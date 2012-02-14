@@ -32,6 +32,11 @@ public class Prime {
 				if(i % k == 0)
 				{
 					j++;
+					if (j>2)
+					{
+						// Don't need to search further
+						break; // leave k-loop
+					}
 				}
 			}
 			if(j == 2)
