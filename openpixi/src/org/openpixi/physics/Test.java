@@ -39,6 +39,12 @@ public class Test {
 		   System.out.println(par2.rangeFromCenter3D());
 		   System.out.println(par1.rangeBetween3D(par2));
 		   System.out.println(par2.rangeBetween3D(par1));
+		   
+		   System.out.println(par1.rangeBetween2D(par2));
+		   if (par1.rangeBetween2D(par2) != Math.sqrt(2.))
+		   {
+			   System.out.println("Error, expect sqrt(2)");
+		   }
 	   }
 	   
 	
