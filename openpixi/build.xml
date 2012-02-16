@@ -1,0 +1,36 @@
+<?xml version="1.0" ?>
+<project name="OpenPixi" default="package">
+
+	<property name="outdir" value="bin" />
+	<property name="srcdir" value="src" />
+	<property name="outdir-classes" value="${outdir}/classes" />
+
+	<!-- Output file -->
+	<property name="out-jar" value="${outdir}/openpixi.jar" />
+
+	<!-- Create the output directories -->
+	<target name="dirs">
+		<delete file="${out-jar}" />
+		<mkdir dir="${outdir}" />
+		<mkdir dir="${outdir-classes}" />
+	</target>
+
+	<target name="clean">
+		<delete file="${out-jar}" />
+		<delete dir="${outdir-classes}" />
+	</target>
+
+	<!-- Compile .java files into .class files. -->
+	<target name="compile" depends="dirs">
+		<javac encoding="ascii" target="1.5" debug="true" extdirs="" srcdir="src" destdir="${outdir-classes}" />
+	</target>
+
+	<!-- Put .class files into .jar file -->
+	<target name="package" depends="compile">
+		<manifest file="MANIFEST.MF">
+			<attribute name="Main-Class" value="org.openpixi.ui.Simulation" />
+		</manifest>
+
+		<jar destfile="${out-jar}" basedir="${outdir-classes}" update="true" manifest="MANIFEST.MF" />
+	</target>
+</project>

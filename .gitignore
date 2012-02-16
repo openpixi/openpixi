@@ -3,3 +3,6 @@
 *.classpath
 *.org.eclipse.jdt.core.prefs
 *~
+openpixi/MANIFEST.MF
+openpixi/bin
+
