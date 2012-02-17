@@ -17,7 +17,11 @@ public class Particle2D{
 	private double mass;         // the mass of the particle
 	private double echarge;      //the electric charge of the particle  
 	
+	private double rightBoundary;   //the right boundary
+	private double bottomBoundary;    //the left boundary
+	
 	public static final double ELC = 1.602e-19;      //defining the electric charge
+	public static final double RADIUS = 15;
 	
 	//building the constructor for 2-dim
 	public Particle2D (double x, double y, double vx, double vy, double ax, double ay, double mass, double echarge)
@@ -91,6 +95,27 @@ public class Particle2D{
 			ay = f.getForceY(vx, vy, this) / mass;
 			onlyonce = false;
 		}
+		//if the particle hits the walls
+		if(x < 0)
+		{
+			x = 0;
+			vx = -vx;
+		}
+		if(x > rightBoundary)
+		{
+			x = rightBoundary;
+			vx = -vx;
+		}
+		if(y < 0)
+		{
+			y = 0;
+			vy = -vy;
+		}
+		if(y > bottomBoundary)
+		{
+			y = bottomBoundary;
+			vy = -vy;
+		}
 		//starting the Euler-Richardson algorithm (the equations correspond with the ones on the above mentioned website)
 		double vxmiddle = vx + ax * step / 2;
 		double vymiddle = vy + ay * step / 2;
@@ -109,6 +134,14 @@ public class Particle2D{
 		
 		ax = f.getForceX(vx, vy, this) / mass;
 		ay = f.getForceY(vx, vy, this) / mass;
+	}
+	//I am introducing a couple of new methods, so I could do the animation better & easier
+	
+	//a method that defines the boundaries
+	public void setBoundaries(int height, int width)
+	{
+		rightBoundary = width - 2 * RADIUS;
+		bottomBoundary = height - 2 * RADIUS;
 	}
 	
 }
