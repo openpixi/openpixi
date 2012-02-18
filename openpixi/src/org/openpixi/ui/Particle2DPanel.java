@@ -1,5 +1,3 @@
-//this is an animation with 30 milliseconds between updates
-
 package org.openpixi.ui;
 import org.openpixi.physics.*;
 import java.awt.*;
@@ -7,13 +5,21 @@ import javax.swing.*;
 import java.awt.event.*;
 import java.util.ArrayList;
 
+/**
+ * Displays 2D particles.
+ */
 public class Particle2DPanel extends JPanel {
 	
 	private static final int step = 30;
 	
-	private int interval = step;                        //Milliseconds between updates
-	public Timer tim;                                //Timer that start the animation for one step
-	public boolean sl = false;                        //it is needed for the slider
+	/** Milliseconds between updates */
+	private int interval = step;
+	
+	/** Timer for animation */
+	public Timer timer;
+	
+	/** Slider state ??? (do we really need this?) */
+	public boolean sl = false;
 	
 	//defining the initial conditions for the particle
 	//private static final double x = 0.0;
@@ -23,17 +29,18 @@ public class Particle2DPanel extends JPanel {
 	
 	private static final int NUM_PARTICLES = 10;
 	
-	private Force f = new Force(0.0, 1.1, 1.2, 1.3);              //new force
+	/** Constant force for particles */
+	private Force f = new Force(0.0, 1.1, 1.2, 1.3);
 	
-	//making an array for more particles
+	/** Contains all particles */
 	ArrayList<Particle2D> parlist = new ArrayList<Particle2D>();
 	
-    //this intern class is required for the timer, i.e. "creating" the timer
-	public class TimerStarts implements ActionListener{
+    /** Listener for timer */
+	public class TimerListener implements ActionListener{
 		
 		public void actionPerformed(ActionEvent eve)
 		{
-			for(int i = 0; i < NUM_PARTICLES; i++)         //this cycle is needed because there are more particles
+			for(int i = 0; i < NUM_PARTICLES; i++)
 			{
 				Particle2D par = (Particle2D) parlist.get(i);
 				par.setBoundaries(getHeight(), getWidth());
@@ -42,34 +49,37 @@ public class Particle2DPanel extends JPanel {
 			repaint();
 		}
 	}
-	
-	public Particle2DPanel()                                           //the constructor
+
+	/** Constructor */
+	public Particle2DPanel()
 	{
-		tim = new Timer(interval, new TimerStarts());               //it creates the timer together with the above class
+		timer = new Timer(interval, new TimerListener());
 		
-		this.setVisible(true); 						     		//setting the panel to be visible
-		this.setSize(700, 500);                                 //setting the size
+		// Set properties of the panel
+		this.setVisible(true);
+		this.setSize(700, 500);
 		
-		for(int i = 0; i < NUM_PARTICLES; i++)                  //constructing the particles
+		// Create all particles
+		for(int i = 0; i < NUM_PARTICLES; i++)
 		{
-		parlist.add(new Particle2D(Math.random(), Math.random(), 100 * Math.random(), 100 * Math.random(), 0.0, 0.0, Math.random() + 1, 10 * Math.random()));
+			parlist.add(new Particle2D(Math.random(), Math.random(), 100 * Math.random(), 100 * Math.random(), 0.0, 0.0, Math.random() + 1, 10 * Math.random()));
 		}
 		
 	}
 
 	public void startAnimation() {
-		tim.start();
+		timer.start();
 		sl = false;
 	}
 
 	public void stopAnimation() {
-		tim.stop();
+		timer.stop();
 		sl = true;
 	}
 
 	public void resetAnimation() {
-		tim.restart();
-		tim.stop();
+		timer.restart();
+		timer.stop();
 		for (int k = 0; k < NUM_PARTICLES; k++)
 		{
 			Particle2D par = (Particle2D) parlist.get(k);
@@ -80,12 +90,13 @@ public class Particle2DPanel extends JPanel {
 		}
 		sl = true;
 	}
-	
-	public void paintComponent(Graphics graph)                  //painting the particle
+
+	/** Display the particles */
+	public void paintComponent(Graphics graph)
 	{
 		setBackground(Color.gray);
 		super.paintComponent(graph); 
-		for(int i = 0; i < NUM_PARTICLES; i++)       //this cycle is needed because there are more particles
+		for(int i = 0; i < NUM_PARTICLES; i++)
 		{
 			Particle2D par = (Particle2D) parlist.get(i);
 			graph.setColor(Color.blue);

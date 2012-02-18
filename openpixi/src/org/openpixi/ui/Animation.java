@@ -28,10 +28,10 @@ public class Animation extends JApplet {
 				} else {
 					int delay = (int) source.getMaximum()
 							- (int) source.getValue();
-					particlePanel.tim.stop();
-					particlePanel.tim.setDelay(delay);
-					particlePanel.tim.setInitialDelay(10 * delay);
-					particlePanel.tim.start();
+					particlePanel.timer.stop();
+					particlePanel.timer.setDelay(delay);
+					particlePanel.timer.setInitialDelay(10 * delay);
+					particlePanel.timer.start();
 				}
 			}
 		}
