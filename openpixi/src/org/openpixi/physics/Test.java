@@ -1,13 +1,13 @@
 package org.openpixi.physics;
-import org.openpixi.physics.Particle;
+import org.openpixi.physics.*;
 
 public class Test {
 	
 	   public static void main(String[] args)
 	   {
-		   Particle par1 = new Particle(1, 1, 1, 0, 0, 0, 8, 5);
+		   Particle3D par1 = new Particle3D(1, 1, 1, 0, 0, 0, 0, 0, 0, 8, 5);
 		   
-		   Particle par2 = new Particle(2, 2, 2, 1, 1, 1, 9, 7);
+		   Particle3D par2 = new Particle3D(2, 2, 2, 1, 1, 1, 0, 0, 0, 9, 7);
 		   
 		   System.out.println(par1.x);
 		   System.out.println(par1.y);
@@ -40,8 +40,8 @@ public class Test {
 		   System.out.println(par1.rangeBetween3D(par2));
 		   System.out.println(par2.rangeBetween3D(par1));
 		   
-		   System.out.println(par1.rangeBetween2D(par2));
-		   if (par1.rangeBetween2D(par2) != Math.sqrt(2.))
+		   System.out.println(par1.rangeBetween3D(par2));
+		   if (par1.rangeBetween3D(par2) != Math.sqrt(2.))
 		   {
 			   System.out.println("Error, expect sqrt(2)");
 		   }
