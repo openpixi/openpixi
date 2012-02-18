@@ -12,6 +12,7 @@ public class Animation extends JFrame{
 	private JSlider slider;
 	private Particle2DPanel particle;
 	
+	//this class is used to define the action of the slider
 	class Slider implements ChangeListener {
 		public void stateChanged(ChangeEvent eve)
 		{
