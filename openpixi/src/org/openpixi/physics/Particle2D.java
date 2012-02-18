@@ -17,8 +17,8 @@ public class Particle2D{
 	private double mass;         // the mass of the particle
 	private double echarge;      //the electric charge of the particle  
 	
-	private double rightBoundary;   //the right boundary
-	private double bottomBoundary;    //the left boundary
+	public double rightBoundary;   //the right boundary
+	public double bottomBoundary;    //the bottom boundary
 	
 	public static final double ELC = 1.602e-19;      //defining the electric charge
 	public static final double RADIUS = 15;
@@ -55,7 +55,6 @@ public class Particle2D{
 	//a method that gives the electric charge
 	public double getCharge()
 	{
-		System.out.println(ELC);
 		return(echarge * ELC);
 	}
 			
@@ -63,6 +62,28 @@ public class Particle2D{
 	public void setCharge(double newEcharge)
 	{
 		echarge = newEcharge;
+	}
+	//methods that set the acceleration
+	
+	public void setAccelerationX(double ax)
+	{
+		this.ax = ax;
+	}
+	
+	public void setAccelerationY(double ay)
+	{
+		this.ay = ay;
+	}
+	
+	//methods that get the acceleration
+	public double getAccelerationX()
+	{
+		return ax;
+	}
+		
+	public double getAccelerationY()
+	{
+		return ay;
 	}
 	
 	//a method that calculates the range from the center 0.0 for 2-dim
@@ -84,7 +105,7 @@ public class Particle2D{
 	 * numerical solutions of a differential equation, based on the Euler algorithm),
 	 *  where I have used the following literature:
 	 * http://www.physics.udel.edu/~bnikolic/teaching/phys660/numerical_ode/node4.html
-	 * I shall use this method togethet with the class Force.java to get some graphical results*/
+	 * I shall use this method together with the class Force.java to get some graphical results*/
 	public void algorithm(double step, Force f)
 	{
 		boolean onlyonce = true;
