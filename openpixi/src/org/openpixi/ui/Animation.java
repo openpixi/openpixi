@@ -1,108 +1,119 @@
-//this is an animation with 30 milliseconds between updates
-
 package org.openpixi.ui;
+
 import java.awt.*;
 import javax.swing.*;
 import java.awt.event.*;
 import javax.swing.event.*;
 
-public class Animation extends JApplet{
+/**
+ * Displays the animation of particles.
+ */
+public class Animation extends JApplet {
 
-	private JButton start, stop, reset;               //the buttons for start, stop & reset
-	private JSlider slider;
-	private Particle2DPanel particle;
+	private JButton startButton, stopButton, resetButton;
+	private JSlider speedSlider;
+	private Particle2DPanel particlePanel;
 
-	//this class is used to define the action of the slider
-	class Slider implements ChangeListener {
-		public void stateChanged(ChangeEvent eve)
-		{
-			JSlider source = (JSlider)eve.getSource();
-			if(!source.getValueIsAdjusting())
-			{
-				int frames = (int)source.getValue();
-				if(frames == 0)
-				{
-					if(!particle.sl)
-						particle.startAnimation(0);
-				}
-				else
-				{
-					int delay = (int)source.getMaximum() - (int)source.getValue();
-				    particle.tim.stop();
-				    particle.tim.setDelay(delay);
-				    particle.tim.setInitialDelay(10 * delay);
-				    particle.tim.start();
+	/**
+	 * Listener for slider.
+	 */
+	class SliderListener implements ChangeListener {
+		public void stateChanged(ChangeEvent eve) {
+			JSlider source = (JSlider) eve.getSource();
+			if (!source.getValueIsAdjusting()) {
+				int frames = (int) source.getValue();
+				if (frames == 0) {
+					if (!particlePanel.sl)
+						particlePanel.startAnimation(0);
+				} else {
+					int delay = (int) source.getMaximum()
+							- (int) source.getValue();
+					particlePanel.tim.stop();
+					particlePanel.tim.setDelay(delay);
+					particlePanel.tim.setInitialDelay(10 * delay);
+					particlePanel.tim.start();
 				}
 			}
 		}
 	}
 
-
-	class Start implements ActionListener{                       //this intern class defines the start for the button
-		public void actionPerformed(ActionEvent eve)
-		{
-			particle.startAnimation(1);
+	/**
+	 * Listener for start button.
+	 */
+	class StartListener implements ActionListener {
+		public void actionPerformed(ActionEvent eve) {
+			particlePanel.startAnimation(1);
 		}
 	}
 
-	class Stop implements ActionListener{                     //this intern class defines the stop for the button
-		public void actionPerformed(ActionEvent eve)
-		{
-			particle.startAnimation(0);
+	/**
+	 * Listener for stop button.
+	 */
+	class StopListener implements ActionListener {
+		public void actionPerformed(ActionEvent eve) {
+			particlePanel.startAnimation(0);
 		}
 	}
 
-	class Reset implements ActionListener{                     //this intern class defines the reset for the button
-		public void actionPerformed(ActionEvent eve)
-		{
-			particle.startAnimation(-1);
+	/**
+	 * Listener for reset button.
+	 */
+	class ResetListener implements ActionListener {
+		public void actionPerformed(ActionEvent eve) {
+			particlePanel.startAnimation(-1);
 		}
 	}
 
-	public Animation()                                           //the constructor
-	{
-		particle = new Particle2DPanel();
+	/**
+	 * Constructor.
+	 */
+	public Animation() {
+		particlePanel = new Particle2DPanel();
 
-		this.setVisible(true); 						     		//setting the frame to be visible
-		this.setSize(700, 500);                                //setting the size
+		this.setVisible(true);
+		this.setSize(700, 500);
 
-		start = new JButton("start");                         //constructor for the 3 buttons
-		stop = new JButton("stop");
-		reset = new JButton("reset");
+		startButton = new JButton("start");
+		stopButton = new JButton("stop");
+		resetButton = new JButton("reset");
 
-		slider = new JSlider();
-		slider.addChangeListener(new Slider());
-		slider.setMinimum(0);
-		slider.setMaximum(50);
-		slider.setValue(30);
+		speedSlider = new JSlider();
+		speedSlider.addChangeListener(new SliderListener());
+		speedSlider.setMinimum(0);
+		speedSlider.setMaximum(50);
+		speedSlider.setValue(30);
 
-		start.addActionListener(new Start());                 //giving the buttons their functions
-		stop.addActionListener(new Stop());
-		reset.addActionListener(new Reset());
+		startButton.addActionListener(new StartListener());
+		stopButton.addActionListener(new StopListener());
+		resetButton.addActionListener(new ResetListener());
 
-	    JPanel buttons = new JPanel();
-		buttons.setLayout(new FlowLayout());                    //setting the buttons in a separate panel
-	    buttons.add(start);
-	    buttons.add(stop);
-	    buttons.add(reset);
-	    buttons.add(slider);
+		JPanel controlPanel = new JPanel();
+		controlPanel.setLayout(new FlowLayout());
+		controlPanel.add(startButton);
+		controlPanel.add(stopButton);
+		controlPanel.add(resetButton);
+		controlPanel.add(speedSlider);
 
-	    this.setLayout(new BorderLayout());
-	    this.add(buttons, BorderLayout.SOUTH);                        //putting the buttons into the frame
-	    this.add(particle, BorderLayout.CENTER);                      //putting the panel of the particle into the frame
+		this.setLayout(new BorderLayout());
+		this.add(controlPanel, BorderLayout.SOUTH);
+		this.add(particlePanel, BorderLayout.CENTER);
 
 	}
-	public static void main(String[] args){                          //defining the main for the applet
+
+	/**
+	 * Entry point for java application.
+	 */
+	public static void main(String[] args) {
 
 		JFrame web = new JFrame();
 
-	    web.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-	    web.setTitle("Animation");
-	    web.setContentPane(new Animation());
+		web.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		web.setTitle("Animation");
+		web.setContentPane(new Animation());
 
-	    web.pack();
-	    web.setVisible(true); 
-	    web.setSize(700, 500);
+		web.pack();
+		web.setVisible(true);
+		web.setSize(700, 500);
 	}
 
 }
