@@ -1,5 +1,4 @@
 package org.openpixi.physics;
-import org.openpixi.physics.*;
 
 public class Test {
 	
