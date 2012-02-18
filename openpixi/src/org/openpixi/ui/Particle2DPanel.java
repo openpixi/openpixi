@@ -4,7 +4,6 @@ package org.openpixi.ui;
 import org.openpixi.physics.*;
 import java.awt.*;
 import javax.swing.*;
-//import javax.swing.Timer;
 
 import java.awt.event.*;
 import java.util.ArrayList;
