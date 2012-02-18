@@ -16,14 +16,14 @@ public class Particle2DPanel extends JPanel{
 	public boolean sl = false;                        //it is needed for the slider
 	
 	//defining the initial conditions for the particle
-	private static final double x = 0.0;
-	private static final double y = 400.0;
-	private static final double vx = 30.0;
-	private static final double vy = 30.0;
+	//private static final double x = 0.0;
+	//private static final double y = 400.0;
+	//private static final double vx = 30.0;
+	//private static final double vy = 30.0;
 	
 	private static final int NUM_PARTICLES = 10;
 	
-	private Force f = new Force(0.0);                                                  //new force
+	private Force f = new Force(0.0, 1.1, 1.2, 1.3);              //new force
 	
 	//making an array for more particles
 	ArrayList<Particle2D> parlist = new ArrayList<Particle2D>();
@@ -52,7 +52,7 @@ public class Particle2DPanel extends JPanel{
 		
 		for(int i = 0; i < NUM_PARTICLES; i++)                  //constructing the particles
 		{
-		parlist.add(new Particle2D(Math.random(), Math.random(), Math.random(), Math.random(), 0.0, 0.0, Math.random() + 1, 0));
+		parlist.add(new Particle2D(Math.random(), Math.random(), 100 * Math.random(), 100 * Math.random(), 0.0, 0.0, Math.random() + 1, 10 * Math.random()));
 		}
 		
 	}
@@ -79,8 +79,8 @@ public class Particle2DPanel extends JPanel{
 						Particle2D par = (Particle2D) parlist.get(k);
 						par.x = Math.random();
 						par.y = Math.random();
-						par.vx = Math.random();
-						par.vy = Math.random();
+						par.vx = 100 * Math.random();
+						par.vy = 100 * Math.random();
 					}
 					sl = true;
 				}
