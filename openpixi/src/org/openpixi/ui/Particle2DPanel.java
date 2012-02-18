@@ -4,7 +4,6 @@ package org.openpixi.ui;
 import org.openpixi.physics.*;
 import java.awt.*;
 import javax.swing.*;
-
 import java.awt.event.*;
 import java.util.ArrayList;
 
@@ -53,7 +52,7 @@ public class Particle2DPanel extends JPanel{
 		
 		for(int i = 0; i < NUM_PARTICLES; i++)                  //constructing the particles
 		{
-		parlist.add(new Particle2D(x, y, i + vx, i + vy, 0.0, 0.0, i + 1, 0));
+		parlist.add(new Particle2D(Math.random(), Math.random(), Math.random(), Math.random(), 0.0, 0.0, Math.random() + 1, 0));
 		}
 		
 	}
@@ -78,10 +77,10 @@ public class Particle2DPanel extends JPanel{
 					for(int k = 0; k < NUM_PARTICLES; k++)          //giving the initial conditions again for reset
 					{
 						Particle2D par = (Particle2D) parlist.get(k);
-						par.x = x;
-						par.y = y;
-						par.vx = vx + k;
-						par.vy = vy + k;
+						par.x = Math.random();
+						par.y = Math.random();
+						par.vx = Math.random();
+						par.vy = Math.random();
 					}
 					sl = true;
 				}
