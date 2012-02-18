@@ -20,7 +20,7 @@ public class Simulation extends JFrame {
 		final double step = 0.5;     //the step that is used in the algorithm
 
 		Particle2D par = new Particle2D(0.0, 400.0, 30.0, 30.0, 0.0, 0.0, 1, 0);   //The particle
-		Force f = new Force(0.0);                                                  //The Force with 0 dragging
+		Force f = new Force(0.0, 0.0, 0.0, 0.0);                           //The Force with 0 dragging and fields
 		par.setBoundaries(getHeight(), getWidth());
 		graph.setColor(Color.blue);                                              //setting the color of the graphics
 
