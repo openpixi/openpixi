@@ -7,7 +7,7 @@ import javax.swing.*;
 import java.awt.event.*;
 import java.util.ArrayList;
 
-public class Particle2DPanel extends JPanel{
+public class Particle2DPanel extends JPanel {
 	
 	private static final int step = 30;
 	
@@ -56,34 +56,29 @@ public class Particle2DPanel extends JPanel{
 		}
 		
 	}
-	public void startAnimation(int i)                           //defining when the animation starts/stops
-	{
-		if(i == 1)
+
+	public void startAnimation() {
+		tim.start();
+		sl = false;
+	}
+
+	public void stopAnimation() {
+		tim.stop();
+		sl = true;
+	}
+
+	public void resetAnimation() {
+		tim.restart();
+		tim.stop();
+		for (int k = 0; k < NUM_PARTICLES; k++)
 		{
-			tim.start();
-			sl = false;
+			Particle2D par = (Particle2D) parlist.get(k);
+			par.x = Math.random();
+			par.y = Math.random();
+			par.vx = 100 * Math.random();
+			par.vy = 100 * Math.random();
 		}
-		else
-			if(i == 0)
-			{
-				tim.stop();
-				sl = true;
-			}
-			else
-				if(i == -1)
-				{
-					tim.restart();
-					tim.stop();
-					for(int k = 0; k < NUM_PARTICLES; k++)          //giving the initial conditions again for reset
-					{
-						Particle2D par = (Particle2D) parlist.get(k);
-						par.x = Math.random();
-						par.y = Math.random();
-						par.vx = 100 * Math.random();
-						par.vy = 100 * Math.random();
-					}
-					sl = true;
-				}
+		sl = true;
 	}
 	
 	public void paintComponent(Graphics graph)                  //painting the particle

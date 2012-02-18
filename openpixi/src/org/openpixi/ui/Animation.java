@@ -24,7 +24,7 @@ public class Animation extends JApplet {
 				int frames = (int) source.getValue();
 				if (frames == 0) {
 					if (!particlePanel.sl)
-						particlePanel.startAnimation(0);
+						particlePanel.stopAnimation();
 				} else {
 					int delay = (int) source.getMaximum()
 							- (int) source.getValue();
@@ -42,7 +42,7 @@ public class Animation extends JApplet {
 	 */
 	class StartListener implements ActionListener {
 		public void actionPerformed(ActionEvent eve) {
-			particlePanel.startAnimation(1);
+			particlePanel.startAnimation();
 		}
 	}
 
@@ -51,7 +51,7 @@ public class Animation extends JApplet {
 	 */
 	class StopListener implements ActionListener {
 		public void actionPerformed(ActionEvent eve) {
-			particlePanel.startAnimation(0);
+			particlePanel.stopAnimation();
 		}
 	}
 
@@ -60,7 +60,7 @@ public class Animation extends JApplet {
 	 */
 	class ResetListener implements ActionListener {
 		public void actionPerformed(ActionEvent eve) {
-			particlePanel.startAnimation(-1);
+			particlePanel.resetAnimation();
 		}
 	}
 
