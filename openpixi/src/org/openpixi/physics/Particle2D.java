@@ -94,7 +94,7 @@ public class Particle2D{
 	
 	
 	//a method that calculates the range between two particles in 2-dim
-	public double rangeBetween2D(Particle a)
+	public double rangeBetween2D(Particle2D a)
 	{
 		double range;
 		range = Math.pow(this.x - a.x, 2) + Math.pow(this.y - this.y, 2);
