@@ -116,9 +116,10 @@ public class Particle2DPanel extends JPanel {
 	}
 
 	/** Display the particles */
-	public void paintComponent(Graphics graph) {
+	public void paintComponent(Graphics graph1) {
+		super.paintComponent(graph1);
+		Graphics2D graph = (Graphics2D) graph1;
 		setBackground(Color.gray);
-		super.paintComponent(graph);
 		for (int i = 0; i < NUM_PARTICLES; i++) {
 			Particle2D par = (Particle2D) parlist.get(i);
 			graph.setColor(Color.blue);
