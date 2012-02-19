@@ -20,24 +20,9 @@ public class Particle3D{
 	private double mass;         // the mass of the particle
 	private double echarge;      //the electric charge of the particle  
 		
-	//building the constructor for 3-dim
-	public Particle3D (double x, double y, double z, double vx, double vy, double vz, 
-			             double ax, double ay, double az, double mass, double echarge)
+	/** Empty constructor */
+	public Particle3D ()
 	{
-		this.x = x;
-		this.y = y;
-		this.z = z;
-		
-		this.vx = vx;
-		this.vy = vy;
-		this.vz = vz;
-		
-		this.ax = ax;
-		this.ay = ay;
-		this.az = az;
-		
-		this.mass = mass;
-		this.echarge = echarge;
 	}
 	
 	//a method that gives the mass

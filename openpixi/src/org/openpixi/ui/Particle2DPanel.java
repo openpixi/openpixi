@@ -23,16 +23,10 @@ public class Particle2DPanel extends JPanel {
 	/** Slider state ??? (do we really need this?) */
 	public boolean sl = false;
 
-	// defining the initial conditions for the particle
-	// private static final double x = 0.0;
-	// private static final double y = 400.0;
-	// private static final double vx = 30.0;
-	// private static final double vy = 30.0;
-
 	private static int NUM_PARTICLES = 10;
 
 	/** Constant force for particles */
-	private Force f = new Force(0.0, 1.1, 1.2, 1.3);
+	private Force f = new Force();
 
 	/** Contains all particles */
 	ArrayList<Particle2D> parlist = new ArrayList<Particle2D>();
@@ -109,13 +103,16 @@ public class Particle2DPanel extends JPanel {
 			par.setCharge(1);
 			parlist.add(par);
 		}
-		f = new Force(0.0, 1.1, 1.2, 1.3);
+		f.reset();
+		f.gy = -ConstantsSI.g;
+		//f.bz = 1;
 	}
 
 	private void initGravity(int count) {
 		initRandomParticles(count);
 
-		f = new Force(0.0, 0.0, 0.0, 0.0);
+		f.reset();
+		f.gy = -ConstantsSI.g;
 	}
 
 	/** Display the particles */

@@ -2,41 +2,51 @@
 package org.openpixi.physics;
 
 public class Force {
+
+	/** Constant gravity in x-direction */
+	public double gx;
+
+	/** Constant gravity in y-direction */
+	public double gy;
+
+	/** Drag coefficient */
+	public double drag;
+
+	/** Electric field in x - direction */
+	public double ex;
+
+	/** Electric field in y - direction */
+	public double ey;
+
+	/** Magnetic field in z - direction */
+	public double bz;
 	
-	private double g;      //the Earth acceleration
-	private double dragcoef;                  //just a simple coefficient that represents the dragging
-	private double ex;                          //the electric field in x - direction
-	private double ey;				            //the electric field in y - direction
-	private double bz;                          //the magnetic field in z - direction
-	
-	public Force(double dragcoeff, double ex, double ey, double bz)       //the constructor
+	/** New empty force */
+	public Force()
 	{
-		this.dragcoef = dragcoeff;
-		this.ex = ex;
-		this.ey = ey;
-		this.bz = bz;
+		reset();
 	}
-	
-	public double getDrag()
+
+	public void reset()
 	{
-		return dragcoef;
+		gx = 0;
+		gy = 0;
+		drag = 0;
+		ex = 0;
+		ey = 0;
+		bz = 0;
 	}
-	
-	public void setDrag(double newcoeff)
-	{
-		dragcoef = newcoeff;
-	}
-	
+
 	//getting the force in the x - direction
 	public double getForceX(double vx, double vy, Particle2D par)
 	{
-		return -dragcoef * vx + par.getCharge() * ex + par.getCharge() * vy * bz;
+		return -drag * vx + par.getMass() * gx + par.getCharge() * ex + par.getCharge() * vy * bz;
 	}
 	
 	//getting the force in the y - direction
 	public double getForceY(double vx, double vy, Particle2D par)
 	{
-		return - dragcoef * vy - par.getMass() * g + par.getCharge() * ey - par.getCharge() * vx * bz;
+		return - drag * vy + par.getMass() * gy + par.getCharge() * ey - par.getCharge() * vx * bz;
 	}
 	
 }

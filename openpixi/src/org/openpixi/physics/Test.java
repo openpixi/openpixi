@@ -4,9 +4,22 @@ public class Test {
 	
 	   public static void main(String[] args)
 	   {
-		   Particle3D par1 = new Particle3D(1, 1, 1, 0, 0, 0, 0, 0, 0, 8, 5);
+		   Particle3D par1 = new Particle3D();
+		   par1.x = 1;
+		   par1.y = 1;
+		   par1.z = 1;
+		   par1.setCharge(8);
+		   par1.setMass(5);
 		   
-		   Particle3D par2 = new Particle3D(2, 2, 2, 1, 1, 1, 0, 0, 0, 9, 7);
+		   Particle3D par2 = new Particle3D();
+		   par1.x = 2;
+		   par1.y = 2;
+		   par1.z = 2;
+		   par1.vx = 1;
+		   par1.vy = 1;
+		   par1.vz = 1;
+		   par1.setCharge(9);
+		   par1.setMass(7);
 		   
 		   System.out.println(par1.x);
 		   System.out.println(par1.y);

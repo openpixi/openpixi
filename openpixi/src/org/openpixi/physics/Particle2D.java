@@ -27,23 +27,6 @@ public class Particle2D{
 	{
 	}
 
-	//building the constructor for 2-dim
-	public Particle2D (double x, double y, double vx, double vy, double ax, double ay, double mass, double echarge)
-	{
-		this.x = x;
-		this.y = y;
-	
-		this.vx = vx;
-		this.vy = vy;
-		
-		this.ax = ax;
-		this.ay = ay;
-		
-		this.mass = mass;
-		this.echarge = echarge;
-	}
-	
-	
 	//a method that gives the mass
 	public double getMass()
 	{
