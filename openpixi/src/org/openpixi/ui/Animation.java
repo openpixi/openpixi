@@ -87,11 +87,11 @@ public class Animation extends JApplet {
 	class CheckListener implements ItemListener {
 		public void itemStateChanged(ItemEvent eve){
 			//AbstractButton abstractbutton = (AbstractButton) eve.getSource();
-			int state = eve.getStateChange();
-			if(state == ItemEvent.SELECTED)
-				particlePanel.stopAnimation();
-			if(state == ItemEvent.DESELECTED)
-				particlePanel.startAnimation();
+//			int state = eve.getStateChange();
+	//		if(state == ItemEvent.SELECTED)
+				particlePanel.checkTrace();
+		//	if(state == ItemEvent.DESELECTED)
+			//	particlePanel.checkTrace();
 		}
 		
 	}
