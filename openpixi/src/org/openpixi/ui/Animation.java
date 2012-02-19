@@ -228,35 +228,25 @@ public class Animation extends JApplet {
 		JLabel gFieldXLabel = new JLabel("Gx Field");
 		JLabel gFieldYLabel = new JLabel("Gy Field");
 		
-		JPanel efieldsPanel = new JPanel();
-		efieldsPanel.setLayout(new FlowLayout());
-		efieldsPanel.add(efieldXSlider);
-		efieldsPanel.add(eFieldXLabel);
-		efieldsPanel.add(efieldYSlider);
-		efieldsPanel.add(eFieldYLabel);
-		
-		JPanel gfieldsPanel = new JPanel();
-		gfieldsPanel.setLayout(new FlowLayout());
-		gfieldsPanel.add(gfieldXSlider);
-		gfieldsPanel.add(gFieldXLabel);
-		gfieldsPanel.add(gfieldYSlider);
-		gfieldsPanel.add(gFieldYLabel);
-		
-		JPanel bfieldPanel = new JPanel();
-		bfieldPanel.setLayout(new FlowLayout());
-		bfieldPanel.add(bfieldZSlider);
-		bfieldPanel.add(bFieldZLabel);
-		
-		JPanel fieldsPanel = new JPanel();
-		fieldsPanel.setLayout(new FlowLayout());
-		fieldsPanel.add(efieldsPanel);
-		fieldsPanel.add(bfieldPanel);
-		fieldsPanel.add(gfieldsPanel);
+		Box fieldsBox = Box.createVerticalBox();
+		fieldsBox.add(eFieldXLabel);
+		fieldsBox.add(efieldXSlider);
+		fieldsBox.add(eFieldYLabel);
+		fieldsBox.add(efieldYSlider);
+		fieldsBox.add(Box.createVerticalGlue());
+		fieldsBox.add(bFieldZLabel);
+		fieldsBox.add(bfieldZSlider);
+		fieldsBox.add(Box.createVerticalGlue());
+		fieldsBox.add(gFieldXLabel);
+		fieldsBox.add(gfieldXSlider);
+		fieldsBox.add(gFieldYLabel);
+		fieldsBox.add(gfieldYSlider);
+		fieldsBox.add(Box.createVerticalGlue());
 		
 		this.setLayout(new BorderLayout());
 		this.add(controlPanel, BorderLayout.SOUTH);
 		this.add(particlePanel, BorderLayout.CENTER);
-		this.add(fieldsPanel, BorderLayout.NORTH);
+		this.add(fieldsBox, BorderLayout.EAST);
 
 	}
 
