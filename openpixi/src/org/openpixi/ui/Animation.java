@@ -3,6 +3,7 @@ package org.openpixi.ui;
 import java.awt.*;
 import javax.swing.*;
 import java.awt.event.*;
+
 import javax.swing.event.*;
 
 /**
@@ -12,7 +13,15 @@ public class Animation extends JApplet {
 
 	private JButton startButton, stopButton, resetButton;
 	private JSlider speedSlider;
+	private JComboBox initComboBox;
 	private Particle2DPanel particlePanel;
+
+	String[] initStrings = {
+			"10 random particles",
+			"100 random particles",
+			"1000 random particles",
+			"10000 random particles",
+			"Single particle in gravity" };
 
 	/**
 	 * Listener for slider.
@@ -34,6 +43,15 @@ public class Animation extends JApplet {
 					particlePanel.timer.start();
 				}
 			}
+		}
+	}
+	
+	class ComboBoxListener implements ActionListener {
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			JComboBox cb = (JComboBox) e.getSource();
+			int id  = cb.getSelectedIndex();
+			particlePanel.resetAnimation(id);
 		}
 	}
 
@@ -60,7 +78,7 @@ public class Animation extends JApplet {
 	 */
 	class ResetListener implements ActionListener {
 		public void actionPerformed(ActionEvent eve) {
-			particlePanel.resetAnimation();
+			particlePanel.resetAnimation(initComboBox.getSelectedIndex());
 		}
 	}
 
@@ -83,6 +101,10 @@ public class Animation extends JApplet {
 		speedSlider.setMaximum(50);
 		speedSlider.setValue(30);
 
+		initComboBox = new JComboBox(initStrings);
+		initComboBox.setSelectedIndex(0);
+		initComboBox.addActionListener(new ComboBoxListener());
+		
 		startButton.addActionListener(new StartListener());
 		stopButton.addActionListener(new StopListener());
 		resetButton.addActionListener(new ResetListener());
@@ -92,6 +114,7 @@ public class Animation extends JApplet {
 		controlPanel.add(startButton);
 		controlPanel.add(stopButton);
 		controlPanel.add(resetButton);
+		controlPanel.add(initComboBox);
 		controlPanel.add(speedSlider);
 
 		this.setLayout(new BorderLayout());

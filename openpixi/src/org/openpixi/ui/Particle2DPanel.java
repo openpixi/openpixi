@@ -28,7 +28,7 @@ public class Particle2DPanel extends JPanel {
 	// private static final double vx = 30.0;
 	// private static final double vy = 30.0;
 
-	private static final int NUM_PARTICLES = 10;
+	private static int NUM_PARTICLES = 10;
 
 	/** Constant force for particles */
 	private Force f = new Force(0.0, 1.1, 1.2, 1.3);
@@ -58,12 +58,7 @@ public class Particle2DPanel extends JPanel {
 		this.setSize(700, 500);
 
 		// Create all particles
-		for (int i = 0; i < NUM_PARTICLES; i++) {
-			parlist.add(new Particle2D(Math.random(), Math.random(), 100 * Math
-					.random(), 100 * Math.random(), 0.0, 0.0,
-					Math.random() + 1, 10 * Math.random()));
-		}
-
+		initRandomParticles(10);
 	}
 
 	public void startAnimation() {
@@ -76,17 +71,51 @@ public class Particle2DPanel extends JPanel {
 		sl = true;
 	}
 
-	public void resetAnimation() {
-		timer.restart();
+	public void resetAnimation(int id) {
+		//timer.restart();
 		timer.stop();
+		switch(id) {
+		case 0:
+			initRandomParticles(10);
+			break;
+		case 1:
+			initRandomParticles(100);
+			break;
+		case 2:
+			initRandomParticles(1000);
+			break;
+		case 3:
+			initRandomParticles(10000);
+			break;
+		case 4:
+			initGravity(1);
+			break;
+		}
+		sl = true;
+		timer.start();
+	}
+
+	private void initRandomParticles(int count) {
+		NUM_PARTICLES = count;
+		parlist.clear();
 		for (int k = 0; k < NUM_PARTICLES; k++) {
-			Particle2D par = (Particle2D) parlist.get(k);
+			Particle2D par = new Particle2D();
 			par.x = Math.random();
 			par.y = Math.random();
 			par.vx = 100 * Math.random();
 			par.vy = 100 * Math.random();
+			par.setMass(1);
+			par.setCharge(1);
+			parlist.add(par);
 		}
-		sl = true;
+
+		f = new Force(0.0, 1.1, 1.2, 1.3);
+	}
+
+	private void initGravity(int count) {
+		initRandomParticles(count);
+
+		f = new Force(0.0, 0.0, 0.0, 0.0);
 	}
 
 	/** Display the particles */

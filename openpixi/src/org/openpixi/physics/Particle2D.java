@@ -22,7 +22,12 @@ public class Particle2D{
 	
 	public static final double ELC = 1.602e-19;      //defining the electric charge
 	public static final double RADIUS = 15;
-	
+
+	/** Empty constructor */
+	public Particle2D ()
+	{
+	}
+
 	//building the constructor for 2-dim
 	public Particle2D (double x, double y, double vx, double vy, double ax, double ay, double mass, double echarge)
 	{
