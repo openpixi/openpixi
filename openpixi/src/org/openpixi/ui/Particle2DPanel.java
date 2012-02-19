@@ -44,7 +44,7 @@ public class Particle2DPanel extends JPanel {
 			for (int i = 0; i < NUM_PARTICLES; i++) {
 				Particle2D par = (Particle2D) parlist.get(i);
 				par.setBoundaries(getHeight(), getWidth());
-				Euler.algorithm(par, f, 0.5);
+				EulerRichardson.algorithm(par, f, 0.5);
 			}
 			repaint();
 		}
