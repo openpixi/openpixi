@@ -9,27 +9,7 @@ package org.openpixi.physics.solver;
 import org.openpixi.physics.*;
 
 public class Euler {
-	
-	private Particle2D particle;
-	private Force f;
-	
-	public Euler(Particle2D particle, Force f)
-	{
-		this.particle = particle;
-		this.f = f;
-	}
-	
-	public Particle2D getParticle2D()
-	{
-		return this.particle;
-	}
-	
-	public Force getForce()
-	{
-		return this.f;
-	}
-	
-	public void algorithm(double step)
+	public static void algorithm(Particle2D particle, Force f, double step)
 	{
 		particle.setAccelerationX(f.getForceX(particle.vx, particle.vy, particle) / particle.getMass());
 		particle.setAccelerationY(f.getForceX(particle.vx, particle.vy, particle) / particle.getMass());
