@@ -255,7 +255,7 @@ public class Animation extends JApplet {
 		gfieldYSlider.setMinorTickSpacing(1);
 		gfieldYSlider.setPaintTicks(true);
 		
-		initComboBox = new JComboBox(initStrings);
+		initComboBox = new JComboBox<String>(initStrings);
 		initComboBox.setSelectedIndex(0);
 		initComboBox.addActionListener(new ComboBoxListener());
 		
