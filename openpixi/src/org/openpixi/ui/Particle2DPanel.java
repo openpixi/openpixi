@@ -98,8 +98,8 @@ public class Particle2DPanel extends JPanel {
 		parlist.clear();
 		for (int k = 0; k < NUM_PARTICLES; k++) {
 			Particle2D par = new Particle2D();
-			par.x = Math.random();
-			par.y = Math.random();
+			par.x = 700 * Math.random();
+			par.y = 500 * Math.random();
 			par.radius = 15;
 			par.vx = 10 * Math.random();
 			par.vy = 10 * Math.random();
@@ -108,7 +108,7 @@ public class Particle2DPanel extends JPanel {
 			parlist.add(par);
 		}
 		f.reset();
-		f.gy = -ConstantsSI.g;
+		f.gy = -1; //-ConstantsSI.g;
 		//f.bz = 1;
 	}
 
@@ -116,7 +116,7 @@ public class Particle2DPanel extends JPanel {
 		initRandomParticles(count);
 
 		f.reset();
-		f.gy = -ConstantsSI.g;
+		f.gy = -1; // -ConstantsSI.g;
 	}
 
 	private void initMagnetic(int count) {
@@ -136,7 +136,7 @@ public class Particle2DPanel extends JPanel {
 		for (int i = 0; i < NUM_PARTICLES; i++) {
 			Particle2D par = (Particle2D) parlist.get(i);
 			graph.setColor(Color.blue);
-			graph.fillOval((int) par.x, (int) par.y, 15, 15);
+			graph.fillOval((int) par.x, (int) par.y, (int) par.radius, (int) par.radius);
 		}
 	}
 
