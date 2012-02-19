@@ -178,8 +178,8 @@ public class Animation extends JApplet {
 		stopButton = new JButton("stop");
 		resetButton = new JButton("reset");
 
-		/**one can also write the constructor for a JSlider as:
-		 * speerSlider = new JSlider(int min, int max, int value);
+		/**one can also write a constructor for a JSlider as:
+		 * JSlider slider = new JSlider(int min, int max, int value);
 		 * where min is the minimal value (the same as setMinimum(int min), 
 		 * max is the maximal value (the same as setMinimum(int max),
 		 * and value is the current value (the same as setValue(int value),
