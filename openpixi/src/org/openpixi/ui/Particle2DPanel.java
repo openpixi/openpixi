@@ -12,7 +12,8 @@ import java.util.ArrayList;
  */
 public class Particle2DPanel extends JPanel {
 
-	private static final int step = 30;
+	//private static final int step = 30;
+	public int step;
 
 	/** Milliseconds between updates */
 	private int interval = step;
