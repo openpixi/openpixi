@@ -313,7 +313,7 @@ public class Animation extends JApplet {
 		JFrame web = new JFrame();
 
 		web.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		web.setTitle("Animation");
+		web.setTitle("Animation 2D");
 		web.setContentPane(new Animation());
 
 		web.pack();
