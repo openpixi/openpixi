@@ -40,13 +40,13 @@ public class Force {
 	//getting the force in the x - direction
 	public double getForceX(double vx, double vy, Particle2D par)
 	{
-		return -drag * vx + par.getMass() * gx + par.getCharge() * ex + par.getCharge() * vy * bz;
+		return -drag * vx + par.mass * gx + par.charge * ex + par.charge * vy * bz;
 	}
 	
 	//getting the force in the y - direction
 	public double getForceY(double vx, double vy, Particle2D par)
 	{
-		return - drag * vy + par.getMass() * gy + par.getCharge() * ey - par.getCharge() * vx * bz;
+		return - drag * vy + par.mass * gy + par.charge * ey - par.charge * vx * bz;
 	}
 	
 }

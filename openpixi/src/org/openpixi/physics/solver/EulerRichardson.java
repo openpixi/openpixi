@@ -15,8 +15,8 @@ import org.openpixi.physics.*;
 public class EulerRichardson {
 	public static void algorithm(Particle2D particle, Force f, double step)
 	{
-		particle.setAccelerationX(f.getForceX(particle.vx, particle.vy, particle) / particle.getMass());
-		particle.setAccelerationY(f.getForceX(particle.vx, particle.vy, particle) / particle.getMass());
+		particle.ax = f.getForceX(particle.vx, particle.vy, particle) / particle.mass;
+		particle.ay = f.getForceX(particle.vx, particle.vy, particle) / particle.mass;
 		
 		//if the particle hits the walls
 		if(particle.x < 0)
@@ -40,14 +40,14 @@ public class EulerRichardson {
 			particle.vy = - particle.vy;
 		}
 		//starting the Euler-Richardson algorithm (the equations correspond with the ones on the above mentioned website)
-		double vxmiddle = particle.vx + particle.getAccelerationX() * step / 2;
-		double vymiddle = particle.vy + particle.getAccelerationY() * step / 2;
+		double vxmiddle = particle.vx + particle.ax * step / 2;
+		double vymiddle = particle.vy + particle.ay * step / 2;
 		
 		//double xmiddle = x + vx * step / 2;    actually, this two equations are not needed, but I've written them
 		//double ymiddle = y + vy * step / 2;    so the algorithm is complete
 		
-		double axmiddle = f.getForceX(vxmiddle, vymiddle, particle) / particle.getMass();
-		double aymiddle = f.getForceY(vxmiddle, vymiddle, particle) / particle.getMass();
+		double axmiddle = f.getForceX(vxmiddle, vymiddle, particle) / particle.mass;
+		double aymiddle = f.getForceY(vxmiddle, vymiddle, particle) / particle.mass;
 		
 		particle.vx += axmiddle * step;
 		particle.vy += aymiddle * step;
@@ -55,8 +55,8 @@ public class EulerRichardson {
 		particle.x += vxmiddle * step;
 		particle.y += vymiddle * step;
 		
-		particle.setAccelerationX(f.getForceX(particle.vx, particle.vy, particle) / particle.getMass());
-		particle.setAccelerationY(f.getForceY(particle.vx, particle.vy, particle) / particle.getMass());
+		particle.ax = f.getForceX(particle.vx, particle.vy, particle) / particle.mass;
+		particle.ax = f.getForceY(particle.vx, particle.vy, particle) / particle.mass;
 	}
 
 }

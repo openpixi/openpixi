@@ -97,10 +97,11 @@ public class Particle2DPanel extends JPanel {
 			Particle2D par = new Particle2D();
 			par.x = Math.random();
 			par.y = Math.random();
+			par.radius = 15;
 			par.vx = 100 * Math.random();
 			par.vy = 100 * Math.random();
-			par.setMass(1);
-			par.setCharge(1);
+			par.mass = 1;
+			par.charge = 1;
 			parlist.add(par);
 		}
 		f.reset();

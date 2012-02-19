@@ -4,75 +4,42 @@ import java.lang.Math;
 
 	
 public class Particle2D{
-		
-	public double x;            //x - Coordinate
-	public double y;            //y - Coordinate
 
-	public double vx;           //velocity in the x - direction
-	public double vy;           //velocity in the y - direction
-	
-	private double ax;           //acceleration in the x - direction
-	private double ay;           //acceleration in the y - direction
+	/** x-coordinate */
+	public double x;
 
-	private double mass;         // the mass of the particle
-	private double echarge;      //the electric charge of the particle  
+	/** y-coordinate */
+	public double y;
 	
+	/** radius of particle */
+	public double radius;
+
+	/** velocity in x-direction */
+	public double vx;
+
+	/** velocity in y-direction */
+	public double vy;
+
+	/** acceleration in x-direction */
+	public double ax;
+
+	/** acceleration in y-direction */
+	public double ay;
+
+	/** mass of the particle */
+	public double mass;
+
+	/** electric charge of the particle */
+	public double charge;
+
 	public double rightBoundary;   //the right boundary
 	public double bottomBoundary;    //the bottom boundary
-	
-	public static final double RADIUS = 15;
 
 	/** Empty constructor */
-	public Particle2D ()
+	public Particle2D()
 	{
 	}
 
-	//a method that gives the mass
-	public double getMass()
-	{
-		return(mass);
-	}
-	
-	//a method that sets the mass to a certain value
-	public void setMass(double newMass)
-	{
-		mass = newMass;
-	}
-	
-	//a method that gives the electric charge
-	public double getCharge()
-	{
-		return(echarge);
-	}
-			
-	//a method that sets the mass to a certain value
-	public void setCharge(double newEcharge)
-	{
-		echarge = newEcharge;
-	}
-	//methods that set the acceleration
-	
-	public void setAccelerationX(double ax)
-	{
-		this.ax = ax;
-	}
-	
-	public void setAccelerationY(double ay)
-	{
-		this.ay = ay;
-	}
-	
-	//methods that get the acceleration
-	public double getAccelerationX()
-	{
-		return ax;
-	}
-		
-	public double getAccelerationY()
-	{
-		return ay;
-	}
-	
 	//a method that calculates the range from the center 0.0 for 2-dim
 	public double rangeFromCenter2D()
 	{
@@ -90,8 +57,8 @@ public class Particle2D{
 	//a method that defines the boundaries
 	public void setBoundaries(int height, int width)
 	{
-		rightBoundary = width - 2 * RADIUS;
-		bottomBoundary = height - 2 * RADIUS;
+		rightBoundary = width - 2 * radius;
+		bottomBoundary = height - 2 * radius;
 	}
 	
 }
