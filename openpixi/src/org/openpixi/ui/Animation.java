@@ -13,6 +13,9 @@ public class Animation extends JApplet {
 
 	private JButton startButton, stopButton, resetButton;
 	private JSlider speedSlider;
+	private JSlider efieldSlider;
+	private JSlider bfieldSlider;
+	private JSlider gfieldSlider;
 	private JComboBox initComboBox;
 	private JCheckBox traceCheck;
 	private Particle2DPanel particlePanel;
@@ -114,7 +117,13 @@ public class Animation extends JApplet {
 		speedSlider.setMinimum(0);
 		speedSlider.setMaximum(50);
 		speedSlider.setValue(30);
-
+		
+		efieldSlider = new JSlider();
+		
+		bfieldSlider = new JSlider();
+		
+		gfieldSlider = new JSlider();
+		
 		initComboBox = new JComboBox(initStrings);
 		initComboBox.setSelectedIndex(0);
 		initComboBox.addActionListener(new ComboBoxListener());
@@ -134,10 +143,25 @@ public class Animation extends JApplet {
 		controlPanel.add(initComboBox);
 		controlPanel.add(speedSlider);
 		controlPanel.add(traceCheck);
+		
+		JLabel eFieldLabel = new JLabel("E Field", JLabel.CENTER);
+		JLabel bFieldLabel = new JLabel("B Field", JLabel.CENTER);
+		JLabel gFieldLabel = new JLabel("G Field", JLabel.CENTER);
+		
+		JPanel fieldsPanel = new JPanel();
+		fieldsPanel.setLayout(new FlowLayout());
+		fieldsPanel.add(efieldSlider);
+		fieldsPanel.add(eFieldLabel);
+		fieldsPanel.add(bfieldSlider);
+		fieldsPanel.add(bFieldLabel);
+		fieldsPanel.add(gfieldSlider);
+		fieldsPanel.add(gFieldLabel);
+		
 
 		this.setLayout(new BorderLayout());
 		this.add(controlPanel, BorderLayout.SOUTH);
 		this.add(particlePanel, BorderLayout.CENTER);
+		this.add(fieldsPanel, BorderLayout.NORTH);
 
 	}
 
