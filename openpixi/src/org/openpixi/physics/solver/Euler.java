@@ -1,3 +1,9 @@
+/*this is a method, that  is based on the simple Euler-Richardson algorithm (it represents a neat way of finding the
+* numerical solutions of a differential equation, based on the Euler algorithm),
+*  where I have used the following literature:
+* http://www.physics.udel.edu/~bnikolic/teaching/phys660/numerical_ode/node4.html
+* I shall use this method together with the class Force.java to get some graphical results*/
+
 package org.openpixi.physics.solver;
 
 import org.openpixi.physics.*;
@@ -13,14 +19,16 @@ public class Euler {
 		this.f = f;
 	}
 	
-	public Euler()
-	{
-		
-	}
 	public Particle2D getParticle2D()
 	{
 		return this.particle;
 	}
+	
+	public Force getForce()
+	{
+		return this.f;
+	}
+	
 	public void algorithm(double step)
 	{
 		particle.setAccelerationX(f.getForceX(particle.vx, particle.vy, particle) / particle.getMass());
