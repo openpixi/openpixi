@@ -15,6 +15,8 @@ public class Particle2DPanel extends JPanel {
 	//private static final int step = 30;
 	public int step;
 
+	public boolean reset_trace;
+	
 	/** Milliseconds between updates */
 	private int interval = step;
 
@@ -73,6 +75,7 @@ public class Particle2DPanel extends JPanel {
 	public void resetAnimation(int id) {
 		// timer.restart();
 		timer.stop();
+		reset_trace = true;
 		switch(id) {
 		case 0:
 			initRandomParticles(10, 15);
@@ -148,6 +151,11 @@ public class Particle2DPanel extends JPanel {
 		if(!paint_trace)
 		{
 			super.paintComponent(graph1);
+		}
+		if(reset_trace)
+		{
+			super.paintComponent(graph1);
+			reset_trace = false;
 		}
 		for (int i = 0; i < NUM_PARTICLES; i++) {
 			Particle2D par = (Particle2D) parlist.get(i);
