@@ -13,9 +13,13 @@ public class Animation extends JApplet {
 
 	private JButton startButton, stopButton, resetButton;
 	private JSlider speedSlider;
-	private JSlider efieldSlider;
-	private JSlider bfieldSlider;
-	private JSlider gfieldSlider;
+	
+	private JSlider efieldXSlider;
+	private JSlider efieldYSlider;
+	private JSlider bfieldZSlider;
+	private JSlider gfieldXSlider;
+	private JSlider gfieldYSlider;
+	
 	private JComboBox initComboBox;
 	private JCheckBox traceCheck;
 	private Particle2DPanel particlePanel;
@@ -89,16 +93,66 @@ public class Animation extends JApplet {
 	
 	class CheckListener implements ItemListener {
 		public void itemStateChanged(ItemEvent eve){
-			//AbstractButton abstractbutton = (AbstractButton) eve.getSource();
-//			int state = eve.getStateChange();
-	//		if(state == ItemEvent.SELECTED)
 				particlePanel.checkTrace();
-		//	if(state == ItemEvent.DESELECTED)
-			//	particlePanel.checkTrace();
 		}
 		
 	}
-
+	
+	class EFieldXListener implements ChangeListener{
+		public void stateChanged(ChangeEvent eve) {
+			JSlider source = (JSlider) eve.getSource();
+			if(!source.getValueIsAdjusting())
+			{
+				int value = source.getValue();
+				particlePanel.f.setEX(value);
+			}
+		}
+	}
+	
+	class EFieldYListener implements ChangeListener{
+		public void stateChanged(ChangeEvent eve) {
+			JSlider source = (JSlider) eve.getSource();
+			if(!source.getValueIsAdjusting())
+			{
+				int value = source.getValue();
+				particlePanel.f.setEY(value);
+			}
+		}
+	}
+	
+	
+	class BFieldZListener implements ChangeListener{
+		public void stateChanged(ChangeEvent eve) {
+			JSlider source = (JSlider) eve.getSource();
+			if(!source.getValueIsAdjusting())
+			{
+				int value = source.getValue();
+				particlePanel.f.setBZ(value);
+			}
+		}
+	}
+	
+	class GFieldXListener implements ChangeListener{
+		public void stateChanged(ChangeEvent eve) {
+			JSlider source = (JSlider) eve.getSource();
+			if(!source.getValueIsAdjusting())
+			{
+				int value = source.getValue();
+				particlePanel.f.setGX(value);
+			}
+		}
+	}
+	
+	class GFieldYListener implements ChangeListener{
+		public void stateChanged(ChangeEvent eve) {
+			JSlider source = (JSlider) eve.getSource();
+			if(!source.getValueIsAdjusting())
+			{
+				int value = source.getValue();
+				particlePanel.f.setGY(value);
+			}
+		}
+	}
 	/**
 	 * Constructor.
 	 */
@@ -118,11 +172,35 @@ public class Animation extends JApplet {
 		speedSlider.setMaximum(50);
 		speedSlider.setValue(30);
 		
-		efieldSlider = new JSlider();
+		efieldXSlider = new JSlider();
+		efieldXSlider.addChangeListener(new EFieldXListener());
+		efieldXSlider.setMinimum(0);
+		efieldXSlider.setMaximum(1);
+		efieldXSlider.setValue(0);
 		
-		bfieldSlider = new JSlider();
+		efieldYSlider = new JSlider();
+		efieldYSlider.addChangeListener(new EFieldYListener());
+		efieldYSlider.setMinimum(0);
+		efieldYSlider.setMaximum(1);
+		efieldYSlider.setValue(0);
 		
-		gfieldSlider = new JSlider();
+		bfieldZSlider = new JSlider();
+		bfieldZSlider.addChangeListener(new BFieldZListener());
+		bfieldZSlider.setMinimum(0);
+		bfieldZSlider.setMaximum(1);
+		bfieldZSlider.setValue(0);
+		
+		gfieldXSlider = new JSlider();
+		gfieldXSlider.addChangeListener(new GFieldXListener());
+		gfieldXSlider.setMinimum(0);
+		gfieldXSlider.setMaximum(1);
+		gfieldXSlider.setValue(0);
+		
+		gfieldYSlider = new JSlider();
+		gfieldXSlider.addChangeListener(new GFieldYListener());
+		gfieldYSlider.setMinimum(0);
+		gfieldYSlider.setMaximum(1);
+		gfieldYSlider.setValue(0);
 		
 		initComboBox = new JComboBox(initStrings);
 		initComboBox.setSelectedIndex(0);
@@ -144,20 +222,37 @@ public class Animation extends JApplet {
 		controlPanel.add(speedSlider);
 		controlPanel.add(traceCheck);
 		
-		JLabel eFieldLabel = new JLabel("E Field", JLabel.CENTER);
-		JLabel bFieldLabel = new JLabel("B Field", JLabel.CENTER);
-		JLabel gFieldLabel = new JLabel("G Field", JLabel.CENTER);
+		JLabel eFieldXLabel = new JLabel("Ex Field");
+		JLabel eFieldYLabel = new JLabel("Ey Field");
+		JLabel bFieldZLabel = new JLabel("Bz Field");
+		JLabel gFieldXLabel = new JLabel("Gx Field");
+		JLabel gFieldYLabel = new JLabel("Gy Field");
+		
+		JPanel efieldsPanel = new JPanel();
+		efieldsPanel.setLayout(new FlowLayout());
+		efieldsPanel.add(efieldXSlider);
+		efieldsPanel.add(eFieldXLabel);
+		efieldsPanel.add(efieldYSlider);
+		efieldsPanel.add(eFieldYLabel);
+		
+		JPanel gfieldsPanel = new JPanel();
+		gfieldsPanel.setLayout(new FlowLayout());
+		gfieldsPanel.add(gfieldXSlider);
+		gfieldsPanel.add(gFieldXLabel);
+		gfieldsPanel.add(gfieldYSlider);
+		gfieldsPanel.add(gFieldYLabel);
+		
+		JPanel bfieldPanel = new JPanel();
+		bfieldPanel.setLayout(new FlowLayout());
+		bfieldPanel.add(bfieldZSlider);
+		bfieldPanel.add(bFieldZLabel);
 		
 		JPanel fieldsPanel = new JPanel();
 		fieldsPanel.setLayout(new FlowLayout());
-		fieldsPanel.add(efieldSlider);
-		fieldsPanel.add(eFieldLabel);
-		fieldsPanel.add(bfieldSlider);
-		fieldsPanel.add(bFieldLabel);
-		fieldsPanel.add(gfieldSlider);
-		fieldsPanel.add(gFieldLabel);
+		fieldsPanel.add(efieldsPanel);
+		fieldsPanel.add(bfieldPanel);
+		fieldsPanel.add(gfieldsPanel);
 		
-
 		this.setLayout(new BorderLayout());
 		this.add(controlPanel, BorderLayout.SOUTH);
 		this.add(particlePanel, BorderLayout.CENTER);
