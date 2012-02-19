@@ -22,6 +22,9 @@ public class Particle2DPanel extends JPanel {
 
 	/** Slider state ??? (do we really need this?) */
 	public boolean sl = false;
+	
+	/** A state for the trace */
+	public boolean paint_trace = false;
 
 	private static int NUM_PARTICLES = 10;
 
@@ -131,16 +134,20 @@ public class Particle2DPanel extends JPanel {
 	}
 	
 	public void checkTrace() {
-		
+		paint_trace =! paint_trace;
+		startAnimation();
 	}
 
 	/** Display the particles */
 	public void paintComponent(Graphics graph1) {
-		super.paintComponent(graph1);
 		Graphics2D graph = (Graphics2D) graph1;
 		setBackground(Color.gray);
-		graph.translate(0.0, 426);
+		graph.translate(0.0, this.getHeight());
 		graph.scale(1.0, -1.0);
+		if(!paint_trace)
+		{
+			super.paintComponent(graph1);
+		}
 		for (int i = 0; i < NUM_PARTICLES; i++) {
 			Particle2D par = (Particle2D) parlist.get(i);
 			if (par.charge > 0) {
@@ -148,8 +155,11 @@ public class Particle2DPanel extends JPanel {
 			} else {
 				graph.setColor(Color.red);
 			}
+			if(paint_trace)
+				graph.fillOval((int) par.x, (int) par.y, (int) par.radius / 5, (int) par.radius / 5);
+			else
 			graph.fillOval((int) par.x, (int) par.y, (int) par.radius, (int) par.radius);
 		}
+		
 	}
-
 }
