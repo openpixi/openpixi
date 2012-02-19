@@ -1,6 +1,7 @@
 package org.openpixi.ui;
 
 import org.openpixi.physics.*;
+import org.openpixi.physics.solver.*;
 import java.awt.*;
 import javax.swing.*;
 import java.awt.event.*;
@@ -34,16 +35,30 @@ public class Particle2DPanel extends JPanel {
 	private Force f = new Force(0.0, 1.1, 1.2, 1.3);
 
 	/** Contains all particles */
-	ArrayList<Particle2D> parlist = new ArrayList<Particle2D>();
+	//ArrayList<Particle2D> parlist = new ArrayList<Particle2D>();
 
+	/** Contains all particles */
+	ArrayList<Euler> parlist = new ArrayList<Euler>();
+			
 	/** Listener for timer */
-	public class TimerListener implements ActionListener {
+	/*public class TimerListener implements ActionListener {
 
 		public void actionPerformed(ActionEvent eve) {
 			for (int i = 0; i < NUM_PARTICLES; i++) {
 				Particle2D par = (Particle2D) parlist.get(i);
 				par.setBoundaries(getHeight(), getWidth());
 				par.algorithm(0.5, f);
+			}
+			repaint();
+		}
+	}*/
+	public class TimerListener implements ActionListener {
+
+		public void actionPerformed(ActionEvent eve) {
+			for (int i = 0; i < NUM_PARTICLES; i++) {
+				Euler par = (Euler) parlist.get(i);
+				par.getParticle2D().setBoundaries(getHeight(), getWidth());
+				par.algorithm(0.5);
 			}
 			repaint();
 		}
@@ -58,10 +73,16 @@ public class Particle2DPanel extends JPanel {
 		this.setSize(700, 500);
 
 		// Create all particles
-		for (int i = 0; i < NUM_PARTICLES; i++) {
+		/*for (int i = 0; i < NUM_PARTICLES; i++) {
 			parlist.add(new Particle2D(Math.random(), Math.random(), 100 * Math
 					.random(), 100 * Math.random(), 0.0, 0.0,
 					Math.random() + 1, 10 * Math.random()));
+		}*/
+		for (int i = 0; i < NUM_PARTICLES; i++) {
+			Particle2D part = new Particle2D(Math.random(), Math.random(), 100 * Math
+					.random(), 100 * Math.random(), 0.0, 0.0,
+					Math.random() + 1, 10 * Math.random());
+			parlist.add(new Euler(part, f));
 		}
 
 	}
@@ -76,7 +97,7 @@ public class Particle2DPanel extends JPanel {
 		sl = true;
 	}
 
-	public void resetAnimation() {
+	/*public void resetAnimation() {
 		timer.restart();
 		timer.stop();
 		for (int k = 0; k < NUM_PARTICLES; k++) {
@@ -87,16 +108,38 @@ public class Particle2DPanel extends JPanel {
 			par.vy = 100 * Math.random();
 		}
 		sl = true;
-	}
+	}*/
 
+	public void resetAnimation() {
+		timer.restart();
+		timer.stop();
+		for (int k = 0; k < NUM_PARTICLES; k++) {
+			Euler par = (Euler) parlist.get(k);
+			par.getParticle2D().x = Math.random();
+			par.getParticle2D().y = Math.random();
+			par.getParticle2D().vx = 100 * Math.random();
+			par.getParticle2D().vy = 100 * Math.random();
+		}
+		sl = true;
+	}
 	/** Display the particles */
-	public void paintComponent(Graphics graph) {
+	/*public void paintComponent(Graphics graph) {
 		setBackground(Color.gray);
 		super.paintComponent(graph);
 		for (int i = 0; i < NUM_PARTICLES; i++) {
 			Particle2D par = (Particle2D) parlist.get(i);
 			graph.setColor(Color.blue);
 			graph.fillOval((int) par.x, (int) par.y, 15, 15);
+		}
+	}*/
+	/** Display the particles */
+	public void paintComponent(Graphics graph) {
+		setBackground(Color.gray);
+		super.paintComponent(graph);
+		for (int i = 0; i < NUM_PARTICLES; i++) {
+			Euler par = (Euler) parlist.get(i);
+			graph.setColor(Color.blue);
+			graph.fillOval((int) par.getParticle2D().x, (int) par.getParticle2D().y, 15, 15);
 		}
 	}
 
