@@ -20,7 +20,6 @@ public class Particle2D{
 	public double rightBoundary;   //the right boundary
 	public double bottomBoundary;    //the bottom boundary
 	
-	public static final double ELC = 1.602e-19;      //defining the electric charge
 	public static final double RADIUS = 15;
 
 	/** Empty constructor */
@@ -60,7 +59,7 @@ public class Particle2D{
 	//a method that gives the electric charge
 	public double getCharge()
 	{
-		return(echarge * ELC);
+		return(echarge);
 	}
 			
 	//a method that sets the mass to a certain value

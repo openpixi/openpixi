@@ -3,7 +3,7 @@ package org.openpixi.physics;
 
 public class Force {
 	
-	private final static double g = 9.81;      //the Earth acceleration
+	private double g;      //the Earth acceleration
 	private double dragcoef;                  //just a simple coefficient that represents the dragging
 	private double ex;                          //the electric field in x - direction
 	private double ey;				            //the electric field in y - direction

@@ -19,8 +19,6 @@ public class Particle3D{
 	
 	private double mass;         // the mass of the particle
 	private double echarge;      //the electric charge of the particle  
-	
-	public static final double ELC = 1.602e-19;      //defining the electric charge
 		
 	//building the constructor for 3-dim
 	public Particle3D (double x, double y, double z, double vx, double vy, double vz, 
@@ -57,8 +55,7 @@ public class Particle3D{
 	//a method that gives the electric charge
 	public double getCharge()
 	{
-		System.out.println(ELC);
-		return(echarge * ELC);
+		return(echarge);
 	}
 			
 	//a method that sets the mass to a certain value
