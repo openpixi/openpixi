@@ -14,6 +14,7 @@ public class Animation extends JApplet {
 	private JButton startButton, stopButton, resetButton;
 	private JSlider speedSlider;
 	private JComboBox initComboBox;
+	private JCheckBox traceCheck;
 	private Particle2DPanel particlePanel;
 
 	String[] initStrings = {
@@ -82,6 +83,18 @@ public class Animation extends JApplet {
 			particlePanel.resetAnimation(initComboBox.getSelectedIndex());
 		}
 	}
+	
+	class CheckListener implements ItemListener {
+		public void itemStateChanged(ItemEvent eve){
+			//AbstractButton abstractbutton = (AbstractButton) eve.getSource();
+			int state = eve.getStateChange();
+			if(state == ItemEvent.SELECTED)
+				particlePanel.stopAnimation();
+			if(state == ItemEvent.DESELECTED)
+				particlePanel.startAnimation();
+		}
+		
+	}
 
 	/**
 	 * Constructor.
@@ -109,6 +122,9 @@ public class Animation extends JApplet {
 		startButton.addActionListener(new StartListener());
 		stopButton.addActionListener(new StopListener());
 		resetButton.addActionListener(new ResetListener());
+		
+		traceCheck = new JCheckBox("Trace");
+		traceCheck.addItemListener(new CheckListener());
 
 		JPanel controlPanel = new JPanel();
 		controlPanel.setLayout(new FlowLayout());
@@ -117,6 +133,7 @@ public class Animation extends JApplet {
 		controlPanel.add(resetButton);
 		controlPanel.add(initComboBox);
 		controlPanel.add(speedSlider);
+		controlPanel.add(traceCheck);
 
 		this.setLayout(new BorderLayout());
 		this.add(controlPanel, BorderLayout.SOUTH);
