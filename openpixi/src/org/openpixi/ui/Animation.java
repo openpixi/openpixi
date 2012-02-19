@@ -21,7 +21,8 @@ public class Animation extends JApplet {
 			"100 random particles",
 			"1000 random particles",
 			"10000 random particles",
-			"Single particle in gravity" };
+			"Single particle in gravity",
+			"Single particle in magnetic field" };
 
 	/**
 	 * Listener for slider.

@@ -85,6 +85,9 @@ public class Particle2DPanel extends JPanel {
 		case 4:
 			initGravity(1);
 			break;
+		case 5:
+			initMagnetic(1);
+			break;
 		}
 		sl = true;
 		timer.start();
@@ -98,8 +101,8 @@ public class Particle2DPanel extends JPanel {
 			par.x = Math.random();
 			par.y = Math.random();
 			par.radius = 15;
-			par.vx = 100 * Math.random();
-			par.vy = 100 * Math.random();
+			par.vx = 10 * Math.random();
+			par.vy = 10 * Math.random();
 			par.mass = 1;
 			par.charge = 1;
 			parlist.add(par);
@@ -114,6 +117,13 @@ public class Particle2DPanel extends JPanel {
 
 		f.reset();
 		f.gy = -ConstantsSI.g;
+	}
+
+	private void initMagnetic(int count) {
+		initRandomParticles(count);
+
+		f.reset();
+		f.bz = .1;
 	}
 
 	/** Display the particles */
