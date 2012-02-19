@@ -125,6 +125,10 @@ public class Particle2DPanel extends JPanel {
 		f.reset();
 		f.bz = .1;
 	}
+	
+	public void checkTrace() {
+		
+	}
 
 	/** Display the particles */
 	public void paintComponent(Graphics graph1) {
