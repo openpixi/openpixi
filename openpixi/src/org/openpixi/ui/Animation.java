@@ -13,6 +13,7 @@ public class Animation extends JApplet {
 
 	private JButton startButton, stopButton, resetButton;
 	private JSlider speedSlider;
+	private JSlider stepSlider;
 	
 	private JSlider efieldXSlider;
 	private JSlider efieldYSlider;
@@ -153,6 +154,17 @@ public class Animation extends JApplet {
 			}
 		}
 	}
+	
+	class StepListener implements ChangeListener{
+		public void stateChanged(ChangeEvent eve) {
+			JSlider source = (JSlider) eve.getSource();
+			if(!source.getValueIsAdjusting())
+			{
+				int value = source.getValue();
+				particlePanel.step = value;
+			}
+		}
+	}
 	/**
 	 * Constructor.
 	 */
@@ -178,6 +190,16 @@ public class Animation extends JApplet {
 		Box speed = Box.createVerticalBox();
 		speed.add(speedSlider);
 		speed.add(speedLabel);
+		
+		stepSlider = new JSlider();
+		stepSlider.addChangeListener(new StepListener());
+		stepSlider.setMinimum(0);
+		stepSlider.setMaximum(70);
+		stepSlider.setValue(30);
+		stepSlider.setMajorTickSpacing(5);
+		stepSlider.setMinorTickSpacing(1);
+		stepSlider.setPaintTicks(true);
+		JLabel stepLabel = new JLabel("Step");
 		
 		efieldXSlider = new JSlider();
 		efieldXSlider.addChangeListener(new EFieldXListener());
@@ -264,6 +286,8 @@ public class Animation extends JApplet {
 		fieldsBox.add(gFieldYLabel);
 		fieldsBox.add(gfieldYSlider);
 		fieldsBox.add(Box.createVerticalGlue());
+		fieldsBox.add(stepLabel);
+		fieldsBox.add(stepSlider);
 		
 		this.setLayout(new BorderLayout());
 		this.add(controlPanel, BorderLayout.SOUTH);
