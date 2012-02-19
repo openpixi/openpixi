@@ -160,7 +160,7 @@ public class Animation extends JApplet {
 		particlePanel = new Particle2DPanel();
 
 		this.setVisible(true);
-		this.setSize(700, 500);
+		this.setSize(1000, 500);
 
 		startButton = new JButton("start");
 		stopButton = new JButton("stop");
@@ -285,7 +285,7 @@ public class Animation extends JApplet {
 
 		web.pack();
 		web.setVisible(true);
-		web.setSize(700, 500);
+		web.setSize(1000, 500);
 	}
 
 }
