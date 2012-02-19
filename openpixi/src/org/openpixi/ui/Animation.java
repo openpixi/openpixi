@@ -171,6 +171,9 @@ public class Animation extends JApplet {
 		speedSlider.setMinimum(0);
 		speedSlider.setMaximum(50);
 		speedSlider.setValue(30);
+		speedSlider.setMajorTickSpacing(5);
+		speedSlider.setMinorTickSpacing(1);
+		speedSlider.setPaintTicks(true);
 		JLabel speedLabel = new JLabel("Speed");
 		Box speed = Box.createVerticalBox();
 		speed.add(speedSlider);
@@ -179,32 +182,47 @@ public class Animation extends JApplet {
 		efieldXSlider = new JSlider();
 		efieldXSlider.addChangeListener(new EFieldXListener());
 		efieldXSlider.setMinimum(0);
-		efieldXSlider.setMaximum(1);
+		efieldXSlider.setMaximum(10);
 		efieldXSlider.setValue(0);
+		efieldXSlider.setMajorTickSpacing(2);
+		efieldXSlider.setMinorTickSpacing(1);
+		efieldXSlider.setPaintTicks(true);
 		
 		efieldYSlider = new JSlider();
 		efieldYSlider.addChangeListener(new EFieldYListener());
 		efieldYSlider.setMinimum(0);
-		efieldYSlider.setMaximum(1);
+		efieldYSlider.setMaximum(10);
 		efieldYSlider.setValue(0);
+		efieldYSlider.setMajorTickSpacing(2);
+		efieldYSlider.setMinorTickSpacing(1);
+		efieldYSlider.setPaintTicks(true);
 		
 		bfieldZSlider = new JSlider();
 		bfieldZSlider.addChangeListener(new BFieldZListener());
 		bfieldZSlider.setMinimum(0);
-		bfieldZSlider.setMaximum(1);
+		bfieldZSlider.setMaximum(10);
 		bfieldZSlider.setValue(0);
+		bfieldZSlider.setMajorTickSpacing(2);
+		bfieldZSlider.setMinorTickSpacing(1);
+		bfieldZSlider.setPaintTicks(true);
 		
 		gfieldXSlider = new JSlider();
 		gfieldXSlider.addChangeListener(new GFieldXListener());
 		gfieldXSlider.setMinimum(0);
-		gfieldXSlider.setMaximum(1);
+		gfieldXSlider.setMaximum(10);
 		gfieldXSlider.setValue(0);
+		gfieldXSlider.setMajorTickSpacing(2);
+		gfieldXSlider.setMinorTickSpacing(1);
+		gfieldXSlider.setPaintTicks(true);
 		
 		gfieldYSlider = new JSlider();
 		gfieldXSlider.addChangeListener(new GFieldYListener());
 		gfieldYSlider.setMinimum(0);
-		gfieldYSlider.setMaximum(1);
+		gfieldYSlider.setMaximum(10);
 		gfieldYSlider.setValue(0);
+		gfieldYSlider.setMajorTickSpacing(2);
+		gfieldYSlider.setMinorTickSpacing(1);
+		gfieldYSlider.setPaintTicks(true);
 		
 		initComboBox = new JComboBox(initStrings);
 		initComboBox.setSelectedIndex(0);
