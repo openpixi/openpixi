@@ -171,6 +171,10 @@ public class Animation extends JApplet {
 		speedSlider.setMinimum(0);
 		speedSlider.setMaximum(50);
 		speedSlider.setValue(30);
+		JLabel speedLabel = new JLabel("Speed");
+		Box speed = Box.createVerticalBox();
+		speed.add(speedSlider);
+		speed.add(speedLabel);
 		
 		efieldXSlider = new JSlider();
 		efieldXSlider.addChangeListener(new EFieldXListener());
@@ -219,7 +223,7 @@ public class Animation extends JApplet {
 		controlPanel.add(stopButton);
 		controlPanel.add(resetButton);
 		controlPanel.add(initComboBox);
-		controlPanel.add(speedSlider);
+		controlPanel.add(speed);
 		controlPanel.add(traceCheck);
 		
 		JLabel eFieldXLabel = new JLabel("Ex Field");
