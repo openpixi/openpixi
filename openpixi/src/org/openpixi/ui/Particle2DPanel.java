@@ -29,7 +29,7 @@ public class Particle2DPanel extends JPanel {
 	private static int NUM_PARTICLES = 10;
 
 	/** Constant force for particles */
-	private Force f = new Force();
+	public Force f = new Force();
 
 	/** Contains all particles */
 	ArrayList<Particle2D> parlist = new ArrayList<Particle2D>();
