@@ -53,7 +53,7 @@ public class Particle2DPanel extends JPanel {
 		this.setSize(700, 500);
 
 		// Create all particles
-		initRandomParticles(10);
+		initRandomParticles(10, 15);
 	}
 
 	public void startAnimation() {
@@ -71,40 +71,44 @@ public class Particle2DPanel extends JPanel {
 		timer.stop();
 		switch(id) {
 		case 0:
-			initRandomParticles(10);
+			initRandomParticles(10, 15);
 			break;
 		case 1:
-			initRandomParticles(100);
+			initRandomParticles(100, 10);
 			break;
 		case 2:
-			initRandomParticles(1000);
+			initRandomParticles(1000, 5);
 			break;
 		case 3:
-			initRandomParticles(10000);
+			initRandomParticles(10000, 2);
 			break;
 		case 4:
 			initGravity(1);
 			break;
 		case 5:
-			initMagnetic(1);
+			initMagnetic(3);
 			break;
 		}
 		sl = true;
 		timer.start();
 	}
 
-	private void initRandomParticles(int count) {
+	private void initRandomParticles(int count, int radius) {
 		NUM_PARTICLES = count;
 		parlist.clear();
 		for (int k = 0; k < NUM_PARTICLES; k++) {
 			Particle2D par = new Particle2D();
 			par.x = 700 * Math.random();
 			par.y = 500 * Math.random();
-			par.radius = 15;
+			par.radius = radius;
 			par.vx = 10 * Math.random();
 			par.vy = 10 * Math.random();
 			par.mass = 1;
-			par.charge = 1;
+			if (Math.random() > 0.5) {
+				par.charge = 1;
+			} else {
+				par.charge = -1;
+			}
 			parlist.add(par);
 		}
 		f.reset();
@@ -113,14 +117,14 @@ public class Particle2DPanel extends JPanel {
 	}
 
 	private void initGravity(int count) {
-		initRandomParticles(count);
+		initRandomParticles(count, 15);
 
 		f.reset();
 		f.gy = -1; // -ConstantsSI.g;
 	}
 
 	private void initMagnetic(int count) {
-		initRandomParticles(count);
+		initRandomParticles(count, 15);
 
 		f.reset();
 		f.bz = .1;
@@ -139,7 +143,11 @@ public class Particle2DPanel extends JPanel {
 		graph.scale(1.0, -1.0);
 		for (int i = 0; i < NUM_PARTICLES; i++) {
 			Particle2D par = (Particle2D) parlist.get(i);
-			graph.setColor(Color.blue);
+			if (par.charge > 0) {
+				graph.setColor(Color.blue);
+			} else {
+				graph.setColor(Color.red);
+			}
 			graph.fillOval((int) par.x, (int) par.y, (int) par.radius, (int) par.radius);
 		}
 	}
