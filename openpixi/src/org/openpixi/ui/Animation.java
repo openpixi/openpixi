@@ -275,11 +275,11 @@ public class Animation extends JApplet {
 		controlPanel.add(speed);
 		controlPanel.add(traceCheck);
 		
-		JLabel eFieldXLabel = new JLabel("Ex Field");
-		JLabel eFieldYLabel = new JLabel("Ey Field");
-		JLabel bFieldZLabel = new JLabel("Bz Field");
-		JLabel gFieldXLabel = new JLabel("Gx Field");
-		JLabel gFieldYLabel = new JLabel("Gy Field");
+		JLabel eFieldXLabel = new JLabel("E Field in x - direction");
+		JLabel eFieldYLabel = new JLabel("E Field in y - direction");
+		JLabel bFieldZLabel = new JLabel("B Field in z - direction");
+		JLabel gFieldXLabel = new JLabel("G Field in x - direction Field");
+		JLabel gFieldYLabel = new JLabel("G Field in y - direction Field");
 		
 		Box fieldsBox = Box.createVerticalBox();
 		fieldsBox.add(eFieldXLabel);
