@@ -23,9 +23,6 @@ public class Particle2DPanel extends JPanel {
 	/** Timer for animation */
 	public Timer timer;
 
-	/** Slider state ??? (do we really need this?) */
-	public boolean sl = false;
-	
 	/** A state for the trace */
 	public boolean paint_trace = false;
 
@@ -64,12 +61,10 @@ public class Particle2DPanel extends JPanel {
 
 	public void startAnimation() {
 		timer.start();
-		sl = false;
 	}
 
 	public void stopAnimation() {
 		timer.stop();
-		sl = true;
 	}
 
 	public void resetAnimation(int id) {
@@ -96,7 +91,6 @@ public class Particle2DPanel extends JPanel {
 			initMagnetic(3);
 			break;
 		}
-		sl = true;
 		timer.start();
 	}
 

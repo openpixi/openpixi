@@ -55,23 +55,6 @@ public class MainControlApplet extends JApplet {
 				int delay = (int) (1000 * Math.exp(-source.getValue() * speedSliderScaling));
 				particlePanel.timer.setDelay(delay);
 			}
-			/*
-			JSlider source = (JSlider) eve.getSource();
-			if (!source.getValueIsAdjusting()) {
-				int frames = (int) source.getValue();
-				if (frames == 0) {
-					if (!particlePanel.sl)
-						particlePanel.stopAnimation();
-				} else {
-					int delay = (int) source.getMaximum()
-							- (int) source.getValue();
-					particlePanel.timer.stop();
-					particlePanel.timer.setDelay(delay);
-					particlePanel.timer.setInitialDelay(10 * delay);
-					particlePanel.timer.start();
-				}
-			}
-			*/
 		}
 	}
 	
