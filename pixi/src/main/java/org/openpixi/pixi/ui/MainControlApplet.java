@@ -108,7 +108,7 @@ public class MainControlApplet extends JApplet {
 			JSlider source = (JSlider) eve.getSource();
 			if(source.getValueIsAdjusting())
 			{
-				int value = source.getValue();
+				double value = source.getValue() / 100;
 				particlePanel.f.drag = value;
 			}
 		}
@@ -119,7 +119,7 @@ public class MainControlApplet extends JApplet {
 			JSlider source = (JSlider) eve.getSource();
 			if(source.getValueIsAdjusting())
 			{
-				int value = source.getValue();
+				double value = source.getValue() / 10;
 				particlePanel.f.ex = value;
 			}
 			//if(source.getValue() == particlePanel.f.ex)
@@ -132,7 +132,7 @@ public class MainControlApplet extends JApplet {
 			JSlider source = (JSlider) eve.getSource();
 			if(source.getValueIsAdjusting())
 			{
-				int value = source.getValue();
+				double value = source.getValue() / 10;
 				particlePanel.f.ey = value;
 			}
 		}
@@ -143,7 +143,7 @@ public class MainControlApplet extends JApplet {
 			JSlider source = (JSlider) eve.getSource();
 			if(source.getValueIsAdjusting())
 			{
-				int value = source.getValue();
+				double value = source.getValue() / 10;
 				particlePanel.f.bz = value;
 			}
 		}
@@ -154,7 +154,7 @@ public class MainControlApplet extends JApplet {
 			JSlider source = (JSlider) eve.getSource();
 			if(source.getValueIsAdjusting())
 			{
-				int value = source.getValue();
+				double value = source.getValue() / 10;
 				particlePanel.f.gx = value;
 			}
 		}
@@ -165,7 +165,7 @@ public class MainControlApplet extends JApplet {
 			JSlider source = (JSlider) eve.getSource();
 			if(source.getValueIsAdjusting())
 			{
-				int value = source.getValue();
+				double value = source.getValue() / 10;
 				particlePanel.f.gy = value;
 			}
 		}
@@ -232,52 +232,55 @@ public class MainControlApplet extends JApplet {
 		dragSlider = new JSlider();
 		dragSlider.addChangeListener(new DragListener());
 		dragSlider.setMinimum(0);
-		dragSlider.setMaximum(1);
+		dragSlider.setMaximum(100);
 		dragSlider.setValue((int) particlePanel.f.drag);
+		dragSlider.setMajorTickSpacing(10);
+		dragSlider.setMinorTickSpacing(2);
+		dragSlider.setPaintTicks(true);
 		
 		efieldXSlider = new JSlider();
 		efieldXSlider.addChangeListener(new EFieldXListener());
-		efieldXSlider.setMinimum(-10);
-		efieldXSlider.setMaximum(10);
+		efieldXSlider.setMinimum(-100);
+		efieldXSlider.setMaximum(100);
 		efieldXSlider.setValue((int) particlePanel.f.ex);
-		efieldXSlider.setMajorTickSpacing(4);
-		efieldXSlider.setMinorTickSpacing(1);
+		efieldXSlider.setMajorTickSpacing(20);
+		efieldXSlider.setMinorTickSpacing(5);
 		efieldXSlider.setPaintTicks(true);
 		
 		efieldYSlider = new JSlider();
 		efieldYSlider.addChangeListener(new EFieldYListener());
-		efieldYSlider.setMinimum(-10);
-		efieldYSlider.setMaximum(10);
+		efieldYSlider.setMinimum(-100);
+		efieldYSlider.setMaximum(100);
 		efieldYSlider.setValue((int) particlePanel.f.ey);
-		efieldYSlider.setMajorTickSpacing(4);
-		efieldYSlider.setMinorTickSpacing(1);
+		efieldYSlider.setMajorTickSpacing(20);
+		efieldYSlider.setMinorTickSpacing(5);
 		efieldYSlider.setPaintTicks(true);
 		
 		bfieldZSlider = new JSlider();
 		bfieldZSlider.addChangeListener(new BFieldZListener());
-		bfieldZSlider.setMinimum(-10);
-		bfieldZSlider.setMaximum(10);
+		bfieldZSlider.setMinimum(-100);
+		bfieldZSlider.setMaximum(100);
 		bfieldZSlider.setValue((int) particlePanel.f.bz);
-		bfieldZSlider.setMajorTickSpacing(4);
-		bfieldZSlider.setMinorTickSpacing(1);
+		bfieldZSlider.setMajorTickSpacing(20);
+		bfieldZSlider.setMinorTickSpacing(5);
 		bfieldZSlider.setPaintTicks(true);
 		
 		gfieldXSlider = new JSlider();
 		gfieldXSlider.addChangeListener(new GFieldXListener());
-		gfieldXSlider.setMinimum(-10);
-		gfieldXSlider.setMaximum(10);
+		gfieldXSlider.setMinimum(-100);
+		gfieldXSlider.setMaximum(100);
 		gfieldXSlider.setValue((int) particlePanel.f.gx);
-		gfieldXSlider.setMajorTickSpacing(4);
-		gfieldXSlider.setMinorTickSpacing(1);
+		gfieldXSlider.setMajorTickSpacing(20);
+		gfieldXSlider.setMinorTickSpacing(5);
 		gfieldXSlider.setPaintTicks(true);
 		
 		gfieldYSlider = new JSlider();
 		gfieldYSlider.addChangeListener(new GFieldYListener());
-		gfieldYSlider.setMinimum(-10);
-		gfieldYSlider.setMaximum(10);
+		gfieldYSlider.setMinimum(-100);
+		gfieldYSlider.setMaximum(100);
 		gfieldYSlider.setValue((int) particlePanel.f.gy);
-		gfieldYSlider.setMajorTickSpacing(4);
-		gfieldYSlider.setMinorTickSpacing(1);
+		gfieldYSlider.setMajorTickSpacing(20);
+		gfieldYSlider.setMinorTickSpacing(5);
 		gfieldYSlider.setPaintTicks(true);
 		
 		initComboBox = new JComboBox<String>(initStrings);
