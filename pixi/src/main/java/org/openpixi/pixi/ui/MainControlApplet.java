@@ -176,7 +176,7 @@ public class MainControlApplet extends JApplet {
 			JSlider source = (JSlider) eve.getSource();
 			if(source.getValueIsAdjusting())
 			{
-				double value = source.getValue() / 100;
+				double value = (double) source.getValue() / (double) 100;
 				particlePanel.step = value;
 			}
 		}
