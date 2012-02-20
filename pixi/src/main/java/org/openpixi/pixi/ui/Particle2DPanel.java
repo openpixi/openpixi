@@ -12,7 +12,6 @@ import java.util.ArrayList;
  */
 public class Particle2DPanel extends JPanel {
 
-	//private static final int step = 30;
 	public double step;
 
 	private boolean reset_trace;
