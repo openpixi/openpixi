@@ -106,7 +106,8 @@ public class MainControlApplet extends JApplet {
 	
 	class FrameListener implements ItemListener {
 		public void itemStateChanged(ItemEvent eve) {
-			
+			//if(eve.getStateChange() ==ItemEvent.SELECTED)
+				
 		}
 	}
 	
@@ -130,8 +131,6 @@ public class MainControlApplet extends JApplet {
 				double value = source.getValue() / 10.;
 				particlePanel.f.ex = value;
 			}
-			//if(source.getValue() == particlePanel.f.ex)
-				//source.setValue((int)particlePanel.f.ex);
 		}
 	}
 	
@@ -303,7 +302,7 @@ public class MainControlApplet extends JApplet {
 		traceCheck = new JCheckBox("Trace");
 		traceCheck.addItemListener(new CheckListener());
 		
-		framerateCheck = new JCheckBox("Frame rate");
+		framerateCheck = new JCheckBox("Info");
 		framerateCheck.addItemListener(new FrameListener());
 
 		JPanel controlPanel = new JPanel();
@@ -343,10 +342,14 @@ public class MainControlApplet extends JApplet {
 		fieldsBox.add(dragSlider);
 		fieldsBox.add(Box.createVerticalGlue());
 		
+		JTextArea info = new JTextArea("Frame rate:");
+		info.setEditable(false);
+		
 		this.setLayout(new BorderLayout());
 		this.add(controlPanel, BorderLayout.SOUTH);
 		this.add(particlePanel, BorderLayout.CENTER);
 		this.add(fieldsBox, BorderLayout.EAST);
+		this.add(info, BorderLayout.NORTH);
 
 	}
 	
