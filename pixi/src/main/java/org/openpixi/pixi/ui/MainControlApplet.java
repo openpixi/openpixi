@@ -23,6 +23,9 @@ public class MainControlApplet extends JApplet {
 	private JSlider gfieldXSlider;
 	private JSlider gfieldYSlider;
 	
+	private JCheckBox framerateCheck;
+	private JTextArea info;
+	
 	private JComboBox initComboBox;
 	private JCheckBox traceCheck;
 	private Particle2DPanel particlePanel;
@@ -100,8 +103,18 @@ public class MainControlApplet extends JApplet {
 		public void itemStateChanged(ItemEvent eve){
 				particlePanel.checkTrace();
 		}
-		
 	}
+	
+	class FrameListener implements ItemListener {
+		public void itemStateChanged(ItemEvent eve) {
+			if(eve.getStateChange() == ItemEvent.SELECTED)
+				setText(info, "Frame rate:", true);
+			if(eve.getStateChange() == ItemEvent.DESELECTED)
+				setText(info, "Frame rate:", false);
+				
+		}
+	}
+	
 	
 	class DragListener implements ChangeListener{
 		public void stateChanged(ChangeEvent eve) {
@@ -122,8 +135,6 @@ public class MainControlApplet extends JApplet {
 				double value = source.getValue() * exSliderScaling;
 				particlePanel.f.ex = value;
 			}
-			//if(source.getValue() == particlePanel.f.ex)
-				//source.setValue((int)particlePanel.f.ex);
 		}
 	}
 	
@@ -181,6 +192,7 @@ public class MainControlApplet extends JApplet {
 			}
 		}
 	}
+	
 	/**
 	 * Constructor.
 	 */
@@ -293,6 +305,9 @@ public class MainControlApplet extends JApplet {
 		
 		traceCheck = new JCheckBox("Trace");
 		traceCheck.addItemListener(new CheckListener());
+		
+		framerateCheck = new JCheckBox("Info");
+		framerateCheck.addItemListener(new FrameListener());
 
 		JPanel controlPanel = new JPanel();
 		controlPanel.setLayout(new FlowLayout());
@@ -303,6 +318,7 @@ public class MainControlApplet extends JApplet {
 		controlPanel.add(speed);
 		controlPanel.add(step);
 		controlPanel.add(traceCheck);
+		controlPanel.add(framerateCheck);
 		
 		JLabel dragLabel = new JLabel("Drag coefficient");
 		
@@ -330,11 +346,23 @@ public class MainControlApplet extends JApplet {
 		fieldsBox.add(dragSlider);
 		fieldsBox.add(Box.createVerticalGlue());
 		
+		info = new JTextArea();
+		info.setEditable(false);
+		
 		this.setLayout(new BorderLayout());
 		this.add(controlPanel, BorderLayout.SOUTH);
 		this.add(particlePanel, BorderLayout.CENTER);
 		this.add(fieldsBox, BorderLayout.EAST);
+		this.add(info, BorderLayout.NORTH);
 
+	}
+	
+	public void setText(JTextArea text, String str, boolean onoff)
+	{
+		if(onoff)
+			text.insert(str, 0);
+		else
+			text.replaceRange(" ", 0, text.getDocument().getLength());
 	}
 	
 	public void setSlidersValue()

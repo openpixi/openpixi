@@ -17,7 +17,6 @@ public class Particle2DPanel extends JPanel {
 	private static final int xmax = 700;
 	private static final int ymax = 500;
 
-	//private static final int step = 30;
 	public double step;
 
 	private boolean reset_trace;
