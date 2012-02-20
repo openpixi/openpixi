@@ -24,7 +24,6 @@ public class MainControlApplet extends JApplet {
 	private JSlider gfieldYSlider;
 	
 	private JCheckBox framerateCheck;
-	private JTextArea info;
 	
 	private JComboBox initComboBox;
 	private JCheckBox traceCheck;
@@ -107,11 +106,11 @@ public class MainControlApplet extends JApplet {
 	
 	class FrameListener implements ItemListener {
 		public void itemStateChanged(ItemEvent eve) {
-			if(eve.getStateChange() == ItemEvent.SELECTED)
-				setText(info, "Frame rate:", true);
-			if(eve.getStateChange() == ItemEvent.DESELECTED)
-				setText(info, "Frame rate:", false);
-				
+			if(eve.getStateChange() == ItemEvent.SELECTED) {
+				particlePanel.showinfo = true;
+			} else if(eve.getStateChange() == ItemEvent.DESELECTED) {
+				particlePanel.showinfo = false;
+			}
 		}
 	}
 	
@@ -346,14 +345,10 @@ public class MainControlApplet extends JApplet {
 		fieldsBox.add(dragSlider);
 		fieldsBox.add(Box.createVerticalGlue());
 		
-		info = new JTextArea();
-		info.setEditable(false);
-		
 		this.setLayout(new BorderLayout());
 		this.add(controlPanel, BorderLayout.SOUTH);
 		this.add(particlePanel, BorderLayout.CENTER);
 		this.add(fieldsBox, BorderLayout.EAST);
-		this.add(info, BorderLayout.NORTH);
 
 	}
 	

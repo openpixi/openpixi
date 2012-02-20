@@ -28,6 +28,7 @@ public class Particle2DPanel extends JPanel {
 	/** Timer for animation */
 	public Timer timer;
 	
+	public boolean showinfo = false;
 	private FrameRateDetector frameratedetector;
 
 	/** A state for the trace */
@@ -197,11 +198,12 @@ public class Particle2DPanel extends JPanel {
 				graph.fillOval((int) par.x, (int) par.y, 2, 2);
 		}
 
-		graph.translate(0.0, this.getHeight());
-		graph.scale(1.0, -1.0);
-		graph.setColor(Color.white);
-		graph.drawString("Frame rate: " + frameratedetector.getRateString() + " fps", 30, 30);
-		graph.drawString("Time step: " + (float) step, 30, 50);
-		
+		if (showinfo) {
+			graph.translate(0.0, this.getHeight());
+			graph.scale(1.0, -1.0);
+			graph.setColor(Color.white);
+			graph.drawString("Frame rate: " + frameratedetector.getRateString() + " fps", 30, 30);
+			graph.drawString("Time step: " + (float) step, 30, 50);
+		}		
 	}
 }
