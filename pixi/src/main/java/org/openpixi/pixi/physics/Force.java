@@ -37,6 +37,12 @@ public class Force {
 		bz = 0;
 	}
 	
+	//method that sets the drag coefficient
+	public void setDrag(double drag)
+	{
+		this.drag = drag;
+	}
+	
 	//method that sets the gravity in x - direction
 	public void setGX(double gx)
 	{
