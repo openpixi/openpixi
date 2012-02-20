@@ -165,7 +165,25 @@ public class Particle2DPanel extends JPanel {
 				graph.setColor(Color.red);
 			}
 			if(paint_trace)
-				graph.fillOval((int) par.x, (int) par.y, (int) par.radius / 5, (int) par.radius / 5);
+			{
+				int resize_factor = 0;
+				switch((int) par.radius)
+				{
+				case 2:
+					resize_factor = 1;
+					break;
+				case 5:
+					resize_factor = 2;
+					break;
+				case 10:
+					resize_factor = 3;
+					break;
+				case 15:
+					resize_factor = 5;
+					break;
+				}
+				graph.fillOval((int) par.x, (int) par.y, (int) par.radius / resize_factor, (int) par.radius / resize_factor);
+			}
 			else
 			graph.fillOval((int) par.x, (int) par.y, (int) par.radius, (int) par.radius);
 		}
