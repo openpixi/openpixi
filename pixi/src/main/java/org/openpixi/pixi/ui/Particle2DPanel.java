@@ -59,7 +59,7 @@ public class Particle2DPanel extends JPanel {
 		this.setSize(700, 500);
 
 		// Create all particles
-		initRandomParticles(10, 15);
+		initRandomParticles(10, 8);
 	}
 
 	public void startAnimation() {
@@ -78,16 +78,16 @@ public class Particle2DPanel extends JPanel {
 		reset_trace = true;
 		switch(id) {
 		case 0:
-			initRandomParticles(10, 15);
+			initRandomParticles(10, 8);
 			break;
 		case 1:
-			initRandomParticles(100, 10);
+			initRandomParticles(100, 5);
 			break;
 		case 2:
-			initRandomParticles(1000, 5);
+			initRandomParticles(1000, 3);
 			break;
 		case 3:
-			initRandomParticles(10000, 2);
+			initRandomParticles(10000, 1);
 			break;
 		case 4:
 			initGravity(1);
@@ -164,28 +164,17 @@ public class Particle2DPanel extends JPanel {
 			} else {
 				graph.setColor(Color.red);
 			}
+			int resize = 2 * (int) par.radius ;
 			if(paint_trace)
 			{
-				int resize_factor = 0;
-				switch((int) par.radius)
-				{
-				case 2:
-					resize_factor = 1;
-					break;
-				case 5:
-					resize_factor = 3;
-					break;
-				case 10:
-					resize_factor = 3;
-					break;
-				case 15:
-					resize_factor = 5;
-					break;
-				}
-				graph.fillOval((int) par.x + (int) par.radius / 2, (int) par.y + (int) par.radius / 2, (int) par.radius / resize_factor, (int) par.radius / resize_factor);
+				resize = resize / 5;
+			}
+			if(resize > 2)
+			{
+				graph.fillOval((int) par.x - resize /2, (int) par.y - resize / 2,  resize,  resize);
 			}
 			else
-			graph.fillOval((int) par.x, (int) par.y, (int) par.radius, (int) par.radius);
+				graph.fillOval((int) par.x, (int) par.y, 2, 2);
 		}
 		
 	}
