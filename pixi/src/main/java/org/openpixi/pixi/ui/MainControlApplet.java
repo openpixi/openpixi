@@ -1,4 +1,4 @@
-package org.openpixi.ui;
+package org.openpixi.pixi.ui;
 
 import java.awt.*;
 import javax.swing.*;

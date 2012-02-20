@@ -1,4 +1,4 @@
-package org.openpixi.physics;
+package org.openpixi.pixi.physics;
 
 public class Test {
 	

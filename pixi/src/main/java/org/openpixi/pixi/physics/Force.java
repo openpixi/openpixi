@@ -1,5 +1,5 @@
 //First I would like to start with very simple class Force.java, so we could see the graphic result.
-package org.openpixi.physics;
+package org.openpixi.pixi.physics;
 
 public class Force {
 

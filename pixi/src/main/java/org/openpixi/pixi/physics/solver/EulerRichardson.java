@@ -1,6 +1,6 @@
-package org.openpixi.physics.solver;
+package org.openpixi.pixi.physics.solver;
 
-import org.openpixi.physics.*;
+import org.openpixi.pixi.physics.*;
 
 /**
  * This class is based on the simple Euler-Richardson algorithm (it

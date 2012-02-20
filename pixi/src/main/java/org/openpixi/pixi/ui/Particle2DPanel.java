@@ -1,7 +1,7 @@
-package org.openpixi.ui;
+package org.openpixi.pixi.ui;
 
-import org.openpixi.physics.*;
-import org.openpixi.physics.solver.*;
+import org.openpixi.pixi.physics.*;
+import org.openpixi.pixi.physics.solver.*;
 import java.awt.*;
 import javax.swing.*;
 import java.awt.event.*;
