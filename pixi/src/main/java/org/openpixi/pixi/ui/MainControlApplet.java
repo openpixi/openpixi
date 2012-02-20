@@ -106,7 +106,7 @@ public class MainControlApplet extends JApplet {
 			if(source.getValueIsAdjusting())
 			{
 				int value = source.getValue();
-				particlePanel.f.setDrag(value);
+				particlePanel.f.drag = value;
 			}
 		}
 	}
@@ -117,7 +117,7 @@ public class MainControlApplet extends JApplet {
 			if(source.getValueIsAdjusting())
 			{
 				int value = source.getValue();
-				particlePanel.f.setEX(value);
+				particlePanel.f.ex = value;
 			}
 		}
 	}
@@ -128,7 +128,7 @@ public class MainControlApplet extends JApplet {
 			if(source.getValueIsAdjusting())
 			{
 				int value = source.getValue();
-				particlePanel.f.setEY(value);
+				particlePanel.f.ey = value;
 			}
 		}
 	}
@@ -140,7 +140,7 @@ public class MainControlApplet extends JApplet {
 			if(source.getValueIsAdjusting())
 			{
 				int value = source.getValue();
-				particlePanel.f.setBZ(value);
+				particlePanel.f.bz = value;
 			}
 		}
 	}
@@ -151,7 +151,7 @@ public class MainControlApplet extends JApplet {
 			if(source.getValueIsAdjusting())
 			{
 				int value = source.getValue();
-				particlePanel.f.setGX(value);
+				particlePanel.f.gx = value;
 			}
 		}
 	}
@@ -162,7 +162,7 @@ public class MainControlApplet extends JApplet {
 			if(source.getValueIsAdjusting())
 			{
 				int value = source.getValue();
-				particlePanel.f.setGY(value);
+				particlePanel.f.gy = value;
 			}
 		}
 	}
