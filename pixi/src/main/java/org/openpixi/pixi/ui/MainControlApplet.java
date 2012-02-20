@@ -221,6 +221,9 @@ public class MainControlApplet extends JApplet {
 		stepSlider.setMinorTickSpacing(1);
 		stepSlider.setPaintTicks(true);
 		JLabel stepLabel = new JLabel("Step");
+		Box step = Box.createVerticalBox();
+		step.add(stepSlider);
+		step.add(stepLabel);
 		
 		dragSlider = new JSlider();
 		dragSlider.addChangeListener(new DragListener());
@@ -291,6 +294,7 @@ public class MainControlApplet extends JApplet {
 		controlPanel.add(resetButton);
 		controlPanel.add(initComboBox);
 		controlPanel.add(speed);
+		controlPanel.add(step);
 		controlPanel.add(traceCheck);
 		
 		JLabel dragLabel = new JLabel("Drag coefficient");
@@ -314,11 +318,10 @@ public class MainControlApplet extends JApplet {
 		fieldsBox.add(gfieldXSlider);
 		fieldsBox.add(gFieldYLabel);
 		fieldsBox.add(gfieldYSlider);
+		fieldsBox.add(Box.createVerticalGlue());
 		fieldsBox.add(dragLabel);
 		fieldsBox.add(dragSlider);
 		fieldsBox.add(Box.createVerticalGlue());
-		fieldsBox.add(stepLabel);
-		fieldsBox.add(stepSlider);
 		
 		this.setLayout(new BorderLayout());
 		this.add(controlPanel, BorderLayout.SOUTH);
