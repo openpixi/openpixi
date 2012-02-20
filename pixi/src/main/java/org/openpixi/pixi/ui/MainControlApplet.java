@@ -27,7 +27,7 @@ public class MainControlApplet extends JApplet {
 	private JCheckBox traceCheck;
 	private Particle2DPanel particlePanel;
 
-	private static final double speedSliderScaling = 0.1;
+	private static final double speedSliderScaling = 0.07;
 	private static final double stepSliderScaling = 0.01;
 	private static final double dragSliderScaling = 0.01;
 	private static final double exSliderScaling = 0.05;
@@ -50,6 +50,13 @@ public class MainControlApplet extends JApplet {
 	class SliderListener implements ChangeListener {
 		public void stateChanged(ChangeEvent eve) {
 			JSlider source = (JSlider) eve.getSource();
+			if(source.getValueIsAdjusting())
+			{
+				int delay = (int) (1000 * Math.exp(-source.getValue() * speedSliderScaling));
+				particlePanel.timer.setDelay(delay);
+			}
+			/*
+			JSlider source = (JSlider) eve.getSource();
 			if (!source.getValueIsAdjusting()) {
 				int frames = (int) source.getValue();
 				if (frames == 0) {
@@ -64,6 +71,7 @@ public class MainControlApplet extends JApplet {
 					particlePanel.timer.start();
 				}
 			}
+			*/
 		}
 	}
 	
@@ -215,25 +223,25 @@ public class MainControlApplet extends JApplet {
 		speedSlider = new JSlider();
 		speedSlider.addChangeListener(new SliderListener());
 		speedSlider.setMinimum(0);
-		speedSlider.setMaximum(50);
+		speedSlider.setMaximum(100);
 		speedSlider.setValue(30);
 		speedSlider.setMajorTickSpacing(5);
 		speedSlider.setMinorTickSpacing(1);
 		speedSlider.setPaintTicks(true);
-		JLabel speedLabel = new JLabel("Speed");
+		JLabel speedLabel = new JLabel("Frame rate");
 		Box speed = Box.createVerticalBox();
 		speed.add(speedSlider);
 		speed.add(speedLabel);
 		
 		stepSlider = new JSlider();
 		stepSlider.addChangeListener(new StepListener());
-		stepSlider.setMinimum(1);
+		stepSlider.setMinimum(0);
 		stepSlider.setMaximum(100);
 		stepSlider.setValue((int) (100 * (particlePanel.step = 0.5)));
 		stepSlider.setMajorTickSpacing(10);
 		stepSlider.setMinorTickSpacing(2);
 		stepSlider.setPaintTicks(true);
-		JLabel stepLabel = new JLabel("Step");
+		JLabel stepLabel = new JLabel("Size of time step");
 		Box step = Box.createVerticalBox();
 		step.add(stepSlider);
 		step.add(stepLabel);
@@ -356,6 +364,17 @@ public class MainControlApplet extends JApplet {
 		gfieldXSlider.setValue((int) (particlePanel.f.gx / gxSliderScaling));
 		gfieldYSlider.setValue((int) (particlePanel.f.gy / gySliderScaling));
 		dragSlider.setValue((int) (particlePanel.f.drag / dragSliderScaling));
+		int delay = particlePanel.timer.getDelay();
+		speedSlider.setValue((int) (-Math.log(delay / 1000.) / speedSliderScaling));
+	}
+
+
+	@Override
+	public void init() {
+		super.init();
+
+		particlePanel.timer.start();
+		setSlidersValue();
 	}
 
 	/**
@@ -367,11 +386,14 @@ public class MainControlApplet extends JApplet {
 
 		web.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		web.setTitle("OpenPixi");
-		web.setContentPane(new MainControlApplet());
+		MainControlApplet applet = new MainControlApplet();
+		web.setContentPane(applet);
 
 		web.pack();
 		web.setVisible(true);
 		web.setSize(1000, 500);
+		
+		applet.init();
 	}
 
 }
