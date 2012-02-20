@@ -176,7 +176,7 @@ public class MainControlApplet extends JApplet {
 			JSlider source = (JSlider) eve.getSource();
 			if(source.getValueIsAdjusting())
 			{
-				int value = source.getValue();
+				double value = source.getValue() / 100;
 				particlePanel.step = value;
 			}
 		}
@@ -218,11 +218,11 @@ public class MainControlApplet extends JApplet {
 		
 		stepSlider = new JSlider();
 		stepSlider.addChangeListener(new StepListener());
-		stepSlider.setMinimum(0);
-		stepSlider.setMaximum(70);
-		stepSlider.setValue(30);
-		stepSlider.setMajorTickSpacing(5);
-		stepSlider.setMinorTickSpacing(1);
+		stepSlider.setMinimum(1);
+		stepSlider.setMaximum(100);
+		stepSlider.setValue((int) (100 * (particlePanel.step = 0.5)));
+		stepSlider.setMajorTickSpacing(10);
+		stepSlider.setMinorTickSpacing(2);
 		stepSlider.setPaintTicks(true);
 		JLabel stepLabel = new JLabel("Step");
 		Box step = Box.createVerticalBox();
@@ -339,6 +339,8 @@ public class MainControlApplet extends JApplet {
 	
 	public void setSlidersValue()
 	{
+		particlePanel.step = 0.5;
+		stepSlider.setValue(50);
 		efieldXSlider.setValue((int) particlePanel.f.ex);
 		efieldYSlider.setValue((int) particlePanel.f.ey);
 		bfieldZSlider.setValue((int) particlePanel.f.bz);
