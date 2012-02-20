@@ -23,7 +23,7 @@ public class MainControlApplet extends JApplet {
 	private JSlider gfieldXSlider;
 	private JSlider gfieldYSlider;
 	
-	private JComboBox<String> initComboBox;
+	private JComboBox initComboBox;
 	private JCheckBox traceCheck;
 	private Particle2DPanel particlePanel;
 
@@ -60,7 +60,7 @@ public class MainControlApplet extends JApplet {
 	
 	class ComboBoxListener implements ActionListener {
 		public void actionPerformed(ActionEvent e) {
-			JComboBox<String> cb = (JComboBox<String>) e.getSource();
+			JComboBox cb = (JComboBox) e.getSource();
 			int id  = cb.getSelectedIndex();
 			particlePanel.resetAnimation(id);
 			particlePanel.resetAnimation(initComboBox.getSelectedIndex());
@@ -283,7 +283,7 @@ public class MainControlApplet extends JApplet {
 		gfieldYSlider.setMinorTickSpacing(5);
 		gfieldYSlider.setPaintTicks(true);
 		
-		initComboBox = new JComboBox<String>(initStrings);
+		initComboBox = new JComboBox(initStrings);
 		initComboBox.setSelectedIndex(0);
 		initComboBox.addActionListener(new ComboBoxListener());
 		
