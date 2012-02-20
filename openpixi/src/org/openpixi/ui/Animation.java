@@ -247,7 +247,7 @@ public class Animation extends JApplet {
 		gfieldXSlider.setPaintTicks(true);
 		
 		gfieldYSlider = new JSlider();
-		gfieldXSlider.addChangeListener(new GFieldYListener());
+		gfieldYSlider.addChangeListener(new GFieldYListener());
 		gfieldYSlider.setMinimum(-10);
 		gfieldYSlider.setMaximum(10);
 		gfieldYSlider.setValue(0);
