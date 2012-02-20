@@ -3,6 +3,7 @@ package org.openpixi.pixi.ui;
 import org.openpixi.pixi.physics.*;
 import org.openpixi.pixi.physics.boundary.*;
 import org.openpixi.pixi.physics.solver.*;
+import org.openpixi.pixi.ui.util.*;
 import java.awt.*;
 import javax.swing.*;
 import java.awt.event.*;
@@ -26,6 +27,8 @@ public class Particle2DPanel extends JPanel {
 
 	/** Timer for animation */
 	public Timer timer;
+	
+	private FrameRateDetector frameratedetector;
 
 	/** A state for the trace */
 	public boolean paint_trace = false;
@@ -51,6 +54,7 @@ public class Particle2DPanel extends JPanel {
 				EulerRichardson.algorithm(par, f, step);
 				boundary.check(par);
 			}
+			frameratedetector.update();
 			repaint();
 		}
 	}
@@ -65,6 +69,8 @@ public class Particle2DPanel extends JPanel {
 
 		// Create all particles
 		initRandomParticles(10, 8);
+		
+		frameratedetector = new FrameRateDetector(500);
 	}
 
 	public void startAnimation() {
@@ -190,6 +196,12 @@ public class Particle2DPanel extends JPanel {
 			else
 				graph.fillOval((int) par.x, (int) par.y, 2, 2);
 		}
+
+		graph.translate(0.0, this.getHeight());
+		graph.scale(1.0, -1.0);
+		graph.setColor(Color.white);
+		graph.drawString("Frame rate: " + frameratedetector.getRateString() + " fps", 30, 30);
+		graph.drawString("Time step: " + (float) step, 30, 50);
 		
 	}
 }

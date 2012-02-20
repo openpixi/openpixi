@@ -230,7 +230,7 @@ public class MainControlApplet extends JApplet {
 		
 		stepSlider = new JSlider();
 		stepSlider.addChangeListener(new StepListener());
-		stepSlider.setMinimum(0);
+		stepSlider.setMinimum(1);
 		stepSlider.setMaximum(100);
 		stepSlider.setValue((int) (100 * (particlePanel.step = 0.5)));
 		stepSlider.setMajorTickSpacing(10);
