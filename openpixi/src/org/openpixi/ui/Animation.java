@@ -102,7 +102,7 @@ public class Animation extends JApplet {
 	class EFieldXListener implements ChangeListener{
 		public void stateChanged(ChangeEvent eve) {
 			JSlider source = (JSlider) eve.getSource();
-			if(!source.getValueIsAdjusting())
+			if(source.getValueIsAdjusting())
 			{
 				int value = source.getValue();
 				particlePanel.f.setEX(value);
@@ -113,7 +113,7 @@ public class Animation extends JApplet {
 	class EFieldYListener implements ChangeListener{
 		public void stateChanged(ChangeEvent eve) {
 			JSlider source = (JSlider) eve.getSource();
-			if(!source.getValueIsAdjusting())
+			if(source.getValueIsAdjusting())
 			{
 				int value = source.getValue();
 				particlePanel.f.setEY(value);
@@ -125,7 +125,7 @@ public class Animation extends JApplet {
 	class BFieldZListener implements ChangeListener{
 		public void stateChanged(ChangeEvent eve) {
 			JSlider source = (JSlider) eve.getSource();
-			if(!source.getValueIsAdjusting())
+			if(source.getValueIsAdjusting())
 			{
 				int value = source.getValue();
 				particlePanel.f.setBZ(value);
@@ -136,7 +136,7 @@ public class Animation extends JApplet {
 	class GFieldXListener implements ChangeListener{
 		public void stateChanged(ChangeEvent eve) {
 			JSlider source = (JSlider) eve.getSource();
-			if(!source.getValueIsAdjusting())
+			if(source.getValueIsAdjusting())
 			{
 				int value = source.getValue();
 				particlePanel.f.setGX(value);
@@ -147,7 +147,7 @@ public class Animation extends JApplet {
 	class GFieldYListener implements ChangeListener{
 		public void stateChanged(ChangeEvent eve) {
 			JSlider source = (JSlider) eve.getSource();
-			if(!source.getValueIsAdjusting())
+			if(source.getValueIsAdjusting())
 			{
 				int value = source.getValue();
 				particlePanel.f.setGY(value);
@@ -158,7 +158,7 @@ public class Animation extends JApplet {
 	class StepListener implements ChangeListener{
 		public void stateChanged(ChangeEvent eve) {
 			JSlider source = (JSlider) eve.getSource();
-			if(!source.getValueIsAdjusting())
+			if(source.getValueIsAdjusting())
 			{
 				int value = source.getValue();
 				particlePanel.step = value;
@@ -212,46 +212,46 @@ public class Animation extends JApplet {
 		
 		efieldXSlider = new JSlider();
 		efieldXSlider.addChangeListener(new EFieldXListener());
-		efieldXSlider.setMinimum(0);
+		efieldXSlider.setMinimum(-10);
 		efieldXSlider.setMaximum(10);
 		efieldXSlider.setValue(0);
-		efieldXSlider.setMajorTickSpacing(2);
+		efieldXSlider.setMajorTickSpacing(4);
 		efieldXSlider.setMinorTickSpacing(1);
 		efieldXSlider.setPaintTicks(true);
 		
 		efieldYSlider = new JSlider();
 		efieldYSlider.addChangeListener(new EFieldYListener());
-		efieldYSlider.setMinimum(0);
+		efieldYSlider.setMinimum(-10);
 		efieldYSlider.setMaximum(10);
 		efieldYSlider.setValue(0);
-		efieldYSlider.setMajorTickSpacing(2);
+		efieldYSlider.setMajorTickSpacing(4);
 		efieldYSlider.setMinorTickSpacing(1);
 		efieldYSlider.setPaintTicks(true);
 		
 		bfieldZSlider = new JSlider();
 		bfieldZSlider.addChangeListener(new BFieldZListener());
-		bfieldZSlider.setMinimum(0);
+		bfieldZSlider.setMinimum(-10);
 		bfieldZSlider.setMaximum(10);
 		bfieldZSlider.setValue(0);
-		bfieldZSlider.setMajorTickSpacing(2);
+		bfieldZSlider.setMajorTickSpacing(4);
 		bfieldZSlider.setMinorTickSpacing(1);
 		bfieldZSlider.setPaintTicks(true);
 		
 		gfieldXSlider = new JSlider();
 		gfieldXSlider.addChangeListener(new GFieldXListener());
-		gfieldXSlider.setMinimum(0);
+		gfieldXSlider.setMinimum(-10);
 		gfieldXSlider.setMaximum(10);
 		gfieldXSlider.setValue(0);
-		gfieldXSlider.setMajorTickSpacing(2);
+		gfieldXSlider.setMajorTickSpacing(4);
 		gfieldXSlider.setMinorTickSpacing(1);
 		gfieldXSlider.setPaintTicks(true);
 		
 		gfieldYSlider = new JSlider();
 		gfieldXSlider.addChangeListener(new GFieldYListener());
-		gfieldYSlider.setMinimum(0);
+		gfieldYSlider.setMinimum(-10);
 		gfieldYSlider.setMaximum(10);
 		gfieldYSlider.setValue(0);
-		gfieldYSlider.setMajorTickSpacing(2);
+		gfieldYSlider.setMajorTickSpacing(4);
 		gfieldYSlider.setMinorTickSpacing(1);
 		gfieldYSlider.setPaintTicks(true);
 		
