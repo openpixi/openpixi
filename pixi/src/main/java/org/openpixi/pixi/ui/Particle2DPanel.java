@@ -13,12 +13,12 @@ import java.util.ArrayList;
 public class Particle2DPanel extends JPanel {
 
 	//private static final int step = 30;
-	public int step;
+	public double step;
 
 	private boolean reset_trace;
 	
 	/** Milliseconds between updates */
-	private int interval = step;
+	private int interval = 30;
 
 	/** Timer for animation */
 	public Timer timer;
@@ -44,7 +44,7 @@ public class Particle2DPanel extends JPanel {
 			for (int i = 0; i < NUM_PARTICLES; i++) {
 				Particle2D par = (Particle2D) parlist.get(i);
 				par.setBoundaries(getHeight(), getWidth());
-				EulerRichardson.algorithm(par, f, 0.5);
+				EulerRichardson.algorithm(par, f, step);
 			}
 			repaint();
 		}
