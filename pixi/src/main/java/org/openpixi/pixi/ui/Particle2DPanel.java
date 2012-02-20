@@ -35,7 +35,7 @@ public class Particle2DPanel extends JPanel {
 	/** Constant force for particles */
 	public Force f = new Force();
 	
-	private HardWallBoundary hardwallboundary = new HardWallBoundary();
+	private Boundary boundary = new HardWallBoundary();
 
 	/** Contains all particles */
 	ArrayList<Particle2D> parlist = new ArrayList<Particle2D>();
@@ -45,11 +45,11 @@ public class Particle2DPanel extends JPanel {
 
 		public void actionPerformed(ActionEvent eve) {
 			
-			hardwallboundary.setBoundaries(0, 0, getWidth(), getHeight());
+			boundary.setBoundaries(0, 0, getWidth(), getHeight());
 			for (int i = 0; i < NUM_PARTICLES; i++) {
 				Particle2D par = (Particle2D) parlist.get(i);
 				EulerRichardson.algorithm(par, f, step);
-				hardwallboundary.check(par);
+				boundary.check(par);
 			}
 			repaint();
 		}
@@ -123,6 +123,8 @@ public class Particle2DPanel extends JPanel {
 		f.reset();
 		f.gy = -1; //-ConstantsSI.g;
 		//f.bz = 1;
+		
+		setHardWallBoundary();
 	}
 
 	private void initGravity(int count) {
@@ -137,11 +139,21 @@ public class Particle2DPanel extends JPanel {
 
 		f.reset();
 		f.bz = .1;
+		
+		setPeriodicBoundary();
 	}
 	
 	public void checkTrace() {
 		paint_trace =! paint_trace;
 		startAnimation();
+	}
+
+	public void setHardWallBoundary() {
+		boundary = new HardWallBoundary();
+	}
+
+	public void setPeriodicBoundary() {
+		boundary = new PeriodicBoundary();
 	}
 
 	/** Display the particles */

@@ -2,23 +2,10 @@ package org.openpixi.pixi.physics.boundary;
 
 import org.openpixi.pixi.physics.Particle2D;
 
-public class HardWallBoundary {
-	public double xmin;
-	public double xmax;
-	public double ymin;
-	public double ymax;
+public class HardWallBoundary extends Boundary {
 
-	/**
-	 * Constructor
-	 */
 	public HardWallBoundary() {
-	}
-	
-	public void setBoundaries(double xmin, double ymin, double xmax, double ymax) {
-		this.xmin = xmin;
-		this.ymin = ymin;
-		this.xmax = xmax;
-		this.ymax = ymax;
+		super();
 	}
 
 	/**
