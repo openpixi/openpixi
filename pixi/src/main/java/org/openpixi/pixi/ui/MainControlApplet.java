@@ -23,7 +23,7 @@ public class MainControlApplet extends JApplet {
 	private JSlider gfieldXSlider;
 	private JSlider gfieldYSlider;
 	
-	private JComboBox initComboBox;
+	private JComboBox<String> initComboBox;
 	private JCheckBox traceCheck;
 	private Particle2DPanel particlePanel;
 
@@ -63,6 +63,13 @@ public class MainControlApplet extends JApplet {
 			JComboBox cb = (JComboBox) e.getSource();
 			int id  = cb.getSelectedIndex();
 			particlePanel.resetAnimation(id);
+			particlePanel.resetAnimation(initComboBox.getSelectedIndex());
+			efieldXSlider.setValue((int) particlePanel.f.ex);
+			efieldYSlider.setValue((int) particlePanel.f.ey);
+			bfieldZSlider.setValue((int) particlePanel.f.bz);
+			gfieldXSlider.setValue((int) particlePanel.f.gx);
+			gfieldYSlider.setValue((int) particlePanel.f.gy);
+			dragSlider.setValue((int) particlePanel.f.drag);
 		}
 	}
 
@@ -90,6 +97,12 @@ public class MainControlApplet extends JApplet {
 	class ResetListener implements ActionListener {
 		public void actionPerformed(ActionEvent eve) {
 			particlePanel.resetAnimation(initComboBox.getSelectedIndex());
+			efieldXSlider.setValue((int) particlePanel.f.ex);
+			efieldYSlider.setValue((int) particlePanel.f.ey);
+			bfieldZSlider.setValue((int) particlePanel.f.bz);
+			gfieldXSlider.setValue((int) particlePanel.f.gx);
+			gfieldYSlider.setValue((int) particlePanel.f.gy);
+			dragSlider.setValue((int) particlePanel.f.drag);
 		}
 	}
 	
@@ -119,6 +132,8 @@ public class MainControlApplet extends JApplet {
 				int value = source.getValue();
 				particlePanel.f.ex = value;
 			}
+			//if(source.getValue() == particlePanel.f.ex)
+				//source.setValue((int)particlePanel.f.ex);
 		}
 	}
 	
@@ -132,7 +147,6 @@ public class MainControlApplet extends JApplet {
 			}
 		}
 	}
-	
 	
 	class BFieldZListener implements ChangeListener{
 		public void stateChanged(ChangeEvent eve) {
@@ -229,13 +243,13 @@ public class MainControlApplet extends JApplet {
 		dragSlider.addChangeListener(new DragListener());
 		dragSlider.setMinimum(0);
 		dragSlider.setMaximum(1);
-		dragSlider.setValue(0);
+		dragSlider.setValue((int) particlePanel.f.drag);
 		
 		efieldXSlider = new JSlider();
 		efieldXSlider.addChangeListener(new EFieldXListener());
 		efieldXSlider.setMinimum(-10);
 		efieldXSlider.setMaximum(10);
-		efieldXSlider.setValue(0);
+		efieldXSlider.setValue((int) particlePanel.f.ex);
 		efieldXSlider.setMajorTickSpacing(4);
 		efieldXSlider.setMinorTickSpacing(1);
 		efieldXSlider.setPaintTicks(true);
@@ -244,7 +258,7 @@ public class MainControlApplet extends JApplet {
 		efieldYSlider.addChangeListener(new EFieldYListener());
 		efieldYSlider.setMinimum(-10);
 		efieldYSlider.setMaximum(10);
-		efieldYSlider.setValue(0);
+		efieldYSlider.setValue((int) particlePanel.f.ey);
 		efieldYSlider.setMajorTickSpacing(4);
 		efieldYSlider.setMinorTickSpacing(1);
 		efieldYSlider.setPaintTicks(true);
@@ -253,7 +267,7 @@ public class MainControlApplet extends JApplet {
 		bfieldZSlider.addChangeListener(new BFieldZListener());
 		bfieldZSlider.setMinimum(-10);
 		bfieldZSlider.setMaximum(10);
-		bfieldZSlider.setValue(0);
+		bfieldZSlider.setValue((int) particlePanel.f.bz);
 		bfieldZSlider.setMajorTickSpacing(4);
 		bfieldZSlider.setMinorTickSpacing(1);
 		bfieldZSlider.setPaintTicks(true);
@@ -262,7 +276,7 @@ public class MainControlApplet extends JApplet {
 		gfieldXSlider.addChangeListener(new GFieldXListener());
 		gfieldXSlider.setMinimum(-10);
 		gfieldXSlider.setMaximum(10);
-		gfieldXSlider.setValue(0);
+		gfieldXSlider.setValue((int) particlePanel.f.gx);
 		gfieldXSlider.setMajorTickSpacing(4);
 		gfieldXSlider.setMinorTickSpacing(1);
 		gfieldXSlider.setPaintTicks(true);
@@ -271,7 +285,7 @@ public class MainControlApplet extends JApplet {
 		gfieldYSlider.addChangeListener(new GFieldYListener());
 		gfieldYSlider.setMinimum(-10);
 		gfieldYSlider.setMaximum(10);
-		gfieldYSlider.setValue(0);
+		gfieldYSlider.setValue((int) particlePanel.f.gy);
 		gfieldYSlider.setMajorTickSpacing(4);
 		gfieldYSlider.setMinorTickSpacing(1);
 		gfieldYSlider.setPaintTicks(true);
