@@ -27,6 +27,15 @@ public class MainControlApplet extends JApplet {
 	private JCheckBox traceCheck;
 	private Particle2DPanel particlePanel;
 
+	private static final double speedSliderScaling = 0.1;
+	private static final double stepSliderScaling = 0.01;
+	private static final double dragSliderScaling = 0.01;
+	private static final double exSliderScaling = 0.05;
+	private static final double eySliderScaling = 0.05;
+	private static final double bzSliderScaling = 0.005;
+	private static final double gxSliderScaling = 0.01;
+	private static final double gySliderScaling = 0.01;
+
 	String[] initStrings = {
 			"10 random particles",
 			"100 random particles",
@@ -108,7 +117,7 @@ public class MainControlApplet extends JApplet {
 			JSlider source = (JSlider) eve.getSource();
 			if(source.getValueIsAdjusting())
 			{
-				double value = source.getValue() / 100.;
+				double value = source.getValue() * dragSliderScaling;
 				particlePanel.f.drag = value;
 			}
 		}
@@ -119,7 +128,7 @@ public class MainControlApplet extends JApplet {
 			JSlider source = (JSlider) eve.getSource();
 			if(source.getValueIsAdjusting())
 			{
-				double value = source.getValue() / 10.;
+				double value = source.getValue() * exSliderScaling;
 				particlePanel.f.ex = value;
 			}
 			//if(source.getValue() == particlePanel.f.ex)
@@ -132,7 +141,7 @@ public class MainControlApplet extends JApplet {
 			JSlider source = (JSlider) eve.getSource();
 			if(source.getValueIsAdjusting())
 			{
-				double value = source.getValue() / 10.;
+				double value = source.getValue() * eySliderScaling;
 				particlePanel.f.ey = value;
 			}
 		}
@@ -143,7 +152,7 @@ public class MainControlApplet extends JApplet {
 			JSlider source = (JSlider) eve.getSource();
 			if(source.getValueIsAdjusting())
 			{
-				double value = source.getValue() / 10.;
+				double value = source.getValue() * bzSliderScaling;
 				particlePanel.f.bz = value;
 			}
 		}
@@ -154,7 +163,7 @@ public class MainControlApplet extends JApplet {
 			JSlider source = (JSlider) eve.getSource();
 			if(source.getValueIsAdjusting())
 			{
-				double value = source.getValue() / 10.;
+				double value = source.getValue() * gxSliderScaling;
 				particlePanel.f.gx = value;
 			}
 		}
@@ -165,7 +174,7 @@ public class MainControlApplet extends JApplet {
 			JSlider source = (JSlider) eve.getSource();
 			if(source.getValueIsAdjusting())
 			{
-				double value = source.getValue() / 10.;
+				double value = source.getValue() * gySliderScaling;
 				particlePanel.f.gy = value;
 			}
 		}
@@ -176,7 +185,7 @@ public class MainControlApplet extends JApplet {
 			JSlider source = (JSlider) eve.getSource();
 			if(source.getValueIsAdjusting())
 			{
-				double value = source.getValue() / 100.;
+				double value = source.getValue() * stepSliderScaling;
 				particlePanel.step = value;
 			}
 		}
@@ -341,12 +350,12 @@ public class MainControlApplet extends JApplet {
 	{
 		particlePanel.step = 0.5;
 		stepSlider.setValue(50);
-		efieldXSlider.setValue((int) particlePanel.f.ex);
-		efieldYSlider.setValue((int) particlePanel.f.ey);
-		bfieldZSlider.setValue((int) particlePanel.f.bz);
-		gfieldXSlider.setValue((int) particlePanel.f.gx);
-		gfieldYSlider.setValue((int) particlePanel.f.gy);
-		dragSlider.setValue((int) particlePanel.f.drag);
+		efieldXSlider.setValue((int) (particlePanel.f.ex / exSliderScaling));
+		efieldYSlider.setValue((int) (particlePanel.f.ey / eySliderScaling));
+		bfieldZSlider.setValue((int) (particlePanel.f.bz / bzSliderScaling));
+		gfieldXSlider.setValue((int) (particlePanel.f.gx / gxSliderScaling));
+		gfieldYSlider.setValue((int) (particlePanel.f.gy / gySliderScaling));
+		dragSlider.setValue((int) (particlePanel.f.drag / dragSliderScaling));
 	}
 
 	/**
