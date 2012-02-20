@@ -23,6 +23,8 @@ public class MainControlApplet extends JApplet {
 	private JSlider gfieldXSlider;
 	private JSlider gfieldYSlider;
 	
+	private JCheckBox framerateCheck;
+	
 	private JComboBox initComboBox;
 	private JCheckBox traceCheck;
 	private Particle2DPanel particlePanel;
@@ -100,8 +102,14 @@ public class MainControlApplet extends JApplet {
 		public void itemStateChanged(ItemEvent eve){
 				particlePanel.checkTrace();
 		}
-		
 	}
+	
+	class FrameListener implements ItemListener {
+		public void itemStateChanged(ItemEvent eve) {
+			
+		}
+	}
+	
 	
 	class DragListener implements ChangeListener{
 		public void stateChanged(ChangeEvent eve) {
@@ -181,6 +189,7 @@ public class MainControlApplet extends JApplet {
 			}
 		}
 	}
+	
 	/**
 	 * Constructor.
 	 */
@@ -293,6 +302,9 @@ public class MainControlApplet extends JApplet {
 		
 		traceCheck = new JCheckBox("Trace");
 		traceCheck.addItemListener(new CheckListener());
+		
+		framerateCheck = new JCheckBox("Frame rate");
+		framerateCheck.addItemListener(new FrameListener());
 
 		JPanel controlPanel = new JPanel();
 		controlPanel.setLayout(new FlowLayout());
@@ -303,6 +315,7 @@ public class MainControlApplet extends JApplet {
 		controlPanel.add(speed);
 		controlPanel.add(step);
 		controlPanel.add(traceCheck);
+		controlPanel.add(framerateCheck);
 		
 		JLabel dragLabel = new JLabel("Drag coefficient");
 		
