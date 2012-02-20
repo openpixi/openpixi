@@ -173,7 +173,7 @@ public class Particle2DPanel extends JPanel {
 					resize_factor = 1;
 					break;
 				case 5:
-					resize_factor = 2;
+					resize_factor = 3;
 					break;
 				case 10:
 					resize_factor = 3;
@@ -182,7 +182,7 @@ public class Particle2DPanel extends JPanel {
 					resize_factor = 5;
 					break;
 				}
-				graph.fillOval((int) par.x, (int) par.y, (int) par.radius / resize_factor, (int) par.radius / resize_factor);
+				graph.fillOval((int) par.x + (int) par.radius / 2, (int) par.y + (int) par.radius / 2, (int) par.radius / resize_factor, (int) par.radius / resize_factor);
 			}
 			else
 			graph.fillOval((int) par.x, (int) par.y, (int) par.radius, (int) par.radius);
