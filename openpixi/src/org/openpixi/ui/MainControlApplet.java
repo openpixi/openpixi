@@ -9,7 +9,7 @@ import javax.swing.event.*;
 /**
  * Displays the animation of particles.
  */
-public class Animation extends JApplet {
+public class MainControlApplet extends JApplet {
 
 	private JButton startButton, stopButton, resetButton;
 	private JSlider speedSlider;
@@ -168,7 +168,7 @@ public class Animation extends JApplet {
 	/**
 	 * Constructor.
 	 */
-	public Animation() {
+	public MainControlApplet() {
 		particlePanel = new Particle2DPanel();
 
 		this.setVisible(true);
@@ -314,7 +314,7 @@ public class Animation extends JApplet {
 
 		web.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		web.setTitle("Animation 2D");
-		web.setContentPane(new Animation());
+		web.setContentPane(new MainControlApplet());
 
 		web.pack();
 		web.setVisible(true);
