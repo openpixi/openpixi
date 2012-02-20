@@ -15,7 +15,7 @@ public class Particle2DPanel extends JPanel {
 	//private static final int step = 30;
 	public int step;
 
-	public boolean reset_trace;
+	private boolean reset_trace;
 	
 	/** Milliseconds between updates */
 	private int interval = step;
