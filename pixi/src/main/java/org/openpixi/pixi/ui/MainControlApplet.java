@@ -15,6 +15,8 @@ public class MainControlApplet extends JApplet {
 	private JSlider speedSlider;
 	private JSlider stepSlider;
 	
+	private JSlider  dragSlider;
+	
 	private JSlider efieldXSlider;
 	private JSlider efieldYSlider;
 	private JSlider bfieldZSlider;
@@ -96,6 +98,17 @@ public class MainControlApplet extends JApplet {
 				particlePanel.checkTrace();
 		}
 		
+	}
+	
+	class DragListener implements ChangeListener{
+		public void stateChanged(ChangeEvent eve) {
+			JSlider source = (JSlider) eve.getSource();
+			if(source.getValueIsAdjusting())
+			{
+				int value = source.getValue();
+				particlePanel.f.setDrag(value);
+			}
+		}
 	}
 	
 	class EFieldXListener implements ChangeListener{
@@ -209,6 +222,12 @@ public class MainControlApplet extends JApplet {
 		stepSlider.setPaintTicks(true);
 		JLabel stepLabel = new JLabel("Step");
 		
+		dragSlider = new JSlider();
+		dragSlider.addChangeListener(new DragListener());
+		dragSlider.setMinimum(0);
+		dragSlider.setMaximum(1);
+		dragSlider.setValue(0);
+		
 		efieldXSlider = new JSlider();
 		efieldXSlider.addChangeListener(new EFieldXListener());
 		efieldXSlider.setMinimum(-10);
@@ -274,6 +293,8 @@ public class MainControlApplet extends JApplet {
 		controlPanel.add(speed);
 		controlPanel.add(traceCheck);
 		
+		JLabel dragLabel = new JLabel("Drag coefficient");
+		
 		JLabel eFieldXLabel = new JLabel("Electric Field in x - direction");
 		JLabel eFieldYLabel = new JLabel("Electric Field in y - direction");
 		JLabel bFieldZLabel = new JLabel("Magnetic Field in z - direction");
@@ -293,6 +314,8 @@ public class MainControlApplet extends JApplet {
 		fieldsBox.add(gfieldXSlider);
 		fieldsBox.add(gFieldYLabel);
 		fieldsBox.add(gfieldYSlider);
+		fieldsBox.add(dragLabel);
+		fieldsBox.add(dragSlider);
 		fieldsBox.add(Box.createVerticalGlue());
 		fieldsBox.add(stepLabel);
 		fieldsBox.add(stepSlider);
