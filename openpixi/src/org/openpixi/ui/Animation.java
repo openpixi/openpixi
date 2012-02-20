@@ -21,7 +21,7 @@ public class Animation extends JApplet {
 	private JSlider gfieldXSlider;
 	private JSlider gfieldYSlider;
 	
-	private JComboBox initComboBox;
+	private JComboBox<String> initComboBox;
 	private JCheckBox traceCheck;
 	private Particle2DPanel particlePanel;
 
@@ -59,7 +59,7 @@ public class Animation extends JApplet {
 	class ComboBoxListener implements ActionListener {
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			JComboBox cb = (JComboBox) e.getSource();
+			JComboBox<String> cb = (JComboBox<String>) e.getSource();
 			int id  = cb.getSelectedIndex();
 			particlePanel.resetAnimation(id);
 		}
