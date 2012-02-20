@@ -1,16 +1,21 @@
 package org.openpixi.pixi.ui;
 
 import org.openpixi.pixi.physics.*;
+import org.openpixi.pixi.physics.boundary.*;
 import org.openpixi.pixi.physics.solver.*;
 import java.awt.*;
 import javax.swing.*;
 import java.awt.event.*;
 import java.util.ArrayList;
 
+
 /**
  * Displays 2D particles.
  */
 public class Particle2DPanel extends JPanel {
+	
+	private static final int xmax = 700;
+	private static final int ymax = 500;
 
 	//private static final int step = 30;
 	public double step;
@@ -30,6 +35,8 @@ public class Particle2DPanel extends JPanel {
 
 	/** Constant force for particles */
 	public Force f = new Force();
+	
+	private HardWallBoundary hardwallboundary = new HardWallBoundary();
 
 	/** Contains all particles */
 	ArrayList<Particle2D> parlist = new ArrayList<Particle2D>();
@@ -38,10 +45,12 @@ public class Particle2DPanel extends JPanel {
 	public class TimerListener implements ActionListener {
 
 		public void actionPerformed(ActionEvent eve) {
+			
+			hardwallboundary.setBoundaries(0, 0, getWidth(), getHeight());
 			for (int i = 0; i < NUM_PARTICLES; i++) {
 				Particle2D par = (Particle2D) parlist.get(i);
-				par.setBoundaries(getHeight(), getWidth());
 				EulerRichardson.algorithm(par, f, step);
+				hardwallboundary.check(par);
 			}
 			repaint();
 		}
@@ -53,7 +62,7 @@ public class Particle2DPanel extends JPanel {
 
 		// Set properties of the panel
 		this.setVisible(true);
-		this.setSize(700, 500);
+		this.setSize(xmax, ymax);
 
 		// Create all particles
 		initRandomParticles(10, 8);
@@ -99,8 +108,8 @@ public class Particle2DPanel extends JPanel {
 		parlist.clear();
 		for (int k = 0; k < NUM_PARTICLES; k++) {
 			Particle2D par = new Particle2D();
-			par.x = 700 * Math.random();
-			par.y = 500 * Math.random();
+			par.x = xmax * Math.random();
+			par.y = ymax * Math.random();
 			par.radius = radius;
 			par.vx = 10 * Math.random();
 			par.vy = 10 * Math.random();

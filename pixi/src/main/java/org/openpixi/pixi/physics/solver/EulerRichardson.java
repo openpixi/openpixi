@@ -18,27 +18,6 @@ public class EulerRichardson {
 		particle.ax = f.getForceX(particle.vx, particle.vy, particle) / particle.mass;
 		particle.ay = f.getForceX(particle.vx, particle.vy, particle) / particle.mass;
 		
-		//if the particle hits the walls
-		if(particle.x < 0)
-		{
-			particle.x = 0;
-			particle.vx = - particle.vx;
-		}
-		if(particle.x > particle.rightBoundary)
-		{
-			particle.x = particle.rightBoundary;
-			particle.vx = - particle.vx;
-		}
-		if(particle.y < 0)
-		{
-			particle.y = 0;
-			particle.vy = - particle.vy;
-		}
-		if(particle.y > particle.bottomBoundary)
-		{
-			particle.y = particle.bottomBoundary;
-			particle.vy = - particle.vy;
-		}
 		//starting the Euler-Richardson algorithm (the equations correspond with the ones on the above mentioned website)
 		double vxmiddle = particle.vx + particle.ax * step / 2;
 		double vymiddle = particle.vy + particle.ay * step / 2;

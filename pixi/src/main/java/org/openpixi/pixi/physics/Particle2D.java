@@ -32,9 +32,6 @@ public class Particle2D{
 	/** electric charge of the particle */
 	public double charge;
 
-	public double rightBoundary;   //the right boundary
-	public double bottomBoundary;    //the bottom boundary
-
 	/** Empty constructor */
 	public Particle2D()
 	{
@@ -53,12 +50,6 @@ public class Particle2D{
 		double range;
 		range = Math.pow(this.x - a.x, 2) + Math.pow(this.y - this.y, 2);
 		return Math.sqrt(range);
-	}
-	//a method that defines the boundaries
-	public void setBoundaries(int height, int width)
-	{
-		rightBoundary = width - 2 * radius;
-		bottomBoundary = height - 2 * radius;
 	}
 	
 }
