@@ -60,16 +60,11 @@ public class MainControlApplet extends JApplet {
 	
 	class ComboBoxListener implements ActionListener {
 		public void actionPerformed(ActionEvent e) {
-			JComboBox cb = (JComboBox) e.getSource();
+			JComboBox<String> cb = (JComboBox<String>) e.getSource();
 			int id  = cb.getSelectedIndex();
 			particlePanel.resetAnimation(id);
 			particlePanel.resetAnimation(initComboBox.getSelectedIndex());
-			efieldXSlider.setValue((int) particlePanel.f.ex);
-			efieldYSlider.setValue((int) particlePanel.f.ey);
-			bfieldZSlider.setValue((int) particlePanel.f.bz);
-			gfieldXSlider.setValue((int) particlePanel.f.gx);
-			gfieldYSlider.setValue((int) particlePanel.f.gy);
-			dragSlider.setValue((int) particlePanel.f.drag);
+			setSlidersValue();
 		}
 	}
 
@@ -97,12 +92,7 @@ public class MainControlApplet extends JApplet {
 	class ResetListener implements ActionListener {
 		public void actionPerformed(ActionEvent eve) {
 			particlePanel.resetAnimation(initComboBox.getSelectedIndex());
-			efieldXSlider.setValue((int) particlePanel.f.ex);
-			efieldYSlider.setValue((int) particlePanel.f.ey);
-			bfieldZSlider.setValue((int) particlePanel.f.bz);
-			gfieldXSlider.setValue((int) particlePanel.f.gx);
-			gfieldYSlider.setValue((int) particlePanel.f.gy);
-			dragSlider.setValue((int) particlePanel.f.drag);
+			setSlidersValue();
 		}
 	}
 	
@@ -290,7 +280,7 @@ public class MainControlApplet extends JApplet {
 		gfieldYSlider.setMinorTickSpacing(1);
 		gfieldYSlider.setPaintTicks(true);
 		
-		initComboBox = new JComboBox(initStrings);
+		initComboBox = new JComboBox<String>(initStrings);
 		initComboBox.setSelectedIndex(0);
 		initComboBox.addActionListener(new ComboBoxListener());
 		
@@ -342,6 +332,16 @@ public class MainControlApplet extends JApplet {
 		this.add(particlePanel, BorderLayout.CENTER);
 		this.add(fieldsBox, BorderLayout.EAST);
 
+	}
+	
+	public void setSlidersValue()
+	{
+		efieldXSlider.setValue((int) particlePanel.f.ex);
+		efieldYSlider.setValue((int) particlePanel.f.ey);
+		bfieldZSlider.setValue((int) particlePanel.f.bz);
+		gfieldXSlider.setValue((int) particlePanel.f.gx);
+		gfieldYSlider.setValue((int) particlePanel.f.gy);
+		dragSlider.setValue((int) particlePanel.f.drag);
 	}
 
 	/**
