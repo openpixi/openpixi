@@ -352,7 +352,7 @@ public class MainControlApplet extends JApplet {
 		JFrame web = new JFrame();
 
 		web.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		web.setTitle("Animation 2D");
+		web.setTitle("OpenPixi");
 		web.setContentPane(new MainControlApplet());
 
 		web.pack();
