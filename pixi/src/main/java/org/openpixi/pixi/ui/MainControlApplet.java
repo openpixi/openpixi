@@ -108,7 +108,7 @@ public class MainControlApplet extends JApplet {
 			JSlider source = (JSlider) eve.getSource();
 			if(source.getValueIsAdjusting())
 			{
-				double value = source.getValue() / 100;
+				double value = source.getValue() / 100.;
 				particlePanel.f.drag = value;
 			}
 		}
@@ -119,7 +119,7 @@ public class MainControlApplet extends JApplet {
 			JSlider source = (JSlider) eve.getSource();
 			if(source.getValueIsAdjusting())
 			{
-				double value = source.getValue() / 10;
+				double value = source.getValue() / 10.;
 				particlePanel.f.ex = value;
 			}
 			//if(source.getValue() == particlePanel.f.ex)
@@ -132,7 +132,7 @@ public class MainControlApplet extends JApplet {
 			JSlider source = (JSlider) eve.getSource();
 			if(source.getValueIsAdjusting())
 			{
-				double value = source.getValue() / 10;
+				double value = source.getValue() / 10.;
 				particlePanel.f.ey = value;
 			}
 		}
@@ -143,7 +143,7 @@ public class MainControlApplet extends JApplet {
 			JSlider source = (JSlider) eve.getSource();
 			if(source.getValueIsAdjusting())
 			{
-				double value = source.getValue() / 10;
+				double value = source.getValue() / 10.;
 				particlePanel.f.bz = value;
 			}
 		}
@@ -154,7 +154,7 @@ public class MainControlApplet extends JApplet {
 			JSlider source = (JSlider) eve.getSource();
 			if(source.getValueIsAdjusting())
 			{
-				double value = source.getValue() / 10;
+				double value = source.getValue() / 10.;
 				particlePanel.f.gx = value;
 			}
 		}
@@ -165,7 +165,7 @@ public class MainControlApplet extends JApplet {
 			JSlider source = (JSlider) eve.getSource();
 			if(source.getValueIsAdjusting())
 			{
-				double value = source.getValue() / 10;
+				double value = source.getValue() / 10.;
 				particlePanel.f.gy = value;
 			}
 		}
@@ -176,7 +176,7 @@ public class MainControlApplet extends JApplet {
 			JSlider source = (JSlider) eve.getSource();
 			if(source.getValueIsAdjusting())
 			{
-				double value = source.getValue() / 100;
+				double value = source.getValue() / 100.;
 				particlePanel.step = value;
 			}
 		}
