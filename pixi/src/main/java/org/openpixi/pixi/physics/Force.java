@@ -37,41 +37,6 @@ public class Force {
 		bz = 0;
 	}
 	
-	//method that sets the drag coefficient
-	public void setDrag(double drag)
-	{
-		this.drag = drag;
-	}
-	
-	//method that sets the gravity in x - direction
-	public void setGX(double gx)
-	{
-		this.gx = gx;
-	}
-	
-	//method that sets the gravity in y - direction
-	public void setGY(double gy)
-	{
-		this.gy = gy;
-	}
-	
-	//method that sets the electrical field in x - direction
-	public void setEX(double ex)
-	{
-		this.ex = ex;
-	}
-	
-	//method that sets the electrical field in y - direction
-	public void setEY(double ey)
-	{
-		this.ey = ey;
-	}
-	
-	//method that sets the magnetic field in z - direction
-	public void setBZ(double bz)
-	{
-		this.bz = bz;
-	}
 	//getting the force in the x - direction
 	public double getForceX(double vx, double vy, Particle2D par)
 	{
