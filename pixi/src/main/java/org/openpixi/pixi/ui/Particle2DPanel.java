@@ -22,6 +22,8 @@ public class Particle2DPanel extends JPanel {
 
 	private boolean reset_trace;
 	
+	private boolean solver_change = true;
+	
 	/** Milliseconds between updates */
 	private int interval = 30;
 
@@ -54,7 +56,12 @@ public class Particle2DPanel extends JPanel {
 			boundary.setBoundaries(0, 0, getWidth(), getHeight());
 			for (int i = 0; i < NUM_PARTICLES; i++) {
 				Particle2D par = (Particle2D) parlist.get(i);
-				EulerRichardson.algorithm(par, f, step);
+				if(solver_change) {
+					EulerRichardson.algorithm(par, f, step);
+				}
+				else {
+					LeapFrog.algorithm(par, f, step);
+				}
 				boundary.check(par);
 			}
 			frameratedetector.update();
@@ -155,6 +162,14 @@ public class Particle2DPanel extends JPanel {
 	public void checkTrace() {
 		paint_trace =! paint_trace;
 		startAnimation();
+	}
+	
+	public void solverChange(int id)
+	{
+		if(id == 0)
+			solver_change = true;
+		else
+			solver_change = false;
 	}
 
 	public void setHardWallBoundary() {
