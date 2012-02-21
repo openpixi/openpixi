@@ -196,8 +196,11 @@ public class Particle2DPanel extends JPanel {
 			{
 				graph.fillOval((int) par.x - resize /2, (int) par.y - resize / 2,  resize,  resize);
 			}
-			else
-				graph.fillOval((int) par.x, (int) par.y, 2, 2);
+			else {
+				// drawRect(x,y,0,0) is about 20% faster than fillRect(x,y,1,1)
+				//graph.fillRect((int) par.x, (int) par.y, 1, 1);
+				graph.drawRect((int) par.x, (int) par.y, 0, 0);
+			}
 		}
 
 		if (showinfo) {
