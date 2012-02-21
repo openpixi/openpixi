@@ -259,6 +259,7 @@ public class MainControlApplet extends JApplet {
 		dragSlider.setMajorTickSpacing(10);
 		dragSlider.setMinorTickSpacing(2);
 		dragSlider.setPaintTicks(true);
+		JLabel dragLabel = new JLabel("Drag coefficient");
 		
 		efieldXSlider = new JSlider();
 		efieldXSlider.addChangeListener(new EFieldXListener());
@@ -313,6 +314,7 @@ public class MainControlApplet extends JApplet {
 		algorithmComboBox = new JComboBox(solverString);
 		algorithmComboBox.setSelectedIndex(0);
 		algorithmComboBox.addActionListener(new AlgorithmListener());
+		JLabel algorithmLabel = new JLabel("Change the algorithm");
 		
 		startButton.addActionListener(new StartListener());
 		stopButton.addActionListener(new StopListener());
@@ -336,7 +338,6 @@ public class MainControlApplet extends JApplet {
 		controlPanel.add(framerateCheck);
 		//controlPanel.add(algorithmComboBox);
 		
-		JLabel dragLabel = new JLabel("Drag coefficient");
 		
 		JLabel eFieldXLabel = new JLabel("Electric Field in x - direction");
 		JLabel eFieldYLabel = new JLabel("Electric Field in y - direction");
@@ -361,7 +362,9 @@ public class MainControlApplet extends JApplet {
 		fieldsBox.add(dragLabel);
 		fieldsBox.add(dragSlider);
 		fieldsBox.add(Box.createVerticalGlue());
+		fieldsBox.add(algorithmLabel);
 		fieldsBox.add(algorithmComboBox);
+		fieldsBox.add(Box.createVerticalGlue());
 		
 		this.setLayout(new BorderLayout());
 		this.add(controlPanel, BorderLayout.SOUTH);
