@@ -44,6 +44,8 @@ public class Particle2DPanel extends JPanel {
 	/** Contains all particles */
 	ArrayList<Particle2D> parlist = new ArrayList<Particle2D>();
 
+	Color darkGreen = new Color(0x00, 0x80, 0x00);
+
 	/** Listener for timer */
 	public class TimerListener implements ActionListener {
 
@@ -166,7 +168,7 @@ public class Particle2DPanel extends JPanel {
 	/** Display the particles */
 	public void paintComponent(Graphics graph1) {
 		Graphics2D graph = (Graphics2D) graph1;
-		setBackground(Color.gray);
+		setBackground(Color.white);
 		graph.translate(0.0, this.getHeight());
 		graph.scale(1.0, -1.0);
 		if(!paint_trace)
@@ -201,7 +203,7 @@ public class Particle2DPanel extends JPanel {
 		if (showinfo) {
 			graph.translate(0.0, this.getHeight());
 			graph.scale(1.0, -1.0);
-			graph.setColor(Color.white);
+			graph.setColor(darkGreen);
 			graph.drawString("Frame rate: " + frameratedetector.getRateString() + " fps", 30, 30);
 			graph.drawString("Time step: " + (float) step, 30, 50);
 
