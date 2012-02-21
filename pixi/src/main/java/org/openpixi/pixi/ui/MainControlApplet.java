@@ -26,7 +26,7 @@ public class MainControlApplet extends JApplet {
 	private JCheckBox framerateCheck;
 	
 	private JComboBox initComboBox;
-	private JComboBox solver;
+	private JComboBox algorithmComboBox;
 	private JCheckBox traceCheck;
 	private Particle2DPanel particlePanel;
 
@@ -73,9 +73,11 @@ public class MainControlApplet extends JApplet {
 	
 	class AlgorithmListener implements ActionListener {
 		public void actionPerformed(ActionEvent eve) {
-			JComboBox box = (JComboBox) eve.getSource();
-			int id = box.getSelectedIndex();
-			particlePanel.solverChange(id);
+			JComboBox cbox = (JComboBox) eve.getSource();
+			int id = cbox.getSelectedIndex();
+			particlePanel.algorithmChange(id);
+			//one can use this instead of the method, just need to change algorithm_change to public
+			//particlePanel.algorithm_change = id;
 		}
 	}
 
@@ -307,10 +309,10 @@ public class MainControlApplet extends JApplet {
 		initComboBox.setSelectedIndex(0);
 		initComboBox.addActionListener(new ComboBoxListener());
 		
-		String[] solverString = {"Euler", "LeapFrog"};
-		solver = new JComboBox(solverString);
-		solver.setSelectedIndex(0);
-		solver.addActionListener(new AlgorithmListener());
+		String[] solverString = {"Euler Richardson", "LeapFrog"};
+		algorithmComboBox = new JComboBox(solverString);
+		algorithmComboBox.setSelectedIndex(0);
+		algorithmComboBox.addActionListener(new AlgorithmListener());
 		
 		startButton.addActionListener(new StartListener());
 		stopButton.addActionListener(new StopListener());
@@ -332,7 +334,7 @@ public class MainControlApplet extends JApplet {
 		controlPanel.add(step);
 		controlPanel.add(traceCheck);
 		controlPanel.add(framerateCheck);
-		controlPanel.add(solver);
+		//controlPanel.add(algorithmComboBox);
 		
 		JLabel dragLabel = new JLabel("Drag coefficient");
 		
@@ -359,6 +361,7 @@ public class MainControlApplet extends JApplet {
 		fieldsBox.add(dragLabel);
 		fieldsBox.add(dragSlider);
 		fieldsBox.add(Box.createVerticalGlue());
+		fieldsBox.add(algorithmComboBox);
 		
 		this.setLayout(new BorderLayout());
 		this.add(controlPanel, BorderLayout.SOUTH);
@@ -413,7 +416,7 @@ public class MainControlApplet extends JApplet {
 		web.pack();
 		web.setVisible(true);
 		web.setSize(1000, 500);
-		
+
 		applet.init();
 	}
 
