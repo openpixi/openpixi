@@ -1,3 +1,7 @@
+/*The algorithm and the equations that are used can be find here:
+ * http://phycomp.technion.ac.il/~david/thesis/node34.html
+ */
+
 package org.openpixi.pixi.physics.solver;
 
 import org.openpixi.pixi.physics.*;
