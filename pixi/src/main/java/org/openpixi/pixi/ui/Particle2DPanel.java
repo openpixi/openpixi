@@ -204,6 +204,18 @@ public class Particle2DPanel extends JPanel {
 			graph.setColor(Color.white);
 			graph.drawString("Frame rate: " + frameratedetector.getRateString() + " fps", 30, 30);
 			graph.drawString("Time step: " + (float) step, 30, 50);
+
+			Runtime runtime = Runtime.getRuntime();
+			long maxMemory = runtime.maxMemory();
+			long allocatedMemory = runtime.totalMemory();
+			long freeMemory = runtime.freeMemory();
+
+			int bottom = getHeight();
+			graph.drawString("free memory: " + freeMemory / 1024, 30, bottom - 90);
+			graph.drawString("allocated memory: " + allocatedMemory / 1024, 30, bottom - 70);
+			graph.drawString("max memory: " + maxMemory /1024, 30, bottom - 50);
+			graph.drawString("total free memory: " +
+				(freeMemory + (maxMemory - allocatedMemory)) / 1024, 30, bottom - 30);
 		}		
 	}
 }
