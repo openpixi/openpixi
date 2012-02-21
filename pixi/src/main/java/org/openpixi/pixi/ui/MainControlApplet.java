@@ -26,6 +26,7 @@ public class MainControlApplet extends JApplet {
 	private JCheckBox framerateCheck;
 	
 	private JComboBox initComboBox;
+	private JComboBox solver;
 	private JCheckBox traceCheck;
 	private Particle2DPanel particlePanel;
 
@@ -67,6 +68,14 @@ public class MainControlApplet extends JApplet {
 			particlePanel.resetAnimation(id);
 			particlePanel.resetAnimation(initComboBox.getSelectedIndex());
 			setSlidersValue();
+		}
+	}
+	
+	class AlgorithmListener implements ActionListener {
+		public void actionPerformed(ActionEvent eve) {
+			JComboBox box = (JComboBox) eve.getSource();
+			int id = box.getSelectedIndex();
+			particlePanel.solverChange(id);
 		}
 	}
 
@@ -298,6 +307,11 @@ public class MainControlApplet extends JApplet {
 		initComboBox.setSelectedIndex(0);
 		initComboBox.addActionListener(new ComboBoxListener());
 		
+		String[] solverString = {"Euler", "LeapFrog"};
+		solver = new JComboBox(solverString);
+		solver.setSelectedIndex(0);
+		solver.addActionListener(new AlgorithmListener());
+		
 		startButton.addActionListener(new StartListener());
 		stopButton.addActionListener(new StopListener());
 		resetButton.addActionListener(new ResetListener());
@@ -318,6 +332,7 @@ public class MainControlApplet extends JApplet {
 		controlPanel.add(step);
 		controlPanel.add(traceCheck);
 		controlPanel.add(framerateCheck);
+		controlPanel.add(solver);
 		
 		JLabel dragLabel = new JLabel("Drag coefficient");
 		
