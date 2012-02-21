@@ -44,7 +44,7 @@ public class MainControlApplet extends JApplet {
 			"1000 random particles",
 			"10000 random particles",
 			"Single particle in gravity",
-			"Three particles in magnetic field" };
+			"3 part. in magnetic field" };
 
 	/**
 	 * Listener for slider.
