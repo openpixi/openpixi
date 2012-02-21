@@ -1,4 +1,4 @@
-/*The algorithm and the equations that are used can be find here:
+/*The algorithm and the equations that are used one can be find here:
  * http://phycomp.technion.ac.il/~david/thesis/node34.html
  * and also here:
  * http://www.artcompsci.org/vol_1/v1_web/node34.html#leapfrog-step2
