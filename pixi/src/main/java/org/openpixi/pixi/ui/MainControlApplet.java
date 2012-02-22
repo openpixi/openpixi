@@ -52,6 +52,7 @@ public class MainControlApplet extends JApplet {
 			"Euler Richardson",
 			"LeapFrog",
 			"LeapFrog Half Step",
+			"Boris Calculation",
 			"Euler"};
 
 	/**
