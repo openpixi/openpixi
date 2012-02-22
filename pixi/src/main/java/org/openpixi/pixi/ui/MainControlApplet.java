@@ -310,7 +310,7 @@ public class MainControlApplet extends JApplet {
 		initComboBox.setSelectedIndex(0);
 		initComboBox.addActionListener(new ComboBoxListener());
 		
-		String[] solverString = {"Euler Richardson", "LeapFrog"};
+		String[] solverString = {"Euler Richardson", "LeapFrog", "LeapFrog Half Step"};
 		algorithmComboBox = new JComboBox(solverString);
 		algorithmComboBox.setSelectedIndex(0);
 		algorithmComboBox.addActionListener(new AlgorithmListener());
