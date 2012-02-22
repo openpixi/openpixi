@@ -45,7 +45,8 @@ public class MainControlApplet extends JApplet {
 			"1000 random particles",
 			"10000 random particles",
 			"Single particle in gravity",
-			"3 part. in magnetic field" };
+			"3 part. in magnetic field",
+			"Spring force test"};
 
 	/**
 	 * Listener for slider.
@@ -310,7 +311,7 @@ public class MainControlApplet extends JApplet {
 		initComboBox.setSelectedIndex(0);
 		initComboBox.addActionListener(new ComboBoxListener());
 		
-		String[] solverString = {"Euler Richardson", "LeapFrog", "LeapFrog Half Step"};
+		String[] solverString = {"Euler Richardson", "LeapFrog", "LeapFrog Half Step", "Euler"};
 		algorithmComboBox = new JComboBox(solverString);
 		algorithmComboBox.setSelectedIndex(0);
 		algorithmComboBox.addActionListener(new AlgorithmListener());
