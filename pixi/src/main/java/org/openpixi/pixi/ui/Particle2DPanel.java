@@ -123,9 +123,12 @@ public class Particle2DPanel extends JPanel {
 			initGravity(1);
 			break;
 		case 5:
-			initMagnetic(3);
+			initElectric(1);
 			break;
 		case 6:
+			initMagnetic(3);
+			break;
+		case 7:
 			initSpring(1);
 			break;
 		}
@@ -155,6 +158,7 @@ public class Particle2DPanel extends JPanel {
 			}
 			parlist.add(par);
 		}
+		f = new Force();
 		f.reset();
 		f.gy = -1; //-ConstantsSI.g;
 		//f.bz = 1;
@@ -167,6 +171,13 @@ public class Particle2DPanel extends JPanel {
 
 		f.reset();
 		f.gy = -1; // -ConstantsSI.g;
+	}
+	
+	private void initElectric(int count) {
+		initRandomParticles(count, 15);
+
+		f.reset();
+		f.ey = -1;
 	}
 
 	private void initMagnetic(int count) {
