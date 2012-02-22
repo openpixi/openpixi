@@ -14,8 +14,8 @@ import org.openpixi.pixi.physics.*;
 public class LeapFrog {
 	public static void algorithm(Particle2D particle, Force f, double step) {
 		
-		/*particle.ax = f.getForceX(particle.vx, particle.vy, particle) / particle.mass;
-		particle.ay = f.getForceX(particle.vx, particle.vy, particle) / particle.mass;
+		//particle.ax = f.getForceX(particle.vx, particle.vy, particle) / particle.mass;
+		//particle.ay = f.getForceY(particle.vx, particle.vy, particle) / particle.mass;
 		
 		double vxminushalf = particle.vx;
 		double vyminushalf = particle.vy;
@@ -23,17 +23,20 @@ public class LeapFrog {
 		double vxplushalf = vxminushalf + particle.ax * step;;
 		double vyplushalf = vyminushalf + particle.ay * step;;
 		
-		particle.vx = (vxplushalf);// - vxminushalf) / (double) 2;
-		particle.vy = (vyplushalf);// - vyminushalf) / (double) 2;
-		
 		particle.x += vxplushalf * step;
 		particle.y += vyplushalf * step;
 		
 		particle.ax = f.getForceX(particle.vx, particle.vy, particle) / particle.mass;
-		particle.ay = f.getForceX(particle.vx, particle.vy, particle) / particle.mass;*/
+		particle.ay = f.getForceY(particle.vx, particle.vy, particle) / particle.mass;
 		
-		particle.vx += particle.ax * step * 0.5;
-		particle.vy += particle.ay * step * 0.5;
+		particle.vx = (vxplushalf);// - vxminushalf) / 2.0;
+		particle.vy = (vyplushalf);// - vyminushalf) / 2.0;		
+		
+	}
+	public static void algorithmHalfStep(Particle2D particle, Force f, double step) {
+		
+		particle.vx += particle.ax * step / 2.0;
+		particle.vy += particle.ay * step / 2.0;
 		
 		particle.x += particle.vx * step;
 		particle.y += particle.vy * step;
@@ -41,8 +44,8 @@ public class LeapFrog {
 		particle.ax = f.getForceX(particle.vx, particle.vy, particle) / particle.mass;
 		particle.ay = f.getForceY(particle.vx, particle.vy, particle) / particle.mass;
 		
-		particle.vx += particle.ax * step * 0.5;
-		particle.vy += particle.ay * step * 0.5;
+		particle.vx += particle.ax * step / 2.0;
+		particle.vy += particle.ay * step / 2.0;
 	}
 
 }
