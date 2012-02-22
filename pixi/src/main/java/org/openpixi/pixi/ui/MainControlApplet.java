@@ -45,6 +45,7 @@ public class MainControlApplet extends JApplet {
 			"1000 random particles",
 			"10000 random particles",
 			"Single particle in gravity",
+			"Single particle in el. Field",
 			"3 part. in magnetic field",
 			"Spring force test"};
 	
