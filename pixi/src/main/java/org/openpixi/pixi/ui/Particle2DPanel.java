@@ -22,6 +22,8 @@ public class Particle2DPanel extends JPanel {
 
 	private boolean reset_trace;
 	
+	private boolean spring_force = false;
+	
 	private int algorithm_change = 0;
 	
 	/** Milliseconds between updates */
@@ -41,6 +43,8 @@ public class Particle2DPanel extends JPanel {
 	/** Constant force for particles */
 	public Force f = new Force();
 	
+	public SpringForce spring_f = new SpringForce();
+	
 	private Boundary boundary = new HardWallBoundary();
 
 	/** Contains all particles */
@@ -56,14 +60,18 @@ public class Particle2DPanel extends JPanel {
 			boundary.setBoundaries(0, 0, getWidth(), getHeight());
 			for (int i = 0; i < NUM_PARTICLES; i++) {
 				Particle2D par = (Particle2D) parlist.get(i);
+				if(spring_force)
+					f = spring_f;
 				if(algorithm_change == 0)
-					EulerRichardson.algorithm(par, f, step);
+						EulerRichardson.algorithm(par, f, step);
 				else if(algorithm_change == 1)
-						LeapFrog.algorithm(par, f, step);
-					else if(algorithm_change == 2)
-							LeapFrog.algorithmHalfStep(par, f, step);
-					else if(algorithm_change == 3)
-							Euler.algorithm(par, f, step);
+					LeapFrog.algorithm(par, f, step);
+				else if(algorithm_change == 2)
+						LeapFrog.algorithmHalfStep(par, f, step);
+				else if(algorithm_change == 3)
+					Boris.algorithm(par, f, step);
+				else if(algorithm_change == 4)
+					Euler.algorithm(par, f, step);
 				
 				boundary.check(par);
 			}
@@ -118,9 +126,14 @@ public class Particle2DPanel extends JPanel {
 			initMagnetic(3);
 			break;
 		case 6:
-			//initSpring(3);
+			initSpring(1);
 			break;
 		}
+		if(id == 6)
+			spring_force = true;
+		else
+			spring_force = false;
+		
 		timer.start();
 	}
 
@@ -162,6 +175,24 @@ public class Particle2DPanel extends JPanel {
 		f.reset();
 		f.bz = .1;
 		
+		setPeriodicBoundary();
+	}
+	
+	private void initSpring(int count) {
+		NUM_PARTICLES = count;
+		parlist.clear();
+		for (int k = 0; k < NUM_PARTICLES; k++) {
+			Particle2D par = new Particle2D();
+			par.x = xmax * Math.random();
+			par.y = ymax * Math.random();
+			par.radius = 15;
+			par.vx = 10 * Math.random();
+			par.vy = 0;
+			par.mass = 1;
+			par.charge = 0;
+			parlist.add(par);
+		}
+		f.reset();
 		setPeriodicBoundary();
 	}
 	
