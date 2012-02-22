@@ -32,8 +32,11 @@ public class LeapFrog {
 		particle.ax = f.getForceX(particle.vx, particle.vy, particle) / particle.mass;
 		particle.ay = f.getForceX(particle.vx, particle.vy, particle) / particle.mass;*/
 		
-		particle.vx += particle.ax * step / 2;
-		particle.vy += particle.ay * step / 2;
+		particle.ax = f.getForceX(particle.vx, particle.vy, particle) / particle.mass;
+		particle.ay = f.getForceX(particle.vx, particle.vy, particle) / particle.mass;
+		
+		particle.vx += particle.ax * step * 0.5;
+		particle.vy += particle.ay * step * 0.5;
 		
 		particle.x += particle.vx * step;
 		particle.y += particle.vy * step;
@@ -41,8 +44,8 @@ public class LeapFrog {
 		particle.ax = f.getForceX(particle.vx, particle.vy, particle) / particle.mass;
 		particle.ay = f.getForceX(particle.vx, particle.vy, particle) / particle.mass;
 		
-		particle.vx += particle.ax * step / 2;
-		particle.vy += particle.ay * step / 2;
+		particle.vx += particle.ax * step * 0.5;
+		particle.vy += particle.ay * step * 0.5;
 	}
 
 }
