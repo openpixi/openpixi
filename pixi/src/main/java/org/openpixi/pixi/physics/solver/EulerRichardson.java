@@ -35,7 +35,7 @@ public class EulerRichardson {
 		particle.y += vymiddle * step;
 		
 		particle.ax = f.getForceX(particle.vx, particle.vy, particle) / particle.mass;
-		particle.ax = f.getForceY(particle.vx, particle.vy, particle) / particle.mass;
+		particle.ay = f.getForceY(particle.vx, particle.vy, particle) / particle.mass;
 	}
 
 }
