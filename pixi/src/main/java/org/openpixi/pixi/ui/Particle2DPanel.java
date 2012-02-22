@@ -59,7 +59,9 @@ public class Particle2DPanel extends JPanel {
 				if(algorithm_change == 0)
 					EulerRichardson.algorithm(par, f, step);
 				else if(algorithm_change == 1)
-					LeapFrog.algorithm(par, f, step);
+						LeapFrog.algorithm(par, f, step);
+					else if(algorithm_change == 2)
+							LeapFrog.algorithmHalfStep(par, f, step);
 				
 				boundary.check(par);
 			}
