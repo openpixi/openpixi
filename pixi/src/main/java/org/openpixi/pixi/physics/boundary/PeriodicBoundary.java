@@ -23,7 +23,7 @@ public class PeriodicBoundary extends Boundary {
 		}
 		if(particle.y < ymin)
 		{
-			particle.y = ymax - ymin;
+			particle.y += ymax - ymin;
 		} else if(particle.y > ymax)
 		{
 			particle.y -= ymax - ymin;
