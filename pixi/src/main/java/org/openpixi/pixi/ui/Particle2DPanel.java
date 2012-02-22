@@ -22,7 +22,7 @@ public class Particle2DPanel extends JPanel {
 
 	private boolean reset_trace;
 	
-	private boolean spring_force = false;
+	public boolean spring_force = false;
 	
 	private int algorithm_change = 0;
 	
@@ -132,7 +132,7 @@ public class Particle2DPanel extends JPanel {
 			initSpring(1);
 			break;
 		}
-		if(id == 6)
+		if(id == 7)
 			spring_force = true;
 		else
 			spring_force = false;
@@ -158,7 +158,7 @@ public class Particle2DPanel extends JPanel {
 			}
 			parlist.add(par);
 		}
-		f = new Force();
+		//f = new Force();
 		f.reset();
 		f.gy = -1; //-ConstantsSI.g;
 		//f.bz = 1;
