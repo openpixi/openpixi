@@ -62,6 +62,8 @@ public class Particle2DPanel extends JPanel {
 						LeapFrog.algorithm(par, f, step);
 					else if(algorithm_change == 2)
 							LeapFrog.algorithmHalfStep(par, f, step);
+					else if(algorithm_change == 3)
+							Euler.algorithm(par, f, step);
 				
 				boundary.check(par);
 			}
@@ -114,6 +116,9 @@ public class Particle2DPanel extends JPanel {
 			break;
 		case 5:
 			initMagnetic(3);
+			break;
+		case 6:
+			//initSpring(3);
 			break;
 		}
 		timer.start();
