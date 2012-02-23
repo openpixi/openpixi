@@ -60,8 +60,8 @@ public class Particle2DPanel extends JPanel {
 			boundary.setBoundaries(0, 0, getWidth(), getHeight());
 			for (int i = 0; i < NUM_PARTICLES; i++) {
 				Particle2D par = (Particle2D) parlist.get(i);
-				if(spring_force)
-					f = spring_f;
+				//if(spring_force)
+					//f = spring_f;
 				if(algorithm_change == 0)
 						EulerRichardson.algorithm(par, f, step);
 				else if(algorithm_change == 1)
@@ -69,10 +69,7 @@ public class Particle2DPanel extends JPanel {
 				else if(algorithm_change == 2)
 						LeapFrog.algorithmHalfStep(par, f, step);
 				else if(algorithm_change == 3)
-					if(!spring_force)
 						Boris.algorithm(par, f, step);
-					else
-						LeapFrog.algorithmHalfStep(par, f, step);
 				else if(algorithm_change == 4)
 					Euler.algorithm(par, f, step);
 				
@@ -161,7 +158,7 @@ public class Particle2DPanel extends JPanel {
 			}
 			parlist.add(par);
 		}
-		//f = new Force();
+		f = new Force();
 		f.reset();
 		f.gy = -1; //-ConstantsSI.g;
 		//f.bz = 1;
@@ -206,7 +203,8 @@ public class Particle2DPanel extends JPanel {
 			par.charge = 0;
 			parlist.add(par);
 		}
-		f.reset();
+		f = new SpringForce();
+		//f.reset();
 		setPeriodicBoundary();
 	}
 	
