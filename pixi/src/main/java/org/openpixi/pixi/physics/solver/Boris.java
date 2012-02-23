@@ -44,8 +44,13 @@ public class Boris {
 		 */
 		//from here are the drag coefficient and the gravity added
 		
-		particle.ax = (- f.drag * particle.vx + particle.mass * f.gx) / particle.mass;
-		particle.ay = (- f.drag * particle.vy + particle.mass * f.gy) / particle.mass;
+		//particle.ax = (- f.drag * particle.vx + particle.mass * f.gx) / particle.mass;
+		//particle.ay = (- f.drag * particle.vy + particle.mass * f.gy) / particle.mass;
+		
+		particle.ax = (f.getPositionComponentofForceX(particle) + 
+				f.getTangentVelocityComponentOfForceX(particle)) / particle.mass;
+		particle.ay = (f.getPositionComponentofForceY(particle) +
+				f.getTangentVelocityComponentOfForceY(particle))/ particle.mass;
 		
 		particle.vx += particle.ax * step / 2.0;
 		particle.vy += particle.ay * step / 2.0;
