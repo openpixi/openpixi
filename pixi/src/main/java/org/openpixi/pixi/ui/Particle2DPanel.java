@@ -22,7 +22,7 @@ public class Particle2DPanel extends JPanel {
 
 	private boolean reset_trace;
 	
-	public boolean spring_force = false;
+	private boolean spring_force = false;
 	
 	private int algorithm_change = 0;
 	
@@ -69,7 +69,10 @@ public class Particle2DPanel extends JPanel {
 				else if(algorithm_change == 2)
 						LeapFrog.algorithmHalfStep(par, f, step);
 				else if(algorithm_change == 3)
-					Boris.algorithm(par, f, step);
+					if(!spring_force)
+						Boris.algorithm(par, f, step);
+					else
+						LeapFrog.algorithmHalfStep(par, f, step);
 				else if(algorithm_change == 4)
 					Euler.algorithm(par, f, step);
 				
