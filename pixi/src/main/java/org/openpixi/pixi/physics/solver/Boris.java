@@ -32,10 +32,10 @@ public class Boris {
 		particle.vx = vxplus + particle.charge * f.ex * step / (2.0 * particle.mass);
 		particle.vy = vyplus + particle.charge * f.ey * step / (2.0 * particle.mass);
 		
-		//particle.x += particle.vx * step;
-		//particle.y += particle.vy * step;
+		particle.x += particle.vx * step;
+		particle.y += particle.vy * step;
 		
-		//until here is the Boris calculation (with the two rows above not commented)
+		//until here is the Boris calculation
 		//-----------------------------------------------------------------
 		/*since I've could not find equations where in the Boris calculation the gravity and dragging
 		 *implemented are, I have "updated" this algorithm by my self.
