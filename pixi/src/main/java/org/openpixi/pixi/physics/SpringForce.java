@@ -18,4 +18,25 @@ public class SpringForce extends Force{
 	{
 		return - 0.01 * (par.y - 200);
 	}
+	
+	public double getPositionComponentofForceX(Particle2D par)
+	{
+		return 0;
+	}
+	
+	public double getPositionComponentofForceY(Particle2D par)
+	{
+		return - 0.01 * (par.y - 200);
+	}
+	
+	public double getTangentVelocityComponentOfForceX(Particle2D par)
+	{
+		return 0;
+	}
+	
+	public double getTangentVelocityComponentOfForceY(Particle2D par)
+	{
+		return 0;
+	}
+	
 }
