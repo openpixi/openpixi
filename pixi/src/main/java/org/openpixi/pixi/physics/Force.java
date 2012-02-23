@@ -51,12 +51,21 @@ public class Force {
 	
 	public double getPositionComponentofForceX(Particle2D par)
 	{
-		return par.mass * gx - par.vx * drag;
+		return par.mass * gx;
 	}
 	
 	public double getPositionComponentofForceY(Particle2D par)
 	{
-		return par.mass * gy - par.vy * drag;
+		return par.mass * gy;
 	}
 	
+	public double getTangentVelocityComponentOfForceX(Particle2D par)
+	{
+		return - drag * par.vx;
+	}
+	
+	public double getTangentVelocityComponentOfForceY(Particle2D par)
+	{
+		return - drag * par.vy;
+	}
 }
