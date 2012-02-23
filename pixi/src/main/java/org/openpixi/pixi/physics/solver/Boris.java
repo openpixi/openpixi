@@ -6,12 +6,10 @@
 package org.openpixi.pixi.physics.solver;
 
 import org.openpixi.pixi.physics.*;
+import org.openpixi.pixi.ui.*;
 
 public class Boris {
 	public static void algorithm(Particle2D particle, Force f, double step) {
-		
-		//particle.ax = f.getForceX(particle.vx, particle.vy, particle) / particle.mass;
-		//particle.ay = f.getForceY(particle.vx, particle.vy, particle) / particle.mass;
 		
 		double vxminus = particle.vx + particle.charge * f.ex * step / (2.0 * particle.mass);
 		double vxplus;
