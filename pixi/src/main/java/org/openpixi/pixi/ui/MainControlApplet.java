@@ -402,8 +402,7 @@ public class MainControlApplet extends JApplet {
 		int delay = particlePanel.timer.getDelay();
 		speedSlider.setValue((int) (-Math.log(delay / 1000.) / speedSliderScaling));
 	}
-
-
+	
 	@Override
 	public void init() {
 		super.init();
