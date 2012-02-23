@@ -13,11 +13,11 @@ public class Boris {
 		
 		double step = step1 / 2.0;
 		
-		double vxminus = particle.vx + particle.charge * f.getPositionComponentofForceX(particle) * step / (2.0 * particle.mass);
+		double vxminus = particle.vx + f.getPositionComponentofForceX(particle) * step / (2.0 * particle.mass);
 		double vxplus;
 		double vxprime;
 		
-		double vyminus = particle.vy + particle.charge * f.getPositionComponentofForceY(particle) * step / (2.0 * particle.mass);
+		double vyminus = particle.vy + f.getPositionComponentofForceY(particle) * step / (2.0 * particle.mass);
 		double vyplus;
 		double vyprime;
 		
