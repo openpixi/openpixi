@@ -7,7 +7,7 @@ public class Euler {
 	public static void algorithm(Particle2D particle, Force f, double step)
 	{
 		particle.ax = f.getForceX(particle.vx, particle.vy, particle) / particle.mass;
-		particle.ay = f.getForceX(particle.vx, particle.vy, particle) / particle.mass;
+		particle.ay = f.getForceY(particle.vx, particle.vy, particle) / particle.mass;
 		
 		particle.vx += particle.ax * step;
 		particle.vy += particle.ay * step;
