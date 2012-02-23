@@ -9,7 +9,9 @@ import org.openpixi.pixi.physics.*;
 import org.openpixi.pixi.ui.*;
 
 public class Boris {
-	public static void algorithm(Particle2D particle, Force f, double step) {
+	public static void algorithm(Particle2D particle, Force f, double step1) {
+		
+		double step = step1 / 2.0;
 		
 		double vxminus = particle.vx + particle.charge * f.ex * step / (2.0 * particle.mass);
 		double vxplus;
