@@ -14,23 +14,24 @@ import org.openpixi.pixi.physics.*;
 public class LeapFrog {
 	public static void algorithm(Particle2D particle, Force f, double step) {
 		
+		boolean onlyonce = true;
 		//particle.ax = f.getForceX(particle.vx, particle.vy, particle) / particle.mass;
 		//particle.ay = f.getForceY(particle.vx, particle.vy, particle) / particle.mass;
 		
 		double vxminushalf = particle.vx;
 		double vyminushalf = particle.vy;
-		
+
 		double vxplushalf = vxminushalf + particle.ax * step;;
 		double vyplushalf = vyminushalf + particle.ay * step;;
-		
+
 		particle.x += vxplushalf * step;
 		particle.y += vyplushalf * step;
-		
+
 		particle.ax = f.getForceX(particle.vx, particle.vy, particle) / particle.mass;
 		particle.ay = f.getForceY(particle.vx, particle.vy, particle) / particle.mass;
-		
-		particle.vx = (vxplushalf);// - vxminushalf) / 2.0;
-		particle.vy = (vyplushalf);// - vyminushalf) / 2.0;		
+
+		particle.vx = (vxplushalf + vxminushalf) / 2.0;
+		particle.vy = (vyplushalf + vyminushalf) / 2.0;	
 		
 	}
 	public static void algorithmHalfStep(Particle2D particle, Force f, double step) {
