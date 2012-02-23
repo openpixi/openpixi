@@ -49,4 +49,14 @@ public class Force {
 		return - drag * vy + par.mass * gy + par.charge * ey - par.charge * vx * bz;
 	}
 	
+	public double getPositionComponentofForceX(Particle2D par)
+	{
+		return par.mass * gx + par.charge * ex;
+	}
+	
+	public double getPositionComponentofForceY(Particle2D par)
+	{
+		return par.mass * gy + par.charge * ey;
+	}
+	
 }
