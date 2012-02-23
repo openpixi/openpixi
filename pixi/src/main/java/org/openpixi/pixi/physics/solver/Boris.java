@@ -13,11 +13,11 @@ public class Boris {
 		
 		double step = step1 / 2.0;
 		
-		double vxminus = particle.vx + particle.charge * f.ex * step / (2.0 * particle.mass);
+		double vxminus = particle.vx + particle.charge * f.getPositionComponentofForceX(particle) * step / (2.0 * particle.mass);
 		double vxplus;
 		double vxprime;
 		
-		double vyminus = particle.vy + particle.charge * f.ey * step / (2.0 * particle.mass);;
+		double vyminus = particle.vy + particle.charge * f.getPositionComponentofForceY(particle) * step / (2.0 * particle.mass);
 		double vyplus;
 		double vyprime;
 		
@@ -31,8 +31,8 @@ public class Boris {
 		vxplus = vxminus + vyprime * s_z;
 		vyplus = vyminus - vxprime * s_z;
 		
-		particle.vx = vxplus + particle.charge * f.ex * step / (2.0 * particle.mass);
-		particle.vy = vyplus + particle.charge * f.ey * step / (2.0 * particle.mass);
+		particle.vx = vxplus + particle.charge * f.getPositionComponentofForceX(particle) * step / (2.0 * particle.mass);
+		particle.vy = vyplus + particle.charge * f.getPositionComponentofForceY(particle) * step / (2.0 * particle.mass);
 		
 		particle.x += particle.vx * step;
 		particle.y += particle.vy * step;
@@ -47,10 +47,8 @@ public class Boris {
 		//particle.ax = (- f.drag * particle.vx + particle.mass * f.gx) / particle.mass;
 		//particle.ay = (- f.drag * particle.vy + particle.mass * f.gy) / particle.mass;
 		
-		particle.ax = (f.getPositionComponentofForceX(particle) + 
-				f.getTangentVelocityComponentOfForceX(particle)) / particle.mass;
-		particle.ay = (f.getPositionComponentofForceY(particle) +
-				f.getTangentVelocityComponentOfForceY(particle))/ particle.mass;
+		particle.ax = (f.getTangentVelocityComponentOfForceX(particle)) / particle.mass;
+		particle.ay = (f.getTangentVelocityComponentOfForceY(particle)) / particle.mass;
 		
 		particle.vx += particle.ax * step / 2.0;
 		particle.vy += particle.ay * step / 2.0;
