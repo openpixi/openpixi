@@ -21,9 +21,7 @@ public class Particle2DPanel extends JPanel {
 	public double step;
 
 	private boolean reset_trace;
-	
-	private boolean spring_force = false;
-	
+
 	private int algorithm_change = 0;
 	
 	/** Milliseconds between updates */
@@ -43,8 +41,6 @@ public class Particle2DPanel extends JPanel {
 	/** Constant force for particles */
 	public Force f = new Force();
 	
-	public SpringForce spring_f = new SpringForce();
-	
 	private Boundary boundary = new HardWallBoundary();
 
 	/** Contains all particles */
@@ -60,8 +56,6 @@ public class Particle2DPanel extends JPanel {
 			boundary.setBoundaries(0, 0, getWidth(), getHeight());
 			for (int i = 0; i < NUM_PARTICLES; i++) {
 				Particle2D par = (Particle2D) parlist.get(i);
-				//if(spring_force)
-					//f = spring_f;
 				if(algorithm_change == 0)
 						EulerRichardson.algorithm(par, f, step);
 				else if(algorithm_change == 1)
@@ -132,11 +126,6 @@ public class Particle2DPanel extends JPanel {
 			initSpring(1);
 			break;
 		}
-		if(id == 7)
-			spring_force = true;
-		else
-			spring_force = false;
-		
 		timer.start();
 	}
 
@@ -204,7 +193,7 @@ public class Particle2DPanel extends JPanel {
 			parlist.add(par);
 		}
 		f = new SpringForce();
-		//f.reset();
+		f.reset();
 		setPeriodicBoundary();
 	}
 	
