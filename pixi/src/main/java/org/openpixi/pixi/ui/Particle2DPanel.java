@@ -22,7 +22,7 @@ public class Particle2DPanel extends JPanel {
 
 	private boolean reset_trace;
 
-	private int algorithm_change = 0;
+	private Solver s = new EulerRichardson();
 	
 	/** Milliseconds between updates */
 	private int interval = 30;
