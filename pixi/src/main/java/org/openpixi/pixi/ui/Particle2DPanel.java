@@ -56,20 +56,8 @@ public class Particle2DPanel extends JPanel {
 			boundary.setBoundaries(0, 0, getWidth(), getHeight());
 			for (int i = 0; i < NUM_PARTICLES; i++) {
 				Particle2D par = (Particle2D) parlist.get(i);
-				if(algorithm_change == 0)
-					EulerRichardson.algorithm(par, f, step);
-				else if(algorithm_change == 1)
-					LeapFrog.algorithm(par, f, step);
-				else if(algorithm_change == 2)
-					LeapFrogHalfStep.algorithm(par, f, step);
-				else if(algorithm_change == 3)
-					Boris.algorithm(par, f, step);
-				else if(algorithm_change == 4)
-					SemiImplicitEuler.algorithm(par, f, step);
-				else if(algorithm_change == 5)
-					Euler.algorithm(par, f, step);
-				
-				boundary.check(par);
+				s.step(par, f, step);				
+				boundary.check(par, s);
 			}
 			frameratedetector.update();
 			repaint();
@@ -206,7 +194,25 @@ public class Particle2DPanel extends JPanel {
 	
 	public void algorithmChange(int id)
 	{
-		algorithm_change = id;
+		switch(id) {
+		case 0:
+			s = new EulerRichardson();
+			break;
+		case 1:
+			s = new LeapFrog();
+			break;
+		case 2:
+			s = new LeapFrogHalfStep();
+			break;
+		case 3:
+			s = new Boris();
+			break;
+		case 4:
+			s = new SemiImplicitEuler();
+			break;
+		case 5:
+			s = new Euler();
+			break;
 	}
 
 	public void setHardWallBoundary() {

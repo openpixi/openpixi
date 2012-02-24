@@ -13,7 +13,13 @@ import org.openpixi.pixi.physics.*;
  * </p>
  */
 public class EulerRichardson extends Solver{
-	public static void algorithm(Particle2D p, Force f, double step)
+	
+	public EulerRichardson()
+	{
+		super();
+	}
+	
+	public static void step(Particle2D p, Force f, double step)
 	{
 		//a(t) = F(v(t), x(t)) / m
 		p.ax = f.getForceX(p.vx, p.vy, p) / p.mass;
