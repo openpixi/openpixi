@@ -61,7 +61,7 @@ public class Particle2DPanel extends JPanel {
 				else if(algorithm_change == 1)
 					LeapFrog.algorithm(par, f, step);
 				else if(algorithm_change == 2)
-					LeapFrog.algorithmHalfStep(par, f, step);
+					LeapFrogHalfStep.algorithm(par, f, step);
 				else if(algorithm_change == 3)
 					Boris.algorithm(par, f, step);
 				else if(algorithm_change == 4)
