@@ -62,7 +62,7 @@ public class EulerRichardson extends Solver{
 	
 	public void finalizing(Particle2D p, Force f, double step)
 	{
-		/*double vxmiddle = p.vx + p.ax * step / 2;
+		double vxmiddle = p.vx + p.ax * step / 2;
 		double vymiddle = p.vy + p.ay * step / 2;
 		
 		double axmiddle = f.getForceX(vxmiddle, vymiddle, p) / p.mass;
@@ -72,7 +72,7 @@ public class EulerRichardson extends Solver{
 		p.vx -= axmiddle * step;
 		p.vy -= aymiddle * step;
 		//p.vx -= p.ax * step;
-		//p.vy -= p.ay * step;*/
+		//p.vy -= p.ay * step;
 	}
 
 }
