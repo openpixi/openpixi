@@ -9,9 +9,9 @@ import org.openpixi.pixi.physics.*;
 import org.openpixi.pixi.ui.*;
 
 public class Boris {
-	public static void algorithm(Particle2D particle, Force f, double step1) {
+	public static void algorithm(Particle2D particle, Force f, double step) {
 		
-		double step = step1 / 2.0;
+		//step = step / 2.0;
 		
 		double vxminus = particle.vx + f.getPositionComponentofForceX(particle) * step / (2.0 * particle.mass);
 		double vxplus;
@@ -47,6 +47,9 @@ public class Boris {
 		//particle.ax = (- f.drag * particle.vx + particle.mass * f.gx) / particle.mass;
 		//particle.ay = (- f.drag * particle.vy + particle.mass * f.gy) / particle.mass;
 		
+		//particle.vx += particle.ax * step / 2.0;
+		//particle.vy += particle.ay * step / 2.0;
+		/*
 		particle.ax = (f.getTangentVelocityComponentOfForceX(particle)) / particle.mass;
 		particle.ay = (f.getTangentVelocityComponentOfForceY(particle)) / particle.mass;
 		
@@ -56,6 +59,6 @@ public class Boris {
 		particle.x += particle.vx * step;
 		particle.y += particle.vy * step;
 		
-		
+		*/
 	}
 }
