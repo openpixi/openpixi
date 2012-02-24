@@ -54,7 +54,8 @@ public class MainControlApplet extends JApplet {
 			"LeapFrog",
 			"LeapFrog Half Step",
 			"Boris Calculation",
-			"Semi Implicit Euler"};
+			"Semi Implicit Euler",
+			"Euler"};
 
 	/**
 	 * Listener for slider.

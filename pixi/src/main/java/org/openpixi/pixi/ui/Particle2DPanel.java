@@ -66,6 +66,8 @@ public class Particle2DPanel extends JPanel {
 						Boris.algorithm(par, f, step);
 				else if(algorithm_change == 4)
 					SemiImplicitEuler.algorithm(par, f, step);
+				else if(algorithm_change == 5)
+					Euler.algorithm(par, f, step);
 				
 				boundary.check(par);
 			}
