@@ -1,6 +1,7 @@
 package org.openpixi.pixi.physics.boundary;
 
 import org.openpixi.pixi.physics.Particle2D;
+import org.openpixi.pixi.physics.solver.*;
 
 public class Boundary {
 	public double xmin;
@@ -19,7 +20,7 @@ public class Boundary {
 		this.ymax = ymax;
 	}
 
-	public void check(Particle2D particle) {
+	public void check(Particle2D particle, Solver s) {
 		
 	}
 }
