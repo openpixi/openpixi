@@ -47,15 +47,15 @@ public class LeapFrog extends Solver{
 		p.ay = f.getForceY(p.vx, p.vy, p) / p.mass;
 		
 		//v(t + dt / 2) = v(t) + a(t+dt)*dt / 2
-		p.vx += p.ax * dt / 2.0;
-		p.vy += p.ay * dt / 2.0;
+		p.vx += p.ax * dt / 2;
+		p.vy += p.ay * dt / 2;
 	}
 	
 	public void finalizing(Particle2D p, Force f, double dt)
 	{
 		//v(t) = v(t + dt / 2) - a(t)*dt / 2
-		p.vx -= p.ax * dt / 2.0;
-		p.vy -= p.ay * dt / 2.0;
+		p.vx -= p.ax * dt / 2;
+		p.vy -= p.ay * dt / 2;
 	}
 
 }
