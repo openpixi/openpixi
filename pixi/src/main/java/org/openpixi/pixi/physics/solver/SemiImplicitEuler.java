@@ -24,5 +24,17 @@ public class SemiImplicitEuler extends Solver {
 		p.y += p.vy * step;
 		
 	}
+	
+	public void prepare(Particle2D p, Force f, double step)
+	{
+		
+	}
+	
+	public void finalizing(Particle2D p, Force f, double step)
+	{
+		// v(t) = v(t + dt) - a(t)*dt
+		p.vx -= p.ax * step;
+		p.vy -= p.ay * step;
+	}
 
 }
