@@ -12,4 +12,13 @@ public abstract class Solver {
 		
 	}
 	
+	public static void prepare()
+	{
+		
+	}
+	
+	public static void finalizing()
+	{
+		
+	}
 }
