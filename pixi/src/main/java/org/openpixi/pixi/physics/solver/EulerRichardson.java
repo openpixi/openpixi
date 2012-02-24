@@ -13,29 +13,36 @@ import org.openpixi.pixi.physics.*;
  * </p>
  */
 public class EulerRichardson extends Solver{
-	public static void algorithm(Particle2D particle, Force f, double step)
+	public static void algorithm(Particle2D p, Force f, double step)
 	{
-		particle.ax = f.getForceX(particle.vx, particle.vy, particle) / particle.mass;
-		particle.ay = f.getForceX(particle.vx, particle.vy, particle) / particle.mass;
+		//a(t) = F(v(t), x(t)) / m
+		p.ax = f.getForceX(p.vx, p.vy, p) / p.mass;
+		p.ay = f.getForceX(p.vx, p.vy, p) / p.mass;
 		
 		//starting the Euler-Richardson algorithm (the equations correspond with the ones on the above mentioned website)
-		double vxmiddle = particle.vx + particle.ax * step / 2;
-		double vymiddle = particle.vy + particle.ay * step / 2;
+		//vmiddle = v(t) + a(t) * dt / 2
+		double vxmiddle = p.vx + p.ax * step / 2;
+		double vymiddle = p.vy + p.ay * step / 2;
 		
+		//xmiddle = x(t) + v(t) * dt / 2
 		//double xmiddle = x + vx * step / 2;    actually, this two equations are not needed, but I've written them
 		//double ymiddle = y + vy * step / 2;    so the algorithm is complete
 		
-		double axmiddle = f.getForceX(vxmiddle, vymiddle, particle) / particle.mass;
-		double aymiddle = f.getForceY(vxmiddle, vymiddle, particle) / particle.mass;
+		//amiddle = F(vmiddle(t), xmiddle(t)) / m, (at t + dt / 2)
+		double axmiddle = f.getForceX(vxmiddle, vymiddle, p) / p.mass;
+		double aymiddle = f.getForceY(vxmiddle, vymiddle, p) / p.mass;
 		
-		particle.vx += axmiddle * step;
-		particle.vy += aymiddle * step;
+		//v(t + dt) = v(t) + amiddle * dt
+		p.vx += axmiddle * step;
+		p.vy += aymiddle * step;
 		
-		particle.x += vxmiddle * step;
-		particle.y += vymiddle * step;
+		//x(t + dt) = x(t) + vmiddle * dt
+		p.x += vxmiddle * step;
+		p.y += vymiddle * step;
 		
-		particle.ax = f.getForceX(particle.vx, particle.vy, particle) / particle.mass;
-		particle.ay = f.getForceY(particle.vx, particle.vy, particle) / particle.mass;
+		//a(t) = F(v(t + dt), x(t + dt)) / m
+		p.ax = f.getForceX(p.vx, p.vy, p) / p.mass;
+		p.ay = f.getForceY(p.vx, p.vy, p) / p.mass;
 	}
 
 }
