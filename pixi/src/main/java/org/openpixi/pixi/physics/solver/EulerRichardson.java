@@ -21,6 +21,10 @@ public class EulerRichardson extends Solver{
 	
 	public void step(Particle2D p, Force f, double step)
 	{
+		//saving the starting value of the position
+		double xstart = p.x;
+		double ystart = p.y;
+		
 		//a(t) = F(v(t), x(t)) / m
 		p.ax = f.getForceX(p.vx, p.vy, p) / p.mass;
 		p.ay = f.getForceX(p.vx, p.vy, p) / p.mass;
@@ -31,8 +35,8 @@ public class EulerRichardson extends Solver{
 		double vymiddle = p.vy + p.ay * step / 2;
 		
 		//x(t + dt / 2) = x(t) + v(t) * dt / 2
-		//double xmiddle = x + vx * step / 2;    actually, this two equations are not needed, but I've written them
-		//double ymiddle = y + vy * step / 2;    so the algorithm is complete
+		p.x += p.vx * step / 2;
+		p.y += p.vy * step / 2; 
 		
 		//a(t + dt / 2) = F(v(t + dt / 2), x(t)) / m
 		double axmiddle = f.getForceX(vxmiddle, vymiddle, p) / p.mass;
@@ -43,8 +47,8 @@ public class EulerRichardson extends Solver{
 		p.vy += aymiddle * step;
 		
 		//x(t + dt) = x(t) + v(t + dt / 2) * dt
-		p.x += vxmiddle * step;
-		p.y += vymiddle * step;
+		p.x = xstart + vxmiddle * step;
+		p.y = ystart + vymiddle * step;
 		
 		//a(t) = F(v(t + dt), x(t + dt)) / m
 		p.ax = f.getForceX(p.vx, p.vy, p) / p.mass;
