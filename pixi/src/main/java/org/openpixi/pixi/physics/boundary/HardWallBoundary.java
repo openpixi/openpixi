@@ -1,6 +1,6 @@
 package org.openpixi.pixi.physics.boundary;
 
-import org.openpixi.pixi.physics.Particle2D;
+import org.openpixi.pixi.physics.*;
 import org.openpixi.pixi.physics.solver.*;
 
 public class HardWallBoundary extends Boundary {
@@ -12,8 +12,9 @@ public class HardWallBoundary extends Boundary {
 	/**
 	 * Reflect a particle off the boundaries.
 	 */
-	public void check(Particle2D particle, Solver s, double step) {
-
+	public void check(Particle2D particle, Force f, Solver s, double step) {
+		
+		s.prepare(particle, f, step);
 		//if the particle hits the walls
 		if(particle.x - particle.radius < xmin)
 		{
@@ -29,5 +30,7 @@ public class HardWallBoundary extends Boundary {
 		{
 			particle.vy = - Math.abs(particle.vy);
 		}
+		
+		s.finalizing(particle, f, step);
 	}
 }
