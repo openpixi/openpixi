@@ -26,14 +26,22 @@ public class Euler extends Solver {
 	
 	public void prepare(Particle2D p, Force f, double step)
 	{
+		/*
+		p.ax = f.getForceX(p.vx, p.vy, p) / p.mass;
+		p.ay = f.getForceY(p.vx, p.vy, p) / p.mass;
 		
+		p.vx += p.ax * step;
+		p.vy += p.ay * step;*/
 	}
 	
 	public void finalizing(Particle2D p, Force f, double step)
 	{
-		//p.vx -= p.ax * step;
-		//p.vy -= p.ay * step;
+		/*p.ax = f.getForceX(p.vx, p.vy, p) / p.mass;
+		p.ay = f.getForceY(p.vx, p.vy, p) / p.mass;
 		
+		p.vx -= p.ax * step;
+		p.vy -= p.ay * step;
+		*/
 	}
 
 }
