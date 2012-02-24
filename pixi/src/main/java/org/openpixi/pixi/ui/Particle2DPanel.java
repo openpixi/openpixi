@@ -57,7 +57,7 @@ public class Particle2DPanel extends JPanel {
 			for (int i = 0; i < NUM_PARTICLES; i++) {
 				Particle2D par = (Particle2D) parlist.get(i);
 				s.step(par, f, step);				
-				boundary.check(par, s);
+				boundary.check(par, s, step);
 			}
 			frameratedetector.update();
 			repaint();
