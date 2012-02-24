@@ -7,7 +7,7 @@ public abstract class Solver {
 		
 	}
 	
-	public static void algorithm()
+	public static void step()
 	{
 		
 	}
