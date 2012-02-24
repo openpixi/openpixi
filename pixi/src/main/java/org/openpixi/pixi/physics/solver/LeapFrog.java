@@ -24,7 +24,7 @@ public class LeapFrog extends Solver{
 	 * @param p before the update: x(t), v(t+dt/2), a(t);
 	 *                 after the update: x(t+dt), v(t+3*dt/2), a(t+dt)
 	 */
-	public static void step(Particle2D p, Force f, double dt) {
+	public void step(Particle2D p, Force f, double dt) {
 		// x(t+dt) = x(t) + v(t+dt/2)*dt
 		p.x += p.vx * dt;
 		p.y += p.vy * dt;

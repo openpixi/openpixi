@@ -10,7 +10,7 @@ public abstract class Solver {
 		
 	}
 	
-	public static void step(Particle2D p, Force f, double step)
+	public void step(Particle2D p, Force f, double step)
 	{
 		
 	}

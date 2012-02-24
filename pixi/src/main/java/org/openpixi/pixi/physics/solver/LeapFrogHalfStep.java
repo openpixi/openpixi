@@ -9,7 +9,7 @@ public class LeapFrogHalfStep extends Solver{
 	{
 		super();
 	}
-	public static void step(Particle2D p, Force f, double dt) {
+	public void step(Particle2D p, Force f, double dt) {
 		
 		/**
 		 * LeapFrog algorithm.

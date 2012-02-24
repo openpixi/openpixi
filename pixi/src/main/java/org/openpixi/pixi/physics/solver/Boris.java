@@ -15,7 +15,7 @@ public class Boris extends Solver{
 		super();
 	}
 	
-	public static void step(Particle2D p, Force f, double step) {
+	public void step(Particle2D p, Force f, double step) {
 		
 		//step = step / 2.0;
 		
