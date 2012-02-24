@@ -5,6 +5,13 @@ import org.openpixi.pixi.physics.Particle2D;
 
 public class LeapFrogHalfStep {
 	public static void algorithm(Particle2D p, Force f, double dt) {
+		
+		/**
+		 * LeapFrog algorithm.
+		 * The velocity is stored at the same times as the position.
+		 * @param p before the update: x(t), v(t), a(t);
+		 *                 after the update: x(t+dt), v(t+dt), a(t+dt)
+		 */
 		// v(t+dt/2) = v(t) + a(t)*dt/2
 		p.vx += p.ax * dt / 2.0;
 		p.vy += p.ay * dt / 2.0;
