@@ -12,7 +12,7 @@ public class HardWallBoundary extends Boundary {
 	/**
 	 * Reflect a particle off the boundaries.
 	 */
-	public void check(Particle2D particle, Solver s) {
+	public void check(Particle2D particle, Solver s, double step) {
 
 		//if the particle hits the walls
 		if(particle.x - particle.radius < xmin)
