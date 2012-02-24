@@ -136,6 +136,7 @@ public class Particle2DPanel extends JPanel {
 				par.charge = -1;
 			}
 			parlist.add(par);
+			s.prepare(par, f, step);
 		}
 		f = new Force();
 		f.reset();
@@ -181,6 +182,7 @@ public class Particle2DPanel extends JPanel {
 			par.mass = 1;
 			par.charge = 0;
 			parlist.add(par);
+			s.prepare(par, f, step);
 		}
 		f = new SpringForce();
 		f.reset();
@@ -194,6 +196,11 @@ public class Particle2DPanel extends JPanel {
 	
 	public void algorithmChange(int id)
 	{
+		for (int i = 0; i < NUM_PARTICLES; i++) {
+			Particle2D par = (Particle2D) parlist.get(i);
+			s.finalizing(par, f, step);				
+		}
+		
 		switch(id) {
 		case 0:
 			s = new EulerRichardson();
@@ -214,6 +221,11 @@ public class Particle2DPanel extends JPanel {
 			s = new Euler();
 			break;
 			}
+		
+		for (int i = 0; i < NUM_PARTICLES; i++) {
+			Particle2D par = (Particle2D) parlist.get(i);
+			s.prepare(par, f, step);				
+		}
 	}
 
 	public void setHardWallBoundary() {
