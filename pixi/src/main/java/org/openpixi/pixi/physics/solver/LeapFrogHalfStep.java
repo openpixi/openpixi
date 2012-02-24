@@ -3,8 +3,13 @@ package org.openpixi.pixi.physics.solver;
 import org.openpixi.pixi.physics.Force;
 import org.openpixi.pixi.physics.Particle2D;
 
-public class LeapFrogHalfStep {
-	public static void algorithm(Particle2D p, Force f, double dt) {
+public class LeapFrogHalfStep extends Solver{
+	
+	public LeapFrogHalfStep()
+	{
+		super();
+	}
+	public static void step(Particle2D p, Force f, double dt) {
 		
 		/**
 		 * LeapFrog algorithm.
