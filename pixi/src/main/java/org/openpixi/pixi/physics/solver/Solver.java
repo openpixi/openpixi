@@ -15,12 +15,12 @@ public abstract class Solver {
 		
 	}
 	
-	public static void prepare()
+	public void prepare()
 	{
 		
 	}
 	
-	public static void finalizing()
+	public void finalizing()
 	{
 		
 	}
