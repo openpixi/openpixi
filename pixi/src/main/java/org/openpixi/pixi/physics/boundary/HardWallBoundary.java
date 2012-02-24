@@ -14,7 +14,7 @@ public class HardWallBoundary extends Boundary {
 	 */
 	public void check(Particle2D particle, Force f, Solver s, double step) {
 		
-		s.prepare(particle, f, step);
+		s.finalizing(particle, f, step);
 		//if the particle hits the walls
 		if(particle.x - particle.radius < xmin)
 		{
@@ -31,6 +31,6 @@ public class HardWallBoundary extends Boundary {
 			particle.vy = - Math.abs(particle.vy);
 		}
 		
-		s.finalizing(particle, f, step);
+		s.prepare(particle, f, step);
 	}
 }
