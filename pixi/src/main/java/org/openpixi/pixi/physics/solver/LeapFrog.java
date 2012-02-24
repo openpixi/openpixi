@@ -16,48 +16,48 @@ public class LeapFrog extends Solver{
 	/**
 	 * LeapFrog algorithm.
 	 * Warning: the velocity is stored half a time step ahead of the position.
-	 * @param particle before the update: x(t), v(t+dt/2), a(t);
+	 * @param p before the update: x(t), v(t+dt/2), a(t);
 	 *                 after the update: x(t+dt), v(t+3*dt/2), a(t+dt)
 	 */
-	public static void algorithm(Particle2D particle, Force f, double step) {
+	public static void algorithm(Particle2D p, Force f, double dt) {
 		// x(t+dt) = x(t) + v(t+dt/2)*dt
-		particle.x += particle.vx * step;
-		particle.y += particle.vy * step;
+		p.x += p.vx * dt;
+		p.y += p.vy * dt;
 
 		// a(t+dt) = F(v(t+dt/2), x(t+dt)) / m
 		// WARNING: Force is evaluated at two different times t+dt/2 and t+dt!
-		particle.ax = f.getForceX(particle.vx, particle.vy, particle) / particle.mass;
-		particle.ay = f.getForceY(particle.vx, particle.vy, particle) / particle.mass;
+		p.ax = f.getForceX(p.vx, p.vy, p) / p.mass;
+		p.ay = f.getForceY(p.vx, p.vy, p) / p.mass;
 
 		// v(t+3*dt/2) = v(t+dt/2) + a(t+dt)*dt
-		particle.vx += particle.ax * step;
-		particle.vy += particle.ay * step;
+		p.vx += p.ax * dt;
+		p.vy += p.ay * dt;
 		
 	}
 
 	/**
 	 * LeapFrog algorithm.
 	 * The velocity is stored at the same times as the position.
-	 * @param particle before the update: x(t), v(t), a(t);
+	 * @param p before the update: x(t), v(t), a(t);
 	 *                 after the update: x(t+dt), v(t+dt), a(t+dt)
 	 */
-	public static void algorithmHalfStep(Particle2D particle, Force f, double step) {
+	public static void algorithmHalfStep(Particle2D p, Force f, double dt) {
 		// v(t+dt/2) = v(t) + a(t)*dt/2
-		particle.vx += particle.ax * step / 2.0;
-		particle.vy += particle.ay * step / 2.0;
+		p.vx += p.ax * dt / 2.0;
+		p.vy += p.ay * dt / 2.0;
 
 		// x(t+dt) = x(t) + v(t+dt/2)*dt
-		particle.x += particle.vx * step;
-		particle.y += particle.vy * step;
+		p.x += p.vx * dt;
+		p.y += p.vy * dt;
 
 		// a(t+dt) = F(v(t+dt/2), x(t+dt)) / m
 		// WARNING: Force is evaluated at two different times t+dt/2 and t+dt!
-		particle.ax = f.getForceX(particle.vx, particle.vy, particle) / particle.mass;
-		particle.ay = f.getForceY(particle.vx, particle.vy, particle) / particle.mass;
+		p.ax = f.getForceX(p.vx, p.vy, p) / p.mass;
+		p.ay = f.getForceY(p.vx, p.vy, p) / p.mass;
 
 		// v(t+dt) = v(t+dt/2) + a(t+dt)*dt/2
-		particle.vx += particle.ax * step / 2.0;
-		particle.vy += particle.ay * step / 2.0;
+		p.vx += p.ax * dt / 2.0;
+		p.vy += p.ay * dt / 2.0;
 	}
 
 }
