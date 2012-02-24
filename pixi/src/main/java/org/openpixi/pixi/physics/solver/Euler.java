@@ -3,7 +3,7 @@ package org.openpixi.pixi.physics.solver;
 import org.openpixi.pixi.physics.*;
 
 
-public class Euler {
+public class Euler extends Solver {
 	public static void algorithm(Particle2D particle, Force f, double step)
 	{
 		particle.ax = f.getForceX(particle.vx, particle.vy, particle) / particle.mass;

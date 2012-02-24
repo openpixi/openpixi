@@ -12,7 +12,7 @@ import org.openpixi.pixi.physics.*;
  * http://www.physics.udel.edu/~bnikolic/teaching/phys660/numerical_ode/node4.html</a>
  * </p>
  */
-public class EulerRichardson {
+public class EulerRichardson extends Solver{
 	public static void algorithm(Particle2D particle, Force f, double step)
 	{
 		particle.ax = f.getForceX(particle.vx, particle.vy, particle) / particle.mass;

@@ -8,7 +8,7 @@ package org.openpixi.pixi.physics.solver;
 import org.openpixi.pixi.physics.*;
 import org.openpixi.pixi.ui.*;
 
-public class Boris {
+public class Boris extends Solver{
 	public static void algorithm(Particle2D particle, Force f, double step) {
 		
 		//step = step / 2.0;

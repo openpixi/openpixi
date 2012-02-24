@@ -11,7 +11,7 @@ package org.openpixi.pixi.physics.solver;
 
 import org.openpixi.pixi.physics.*;
 
-public class LeapFrog {
+public class LeapFrog extends Solver{
 
 	/**
 	 * LeapFrog algorithm.
