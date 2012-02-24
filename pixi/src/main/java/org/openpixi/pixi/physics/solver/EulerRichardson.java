@@ -20,23 +20,23 @@ public class EulerRichardson extends Solver{
 		p.ay = f.getForceX(p.vx, p.vy, p) / p.mass;
 		
 		//starting the Euler-Richardson algorithm (the equations correspond with the ones on the above mentioned website)
-		//vmiddle = v(t) + a(t) * dt / 2
+		//v(t + dt / 2) = v(t) + a(t) * dt / 2
 		double vxmiddle = p.vx + p.ax * step / 2;
 		double vymiddle = p.vy + p.ay * step / 2;
 		
-		//xmiddle = x(t) + v(t) * dt / 2
+		//x(t + dt / 2) = x(t) + v(t) * dt / 2
 		//double xmiddle = x + vx * step / 2;    actually, this two equations are not needed, but I've written them
 		//double ymiddle = y + vy * step / 2;    so the algorithm is complete
 		
-		//amiddle = F(vmiddle(t), xmiddle(t)) / m, (at t + dt / 2)
+		//a(t + dt / 2) = F(v(t + dt / 2), x(t + dt / 2)) / m
 		double axmiddle = f.getForceX(vxmiddle, vymiddle, p) / p.mass;
 		double aymiddle = f.getForceY(vxmiddle, vymiddle, p) / p.mass;
 		
-		//v(t + dt) = v(t) + amiddle * dt
+		//v(t + dt) = v(t) + a(t + dt / 2) * dt
 		p.vx += axmiddle * step;
 		p.vy += aymiddle * step;
 		
-		//x(t + dt) = x(t) + vmiddle * dt
+		//x(t + dt) = x(t) + v(t + dt / 2) * dt
 		p.x += vxmiddle * step;
 		p.y += vymiddle * step;
 		
