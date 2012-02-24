@@ -28,7 +28,7 @@ public class EulerRichardson extends Solver{
 		//double xmiddle = x + vx * step / 2;    actually, this two equations are not needed, but I've written them
 		//double ymiddle = y + vy * step / 2;    so the algorithm is complete
 		
-		//a(t + dt / 2) = F(v(t + dt / 2), x(t + dt / 2)) / m
+		//a(t + dt / 2) = F(v(t + dt / 2), x(t)) / m
 		double axmiddle = f.getForceX(vxmiddle, vymiddle, p) / p.mass;
 		double aymiddle = f.getForceY(vxmiddle, vymiddle, p) / p.mass;
 		
