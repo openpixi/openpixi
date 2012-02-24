@@ -9,19 +9,19 @@ import org.openpixi.pixi.physics.*;
 import org.openpixi.pixi.ui.*;
 
 public class Boris extends Solver{
-	public static void algorithm(Particle2D particle, Force f, double step) {
+	public static void algorithm(Particle2D p, Force f, double step) {
 		
 		//step = step / 2.0;
 		
-		double vxminus = particle.vx + f.getPositionComponentofForceX(particle) * step / (2.0 * particle.mass);
+		double vxminus = p.vx + f.getPositionComponentofForceX(p) * step / (2.0 * p.mass);
 		double vxplus;
 		double vxprime;
 		
-		double vyminus = particle.vy + f.getPositionComponentofForceY(particle) * step / (2.0 * particle.mass);
+		double vyminus = p.vy + f.getPositionComponentofForceY(p) * step / (2.0 * p.mass);
 		double vyplus;
 		double vyprime;
 		
-		double t_z = particle.charge * f.bz * step / (2.0 * particle.mass);   //t vector
+		double t_z = p.charge * f.bz * step / (2.0 * p.mass);   //t vector
 		
 		double s_z = 2 * t_z / (1 + t_z * t_z);               //s vector
 		
@@ -31,11 +31,11 @@ public class Boris extends Solver{
 		vxplus = vxminus + vyprime * s_z;
 		vyplus = vyminus - vxprime * s_z;
 		
-		particle.vx = vxplus + particle.charge * f.getPositionComponentofForceX(particle) * step / (2.0 * particle.mass);
-		particle.vy = vyplus + particle.charge * f.getPositionComponentofForceY(particle) * step / (2.0 * particle.mass);
+		p.vx = vxplus + p.charge * f.getPositionComponentofForceX(p) * step / (2.0 * p.mass);
+		p.vy = vyplus + p.charge * f.getPositionComponentofForceY(p) * step / (2.0 * p.mass);
 		
-		particle.x += particle.vx * step;
-		particle.y += particle.vy * step;
+		p.x += p.vx * step;
+		p.y += p.vy * step;
 		
 		//until here is the Boris calculation
 		//-----------------------------------------------------------------
@@ -44,20 +44,20 @@ public class Boris extends Solver{
 		 */
 		//from here are the drag coefficient and the gravity added
 		
-		//particle.ax = (- f.drag * particle.vx + particle.mass * f.gx) / particle.mass;
-		//particle.ay = (- f.drag * particle.vy + particle.mass * f.gy) / particle.mass;
+		//p.ax = (- f.drag * p.vx + p.mass * f.gx) / p.mass;
+		//p.ay = (- f.drag * p.vy + p.mass * f.gy) / p.mass;
 		
-		//particle.vx += particle.ax * step / 2.0;
-		//particle.vy += particle.ay * step / 2.0;
+		//p.vx += p.ax * step / 2.0;
+		//p.vy += p.ay * step / 2.0;
 		/*
-		particle.ax = (f.getTangentVelocityComponentOfForceX(particle)) / particle.mass;
-		particle.ay = (f.getTangentVelocityComponentOfForceY(particle)) / particle.mass;
+		p.ax = (f.getTangentVelocityComponentOfForceX(p)) / p.mass;
+		p.ay = (f.getTangentVelocityComponentOfForceY(p)) / p.mass;
 		
-		particle.vx += particle.ax * step / 2.0;
-		particle.vy += particle.ay * step / 2.0;
+		p.vx += p.ax * step / 2.0;
+		p.vy += p.ay * step / 2.0;
 		
-		particle.x += particle.vx * step;
-		particle.y += particle.vy * step;
+		p.x += p.vx * step;
+		p.y += p.vy * step;
 		
 		*/
 	}
