@@ -57,13 +57,13 @@ public class Particle2DPanel extends JPanel {
 			for (int i = 0; i < NUM_PARTICLES; i++) {
 				Particle2D par = (Particle2D) parlist.get(i);
 				if(algorithm_change == 0)
-						EulerRichardson.algorithm(par, f, step);
+					EulerRichardson.algorithm(par, f, step);
 				else if(algorithm_change == 1)
 					LeapFrog.algorithm(par, f, step);
 				else if(algorithm_change == 2)
-						LeapFrog.algorithmHalfStep(par, f, step);
+					LeapFrog.algorithmHalfStep(par, f, step);
 				else if(algorithm_change == 3)
-						Boris.algorithm(par, f, step);
+					Boris.algorithm(par, f, step);
 				else if(algorithm_change == 4)
 					SemiImplicitEuler.algorithm(par, f, step);
 				else if(algorithm_change == 5)
