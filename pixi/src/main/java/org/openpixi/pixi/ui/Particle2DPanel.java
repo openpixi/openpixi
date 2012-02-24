@@ -213,6 +213,7 @@ public class Particle2DPanel extends JPanel {
 		case 5:
 			s = new Euler();
 			break;
+			}
 	}
 
 	public void setHardWallBoundary() {
