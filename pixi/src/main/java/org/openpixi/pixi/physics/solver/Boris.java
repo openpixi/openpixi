@@ -67,35 +67,9 @@ public class Boris extends Solver{
 		
 		*/
 	}
-	
+	/*
 	public void prepare(Particle2D p, Force f, double dt)
 	{
-		/*double vxminus = p.vx + f.getPositionComponentofForceX(p) * dt / (2.0 * p.mass);
-		double vxplus;
-		double vxprime;
-		
-		double vyminus = p.vy + f.getPositionComponentofForceY(p) * dt / (2.0 * p.mass);
-		double vyplus;
-		double vyprime;
-		
-		double t_z = p.charge * f.bz * dt / (2.0 * p.mass);   //t vector
-		
-		double s_z = 2 * t_z / (1 + t_z * t_z);               //s vector
-		
-		vxprime = vxminus + vyminus * t_z;
-		vyprime = vyminus - vxminus * t_z;
-		
-		vxplus = vxminus + vyprime * s_z;
-		vyplus = vyminus - vxprime * s_z;
-		
-		p.vx = vxplus + p.charge * f.getPositionComponentofForceX(p) * dt / (4.0 * p.mass);
-		p.vy = vyplus + p.charge * f.getPositionComponentofForceY(p) * dt / (4.0 * p.mass);*/
-		
-	}
-	
-	public void finalizing(Particle2D p, Force f, double dt)
-	{
-		/*
 		double vxminus = p.vx + f.getPositionComponentofForceX(p) * dt / (2.0 * p.mass);
 		double vxplus;
 		double vxprime;
@@ -114,7 +88,33 @@ public class Boris extends Solver{
 		vxplus = vxminus + vyprime * s_z;
 		vyplus = vyminus - vxprime * s_z;
 		
-		p.vx = vxplus - p.charge * f.getPositionComponentofForceX(p) * dt / (4.0 * p.mass);
-		p.vy = vyplus - p.charge * f.getPositionComponentofForceY(p) * dt / (4.0 * p.mass);*/
+		p.vx = vxplus + p.charge * f.getPositionComponentofForceX(p) * dt / (4.0 * p.mass);
+		p.vy = vyplus + p.charge * f.getPositionComponentofForceY(p) * dt / (4.0 * p.mass);
+		
 	}
+	
+	public void finalizing(Particle2D p, Force f, double dt)
+	{
+		
+		double vxminus = p.vx + f.getPositionComponentofForceX(p) * dt / (4.0 * p.mass);
+		double vxplus;
+		double vxprime;
+		
+		double vyminus = p.vy + f.getPositionComponentofForceY(p) * dt / (4.0 * p.mass);
+		double vyplus;
+		double vyprime;
+		
+		double t_z = p.charge * f.bz * dt / (4.0 * p.mass);   //t vector
+		
+		double s_z = 2 * t_z / (1 + t_z * t_z);               //s vector
+		
+		vxprime = vxminus + vyminus * t_z;
+		vyprime = vyminus - vxminus * t_z;
+		
+		vxplus = vxminus + vyprime * s_z;
+		vyplus = vyminus - vxprime * s_z;
+		
+		p.vx = vxplus - p.charge * f.getPositionComponentofForceX(p) * dt / (4.0 * p.mass);
+		p.vy = vyplus - p.charge * f.getPositionComponentofForceY(p) * dt / (4.0 * p.mass);
+	}*/
 }

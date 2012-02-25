@@ -30,7 +30,7 @@ public class Euler extends Solver {
 
 	public void prepare(Particle2D p, Force f, double step)
 	{
-
+		
 	}
 
 	public void finalizing(Particle2D p, Force f, double step)
