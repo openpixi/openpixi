@@ -172,6 +172,9 @@ public class Particle2DPanel extends JPanel {
 	private void initSpring(int count) {
 		NUM_PARTICLES = count;
 		parlist.clear();
+		f = new SpringForce();
+		f.reset();
+		
 		for (int k = 0; k < NUM_PARTICLES; k++) {
 			Particle2D par = new Particle2D();
 			par.x = xmax * Math.random();
@@ -182,15 +185,10 @@ public class Particle2DPanel extends JPanel {
 			par.mass = 1;
 			par.charge = 0;
 			parlist.add(par);
-			//s.prepare(par, f, step);
+			s.prepare(par, f, step);
 		}
-		f = new SpringForce();
-		f.reset();
+
 		setPeriodicBoundary();
-		for (int i = 0; i < NUM_PARTICLES; i++) {
-			Particle2D par = (Particle2D) parlist.get(i);
-			s.prepare(par, f, step);				
-		}
 	}
 	
 	public void checkTrace() {
