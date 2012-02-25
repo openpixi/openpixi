@@ -120,52 +120,39 @@ public class Particle2DPanel extends JPanel {
 	}
 
 	private void initRandomParticles(int count, int radius) {
-		NUM_PARTICLES = count;
-		parlist.clear();
-		for (int k = 0; k < NUM_PARTICLES; k++) {
-			Particle2D par = new Particle2D();
-			par.x = xmax * Math.random();
-			par.y = ymax * Math.random();
-			par.radius = radius;
-			par.vx = 10 * Math.random();
-			par.vy = 10 * Math.random();
-			par.mass = 1;
-			if (Math.random() > 0.5) {
-				par.charge = 1;
-			} else {
-				par.charge = -1;
-			}
-			parlist.add(par);
-			s.prepare(par, f, step);
-		}
 		f = new Force();
 		f.reset();
 		f.gy = -1; //-ConstantsSI.g;
 		//f.bz = 1;
 		
+		createRandomParticles(count, radius);
 		setHardWallBoundary();
 	}
 
 	private void initGravity(int count) {
-		initRandomParticles(count, 15);
-
+		f = new Force();
 		f.reset();
 		f.gy = -1; // -ConstantsSI.g;
+		
+		createRandomParticles(count, 15);
+		setHardWallBoundary();
 	}
 	
 	private void initElectric(int count) {
-		initRandomParticles(count, 15);
-
+		f = new Force();
 		f.reset();
 		f.ey = -1;
+		
+		createRandomParticles(count, 15);
+		setHardWallBoundary();
 	}
 
 	private void initMagnetic(int count) {
-		initRandomParticles(count, 15);
-
+		f = new Force();
 		f.reset();
 		f.bz = .1;
 		
+		createRandomParticles(count, 15);
 		setPeriodicBoundary();
 	}
 	
@@ -184,11 +171,40 @@ public class Particle2DPanel extends JPanel {
 			par.vy = 0;
 			par.mass = 1;
 			par.charge = 0;
-			parlist.add(par);
 			s.prepare(par, f, step);
+			parlist.add(par);
 		}
 
 		setPeriodicBoundary();
+	}
+	
+	private void createRandomParticles(int count, int radius) {
+		NUM_PARTICLES = count;
+		parlist.clear();
+		for (int k = 0; k < NUM_PARTICLES; k++) {
+			Particle2D par = new Particle2D();
+			par.x = xmax * Math.random();
+			par.y = ymax * Math.random();
+			par.radius = radius;
+			par.vx = 10 * Math.random();
+			par.vy = 10 * Math.random();
+			par.mass = 1;
+			if (Math.random() > 0.5) {
+				par.charge = 1;
+			} else {
+				par.charge = -1;
+			}
+			s.prepare(par, f, step);
+			parlist.add(par);
+		}
+	}
+	
+	public void setHardWallBoundary() {
+		boundary = new HardWallBoundary();
+	}
+
+	public void setPeriodicBoundary() {
+		boundary = new PeriodicBoundary();
 	}
 	
 	public void checkTrace() {
@@ -228,14 +244,6 @@ public class Particle2DPanel extends JPanel {
 			Particle2D par = (Particle2D) parlist.get(i);
 			s.prepare(par, f, step);				
 		}
-	}
-
-	public void setHardWallBoundary() {
-		boundary = new HardWallBoundary();
-	}
-
-	public void setPeriodicBoundary() {
-		boundary = new PeriodicBoundary();
 	}
 
 	/** Display the particles */
