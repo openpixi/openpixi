@@ -202,7 +202,7 @@ public class Particle2DPanel extends JPanel {
 	{
 		for (int i = 0; i < NUM_PARTICLES; i++) {
 			Particle2D par = (Particle2D) parlist.get(i);
-			s.finalizing(par, f, step);				
+			s.complete(par, f, step);				
 		}
 		
 		switch(id) {

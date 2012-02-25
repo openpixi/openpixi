@@ -20,7 +20,7 @@ public abstract class Solver {
 		
 	}
 	
-	public void finalizing(Particle2D p, Force f, double step)
+	public void complete(Particle2D p, Force f, double step)
 	{
 		
 	}
