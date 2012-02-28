@@ -21,6 +21,8 @@ public class Particle2DPanel extends JPanel {
 	public double step;
 
 	private boolean reset_trace;
+	
+	private boolean test = false;
 
 	private Solver s = new EulerRichardson();
 	
@@ -84,6 +86,7 @@ public class Particle2DPanel extends JPanel {
 
 	public void stopAnimation() {
 		timer.stop();
+		test = false;
 	}
 
 	public void resetAnimation(int id) {
@@ -118,6 +121,27 @@ public class Particle2DPanel extends JPanel {
 		}
 		timer.start();
 	}
+	
+	public void testSolver()
+	{
+		test = true;
+		createRandomParticles(2, 10);
+		f.reset();
+		for (int i = 0; i < NUM_PARTICLES; i++) {
+			Particle2D par = (Particle2D) parlist.get(i);
+			par.x = (100);
+			par.y = (100 + 100 * i);
+			par.vx = 10;
+			par.vy = 0;
+			par.mass = 1;
+			if(i == 0)
+				par.charge = 1;
+			else
+				par.charge = -1;
+		}
+		setPeriodicBoundary();
+	}
+	
 
 	private void initRandomParticles(int count, int radius) {
 		f = new Force();

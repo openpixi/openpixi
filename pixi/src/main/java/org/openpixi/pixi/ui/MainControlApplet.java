@@ -127,6 +127,7 @@ public class MainControlApplet extends JApplet {
 	class TestListener implements ActionListener {
 		public void actionPerformed(ActionEvent eve) {
 				testButton.setEnabled(false);
+				particlePanel.testSolver();
 		}
 	}
 	
