@@ -11,7 +11,11 @@ import javax.swing.event.*;
  */
 public class MainControlApplet extends JApplet {
 
-	private JButton startButton, stopButton, resetButton;
+	private JButton startButton;
+	private JButton stopButton;
+	private JButton resetButton;
+	private JButton testButton;
+	
 	private JSlider speedSlider;
 	private JSlider stepSlider;
 	
@@ -106,6 +110,7 @@ public class MainControlApplet extends JApplet {
 	class StopListener implements ActionListener {
 		public void actionPerformed(ActionEvent eve) {
 			particlePanel.stopAnimation();
+			testButton.setEnabled(true);
 		}
 	}
 
@@ -116,6 +121,12 @@ public class MainControlApplet extends JApplet {
 		public void actionPerformed(ActionEvent eve) {
 			particlePanel.resetAnimation(initComboBox.getSelectedIndex());
 			setSlidersValue();
+		}
+	}
+	
+	class TestListener implements ActionListener {
+		public void actionPerformed(ActionEvent eve) {
+				testButton.setEnabled(false);
 		}
 	}
 	
@@ -225,6 +236,7 @@ public class MainControlApplet extends JApplet {
 		startButton = new JButton("start");
 		stopButton = new JButton("stop");
 		resetButton = new JButton("reset");
+		testButton = new JButton("Test");
 
 		/**one can also write a constructor for a JSlider as:
 		 * JSlider slider = new JSlider(int min, int max, int value);
@@ -328,6 +340,7 @@ public class MainControlApplet extends JApplet {
 		startButton.addActionListener(new StartListener());
 		stopButton.addActionListener(new StopListener());
 		resetButton.addActionListener(new ResetListener());
+		testButton.addActionListener(new TestListener());
 		
 		traceCheck = new JCheckBox("Trace");
 		traceCheck.addItemListener(new CheckListener());
@@ -345,7 +358,7 @@ public class MainControlApplet extends JApplet {
 		controlPanel.add(step);
 		controlPanel.add(traceCheck);
 		controlPanel.add(framerateCheck);
-		//controlPanel.add(algorithmComboBox);
+		controlPanel.add(testButton);
 		
 		
 		JLabel eFieldXLabel = new JLabel("Electric Field in x - direction");
