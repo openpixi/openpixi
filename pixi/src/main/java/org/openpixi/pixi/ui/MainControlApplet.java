@@ -110,7 +110,6 @@ public class MainControlApplet extends JApplet {
 	class StopListener implements ActionListener {
 		public void actionPerformed(ActionEvent eve) {
 			particlePanel.stopAnimation();
-			testButton.setEnabled(true);
 		}
 	}
 
@@ -121,6 +120,7 @@ public class MainControlApplet extends JApplet {
 		public void actionPerformed(ActionEvent eve) {
 			particlePanel.resetAnimation(initComboBox.getSelectedIndex());
 			setSlidersValue();
+			testButton.setEnabled(true);
 		}
 	}
 	
@@ -238,6 +238,7 @@ public class MainControlApplet extends JApplet {
 		stopButton = new JButton("stop");
 		resetButton = new JButton("reset");
 		testButton = new JButton("Test");
+		testButton.setToolTipText("Click the reset button afterwards to exit the test");
 
 		/**one can also write a constructor for a JSlider as:
 		 * JSlider slider = new JSlider(int min, int max, int value);
