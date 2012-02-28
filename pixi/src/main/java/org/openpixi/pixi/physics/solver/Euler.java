@@ -35,9 +35,7 @@ public class Euler extends Solver {
 
 	public void complete(Particle2D p, Force f, double step)
 	{
-		// v(t) = v(t + dt) - a(t)*dt
-		p.vx -= p.ax * step;
-		p.vy -= p.ay * step;
+		
 	}
 
 }
