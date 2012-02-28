@@ -94,7 +94,7 @@ public class Particle2DPanel extends JPanel {
 
 	public void stopAnimation() {
 		timer.stop();
-		test = false;
+		//test = false;
 	}
 
 	public void resetAnimation(int id) {
