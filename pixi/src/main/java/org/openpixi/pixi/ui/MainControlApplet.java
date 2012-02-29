@@ -415,8 +415,10 @@ public class MainControlApplet extends JApplet {
 		gfieldXSlider.setValue((int) (particlePanel.f.gx / gxSliderScaling));
 		gfieldYSlider.setValue((int) (particlePanel.f.gy / gySliderScaling));
 		dragSlider.setValue((int) (particlePanel.f.drag / dragSliderScaling));
-		int delay = particlePanel.timer.getDelay();
-		speedSlider.setValue((int) (-Math.log(delay / 1000.) / speedSliderScaling));
+		//int delay = particlePanel.timer.getDelay();
+		//speedSlider.setValue((int) (-Math.log(delay / 1000.) / speedSliderScaling));
+		speedSlider.setValue(50);
+		particlePanel.timer.setDelay((int) (1000 * Math.exp(-50 * speedSliderScaling)));
 	}
 	
 	@Override
