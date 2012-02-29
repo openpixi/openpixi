@@ -43,8 +43,8 @@ public class Boris extends Solver{
 		vxold = p.vx;
 		vyold = p.vy;
 		
-		p.vx = vxplus + p.charge * f.getPositionComponentofForceX(p) * step / (2.0 * p.mass);
-		p.vy = vyplus + p.charge * f.getPositionComponentofForceY(p) * step / (2.0 * p.mass);
+		p.vx = vxplus + f.getPositionComponentofForceX(p) * step / (2.0 * p.mass);
+		p.vy = vyplus + f.getPositionComponentofForceY(p) * step / (2.0 * p.mass);
 		
 		p.x += p.vx * step;
 		p.y += p.vy * step;
