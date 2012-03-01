@@ -20,13 +20,24 @@ public class Boris extends Solver{
 	
 	public void step(Particle2D p, Force f, double step) {
 		
-		//step = step / 2.0;
+		double step1 = step / 2.0;
 		
-		double vxminus = p.vx + f.getPositionComponentofForceX(p) * step / (2.0 * p.mass);
+		double f_coef;
+		//one need to divide the dragging coefficient with the mass, so the unit of help_coef is dimensionless
+		double help_coef = f.drag * step1 / p.mass;
+		
+		double v_coef = Math.exp(-help_coef);
+		
+		if(Math.abs(help_coef) < 1.0e-5)
+			f_coef = step1 * (1 + help_coef * (1 - help_coef/3)/2); //to avoid problems when f.drag = 0 is
+		else
+			f_coef = (1 - v_coef) / (f.drag / p.mass);
+		
+		double vxminus = v_coef * p.vx + f_coef * f.getPositionComponentofForceX(p) * step / (2.0 * p.mass);
 		double vxplus;
 		double vxprime;
 		
-		double vyminus = p.vy + f.getPositionComponentofForceY(p) * step / (2.0 * p.mass);
+		double vyminus = v_coef * p.vy + f_coef * f.getPositionComponentofForceY(p) * step / (2.0 * p.mass);
 		double vyplus;
 		double vyprime;
 		
@@ -43,8 +54,8 @@ public class Boris extends Solver{
 		vxold = p.vx;
 		vyold = p.vy;
 		
-		p.vx = vxplus + f.getPositionComponentofForceX(p) * step / (2.0 * p.mass);
-		p.vy = vyplus + f.getPositionComponentofForceY(p) * step / (2.0 * p.mass);
+		p.vx = v_coef * vxplus + f_coef * f.getPositionComponentofForceX(p) * step / (2.0 * p.mass);
+		p.vy = v_coef * vyplus + f_coef * f.getPositionComponentofForceY(p) * step / (2.0 * p.mass);
 		
 		p.x += p.vx * step;
 		p.y += p.vy * step;
