@@ -33,8 +33,8 @@ public class Boris extends Solver{
 		else
 			f_coef = (1 - v_coef) / (f.drag / p.mass);*/
 		
-		double help1_coef = 1 - f.drag * step1 / (2 + p.mass);
-		double help2_coef = 1 + f.drag * step1 / (2 + p.mass);
+		double help1_coef = 1 - f.drag * step1 / (2 * p.mass);
+		double help2_coef = 1 + f.drag * step1 / (2 * p.mass);
 		
 		double vxminus = help1_coef * p.vx / help2_coef + f.getPositionComponentofForceX(p) * step / (2.0 * p.mass * help2_coef);
 		double vxplus;
