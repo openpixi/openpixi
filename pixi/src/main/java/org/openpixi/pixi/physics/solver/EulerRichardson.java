@@ -38,7 +38,7 @@ public class EulerRichardson extends Solver{
 		p.x += p.vx * step / 2;
 		p.y += p.vy * step / 2; 
 		
-		//a(t + dt / 2) = F(v(t + dt / 2), x(t)) / m
+		//a(t + dt / 2) = F(v(t + dt / 2), x(t + dt / 2)) / m
 		double axmiddle = f.getForceX(vxmiddle, vymiddle, p) / p.mass;
 		double aymiddle = f.getForceY(vxmiddle, vymiddle, p) / p.mass;
 		
