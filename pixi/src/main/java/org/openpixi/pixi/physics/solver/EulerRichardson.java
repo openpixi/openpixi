@@ -27,7 +27,7 @@ public class EulerRichardson extends Solver{
 		
 		//a(t) = F(v(t), x(t)) / m
 		p.ax = f.getForceX(p.vx, p.vy, p) / p.mass;
-		p.ay = f.getForceX(p.vx, p.vy, p) / p.mass;
+		p.ay = f.getForceY(p.vx, p.vy, p) / p.mass;
 		
 		//starting the Euler-Richardson algorithm (the equations correspond with the ones on the above mentioned website)
 		//v(t + dt / 2) = v(t) + a(t) * dt / 2
