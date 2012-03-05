@@ -1,22 +1,6 @@
 OpenPixi - Open Particle-in-Cell (PIC) simulator.
 Copyright (C) 2012  OpenPixi.org
 
-OpenPixi is an open Particle-In-Cell (PIC) simulator. It simulates the
-motion of a large number of charged particles in an electro-magnetic
-background. Currently the simulation supports tracking thousands of
-particles in constant electric, magnetic, and gravitational fields.
-Support for dynamic relativistic particles and fields is in preparation.
-
-OpenPixi is being developed in Java, with an educational aspect in mind.
-As such, it is possible to interact with the plasma in a live Java
-applet. Please try out the live version at
-
-  http://www.openpixi.org
-
----------------------
-
-LICENSE
-
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation; either version 2 of the License, or
@@ -31,6 +15,28 @@ You should have received a copy of the GNU General Public License along
 with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-The GNU General Public License is included under the name COPYING.
+---------------------
+
+OpenPixi is an open Particle-In-Cell (PIC) simulator. 
+
+Please try out the live version at
+
+  http://www.openpixi.org
 
 
+---
+Version 0.2 - ?
+
+* Additional solvers: Boris, Euler, LeapFrog, SemiImplicitEuler
+* New spring force
+* Periodic boundary
+* Basic accuracy test at 1/100 of the step size
+
+---
+Version 0.1 - March 5, 2012
+
+* Initial release.
+* Simulate up to 10000 particles in constant electric, magnetic, and gravitational fields.
+* Quick settings with particles of two different charges.
+* Set frame rate and time step.
+* Show frame rate and memory information.
