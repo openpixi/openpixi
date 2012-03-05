@@ -29,14 +29,14 @@ public class CurrentGrid {
 	public static int X_BOX = 10;
 	public static int Y_BOX = 10;
 	
-	public double cellWidth;
-	public double cellHeight;
+	public int cellWidth;
+	public int cellHeight;
 	
 	//the constructor
-	public CurrentGrid(int panelWidth, int panelHeight) {
-		
-		this.cellWidth = panelWidth / X_BOX;
-		this.cellHeight = panelHeight / Y_BOX;
+	public CurrentGrid() {
+	
+		this.cellWidth = 0;
+		this.cellHeight = 0;
 		
 		jx = new double[X_BOX][Y_BOX];
 		jy = new double[X_BOX][Y_BOX];
@@ -47,6 +47,12 @@ public class CurrentGrid {
 				jx[i][k] = 0.0;
 				jy[i][k] = 0.0;
 			}
+	}
+	
+	public void setGrid(int panelWidth, int panelHeight)
+	{
+		this.cellWidth = panelWidth / X_BOX;
+		this.cellHeight = panelHeight / Y_BOX;
 	}
 	
 	public void updateGrid(ArrayList<Particle2D> parlist)
@@ -63,6 +69,15 @@ public class CurrentGrid {
 			Particle2D par = (Particle2D) parlist.get(i);
 			int xCellPosition = (int) (par.x / cellWidth);
 			int yCellPosition = (int) (par.y / cellHeight);
+			if(xCellPosition > 9)
+				xCellPosition = 9;
+			if(yCellPosition > 9)
+				yCellPosition = 9;
+			if(xCellPosition < 0)
+				xCellPosition = 0;
+			if(yCellPosition < 0)
+				yCellPosition = 0;
+			//System.out.println("x: " + xCellPosition + ", y: " + yCellPosition);
 			jx[xCellPosition][yCellPosition] += par.charge * par.vx;
 			jy[xCellPosition][yCellPosition] += par.charge * par.vy;
 		}
