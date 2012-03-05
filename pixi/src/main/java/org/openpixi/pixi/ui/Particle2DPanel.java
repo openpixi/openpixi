@@ -313,7 +313,17 @@ public class Particle2DPanel extends JPanel {
 		setBackground(Color.white);
 		graph.translate(0.0, this.getHeight());
 		graph.scale(1.0, -1.0);
-		currentGrid.setGrid(this.getWidth(), this.getHeight());
+		currentGrid.setGrid(getWidth(), getHeight());
+
+		if(!paint_trace)
+		{
+			super.paintComponent(graph1);
+		}
+		if(reset_trace)
+		{
+			super.paintComponent(graph1);
+			reset_trace = false;
+		}
 		if(drawCurrentGrid)
 		{
 			currentGrid.updateGrid(parlist);
@@ -324,17 +334,9 @@ public class Particle2DPanel extends JPanel {
 					int ystart = (int) (currentGrid.cellHeight * (k + 0.5));
 					drawArrow(graph, xstart, ystart, (int) Math.round(currentGrid.jx[i][k] + xstart), (int) Math.round(currentGrid.jy[i][k] + ystart));
 				}
-			return;
+			//return;
 		}
-		if(!paint_trace)
-		{
-			super.paintComponent(graph1);
-		}
-		if(reset_trace)
-		{
-			super.paintComponent(graph1);
-			reset_trace = false;
-		}
+		if(!drawCurrentGrid) {
 		for (int i = 0; i < NUM_PARTICLES; i++) {
 			Particle2D par = (Particle2D) parlist.get(i);
 			if (par.charge > 0) {
@@ -356,6 +358,7 @@ public class Particle2DPanel extends JPanel {
 				//graph.fillRect((int) par.x, (int) par.y, 1, 1);
 				graph.drawRect((int) par.x, (int) par.y, 0, 0);
 			}
+		}
 		}
 
 		if (showinfo) {
@@ -380,7 +383,7 @@ public class Particle2DPanel extends JPanel {
 	}
 	private void drawArrow(Graphics2D g, int x1, int y1, int x2, int y2) {
 		
-		int ARR_SIZE = 4;
+		int ARR_SIZE = 5;
 
         double dx = x2 - x1, dy = y2 - y1;
         double angle = Math.atan2(dy, dx);
@@ -391,7 +394,8 @@ public class Particle2DPanel extends JPanel {
 
          // Draw horizontal arrow starting in (0, 0)
         g.drawLine(0, 0, (int) len, 0);
-        g.fillPolygon(new int[] {len, len-ARR_SIZE, len-ARR_SIZE, len},
-                      new int[] {0, -ARR_SIZE, ARR_SIZE, 0}, 4);
+        if(Math.abs(x2 - x1) > 0 || Math.abs(y2 - y1) > 0)
+        	g.fillPolygon(new int[] {len, len-ARR_SIZE, len-ARR_SIZE, len},
+        				  new int[] {0, -ARR_SIZE, ARR_SIZE, 0}, 4);
      }
 }
