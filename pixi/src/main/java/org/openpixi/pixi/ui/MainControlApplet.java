@@ -46,6 +46,7 @@ public class MainControlApplet extends JApplet {
 	private JSlider gfieldYSlider;
 	
 	private JCheckBox framerateCheck;
+	private JCheckBox currentgridCheck;
 	
 	private JComboBox initComboBox;
 	private JComboBox algorithmComboBox;
@@ -152,6 +153,12 @@ public class MainControlApplet extends JApplet {
 	class CheckListener implements ItemListener {
 		public void itemStateChanged(ItemEvent eve){
 				particlePanel.checkTrace();
+		}
+	}
+	
+	class DrawCurrentGridListener implements ItemListener {
+		public void itemStateChanged(ItemEvent eve){
+				particlePanel.drawCurrentGrid();
 		}
 	}
 	
@@ -365,6 +372,10 @@ public class MainControlApplet extends JApplet {
 		traceCheck = new JCheckBox("Trace");
 		traceCheck.addItemListener(new CheckListener());
 		
+		currentgridCheck = new JCheckBox("Current");
+		currentgridCheck.addItemListener(new DrawCurrentGridListener());
+		
+		
 		framerateCheck = new JCheckBox("Info");
 		framerateCheck.addItemListener(new FrameListener());
 
@@ -377,9 +388,9 @@ public class MainControlApplet extends JApplet {
 		controlPanel.add(speed);
 		controlPanel.add(step);
 		controlPanel.add(traceCheck);
+		controlPanel.add(currentgridCheck);
 		controlPanel.add(framerateCheck);
 		controlPanel.add(testButton);
-		
 		
 		JLabel eFieldXLabel = new JLabel("Electric Field in x - direction");
 		JLabel eFieldYLabel = new JLabel("Electric Field in y - direction");
@@ -461,7 +472,7 @@ public class MainControlApplet extends JApplet {
 
 		web.pack();
 		web.setVisible(true);
-		web.setSize(1000, 500);
+		web.setSize(1200, 500);
 
 		applet.init();
 	}
