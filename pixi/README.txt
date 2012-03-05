@@ -1,0 +1,35 @@
+OpenPixi - Open Particle-in-Cell (PIC) simulator.
+Copyright (C) 2012  OpenPixi.org
+
+This program is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 2 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License along
+with this program; if not, write to the Free Software Foundation, Inc.,
+51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+
+---------------------
+
+OpenPixi is an open Particle-In-Cell (PIC) simulator. 
+
+Please try out the live version at
+
+  http://www.openpixi.org
+
+---
+Version 0.1
+March 5, 2012
+
+* Initial release.
+* Simulate up to 10000 particles in constant electric, magnetic, and gravitational fields.
+* Presets with particles of two different charges.
+* Set frame rate and time step.
+* Show frame rate and memory information.
+
