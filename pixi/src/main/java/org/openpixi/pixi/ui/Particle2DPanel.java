@@ -7,6 +7,8 @@ import org.openpixi.pixi.ui.util.*;
 import java.awt.*;
 import javax.swing.*;
 import java.awt.event.*;
+import java.awt.geom.AffineTransform;
+import static java.awt.geom.AffineTransform.*;
 import java.util.ArrayList;
 
 
@@ -336,4 +338,20 @@ public class Particle2DPanel extends JPanel {
 				(freeMemory + (maxMemory - allocatedMemory)) / 1024, 30, bottom - 30);
 		}		
 	}
+	void drawArrow(Graphics2D g, int x1, int y1, int x2, int y2) {
+		
+		int ARR_SIZE = 4;
+
+        double dx = x2 - x1, dy = y2 - y1;
+        double angle = Math.atan2(dy, dx);
+        int len = (int) Math.sqrt(dx*dx + dy*dy);
+        AffineTransform at = getTranslateInstance(x1, y1);
+        at.concatenate(getRotateInstance(angle));
+        g.setTransform(at);
+
+         // Draw horizontal arrow starting in (0, 0)
+        g.drawLine(0, 0, (int) len, 0);
+        g.fillPolygon(new int[] {len, len-ARR_SIZE, len-ARR_SIZE, len},
+                      new int[] {0, -ARR_SIZE, ARR_SIZE, 0}, 4);
+     }
 }
