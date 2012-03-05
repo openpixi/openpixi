@@ -23,13 +23,20 @@ Please try out the live version at
 
   http://www.openpixi.org
 
+
 ---
-Version 0.1
-March 5, 2012
+Version 0.2 - ?
+
+* Additional solvers: Boris, Euler, LeapFrog, SemiImplicitEuler
+* New spring force
+* Periodic boundary
+* Basic accuracy test at 1/100 of the step size
+
+---
+Version 0.1 - March 5, 2012
 
 * Initial release.
 * Simulate up to 10000 particles in constant electric, magnetic, and gravitational fields.
-* Presets with particles of two different charges.
+* Quick settings with particles of two different charges.
 * Set frame rate and time step.
 * Show frame rate and memory information.
-
