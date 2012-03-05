@@ -28,6 +28,7 @@ import java.awt.event.*;
 import java.awt.geom.AffineTransform;
 import static java.awt.geom.AffineTransform.*;
 import java.util.ArrayList;
+import java.lang.Math;
 
 
 /**
@@ -43,6 +44,8 @@ public class Particle2DPanel extends JPanel {
 	private boolean reset_trace;
 	
 	private boolean test = false;
+	
+	private boolean drawCurrentGrid = false;
 
 	private Solver s = new EulerRichardson();
 	
@@ -67,6 +70,8 @@ public class Particle2DPanel extends JPanel {
 
 	/** Contains all particles */
 	ArrayList<Particle2D> parlist = new ArrayList<Particle2D>();
+	
+	private CurrentGrid currentGrid = new CurrentGrid();
 
 	Color darkGreen = new Color(0x00, 0x80, 0x00);
 
@@ -264,6 +269,10 @@ public class Particle2DPanel extends JPanel {
 		startAnimation();
 	}
 	
+	public void drawCurrentGrid() {
+		drawCurrentGrid =! drawCurrentGrid;
+	}
+	
 	public void algorithmChange(int id)
 	{
 		for (int i = 0; i < NUM_PARTICLES; i++) {
@@ -304,6 +313,19 @@ public class Particle2DPanel extends JPanel {
 		setBackground(Color.white);
 		graph.translate(0.0, this.getHeight());
 		graph.scale(1.0, -1.0);
+		currentGrid.setGrid(this.getWidth(), this.getHeight());
+		if(drawCurrentGrid)
+		{
+			currentGrid.updateGrid(parlist);
+			for(int i = 0; i < currentGrid.X_BOX; i++)
+				for(int k = 0; k < currentGrid.Y_BOX; k++)
+				{
+					int xstart = (int) (currentGrid.cellWidth * (i + 0.5));
+					int ystart = (int) (currentGrid.cellHeight * (k + 0.5));
+					drawArrow(graph, xstart, ystart, (int) Math.round(currentGrid.jx[i][k] + xstart), (int) Math.round(currentGrid.jy[i][k] + ystart));
+				}
+			return;
+		}
 		if(!paint_trace)
 		{
 			super.paintComponent(graph1);
@@ -356,7 +378,7 @@ public class Particle2DPanel extends JPanel {
 				(freeMemory + (maxMemory - allocatedMemory)) / 1024, 30, bottom - 30);
 		}		
 	}
-	void drawArrow(Graphics2D g, int x1, int y1, int x2, int y2) {
+	private void drawArrow(Graphics2D g, int x1, int y1, int x2, int y2) {
 		
 		int ARR_SIZE = 4;
 
