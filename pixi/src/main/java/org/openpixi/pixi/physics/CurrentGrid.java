@@ -23,7 +23,9 @@ import java.util.ArrayList;
 
 public class CurrentGrid {
 	
+	/**Electric current in the middle of a cell in x-Direction*/
 	public double [][] jx;
+	/**Electric current in the middle of a cell in y-Direction*/
 	public double [][] jy;
 	
 	public static int X_BOX = 10;
