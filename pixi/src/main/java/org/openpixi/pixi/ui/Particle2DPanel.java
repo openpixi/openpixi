@@ -324,19 +324,8 @@ public class Particle2DPanel extends JPanel {
 			super.paintComponent(graph1);
 			reset_trace = false;
 		}
-		if(drawCurrentGrid)
-		{
-			currentGrid.updateGrid(parlist);
-			for(int i = 0; i < currentGrid.X_BOX; i++)
-				for(int k = 0; k < currentGrid.Y_BOX; k++)
-				{
-					int xstart = (int) (currentGrid.cellWidth * (i + 0.5));
-					int ystart = (int) (currentGrid.cellHeight * (k + 0.5));
-					drawArrow(graph, xstart, ystart, (int) Math.round(currentGrid.jx[i][k] + xstart), (int) Math.round(currentGrid.jy[i][k] + ystart));
-				}
-			//return;
-		}
-		if(!drawCurrentGrid) {
+		
+		//if(!drawCurrentGrid) {
 		for (int i = 0; i < NUM_PARTICLES; i++) {
 			Particle2D par = (Particle2D) parlist.get(i);
 			if (par.charge > 0) {
@@ -359,6 +348,19 @@ public class Particle2DPanel extends JPanel {
 				graph.drawRect((int) par.x, (int) par.y, 0, 0);
 			}
 		}
+		
+		if(drawCurrentGrid)
+		{
+			graph.setColor(Color.black);
+			currentGrid.updateGrid(parlist);
+			for(int i = 0; i < currentGrid.X_BOX; i++)
+				for(int k = 0; k < currentGrid.Y_BOX; k++)
+				{
+					int xstart = (int) (currentGrid.cellWidth * (i + 0.5));
+					int ystart = (int) (currentGrid.cellHeight * (k + 0.5));
+					drawArrow(graph, xstart, ystart, (int) Math.round(currentGrid.jx[i][k] + xstart), (int) Math.round(currentGrid.jy[i][k] + ystart));
+				}
+			//return;
 		}
 
 		if (showinfo) {
@@ -392,10 +394,12 @@ public class Particle2DPanel extends JPanel {
         at.concatenate(getRotateInstance(angle));
         g.setTransform(at);
 
-         // Draw horizontal arrow starting in (0, 0)
+        // Draw horizontal arrow starting in (0, 0)
         g.drawLine(0, 0, (int) len, 0);
         if(Math.abs(x2 - x1) > 0 || Math.abs(y2 - y1) > 0)
         	g.fillPolygon(new int[] {len, len-ARR_SIZE, len-ARR_SIZE, len},
         				  new int[] {0, -ARR_SIZE, ARR_SIZE, 0}, 4);
+        
+        
      }
 }
