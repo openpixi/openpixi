@@ -485,6 +485,10 @@ public class MainControlApplet extends JApplet {
 		//speedSlider.setValue((int) (-Math.log(delay / 1000.) / speedSliderScaling));
 		speedSlider.setValue(50);
 		particlePanel.timer.setDelay((int) (1000 * Math.exp(-50 * speedSliderScaling)));
+		xboxentry.setText("10");
+		yboxentry.setText("10");
+		particlePanel.currentGrid.changeDimension(10, 10);
+		particlePanel.currentGrid.setGrid(particlePanel.getWidth(), particlePanel.getHeight());
 	}
 	
 	@Override
