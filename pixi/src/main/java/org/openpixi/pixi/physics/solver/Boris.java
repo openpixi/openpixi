@@ -20,7 +20,7 @@ public class Boris extends Solver{
 	
 	public void step(Particle2D p, Force f, double step) {
 		
-		double step1 = step / 2.0;
+		double step1 = step;
 		
 		/*double f_coef;
 		//one need to divide the dragging coefficient with the mass, so the unit of help_coef is dimensionless
@@ -57,8 +57,8 @@ public class Boris extends Solver{
 		vxold = p.vx;
 		vyold = p.vy;
 		
-		p.vx = help1_coef * vxplus / help2_coef + f.getPositionComponentofForceX(p) * step / (2.0 * p.mass * help2_coef);
-		p.vy = help1_coef * vyplus / help2_coef + f.getPositionComponentofForceY(p) * step / (2.0 * p.mass * help2_coef);
+		p.vx = vxplus + f.getPositionComponentofForceX(p) * step / (2.0 * p.mass * help2_coef);
+		p.vy = vyplus + f.getPositionComponentofForceY(p) * step / (2.0 * p.mass * help2_coef);
 		
 		p.x += p.vx * step;
 		p.y += p.vy * step;
@@ -87,15 +87,19 @@ public class Boris extends Solver{
 		
 		*/
 	}
-	
-	/*public void prepare(Particle2D p, Force f, double dt)
+	/*
+	public void prepare(Particle2D p, Force f, double dt)
 	{
-		dt = dt / 2;
-		double vxminus = p.vx + f.getPositionComponentofForceX(p) * dt / (2.0 * p.mass);
+		//dt = dt * 0.5;
+		
+		double help1_coef = 1 - f.drag * dt / (2 * p.mass);
+		double help2_coef = 1 + f.drag * dt / (2 * p.mass);
+		
+		double vxminus = help1_coef * p.vx / help2_coef + f.getPositionComponentofForceX(p) * dt / (2.0 * p.mass * help2_coef);
 		double vxplus;
 		double vxprime;
 		
-		double vyminus = p.vy + f.getPositionComponentofForceY(p) * dt / (2.0 * p.mass);
+		double vyminus = help1_coef * p.vy / help2_coef + f.getPositionComponentofForceY(p) * dt / (2.0 * p.mass * help2_coef);
 		double vyplus;
 		double vyprime;
 		
@@ -109,19 +113,26 @@ public class Boris extends Solver{
 		vxplus = vxminus + vyprime * s_z;
 		vyplus = vyminus - vxprime * s_z;
 		
-		p.vx = vxplus + p.charge * f.getPositionComponentofForceX(p) * dt / (2.0 * p.mass);
-		p.vy = vyplus + p.charge * f.getPositionComponentofForceY(p) * dt / (2.0 * p.mass);
+		p.vx = f.getPositionComponentofForceX(p) * dt / (2.0 * p.mass * help2_coef) + vyprime * s_z;
+		p.vy = f.getPositionComponentofForceY(p) * dt / (2.0 * p.mass * help2_coef) - vxprime * s_z; 
+		
+		//p.vx = vxplus + f.getPositionComponentofForceX(p) * dt / (2.0 * p.mass * help2_coef);
+		//p.vy = vyplus + f.getPositionComponentofForceY(p) * dt / (2.0 * p.mass * help2_coef);
+		
 		
 	}
 	
 	public void complete(Particle2D p, Force f, double dt)
 	{
-		dt = dt / 2;
-		double vxminus = p.vx + f.getPositionComponentofForceX(p) * dt / (2.0 * p.mass);
+
+		/*double help1_coef = 1 - f.drag * dt / (2 * p.mass);
+		double help2_coef = 1 + f.drag * dt / (2 * p.mass);
+		
+		double vxminus = help1_coef * p.vx / help2_coef + f.getPositionComponentofForceX(p) * dt / (2.0 * p.mass * help2_coef);
 		double vxplus;
 		double vxprime;
 		
-		double vyminus = p.vy + f.getPositionComponentofForceY(p) * dt / (2.0 * p.mass);
+		double vyminus = help1_coef * p.vy / help2_coef + f.getPositionComponentofForceY(p) * dt / (2.0 * p.mass * help2_coef);
 		double vyplus;
 		double vyprime;
 		
@@ -135,15 +146,14 @@ public class Boris extends Solver{
 		vxplus = vxminus + vyprime * s_z;
 		vyplus = vyminus - vxprime * s_z;
 		
-		//p.vx = vxplus - p.charge * f.getPositionComponentofForceX(p) * dt / (2.0 * p.mass);
-		//p.vy = vyplus - p.charge * f.getPositionComponentofForceY(p) * dt / (2.0 * p.mass);
+		vxold = p.vx;
+		vyold = p.vy;
 		
-		p.vx = (2 * p.mass * p.vx - 2 * p.mass * s_z * vyold - 2 * f.getPositionComponentofForceX(p) * p.charge * dt - 
-				f.getPositionComponentofForceY(p) * p.charge * s_z * dt - 
-				f.getPositionComponentofForceX(p) * p.charge * s_z * t_z * dt) / (2 * p.mass * (1 + s_z + t_z));
-		p.vy = (2 * p.mass * p.vy - 2 * p.mass * s_z * vxold - 2 * f.getPositionComponentofForceY(p) * p.charge * dt - 
-				f.getPositionComponentofForceX(p) * p.charge * s_z * dt - 
-				f.getPositionComponentofForceY(p) * p.charge * s_z * t_z * dt) / (2 * p.mass * (1 + s_z + t_z));
-	}*/
-	
+		p.vx = vxplus + f.getPositionComponentofForceX(p) * dt / (2.0 * p.mass * help2_coef);
+		p.vy = vyplus + f.getPositionComponentofForceY(p) * dt / (2.0 * p.mass * help2_coef);
+		
+		p.vx = (p.vx + vxold) * 0.5;
+		p.vy = (p.vy + vyold) * 0.5;
+	}
+	*/
 }
