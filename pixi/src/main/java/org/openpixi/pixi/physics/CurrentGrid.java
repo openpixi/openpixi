@@ -28,8 +28,8 @@ public class CurrentGrid {
 	/**Electric current in the middle of a cell in y-Direction*/
 	public double [][] jy;
 	
-	public static int X_BOX = 10;
-	public static int Y_BOX = 10;
+	public int X_BOX = 10;
+	public int Y_BOX = 10;
 	
 	public int cellWidth;
 	public int cellHeight;
@@ -44,6 +44,23 @@ public class CurrentGrid {
 		jy = new double[X_BOX][Y_BOX];
 		
 		for(int i = 0; i < X_BOX; i++)                           //setting the arrays to 0
+			for(int k = 0; k < Y_BOX; k++)
+			{
+				jx[i][k] = 0.0;
+				jy[i][k] = 0.0;
+			}
+	}
+	
+	//a method to change the dimensions of the cells, i.e. the width and the height
+	public void changeDimension(int xbox, int ybox)
+	{
+		X_BOX = xbox;
+		Y_BOX = ybox;
+		
+		jx = new double[X_BOX][Y_BOX];
+		jy = new double[X_BOX][Y_BOX];
+		
+		for(int i = 0; i < X_BOX; i++)                           
 			for(int k = 0; k < Y_BOX; k++)
 			{
 				jx[i][k] = 0.0;
