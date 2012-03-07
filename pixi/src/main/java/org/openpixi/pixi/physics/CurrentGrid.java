@@ -88,10 +88,10 @@ public class CurrentGrid {
 			Particle2D par = (Particle2D) parlist.get(i);
 			int xCellPosition = (int) (par.x / cellWidth);
 			int yCellPosition = (int) (par.y / cellHeight);
-			if(xCellPosition > 9)
-				xCellPosition = 9;
-			if(yCellPosition > 9)
-				yCellPosition = 9;
+			if(xCellPosition > (X_BOX - 1))
+				xCellPosition = (X_BOX - 1);
+			if(yCellPosition > (Y_BOX - 1))
+				yCellPosition = (Y_BOX - 1);
 			if(xCellPosition < 0)
 				xCellPosition = 0;
 			if(yCellPosition < 0)
