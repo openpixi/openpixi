@@ -48,6 +48,9 @@ public class MainControlApplet extends JApplet {
 	private JCheckBox framerateCheck;
 	private JCheckBox currentgridCheck;
 	
+	private JTextField xboxentry;
+	private JTextField yboxentry;
+	
 	private JComboBox initComboBox;
 	private JComboBox algorithmComboBox;
 	private JCheckBox traceCheck;
@@ -250,6 +253,16 @@ public class MainControlApplet extends JApplet {
 		}
 	}
 	
+	class BoxDimension implements ActionListener{
+		public void actionPerformed(ActionEvent eve) {
+			int xbox = Integer.parseInt(xboxentry.getText());
+			int ybox = Integer.parseInt(yboxentry.getText());
+			particlePanel.currentGrid.changeDimension(xbox, ybox);
+			particlePanel.currentGrid.setGrid(particlePanel.getWidth(), particlePanel.getHeight());
+		}
+	}
+
+	
 	/**
 	 * Constructor.
 	 */
@@ -284,8 +297,8 @@ public class MainControlApplet extends JApplet {
 		speedSlider.setPaintTicks(true);
 		JLabel speedLabel = new JLabel("Frame rate");
 		Box speed = Box.createVerticalBox();
-		speed.add(speedSlider);
 		speed.add(speedLabel);
+		speed.add(speedSlider);
 		
 		stepSlider = new JSlider();
 		stepSlider.addChangeListener(new StepListener());
@@ -297,8 +310,8 @@ public class MainControlApplet extends JApplet {
 		stepSlider.setPaintTicks(true);
 		JLabel stepLabel = new JLabel("Size of time step");
 		Box step = Box.createVerticalBox();
-		step.add(stepSlider);
 		step.add(stepLabel);
+		step.add(stepSlider);
 		
 		dragSlider = new JSlider();
 		dragSlider.addChangeListener(new DragListener());
@@ -363,6 +376,9 @@ public class MainControlApplet extends JApplet {
 		algorithmComboBox.setSelectedIndex(0);
 		algorithmComboBox.addActionListener(new AlgorithmListener());
 		JLabel algorithmLabel = new JLabel("Change the algorithm");
+		Box algorithmBox = Box.createVerticalBox();
+		algorithmBox.add(algorithmLabel);
+		algorithmBox.add(algorithmComboBox);
 		
 		startButton.addActionListener(new StartListener());
 		stopButton.addActionListener(new StopListener());
@@ -375,22 +391,43 @@ public class MainControlApplet extends JApplet {
 		currentgridCheck = new JCheckBox("Current");
 		currentgridCheck.addItemListener(new DrawCurrentGridListener());
 		
-		
 		framerateCheck = new JCheckBox("Info");
 		framerateCheck.addItemListener(new FrameListener());
+		
+		xboxentry = new JTextField("10");
+		xboxentry.addActionListener(new BoxDimension());
+		
+		yboxentry = new JTextField("10");
+		yboxentry.addActionListener(new BoxDimension());
+		
+		JLabel xboxentryLabel = new JLabel("Cell width");
+		JLabel yboxentryLabel = new JLabel("Cell height");
+		Box currentBox = Box.createVerticalBox();
+		//currentBox.add(currentgridCheck);
+		currentBox.add(xboxentryLabel);
+		currentBox.add(xboxentry);
+		currentBox.add(yboxentryLabel);
+		currentBox.add(yboxentry);
 
 		JPanel controlPanel = new JPanel();
 		controlPanel.setLayout(new FlowLayout());
 		controlPanel.add(startButton);
 		controlPanel.add(stopButton);
 		controlPanel.add(resetButton);
-		controlPanel.add(initComboBox);
+		controlPanel.add(testButton);
+		//controlPanel.add(initComboBox);
+		//controlPanel.add(algorithmBox);
 		controlPanel.add(speed);
 		controlPanel.add(step);
 		controlPanel.add(traceCheck);
-		controlPanel.add(currentgridCheck);
 		controlPanel.add(framerateCheck);
-		controlPanel.add(testButton);
+		controlPanel.add(Box.createHorizontalGlue());
+		controlPanel.add(Box.createHorizontalGlue());
+		controlPanel.add(Box.createHorizontalGlue());
+		controlPanel.add(Box.createHorizontalGlue());
+		controlPanel.add(Box.createHorizontalGlue());
+		controlPanel.add(currentgridCheck);		
+		controlPanel.add(currentBox);
 		
 		JLabel eFieldXLabel = new JLabel("Electric Field in x - direction");
 		JLabel eFieldYLabel = new JLabel("Electric Field in y - direction");
@@ -415,9 +452,9 @@ public class MainControlApplet extends JApplet {
 		fieldsBox.add(dragLabel);
 		fieldsBox.add(dragSlider);
 		fieldsBox.add(Box.createVerticalGlue());
-		fieldsBox.add(algorithmLabel);
-		fieldsBox.add(algorithmComboBox);
+		fieldsBox.add(initComboBox);
 		fieldsBox.add(Box.createVerticalGlue());
+		fieldsBox.add(algorithmBox);		
 		
 		this.setLayout(new BorderLayout());
 		this.add(controlPanel, BorderLayout.SOUTH);
@@ -472,7 +509,7 @@ public class MainControlApplet extends JApplet {
 
 		web.pack();
 		web.setVisible(true);
-		web.setSize(1200, 500);
+		web.setSize(1000, 500);
 
 		applet.init();
 	}
