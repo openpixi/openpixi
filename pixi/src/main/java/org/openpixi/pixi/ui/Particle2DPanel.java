@@ -38,7 +38,7 @@ public class Particle2DPanel extends JPanel {
 	
 	private static final int xmax = 700;
 	private static final int ymax = 500;
-
+	
 	public double step;
 
 	private boolean reset_trace;
@@ -71,7 +71,7 @@ public class Particle2DPanel extends JPanel {
 	/** Contains all particles */
 	ArrayList<Particle2D> parlist = new ArrayList<Particle2D>();
 	
-	private CurrentGrid currentGrid = new CurrentGrid();
+	public CurrentGrid currentGrid = new CurrentGrid();
 
 	Color darkGreen = new Color(0x00, 0x80, 0x00);
 
