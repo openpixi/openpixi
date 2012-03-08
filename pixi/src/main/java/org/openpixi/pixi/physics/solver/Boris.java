@@ -21,6 +21,11 @@ public class Boris extends Solver{
 	public void step(Particle2D p, Force f, double step) {
 		
 		double step1 = step;
+
+		// remember for complete()
+		//a(t) = F(v(t), x(t)) / m
+		p.ax = f.getForceX(p.vx, p.vy, p) / p.mass;
+		p.ay = f.getForceY(p.vx, p.vy, p) / p.mass;
 		
 		/*double f_coef;
 		//one need to divide the dragging coefficient with the mass, so the unit of help_coef is dimensionless
@@ -160,4 +165,22 @@ public class Boris extends Solver{
 		p.vy = (p.vy + vyold) * 0.5;
 	}
 	*/
+
+	public void prepare(Particle2D p, Force f, double dt)
+	{
+		//a(t) = F(v(t), x(t)) / m
+		p.ax = f.getForceX(p.vx, p.vy, p) / p.mass;
+		p.ay = f.getForceY(p.vx, p.vy, p) / p.mass;
+
+		//v(t + dt / 2) = v(t) + a(t)*dt / 2
+		p.vx -= p.ax * dt / 2;
+		p.vy -= p.ay * dt / 2;
+	}
+
+	public void complete(Particle2D p, Force f, double dt)
+	{
+		//v(t) = v(t + dt / 2) - a(t)*dt / 2
+		p.vx += p.ax * dt / 2;
+		p.vy += p.ay * dt / 2;
+	}
 }
