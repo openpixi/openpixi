@@ -55,6 +55,19 @@ public class Particle2D{
 	{
 	}
 
+	/** Copy constructor */
+	public Particle2D(Particle2D p) {
+		x = p.x;
+		y = p.y;
+		radius = p.radius;
+		vx = p.vx;
+		vy = p.vy;
+		ax = p.ax;
+		ay = p.ay;
+		mass = p.mass;
+		charge = p.charge;
+	}
+
 	//a method that calculates the range from the center 0.0 for 2-dim
 	public double rangeFromCenter2D()
 	{
@@ -69,5 +82,4 @@ public class Particle2D{
 		range = Math.pow(this.x - a.x, 2) + Math.pow(this.y - this.y, 2);
 		return Math.sqrt(range);
 	}
-	
 }
