@@ -92,17 +92,18 @@ public class Boris extends Solver{
 	/*
 	public void prepare(Particle2D p, Force f, double dt)
 	{
-		//dt = dt * 0.5;
-		
+		/*dt = dt * 0.5;
 		
 		double help1_coef = 1 - f.drag * dt / (2 * p.mass);
 		double help2_coef = 1 + f.drag * dt / (2 * p.mass);
 		
-		double vxminus = help1_coef * p.vx / help2_coef + f.getPositionComponentofForceX(p) * dt / (2.0 * p.mass * help2_coef);
+		double vxminus1 = help1_coef * p.vx / help2_coef + f.getPositionComponentofForceX(p) * dt / (2.0 * p.mass * help2_coef);
+		double vxminus = p.vx + f.getPositionComponentofForceX(p) * dt / (2.0 * p.mass);
 		double vxplus;
 		double vxprime;
 		
-		double vyminus = help1_coef * p.vy / help2_coef + f.getPositionComponentofForceY(p) * dt / (2.0 * p.mass * help2_coef);
+		double vyminus1 = help1_coef * p.vy / help2_coef + f.getPositionComponentofForceY(p) * dt / (2.0 * p.mass * help2_coef);
+		double vyminus = p.vy + f.getPositionComponentofForceY(p) * dt / (2.0 * p.mass);
 		double vyplus;
 		double vyprime;
 		
@@ -113,11 +114,16 @@ public class Boris extends Solver{
 		vxprime = vxminus + vyminus * t_z;
 		vyprime = vyminus - vxminus * t_z;
 		
-		vxplus = vxminus + vyprime * s_z;
-		vyplus = vyminus - vxprime * s_z;
+		vxplus = vxminus1 + vyprime * s_z / help2_coef;
+		vyplus = vyminus1 - vxprime * s_z / help2_coef;
+		
+		vxold = p.vx;
+		vyold = p.vy;
 		
 		p.vx = vxplus + f.getPositionComponentofForceX(p) * dt / (2.0 * p.mass * help2_coef);
 		p.vy = vyplus + f.getPositionComponentofForceY(p) * dt / (2.0 * p.mass * help2_coef);
+		
+
 	}
 	
 	public void complete(Particle2D p, Force f, double dt)
