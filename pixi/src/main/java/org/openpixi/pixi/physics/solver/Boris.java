@@ -6,13 +6,10 @@
 package org.openpixi.pixi.physics.solver;
 
 import org.openpixi.pixi.physics.*;
-import org.openpixi.pixi.ui.*;
+
 
 public class Boris extends Solver{
-	
-	private double vxold;
-	private double vyold;
-	
+
 	public Boris()
 	{
 		super();
@@ -42,9 +39,6 @@ public class Boris extends Solver{
 		
 		vxplus = vxminus + vyprime * s_z;
 		vyplus = vyminus - vxprime * s_z;
-		
-		vxold = p.vx;
-		vyold = p.vy;
 		
 		p.vx = vxplus + f.getPositionComponentofForceX(p) * step / (2.0 * p.mass) + f.getTangentVelocityComponentOfForceX(p) / p.mass;
 		p.vy = vyplus + f.getPositionComponentofForceY(p) * step / (2.0 * p.mass) + f.getTangentVelocityComponentOfForceY(p) / p.mass;
