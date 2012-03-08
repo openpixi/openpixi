@@ -29,6 +29,7 @@ import java.awt.geom.AffineTransform;
 import static java.awt.geom.AffineTransform.*;
 import java.util.ArrayList;
 import java.lang.Math;
+import java.io.*;
 
 
 /**
@@ -39,6 +40,13 @@ public class Particle2DPanel extends JPanel {
 	private static final int xmax = 700;
 	private static final int ymax = 500;
 	
+	public String fileName;
+	
+	//File data;
+	
+	FileWriter fstream;
+	BufferedWriter out;
+	
 	public double step;
 
 	private boolean reset_trace;
@@ -46,6 +54,8 @@ public class Particle2DPanel extends JPanel {
 	private boolean test = false;
 	
 	private boolean drawCurrentGrid = false;
+	
+	private boolean writePosition = false;
 
 	private Solver s = new EulerRichardson();
 	
@@ -96,6 +106,23 @@ public class Particle2DPanel extends JPanel {
 			}
 			frameratedetector.update();
 			repaint();
+			if(writePosition)
+			{
+				Particle2D par = (Particle2D) parlist.get(0);
+				System.out.println(par.x + " " + par.y);
+				//data = new File("C:\\Text.txt");
+				try {
+					fstream = new FileWriter(fileName + ".dat", true);
+					out = new BufferedWriter(fstream);
+					out.write(par.x + " " + par.y);
+					out.newLine();
+					out.close();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				
+			}
 		}
 	}
 
@@ -273,6 +300,23 @@ public class Particle2DPanel extends JPanel {
 		drawCurrentGrid =! drawCurrentGrid;
 	}
 	
+	public void writePosition() {
+		writePosition =! writePosition;
+		if(writePosition)
+		{
+			createRandomParticles(1, 10);
+			Particle2D par = (Particle2D) parlist.get(0);
+			par.x = 0;
+			par.y = this.getHeight() * 0.5;
+			par.vx = 10;
+			par.vy = 10;
+			par.mass = 1;
+			par.charge = 1;
+		}
+		else
+			resetAnimation(0);
+	}
+	
 	public void algorithmChange(int id)
 	{
 		for (int i = 0; i < NUM_PARTICLES; i++) {
@@ -412,4 +456,5 @@ public class Particle2DPanel extends JPanel {
         // reset transformationmatrix
         g.setTransform(old);
      }
+
 }
