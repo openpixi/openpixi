@@ -20,6 +20,7 @@ package org.openpixi.pixi.ui;
 
 import org.openpixi.pixi.physics.*;
 import org.openpixi.pixi.physics.boundary.*;
+import org.openpixi.pixi.physics.collision.*;
 import org.openpixi.pixi.physics.solver.*;
 import org.openpixi.pixi.ui.util.*;
 import java.awt.*;
@@ -58,6 +59,8 @@ public class Particle2DPanel extends JPanel {
 	private boolean writePosition = false;
 
 	private Solver s = new EulerRichardson();
+	
+	//private Collision collision = new ElasticCollision();
 	
 	/** Milliseconds between updates */
 	private int interval = 30;
@@ -104,6 +107,7 @@ public class Particle2DPanel extends JPanel {
 					boundary.check(par, f, s, step);
 				}
 			}
+			//collision.check(parlist, f, s, step);
 			frameratedetector.update();
 			repaint();
 			if(writePosition)
@@ -206,7 +210,7 @@ public class Particle2DPanel extends JPanel {
 	private void initRandomParticles(int count, int radius) {
 		f = new Force();
 		f.reset();
-		f.gy = -1; //-ConstantsSI.g;
+		f.gy = - 1; //-ConstantsSI.g;
 		//f.bz = 1;
 		
 		createRandomParticles(count, radius);
