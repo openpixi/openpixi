@@ -373,6 +373,10 @@ public class MainControlApplet extends JApplet {
 		initComboBox = new JComboBox(initStrings);
 		initComboBox.setSelectedIndex(0);
 		initComboBox.addActionListener(new ComboBoxListener());
+		JLabel initComboBoxLabel = new JLabel("Initial conditions");
+		Box initBox = Box.createVerticalBox();
+		initBox.add(initComboBoxLabel);
+		initBox.add(initComboBox);
 		
 		algorithmComboBox = new JComboBox(solverString);
 		algorithmComboBox.setSelectedIndex(0);
@@ -396,40 +400,51 @@ public class MainControlApplet extends JApplet {
 		framerateCheck = new JCheckBox("Info");
 		framerateCheck.addItemListener(new FrameListener());
 		
-		xboxentry = new JTextField("10");
+		xboxentry = new JTextField(3);
+		xboxentry.setText("10");
 		xboxentry.addActionListener(new BoxDimension());
 		
-		yboxentry = new JTextField("10");
+		yboxentry = new JTextField(3);
+		yboxentry.setText("10");
 		yboxentry.addActionListener(new BoxDimension());
 		
-		JLabel xboxentryLabel = new JLabel("Cell width");
-		JLabel yboxentryLabel = new JLabel("Cell height");
-		Box currentBox = Box.createVerticalBox();
-		//currentBox.add(currentgridCheck);
+		JLabel xboxentryLabel = new JLabel("Current cell width");
+		JLabel yboxentryLabel = new JLabel("Current cell height");
+		/*Box currentBox = Box.createHorizontalBox();
+		currentBox.add(currentgridCheck);
 		currentBox.add(xboxentryLabel);
 		currentBox.add(xboxentry);
+		currentBox.add(Box.createHorizontalGlue());
 		currentBox.add(yboxentryLabel);
-		currentBox.add(yboxentry);
+		currentBox.add(yboxentry);*/
 
-		JPanel controlPanel = new JPanel();
-		controlPanel.setLayout(new FlowLayout());
-		controlPanel.add(startButton);
-		controlPanel.add(stopButton);
-		controlPanel.add(resetButton);
-		controlPanel.add(testButton);
-		//controlPanel.add(initComboBox);
-		//controlPanel.add(algorithmBox);
-		controlPanel.add(speed);
-		controlPanel.add(step);
-		controlPanel.add(traceCheck);
-		controlPanel.add(framerateCheck);
-		controlPanel.add(Box.createHorizontalGlue());
-		controlPanel.add(Box.createHorizontalGlue());
-		controlPanel.add(Box.createHorizontalGlue());
-		controlPanel.add(Box.createHorizontalGlue());
-		controlPanel.add(Box.createHorizontalGlue());
-		controlPanel.add(currentgridCheck);		
-		controlPanel.add(currentBox);
+		JPanel controlPanelUp = new JPanel();
+		controlPanelUp.setLayout(new FlowLayout());
+		controlPanelUp.add(startButton);
+		controlPanelUp.add(stopButton);
+		controlPanelUp.add(resetButton);
+		controlPanelUp.add(testButton);
+		controlPanelUp.add(traceCheck);
+		controlPanelUp.add(framerateCheck);
+		controlPanelUp.add(currentgridCheck);		
+		controlPanelUp.add(Box.createHorizontalGlue());
+		//controlPanelUp.add(currentBox);
+		controlPanelUp.add(xboxentryLabel);
+		controlPanelUp.add(xboxentry);
+		controlPanelUp.add(Box.createHorizontalGlue());
+		controlPanelUp.add(yboxentryLabel);
+		controlPanelUp.add(yboxentry);
+		
+		JPanel controlPanelDown = new JPanel();
+		controlPanelDown.setLayout(new FlowLayout());
+		controlPanelDown.add(initBox);
+		controlPanelDown.add(algorithmBox);
+		controlPanelDown.add(speed);
+		controlPanelDown.add(step);
+		
+		Box panelBox = Box.createVerticalBox();
+		panelBox.add(controlPanelUp);
+		panelBox.add(controlPanelDown);
 		
 		JLabel eFieldXLabel = new JLabel("Electric Field in x - direction");
 		JLabel eFieldYLabel = new JLabel("Electric Field in y - direction");
@@ -454,12 +469,9 @@ public class MainControlApplet extends JApplet {
 		fieldsBox.add(dragLabel);
 		fieldsBox.add(dragSlider);
 		fieldsBox.add(Box.createVerticalGlue());
-		fieldsBox.add(initComboBox);
-		fieldsBox.add(Box.createVerticalGlue());
-		fieldsBox.add(algorithmBox);		
 		
 		this.setLayout(new BorderLayout());
-		this.add(controlPanel, BorderLayout.SOUTH);
+		this.add(panelBox, BorderLayout.SOUTH);
 		this.add(particlePanel, BorderLayout.CENTER);
 		this.add(fieldsBox, BorderLayout.EAST);
 
