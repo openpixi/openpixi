@@ -56,15 +56,15 @@ public class Force {
 	}
 	
 	//getting the force in the x - direction
-	public double getForceX(double vx, double vy, Particle2D par)
+	public double getForceX(Particle2D par)
 	{
-		return -drag * vx + par.mass * gx + par.charge * ex + par.charge * vy * bz;
+		return -drag * par.vx + par.mass * gx + par.charge * ex + par.charge * par.vy * bz;
 	}
 	
 	//getting the force in the y - direction
-	public double getForceY(double vx, double vy, Particle2D par)
+	public double getForceY(Particle2D par)
 	{
-		return - drag * vy + par.mass * gy + par.charge * ey - par.charge * vx * bz;
+		return - drag * par.vy + par.mass * gy + par.charge * ey - par.charge * par.vx * bz;
 	}
 	
 	public double getPositionComponentofForceX(Particle2D par)
