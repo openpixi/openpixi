@@ -23,9 +23,6 @@ public class Euler extends Solver {
 		p.vx += p.ax * step;
 		p.vy += p.ay * step;
 
-		//a(t + dt) = F(v(t + dt), x(t + dt)) / m
-		//p.ax = f.getForceX(p.vx, p.vy, p) / p.mass;
-		//p.ay = f.getForceY(p.vx, p.vy, p) / p.mass;
 	}
 
 }
