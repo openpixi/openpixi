@@ -167,6 +167,7 @@ public class MainControlApplet extends JApplet {
 	class WritePosition implements ItemListener {
 		public void itemStateChanged(ItemEvent eve){
 			if(eve.getStateChange() == ItemEvent.SELECTED)
+				filename.setEnabled(true);
 				filename.setEditable(true);
 			if(eve.getStateChange() == ItemEvent.DESELECTED)
 			{
@@ -182,6 +183,8 @@ public class MainControlApplet extends JApplet {
 			{
 				particlePanel.fileName = filename.getText();
 				particlePanel.writePosition();
+				filename.setEditable(false);
+				filename.setEnabled(false);
 			}
 		}
 	}
@@ -438,6 +441,7 @@ public class MainControlApplet extends JApplet {
 		
 		filename = new JTextField(10);
 		filename.setText("Enter a filename");
+		filename.setEnabled(false);
 		filename.setEditable(false);
 		filename.addActionListener(new WriteFilename());
 		
@@ -544,6 +548,7 @@ public class MainControlApplet extends JApplet {
 		particlePanel.currentGrid.setGrid(particlePanel.getWidth(), particlePanel.getHeight());
 		writePositionCheck.setSelected(false);
 		filename.setEditable(false);
+		filename.setEnabled(false);
 		filename.setText("Enter a filename");
 	}
 	
