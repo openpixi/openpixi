@@ -47,9 +47,12 @@ public class MainControlApplet extends JApplet {
 	
 	private JCheckBox framerateCheck;
 	private JCheckBox currentgridCheck;
+	private JCheckBox writePositionCheck;
 	
 	private JTextField xboxentry;
 	private JTextField yboxentry;
+	
+	private JTextField filename;
 	
 	private JComboBox initComboBox;
 	private JComboBox algorithmComboBox;
@@ -158,6 +161,28 @@ public class MainControlApplet extends JApplet {
 	class CheckListener implements ItemListener {
 		public void itemStateChanged(ItemEvent eve){
 				particlePanel.checkTrace();
+		}
+	}
+	
+	class WritePosition implements ItemListener {
+		public void itemStateChanged(ItemEvent eve){
+			if(eve.getStateChange() == ItemEvent.SELECTED)
+				filename.setEditable(true);
+			if(eve.getStateChange() == ItemEvent.DESELECTED)
+			{
+				filename.setEditable(false);
+				particlePanel.writePosition();
+			}
+		}
+	}
+	
+	class WriteFilename implements ActionListener {
+		public void actionPerformed(ActionEvent eve) {
+			if(writePositionCheck.isSelected())
+			{
+				particlePanel.fileName = filename.getText();
+				particlePanel.writePosition();
+			}
 		}
 	}
 	
@@ -400,13 +425,21 @@ public class MainControlApplet extends JApplet {
 		framerateCheck = new JCheckBox("Info");
 		framerateCheck.addItemListener(new FrameListener());
 		
-		xboxentry = new JTextField(3);
+		writePositionCheck = new JCheckBox("Write Position");
+		writePositionCheck.addItemListener(new WritePosition());
+		
+		xboxentry = new JTextField(2);
 		xboxentry.setText("10");
 		xboxentry.addActionListener(new BoxDimension());
 		
-		yboxentry = new JTextField(3);
+		yboxentry = new JTextField(2);
 		yboxentry.setText("10");
 		yboxentry.addActionListener(new BoxDimension());
+		
+		filename = new JTextField(10);
+		filename.setText("Enter a filename");
+		filename.setEditable(false);
+		filename.addActionListener(new WriteFilename());
 		
 		JLabel xboxentryLabel = new JLabel("Current cell width");
 		JLabel yboxentryLabel = new JLabel("Current cell height");
@@ -424,8 +457,11 @@ public class MainControlApplet extends JApplet {
 		controlPanelUp.add(stopButton);
 		controlPanelUp.add(resetButton);
 		controlPanelUp.add(testButton);
-		controlPanelUp.add(traceCheck);
-		controlPanelUp.add(framerateCheck);
+		//controlPanelUp.add(traceCheck);
+		//controlPanelUp.add(framerateCheck);
+		controlPanelUp.add(writePositionCheck);
+		controlPanelUp.add(filename);
+		controlPanelUp.add(Box.createHorizontalGlue());
 		controlPanelUp.add(currentgridCheck);		
 		controlPanelUp.add(Box.createHorizontalGlue());
 		//controlPanelUp.add(currentBox);
@@ -435,8 +471,11 @@ public class MainControlApplet extends JApplet {
 		controlPanelUp.add(yboxentryLabel);
 		controlPanelUp.add(yboxentry);
 		
+		
 		JPanel controlPanelDown = new JPanel();
 		controlPanelDown.setLayout(new FlowLayout());
+		controlPanelDown.add(traceCheck);
+		controlPanelDown.add(framerateCheck);
 		controlPanelDown.add(initBox);
 		controlPanelDown.add(algorithmBox);
 		controlPanelDown.add(speed);
@@ -503,6 +542,9 @@ public class MainControlApplet extends JApplet {
 		yboxentry.setText("10");
 		particlePanel.currentGrid.changeDimension(10, 10);
 		particlePanel.currentGrid.setGrid(particlePanel.getWidth(), particlePanel.getHeight());
+		writePositionCheck.setSelected(false);
+		filename.setEditable(false);
+		filename.setText("Enter a filename");
 	}
 	
 	@Override
