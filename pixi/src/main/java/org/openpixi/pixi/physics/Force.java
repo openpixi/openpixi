@@ -86,4 +86,14 @@ public class Force {
 	{
 		return - drag * par.vy;
 	}
+	
+	public double getNormalVelocityComponentofForceX(Particle2D par)
+	{
+		return par.charge * par.vy * bz;
+	}
+	
+	public double getNormalVelocityComponentofForceY(Particle2D par)
+	{
+		return - par.charge * par.vx * bz;
+	}
 }
