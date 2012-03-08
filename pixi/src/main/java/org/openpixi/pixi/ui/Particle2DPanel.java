@@ -288,15 +288,21 @@ public class Particle2DPanel extends JPanel {
 			s = new LeapFrog();
 			break;
 		case 2:
-			s = new LeapFrogHalfStep();
+			s = new LeapFrogDamped();
 			break;
 		case 3:
-			s = new Boris();
+			s = new LeapFrogHalfStep();
 			break;
 		case 4:
-			s = new SemiImplicitEuler();
+			s = new Boris();
 			break;
 		case 5:
+			s = new BorisDamped();
+			break;
+		case 6:
+			s = new SemiImplicitEuler();
+			break;
+		case 7:
 			s = new Euler();
 			break;
 			}

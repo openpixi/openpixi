@@ -78,8 +78,10 @@ public class MainControlApplet extends JApplet {
 	String[] solverString = {
 			"Euler Richardson",
 			"LeapFrog",
+			"LeapFrog Damped",
 			"LeapFrog Half Step",
-			"Boris Calculation",
+			"Boris",
+			"Boris Damped",
 			"Semi Implicit Euler",
 			"Euler"};
 
