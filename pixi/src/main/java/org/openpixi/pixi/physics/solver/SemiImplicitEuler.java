@@ -12,8 +12,8 @@ public class SemiImplicitEuler extends Solver {
 	public void step(Particle2D p, Force f, double step)
 	{
 		//a(t) = F(v(t), x(t)) / m
-		p.ax = f.getForceX(p.vx, p.vy, p) / p.mass;
-		p.ay = f.getForceY(p.vx, p.vy, p) / p.mass;
+		p.ax = f.getForceX(p) / p.mass;
+		p.ay = f.getForceY(p) / p.mass;
 		
 		// v(t+dt) = v(t) + a(t)*dt
 		p.vx += p.ax * step;
@@ -25,16 +25,4 @@ public class SemiImplicitEuler extends Solver {
 		
 	}
 	
-	public void prepare(Particle2D p, Force f, double step)
-	{
-		
-	}
-	
-	public void complete(Particle2D p, Force f, double step)
-	{
-		// v(t) = v(t + dt) - a(t)*dt
-		p.vx -= p.ax * step;
-		p.vy -= p.ay * step;
-	}
-
 }

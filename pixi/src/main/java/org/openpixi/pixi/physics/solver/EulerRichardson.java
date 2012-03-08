@@ -39,58 +39,37 @@ public class EulerRichardson extends Solver{
 	
 	public void step(Particle2D p, Force f, double step)
 	{
-		//saving the starting value of the position
+		//saving the starting value of the position & velocity
 		double xstart = p.x;
 		double ystart = p.y;
+		double vxstart = p.vx;
+		double vystart = p.vy;
 		
 		//a(t) = F(v(t), x(t)) / m
-		p.ax = f.getForceX(p.vx, p.vy, p) / p.mass;
-		p.ay = f.getForceY(p.vx, p.vy, p) / p.mass;
+		p.ax = f.getForceX(p) / p.mass;
+		p.ay = f.getForceY(p) / p.mass;
 		
 		//starting the Euler-Richardson algorithm (the equations correspond with the ones on the above mentioned website)
 		//v(t + dt / 2) = v(t) + a(t) * dt / 2
-		double vxmiddle = p.vx + p.ax * step / 2;
-		double vymiddle = p.vy + p.ay * step / 2;
+		p.vx += p.ax * step / 2;
+		p.vy += p.ay * step / 2;
 		
 		//x(t + dt / 2) = x(t) + v(t) * dt / 2
 		p.x += p.vx * step / 2;
 		p.y += p.vy * step / 2; 
 		
 		//a(t + dt / 2) = F(v(t + dt / 2), x(t + dt / 2)) / m
-		double axmiddle = f.getForceX(vxmiddle, vymiddle, p) / p.mass;
-		double aymiddle = f.getForceY(vxmiddle, vymiddle, p) / p.mass;
-		
-		//v(t + dt) = v(t) + a(t + dt / 2) * dt
-		p.vx += axmiddle * step;
-		p.vy += aymiddle * step;
+		p.ax = f.getForceX(p) / p.mass;
+		p.ay = f.getForceY(p) / p.mass;
 		
 		//x(t + dt) = x(t) + v(t + dt / 2) * dt
-		p.x = xstart + vxmiddle * step;
-		p.y = ystart + vymiddle * step;
-		
-		//a(t) = F(v(t + dt), x(t + dt)) / m
-		p.ax = f.getForceX(p.vx, p.vy, p) / p.mass;
-		p.ay = f.getForceY(p.vx, p.vy, p) / p.mass;
-	}
-	
-	public void prepare(Particle2D p, Force f, double step)
-	{
-		
-	}
-	
-	public void complete(Particle2D p, Force f, double step)
-	{
-		double vxmiddle = p.vx + p.ax * step / 2;
-		double vymiddle = p.vy + p.ay * step / 2;
-		
-		double axmiddle = f.getForceX(vxmiddle, vymiddle, p) / p.mass;
-		double aymiddle = f.getForceY(vxmiddle, vymiddle, p) / p.mass;
+		p.x = xstart + p.vx * step;
+		p.y = ystart + p.vy * step;
 		
 		//v(t + dt) = v(t) + a(t + dt / 2) * dt
-		p.vx -= axmiddle * step;
-		p.vy -= aymiddle * step;
-		//p.vx -= p.ax * step;
-		//p.vy -= p.ay * step;
+		p.vx = vxstart + p.ax * step;
+		p.vy = vystart + p.ay * step;
+		
 	}
 
 }
