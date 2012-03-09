@@ -37,6 +37,11 @@ public class EulerRichardson extends Solver{
 		super();
 	}
 	
+	/**
+	 * Euler - Richardson algorithm.
+	 * @param p before the update: x(t), v(t), a(t);
+	 *                 after the update: x(t+dt), v(t+dt), a(t+dt/2)
+	 */
 	public void step(Particle2D p, Force f, double step)
 	{
 		//saving the starting value of the position & velocity
