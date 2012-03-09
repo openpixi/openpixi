@@ -30,7 +30,6 @@ import java.awt.geom.AffineTransform;
 import static java.awt.geom.AffineTransform.*;
 import java.util.ArrayList;
 import java.lang.Math;
-import java.io.*;
 
 
 /**
@@ -43,10 +42,7 @@ public class Particle2DPanel extends JPanel {
 	
 	public String fileName;
 	
-	//File data;
-	
-	FileWriter fstream;
-	BufferedWriter out;
+	private WriteFile file = new WriteFile();
 	
 	public double step;
 
@@ -114,18 +110,7 @@ public class Particle2DPanel extends JPanel {
 			{
 				Particle2D par = (Particle2D) parlist.get(0);
 				System.out.println(par.x + " " + par.y);
-				//data = new File("C:\\Text.txt");
-				try {
-					fstream = new FileWriter(fileName + ".dat", true);
-					out = new BufferedWriter(fstream);
-					out.write(par.x + " " + par.y);
-					out.newLine();
-					out.close();
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				
+				file.writeFile(fileName, par.x + " " + par.y);
 			}
 		}
 	}
