@@ -53,6 +53,7 @@ public class MainControlApplet extends JApplet {
 	private JTextField yboxentry;
 	
 	private JTextField filename;
+	private JTextField filedirectory;
 	
 	private JComboBox initComboBox;
 	private JComboBox algorithmComboBox;
@@ -169,6 +170,8 @@ public class MainControlApplet extends JApplet {
 			if(eve.getStateChange() == ItemEvent.SELECTED)
 				filename.setEnabled(true);
 				filename.setEditable(true);
+				filedirectory.setEnabled(true);
+				filedirectory.setEditable(true);
 			if(eve.getStateChange() == ItemEvent.DESELECTED)
 			{
 				filename.setEditable(false);
@@ -182,9 +185,12 @@ public class MainControlApplet extends JApplet {
 			if(writePositionCheck.isSelected())
 			{
 				particlePanel.fileName = filename.getText();
+				particlePanel.fileDirectory = filedirectory.getText();
 				particlePanel.writePosition();
 				filename.setEditable(false);
 				filename.setEnabled(false);
+				filedirectory.setEditable(false);
+				filedirectory.setEnabled(false);
 			}
 		}
 	}
@@ -440,10 +446,18 @@ public class MainControlApplet extends JApplet {
 		yboxentry.addActionListener(new BoxDimension());
 		
 		filename = new JTextField(10);
-		filename.setText("Enter a filename");
+		filename.setText("Filename");
 		filename.setEnabled(false);
 		filename.setEditable(false);
-		filename.addActionListener(new WriteFilename());
+		//filename.addActionListener(new WriteFilename());
+		
+		filedirectory = new JTextField(10);
+		filedirectory.setText("Dir., ex. C:\\Pixi");
+		filedirectory.setEnabled(false);
+		filedirectory.setEditable(false);
+		filedirectory.addActionListener(new WriteFilename());
+		filedirectory.setToolTipText("Please enter an existing directory");
+		
 		
 		JLabel xboxentryLabel = new JLabel("Current cell width");
 		JLabel yboxentryLabel = new JLabel("Current cell height");
@@ -465,6 +479,7 @@ public class MainControlApplet extends JApplet {
 		//controlPanelUp.add(framerateCheck);
 		controlPanelUp.add(writePositionCheck);
 		controlPanelUp.add(filename);
+		controlPanelUp.add(filedirectory);
 		controlPanelUp.add(Box.createHorizontalGlue());
 		controlPanelUp.add(currentgridCheck);		
 		controlPanelUp.add(Box.createHorizontalGlue());
@@ -549,7 +564,10 @@ public class MainControlApplet extends JApplet {
 		writePositionCheck.setSelected(false);
 		filename.setEditable(false);
 		filename.setEnabled(false);
-		filename.setText("Enter a filename");
+		filename.setText("Filename");
+		filedirectory.setEditable(false);
+		filedirectory.setEnabled(false);
+		filedirectory.setText("direc., ex. C:\\Pixi");
 	}
 	
 	@Override

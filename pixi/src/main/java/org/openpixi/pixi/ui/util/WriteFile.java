@@ -6,14 +6,16 @@ public class WriteFile {
 	
 	FileWriter fstream;
 	BufferedWriter out;
+	File file;
 	
 	public WriteFile() {
 		
-	}
+	}//filename + ".dat"
 	
-	public void writeFile(String filename, String output) {
+	public void writeFile(String filename, String filedirectory, String output) {
 		try {
-			fstream = new FileWriter(filename + ".dat", true);
+			file = new File(filedirectory + "\\" + filename + ".dat");
+			fstream = new FileWriter(file, true);
 			out = new BufferedWriter(fstream);
 			out.write(output);
 			out.newLine();

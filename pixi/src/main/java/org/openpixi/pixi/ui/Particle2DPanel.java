@@ -42,6 +42,8 @@ public class Particle2DPanel extends JPanel {
 	
 	public String fileName;
 	
+	public String fileDirectory;
+	
 	private WriteFile file = new WriteFile();
 	
 	public double step;
@@ -110,7 +112,7 @@ public class Particle2DPanel extends JPanel {
 			{
 				Particle2D par = (Particle2D) parlist.get(0);
 				System.out.println(par.x + " " + par.y);
-				file.writeFile(fileName, par.x + " " + par.y);
+				file.writeFile(fileName, fileDirectory, par.x + " " + par.y);
 			}
 		}
 	}
