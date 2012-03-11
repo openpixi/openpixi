@@ -1,7 +1,6 @@
 package org.openpixi.pixi.physics;
 
-import org.openpixi.pixi.physics.solver.Boris;
-import org.openpixi.pixi.physics.solver.Solver;
+import org.openpixi.pixi.physics.solver.*;
 
 public class ParticleMover {
 
