@@ -6,6 +6,7 @@ public class InterpolatorParticlesGrid {
 	
 	static double [][] jx = new double[Simulation.num_cells_x][Simulation.num_cells_y];
 	static double [][] jy = new double[Simulation.num_cells_x][Simulation.num_cells_y];
+	static double [][] rho = new double[Simulation.num_cells_x][Simulation.num_cells_y];
 	
 	static void interpolateParticlesGrid(int num_particles, Particle2D [] particles) {
 		
@@ -28,6 +29,7 @@ public class InterpolatorParticlesGrid {
 				xCellPosition = 0;
 			if(yCellPosition < 0)
 				yCellPosition = 0;
+			rho[xCellPosition][yCellPosition] += Simulation.particles[i].charge;
 			jx[xCellPosition][yCellPosition] += Simulation.particles[i].charge * Simulation.particles[i].vx;
 			jy[xCellPosition][yCellPosition] += Simulation.particles[i].charge * Simulation.particles[i].vy;
 		}
