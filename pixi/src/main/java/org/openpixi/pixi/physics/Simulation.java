@@ -6,23 +6,22 @@ import org.openpixi.pixi.physics.boundary.*;
 
 public class Simulation {
 	
-	private static final int num_particles = 100000;
+	private static final int num_particles = 1000;
 	private static final double particle_radius = 0.1;
 	/**Total number of timesteps*/
-	private static final int steps = 10000;
+	private static final int steps = 1000;
 	/**Timestep*/
-	private static final double tstep = 1;
+	static final double tstep = 1;
 	/**Width of simulated area*/
 	private static final int width = 100;
 	/**Height of simulated area*/
 	private static  final int  height = 100;
 	
-	/**Contains current solver algorithm*/
-	private static Solver solver = new Boris();
 	/**Contains all Particle2D objects*/
-	private static Particle2D[] particles = new Particle2D[num_particles];
-	private static Force  f= new Force();
-	private static Boundary boundary = new HardWallBoundary();
+	static Particle2D[] particles = new Particle2D[num_particles];
+	static Force  f= new Force();
+	static Boundary boundary = new HardWallBoundary();
+	
 	
 	private static void CreateParticles(int num_particles, double particle_radius) {
 		for (int i = 0; i < num_particles; i++) {
@@ -38,26 +37,10 @@ public class Simulation {
 			} else {
 				particles[i].charge = -1;
 			}
-			solver.prepare(particles[i], f, tstep);
+			ParticleMover.solver.prepare(particles[i], f, tstep);
 		}
 	}
 	
-	private static void particlePush(int num_particles) {
-		
-		for (int i = 0; i < num_particles; i++) {
-			solver.step(particles[i], f, tstep);
-			boundary.check(particles[i], f, solver, tstep);
-		}
-		
-	}
-		/*
-		private static void InterpolateToGrid(int NUM_PARTICLES) {
-			
-		for (int i = 0; i < NUM_PARTICLES; i++) {
-		}
-		
-	}*/
-		
 	public static void main(String[] args) {
 				
 		boundary.xmin = 0;
@@ -80,8 +63,7 @@ public class Simulation {
 		long start = System.currentTimeMillis();
 		
 		for (int i = 0; i < steps; i++) {
-			particlePush(num_particles);
-			//InterpolateToGrid(NUM_PARTICLES);
+			ParticleMover.particlePush(num_particles);
 		}
 		
 		long elapsed = System.currentTimeMillis()-start;
