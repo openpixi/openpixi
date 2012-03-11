@@ -12,16 +12,20 @@ public class Simulation {
 	/**Timestep*/
 	static final double tstep = 1;
 	/**Width of simulated area*/
-	private static final int width = 100;
+	public static final int width = 100;
 	/**Height of simulated area*/
-	private static  final int  height = 100;
+	public static  final int  height = 100;
+	
+	static int num_cells_x = 10;
+	static int num_cells_y = 10;
+	static final double cell_width = width/num_cells_x;
+	static final double cell_height = height/num_cells_y;
 	
 	/**Contains all Particle2D objects*/
-	static Particle2D[] particles = new Particle2D[num_particles];
+	public static Particle2D[] particles = new Particle2D[num_particles];
 	static Force  f= new Force();
 	static Boundary boundary = new HardWallBoundary();
-	
-	
+		
 	private static void CreateParticles(int num_particles, double particle_radius) {
 		for (int i = 0; i < num_particles; i++) {
 			particles[i] = new Particle2D();
@@ -63,6 +67,7 @@ public class Simulation {
 		
 		for (int i = 0; i < steps; i++) {
 			ParticleMover.particlePush(num_particles);
+			InterpolatorParticlesGrid.interpolateParticlesGrid(num_particles, particles);
 		}
 		
 		long elapsed = System.currentTimeMillis()-start;
@@ -71,7 +76,13 @@ public class Simulation {
 			System.out.println(particles[i].x);	
 		}
 		
-		System.out.println("\n Calculation time: "+elapsed);
+		System.out.println("\nCurrent: ");
+		
+		for (int i = 0; i < Simulation.num_cells_x; i++) {
+				System.out.println(InterpolatorParticlesGrid.jx[i][0]);
+		}
+		
+		System.out.println("\nCalculation time: "+elapsed);
 	}
 
 }
