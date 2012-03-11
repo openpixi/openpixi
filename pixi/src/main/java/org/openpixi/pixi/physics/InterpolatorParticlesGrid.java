@@ -6,6 +6,7 @@ public class InterpolatorParticlesGrid {
 	
 	static double [][] jx = new double[Simulation.num_cells_x][Simulation.num_cells_y];
 	static double [][] jy = new double[Simulation.num_cells_x][Simulation.num_cells_y];
+	
 	static void interpolateParticlesGrid(int num_particles, Particle2D [] particles) {
 		
 		for (int i = 0; i < Simulation.num_cells_x; i++) {
