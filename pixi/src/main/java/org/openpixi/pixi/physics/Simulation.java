@@ -6,10 +6,10 @@ import org.openpixi.pixi.physics.boundary.*;
 
 public class Simulation {
 	
-	private static final int num_particles = 1000;
+	private static final int num_particles = 100000;
 	private static final double particle_radius = 0.1;
 	/**Total number of timesteps*/
-	private static final int steps = 1000;
+	private static final int steps = 10000;
 	/**Timestep*/
 	private static final double tstep = 1;
 	/**Width of simulated area*/
@@ -20,33 +20,33 @@ public class Simulation {
 	/**Contains current solver algorithm*/
 	private static Solver solver = new Boris();
 	/**Contains all Particle2D objects*/
-	private static Particle2D[] pararray = new Particle2D[num_particles];
+	private static Particle2D[] particles = new Particle2D[num_particles];
 	private static Force  f= new Force();
 	private static Boundary boundary = new HardWallBoundary();
 	
-	private static void CreateParticles(int NUM_PARTICLES, double PARTICLE_RADIUS) {
-		for (int i = 0; i < NUM_PARTICLES; i++) {
-			pararray[i] = new Particle2D();
-			pararray[i].x = width * Math.random();
-			pararray[i].y = height * Math.random();
-			pararray[i].radius = PARTICLE_RADIUS;
-			pararray[i].vx = 10 * Math.random();
-			pararray[i].vy = 10 * Math.random();
-			pararray[i].mass = 1;
+	private static void CreateParticles(int num_particles, double particle_radius) {
+		for (int i = 0; i < num_particles; i++) {
+			particles[i] = new Particle2D();
+			particles[i].x = width * Math.random();
+			particles[i].y = height * Math.random();
+			particles[i].radius = particle_radius;
+			particles[i].vx = 10 * Math.random();
+			particles[i].vy = 10 * Math.random();
+			particles[i].mass = 1;
 			if (Math.random() > 0.5) {
-				pararray[i].charge = 1;
+				particles[i].charge = 1;
 			} else {
-				pararray[i].charge = -1;
+				particles[i].charge = -1;
 			}
-			solver.prepare(pararray[i], f, tstep);
+			solver.prepare(particles[i], f, tstep);
 		}
 	}
 	
-		private static void ParticleMover(int NUM_PARTICLES) {
+	private static void particlePush(int num_particles) {
 		
-		for (int i = 0; i < NUM_PARTICLES; i++) {
-			solver.step(pararray[i], f, tstep);
-			boundary.check(pararray[i], f, solver, tstep);
+		for (int i = 0; i < num_particles; i++) {
+			solver.step(particles[i], f, tstep);
+			boundary.check(particles[i], f, solver, tstep);
 		}
 		
 	}
@@ -72,7 +72,7 @@ public class Simulation {
 		System.out.println("-------- INITIAL CONDITIONS--------");		
 		
 		for (int i=0; i < 10; i++) {
-			System.out.println(pararray[i].x);	
+			System.out.println(particles[i].x);	
 		}
 		
 		System.out.println("\n-------- SIMULATION RESULTS --------");			
@@ -80,14 +80,14 @@ public class Simulation {
 		long start = System.currentTimeMillis();
 		
 		for (int i = 0; i < steps; i++) {
-			ParticleMover(num_particles);
+			particlePush(num_particles);
 			//InterpolateToGrid(NUM_PARTICLES);
 		}
 		
 		long elapsed = System.currentTimeMillis()-start;
 		
 		for (int i=0; i < 10; i++) {
-			System.out.println(pararray[i].x);	
+			System.out.println(particles[i].x);	
 		}
 		
 		System.out.println("\n Calculation time: "+elapsed);
