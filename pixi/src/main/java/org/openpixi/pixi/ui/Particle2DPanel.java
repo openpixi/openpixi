@@ -295,6 +295,7 @@ public class Particle2DPanel extends JPanel {
 		writePosition =! writePosition;
 		if(writePosition)
 		{
+			f.reset();
 			createRandomParticles(1, 10);
 			Particle2D par = (Particle2D) parlist.get(0);
 			par.x = 0;
