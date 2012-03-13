@@ -75,12 +75,13 @@ public class ElasticCollision extends Collision{
 			{
 				Particle2D p2 = (Particle2D) parlist.get(k);
 				double distance = Math.sqrt((p1.x - p2.x) * (p1.x - p2.x) + (p1.y - p2.y) * (p1.y - p2.y));
-				if(distance <= (p1.radius + p2.radius))
+				if(distance <= (p1.radius + p2.radius)) {
 					s.complete(p1, f, step);
 					s.complete(p2, f, step);
 					doCollision(p1, p2);
 					s.prepare(p1, f, step);
 					s.prepare(p2, f, step);
+				}
 			}
 			
 		}
