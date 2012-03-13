@@ -21,6 +21,27 @@ public class ElasticCollision extends Collision{
 	
 	public void doCollision(Particle2D p1, Particle2D p2)
 	{
+		//distance between the particles
+		double distance = Math.sqrt((p1.x - p2.x) * (p1.x - p2.x) + (p1.y - p2.y) * (p1.y - p2.y));
+		
+		//finding the unit distance vector
+		double dnX = (p1.x - p2.x) / distance;
+		double dnY = (p1.y - p2.y) / distance;
+		
+		//finding the tangential vector;
+		double dtX = dnY;
+		double dtY = - dtX;
+		
+		//finding the minimal distance if the ball are overlapping
+		double minDistanceX = dnX * (p1.radius + p2.radius - distance);
+		double minDistanceY = dnY * (p1.radius + p2.radius - distance);
+		
+		//moving the balls if they are overlapping (if not, the minimal distance is equal to zero)
+		p1.x += minDistanceX * p2.mass / (p1.mass + p2.mass);
+		p1.y += minDistanceY * p2.mass / (p1.mass + p2.mass);
+		p2.x -= minDistanceX * p1.mass / (p1.mass + p2.mass);
+		p2.y -= minDistanceY * p1.mass / (p1.mass + p2.mass);
+		
 		//double convert = Math.PI / 180;
 		double phi = 0.0;
 		
@@ -40,16 +61,16 @@ public class ElasticCollision extends Collision{
 		//double theta2 = Math.atan(p2.vy / p2.vx);
 		
 		//calculating the velocities in the new coordinate system
-		/*double v1xNewCoor = v1 * Math.cos(theta1 - phi);
-		double v1yNewCoor = v1 * Math.sin(theta1 - phi);
-		double v2xNewCoor = v2 * Math.cos(theta2 - phi);
-		double v2yNewCoor = v2 * Math.sin(theta2 - phi);*/
+		//double v1xNewCoor = v1 * Math.cos(theta1 - phi);
+		//double v1yNewCoor = v1 * Math.sin(theta1 - phi);
+		//double v2xNewCoor = v2 * Math.cos(theta2 - phi);
+		//double v2yNewCoor = v2 * Math.sin(theta2 - phi);
 		double v1xNewCoor = p1.vx * Math.cos(phi) + p1.vy * Math.sin(phi);
 		double v1yNewCoor = - p1.vx * Math.sin(phi) + p1.vy * Math.cos(phi);
 		double v2xNewCoor = p2.vx * Math.cos(phi) + p2.vy * Math.sin(phi);
 		double v2yNewCoor = - p2.vx * Math.sin(phi) + p2.vy * Math.sin(phi);
 		
-		//calculation the new velocities in the new coordinate system
+		//calculating the new velocities in the new coordinate system
 		//http://en.wikipedia.org/wiki/Elastic_collision
 		double newv1xNewCoor = ((p1.mass - p2.mass) * v1xNewCoor + 2 * p2.mass * v2xNewCoor) / (p1.mass + p2.mass);
 		double newv2xNewCoor = (2 * p1.mass * v1xNewCoor + (p2.mass - p1.mass) * v2xNewCoor) / (p1.mass + p2.mass);
@@ -62,9 +83,92 @@ public class ElasticCollision extends Collision{
 		p2.vy = newv2xNewCoor * Math.sin(phi) + v2yNewCoor * Math.sin(phi + Math.PI);
 	}
 	
+	/*
+	public void doCollision(Particle2D p1, Particle2D p2) {
+		
+		//distance between the particles
+		double distance = Math.sqrt((p1.x - p2.x) * (p1.x - p2.x) + (p1.y - p2.y) * (p1.y - p2.y));
+		
+		//finding the unit distance vector
+		double dnX = (p1.x - p2.x) / distance;
+		double dnY = (p1.y - p2.y) / distance;
+		
+		//finding the tangential vector;
+		double dtX = dnY;
+		double dtY = - dnX;
+		
+		//finding the minimal distance if the particles are overlapping
+		double minDistanceX = dnX * (p1.radius + p2.radius - distance);
+		double minDistanceY = dnY * (p1.radius + p2.radius - distance);
+		
+		//moving the particles if they are overlapping (if not, the minimal distance is equal to zero)
+		p1.x += minDistanceX * p2.mass / (p1.mass + p2.mass);
+		p1.y += minDistanceY * p2.mass / (p1.mass + p2.mass);
+		p2.x -= minDistanceX * p1.mass / (p1.mass + p2.mass);
+		p2.y -= minDistanceY * p1.mass / (p1.mass + p2.mass);
+		
+		//finding the normal and the tangential vectors of the particles corresponding with the collision plane
+		double v1NX = dnX * (p1.vx * dnX + p1.vy * dnY);
+		double v1NY = dnY * (p1.vx * dnX + p1.vy * dnY);
+		double v1TX = dtX * (p1.vx * dtX + p1.vy * dtY);
+		double v1TY = dtY * (p1.vx * dtX + p1.vy * dtY);
+		
+		double v2NX = dnX * (p2.vx * dnX + p2.vy * dnY);
+		double v2NY = dnY * (p2.vx * dnX + p2.vy * dnY);
+		double v2TX = dtX * (p2.vx * dtX + p2.vy * dtY);
+		double v2TY = dtY * (p2.vx * dtX + p2.vy * dtY);
+		
+		//calculating the new velocities
+		p1.vx = v1TX + dnX * ((p1.mass - p2.mass) * Math.sqrt(v1NX * v1NX + v1NY * v1NY) / (p1.mass + p2.mass) +
+				2 * p2.mass * Math.sqrt(v2NX * v2NX + v2NY * v2NY));
+		p1.vy = v1TY + dnY * ((p1.mass - p2.mass) * Math.sqrt(v1NX * v1NX + v1NY * v1NY) / (p1.mass + p2.mass) +
+				2 * p2.mass * Math.sqrt(v2NX * v2NX + v2NY * v2NY));
+		p2.vx = v2TX + dnX * ((p2.mass - p1.mass) * Math.sqrt(v2NX * v2NX + v2NY * v2NY) / (p1.mass + p2.mass) +
+				2 * p1.mass * Math.sqrt(v1NX * v1NX + v1NY * v1NY));
+		p2.vy = v2TY + dnY * ((p2.mass - p1.mass) * Math.sqrt(v2NX * v2NX + v2NY * v2NY) / (p1.mass + p2.mass) +
+				2 * p1.mass * Math.sqrt(v1NX * v1NX + v1NY * v1NY));
+	}*/
+	
+	/*public void doCollision(Particle2D p1, Particle2D p2) {
+		//distance between the particles
+		double distance = Math.sqrt((p1.x - p2.x) * (p1.x - p2.x) + (p1.y - p2.y) * (p1.y - p2.y));
+		
+		//finding the unit distance vector
+		double dnX = (p1.x - p2.x) / distance;
+		double dnY = (p1.y - p2.y) / distance;
+		
+		//finding the tangential vector;
+		double dtX = dnY;
+		double dtY = - dtX;
+		
+		//finding the minimal distance if the ball are overlapping
+		double minDistanceX = dnX * (p1.radius + p2.radius - distance);
+		double minDistanceY = dnY * (p1.radius + p2.radius - distance);
+		
+		//moving the balls if they are overlapping (if not, the minimal distance is equal to zero)
+		p1.x += minDistanceX * p2.mass / (p1.mass + p2.mass);
+		p1.y += minDistanceY * p2.mass / (p1.mass + p2.mass);
+		p2.x -= minDistanceX * p1.mass / (p1.mass + p2.mass);
+		p2.y -= minDistanceY * p1.mass / (p1.mass + p2.mass);
+		
+		double m21 = p2.mass / p1.mass;
+	    double x21 = p2.x - p1.x;
+	    double y21 = p2.y - p1.y;
+	    double vx21 = p2.vx - p1.vx;
+	    double vy21 = p2.vy - p1.vy;
+	    
+	    double a = y21 / x21;
+	    double dvx2 = -2 * (vx21 + a * vy21) / ((1 + a * a) * (1 + m21)) ;
+	    p2.vx += dvx2;
+	    p2.vy += a * dvx2;
+	    p1.vx -= m21 * dvx2;
+	    p1.vy -= a * m21 * dvx2;
+	}*/
+	
 	/*for this method I need to integrate a few more things to avoid for example particles getting stuck together,
 	 * and solve couple of more problems, be patient!
 	 */
+
 	public void check(ArrayList<Particle2D> parlist, Force f, Solver s, double step)
 	{
 		for(int i = 0; i < (parlist.size() - 1); i++)
