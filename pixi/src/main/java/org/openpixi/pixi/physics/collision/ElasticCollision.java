@@ -157,8 +157,8 @@ public class ElasticCollision extends Collision{
 	    double vx21 = p2.vx - p1.vx;
 	    double vy21 = p2.vy - p1.vy;
 	    
-	    double a = y21 / x21;
-	    double dvx2 = -2 * (vx21 + a * vy21) / ((1 + a * a) * (1 + m21)) ;
+	    double angle = y21 / x21;
+	    double dvx2 = -2 * (vx21 + angle * vy21) / ((1 + angle * angle) * (1 + m21)) ;
 	    p2.vx += dvx2;
 	    p2.vy += a * dvx2;
 	    p1.vx -= m21 * dvx2;
