@@ -83,9 +83,7 @@ public class Particle2DPanel extends JPanel {
 //					Simulation.boundary.check(par, Simulation.f, ParticleMover.solver, Simulation.tstep);
 //				}
 //			}
-			ParticleMover.particlePush();
-			Simulation.currentGrid.updateGrid(Simulation.particles);
-			//collision.check(parlist, f, s, Simulation.tstep);
+			Simulation.step();
 			frameratedetector.update();
 			repaint();
 			if(writePosition)

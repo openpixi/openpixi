@@ -25,8 +25,7 @@ public class MainBatch {
 		long start = System.currentTimeMillis();
 		
 		for (int i = 0; i < Simulation.steps; i++) {
-			ParticleMover.particlePush();
-			Simulation.currentGrid.updateGrid(Simulation.particles);
+			Simulation.step();
 		}
 		
 		long elapsed = System.currentTimeMillis()-start;

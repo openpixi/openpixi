@@ -57,4 +57,10 @@ public class Simulation {
 		Simulation.currentGrid.setGrid(width, height);
 	}
 
+	public static void step() {
+		ParticleMover.particlePush();
+		Simulation.currentGrid.updateGrid(Simulation.particles);
+		//collision.check(parlist, f, s, Simulation.tstep);
+	}
+
 }
