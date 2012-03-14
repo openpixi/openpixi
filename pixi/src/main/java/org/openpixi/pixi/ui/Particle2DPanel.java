@@ -70,18 +70,23 @@ public class Particle2DPanel extends JPanel {
 		public void actionPerformed(ActionEvent eve) {
 
 			updateSimulationSize();
+//			for (int i = 0; i < Simulation.particles.size(); i++) {
+//				Particle2D par = (Particle2D) Simulation.particles.get(i);
+//				if(test && i == 0)
+//					for(int k = 0; k < 100; k++)
+//					{
+//						ParticleMover.solver.step(par, Simulation.f, Simulation.tstep / 100);
+//						Simulation.boundary.check(par, Simulation.f, ParticleMover.solver, Simulation.tstep / 100);
+//					}
+//				else {
+//					ParticleMover.solver.step(par, Simulation.f, Simulation.tstep);
+//					Simulation.boundary.check(par, Simulation.f, ParticleMover.solver, Simulation.tstep);
+//				}
+//			}
 			for (int i = 0; i < Simulation.particles.size(); i++) {
 				Particle2D par = (Particle2D) Simulation.particles.get(i);
-				if(test && i == 0)
-					for(int k = 0; k < 100; k++)
-					{
-						ParticleMover.solver.step(par, Simulation.f, Simulation.tstep / 100);
-						Simulation.boundary.check(par, Simulation.f, ParticleMover.solver, Simulation.tstep / 100);
-					}
-				else {
-					ParticleMover.solver.step(par, Simulation.f, Simulation.tstep);
-					Simulation.boundary.check(par, Simulation.f, ParticleMover.solver, Simulation.tstep);
-				}
+				ParticleMover.solver.step(par, Simulation.f, Simulation.tstep);
+				Simulation.boundary.check(par, Simulation.f, ParticleMover.solver, Simulation.tstep);
 			}
 			Simulation.currentGrid.updateGrid(Simulation.particles);
 			//collision.check(parlist, f, s, Simulation.tstep);

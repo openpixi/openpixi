@@ -476,7 +476,7 @@ public class MainControlApplet extends JApplet {
 		controlPanelUp.add(startButton);
 		controlPanelUp.add(stopButton);
 		controlPanelUp.add(resetButton);
-		controlPanelUp.add(testButton);
+//		controlPanelUp.add(testButton);
 		//controlPanelUp.add(traceCheck);
 		//controlPanelUp.add(framerateCheck);
 //		controlPanelUp.add(writePositionCheck);
