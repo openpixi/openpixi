@@ -286,7 +286,7 @@ public class MainControlApplet extends JApplet {
 			if(source.getValueIsAdjusting())
 			{
 				double value = source.getValue() * stepSliderScaling;
-				particlePanel.step = value;
+				Simulation.tstep = value;
 			}
 		}
 	}
@@ -342,7 +342,7 @@ public class MainControlApplet extends JApplet {
 		stepSlider.addChangeListener(new StepListener());
 		stepSlider.setMinimum(1);
 		stepSlider.setMaximum(100);
-		stepSlider.setValue((int) (100 * (particlePanel.step = 0.5)));
+		stepSlider.setValue((int) (100 * (Simulation.tstep = 0.5)));
 		stepSlider.setMajorTickSpacing(10);
 		stepSlider.setMinorTickSpacing(2);
 		stepSlider.setPaintTicks(true);
@@ -547,7 +547,7 @@ public class MainControlApplet extends JApplet {
 	
 	public void setSlidersValue()
 	{
-		particlePanel.step = 0.5;
+		Simulation.tstep = 0.5;
 		stepSlider.setValue(50);
 		efieldXSlider.setValue((int) (Simulation.f.ex / exSliderScaling));
 		efieldYSlider.setValue((int) (Simulation.f.ey / eySliderScaling));

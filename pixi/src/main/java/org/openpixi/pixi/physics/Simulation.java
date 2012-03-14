@@ -32,7 +32,7 @@ public class Simulation {
 	/**Total number of timesteps*/
 	public static final int steps = 1000;
 	/**Timestep*/
-	static final double tstep = 1;
+	public static double tstep = 1;
 	/**Width of simulated area*/
 	public static double width = 100;
 	/**Height of simulated area*/

@@ -39,8 +39,6 @@ public class Particle2DPanel extends JPanel {
 	public String fileDirectory;
 	
 	private WriteFile file = new WriteFile();
-	
-	public double step;
 
 	private boolean reset_trace;
 	
@@ -81,15 +79,15 @@ public class Particle2DPanel extends JPanel {
 				if(test && i == 0)
 					for(int k = 0; k < 100; k++)
 					{
-						s.step(par, Simulation.f, step / 100);
-						Simulation.boundary.check(par, Simulation.f, s, step / 100);
+						s.step(par, Simulation.f, Simulation.tstep / 100);
+						Simulation.boundary.check(par, Simulation.f, s, Simulation.tstep / 100);
 					}
 				else {
-					s.step(par, Simulation.f, step);
-					Simulation.boundary.check(par, Simulation.f, s, step);
+					s.step(par, Simulation.f, Simulation.tstep);
+					Simulation.boundary.check(par, Simulation.f, s, Simulation.tstep);
 				}
 			}
-			//collision.check(parlist, f, s, step);
+			//collision.check(parlist, f, s, Simulation.tstep);
 			frameratedetector.update();
 			repaint();
 			if(writePosition)
@@ -186,7 +184,7 @@ public class Particle2DPanel extends JPanel {
 
 	private void prepareParticles() {
 		for (Particle2D p : Simulation.particles) {
-			s.prepare(p, Simulation.f, step);
+			s.prepare(p, Simulation.f, Simulation.tstep);
 		}
 	}
 
@@ -221,7 +219,7 @@ public class Particle2DPanel extends JPanel {
 	{
 		for (int i = 0; i < Simulation.particles.size(); i++) {
 			Particle2D par = (Particle2D) Simulation.particles.get(i);
-			s.complete(par, Simulation.f, step);
+			s.complete(par, Simulation.f, Simulation.tstep);
 		}
 		
 		switch(id) {
@@ -253,7 +251,7 @@ public class Particle2DPanel extends JPanel {
 		
 		for (int i = 0; i < Simulation.particles.size(); i++) {
 			Particle2D par = (Particle2D) Simulation.particles.get(i);
-			s.prepare(par, Simulation.f, step);
+			s.prepare(par, Simulation.f, Simulation.tstep);
 		}
 	}
 
@@ -318,7 +316,7 @@ public class Particle2DPanel extends JPanel {
 			graph.scale(1.0, -1.0);
 			graph.setColor(darkGreen);
 			graph.drawString("Frame rate: " + frameratedetector.getRateString() + " fps", 30, 30);
-			graph.drawString("Time step: " + (float) step, 30, 50);
+			graph.drawString("Time step: " + (float) Simulation.tstep, 30, 50);
 
 			Runtime runtime = Runtime.getRuntime();
 			long maxMemory = runtime.maxMemory();
