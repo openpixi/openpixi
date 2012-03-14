@@ -28,4 +28,7 @@ public final class ConstantsSI {
 
 	/** electric charge */
 	public static final double e = 1.602e-19;
+	
+	/**Vacuum permittivity*/
+	public static final double e0 = 8.854e-12;
 }
