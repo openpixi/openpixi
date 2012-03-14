@@ -1,7 +1,6 @@
 package org.openpixi.pixi.ui;
 
 import org.openpixi.pixi.physics.InitialConditions;
-import org.openpixi.pixi.physics.InterpolatorParticlesGrid;
 import org.openpixi.pixi.physics.ParticleMover;
 import org.openpixi.pixi.physics.Simulation;
 
@@ -27,7 +26,7 @@ public class MainBatch {
 		
 		for (int i = 0; i < Simulation.steps; i++) {
 			ParticleMover.particlePush(Simulation.num_particles);
-			InterpolatorParticlesGrid.interpolateParticlesGrid(Simulation.num_particles, Simulation.particles);
+			Simulation.currentGrid.updateGrid(Simulation.particles);
 		}
 		
 		long elapsed = System.currentTimeMillis()-start;
@@ -39,7 +38,7 @@ public class MainBatch {
 		System.out.println("\nCurrent: ");
 		
 		for (int i = 0; i < Simulation.num_cells_x; i++) {
-				System.out.println(InterpolatorParticlesGrid.jx[i][0]);
+				System.out.println(Simulation.currentGrid.jx[i][0]);
 		}
 		
 		System.out.println("\nCalculation time: "+elapsed);
