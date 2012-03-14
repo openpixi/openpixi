@@ -45,12 +45,14 @@ public class CurrentGrid {
 		
 		jx = new double[numCellsX][numCellsY];
 		jy = new double[numCellsX][numCellsY];
+		rho = new double[numCellsX][numCellsY];
 		
 		for(int i = 0; i < numCellsX; i++)
 			for(int k = 0; k < numCellsY; k++)
 			{
 				jx[i][k] = 0.0;
 				jy[i][k] = 0.0;
+				rho[i][k] = 0.0;
 			}
 	}
 	
@@ -62,12 +64,14 @@ public class CurrentGrid {
 		
 		jx = new double[numCellsX][numCellsY];
 		jy = new double[numCellsX][numCellsY];
+		rho = new double[numCellsX][numCellsY];
 		
 		for(int i = 0; i < numCellsX; i++)
 			for(int k = 0; k < numCellsY; k++)
 			{
 				jx[i][k] = 0.0;
 				jy[i][k] = 0.0;
+				rho[i][k] = 0.0;
 			}
 	}
 	
@@ -84,6 +88,7 @@ public class CurrentGrid {
 			{
 				jx[i][k] = 0.0;
 				jy[i][k] = 0.0;
+				rho[i][k] = 0.0;
 			}
 		
 		for(int i = 0; i < parlist.size(); i++)
