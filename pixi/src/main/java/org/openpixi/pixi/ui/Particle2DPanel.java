@@ -253,7 +253,6 @@ public class Particle2DPanel extends JPanel {
 		setBackground(Color.white);
 		graph.translate(0.0, this.getHeight());
 		graph.scale(1.0, -1.0);
-		Simulation.currentGrid.setGrid(getWidth(), getHeight());
 
 		if(!paint_trace)
 		{

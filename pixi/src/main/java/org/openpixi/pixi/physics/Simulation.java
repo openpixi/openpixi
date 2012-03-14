@@ -54,6 +54,7 @@ public class Simulation {
 		Simulation.width = width;
 		Simulation.height = height;
 		Simulation.boundary.setBoundaries(0, 0, width, height);
+		Simulation.currentGrid.setGrid(width, height);
 	}
 
 }

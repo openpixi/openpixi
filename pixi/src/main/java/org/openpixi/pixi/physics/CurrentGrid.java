@@ -34,8 +34,8 @@ public class CurrentGrid {
 	public int numCellsX = 10;
 	public int numCellsY = 10;
 	
-	public int cellWidth;
-	public int cellHeight;
+	public double cellWidth;
+	public double cellHeight;
 	
 	//the constructor
 	public CurrentGrid() {
@@ -59,10 +59,10 @@ public class CurrentGrid {
 		rho = new double[numCellsX][numCellsY];
 	}
 	
-	public void setGrid(int panelWidth, int panelHeight)
+	public void setGrid(double width, double height)
 	{
-		this.cellWidth = panelWidth / numCellsX;
-		this.cellHeight = panelHeight / numCellsY;
+		this.cellWidth = width / numCellsX;
+		this.cellHeight = height / numCellsY;
 	}
 	
 	public void updateGrid(ArrayList<Particle2D> parlist)
