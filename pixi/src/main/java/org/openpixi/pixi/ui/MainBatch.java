@@ -8,11 +8,7 @@ import org.openpixi.pixi.physics.Simulation;
 public class MainBatch {
 
 	public static void main(String[] args) {
-				
-		Simulation.boundary.xmin = 0;
-		Simulation.boundary.xmax = (double) Simulation.width;
-		Simulation.boundary.ymin = 0;
-		Simulation.boundary.ymax = (double) Simulation.height;
+		Simulation.setSize(100, 100);
 				
 		InitialConditions.createRandomParticles(Simulation.num_particles, Simulation.particle_radius);
 		ParticleMover.prepareAllParticles();
