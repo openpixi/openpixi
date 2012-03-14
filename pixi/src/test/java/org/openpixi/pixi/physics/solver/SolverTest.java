@@ -14,8 +14,8 @@ public class SolverTest extends TestCase {
 
 	Solver solver;
 
-	double ACCURACY_LIMIT = 1.e-16;
-	//double ACCURACY_LIMIT = 1.e-15;
+	//double ACCURACY_LIMIT = 1.e-16;
+	double ACCURACY_LIMIT = 1.e-15;
 
 	void assertAlmostEquals(String text, double x, double y) {
 		if (Math.abs(x - y) / Math.abs(x + y) > ACCURACY_LIMIT) {
