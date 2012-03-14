@@ -1,5 +1,6 @@
 package org.openpixi.pixi.ui;
 
+import org.openpixi.pixi.physics.InitialConditions;
 import org.openpixi.pixi.physics.InterpolatorParticlesGrid;
 import org.openpixi.pixi.physics.ParticleMover;
 import org.openpixi.pixi.physics.Simulation;
@@ -13,7 +14,8 @@ public class MainBatch {
 		Simulation.boundary.ymin = 0;
 		Simulation.boundary.ymax = (double) Simulation.height;
 				
-		Simulation.CreateParticles(Simulation.num_particles, Simulation.particle_radius);
+		InitialConditions.createRandomParticles(Simulation.num_particles, Simulation.particle_radius);
+		ParticleMover.prepareAllParticles();
 		Simulation.f.bz = 0.001;
 		Simulation.f.ex = 0.1;
 		

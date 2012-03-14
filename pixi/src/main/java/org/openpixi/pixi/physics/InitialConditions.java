@@ -4,7 +4,6 @@ import org.openpixi.pixi.physics.boundary.HardWallBoundary;
 import org.openpixi.pixi.physics.boundary.PeriodicBoundary;
 import org.openpixi.pixi.physics.force.Force;
 import org.openpixi.pixi.physics.force.SpringForce;
-import org.openpixi.pixi.ui.Particle2DPanel;
 
 public class InitialConditions {
 
@@ -65,7 +64,7 @@ public class InitialConditions {
 		InitialConditions.setPeriodicBoundary();
 	}
 
-	public static void createRandomParticles(int count, int radius) {
+	public static void createRandomParticles(int count, double radius) {
 		Simulation.particles.clear();
 		for (int k = 0; k < count; k++) {
 			Particle2D par = new Particle2D();

@@ -47,25 +47,6 @@ public class Simulation {
 	public static ArrayList<Particle2D> particles = new ArrayList<Particle2D>(num_particles);
 	public static Force  f= new Force();
 	public static Boundary boundary = new HardWallBoundary();
-		
-	public static void CreateParticles(int num_particles, double particle_radius) {
-		for (int i = 0; i < num_particles; i++) {
-			Particle2D p = new Particle2D();
-			p.x = width * Math.random();
-			p.y = height * Math.random();
-			p.radius = particle_radius;
-			p.vx = 10 * Math.random();
-			p.vy = 10 * Math.random();
-			p.mass = 1;
-			if (Math.random() > 0.5) {
-				p.charge = 1;
-			} else {
-				p.charge = -1;
-			}
-			ParticleMover.solver.prepare(p, f, tstep);
-			particles.add(p);
-		}
-	}
 
 	public static void setSize(double width, double height) {
 		Simulation.width = width;
