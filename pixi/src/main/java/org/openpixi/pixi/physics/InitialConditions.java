@@ -46,12 +46,11 @@ public class InitialConditions {
 	}
 
 	public static void initSpring(int count) {
-		Particle2DPanel.num_particles = count;
 		Simulation.particles.clear();
 		Simulation.f = new SpringForce();
 		Simulation.f.reset();
 		
-		for (int k = 0; k < Particle2DPanel.num_particles; k++) {
+		for (int k = 0; k < count; k++) {
 			Particle2D par = new Particle2D();
 			par.x = Particle2DPanel.xmax * Math.random();
 			par.y = Particle2DPanel.ymax * Math.random();
@@ -67,9 +66,8 @@ public class InitialConditions {
 	}
 
 	public static void createRandomParticles(int count, int radius) {
-		Particle2DPanel.num_particles = count;
 		Simulation.particles.clear();
-		for (int k = 0; k < Particle2DPanel.num_particles; k++) {
+		for (int k = 0; k < count; k++) {
 			Particle2D par = new Particle2D();
 			par.x = Particle2DPanel.xmax * Math.random();
 			par.y = Particle2DPanel.ymax * Math.random();

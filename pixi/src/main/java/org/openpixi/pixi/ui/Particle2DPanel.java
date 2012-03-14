@@ -69,8 +69,6 @@ public class Particle2DPanel extends JPanel {
 	/** A state for the trace */
 	public boolean paint_trace = false;
 
-	public static int num_particles = 10;
-
 	public CurrentGrid currentGrid = new CurrentGrid();
 
 	Color darkGreen = new Color(0x00, 0x80, 0x00);
@@ -81,7 +79,7 @@ public class Particle2DPanel extends JPanel {
 		public void actionPerformed(ActionEvent eve) {
 			
 			Simulation.boundary.setBoundaries(0, 0, getWidth(), getHeight());
-			for (int i = 0; i < num_particles; i++) {
+			for (int i = 0; i < Simulation.particles.size(); i++) {
 				Particle2D par = (Particle2D) Simulation.particles.get(i);
 				if(test && i == 0)
 					for(int k = 0; k < 100; k++)
@@ -168,7 +166,7 @@ public class Particle2DPanel extends JPanel {
 		test = true;
 		InitialConditions.createRandomParticles(2, 10);
 		Simulation.f.reset();
-		for (int i = 0; i < num_particles; i++) {
+		for (int i = 0; i < Simulation.particles.size(); i++) {
 			Particle2D par = (Particle2D) Simulation.particles.get(i);
 			par.x = (100);
 			par.y = (100 + 100 * i);
@@ -219,7 +217,7 @@ public class Particle2DPanel extends JPanel {
 	
 	public void algorithmChange(int id)
 	{
-		for (int i = 0; i < num_particles; i++) {
+		for (int i = 0; i < Simulation.particles.size(); i++) {
 			Particle2D par = (Particle2D) Simulation.particles.get(i);
 			s.complete(par, Simulation.f, step);
 		}
@@ -251,7 +249,7 @@ public class Particle2DPanel extends JPanel {
 			break;
 			}
 		
-		for (int i = 0; i < num_particles; i++) {
+		for (int i = 0; i < Simulation.particles.size(); i++) {
 			Particle2D par = (Particle2D) Simulation.particles.get(i);
 			s.prepare(par, Simulation.f, step);
 		}
@@ -276,7 +274,7 @@ public class Particle2DPanel extends JPanel {
 		}
 		
 		//if(!drawCurrentGrid) {
-		for (int i = 0; i < num_particles; i++) {
+		for (int i = 0; i < Simulation.particles.size(); i++) {
 			Particle2D par = (Particle2D) Simulation.particles.get(i);
 			if (par.charge > 0) {
 				graph.setColor(Color.blue);
