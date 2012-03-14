@@ -25,11 +25,11 @@ import org.openpixi.pixi.physics.Simulation;
 
 public class InterpolatorParticlesGrid {
 	
-	static double [][] jx = new double[Simulation.num_cells_x][Simulation.num_cells_y];
-	static double [][] jy = new double[Simulation.num_cells_x][Simulation.num_cells_y];
-	static double [][] rho = new double[Simulation.num_cells_x][Simulation.num_cells_y];
+	public static double [][] jx = new double[Simulation.num_cells_x][Simulation.num_cells_y];
+	public static double [][] jy = new double[Simulation.num_cells_x][Simulation.num_cells_y];
+	public static double [][] rho = new double[Simulation.num_cells_x][Simulation.num_cells_y];
 	
-	static void interpolateParticlesGrid(int num_particles, ArrayList<Particle2D> particles) {
+	public static void interpolateParticlesGrid(int num_particles, ArrayList<Particle2D> particles) {
 		
 		for (int i = 0; i < Simulation.num_cells_x; i++) {
 			for (int k = 0; k < Simulation.num_cells_y; k++) {

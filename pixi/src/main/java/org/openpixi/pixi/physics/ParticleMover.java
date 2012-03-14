@@ -26,7 +26,7 @@ public class ParticleMover {
 	/**Contains current solver algorithm*/
 	static Solver solver = new Boris();
 	
-	static void particlePush(int num_particles) {
+	public static void particlePush(int num_particles) {
 		
 		for (int i = 0; i < num_particles; i++) {
 			solver.step(Simulation.particles.get(i), Simulation.f, Simulation.tstep);
