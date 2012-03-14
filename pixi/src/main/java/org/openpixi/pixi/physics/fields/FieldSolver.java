@@ -25,7 +25,7 @@ public abstract class FieldSolver {
 		
 	}
 	
-	public void step() {
+	public void step(double [][] a, double [][] b, int nx, int ny, double dx, double dy) {
 		
 	}
 	
