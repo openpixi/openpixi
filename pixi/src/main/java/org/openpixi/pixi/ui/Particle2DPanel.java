@@ -207,10 +207,7 @@ public class Particle2DPanel extends JPanel {
 	
 	public void algorithmChange(int id)
 	{
-		for (int i = 0; i < Simulation.particles.size(); i++) {
-			Particle2D par = (Particle2D) Simulation.particles.get(i);
-			ParticleMover.solver.complete(par, Simulation.f, Simulation.tstep);
-		}
+		ParticleMover.completeAllParticles();
 		
 		switch(id) {
 		case 0:
@@ -238,11 +235,8 @@ public class Particle2DPanel extends JPanel {
 			ParticleMover.solver = new Euler();
 			break;
 			}
-		
-		for (int i = 0; i < Simulation.particles.size(); i++) {
-			Particle2D par = (Particle2D) Simulation.particles.get(i);
-			ParticleMover.solver.prepare(par, Simulation.f, Simulation.tstep);
-		}
+
+		ParticleMover.prepareAllParticles();
 	}
 
 	/** Display the particles */

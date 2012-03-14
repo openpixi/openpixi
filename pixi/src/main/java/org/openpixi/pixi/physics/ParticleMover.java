@@ -41,4 +41,9 @@ public class ParticleMover {
 		}
 	}
 
+	public static void completeAllParticles() {
+		for (Particle2D p : Simulation.particles) {
+			solver.complete(p, Simulation.f, Simulation.tstep);
+		}
+	}
 }
