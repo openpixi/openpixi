@@ -65,27 +65,28 @@ public class CurrentGrid {
 		this.cellHeight = height / numCellsY;
 	}
 	
-	public void updateGrid(ArrayList<Particle2D> parlist)
+	public void updateGrid(ArrayList<Particle2D> particles)
 	{
 		reset();
 		
-		for(int i = 0; i < parlist.size(); i++)
+		for(Particle2D p : particles)
 		{
-			Particle2D par = (Particle2D) parlist.get(i);
-			int xCellPosition = (int) (par.x / cellWidth);
-			int yCellPosition = (int) (par.y / cellHeight);
-			if(xCellPosition > (numCellsX - 1))
+			int xCellPosition = (int) (p.x / cellWidth);
+			int yCellPosition = (int) (p.y / cellHeight);
+			if(xCellPosition > (numCellsX - 1)) {
 				xCellPosition = (numCellsX - 1);
-			if(yCellPosition > (numCellsY - 1))
+			} else if(xCellPosition < 0) {
+					xCellPosition = 0;
+			}
+			if(yCellPosition > (numCellsY - 1)) {
 				yCellPosition = (numCellsY - 1);
-			if(xCellPosition < 0)
-				xCellPosition = 0;
-			if(yCellPosition < 0)
+			} else if(yCellPosition < 0) {
 				yCellPosition = 0;
+			}
 			//System.out.println("x: " + xCellPosition + ", y: " + yCellPosition);
-			jx[xCellPosition][yCellPosition] += par.charge * par.vx;
-			jy[xCellPosition][yCellPosition] += par.charge * par.vy;
-			rho[xCellPosition][yCellPosition] += par.charge;
+			jx[xCellPosition][yCellPosition] += p.charge * p.vx;
+			jy[xCellPosition][yCellPosition] += p.charge * p.vy;
+			rho[xCellPosition][yCellPosition] += p.charge;
 		}
 		
 	}
