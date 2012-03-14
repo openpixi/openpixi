@@ -415,7 +415,7 @@ public class MainControlApplet extends JApplet {
 		algorithmComboBox = new JComboBox(solverString);
 		algorithmComboBox.setSelectedIndex(0);
 		algorithmComboBox.addActionListener(new AlgorithmListener());
-		JLabel algorithmLabel = new JLabel("Change the algorithm");
+		JLabel algorithmLabel = new JLabel("Algorithm");
 		Box algorithmBox = Box.createVerticalBox();
 		algorithmBox.add(algorithmLabel);
 		algorithmBox.add(algorithmComboBox);
@@ -459,8 +459,8 @@ public class MainControlApplet extends JApplet {
 		filedirectory.setToolTipText("Please enter an existing directory");
 		
 		
-		JLabel xboxentryLabel = new JLabel("Current cell width");
-		JLabel yboxentryLabel = new JLabel("Current cell height");
+		JLabel xboxentryLabel = new JLabel("Cell width");
+		JLabel yboxentryLabel = new JLabel("Cell height");
 		/*Box currentBox = Box.createHorizontalBox();
 		currentBox.add(currentgridCheck);
 		currentBox.add(xboxentryLabel);
