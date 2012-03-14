@@ -19,10 +19,6 @@
 package org.openpixi.pixi.ui;
 
 import org.openpixi.pixi.physics.*;
-import org.openpixi.pixi.physics.boundary.*;
-import org.openpixi.pixi.physics.collision.*;
-import org.openpixi.pixi.physics.force.Force;
-import org.openpixi.pixi.physics.force.SpringForce;
 import org.openpixi.pixi.physics.solver.*;
 import org.openpixi.pixi.ui.util.*;
 import java.awt.*;
@@ -30,7 +26,6 @@ import javax.swing.*;
 import java.awt.event.*;
 import java.awt.geom.AffineTransform;
 import static java.awt.geom.AffineTransform.*;
-import java.util.ArrayList;
 import java.lang.Math;
 
 
@@ -39,8 +34,8 @@ import java.lang.Math;
  */
 public class Particle2DPanel extends JPanel {
 	
-	private static final int xmax = 700;
-	private static final int ymax = 500;
+	public static final int xmax = 700;
+	public static final int ymax = 500;
 	
 	public String fileName;
 	
@@ -74,7 +69,7 @@ public class Particle2DPanel extends JPanel {
 	/** A state for the trace */
 	public boolean paint_trace = false;
 
-	private static int num_particles = 10;
+	public static int num_particles = 10;
 
 	public CurrentGrid currentGrid = new CurrentGrid();
 
@@ -120,7 +115,7 @@ public class Particle2DPanel extends JPanel {
 		this.setSize(xmax, ymax);
 
 		// Create all particles
-		initRandomParticles(10, 8);
+		InitialConditions.initRandomParticles(10, 8);
 		
 		frameratedetector = new FrameRateDetector(500);
 	}
@@ -140,28 +135,28 @@ public class Particle2DPanel extends JPanel {
 		reset_trace = true;
 		switch(id) {
 		case 0:
-			initRandomParticles(10, 8);
+			InitialConditions.initRandomParticles(10, 8);
 			break;
 		case 1:
-			initRandomParticles(100, 5);
+			InitialConditions.initRandomParticles(100, 5);
 			break;
 		case 2:
-			initRandomParticles(1000, 3);
+			InitialConditions.initRandomParticles(1000, 3);
 			break;
 		case 3:
-			initRandomParticles(10000, 1);
+			InitialConditions.initRandomParticles(10000, 1);
 			break;
 		case 4:
-			initGravity(1);
+			InitialConditions.initGravity(1);
 			break;
 		case 5:
-			initElectric(1);
+			InitialConditions.initElectric(1);
 			break;
 		case 6:
-			initMagnetic(3);
+			InitialConditions.initMagnetic(3);
 			break;
 		case 7:
-			initSpring(1);
+			InitialConditions.initSpring(1);
 			break;
 		}
 		prepareParticles();
@@ -171,7 +166,7 @@ public class Particle2DPanel extends JPanel {
 	public void testSolver()
 	{
 		test = true;
-		createRandomParticles(2, 10);
+		InitialConditions.createRandomParticles(2, 10);
 		Simulation.f.reset();
 		for (int i = 0; i < num_particles; i++) {
 			Particle2D par = (Particle2D) Simulation.particles.get(i);
@@ -185,102 +180,16 @@ public class Particle2DPanel extends JPanel {
 			else
 				par.charge = -1;
 		}
-		setPeriodicBoundary();
+		InitialConditions.setPeriodicBoundary();
 	}
 	
 
-	private static void initRandomParticles(int count, int radius) {
-		Simulation.f = new Force();
-		Simulation.f.reset();
-		Simulation.f.gy = - 1; //-ConstantsSI.g;
-		//f.bz = 1;
-		
-		createRandomParticles(count, radius);
-		setHardWallBoundary();
-	}
-
-	private static void initGravity(int count) {
-		Simulation.f = new Force();
-		Simulation.f.reset();
-		Simulation.f.gy = -1; // -ConstantsSI.g;
-		
-		createRandomParticles(count, 15);
-		setHardWallBoundary();
-	}
-	
-	private static void initElectric(int count) {
-		Simulation.f = new Force();
-		Simulation.f.reset();
-		Simulation.f.ey = -1;
-		
-		createRandomParticles(count, 15);
-		setHardWallBoundary();
-	}
-
-	private static void initMagnetic(int count) {
-		Simulation.f = new Force();
-		Simulation.f.reset();
-		Simulation.f.bz = .1;
-		
-		createRandomParticles(count, 15);
-		setPeriodicBoundary();
-	}
-	
-	private static void initSpring(int count) {
-		num_particles = count;
-		Simulation.particles.clear();
-		Simulation.f = new SpringForce();
-		Simulation.f.reset();
-		
-		for (int k = 0; k < num_particles; k++) {
-			Particle2D par = new Particle2D();
-			par.x = xmax * Math.random();
-			par.y = ymax * Math.random();
-			par.radius = 15;
-			par.vx = 10 * Math.random();
-			par.vy = 0;
-			par.mass = 1;
-			par.charge = 0;
-			Simulation.particles.add(par);
-		}
-
-		setPeriodicBoundary();
-	}
-	
-	private static void createRandomParticles(int count, int radius) {
-		num_particles = count;
-		Simulation.particles.clear();
-		for (int k = 0; k < num_particles; k++) {
-			Particle2D par = new Particle2D();
-			par.x = xmax * Math.random();
-			par.y = ymax * Math.random();
-			par.radius = radius;
-			par.vx = 10 * Math.random();
-			par.vy = 10 * Math.random();
-			par.mass = 1;
-			if (Math.random() > 0.5) {
-				par.charge = 1;
-			} else {
-				par.charge = -1;
-			}
-			Simulation.particles.add(par);
-		}
-	}
-	
 	private void prepareParticles() {
 		for (Particle2D p : Simulation.particles) {
 			s.prepare(p, Simulation.f, step);
 		}
 	}
 
-	public static void setHardWallBoundary() {
-		Simulation.boundary = new HardWallBoundary();
-	}
-
-	public static void setPeriodicBoundary() {
-		Simulation.boundary = new PeriodicBoundary();
-	}
-	
 	public void checkTrace() {
 		paint_trace =! paint_trace;
 		startAnimation();
@@ -295,7 +204,7 @@ public class Particle2DPanel extends JPanel {
 		if(writePosition)
 		{
 			Simulation.f.reset();
-			createRandomParticles(1, 10);
+			InitialConditions.createRandomParticles(1, 10);
 			Particle2D par = (Particle2D) Simulation.particles.get(0);
 			par.x = 0;
 			par.y = this.getHeight() * 0.5;
