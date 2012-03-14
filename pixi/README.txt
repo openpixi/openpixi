@@ -25,6 +25,9 @@ Please try out the live version at
 
 
 ---
+Version 0.3 - ?
+
+---
 Version 0.2 - March 14, 2012
 
 * Additional solvers: Boris, BorisDamped, Euler, LeapFrog, LeapFrogDamped,
