@@ -25,12 +25,14 @@ Please try out the live version at
 
 
 ---
-Version 0.2 - ?
+Version 0.2 - March 14, 2012
 
-* Additional solvers: Boris, Euler, LeapFrog, SemiImplicitEuler
+* Additional solvers: Boris, BorisDamped, Euler, LeapFrog, LeapFrogDamped,
+  SemiImplicitEuler
 * New spring force
 * Periodic boundary
 * Basic accuracy test at 1/100 of the step size
+* Display current
 
 ---
 Version 0.1 - March 5, 2012
