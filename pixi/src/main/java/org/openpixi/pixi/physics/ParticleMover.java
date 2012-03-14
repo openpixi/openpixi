@@ -24,7 +24,7 @@ import org.openpixi.pixi.physics.solver.*;
 public class ParticleMover {
 
 	/**Contains current solver algorithm*/
-	static Solver solver = new Boris();
+	public static Solver solver = new Boris();
 	
 	public static void particlePush(int num_particles) {
 		

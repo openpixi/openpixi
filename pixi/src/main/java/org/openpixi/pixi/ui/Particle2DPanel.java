@@ -48,8 +48,6 @@ public class Particle2DPanel extends JPanel {
 	
 	private boolean writePosition = false;
 
-	private Solver s = new EulerRichardson();
-	
 	//private Collision collision = new ElasticCollision();
 	
 	/** Milliseconds between updates */
@@ -79,12 +77,12 @@ public class Particle2DPanel extends JPanel {
 				if(test && i == 0)
 					for(int k = 0; k < 100; k++)
 					{
-						s.step(par, Simulation.f, Simulation.tstep / 100);
-						Simulation.boundary.check(par, Simulation.f, s, Simulation.tstep / 100);
+						ParticleMover.solver.step(par, Simulation.f, Simulation.tstep / 100);
+						Simulation.boundary.check(par, Simulation.f, ParticleMover.solver, Simulation.tstep / 100);
 					}
 				else {
-					s.step(par, Simulation.f, Simulation.tstep);
-					Simulation.boundary.check(par, Simulation.f, s, Simulation.tstep);
+					ParticleMover.solver.step(par, Simulation.f, Simulation.tstep);
+					Simulation.boundary.check(par, Simulation.f, ParticleMover.solver, Simulation.tstep);
 				}
 			}
 			//collision.check(parlist, f, s, Simulation.tstep);
@@ -107,6 +105,8 @@ public class Particle2DPanel extends JPanel {
 		this.setVisible(true);
 		this.setSize(700, 500);
 		updateSimulationSize();
+
+		ParticleMover.solver = new EulerRichardson();
 
 		// Create all particles
 		InitialConditions.initRandomParticles(10, 8);
@@ -184,7 +184,7 @@ public class Particle2DPanel extends JPanel {
 
 	private void prepareParticles() {
 		for (Particle2D p : Simulation.particles) {
-			s.prepare(p, Simulation.f, Simulation.tstep);
+			ParticleMover.solver.prepare(p, Simulation.f, Simulation.tstep);
 		}
 	}
 
@@ -219,39 +219,39 @@ public class Particle2DPanel extends JPanel {
 	{
 		for (int i = 0; i < Simulation.particles.size(); i++) {
 			Particle2D par = (Particle2D) Simulation.particles.get(i);
-			s.complete(par, Simulation.f, Simulation.tstep);
+			ParticleMover.solver.complete(par, Simulation.f, Simulation.tstep);
 		}
 		
 		switch(id) {
 		case 0:
-			s = new EulerRichardson();
+			ParticleMover.solver = new EulerRichardson();
 			break;
 		case 1:
-			s = new LeapFrog();
+			ParticleMover.solver = new LeapFrog();
 			break;
 		case 2:
-			s = new LeapFrogDamped();
+			ParticleMover.solver = new LeapFrogDamped();
 			break;
 		case 3:
-			s = new LeapFrogHalfStep();
+			ParticleMover.solver = new LeapFrogHalfStep();
 			break;
 		case 4:
-			s = new Boris();
+			ParticleMover.solver = new Boris();
 			break;
 		case 5:
-			s = new BorisDamped();
+			ParticleMover.solver = new BorisDamped();
 			break;
 		case 6:
-			s = new SemiImplicitEuler();
+			ParticleMover.solver = new SemiImplicitEuler();
 			break;
 		case 7:
-			s = new Euler();
+			ParticleMover.solver = new Euler();
 			break;
 			}
 		
 		for (int i = 0; i < Simulation.particles.size(); i++) {
 			Particle2D par = (Particle2D) Simulation.particles.get(i);
-			s.prepare(par, Simulation.f, Simulation.tstep);
+			ParticleMover.solver.prepare(par, Simulation.f, Simulation.tstep);
 		}
 	}
 
