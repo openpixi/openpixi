@@ -48,8 +48,6 @@ public class Particle2DPanel extends JPanel {
 	
 	private boolean writePosition = false;
 
-	//private Collision collision = new ElasticCollision();
-	
 	/** Milliseconds between updates */
 	private int interval = 30;
 

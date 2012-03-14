@@ -21,8 +21,8 @@ package org.openpixi.pixi.physics;
 
 import java.util.ArrayList;
 
-import org.openpixi.pixi.physics.Particle2D;
 import org.openpixi.pixi.physics.boundary.*;
+import org.openpixi.pixi.physics.collision.*;
 import org.openpixi.pixi.physics.force.Force;
 
 public class Simulation {
@@ -49,6 +49,7 @@ public class Simulation {
 	public static Boundary boundary = new HardWallBoundary();
 
 	public static CurrentGrid currentGrid = new CurrentGrid();
+	private static Collision collision = new ElasticCollision();
 
 	public static void setSize(double width, double height) {
 		Simulation.width = width;
@@ -59,8 +60,8 @@ public class Simulation {
 
 	public static void step() {
 		ParticleMover.particlePush();
-		Simulation.currentGrid.updateGrid(Simulation.particles);
-		//collision.check(parlist, f, s, Simulation.tstep);
+		//collision.check(particles, f, ParticleMover.solver, tstep);
+		currentGrid.updateGrid(particles);
 	}
 
 }
