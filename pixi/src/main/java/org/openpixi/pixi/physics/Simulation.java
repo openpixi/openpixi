@@ -34,9 +34,9 @@ public class Simulation {
 	/**Timestep*/
 	static final double tstep = 1;
 	/**Width of simulated area*/
-	public static final int width = 100;
+	public static double width = 100;
 	/**Height of simulated area*/
-	public static  final int  height = 100;
+	public static double  height = 100;
 	
 	public static int num_cells_x = 10;
 	static int num_cells_y = 10;
@@ -65,6 +65,12 @@ public class Simulation {
 			ParticleMover.solver.prepare(p, f, tstep);
 			particles.add(p);
 		}
+	}
+
+	public static void setSize(double width, double height) {
+		Simulation.width = width;
+		Simulation.height = height;
+		Simulation.boundary.setBoundaries(0, 0, width, height);
 	}
 
 }

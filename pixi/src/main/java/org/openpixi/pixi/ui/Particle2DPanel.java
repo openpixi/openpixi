@@ -33,10 +33,7 @@ import java.lang.Math;
  * Displays 2D particles.
  */
 public class Particle2DPanel extends JPanel {
-	
-	public static final int xmax = 700;
-	public static final int ymax = 500;
-	
+
 	public String fileName;
 	
 	public String fileDirectory;
@@ -77,8 +74,8 @@ public class Particle2DPanel extends JPanel {
 	public class TimerListener implements ActionListener {
 
 		public void actionPerformed(ActionEvent eve) {
-			
-			Simulation.boundary.setBoundaries(0, 0, getWidth(), getHeight());
+
+			updateSimulationSize();
 			for (int i = 0; i < Simulation.particles.size(); i++) {
 				Particle2D par = (Particle2D) Simulation.particles.get(i);
 				if(test && i == 0)
@@ -110,12 +107,17 @@ public class Particle2DPanel extends JPanel {
 
 		// Set properties of the panel
 		this.setVisible(true);
-		this.setSize(xmax, ymax);
+		this.setSize(700, 500);
+		updateSimulationSize();
 
 		// Create all particles
 		InitialConditions.initRandomParticles(10, 8);
 		
 		frameratedetector = new FrameRateDetector(500);
+	}
+
+	private void updateSimulationSize() {
+		Simulation.setSize(getWidth(), getHeight());
 	}
 
 	public void startAnimation() {

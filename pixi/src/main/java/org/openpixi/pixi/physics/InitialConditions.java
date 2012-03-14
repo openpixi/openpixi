@@ -52,8 +52,8 @@ public class InitialConditions {
 		
 		for (int k = 0; k < count; k++) {
 			Particle2D par = new Particle2D();
-			par.x = Particle2DPanel.xmax * Math.random();
-			par.y = Particle2DPanel.ymax * Math.random();
+			par.x = Simulation.width * Math.random();
+			par.y = Simulation.height * Math.random();
 			par.radius = 15;
 			par.vx = 10 * Math.random();
 			par.vy = 0;
@@ -69,8 +69,8 @@ public class InitialConditions {
 		Simulation.particles.clear();
 		for (int k = 0; k < count; k++) {
 			Particle2D par = new Particle2D();
-			par.x = Particle2DPanel.xmax * Math.random();
-			par.y = Particle2DPanel.ymax * Math.random();
+			par.x = Simulation.width * Math.random();
+			par.y = Simulation.height * Math.random();
 			par.radius = radius;
 			par.vx = 10 * Math.random();
 			par.vy = 10 * Math.random();
