@@ -26,11 +26,11 @@ public class ParticleMover {
 	/**Contains current solver algorithm*/
 	public static Solver solver = new Boris();
 	
-	public static void particlePush(int num_particles) {
+	public static void particlePush() {
 		
-		for (int i = 0; i < num_particles; i++) {
-			solver.step(Simulation.particles.get(i), Simulation.f, Simulation.tstep);
-			Simulation.boundary.check(Simulation.particles.get(i), Simulation.f, solver, Simulation.tstep);
+		for (Particle2D p : Simulation.particles) {
+			solver.step(p, Simulation.f, Simulation.tstep);
+			Simulation.boundary.check(p, Simulation.f, solver, Simulation.tstep);
 		}
 		
 	}
