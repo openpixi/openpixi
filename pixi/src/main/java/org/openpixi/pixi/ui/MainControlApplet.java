@@ -24,6 +24,8 @@ import java.awt.event.*;
 
 import javax.swing.event.*;
 
+import org.openpixi.pixi.physics.Simulation;
+
 /**
  * Displays the animation of particles.
  */
@@ -218,7 +220,7 @@ public class MainControlApplet extends JApplet {
 			if(source.getValueIsAdjusting())
 			{
 				double value = source.getValue() * dragSliderScaling;
-				particlePanel.f.drag = value;
+				Simulation.f.drag = value;
 			}
 		}
 	}
@@ -229,7 +231,7 @@ public class MainControlApplet extends JApplet {
 			if(source.getValueIsAdjusting())
 			{
 				double value = source.getValue() * exSliderScaling;
-				particlePanel.f.ex = value;
+				Simulation.f.ex = value;
 			}
 		}
 	}
@@ -240,7 +242,7 @@ public class MainControlApplet extends JApplet {
 			if(source.getValueIsAdjusting())
 			{
 				double value = source.getValue() * eySliderScaling;
-				particlePanel.f.ey = value;
+				Simulation.f.ey = value;
 			}
 		}
 	}
@@ -251,7 +253,7 @@ public class MainControlApplet extends JApplet {
 			if(source.getValueIsAdjusting())
 			{
 				double value = source.getValue() * bzSliderScaling;
-				particlePanel.f.bz = value;
+				Simulation.f.bz = value;
 			}
 		}
 	}
@@ -262,7 +264,7 @@ public class MainControlApplet extends JApplet {
 			if(source.getValueIsAdjusting())
 			{
 				double value = source.getValue() * gxSliderScaling;
-				particlePanel.f.gx = value;
+				Simulation.f.gx = value;
 			}
 		}
 	}
@@ -273,7 +275,7 @@ public class MainControlApplet extends JApplet {
 			if(source.getValueIsAdjusting())
 			{
 				double value = source.getValue() * gySliderScaling;
-				particlePanel.f.gy = value;
+				Simulation.f.gy = value;
 			}
 		}
 	}
@@ -353,7 +355,7 @@ public class MainControlApplet extends JApplet {
 		dragSlider.addChangeListener(new DragListener());
 		dragSlider.setMinimum(0);
 		dragSlider.setMaximum(100);
-		dragSlider.setValue((int) particlePanel.f.drag);
+		dragSlider.setValue((int) Simulation.f.drag);
 		dragSlider.setMajorTickSpacing(10);
 		dragSlider.setMinorTickSpacing(2);
 		dragSlider.setPaintTicks(true);
@@ -363,7 +365,7 @@ public class MainControlApplet extends JApplet {
 		efieldXSlider.addChangeListener(new EFieldXListener());
 		efieldXSlider.setMinimum(-100);
 		efieldXSlider.setMaximum(100);
-		efieldXSlider.setValue((int) particlePanel.f.ex);
+		efieldXSlider.setValue((int) Simulation.f.ex);
 		efieldXSlider.setMajorTickSpacing(20);
 		efieldXSlider.setMinorTickSpacing(5);
 		efieldXSlider.setPaintTicks(true);
@@ -372,7 +374,7 @@ public class MainControlApplet extends JApplet {
 		efieldYSlider.addChangeListener(new EFieldYListener());
 		efieldYSlider.setMinimum(-100);
 		efieldYSlider.setMaximum(100);
-		efieldYSlider.setValue((int) particlePanel.f.ey);
+		efieldYSlider.setValue((int) Simulation.f.ey);
 		efieldYSlider.setMajorTickSpacing(20);
 		efieldYSlider.setMinorTickSpacing(5);
 		efieldYSlider.setPaintTicks(true);
@@ -381,7 +383,7 @@ public class MainControlApplet extends JApplet {
 		bfieldZSlider.addChangeListener(new BFieldZListener());
 		bfieldZSlider.setMinimum(-100);
 		bfieldZSlider.setMaximum(100);
-		bfieldZSlider.setValue((int) particlePanel.f.bz);
+		bfieldZSlider.setValue((int) Simulation.f.bz);
 		bfieldZSlider.setMajorTickSpacing(20);
 		bfieldZSlider.setMinorTickSpacing(5);
 		bfieldZSlider.setPaintTicks(true);
@@ -390,7 +392,7 @@ public class MainControlApplet extends JApplet {
 		gfieldXSlider.addChangeListener(new GFieldXListener());
 		gfieldXSlider.setMinimum(-100);
 		gfieldXSlider.setMaximum(100);
-		gfieldXSlider.setValue((int) particlePanel.f.gx);
+		gfieldXSlider.setValue((int) Simulation.f.gx);
 		gfieldXSlider.setMajorTickSpacing(20);
 		gfieldXSlider.setMinorTickSpacing(5);
 		gfieldXSlider.setPaintTicks(true);
@@ -399,7 +401,7 @@ public class MainControlApplet extends JApplet {
 		gfieldYSlider.addChangeListener(new GFieldYListener());
 		gfieldYSlider.setMinimum(-100);
 		gfieldYSlider.setMaximum(100);
-		gfieldYSlider.setValue((int) particlePanel.f.gy);
+		gfieldYSlider.setValue((int) Simulation.f.gy);
 		gfieldYSlider.setMajorTickSpacing(20);
 		gfieldYSlider.setMinorTickSpacing(5);
 		gfieldYSlider.setPaintTicks(true);
@@ -547,12 +549,12 @@ public class MainControlApplet extends JApplet {
 	{
 		particlePanel.step = 0.5;
 		stepSlider.setValue(50);
-		efieldXSlider.setValue((int) (particlePanel.f.ex / exSliderScaling));
-		efieldYSlider.setValue((int) (particlePanel.f.ey / eySliderScaling));
-		bfieldZSlider.setValue((int) (particlePanel.f.bz / bzSliderScaling));
-		gfieldXSlider.setValue((int) (particlePanel.f.gx / gxSliderScaling));
-		gfieldYSlider.setValue((int) (particlePanel.f.gy / gySliderScaling));
-		dragSlider.setValue((int) (particlePanel.f.drag / dragSliderScaling));
+		efieldXSlider.setValue((int) (Simulation.f.ex / exSliderScaling));
+		efieldYSlider.setValue((int) (Simulation.f.ey / eySliderScaling));
+		bfieldZSlider.setValue((int) (Simulation.f.bz / bzSliderScaling));
+		gfieldXSlider.setValue((int) (Simulation.f.gx / gxSliderScaling));
+		gfieldYSlider.setValue((int) (Simulation.f.gy / gySliderScaling));
+		dragSlider.setValue((int) (Simulation.f.drag / dragSliderScaling));
 		//int delay = particlePanel.timer.getDelay();
 		//speedSlider.setValue((int) (-Math.log(delay / 1000.) / speedSliderScaling));
 		speedSlider.setValue(50);

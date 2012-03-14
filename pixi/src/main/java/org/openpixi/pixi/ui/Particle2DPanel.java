@@ -75,9 +75,6 @@ public class Particle2DPanel extends JPanel {
 	public boolean paint_trace = false;
 
 	private static int num_particles = 10;
-
-	/** Constant force for particles */
-	public Force f = new Force();
 	
 	private Boundary boundary = new HardWallBoundary();
 
@@ -99,12 +96,12 @@ public class Particle2DPanel extends JPanel {
 				if(test && i == 0)
 					for(int k = 0; k < 100; k++)
 					{
-						s.step(par, f, step / 100);
-						boundary.check(par, f, s, step / 100);
+						s.step(par, Simulation.f, step / 100);
+						boundary.check(par, Simulation.f, s, step / 100);
 					}
 				else {
-					s.step(par, f, step);				
-					boundary.check(par, f, s, step);
+					s.step(par, Simulation.f, step);
+					boundary.check(par, Simulation.f, s, step);
 				}
 			}
 			//collision.check(parlist, f, s, step);
@@ -179,7 +176,7 @@ public class Particle2DPanel extends JPanel {
 	{
 		test = true;
 		createRandomParticles(2, 10);
-		f.reset();
+		Simulation.f.reset();
 		for (int i = 0; i < num_particles; i++) {
 			Particle2D par = (Particle2D) parlist.get(i);
 			par.x = (100);
@@ -197,9 +194,9 @@ public class Particle2DPanel extends JPanel {
 	
 
 	private void initRandomParticles(int count, int radius) {
-		f = new Force();
-		f.reset();
-		f.gy = - 1; //-ConstantsSI.g;
+		Simulation.f = new Force();
+		Simulation.f.reset();
+		Simulation.f.gy = - 1; //-ConstantsSI.g;
 		//f.bz = 1;
 		
 		createRandomParticles(count, radius);
@@ -207,27 +204,27 @@ public class Particle2DPanel extends JPanel {
 	}
 
 	private void initGravity(int count) {
-		f = new Force();
-		f.reset();
-		f.gy = -1; // -ConstantsSI.g;
+		Simulation.f = new Force();
+		Simulation.f.reset();
+		Simulation.f.gy = -1; // -ConstantsSI.g;
 		
 		createRandomParticles(count, 15);
 		setHardWallBoundary();
 	}
 	
 	private void initElectric(int count) {
-		f = new Force();
-		f.reset();
-		f.ey = -1;
+		Simulation.f = new Force();
+		Simulation.f.reset();
+		Simulation.f.ey = -1;
 		
 		createRandomParticles(count, 15);
 		setHardWallBoundary();
 	}
 
 	private void initMagnetic(int count) {
-		f = new Force();
-		f.reset();
-		f.bz = .1;
+		Simulation.f = new Force();
+		Simulation.f.reset();
+		Simulation.f.bz = .1;
 		
 		createRandomParticles(count, 15);
 		setPeriodicBoundary();
@@ -236,8 +233,8 @@ public class Particle2DPanel extends JPanel {
 	private void initSpring(int count) {
 		num_particles = count;
 		parlist.clear();
-		f = new SpringForce();
-		f.reset();
+		Simulation.f = new SpringForce();
+		Simulation.f.reset();
 		
 		for (int k = 0; k < num_particles; k++) {
 			Particle2D par = new Particle2D();
@@ -248,7 +245,7 @@ public class Particle2DPanel extends JPanel {
 			par.vy = 0;
 			par.mass = 1;
 			par.charge = 0;
-			s.prepare(par, f, step);
+			s.prepare(par, Simulation.f, step);
 			parlist.add(par);
 		}
 
@@ -271,7 +268,7 @@ public class Particle2DPanel extends JPanel {
 			} else {
 				par.charge = -1;
 			}
-			s.prepare(par, f, step);
+			s.prepare(par, Simulation.f, step);
 			parlist.add(par);
 		}
 	}
@@ -297,7 +294,7 @@ public class Particle2DPanel extends JPanel {
 		writePosition =! writePosition;
 		if(writePosition)
 		{
-			f.reset();
+			Simulation.f.reset();
 			createRandomParticles(1, 10);
 			Particle2D par = (Particle2D) parlist.get(0);
 			par.x = 0;
@@ -315,7 +312,7 @@ public class Particle2DPanel extends JPanel {
 	{
 		for (int i = 0; i < num_particles; i++) {
 			Particle2D par = (Particle2D) parlist.get(i);
-			s.complete(par, f, step);				
+			s.complete(par, Simulation.f, step);
 		}
 		
 		switch(id) {
@@ -347,7 +344,7 @@ public class Particle2DPanel extends JPanel {
 		
 		for (int i = 0; i < num_particles; i++) {
 			Particle2D par = (Particle2D) parlist.get(i);
-			s.prepare(par, f, step);				
+			s.prepare(par, Simulation.f, step);
 		}
 	}
 
