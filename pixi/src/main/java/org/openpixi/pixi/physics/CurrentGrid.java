@@ -20,6 +20,9 @@ package org.openpixi.pixi.physics;
 
 import java.util.ArrayList;
 
+import org.openpixi.pixi.physics.fields.FieldSolver;
+import org.openpixi.pixi.physics.fields.GaussSeidel;
+
 
 public class CurrentGrid {
 	
@@ -40,6 +43,8 @@ public class CurrentGrid {
 	public double cellWidth;
 	public double cellHeight;
 	
+	public FieldSolver fsolver = new GaussSeidel();
+	
 	//the constructor
 	public CurrentGrid() {
 	
@@ -50,6 +55,7 @@ public class CurrentGrid {
 		jy = new double[numCellsX][numCellsY];
 		rho = new double[numCellsX][numCellsY];
 		phi = new double[numCellsX][numCellsY];
+		initPotential();
 	}
 	
 	//a method to change the dimensions of the cells, i.e. the width and the height
@@ -61,12 +67,19 @@ public class CurrentGrid {
 		jx = new double[numCellsX][numCellsY];
 		jy = new double[numCellsX][numCellsY];
 		rho = new double[numCellsX][numCellsY];
+		phi = new double[numCellsX][numCellsY];
+		initPotential();
+		
+		//this.setGrid() should be called here since changeDimension() can not appear alone. This would cause dualities with MainControlApplet
 	}
 	
 	public void setGrid(double width, double height)
 	{
 		this.cellWidth = width / numCellsX;
 		this.cellHeight = height / numCellsY;
+
+		
+		//include updateGrid() and the first calculation of Fields here
 	}
 	
 	public void updateGrid(ArrayList<Particle2D> particles)
@@ -92,6 +105,8 @@ public class CurrentGrid {
 			jy[xCellPosition][yCellPosition] += p.charge * p.vy;
 			rho[xCellPosition][yCellPosition] += p.charge;
 		}
+
+		fsolver.step(phi, rho, numCellsX, numCellsY, cellWidth, cellHeight);
 		
 	}
 
@@ -101,6 +116,22 @@ public class CurrentGrid {
 				jx[i][k] = 0.0;
 				jy[i][k] = 0.0;
 				rho[i][k] = 0.0;
+			}
+		}
+	}
+	
+	//Dirichlet boundary conditions - will be moved to a different class later on.
+	private void initPotential() {
+		for (int i = 0; i < numCellsX; i++) {
+			phi[i][0] = phi[i][numCellsY-1] = 1;
+		}
+		for (int i = 1; i < numCellsY-1; i++) {
+			phi[0][i] = phi[numCellsX-1][i] = 1;
+		}
+	
+		for (int i = 1; i < (numCellsX-1); i++) {
+			for (int j = 1; j < (numCellsY-1); j++) {
+				phi[i][j] = 0;
 			}
 		}
 	}
