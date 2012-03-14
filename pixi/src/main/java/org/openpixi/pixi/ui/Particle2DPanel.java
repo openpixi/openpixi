@@ -157,7 +157,7 @@ public class Particle2DPanel extends JPanel {
 			InitialConditions.initSpring(1);
 			break;
 		}
-		prepareParticles();
+		ParticleMover.prepareAllParticles();
 		timer.start();
 	}
 	
@@ -181,12 +181,6 @@ public class Particle2DPanel extends JPanel {
 		InitialConditions.setPeriodicBoundary();
 	}
 	
-
-	private void prepareParticles() {
-		for (Particle2D p : Simulation.particles) {
-			ParticleMover.solver.prepare(p, Simulation.f, Simulation.tstep);
-		}
-	}
 
 	public void checkTrace() {
 		paint_trace =! paint_trace;

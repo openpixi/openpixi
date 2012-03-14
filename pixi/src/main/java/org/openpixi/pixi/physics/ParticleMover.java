@@ -35,4 +35,10 @@ public class ParticleMover {
 		
 	}
 
+	public static void prepareAllParticles() {
+		for (Particle2D p : Simulation.particles) {
+			solver.prepare(p, Simulation.f, Simulation.tstep);
+		}
+	}
+
 }
