@@ -75,8 +75,6 @@ public class Particle2DPanel extends JPanel {
 	public boolean paint_trace = false;
 
 	private static int num_particles = 10;
-	
-	private Boundary boundary = new HardWallBoundary();
 
 	public CurrentGrid currentGrid = new CurrentGrid();
 
@@ -87,18 +85,18 @@ public class Particle2DPanel extends JPanel {
 
 		public void actionPerformed(ActionEvent eve) {
 			
-			boundary.setBoundaries(0, 0, getWidth(), getHeight());
+			Simulation.boundary.setBoundaries(0, 0, getWidth(), getHeight());
 			for (int i = 0; i < num_particles; i++) {
 				Particle2D par = (Particle2D) Simulation.particles.get(i);
 				if(test && i == 0)
 					for(int k = 0; k < 100; k++)
 					{
 						s.step(par, Simulation.f, step / 100);
-						boundary.check(par, Simulation.f, s, step / 100);
+						Simulation.boundary.check(par, Simulation.f, s, step / 100);
 					}
 				else {
 					s.step(par, Simulation.f, step);
-					boundary.check(par, Simulation.f, s, step);
+					Simulation.boundary.check(par, Simulation.f, s, step);
 				}
 			}
 			//collision.check(parlist, f, s, step);
@@ -271,11 +269,11 @@ public class Particle2DPanel extends JPanel {
 	}
 	
 	public void setHardWallBoundary() {
-		boundary = new HardWallBoundary();
+		Simulation.boundary = new HardWallBoundary();
 	}
 
 	public void setPeriodicBoundary() {
-		boundary = new PeriodicBoundary();
+		Simulation.boundary = new PeriodicBoundary();
 	}
 	
 	public void checkTrace() {
