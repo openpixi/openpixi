@@ -6,10 +6,15 @@ import org.openpixi.pixi.physics.Simulation;
 
 public class MainBatch {
 
+	public static final int num_particles = 1000;
+	public static final double particle_radius = 0.1;
+	/**Total number of timesteps*/
+	public static final int steps = 1000;
+
 	public static void main(String[] args) {
 		Simulation.setSize(100, 100);
 				
-		InitialConditions.createRandomParticles(Simulation.num_particles, Simulation.particle_radius);
+		InitialConditions.createRandomParticles(num_particles, particle_radius);
 		ParticleMover.prepareAllParticles();
 		Simulation.f.bz = 0.001;
 		Simulation.f.ex = 0.1;
@@ -24,7 +29,7 @@ public class MainBatch {
 		
 		long start = System.currentTimeMillis();
 		
-		for (int i = 0; i < Simulation.steps; i++) {
+		for (int i = 0; i < steps; i++) {
 			Simulation.step();
 		}
 		

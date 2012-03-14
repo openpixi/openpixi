@@ -27,10 +27,6 @@ import org.openpixi.pixi.physics.force.Force;
 
 public class Simulation {
 	
-	public static final int num_particles = 1000;
-	public static final double particle_radius = 0.1;
-	/**Total number of timesteps*/
-	public static final int steps = 1000;
 	/**Timestep*/
 	public static double tstep = 1;
 	/**Width of simulated area*/
@@ -44,7 +40,7 @@ public class Simulation {
 	static final double cell_height = height/num_cells_y;
 	
 	/**Contains all Particle2D objects*/
-	public static ArrayList<Particle2D> particles = new ArrayList<Particle2D>(num_particles);
+	public static ArrayList<Particle2D> particles = new ArrayList<Particle2D>(0);
 	public static Force  f= new Force();
 	public static Boundary boundary = new HardWallBoundary();
 
