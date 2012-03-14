@@ -78,9 +78,6 @@ public class Particle2DPanel extends JPanel {
 	
 	private Boundary boundary = new HardWallBoundary();
 
-	/** Contains all particles */
-	ArrayList<Particle2D> parlist = new ArrayList<Particle2D>();
-	
 	public CurrentGrid currentGrid = new CurrentGrid();
 
 	Color darkGreen = new Color(0x00, 0x80, 0x00);
@@ -92,7 +89,7 @@ public class Particle2DPanel extends JPanel {
 			
 			boundary.setBoundaries(0, 0, getWidth(), getHeight());
 			for (int i = 0; i < num_particles; i++) {
-				Particle2D par = (Particle2D) parlist.get(i);
+				Particle2D par = (Particle2D) Simulation.particles.get(i);
 				if(test && i == 0)
 					for(int k = 0; k < 100; k++)
 					{
@@ -109,7 +106,7 @@ public class Particle2DPanel extends JPanel {
 			repaint();
 			if(writePosition)
 			{
-				Particle2D par = (Particle2D) parlist.get(0);
+				Particle2D par = (Particle2D) Simulation.particles.get(0);
 				System.out.println(par.x + " " + par.y);
 				file.writeFile(fileName, fileDirectory, par.x + " " + par.y);
 			}
@@ -178,7 +175,7 @@ public class Particle2DPanel extends JPanel {
 		createRandomParticles(2, 10);
 		Simulation.f.reset();
 		for (int i = 0; i < num_particles; i++) {
-			Particle2D par = (Particle2D) parlist.get(i);
+			Particle2D par = (Particle2D) Simulation.particles.get(i);
 			par.x = (100);
 			par.y = (100 + 100 * i);
 			par.vx = 10;
@@ -232,7 +229,7 @@ public class Particle2DPanel extends JPanel {
 	
 	private void initSpring(int count) {
 		num_particles = count;
-		parlist.clear();
+		Simulation.particles.clear();
 		Simulation.f = new SpringForce();
 		Simulation.f.reset();
 		
@@ -246,7 +243,7 @@ public class Particle2DPanel extends JPanel {
 			par.mass = 1;
 			par.charge = 0;
 			s.prepare(par, Simulation.f, step);
-			parlist.add(par);
+			Simulation.particles.add(par);
 		}
 
 		setPeriodicBoundary();
@@ -254,7 +251,7 @@ public class Particle2DPanel extends JPanel {
 	
 	private void createRandomParticles(int count, int radius) {
 		num_particles = count;
-		parlist.clear();
+		Simulation.particles.clear();
 		for (int k = 0; k < num_particles; k++) {
 			Particle2D par = new Particle2D();
 			par.x = xmax * Math.random();
@@ -269,7 +266,7 @@ public class Particle2DPanel extends JPanel {
 				par.charge = -1;
 			}
 			s.prepare(par, Simulation.f, step);
-			parlist.add(par);
+			Simulation.particles.add(par);
 		}
 	}
 	
@@ -296,7 +293,7 @@ public class Particle2DPanel extends JPanel {
 		{
 			Simulation.f.reset();
 			createRandomParticles(1, 10);
-			Particle2D par = (Particle2D) parlist.get(0);
+			Particle2D par = (Particle2D) Simulation.particles.get(0);
 			par.x = 0;
 			par.y = this.getHeight() * 0.5;
 			par.vx = 10;
@@ -311,7 +308,7 @@ public class Particle2DPanel extends JPanel {
 	public void algorithmChange(int id)
 	{
 		for (int i = 0; i < num_particles; i++) {
-			Particle2D par = (Particle2D) parlist.get(i);
+			Particle2D par = (Particle2D) Simulation.particles.get(i);
 			s.complete(par, Simulation.f, step);
 		}
 		
@@ -343,7 +340,7 @@ public class Particle2DPanel extends JPanel {
 			}
 		
 		for (int i = 0; i < num_particles; i++) {
-			Particle2D par = (Particle2D) parlist.get(i);
+			Particle2D par = (Particle2D) Simulation.particles.get(i);
 			s.prepare(par, Simulation.f, step);
 		}
 	}
@@ -368,7 +365,7 @@ public class Particle2DPanel extends JPanel {
 		
 		//if(!drawCurrentGrid) {
 		for (int i = 0; i < num_particles; i++) {
-			Particle2D par = (Particle2D) parlist.get(i);
+			Particle2D par = (Particle2D) Simulation.particles.get(i);
 			if (par.charge > 0) {
 				graph.setColor(Color.blue);
 			} else {
@@ -393,7 +390,7 @@ public class Particle2DPanel extends JPanel {
 		if(drawCurrentGrid)
 		{
 			graph.setColor(Color.black);
-			currentGrid.updateGrid(parlist);
+			currentGrid.updateGrid(Simulation.particles);
 			for(int i = 0; i < currentGrid.X_BOX; i++)
 				for(int k = 0; k < currentGrid.Y_BOX; k++)
 				{
