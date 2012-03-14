@@ -295,8 +295,8 @@ public class Particle2DPanel extends JPanel {
 		{
 			graph.setColor(Color.black);
 			currentGrid.updateGrid(Simulation.particles);
-			for(int i = 0; i < currentGrid.X_BOX; i++)
-				for(int k = 0; k < currentGrid.Y_BOX; k++)
+			for(int i = 0; i < currentGrid.numCellsX; i++)
+				for(int k = 0; k < currentGrid.numCellsY; k++)
 				{
 					int xstart = (int) (currentGrid.cellWidth * (i + 0.5));
 					int ystart = (int) (currentGrid.cellHeight * (k + 0.5));

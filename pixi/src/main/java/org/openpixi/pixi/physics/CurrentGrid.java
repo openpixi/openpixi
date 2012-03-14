@@ -27,9 +27,12 @@ public class CurrentGrid {
 	public double [][] jx;
 	/**Electric current in the middle of a cell in y-Direction*/
 	public double [][] jy;
+
+	/**Electric charge sum of a cell in y-Direction*/
+	public double [][] rho;
 	
-	public int X_BOX = 10;
-	public int Y_BOX = 10;
+	public int numCellsX = 10;
+	public int numCellsY = 10;
 	
 	public int cellWidth;
 	public int cellHeight;
@@ -40,11 +43,11 @@ public class CurrentGrid {
 		this.cellWidth = 0;
 		this.cellHeight = 0;
 		
-		jx = new double[X_BOX][Y_BOX];
-		jy = new double[X_BOX][Y_BOX];
+		jx = new double[numCellsX][numCellsY];
+		jy = new double[numCellsX][numCellsY];
 		
-		for(int i = 0; i < X_BOX; i++)                           //setting the arrays to 0
-			for(int k = 0; k < Y_BOX; k++)
+		for(int i = 0; i < numCellsX; i++)
+			for(int k = 0; k < numCellsY; k++)
 			{
 				jx[i][k] = 0.0;
 				jy[i][k] = 0.0;
@@ -54,14 +57,14 @@ public class CurrentGrid {
 	//a method to change the dimensions of the cells, i.e. the width and the height
 	public void changeDimension(int xbox, int ybox)
 	{
-		X_BOX = xbox;
-		Y_BOX = ybox;
+		numCellsX = xbox;
+		numCellsY = ybox;
 		
-		jx = new double[X_BOX][Y_BOX];
-		jy = new double[X_BOX][Y_BOX];
+		jx = new double[numCellsX][numCellsY];
+		jy = new double[numCellsX][numCellsY];
 		
-		for(int i = 0; i < X_BOX; i++)                           
-			for(int k = 0; k < Y_BOX; k++)
+		for(int i = 0; i < numCellsX; i++)
+			for(int k = 0; k < numCellsY; k++)
 			{
 				jx[i][k] = 0.0;
 				jy[i][k] = 0.0;
@@ -70,14 +73,14 @@ public class CurrentGrid {
 	
 	public void setGrid(int panelWidth, int panelHeight)
 	{
-		this.cellWidth = panelWidth / X_BOX;
-		this.cellHeight = panelHeight / Y_BOX;
+		this.cellWidth = panelWidth / numCellsX;
+		this.cellHeight = panelHeight / numCellsY;
 	}
 	
 	public void updateGrid(ArrayList<Particle2D> parlist)
 	{
-		for(int i = 0; i < X_BOX; i++)
-			for(int k = 0; k < Y_BOX; k++)
+		for(int i = 0; i < numCellsX; i++)
+			for(int k = 0; k < numCellsY; k++)
 			{
 				jx[i][k] = 0.0;
 				jy[i][k] = 0.0;
@@ -88,10 +91,10 @@ public class CurrentGrid {
 			Particle2D par = (Particle2D) parlist.get(i);
 			int xCellPosition = (int) (par.x / cellWidth);
 			int yCellPosition = (int) (par.y / cellHeight);
-			if(xCellPosition > (X_BOX - 1))
-				xCellPosition = (X_BOX - 1);
-			if(yCellPosition > (Y_BOX - 1))
-				yCellPosition = (Y_BOX - 1);
+			if(xCellPosition > (numCellsX - 1))
+				xCellPosition = (numCellsX - 1);
+			if(yCellPosition > (numCellsY - 1))
+				yCellPosition = (numCellsY - 1);
 			if(xCellPosition < 0)
 				xCellPosition = 0;
 			if(yCellPosition < 0)
@@ -99,6 +102,7 @@ public class CurrentGrid {
 			//System.out.println("x: " + xCellPosition + ", y: " + yCellPosition);
 			jx[xCellPosition][yCellPosition] += par.charge * par.vx;
 			jy[xCellPosition][yCellPosition] += par.charge * par.vy;
+			rho[xCellPosition][yCellPosition] += par.charge;
 		}
 		
 	}
