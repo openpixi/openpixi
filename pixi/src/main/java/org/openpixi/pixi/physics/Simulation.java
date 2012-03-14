@@ -19,6 +19,8 @@
 
 package org.openpixi.pixi.physics;
 
+import java.util.ArrayList;
+
 import org.openpixi.pixi.physics.Particle2D;
 import org.openpixi.pixi.physics.boundary.*;
 import org.openpixi.pixi.physics.force.Force;
@@ -42,25 +44,26 @@ public class Simulation {
 	static final double cell_height = height/num_cells_y;
 	
 	/**Contains all Particle2D objects*/
-	public static Particle2D[] particles = new Particle2D[num_particles];
+	public static ArrayList<Particle2D> particles = new ArrayList<Particle2D>(num_particles);
 	static Force  f= new Force();
 	static Boundary boundary = new HardWallBoundary();
 		
 	private static void CreateParticles(int num_particles, double particle_radius) {
 		for (int i = 0; i < num_particles; i++) {
-			particles[i] = new Particle2D();
-			particles[i].x = width * Math.random();
-			particles[i].y = height * Math.random();
-			particles[i].radius = particle_radius;
-			particles[i].vx = 10 * Math.random();
-			particles[i].vy = 10 * Math.random();
-			particles[i].mass = 1;
+			Particle2D p = new Particle2D();
+			p.x = width * Math.random();
+			p.y = height * Math.random();
+			p.radius = particle_radius;
+			p.vx = 10 * Math.random();
+			p.vy = 10 * Math.random();
+			p.mass = 1;
 			if (Math.random() > 0.5) {
-				particles[i].charge = 1;
+				p.charge = 1;
 			} else {
-				particles[i].charge = -1;
+				p.charge = -1;
 			}
-			ParticleMover.solver.prepare(particles[i], f, tstep);
+			ParticleMover.solver.prepare(p, f, tstep);
+			particles.add(p);
 		}
 	}
 	
@@ -78,7 +81,7 @@ public class Simulation {
 		System.out.println("-------- INITIAL CONDITIONS--------");		
 		
 		for (int i=0; i < 10; i++) {
-			System.out.println(particles[i].x);	
+			System.out.println(particles.get(i).x);	
 		}
 		
 		System.out.println("\n-------- SIMULATION RESULTS --------");			
@@ -93,7 +96,7 @@ public class Simulation {
 		long elapsed = System.currentTimeMillis()-start;
 		
 		for (int i=0; i < 10; i++) {
-			System.out.println(particles[i].x);	
+			System.out.println(particles.get(i).x);	
 		}
 		
 		System.out.println("\nCurrent: ");

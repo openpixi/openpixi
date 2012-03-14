@@ -19,6 +19,8 @@
 
 package org.openpixi.pixi.physics;
 
+import java.util.ArrayList;
+
 import org.openpixi.pixi.physics.Simulation;
 
 public class InterpolatorParticlesGrid {
@@ -27,7 +29,7 @@ public class InterpolatorParticlesGrid {
 	static double [][] jy = new double[Simulation.num_cells_x][Simulation.num_cells_y];
 	static double [][] rho = new double[Simulation.num_cells_x][Simulation.num_cells_y];
 	
-	static void interpolateParticlesGrid(int num_particles, Particle2D [] particles) {
+	static void interpolateParticlesGrid(int num_particles, ArrayList<Particle2D> particles) {
 		
 		for (int i = 0; i < Simulation.num_cells_x; i++) {
 			for (int k = 0; k < Simulation.num_cells_y; k++) {
@@ -38,8 +40,8 @@ public class InterpolatorParticlesGrid {
 		
 		
 		for (int i = 0; i < num_particles; i++) {
-			int xCellPosition = (int) (particles[i].x / Simulation.cell_width);
-			int yCellPosition = (int) (particles[i].y / Simulation.cell_height);
+			int xCellPosition = (int) (particles.get(i).x / Simulation.cell_width);
+			int yCellPosition = (int) (particles.get(i).y / Simulation.cell_height);
 			if(xCellPosition > (Simulation.num_cells_x - 1))
 				xCellPosition = (Simulation.num_cells_x - 1);
 			if(yCellPosition > (Simulation.num_cells_y - 1))
@@ -48,9 +50,9 @@ public class InterpolatorParticlesGrid {
 				xCellPosition = 0;
 			if(yCellPosition < 0)
 				yCellPosition = 0;
-			rho[xCellPosition][yCellPosition] += Simulation.particles[i].charge;
-			jx[xCellPosition][yCellPosition] += Simulation.particles[i].charge * Simulation.particles[i].vx;
-			jy[xCellPosition][yCellPosition] += Simulation.particles[i].charge * Simulation.particles[i].vy;
+			rho[xCellPosition][yCellPosition] += Simulation.particles.get(i).charge;
+			jx[xCellPosition][yCellPosition] += Simulation.particles.get(i).charge * Simulation.particles.get(i).vx;
+			jy[xCellPosition][yCellPosition] += Simulation.particles.get(i).charge * Simulation.particles.get(i).vy;
 		}
 		
 	}

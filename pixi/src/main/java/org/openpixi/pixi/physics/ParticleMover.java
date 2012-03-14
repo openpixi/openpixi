@@ -29,8 +29,8 @@ public class ParticleMover {
 	static void particlePush(int num_particles) {
 		
 		for (int i = 0; i < num_particles; i++) {
-			solver.step(Simulation.particles[i], Simulation.f, Simulation.tstep);
-			Simulation.boundary.check(Simulation.particles[i], Simulation.f, solver, Simulation.tstep);
+			solver.step(Simulation.particles.get(i), Simulation.f, Simulation.tstep);
+			Simulation.boundary.check(Simulation.particles.get(i), Simulation.f, solver, Simulation.tstep);
 		}
 		
 	}
