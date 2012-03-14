@@ -77,14 +77,13 @@ public class Particle2DPanel extends JPanel {
 					{
 						ParticleMover.solver.step(par, Simulation.f, Simulation.tstep / 100);
 						Simulation.boundary.check(par, Simulation.f, ParticleMover.solver, Simulation.tstep / 100);
-						Simulation.currentGrid.updateGrid(Simulation.particles);
 					}
 				else {
 					ParticleMover.solver.step(par, Simulation.f, Simulation.tstep);
 					Simulation.boundary.check(par, Simulation.f, ParticleMover.solver, Simulation.tstep);
-					Simulation.currentGrid.updateGrid(Simulation.particles);
 				}
 			}
+			Simulation.currentGrid.updateGrid(Simulation.particles);
 			//collision.check(parlist, f, s, Simulation.tstep);
 			frameratedetector.update();
 			repaint();
