@@ -15,9 +15,9 @@ public class MainBatch {
 		Simulation.setSize(100, 100);
 				
 		InitialConditions.createRandomParticles(num_particles, particle_radius);
-		ParticleMover.prepareAllParticles();
 		Simulation.f.bz = 0.001;
 		Simulation.f.ex = 0.1;
+		ParticleMover.prepareAllParticles();
 		
 		System.out.println("-------- INITIAL CONDITIONS--------");		
 		
