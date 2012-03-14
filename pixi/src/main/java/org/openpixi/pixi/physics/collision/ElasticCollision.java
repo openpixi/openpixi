@@ -20,7 +20,7 @@ public class ElasticCollision extends Collision{
 		super();
 	}
 	
-	public void doCollision(Particle2D p1, Particle2D p2)
+	/*public void doCollision(Particle2D p1, Particle2D p2)
 	{
 		//distance between the particles
 		double distance = Math.sqrt((p1.x - p2.x) * (p1.x - p2.x) + (p1.y - p2.y) * (p1.y - p2.y));
@@ -82,7 +82,7 @@ public class ElasticCollision extends Collision{
 		p1.vy = newv1xNewCoor * Math.sin(phi) + v1yNewCoor * Math.sin(phi + Math.PI);
 		p2.vx = newv2xNewCoor * Math.cos(phi) + v2yNewCoor * Math.cos(phi + Math.PI);
 		p2.vy = newv2xNewCoor * Math.sin(phi) + v2yNewCoor * Math.sin(phi + Math.PI);
-	}
+	}*/
 	
 	/*
 	public void doCollision(Particle2D p1, Particle2D p2) {
@@ -130,7 +130,7 @@ public class ElasticCollision extends Collision{
 				2 * p1.mass * Math.sqrt(v1NX * v1NX + v1NY * v1NY));
 	}*/
 	
-	/*public void doCollision(Particle2D p1, Particle2D p2) {
+	public void doCollision(Particle2D p1, Particle2D p2) {
 		//distance between the particles
 		double distance = Math.sqrt((p1.x - p2.x) * (p1.x - p2.x) + (p1.y - p2.y) * (p1.y - p2.y));
 		
@@ -161,10 +161,10 @@ public class ElasticCollision extends Collision{
 	    double angle = y21 / x21;
 	    double dvx2 = -2 * (vx21 + angle * vy21) / ((1 + angle * angle) * (1 + m21)) ;
 	    p2.vx += dvx2;
-	    p2.vy += a * dvx2;
+	    p2.vy += angle * dvx2;
 	    p1.vx -= m21 * dvx2;
-	    p1.vy -= a * m21 * dvx2;
-	}*/
+	    p1.vy -= angle * m21 * dvx2;
+	}
 	
 	/*for this method I need to integrate a few more things to avoid for example particles getting stuck together,
 	 * and solve couple of more problems, be patient!
