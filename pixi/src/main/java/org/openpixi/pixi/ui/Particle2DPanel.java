@@ -77,10 +77,12 @@ public class Particle2DPanel extends JPanel {
 					{
 						ParticleMover.solver.step(par, Simulation.f, Simulation.tstep / 100);
 						Simulation.boundary.check(par, Simulation.f, ParticleMover.solver, Simulation.tstep / 100);
+						Simulation.currentGrid.updateGrid(Simulation.particles);
 					}
 				else {
 					ParticleMover.solver.step(par, Simulation.f, Simulation.tstep);
 					Simulation.boundary.check(par, Simulation.f, ParticleMover.solver, Simulation.tstep);
+					Simulation.currentGrid.updateGrid(Simulation.particles);
 				}
 			}
 			//collision.check(parlist, f, s, Simulation.tstep);
@@ -291,7 +293,6 @@ public class Particle2DPanel extends JPanel {
 		if(drawCurrentGrid)
 		{
 			graph.setColor(Color.black);
-			Simulation.currentGrid.updateGrid(Simulation.particles);
 			for(int i = 0; i < Simulation.currentGrid.numCellsX; i++)
 				for(int k = 0; k < Simulation.currentGrid.numCellsY; k++)
 				{
