@@ -164,6 +164,7 @@ public class Particle2DPanel extends JPanel {
 			initSpring(1);
 			break;
 		}
+		prepareParticles();
 		timer.start();
 	}
 	
@@ -188,7 +189,7 @@ public class Particle2DPanel extends JPanel {
 	}
 	
 
-	private void initRandomParticles(int count, int radius) {
+	private static void initRandomParticles(int count, int radius) {
 		Simulation.f = new Force();
 		Simulation.f.reset();
 		Simulation.f.gy = - 1; //-ConstantsSI.g;
@@ -198,7 +199,7 @@ public class Particle2DPanel extends JPanel {
 		setHardWallBoundary();
 	}
 
-	private void initGravity(int count) {
+	private static void initGravity(int count) {
 		Simulation.f = new Force();
 		Simulation.f.reset();
 		Simulation.f.gy = -1; // -ConstantsSI.g;
@@ -207,7 +208,7 @@ public class Particle2DPanel extends JPanel {
 		setHardWallBoundary();
 	}
 	
-	private void initElectric(int count) {
+	private static void initElectric(int count) {
 		Simulation.f = new Force();
 		Simulation.f.reset();
 		Simulation.f.ey = -1;
@@ -216,7 +217,7 @@ public class Particle2DPanel extends JPanel {
 		setHardWallBoundary();
 	}
 
-	private void initMagnetic(int count) {
+	private static void initMagnetic(int count) {
 		Simulation.f = new Force();
 		Simulation.f.reset();
 		Simulation.f.bz = .1;
@@ -225,7 +226,7 @@ public class Particle2DPanel extends JPanel {
 		setPeriodicBoundary();
 	}
 	
-	private void initSpring(int count) {
+	private static void initSpring(int count) {
 		num_particles = count;
 		Simulation.particles.clear();
 		Simulation.f = new SpringForce();
@@ -240,14 +241,13 @@ public class Particle2DPanel extends JPanel {
 			par.vy = 0;
 			par.mass = 1;
 			par.charge = 0;
-			s.prepare(par, Simulation.f, step);
 			Simulation.particles.add(par);
 		}
 
 		setPeriodicBoundary();
 	}
 	
-	private void createRandomParticles(int count, int radius) {
+	private static void createRandomParticles(int count, int radius) {
 		num_particles = count;
 		Simulation.particles.clear();
 		for (int k = 0; k < num_particles; k++) {
@@ -263,16 +263,21 @@ public class Particle2DPanel extends JPanel {
 			} else {
 				par.charge = -1;
 			}
-			s.prepare(par, Simulation.f, step);
 			Simulation.particles.add(par);
 		}
 	}
 	
-	public void setHardWallBoundary() {
+	private void prepareParticles() {
+		for (Particle2D p : Simulation.particles) {
+			s.prepare(p, Simulation.f, step);
+		}
+	}
+
+	public static void setHardWallBoundary() {
 		Simulation.boundary = new HardWallBoundary();
 	}
 
-	public void setPeriodicBoundary() {
+	public static void setPeriodicBoundary() {
 		Simulation.boundary = new PeriodicBoundary();
 	}
 	
