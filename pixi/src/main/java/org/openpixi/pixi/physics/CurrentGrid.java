@@ -31,6 +31,9 @@ public class CurrentGrid {
 	/**Electric charge sum of a cell*/
 	public double [][] rho;
 	
+	/**Electric potential for each cell*/
+	public double [][] phi;
+	
 	public int numCellsX = 10;
 	public int numCellsY = 10;
 	
@@ -46,6 +49,7 @@ public class CurrentGrid {
 		jx = new double[numCellsX][numCellsY];
 		jy = new double[numCellsX][numCellsY];
 		rho = new double[numCellsX][numCellsY];
+		phi = new double[numCellsX][numCellsY];
 	}
 	
 	//a method to change the dimensions of the cells, i.e. the width and the height
