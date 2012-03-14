@@ -48,6 +48,8 @@ public class Simulation {
 	public static Force  f= new Force();
 	public static Boundary boundary = new HardWallBoundary();
 
+	public static CurrentGrid currentGrid = new CurrentGrid();
+
 	public static void setSize(double width, double height) {
 		Simulation.width = width;
 		Simulation.height = height;

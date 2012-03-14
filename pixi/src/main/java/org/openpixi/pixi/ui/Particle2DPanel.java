@@ -62,8 +62,6 @@ public class Particle2DPanel extends JPanel {
 	/** A state for the trace */
 	public boolean paint_trace = false;
 
-	public CurrentGrid currentGrid = new CurrentGrid();
-
 	Color darkGreen = new Color(0x00, 0x80, 0x00);
 
 	/** Listener for timer */
@@ -255,7 +253,7 @@ public class Particle2DPanel extends JPanel {
 		setBackground(Color.white);
 		graph.translate(0.0, this.getHeight());
 		graph.scale(1.0, -1.0);
-		currentGrid.setGrid(getWidth(), getHeight());
+		Simulation.currentGrid.setGrid(getWidth(), getHeight());
 
 		if(!paint_trace)
 		{
@@ -294,13 +292,13 @@ public class Particle2DPanel extends JPanel {
 		if(drawCurrentGrid)
 		{
 			graph.setColor(Color.black);
-			currentGrid.updateGrid(Simulation.particles);
-			for(int i = 0; i < currentGrid.numCellsX; i++)
-				for(int k = 0; k < currentGrid.numCellsY; k++)
+			Simulation.currentGrid.updateGrid(Simulation.particles);
+			for(int i = 0; i < Simulation.currentGrid.numCellsX; i++)
+				for(int k = 0; k < Simulation.currentGrid.numCellsY; k++)
 				{
-					int xstart = (int) (currentGrid.cellWidth * (i + 0.5));
-					int ystart = (int) (currentGrid.cellHeight * (k + 0.5));
-					drawArrow(graph, xstart, ystart, (int) Math.round(currentGrid.jx[i][k] + xstart), (int) Math.round(currentGrid.jy[i][k] + ystart));
+					int xstart = (int) (Simulation.currentGrid.cellWidth * (i + 0.5));
+					int ystart = (int) (Simulation.currentGrid.cellHeight * (k + 0.5));
+					drawArrow(graph, xstart, ystart, (int) Math.round(Simulation.currentGrid.jx[i][k] + xstart), (int) Math.round(Simulation.currentGrid.jy[i][k] + ystart));
 				}
 			//return;
 		}
