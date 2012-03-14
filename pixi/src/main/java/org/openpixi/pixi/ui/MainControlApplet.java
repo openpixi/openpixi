@@ -477,9 +477,9 @@ public class MainControlApplet extends JApplet {
 		controlPanelUp.add(testButton);
 		//controlPanelUp.add(traceCheck);
 		//controlPanelUp.add(framerateCheck);
-		controlPanelUp.add(writePositionCheck);
-		controlPanelUp.add(filename);
-		controlPanelUp.add(filedirectory);
+//		controlPanelUp.add(writePositionCheck);
+//		controlPanelUp.add(filename);
+//		controlPanelUp.add(filedirectory);
 		controlPanelUp.add(Box.createHorizontalGlue());
 		controlPanelUp.add(currentgridCheck);		
 		controlPanelUp.add(Box.createHorizontalGlue());
