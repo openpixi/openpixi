@@ -32,7 +32,7 @@ Version 0.2 - March 14, 2012
 * New spring force
 * Periodic boundary
 * Basic accuracy test at 1/100 of the step size
-* Display current
+* Display current at variable grid size
 
 ---
 Version 0.1 - March 5, 2012
