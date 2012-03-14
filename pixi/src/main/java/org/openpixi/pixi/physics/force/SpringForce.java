@@ -1,4 +1,6 @@
-package org.openpixi.pixi.physics;
+package org.openpixi.pixi.physics.force;
+
+import org.openpixi.pixi.physics.Particle2D;
 
 public class SpringForce extends Force{
 	

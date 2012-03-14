@@ -21,6 +21,7 @@ package org.openpixi.pixi.physics;
 
 import org.openpixi.pixi.physics.Particle2D;
 import org.openpixi.pixi.physics.boundary.*;
+import org.openpixi.pixi.physics.force.Force;
 
 public class Simulation {
 	

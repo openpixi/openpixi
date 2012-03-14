@@ -21,9 +21,9 @@ package org.openpixi.pixi.physics.arraylist;
 
 import java.util.ArrayList;
 
-import org.openpixi.pixi.physics.Force;
 import org.openpixi.pixi.physics.Particle2D;
 import org.openpixi.pixi.physics.boundary.*;
+import org.openpixi.pixi.physics.force.Force;
 
 public class SimulationArrayList {
 	

@@ -20,6 +20,7 @@
 package org.openpixi.pixi.physics.solver;
 
 import org.openpixi.pixi.physics.*;
+import org.openpixi.pixi.physics.force.Force;
 
 /**The calculation is due to Boris and the equations((7) - (10)) can be found here:
  * http://ptsg.eecs.berkeley.edu/publications/Verboncoeur2005IOP.pdf

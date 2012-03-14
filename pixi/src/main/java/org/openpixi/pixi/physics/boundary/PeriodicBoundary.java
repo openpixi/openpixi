@@ -19,6 +19,7 @@
 package org.openpixi.pixi.physics.boundary;
 
 import org.openpixi.pixi.physics.*;
+import org.openpixi.pixi.physics.force.Force;
 import org.openpixi.pixi.physics.solver.*;
 
 public class PeriodicBoundary extends Boundary {

@@ -19,6 +19,7 @@
 package org.openpixi.pixi.physics.solver;
 
 import org.openpixi.pixi.physics.*;
+import org.openpixi.pixi.physics.force.Force;
 
 /**This class represents the LeapFrog algorithm and the equations that are used one can be find here:
  * http://phycomp.technion.ac.il/~david/thesis/node34.html

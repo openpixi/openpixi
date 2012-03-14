@@ -19,6 +19,7 @@
 package org.openpixi.pixi.physics.collision;
 
 import org.openpixi.pixi.physics.*;
+import org.openpixi.pixi.physics.force.Force;
 import org.openpixi.pixi.physics.solver.*;
 
 import java.util.ArrayList;

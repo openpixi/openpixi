@@ -21,6 +21,8 @@ package org.openpixi.pixi.ui;
 import org.openpixi.pixi.physics.*;
 import org.openpixi.pixi.physics.boundary.*;
 import org.openpixi.pixi.physics.collision.*;
+import org.openpixi.pixi.physics.force.Force;
+import org.openpixi.pixi.physics.force.SpringForce;
 import org.openpixi.pixi.physics.solver.*;
 import org.openpixi.pixi.ui.util.*;
 import java.awt.*;

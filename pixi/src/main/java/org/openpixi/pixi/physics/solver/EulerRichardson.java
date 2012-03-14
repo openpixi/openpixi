@@ -19,6 +19,7 @@
 package org.openpixi.pixi.physics.solver;
 
 import org.openpixi.pixi.physics.*;
+import org.openpixi.pixi.physics.force.Force;
 
 /**
  * This class is based on the simple Euler-Richardson algorithm (it
