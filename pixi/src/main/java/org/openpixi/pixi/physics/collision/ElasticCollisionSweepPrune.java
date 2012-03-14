@@ -12,15 +12,21 @@ import org.openpixi.pixi.physics.force.Force;
 import org.openpixi.pixi.physics.solver.*;
 import java.lang.Math;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Set;
 
 
-public class ElasticCollision extends Collision{
+public class ElasticCollisionSweepPrune extends Collision{
 	
-	public ElasticCollision() {
+	//Particle2D [][] col = new Particle2D [100][2];
+	
+	public ElasticCollisionSweepPrune() {
 		super();
 	}
 	
-	/*public void doCollision(Particle2D p1, Particle2D p2)
+	
+	public void doCollision(Particle2D p1, Particle2D p2)
 	{
 		//distance between the particles
 		double distance = Math.sqrt((p1.x - p2.x) * (p1.x - p2.x) + (p1.y - p2.y) * (p1.y - p2.y));
@@ -82,54 +88,9 @@ public class ElasticCollision extends Collision{
 		p1.vy = newv1xNewCoor * Math.sin(phi) + v1yNewCoor * Math.sin(phi + Math.PI);
 		p2.vx = newv2xNewCoor * Math.cos(phi) + v2yNewCoor * Math.cos(phi + Math.PI);
 		p2.vy = newv2xNewCoor * Math.sin(phi) + v2yNewCoor * Math.sin(phi + Math.PI);
-	}*/
+	}
 	
 	/*
-	public void doCollision(Particle2D p1, Particle2D p2) {
-		
-		//distance between the particles
-		double distance = Math.sqrt((p1.x - p2.x) * (p1.x - p2.x) + (p1.y - p2.y) * (p1.y - p2.y));
-		
-		//finding the unit distance vector
-		double dnX = (p1.x - p2.x) / distance;
-		double dnY = (p1.y - p2.y) / distance;
-		
-		//finding the tangential vector;
-		double dtX = dnY;
-		double dtY = - dnX;
-		
-		//finding the minimal distance if the particles are overlapping
-		double minDistanceX = dnX * (p1.radius + p2.radius - distance);
-		double minDistanceY = dnY * (p1.radius + p2.radius - distance);
-		
-		//moving the particles if they are overlapping (if not, the minimal distance is equal to zero)
-		p1.x += minDistanceX * p2.mass / (p1.mass + p2.mass);
-		p1.y += minDistanceY * p2.mass / (p1.mass + p2.mass);
-		p2.x -= minDistanceX * p1.mass / (p1.mass + p2.mass);
-		p2.y -= minDistanceY * p1.mass / (p1.mass + p2.mass);
-		
-		//finding the normal and the tangential vectors of the particles corresponding with the collision plane
-		double v1NX = dnX * (p1.vx * dnX + p1.vy * dnY);
-		double v1NY = dnY * (p1.vx * dnX + p1.vy * dnY);
-		double v1TX = dtX * (p1.vx * dtX + p1.vy * dtY);
-		double v1TY = dtY * (p1.vx * dtX + p1.vy * dtY);
-		
-		double v2NX = dnX * (p2.vx * dnX + p2.vy * dnY);
-		double v2NY = dnY * (p2.vx * dnX + p2.vy * dnY);
-		double v2TX = dtX * (p2.vx * dtX + p2.vy * dtY);
-		double v2TY = dtY * (p2.vx * dtX + p2.vy * dtY);
-		
-		//calculating the new velocities
-		p1.vx = v1TX + dnX * ((p1.mass - p2.mass) * Math.sqrt(v1NX * v1NX + v1NY * v1NY) / (p1.mass + p2.mass) +
-				2 * p2.mass * Math.sqrt(v2NX * v2NX + v2NY * v2NY));
-		p1.vy = v1TY + dnY * ((p1.mass - p2.mass) * Math.sqrt(v1NX * v1NX + v1NY * v1NY) / (p1.mass + p2.mass) +
-				2 * p2.mass * Math.sqrt(v2NX * v2NX + v2NY * v2NY));
-		p2.vx = v2TX + dnX * ((p2.mass - p1.mass) * Math.sqrt(v2NX * v2NX + v2NY * v2NY) / (p1.mass + p2.mass) +
-				2 * p1.mass * Math.sqrt(v1NX * v1NX + v1NY * v1NY));
-		p2.vy = v2TY + dnY * ((p2.mass - p1.mass) * Math.sqrt(v2NX * v2NX + v2NY * v2NY) / (p1.mass + p2.mass) +
-				2 * p1.mass * Math.sqrt(v1NX * v1NX + v1NY * v1NY));
-	}*/
-	
 	public void doCollision(Particle2D p1, Particle2D p2) {
 		//distance between the particles
 		double distance = Math.sqrt((p1.x - p2.x) * (p1.x - p2.x) + (p1.y - p2.y) * (p1.y - p2.y));
@@ -165,31 +126,94 @@ public class ElasticCollision extends Collision{
 	    p1.vx -= m21 * dvx2;
 	    p1.vy -= angle * m21 * dvx2;
 	}
+	*/
 	
-	/*for this method I need to integrate a few more things to avoid for example particles getting stuck together,
-	 * and solve couple of more problems, be patient!
-	 */
-
+	
 	public void check(ArrayList<Particle2D> parlist, Force f, Solver s, double step)
 	{
-		for(int i = 0; i < (parlist.size() - 1); i++)
-		{
-			Particle2D p1 = (Particle2D) parlist.get(i);
-			//double x1 = Math.sqrt(p1.x * p1.x + p1.y * p1.y);
-			for(int k = (i + 1); k < parlist.size(); k++)
-			{
-				Particle2D p2 = (Particle2D) parlist.get(k);
-				double distance = Math.sqrt((p1.x - p2.x) * (p1.x - p2.x) + (p1.y - p2.y) * (p1.y - p2.y));
-				if(distance <= (p1.radius + p2.radius)) {
-					s.complete(p1, f, step);
-					s.complete(p2, f, step);
-					doCollision(p1, p2);
-					s.prepare(p1, f, step);
-					s.prepare(p2, f, step);
-				}
-			}
+		//lists of the particles that are sorted by the x - & y - coordinates
+		ArrayList<Particle2D> listX = parlist;
+		ArrayList<Particle2D> listY = parlist;
+	
+		Collections.sort(listX, BY_X);
+		Collections.sort(listY, BY_Y);
+		
+		//ArrayList<Set<Particle2D>> colllisionParList = new ArrayList<Set<Particle2D>>();
+		//int [] collisionParticles = new int [2 * parlist.size()];
+		//ArrayList<Particle2D []> collision = new ArrayList<Particle2D[]>;
+		
+		//list that cointains the particles that are most probably to collide
+		Particle2D [][] aktiveCollisions = new Particle2D [parlist.size() * parlist.size()][2];
+		
+		//starting to check if the "boxes" of the particles overlap along the x - axis
+		int colPairs = 0;
+		for(int i = 0; i < (listX.size() - 1); i++) {
+			Particle2D par1 = (Particle2D) listX.get(i);
 			
+			for(int k = (i + 1); k < listX.size(); k++) {
+				Particle2D par2 = (Particle2D) listX.get(k);
+				
+				//here are the "boxes" built
+				if(((par2.x - 2 * par2.radius) - (par1.x + 2 * par1.radius)) < 0) {
+					if (((par2.y - 2 * par2.radius) - (par1.y + 2 * par1.radius)) < 0) {
+						aktiveCollisions[colPairs][0] = par1;
+						aktiveCollisions[colPairs][1] = par2;
+						colPairs++;
+					}
+					else
+						break;
+				}
+				else
+					break;
+			}
+		}
+		System.out.println("Col Pairs: " + colPairs);
+		//doing the exact detection for collisions
+		for(int i = 0; i < (colPairs - 1); i++)
+		{
+			Particle2D p1 = (Particle2D) aktiveCollisions[i][0];
+			Particle2D p2 = (Particle2D) aktiveCollisions[i][1];
+		
+			double distance = Math.sqrt((p1.x - p2.x) * (p1.x - p2.x) + (p1.y - p2.y) * (p1.y - p2.y));
+			if(distance <= (p1.radius + p2.radius)) {
+				s.complete(p1, f, step);
+				s.complete(p2, f, step);
+				doCollision(p1, p2);
+				//System.out.println("Collision! -> " + distance);
+				s.prepare(p1, f, step);
+				s.prepare(p2, f, step);
+			}
 		}
 	}
+	
+	//subclasses that are needed to sort the lists along the x - & y - axis according to their coordinates
+	 private static final Comparator<Particle2D> BY_X = new Comparator<Particle2D>() {
+         public int compare(Particle2D first, Particle2D second) {
+             return doCompare((double)first.x, (double)second.x);
+         }
+     };
+     
+     private static final Comparator<Particle2D> BY_Y = new Comparator<Particle2D>() {
+         public int compare(Particle2D first, Particle2D second) {
+             return doCompare((double)first.y, (double)second.y);
+         }
+     };
+     
+     private static <T extends Comparable<? super T>> int doCompare(T t0, T t1)
+     {
+         if (t0 == null)
+         {
+             if (t1 == null)
+             {
+                 return 0;
+             }
+             return 1;
+         }
+         if (t1 == null)
+         {
+             return -1;
+         }
+         return t0.compareTo(t1);
+     }
 
 }
