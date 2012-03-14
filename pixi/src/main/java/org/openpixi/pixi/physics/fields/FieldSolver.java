@@ -17,7 +17,7 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-package org.openpixi.pixi.physics;
+package org.openpixi.pixi.physics.fields;
 
 public abstract class FieldSolver {
 	
