@@ -46,14 +46,6 @@ public class CurrentGrid {
 		jx = new double[numCellsX][numCellsY];
 		jy = new double[numCellsX][numCellsY];
 		rho = new double[numCellsX][numCellsY];
-		
-		for(int i = 0; i < numCellsX; i++)
-			for(int k = 0; k < numCellsY; k++)
-			{
-				jx[i][k] = 0.0;
-				jy[i][k] = 0.0;
-				rho[i][k] = 0.0;
-			}
 	}
 	
 	//a method to change the dimensions of the cells, i.e. the width and the height
@@ -65,14 +57,6 @@ public class CurrentGrid {
 		jx = new double[numCellsX][numCellsY];
 		jy = new double[numCellsX][numCellsY];
 		rho = new double[numCellsX][numCellsY];
-		
-		for(int i = 0; i < numCellsX; i++)
-			for(int k = 0; k < numCellsY; k++)
-			{
-				jx[i][k] = 0.0;
-				jy[i][k] = 0.0;
-				rho[i][k] = 0.0;
-			}
 	}
 	
 	public void setGrid(int panelWidth, int panelHeight)
@@ -83,13 +67,7 @@ public class CurrentGrid {
 	
 	public void updateGrid(ArrayList<Particle2D> parlist)
 	{
-		for(int i = 0; i < numCellsX; i++)
-			for(int k = 0; k < numCellsY; k++)
-			{
-				jx[i][k] = 0.0;
-				jy[i][k] = 0.0;
-				rho[i][k] = 0.0;
-			}
+		reset();
 		
 		for(int i = 0; i < parlist.size(); i++)
 		{
@@ -110,6 +88,16 @@ public class CurrentGrid {
 			rho[xCellPosition][yCellPosition] += par.charge;
 		}
 		
+	}
+
+	private void reset() {
+		for(int i = 0; i < numCellsX; i++) {
+			for(int k = 0; k < numCellsY; k++) {
+				jx[i][k] = 0.0;
+				jy[i][k] = 0.0;
+				rho[i][k] = 0.0;
+			}
+		}
 	}
 
 }
