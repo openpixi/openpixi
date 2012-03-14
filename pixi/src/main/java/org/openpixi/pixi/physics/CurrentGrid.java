@@ -28,7 +28,7 @@ public class CurrentGrid {
 	/**Electric current in the middle of a cell in y-Direction*/
 	public double [][] jy;
 
-	/**Electric charge sum of a cell in y-Direction*/
+	/**Electric charge sum of a cell*/
 	public double [][] rho;
 	
 	public int numCellsX = 10;
