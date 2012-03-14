@@ -73,13 +73,13 @@ public class CurrentGrid {
 		{
 			int xCellPosition = (int) (p.x / cellWidth);
 			int yCellPosition = (int) (p.y / cellHeight);
-			if(xCellPosition > (numCellsX - 1)) {
-				xCellPosition = (numCellsX - 1);
+			if(xCellPosition >= numCellsX) {
+				xCellPosition = numCellsX - 1;
 			} else if(xCellPosition < 0) {
 					xCellPosition = 0;
 			}
-			if(yCellPosition > (numCellsY - 1)) {
-				yCellPosition = (numCellsY - 1);
+			if(yCellPosition >= numCellsY) {
+				yCellPosition = numCellsY - 1;
 			} else if(yCellPosition < 0) {
 				yCellPosition = 0;
 			}
