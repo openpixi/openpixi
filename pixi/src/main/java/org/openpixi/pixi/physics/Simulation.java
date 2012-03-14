@@ -33,12 +33,7 @@ public class Simulation {
 	public static double width = 100;
 	/**Height of simulated area*/
 	public static double  height = 100;
-	
-	public static int num_cells_x = 10;
-	static int num_cells_y = 10;
-	static final double cell_width = width/num_cells_x;
-	static final double cell_height = height/num_cells_y;
-	
+
 	/**Contains all Particle2D objects*/
 	public static ArrayList<Particle2D> particles = new ArrayList<Particle2D>(0);
 	public static Force  f= new Force();

@@ -60,7 +60,7 @@ public class MainBatch {
 		
 		System.out.println("\nCurrent: ");
 		
-		for (int i = 0; i < Simulation.num_cells_x; i++) {
+		for (int i = 0; i < Simulation.currentGrid.numCellsX; i++) {
 				System.out.println(Simulation.currentGrid.jx[i][0]);
 		}
 		
