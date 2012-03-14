@@ -21,6 +21,10 @@ package org.openpixi.pixi.physics.fields;
 
 public abstract class FieldSolver {
 	
+	public FieldSolver() {
+		
+	}
+	
 	public void step() {
 		
 	}
