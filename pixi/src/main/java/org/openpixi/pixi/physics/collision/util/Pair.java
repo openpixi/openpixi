@@ -34,6 +34,14 @@ public class Pair<A, B> {
 		return this.hashCode() < another.hashCode() ? -1 : 1;
 	}
 	
+	public boolean containsFirst(A another) {
+		return (this.first == another);
+	}
+	
+	public boolean containsSecond(B another) {
+		return (this.second == another);
+	}
+	
 	public A getFirst() {
 		return this.first;
 	}
