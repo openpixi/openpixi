@@ -11,13 +11,15 @@ import java.util.Set;
 public class SweepAndPrune {
 	
 	private final int MAX_PARTICLES = 10;
+	//private OverlapCounter count = new OverlapCounter();
 	private ArrayList<BoundingBox> boxlist = new ArrayList<BoundingBox>();
 	private ArrayList<SweepParticle> axisX = new ArrayList<SweepParticle>();
 	//private SweepParticle [] axisX = new SweepParticle[MAX_PARTICLES];
 	private ArrayList<SweepParticle> axisY = new ArrayList<SweepParticle>();
 	//SweepParticle [] axisY = new SweepParticle[MAX_PARTICLES];
 	private ArrayList<Pair<BoundingBox, BoundingBox>> overlaps = new ArrayList<Pair<BoundingBox, BoundingBox>>();
-	private Map<Pair<BoundingBox, BoundingBox>, Integer> overlapCounter = new LinkedHashMap<Pair<BoundingBox, BoundingBox>, Integer>();
+	private Map<Pair<BoundingBox, BoundingBox>, OverlapCounter> overlapCounter = 
+			new LinkedHashMap<Pair<BoundingBox, BoundingBox>, OverlapCounter>();
 	
 	public SweepAndPrune() {
 		
@@ -52,6 +54,52 @@ public class SweepAndPrune {
 			//removing the sweep particles from the lists of the axes
 			removeSweepParticle(axisX, box);
 			removeSweepParticle(axisY, box);
+		}
+	}
+	
+	//adding a method for sorting the lists
+	private void sortList(ArrayList<SweepParticle> list) {
+		
+		for(int i = 0; i < list.size(); i++) {
+			
+			SweepParticle sweepPar = list.get(i);
+			double sweepParValue = sweepPar.updateGetValue();
+			
+			int j = i - 1;
+			
+			while(i >= 0 && (list.get(i).updateGetValue() > sweepParValue)) {
+				
+				SweepParticle swapPar = list.get(i);
+				
+				if(sweepPar.begin && !swapPar.begin) {
+					
+					//creating a pair of the possibly overlapping particles
+					Pair<BoundingBox, BoundingBox> pairbox = new Pair<BoundingBox, BoundingBox>(sweepPar.bb, swapPar.bb);
+					
+					//setting them into a list
+					if(overlapCounter.containsKey(pairbox)) {
+						overlapCounter.get(pairbox).overlaps++;
+					}
+					else {
+						OverlapCounter newOverlapCounter = new OverlapCounter();
+						newOverlapCounter.overlaps = 1;
+						overlapCounter.put(pairbox, newOverlapCounter);
+					}
+				}
+				
+				if(!sweepPar.begin && swapPar.begin) {
+					Pair<BoundingBox, BoundingBox> pairbox = new Pair<BoundingBox, BoundingBox>(sweepPar.bb, swapPar.bb);
+					
+					if(overlapCounter.containsKey(pairbox)) {
+						overlapCounter.get(pairbox).overlaps--;
+					}
+				}
+				
+				list.set(j + 1, swapPar);
+				j--;
+			}
+				list.set(j+1, sweepPar);	
+			
 		}
 	}
 
