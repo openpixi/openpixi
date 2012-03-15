@@ -4,10 +4,10 @@ import org.openpixi.pixi.physics.*;
 
 public class BoundingBox {
 	
-	private double xMin;
-	private double xMax;
-	private double yMin;
-	private double yMax;
+	public double xMin;
+	public double xMax;
+	public double yMin;
+	public double yMax;
 	
 	public BoundingBox(Particle2D particle) {
 		
