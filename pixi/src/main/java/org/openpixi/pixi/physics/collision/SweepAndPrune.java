@@ -3,9 +3,11 @@ package org.openpixi.pixi.physics.collision;
 import org.openpixi.pixi.physics.*;
 import org.openpixi.pixi.physics.collision.util.*;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.ListIterator;
 import java.util.Map;
+import java.util.Map.Entry;
 
 public class SweepAndPrune {
 	
@@ -59,6 +61,21 @@ public class SweepAndPrune {
 			//removing the sweep particles from the lists of the axes
 			removeSweepParticle(axisX, box);
 			removeSweepParticle(axisY, box);
+			
+			//one needs to clean the counters too
+			Iterator<Entry<Pair<BoundingBox, BoundingBox>, OverlapCounter>> iterator = overlapCounter.entrySet().iterator();
+			while(iterator.hasNext()) {
+				Entry<Pair<BoundingBox, BoundingBox>, OverlapCounter> entry = iterator.next();
+				OverlapCounter counter = entry.getValue();
+				Pair<BoundingBox, BoundingBox> pairbox = entry.getKey();
+				if(pairbox.getFirst() == box || pairbox.getSecond() == box) {
+					if(counter.overlaping) {
+						overlaps.remove(pairbox);
+					}
+					
+					iterator.remove();
+				}
+			}
 		}
 	}
 	
@@ -107,6 +124,8 @@ public class SweepAndPrune {
 			
 		}
 	}
+	
+	
 	
 	public ArrayList<Pair<Particle2D, Particle2D>> getOverlappedPairs() {
 		
