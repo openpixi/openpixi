@@ -18,7 +18,7 @@ public class Pair<A, B> {
 	}
 	
 	public boolean equals (Object another) {
-		if(another instanceof Pair) {
+		if(another != null && this.getClass() == another.getClass()) {
 			Pair anotherPair = (Pair) another;
 			return
 					((this.first == anotherPair.first || (this.first != null && anotherPair.first != null && 
@@ -30,6 +30,20 @@ public class Pair<A, B> {
 		return false;
 	}
 	
+	public A getFirst() {
+		return this.first;
+	}
+	
+	public void setFirst(A newFirst) {
+		this.first = newFirst; 
+	}
+	
+	public B getSecond() {
+		return this.second;
+	}
+	public void setSecond(B newSecond) {
+		this.second = newSecond;
+	}
 	
 	
 }
