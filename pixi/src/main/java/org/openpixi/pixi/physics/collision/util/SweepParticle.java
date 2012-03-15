@@ -5,15 +5,13 @@ import org.openpixi.pixi.physics.*;
 public class SweepParticle {
 	
 	public BoundingBox bb;
-	public Particle2D particle;
 	public final int axis;
 	public boolean begin;
 	public double value;
 	
-	public SweepParticle(BoundingBox bb, Particle2D particle, int axis, boolean begin) {
+	public SweepParticle(BoundingBox bb, int axis, boolean begin) {
 		
 		this.bb = bb;
-		this.particle = particle;
 		this.axis = axis;
 		this.begin = begin;
 	}
