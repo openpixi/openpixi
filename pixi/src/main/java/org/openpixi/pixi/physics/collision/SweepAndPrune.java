@@ -23,6 +23,7 @@ public class SweepAndPrune {
 		
 	}
 	
+	//method to add a box to the axes
 	public void add(BoundingBox box) {
 		if(!boxlist.contains(box)) {
 			axisX.add(new SweepParticle(box, 0, true));
@@ -32,6 +33,7 @@ public class SweepAndPrune {
 		}
 	}
 	
+	//method to remove sweep particles from list, it is used when a bounding box is removed
 	private void removeSweepParticle(ArrayList<SweepParticle> list, BoundingBox box) {
 		ListIterator<SweepParticle> iterator = list.listIterator();
 		while(iterator.hasNext()) {
@@ -39,6 +41,17 @@ public class SweepAndPrune {
 			if(spar.bb == box) {
 				iterator.remove();
 			}
+		}
+	}
+	
+	//method to remove a bounding box from list
+	public void remove(BoundingBox box) {
+		if(boxlist.contains(box)) {
+			boxlist.remove(box);
+			
+			//removing the sweep particles from the lists of the axes
+			removeSweepParticle(axisX, box);
+			removeSweepParticle(axisY, box);
 		}
 	}
 
