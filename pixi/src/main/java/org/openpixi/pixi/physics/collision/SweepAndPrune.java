@@ -1,16 +1,15 @@
 package org.openpixi.pixi.physics.collision;
 
+import org.openpixi.pixi.physics.*;
 import org.openpixi.pixi.physics.collision.util.*;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
 import java.util.ListIterator;
 import java.util.Map;
-import java.util.Set;
 
 public class SweepAndPrune {
 	
-	private final int MAX_PARTICLES = 10;
+	//private final int MAX_PARTICLES = 10;
 	//private OverlapCounter count = new OverlapCounter();
 	private ArrayList<BoundingBox> boxlist = new ArrayList<BoundingBox>();
 	private ArrayList<SweepParticle> axisX = new ArrayList<SweepParticle>();
@@ -21,7 +20,14 @@ public class SweepAndPrune {
 	private Map<Pair<BoundingBox, BoundingBox>, OverlapCounter> overlapCounter = 
 			new LinkedHashMap<Pair<BoundingBox, BoundingBox>, OverlapCounter>();
 	
-	public SweepAndPrune() {
+	//constructor
+	public SweepAndPrune(ArrayList<Particle2D> parlist) {
+		
+		for(int i = 0; i < parlist.size(); i++) {
+			Particle2D par = (Particle2D) parlist.get(i);
+			boxlist.set(i, new BoundingBox(par));
+		}
+		
 		
 	}
 	
