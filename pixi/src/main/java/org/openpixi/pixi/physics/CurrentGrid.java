@@ -126,7 +126,7 @@ public class CurrentGrid {
 			rho[xCellPosition][yCellPosition] += p.charge;
 		}
 		
-		//fsolver.step(this);		
+		fsolver.step(this);		
 	}
 
 	private void reset() {
