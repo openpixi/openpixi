@@ -69,7 +69,7 @@ public class SweepAndPrune {
 				OverlapCounter counter = entry.getValue();
 				Pair<BoundingBox, BoundingBox> pairbox = entry.getKey();
 				if(pairbox.getFirst() == box || pairbox.getSecond() == box) {
-					if(counter.overlaping) {
+					if(counter.overlapping) {
 						overlaps.remove(pairbox);
 					}
 					
@@ -130,6 +130,33 @@ public class SweepAndPrune {
 		//sorting the axes lists
 		sortList(axisX);
 		sortList(axisY);
+		
+		int countOverlaps = 0;
+		//one needs to look at the counters (similar like with the remove method)
+		Iterator<Entry<Pair<BoundingBox, BoundingBox>, OverlapCounter>> iterator = overlapCounter.entrySet().iterator();
+		
+		while(iterator.hasNext()) {
+			Entry<Pair<BoundingBox, BoundingBox>, OverlapCounter> entry = iterator.next();
+			OverlapCounter counter = entry.getValue();
+			Pair<BoundingBox, BoundingBox> pairbox = entry.getKey();
+			
+			if(counter.overlaps == 3) {
+				countOverlaps++;
+			}
+			
+			if(counter.overlapping) {
+				if(counter.overlaps < 3) {
+					overlaps.remove(pairbox);
+					counter.overlapping = false;
+				}
+			}
+			else {
+				if(counter.overlaps > 2) {
+					overlaps.add(pairbox);
+					counter.overlapping = true;
+				}
+			}
+		}
 	}
 	
 	public ArrayList<Pair<Particle2D, Particle2D>> getOverlappedPairs() {
