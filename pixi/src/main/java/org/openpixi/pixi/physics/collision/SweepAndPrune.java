@@ -28,7 +28,9 @@ public class SweepAndPrune {
 		
 		for(int i = 0; i < parlist.size(); i++) {
 			Particle2D par = (Particle2D) parlist.get(i);
-			boxlist.set(i, new BoundingBox(par));
+			BoundingBox box = new BoundingBox(par);
+			boxlist.set(i, box);
+			add(box);
 		}
 	}
 	
