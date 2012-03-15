@@ -4,6 +4,7 @@ import org.openpixi.pixi.physics.collision.util.*;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
+import java.util.ListIterator;
 import java.util.Map;
 import java.util.Set;
 
@@ -28,6 +29,16 @@ public class SweepAndPrune {
 			axisX.add(new SweepParticle(box, 0, false));
 			axisY.add(new SweepParticle(box, 1, true));
 			axisY.add(new SweepParticle(box, 1, false));
+		}
+	}
+	
+	private void removeSweepParticle(ArrayList<SweepParticle> list, BoundingBox box) {
+		ListIterator<SweepParticle> iterator = list.listIterator();
+		while(iterator.hasNext()) {
+			SweepParticle spar = iterator.next();
+			if(spar.bb == box) {
+				iterator.remove();
+			}
 		}
 	}
 
