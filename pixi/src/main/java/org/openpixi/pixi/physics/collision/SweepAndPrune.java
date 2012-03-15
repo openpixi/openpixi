@@ -125,7 +125,12 @@ public class SweepAndPrune {
 		}
 	}
 	
-	
+	public void run() {
+		
+		//sorting the axes lists
+		sortList(axisX);
+		sortList(axisY);
+	}
 	
 	public ArrayList<Pair<Particle2D, Particle2D>> getOverlappedPairs() {
 		
