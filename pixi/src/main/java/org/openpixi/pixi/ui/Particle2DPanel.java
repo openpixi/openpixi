@@ -46,6 +46,8 @@ public class Particle2DPanel extends JPanel {
 	
 	private boolean drawCurrentGrid = false;
 	
+	private boolean drawFields = false;
+	
 	private boolean writePosition = false;
 
 	/** Milliseconds between updates */
@@ -187,6 +189,10 @@ public class Particle2DPanel extends JPanel {
 		drawCurrentGrid =! drawCurrentGrid;
 	}
 	
+	public void drawFields() {
+		drawFields =! drawFields;
+	}
+	
 	public void writePosition() {
 		writePosition =! writePosition;
 		if(writePosition)
@@ -289,6 +295,19 @@ public class Particle2DPanel extends JPanel {
 					int xstart = (int) (Simulation.currentGrid.cellWidth * (i + 0.5));
 					int ystart = (int) (Simulation.currentGrid.cellHeight * (k + 0.5));
 					drawArrow(graph, xstart, ystart, (int) Math.round(Simulation.currentGrid.jx[i][k] + xstart), (int) Math.round(Simulation.currentGrid.jy[i][k] + ystart));
+				}
+			//return;
+		}
+		
+		if(drawFields)
+		{
+			graph.setColor(Color.black);
+			for(int i = 0; i < Simulation.currentGrid.numCellsX; i++)
+				for(int k = 0; k < Simulation.currentGrid.numCellsY; k++)
+				{
+					int xstart = (int) (Simulation.currentGrid.cellWidth * (i + 0.5));
+					int ystart = (int) (Simulation.currentGrid.cellHeight * (k + 0.5));
+					drawArrow(graph, xstart, ystart, (int) Math.round(Simulation.currentGrid.Ex[i][k] + xstart), (int) Math.round(Simulation.currentGrid.Ey[i][k] + ystart));
 				}
 			//return;
 		}
