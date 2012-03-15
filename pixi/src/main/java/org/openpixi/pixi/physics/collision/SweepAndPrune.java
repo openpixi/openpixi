@@ -17,6 +17,7 @@ public class SweepAndPrune {
 	private ArrayList<SweepParticle> axisY = new ArrayList<SweepParticle>();
 	//SweepParticle [] axisY = new SweepParticle[MAX_PARTICLES];
 	private ArrayList<Pair<BoundingBox, BoundingBox>> overlaps = new ArrayList<Pair<BoundingBox, BoundingBox>>();
+	private ArrayList<Pair<Particle2D, Particle2D>> overlappedPairs = new ArrayList<Pair<Particle2D, Particle2D>>();
 	private Map<Pair<BoundingBox, BoundingBox>, OverlapCounter> overlapCounter = 
 			new LinkedHashMap<Pair<BoundingBox, BoundingBox>, OverlapCounter>();
 	
@@ -27,8 +28,6 @@ public class SweepAndPrune {
 			Particle2D par = (Particle2D) parlist.get(i);
 			boxlist.set(i, new BoundingBox(par));
 		}
-		
-		
 	}
 	
 	//method to add a box to the axes
@@ -107,6 +106,18 @@ public class SweepAndPrune {
 				list.set(j+1, sweepPar);	
 			
 		}
+	}
+	
+	public ArrayList<Pair<Particle2D, Particle2D>> getOverlappedPairs() {
+		
+		for(int i = 0; i < overlaps.size(); i++) {
+			BoundingBox box1 = (BoundingBox) overlaps.get(i).getFirst();
+			BoundingBox box2 = (BoundingBox) overlaps.get(i).getSecond();
+			Pair<Particle2D, Particle2D> pairpar = new Pair<Particle2D, Particle2D>(box1.particle, box2.particle);
+			overlappedPairs.set(i, pairpar);
+		}
+		return overlappedPairs;
+		
 	}
 
 }
