@@ -30,6 +30,10 @@ public class Pair<A, B> {
 		return false;
 	}
 	
+	public int compareTo(Pair<A, B> another) {
+		return this.hashCode() < another.hashCode() ? -1 : 1;
+	}
+	
 	public A getFirst() {
 		return this.first;
 	}
