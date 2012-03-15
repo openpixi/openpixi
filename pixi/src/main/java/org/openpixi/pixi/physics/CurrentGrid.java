@@ -21,7 +21,7 @@ package org.openpixi.pixi.physics;
 import java.util.ArrayList;
 
 import org.openpixi.pixi.physics.fields.FieldSolver;
-import org.openpixi.pixi.physics.fields.GaussSeidel;
+import org.openpixi.pixi.physics.fields.*;
 
 
 public class CurrentGrid {
@@ -34,8 +34,18 @@ public class CurrentGrid {
 	/**Electric charge sum of a cell*/
 	public double [][] rho;
 	
-	/**Electric potential for each cell*/
-	public double [][] phi;
+	/**Electric field in x direction*/
+	public double [][] Ex;
+	/**Electric field in y direction*/
+	public double [][] Ey;
+	/**Electric field in z direction*/
+	public double [][] Ez;
+	/**Magnetic field in x direction*/
+	public double [][] Bx;
+	/**Magnetic field in y direction*/
+	public double [][] By;
+	/**Magnetic field in z direction*/
+	public double [][] Bz;
 	
 	public int numCellsX = 10;
 	public int numCellsY = 10;
@@ -43,7 +53,7 @@ public class CurrentGrid {
 	public double cellWidth;
 	public double cellHeight;
 	
-	public FieldSolver fsolver = new GaussSeidel();
+	public FieldSolver fsolver = new SimpleSolver();
 	
 	//the constructor
 	public CurrentGrid() {
@@ -54,8 +64,13 @@ public class CurrentGrid {
 		jx = new double[numCellsX][numCellsY];
 		jy = new double[numCellsX][numCellsY];
 		rho = new double[numCellsX][numCellsY];
-		phi = new double[numCellsX][numCellsY];
-		initPotential();
+		Ex = new double[numCellsX][numCellsY];
+		Ey = new double[numCellsX][numCellsY];
+		Ez = new double[numCellsX][numCellsY];
+		Bx = new double[numCellsX][numCellsY];
+		By = new double[numCellsX][numCellsY];
+		Bz = new double[numCellsX][numCellsY];
+		initFields();
 	}
 	
 	//a method to change the dimensions of the cells, i.e. the width and the height
@@ -67,8 +82,13 @@ public class CurrentGrid {
 		jx = new double[numCellsX][numCellsY];
 		jy = new double[numCellsX][numCellsY];
 		rho = new double[numCellsX][numCellsY];
-		phi = new double[numCellsX][numCellsY];
-		initPotential();
+		Ex = new double[numCellsX][numCellsY];
+		Ey = new double[numCellsX][numCellsY];
+		Ez = new double[numCellsX][numCellsY];
+		Bx = new double[numCellsX][numCellsY];
+		By = new double[numCellsX][numCellsY];
+		Bz = new double[numCellsX][numCellsY];
+		initFields();
 		
 		//this.setGrid() should be called here since changeDimension() can not appear alone. This would cause dualities with MainControlApplet
 	}
@@ -105,9 +125,8 @@ public class CurrentGrid {
 			jy[xCellPosition][yCellPosition] += p.charge * p.vy;
 			rho[xCellPosition][yCellPosition] += p.charge;
 		}
-
-		fsolver.step(phi, rho, numCellsX, numCellsY, cellWidth, cellHeight);
 		
+		//fsolver.step(this);		
 	}
 
 	private void reset() {
@@ -120,8 +139,22 @@ public class CurrentGrid {
 		}
 	}
 	
+	private void initFields() {
+		for (int i = 0; i < numCellsX; i++) {
+			for (int j = 0; j < numCellsY; j++) {
+				Ex[i][j] = 0.0;
+				Ey[i][j] = 0.0;
+				Ez[i][j] = 0.0;
+				Bx[i][j] = 0.0;
+				By[i][j] = 0.0;
+				Bz[i][j] = 0.0;
+			}
+		}
+	}
+	
+	/*
 	//Dirichlet boundary conditions - will be moved to a different class later on.
-	private void initPotential() {
+	private void initPotentialDirichlet() {
 		for (int i = 0; i < numCellsX; i++) {
 			phi[i][0] = phi[i][numCellsY-1] = 1;
 		}
@@ -134,6 +167,6 @@ public class CurrentGrid {
 				phi[i][j] = 0;
 			}
 		}
-	}
+	}*/
 
 }

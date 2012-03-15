@@ -49,6 +49,7 @@ public class MainControlApplet extends JApplet {
 	
 	private JCheckBox framerateCheck;
 	private JCheckBox currentgridCheck;
+	private JCheckBox fieldsCheck;
 	private JCheckBox writePositionCheck;
 	
 	private JTextField xboxentry;
@@ -200,6 +201,12 @@ public class MainControlApplet extends JApplet {
 	class DrawCurrentGridListener implements ItemListener {
 		public void itemStateChanged(ItemEvent eve){
 				particlePanel.drawCurrentGrid();
+		}
+	}
+	
+	class DrawFieldsListener implements ItemListener {
+		public void itemStateChanged(ItemEvent eve){
+				particlePanel.drawFields();
 		}
 	}
 	
@@ -433,6 +440,9 @@ public class MainControlApplet extends JApplet {
 		currentgridCheck = new JCheckBox("Current");
 		currentgridCheck.addItemListener(new DrawCurrentGridListener());
 		
+		fieldsCheck = new JCheckBox("Fields");
+		fieldsCheck.addItemListener(new DrawFieldsListener());
+		
 		framerateCheck = new JCheckBox("Info");
 		framerateCheck.addItemListener(new FrameListener());
 		
@@ -483,7 +493,8 @@ public class MainControlApplet extends JApplet {
 //		controlPanelUp.add(filename);
 //		controlPanelUp.add(filedirectory);
 		controlPanelUp.add(Box.createHorizontalGlue());
-		controlPanelUp.add(currentgridCheck);		
+		controlPanelUp.add(currentgridCheck);	
+		controlPanelUp.add(fieldsCheck);	
 		controlPanelUp.add(Box.createHorizontalGlue());
 		//controlPanelUp.add(currentBox);
 		controlPanelUp.add(xboxentryLabel);

@@ -19,13 +19,15 @@
 
 package org.openpixi.pixi.physics.fields;
 
+import org.openpixi.pixi.physics.CurrentGrid;
+
 public abstract class FieldSolver {
 	
 	public FieldSolver() {
 		
 	}
 	
-	public void step(double [][] a, double [][] b, int nx, int ny, double dx, double dy) {
+	public void step(CurrentGrid g) {
 		
 	}
 	
