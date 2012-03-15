@@ -8,6 +8,7 @@
 package org.openpixi.pixi.physics.collision;
 
 import org.openpixi.pixi.physics.*;
+import org.openpixi.pixi.physics.collision.util.Pair;
 import org.openpixi.pixi.physics.force.Force;
 import org.openpixi.pixi.physics.solver.*;
 import java.lang.Math;
@@ -20,6 +21,7 @@ import java.util.Set;
 public class ElasticCollisionSweepPrune extends Collision{
 	
 	//Particle2D [][] col = new Particle2D [100][2];
+	SweepAndPrune sweep;
 	
 	public ElasticCollisionSweepPrune() {
 		super();
@@ -129,7 +131,7 @@ public class ElasticCollisionSweepPrune extends Collision{
 	*/
 	
 	
-	public void check(ArrayList<Particle2D> parlist, Force f, Solver s, double step)
+	/*public void check(ArrayList<Particle2D> parlist, Force f, Solver s, double step)
 	{
 		//lists of the particles that are sorted by the x - & y - coordinates
 		ArrayList<Particle2D> listX = parlist;
@@ -214,6 +216,30 @@ public class ElasticCollisionSweepPrune extends Collision{
              return -1;
          }
          return t0.compareTo(t1);
-     }
+     }*/
+	
+	/*public void check(ArrayList<Particle2D> parlist, Force f, Solver s, double step) {
+		sweep = new SweepAndPrune(parlist);
+		sweep.run();
+		ArrayList<Pair<Particle2D, Particle2D>> aktiveCollisions = sweep.getOverlappedPairs();
+		
+		//doing the exact detection for collisions
+				for(int i = 0; i < aktiveCollisions.size(); i++)
+				{
+					Particle2D p1 = (Particle2D) aktiveCollisions.get(i).getFirst();
+					Particle2D p2 = (Particle2D) aktiveCollisions.get(i).getSecond();
+				
+					double distance = Math.sqrt((p1.x - p2.x) * (p1.x - p2.x) + (p1.y - p2.y) * (p1.y - p2.y));
+					if(distance <= (p1.radius + p2.radius)) {
+						s.complete(p1, f, step);
+						s.complete(p2, f, step);
+						doCollision(p1, p2);
+						//System.out.println("Collision! -> " + distance);
+						s.prepare(p1, f, step);
+						s.prepare(p2, f, step);
+					}
+				}
+		
+	}*/
 
 }

@@ -3,9 +3,11 @@ package org.openpixi.pixi.physics.collision;
 import org.openpixi.pixi.physics.*;
 import org.openpixi.pixi.physics.collision.util.*;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.ListIterator;
 import java.util.Map;
+import java.util.Map.Entry;
 
 public class SweepAndPrune {
 	
@@ -26,7 +28,9 @@ public class SweepAndPrune {
 		
 		for(int i = 0; i < parlist.size(); i++) {
 			Particle2D par = (Particle2D) parlist.get(i);
-			boxlist.set(i, new BoundingBox(par));
+			BoundingBox box = new BoundingBox(par);
+			boxlist.set(i, box);
+			add(box);
 		}
 	}
 	
@@ -59,6 +63,21 @@ public class SweepAndPrune {
 			//removing the sweep particles from the lists of the axes
 			removeSweepParticle(axisX, box);
 			removeSweepParticle(axisY, box);
+			
+			//one needs to clean the counters too
+			Iterator<Entry<Pair<BoundingBox, BoundingBox>, OverlapCounter>> iterator = overlapCounter.entrySet().iterator();
+			while(iterator.hasNext()) {
+				Entry<Pair<BoundingBox, BoundingBox>, OverlapCounter> entry = iterator.next();
+				OverlapCounter counter = entry.getValue();
+				Pair<BoundingBox, BoundingBox> pairbox = entry.getKey();
+				if(pairbox.getFirst() == box || pairbox.getSecond() == box) {
+					if(counter.overlapping) {
+						overlaps.remove(pairbox);
+					}
+					
+					iterator.remove();
+				}
+			}
 		}
 	}
 	
@@ -105,6 +124,40 @@ public class SweepAndPrune {
 			}
 				list.set(j+1, sweepPar);	
 			
+		}
+	}
+	
+	public void run() {
+		
+		//sorting the axes lists
+		sortList(axisX);
+		sortList(axisY);
+		
+		int countOverlaps = 0;
+		//one needs to look at the counters (similar like with the remove method)
+		Iterator<Entry<Pair<BoundingBox, BoundingBox>, OverlapCounter>> iterator = overlapCounter.entrySet().iterator();
+		
+		while(iterator.hasNext()) {
+			Entry<Pair<BoundingBox, BoundingBox>, OverlapCounter> entry = iterator.next();
+			OverlapCounter counter = entry.getValue();
+			Pair<BoundingBox, BoundingBox> pairbox = entry.getKey();
+			
+			if(counter.overlaps == 3) {
+				countOverlaps++;
+			}
+			
+			if(counter.overlapping) {
+				if(counter.overlaps < 3) {
+					overlaps.remove(pairbox);
+					counter.overlapping = false;
+				}
+			}
+			else {
+				if(counter.overlaps > 2) {
+					overlaps.add(pairbox);
+					counter.overlapping = true;
+				}
+			}
 		}
 	}
 	
