@@ -13,7 +13,11 @@ public abstract class CollisionAlgorithm {
 		
 	}
 	
-	public void doCollision(ArrayList<Pair<Particle2D, Particle2D>> pairs, Force f, Solver s, double step) {
+	public void doCollision(Particle2D p1, Particle2D p2) {
+		
+	}
+	
+	public void collide(ArrayList<Pair<Particle2D, Particle2D>> pairs, Force f, Solver s, double step) {
 		
 	}
 

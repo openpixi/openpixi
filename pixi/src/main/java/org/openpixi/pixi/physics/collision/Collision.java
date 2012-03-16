@@ -45,14 +45,7 @@ public class Collision {
 	{
 		det.add(parlist);
 		det.run();
-		//pairs = det.getOverlappedPairs();
-		//System.out.println(det.getOverlappedPairs().size());
-		alg.doCollision(det.getOverlappedPairs(), f, s, step);
-	}
-	
-	public void collide(Force f, Solver s, double step)
-	{
-		
+		alg.collide(det.getOverlappedPairs(), f, s, step);
 	}
 
 }
