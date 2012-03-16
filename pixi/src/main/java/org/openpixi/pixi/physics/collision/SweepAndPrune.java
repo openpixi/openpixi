@@ -184,7 +184,7 @@ public class SweepAndPrune {
 			BoundingBox box1 = (BoundingBox) overlaps.get(i).getFirst();
 			BoundingBox box2 = (BoundingBox) overlaps.get(i).getSecond();
 			Pair<Particle2D, Particle2D> pairpar = new Pair<Particle2D, Particle2D>(box1.particle, box2.particle);
-			overlappedPairs.set(i, pairpar);
+			overlappedPairs.add(pairpar);
 		}
 		return overlappedPairs;
 		
