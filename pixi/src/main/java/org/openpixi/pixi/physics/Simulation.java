@@ -66,8 +66,8 @@ public class Simulation {
 		currentGrid = new CurrentGrid(this);
 		detector = new SweepAndPrune();
 		algorithm = new TransformationMatrix();
-		//collision = new Collision(detector, algorithm);
-		collision = new ElasticCollisionSweepPrune(detector, algorithm);
+		collision = new Collision(detector, algorithm);
+		//collision = new ElasticCollisionSweepPrune(detector, algorithm);
 	}
 	
 	public void setSize(double width, double height) {
@@ -79,7 +79,7 @@ public class Simulation {
 
 	public void step() {
 		ParticleMover.particlePush(this);
-		collision.check(particles, f, psolver, tstep);
+		//collision.check(particles, f, psolver, tstep);
 		currentGrid.updateGrid(particles);
 	}
 
