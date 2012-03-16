@@ -4,6 +4,8 @@ import java.util.ArrayList;
 
 import org.openpixi.pixi.physics.Particle2D;
 import org.openpixi.pixi.physics.collision.util.Pair;
+import org.openpixi.pixi.physics.force.Force;
+import org.openpixi.pixi.physics.solver.Solver;
 
 public class TransformationMatrix extends CollisionAlgorithm{
 	
@@ -12,11 +14,16 @@ public class TransformationMatrix extends CollisionAlgorithm{
 		super();
 	}
 	
-	public void doCollision(ArrayList<Pair<Particle2D, Particle2D>> pairs) {
+	public void doCollision(ArrayList<Pair<Particle2D, Particle2D>> pairs, Force f, Solver s, double step) {
 		
 		for(int i = 0; i < pairs.size(); i++) {
+			
 			Particle2D p1 = (Particle2D) pairs.get(i).getFirst();
 			Particle2D p2 = (Particle2D) pairs.get(i).getSecond();
+			
+			s.complete(p1, f, step);
+			s.complete(p2, f, step);
+			
 		//distance between the particles
 			double distance = Math.sqrt((p1.x - p2.x) * (p1.x - p2.x) + (p1.y - p2.y) * (p1.y - p2.y));
 			
@@ -77,6 +84,9 @@ public class TransformationMatrix extends CollisionAlgorithm{
 			p1.vy = newv1xNewCoor * Math.sin(phi) + v1yNewCoor * Math.sin(phi + Math.PI);
 			p2.vx = newv2xNewCoor * Math.cos(phi) + v2yNewCoor * Math.cos(phi + Math.PI);
 			p2.vy = newv2xNewCoor * Math.sin(phi) + v2yNewCoor * Math.sin(phi + Math.PI);
+			
+			s.prepare(p1, f, step);
+			s.prepare(p2, f, step);
 		}
 	}
 }
