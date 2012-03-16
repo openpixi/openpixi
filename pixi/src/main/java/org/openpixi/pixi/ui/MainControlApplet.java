@@ -61,6 +61,9 @@ public class MainControlApplet extends JApplet {
 	private JComboBox initComboBox;
 	private JComboBox algorithmComboBox;
 	private JCheckBox traceCheck;
+	
+	private JTabbedPane tabs;
+	
 	private Particle2DPanel particlePanel;
 
 	private static final double speedSliderScaling = 0.07;
@@ -523,6 +526,9 @@ public class MainControlApplet extends JApplet {
 		JLabel gFieldXLabel = new JLabel("Gravitation in x - direction Field");
 		JLabel gFieldYLabel = new JLabel("Gravitation in y - direction Field");
 		
+		tabs = new JTabbedPane();
+		
+		///JComponent f = makeTextPanel("p");
 		Box fieldsBox = Box.createVerticalBox();
 		fieldsBox.add(eFieldXLabel);
 		fieldsBox.add(efieldXSlider);
@@ -540,11 +546,15 @@ public class MainControlApplet extends JApplet {
 		fieldsBox.add(dragLabel);
 		fieldsBox.add(dragSlider);
 		fieldsBox.add(Box.createVerticalGlue());
+		fieldsBox.setPreferredSize(new Dimension(250, 100));
+		
+		tabs.addTab("Fields", fieldsBox);
 		
 		this.setLayout(new BorderLayout());
 		this.add(panelBox, BorderLayout.SOUTH);
 		this.add(particlePanel, BorderLayout.CENTER);
-		this.add(fieldsBox, BorderLayout.EAST);
+		//this.add(fieldsBox, BorderLayout.EAST);
+		this.add(tabs, BorderLayout.EAST);
 
 	}
 	
