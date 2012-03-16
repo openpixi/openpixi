@@ -25,6 +25,7 @@ import java.awt.event.*;
 import javax.swing.event.*;
 
 import org.openpixi.pixi.physics.Simulation;
+import org.openpixi.pixi.physics.boundary.*;
 
 /**
  * Displays the animation of particles.
@@ -630,6 +631,14 @@ public class MainControlApplet extends JApplet {
 		filedirectory.setEditable(false);
 		filedirectory.setEnabled(false);
 		filedirectory.setText("direc., ex. C:\\Pixi");
+		if(particlePanel.s.boundary instanceof HardWallBoundary) {
+			hardBoundaries.setSelected(true);
+			periodicBoundaries.setSelected(false);
+		}
+		else if(particlePanel.s.boundary instanceof PeriodicBoundary) {
+			hardBoundaries.setSelected(false);
+			periodicBoundaries.setSelected(true);
+		}
 	}
 	
 	@Override
