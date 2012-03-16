@@ -25,7 +25,7 @@ public class SweepAndPrune extends Detector{
 	
 	private ArrayList<Pair<BoundingBox, BoundingBox>> overlaps = new ArrayList<Pair<BoundingBox, BoundingBox>>();
 	
-	private ArrayList<Pair<Particle2D, Particle2D>> overlappedPairs = new ArrayList<Pair<Particle2D, Particle2D>>();
+	//private ArrayList<Pair<Particle2D, Particle2D>> overlappedPairs = new ArrayList<Pair<Particle2D, Particle2D>>();
 	
 	private Map<Pair<BoundingBox, BoundingBox>, OverlapCounter> overlapCounter = 
 			new HashMap<Pair<BoundingBox, BoundingBox>, OverlapCounter>();

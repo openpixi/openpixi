@@ -17,7 +17,7 @@ public class TransformationMatrix extends CollisionAlgorithm{
 	public void doCollision(ArrayList<Pair<Particle2D, Particle2D>> pairs, Force f, Solver s, double step) {
 		
 		for(int i = 0; i < pairs.size(); i++) {
-			
+		
 			Particle2D p1 = (Particle2D) pairs.get(i).getFirst();
 			Particle2D p2 = (Particle2D) pairs.get(i).getSecond();
 			

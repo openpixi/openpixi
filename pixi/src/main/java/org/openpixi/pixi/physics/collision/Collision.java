@@ -33,6 +33,7 @@ public class Collision {
 	
 	private Detector det;
 	private CollisionAlgorithm alg;
+	//private ArrayList<Pair<Particle2D, Particle2D>> pairs;
 	
 	public Collision(Detector det, CollisionAlgorithm alg) {
 		
@@ -44,10 +45,12 @@ public class Collision {
 	{
 		det.add(parlist);
 		det.run();
-		//alg.doCollision(det.getOverlappedPairs(), f, s, step);
+		//pairs = det.getOverlappedPairs();
+		//System.out.println(det.getOverlappedPairs().size());
+		alg.doCollision(det.getOverlappedPairs(), f, s, step);
 	}
 	
-	public void collide(ArrayList<Pair<Particle2D, Particle2D>> pairs)
+	public void collide(Force f, Solver s, double step)
 	{
 		
 	}
