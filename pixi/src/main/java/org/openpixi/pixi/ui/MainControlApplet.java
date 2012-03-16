@@ -493,7 +493,7 @@ public class MainControlApplet extends JApplet {
 		filedirectory.setToolTipText("Please enter an existing directory");
 		
 		hardBoundaries = new JRadioButton("Hardwall");
-		periodicBoundaries = new JRadioButton("Period");
+		periodicBoundaries = new JRadioButton("Periodic");
 		
 		ButtonGroup bgroup = new ButtonGroup();
 		
@@ -506,6 +506,7 @@ public class MainControlApplet extends JApplet {
 		JPanel boundaries = new JPanel();
 		boundaries.add(hardBoundaries);
 		boundaries.add(periodicBoundaries);
+		JLabel boundariesLabel = new JLabel("Boundaries");
 		
 		JLabel xboxentryLabel = new JLabel("Cell width");
 		JLabel yboxentryLabel = new JLabel("Cell height");
@@ -552,6 +553,8 @@ public class MainControlApplet extends JApplet {
 		settingControls.add(Box.createVerticalGlue());
 		settingControls.add(step);
 		settingControls.add(Box.createVerticalGlue());
+		settingControls.add(boundariesLabel);
+		settingControls.add(boundaries);
 		
 		Box panelBox = Box.createVerticalBox();
 		panelBox.add(controlPanelUp);
@@ -588,7 +591,7 @@ public class MainControlApplet extends JApplet {
 		
 		tabs.addTab("Fields", fieldsBox);
 		tabs.addTab("Settings", settingControls);
-		tabs.addTab("Boundaries", boundaries);
+		//tabs.addTab("Boundaries", boundaries);
 		
 		this.setLayout(new BorderLayout());
 		this.add(panelBox, BorderLayout.SOUTH);
