@@ -38,12 +38,6 @@ public class CurrentGrid {
 	public double [][] Ex;
 	/**Electric field in y direction*/
 	public double [][] Ey;
-	/**Electric field in z direction*/
-	public double [][] Ez;
-	/**Magnetic field in x direction*/
-	public double [][] Bx;
-	/**Magnetic field in y direction*/
-	public double [][] By;
 	/**Magnetic field in z direction*/
 	public double [][] Bz;
 	
@@ -69,9 +63,6 @@ public class CurrentGrid {
 		rho = new double[numCellsX+2][numCellsY+2];
 		Ex = new double[numCellsX+2][numCellsY+2];
 		Ey = new double[numCellsX+2][numCellsY+2];
-		Ez = new double[numCellsX+2][numCellsY+2];
-		Bx = new double[numCellsX+2][numCellsY+2];
-		By = new double[numCellsX+2][numCellsY+2];
 		Bz = new double[numCellsX+2][numCellsY+2];
 		initFields();
 	}
@@ -87,9 +78,6 @@ public class CurrentGrid {
 		rho = new double[numCellsX+2][numCellsY+2];
 		Ex = new double[numCellsX+2][numCellsY+2];
 		Ey = new double[numCellsX+2][numCellsY+2];
-		Ez = new double[numCellsX+2][numCellsY+2];
-		Bx = new double[numCellsX+2][numCellsY+2];
-		By = new double[numCellsX+2][numCellsY+2];
 		Bz = new double[numCellsX+2][numCellsY+2];
 		initFields();
 		
@@ -147,9 +135,6 @@ public class CurrentGrid {
 			for (int j = 0; j < numCellsY + 2; j++) {
 				Ex[i][j] = 0.0;
 				Ey[i][j] = 0.0;
-				Ez[i][j] = 0.0;
-				Bx[i][j] = 0.0;
-				By[i][j] = 0.0;
 				Bz[i][j] = 0.0;
 			}
 		}
