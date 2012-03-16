@@ -218,7 +218,7 @@ public class ElasticCollisionSweepPrune extends Collision{
          return t0.compareTo(t1);
      }*/
 	
-	/*public void check(ArrayList<Particle2D> parlist, Force f, Solver s, double step) {
+	public void check(ArrayList<Particle2D> parlist, Force f, Solver s, double step) {
 		sweep = new SweepAndPrune(parlist);
 		sweep.run();
 		ArrayList<Pair<Particle2D, Particle2D>> aktiveCollisions = sweep.getOverlappedPairs();
@@ -234,12 +234,12 @@ public class ElasticCollisionSweepPrune extends Collision{
 						s.complete(p1, f, step);
 						s.complete(p2, f, step);
 						doCollision(p1, p2);
-						//System.out.println("Collision! -> " + distance);
+						System.out.println("Collision! -> " + distance);
 						s.prepare(p1, f, step);
 						s.prepare(p2, f, step);
 					}
 				}
 		
-	}*/
+	}
 
 }

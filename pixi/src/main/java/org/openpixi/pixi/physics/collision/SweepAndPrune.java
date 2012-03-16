@@ -3,6 +3,7 @@ package org.openpixi.pixi.physics.collision;
 import org.openpixi.pixi.physics.*;
 import org.openpixi.pixi.physics.collision.util.*;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.ListIterator;
@@ -21,7 +22,7 @@ public class SweepAndPrune {
 	private ArrayList<Pair<BoundingBox, BoundingBox>> overlaps = new ArrayList<Pair<BoundingBox, BoundingBox>>();
 	private ArrayList<Pair<Particle2D, Particle2D>> overlappedPairs = new ArrayList<Pair<Particle2D, Particle2D>>();
 	private Map<Pair<BoundingBox, BoundingBox>, OverlapCounter> overlapCounter = 
-			new LinkedHashMap<Pair<BoundingBox, BoundingBox>, OverlapCounter>();
+			new HashMap<Pair<BoundingBox, BoundingBox>, OverlapCounter>();
 	
 	//constructor
 	public SweepAndPrune(ArrayList<Particle2D> parlist) {
@@ -29,7 +30,7 @@ public class SweepAndPrune {
 		for(int i = 0; i < parlist.size(); i++) {
 			Particle2D par = (Particle2D) parlist.get(i);
 			BoundingBox box = new BoundingBox(par);
-			boxlist.set(i, box);
+			//boxlist.add(box);
 			add(box);
 		}
 	}
@@ -37,6 +38,8 @@ public class SweepAndPrune {
 	//method to add a box to the axes
 	public void add(BoundingBox box) {
 		if(!boxlist.contains(box)) {
+			boxlist.add(box);
+			
 			axisX.add(new SweepParticle(box, 0, true));
 			axisX.add(new SweepParticle(box, 0, false));
 			axisY.add(new SweepParticle(box, 1, true));
