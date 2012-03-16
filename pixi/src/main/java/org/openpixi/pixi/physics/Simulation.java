@@ -39,7 +39,7 @@ public class Simulation {
 	public static Boundary boundary = new HardWallBoundary();
 
 	public static CurrentGrid currentGrid = new CurrentGrid();
-	private static Collision collision = new ElasticCollision();
+	private static Collision collision = new ElasticCollisionSweepPrune();
 
 	public static void setSize(double width, double height) {
 		Simulation.width = width;
