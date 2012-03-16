@@ -419,6 +419,7 @@ public class MainControlApplet extends JApplet {
 		initComboBox = new JComboBox(initStrings);
 		initComboBox.setSelectedIndex(0);
 		initComboBox.addActionListener(new ComboBoxListener());
+		initComboBox.setPreferredSize(new Dimension(initComboBox.getPreferredSize().width, 5));
 		JLabel initComboBoxLabel = new JLabel("Initial conditions");
 		Box initBox = Box.createVerticalBox();
 		initBox.add(initComboBoxLabel);
@@ -427,6 +428,7 @@ public class MainControlApplet extends JApplet {
 		algorithmComboBox = new JComboBox(solverString);
 		algorithmComboBox.setSelectedIndex(0);
 		algorithmComboBox.addActionListener(new AlgorithmListener());
+		algorithmComboBox.setPreferredSize(new Dimension(algorithmComboBox.getPreferredSize().width, 5));
 		JLabel algorithmLabel = new JLabel("Algorithm");
 		Box algorithmBox = Box.createVerticalBox();
 		algorithmBox.add(algorithmLabel);
@@ -490,8 +492,8 @@ public class MainControlApplet extends JApplet {
 		controlPanelUp.add(stopButton);
 		controlPanelUp.add(resetButton);
 //		controlPanelUp.add(testButton);
-		//controlPanelUp.add(traceCheck);
-		//controlPanelUp.add(framerateCheck);
+		controlPanelUp.add(traceCheck);
+		controlPanelUp.add(framerateCheck);
 //		controlPanelUp.add(writePositionCheck);
 //		controlPanelUp.add(filename);
 //		controlPanelUp.add(filedirectory);
@@ -506,15 +508,19 @@ public class MainControlApplet extends JApplet {
 		controlPanelUp.add(yboxentryLabel);
 		controlPanelUp.add(yboxentry);
 		
-		
+		Box settingControls = Box.createVerticalBox();
 		JPanel controlPanelDown = new JPanel();
 		controlPanelDown.setLayout(new FlowLayout());
-		controlPanelDown.add(traceCheck);
-		controlPanelDown.add(framerateCheck);
-		controlPanelDown.add(initBox);
-		controlPanelDown.add(algorithmBox);
-		controlPanelDown.add(speed);
-		controlPanelDown.add(step);
+		//controlPanelDown.add(traceCheck);
+		//controlPanelDown.add(framerateCheck);
+		settingControls.add(initBox);
+		settingControls.add(Box.createVerticalGlue());
+		settingControls.add(algorithmBox);
+		settingControls.add(Box.createVerticalGlue());
+		settingControls.add(speed);
+		settingControls.add(Box.createVerticalGlue());
+		settingControls.add(step);
+		settingControls.add(Box.createVerticalGlue());
 		
 		Box panelBox = Box.createVerticalBox();
 		panelBox.add(controlPanelUp);
@@ -528,7 +534,6 @@ public class MainControlApplet extends JApplet {
 		
 		tabs = new JTabbedPane();
 		
-		///JComponent f = makeTextPanel("p");
 		Box fieldsBox = Box.createVerticalBox();
 		fieldsBox.add(eFieldXLabel);
 		fieldsBox.add(efieldXSlider);
@@ -546,9 +551,12 @@ public class MainControlApplet extends JApplet {
 		fieldsBox.add(dragLabel);
 		fieldsBox.add(dragSlider);
 		fieldsBox.add(Box.createVerticalGlue());
+		
 		fieldsBox.setPreferredSize(new Dimension(250, 100));
+		settingControls.setPreferredSize(new Dimension (250, 100));
 		
 		tabs.addTab("Fields", fieldsBox);
+		tabs.addTab("Settings", settingControls);
 		
 		this.setLayout(new BorderLayout());
 		this.add(panelBox, BorderLayout.SOUTH);
