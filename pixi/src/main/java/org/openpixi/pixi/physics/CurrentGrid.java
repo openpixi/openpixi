@@ -58,8 +58,8 @@ public class CurrentGrid {
 	//the constructor
 	public CurrentGrid() {
 	
-		this.cellWidth = 0;
-		this.cellHeight = 0;
+		cellWidth = 0;
+		cellHeight = 0;
 		
 		jx = new double[numCellsX+2][numCellsY+2];
 		jy = new double[numCellsX+2][numCellsY+2];
@@ -95,8 +95,8 @@ public class CurrentGrid {
 	
 	public void setGrid(double width, double height)
 	{
-		this.cellWidth = width / numCellsX;
-		this.cellHeight = height / numCellsY;
+		cellWidth = width / numCellsX;
+		cellHeight = height / numCellsY;
 
 		
 		//include updateGrid() and the first calculation of Fields here
