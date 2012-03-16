@@ -15,13 +15,18 @@ public class SweepAndPrune {
 	
 	//private final int MAX_PARTICLES = 10;
 	//private OverlapCounter count = new OverlapCounter();
-	private ArrayList<BoundingBox> boxlist = new ArrayList<BoundingBox>();
-	private ArrayList<SweepParticle> axisX = new ArrayList<SweepParticle>();
 	//private SweepParticle [] axisX = new SweepParticle[MAX_PARTICLES];
-	private ArrayList<SweepParticle> axisY = new ArrayList<SweepParticle>();
 	//SweepParticle [] axisY = new SweepParticle[MAX_PARTICLES];
+
+	private ArrayList<BoundingBox> boxlist = new ArrayList<BoundingBox>();
+	
+	private ArrayList<SweepParticle> axisX = new ArrayList<SweepParticle>();
+	private ArrayList<SweepParticle> axisY = new ArrayList<SweepParticle>();
+	
 	private ArrayList<Pair<BoundingBox, BoundingBox>> overlaps = new ArrayList<Pair<BoundingBox, BoundingBox>>();
+	
 	private ArrayList<Pair<Particle2D, Particle2D>> overlappedPairs = new ArrayList<Pair<Particle2D, Particle2D>>();
+	
 	private Map<Pair<BoundingBox, BoundingBox>, OverlapCounter> overlapCounter = 
 			new HashMap<Pair<BoundingBox, BoundingBox>, OverlapCounter>();
 	
@@ -69,6 +74,7 @@ public class SweepAndPrune {
 			//removing the sweep particles from the lists of the axes
 			removeSweepParticle(axisX, box);
 			removeSweepParticle(axisY, box);
+			System.out.println("Particle removed");
 			
 			//one needs to clean the counters too
 			Iterator<Entry<Pair<BoundingBox, BoundingBox>, OverlapCounter>> iterator = overlapCounter.entrySet().iterator();
@@ -129,10 +135,11 @@ public class SweepAndPrune {
 				}
 				
 				list.set(j + 1, swapPar);
-				j--;
+				j = j -1;
 			}
-				list.set(j+1, sweepPar);	
 			
+			list.set(j + 1, sweepPar);
+			//System.out.println("Particles swapped");
 		}
 	}
 	
@@ -141,6 +148,7 @@ public class SweepAndPrune {
 		//sorting the axes lists
 		sortList(axisX);
 		sortList(axisY);
+		//System.out.println("Axes sorted");
 		
 		int countOverlaps = 0;
 		//one needs to look at the counters (similar like with the remove method)
@@ -151,18 +159,18 @@ public class SweepAndPrune {
 			OverlapCounter counter = entry.getValue();
 			Pair<BoundingBox, BoundingBox> pairbox = entry.getKey();
 			
-			if(counter.overlaps == 3) {
+			if(counter.overlaps == 2) {
 				countOverlaps++;
 			}
 			
 			if(counter.overlapping) {
-				if(counter.overlaps < 3) {
+				if(counter.overlaps < 2) {
 					overlaps.remove(pairbox);
 					counter.overlapping = false;
 				}
 			}
 			else {
-				if(counter.overlaps > 2) {
+				if(counter.overlaps > 1) {
 					overlaps.add(pairbox);
 					counter.overlapping = true;
 				}
