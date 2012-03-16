@@ -9,5 +9,13 @@ public abstract class Detector {
 	public Detector() {
 		
 	}
+	
+	public void add(ArrayList<Particle2D> parlist) {
+		
+	}
+	
+	public void run() {
+		
+	}
 
 }
