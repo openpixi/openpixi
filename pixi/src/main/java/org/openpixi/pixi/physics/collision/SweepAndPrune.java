@@ -31,26 +31,35 @@ public class SweepAndPrune {
 			new HashMap<Pair<BoundingBox, BoundingBox>, OverlapCounter>();
 	
 	//constructor
-	public SweepAndPrune(ArrayList<Particle2D> parlist) {
+	public SweepAndPrune() {
+		
+		//super();
+		
+		/*for(int i = 0; i < parlist.size(); i++) {
+			Particle2D par = (Particle2D) parlist.get(i);
+			BoundingBox box = new BoundingBox(par);
+			//boxlist.add(box);
+			add(box);
+		}*/
+	}
+	
+	//method to add a box to the axes
+	public void add(ArrayList<Particle2D> parlist) {
 		
 		for(int i = 0; i < parlist.size(); i++) {
 			Particle2D par = (Particle2D) parlist.get(i);
 			BoundingBox box = new BoundingBox(par);
 			//boxlist.add(box);
-			add(box);
-		}
-	}
-	
-	//method to add a box to the axes
-	public void add(BoundingBox box) {
-		if(!boxlist.contains(box)) {
-			boxlist.add(box);
-			
-			axisX.add(new SweepParticle(box, 0, true));
-			axisX.add(new SweepParticle(box, 0, false));
-			axisY.add(new SweepParticle(box, 1, true));
-			axisY.add(new SweepParticle(box, 1, false));
-			//System.out.println("Particles added");
+		
+			if(!boxlist.contains(box)) {
+				boxlist.add(box);
+				
+				axisX.add(new SweepParticle(box, 0, true));
+				axisX.add(new SweepParticle(box, 0, false));
+				axisY.add(new SweepParticle(box, 1, true));
+				axisY.add(new SweepParticle(box, 1, false));
+				//System.out.println("Particles added");
+			}
 		}
 	}
 	
