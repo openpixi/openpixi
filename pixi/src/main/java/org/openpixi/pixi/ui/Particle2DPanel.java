@@ -289,11 +289,11 @@ public class Particle2DPanel extends JPanel {
 		if(drawCurrentGrid)
 		{
 			graph.setColor(Color.black);
-			for(int i = 0; i < Simulation.currentGrid.numCellsX; i++)
-				for(int k = 0; k < Simulation.currentGrid.numCellsY; k++)
+			for(int i = 1; i < Simulation.currentGrid.numCellsX + 1; i++)
+				for(int k = 1; k < Simulation.currentGrid.numCellsY + 1; k++)
 				{
-					int xstart = (int) (Simulation.currentGrid.cellWidth * (i + 0.5));
-					int ystart = (int) (Simulation.currentGrid.cellHeight * (k + 0.5));
+					int xstart = (int) (Simulation.currentGrid.cellWidth * (i - 0.5));
+					int ystart = (int) (Simulation.currentGrid.cellHeight * (k - 0.5));
 					drawArrow(graph, xstart, ystart, (int) Math.round(Simulation.currentGrid.jx[i][k] + xstart), (int) Math.round(Simulation.currentGrid.jy[i][k] + ystart));
 				}
 			//return;
@@ -302,11 +302,11 @@ public class Particle2DPanel extends JPanel {
 		if(drawFields)
 		{
 			graph.setColor(Color.black);
-			for(int i = 0; i < Simulation.currentGrid.numCellsX; i++)
-				for(int k = 0; k < Simulation.currentGrid.numCellsY; k++)
+			for(int i = 1; i < Simulation.currentGrid.numCellsX + 1; i++)
+				for(int k = 1; k < Simulation.currentGrid.numCellsY + 1; k++)
 				{
-					int xstart = (int) (Simulation.currentGrid.cellWidth * (i + 0.5));
-					int ystart = (int) (Simulation.currentGrid.cellHeight * (k + 0.5));
+					int xstart = (int) (Simulation.currentGrid.cellWidth * (i - 0.5));
+					int ystart = (int) (Simulation.currentGrid.cellHeight * (k - 0.5));
 					drawArrow(graph, xstart, ystart, (int) Math.round(Simulation.currentGrid.Ex[i][k] + xstart), (int) Math.round(Simulation.currentGrid.Ey[i][k] + ystart));
 				}
 			//return;

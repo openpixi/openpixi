@@ -61,15 +61,15 @@ public class CurrentGrid {
 		this.cellWidth = 0;
 		this.cellHeight = 0;
 		
-		jx = new double[numCellsX][numCellsY];
-		jy = new double[numCellsX][numCellsY];
-		rho = new double[numCellsX][numCellsY];
-		Ex = new double[numCellsX][numCellsY];
-		Ey = new double[numCellsX][numCellsY];
-		Ez = new double[numCellsX][numCellsY];
-		Bx = new double[numCellsX][numCellsY];
-		By = new double[numCellsX][numCellsY];
-		Bz = new double[numCellsX][numCellsY];
+		jx = new double[numCellsX+2][numCellsY+2];
+		jy = new double[numCellsX+2][numCellsY+2];
+		rho = new double[numCellsX+2][numCellsY+2];
+		Ex = new double[numCellsX+2][numCellsY+2];
+		Ey = new double[numCellsX+2][numCellsY+2];
+		Ez = new double[numCellsX+2][numCellsY+2];
+		Bx = new double[numCellsX+2][numCellsY+2];
+		By = new double[numCellsX+2][numCellsY+2];
+		Bz = new double[numCellsX+2][numCellsY+2];
 		initFields();
 	}
 	
@@ -79,15 +79,15 @@ public class CurrentGrid {
 		numCellsX = xbox;
 		numCellsY = ybox;
 		
-		jx = new double[numCellsX][numCellsY];
-		jy = new double[numCellsX][numCellsY];
-		rho = new double[numCellsX][numCellsY];
-		Ex = new double[numCellsX][numCellsY];
-		Ey = new double[numCellsX][numCellsY];
-		Ez = new double[numCellsX][numCellsY];
-		Bx = new double[numCellsX][numCellsY];
-		By = new double[numCellsX][numCellsY];
-		Bz = new double[numCellsX][numCellsY];
+		jx = new double[numCellsX+2][numCellsY+2];
+		jy = new double[numCellsX+2][numCellsY+2];
+		rho = new double[numCellsX+2][numCellsY+2];
+		Ex = new double[numCellsX+2][numCellsY+2];
+		Ey = new double[numCellsX+2][numCellsY+2];
+		Ez = new double[numCellsX+2][numCellsY+2];
+		Bx = new double[numCellsX+2][numCellsY+2];
+		By = new double[numCellsX+2][numCellsY+2];
+		Bz = new double[numCellsX+2][numCellsY+2];
 		initFields();
 		
 		//this.setGrid() should be called here since changeDimension() can not appear alone. This would cause dualities with MainControlApplet
@@ -108,15 +108,15 @@ public class CurrentGrid {
 		
 		for(Particle2D p : particles)
 		{
-			int xCellPosition = (int) (p.x / cellWidth);
-			int yCellPosition = (int) (p.y / cellHeight);
-			if(xCellPosition >= numCellsX) {
-				xCellPosition = numCellsX - 1;
+			int xCellPosition = (int) (p.x / cellWidth) + 1;
+			int yCellPosition = (int) (p.y / cellHeight) + 1;
+			if(xCellPosition >= numCellsX+1) {
+				xCellPosition = numCellsX+1;
 			} else if(xCellPosition < 0) {
 					xCellPosition = 0;
 			}
-			if(yCellPosition >= numCellsY) {
-				yCellPosition = numCellsY - 1;
+			if(yCellPosition >= numCellsY+1) {
+				yCellPosition = numCellsY+1;
 			} else if(yCellPosition < 0) {
 				yCellPosition = 0;
 			}
@@ -130,8 +130,8 @@ public class CurrentGrid {
 	}
 
 	private void reset() {
-		for(int i = 0; i < numCellsX; i++) {
-			for(int k = 0; k < numCellsY; k++) {
+		for(int i = 0; i < numCellsX + 2; i++) {
+			for(int k = 0; k < numCellsY + 2; k++) {
 				jx[i][k] = 0.0;
 				jy[i][k] = 0.0;
 				rho[i][k] = 0.0;
@@ -140,8 +140,8 @@ public class CurrentGrid {
 	}
 	
 	private void initFields() {
-		for (int i = 0; i < numCellsX; i++) {
-			for (int j = 0; j < numCellsY; j++) {
+		for (int i = 0; i < numCellsX + 2; i++) {
+			for (int j = 0; j < numCellsY + 2; j++) {
 				Ex[i][j] = 0.0;
 				Ey[i][j] = 0.0;
 				Ez[i][j] = 0.0;
