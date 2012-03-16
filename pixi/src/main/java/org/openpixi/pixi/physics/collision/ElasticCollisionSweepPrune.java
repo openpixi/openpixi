@@ -8,6 +8,9 @@
 package org.openpixi.pixi.physics.collision;
 
 import org.openpixi.pixi.physics.*;
+import org.openpixi.pixi.physics.collision.Algorithms.CollisionAlgorithm;
+import org.openpixi.pixi.physics.collision.detectors.Detector;
+import org.openpixi.pixi.physics.collision.detectors.SweepAndPrune;
 import org.openpixi.pixi.physics.collision.util.Pair;
 import org.openpixi.pixi.physics.force.Force;
 import org.openpixi.pixi.physics.solver.*;
@@ -23,8 +26,9 @@ public class ElasticCollisionSweepPrune extends Collision{
 	//Particle2D [][] col = new Particle2D [100][2];
 	SweepAndPrune sweep;
 	
-	public ElasticCollisionSweepPrune() {
-		super();
+	public ElasticCollisionSweepPrune(Detector det, CollisionAlgorithm alg) {
+		
+		super(det, alg);
 	}
 	
 	
@@ -219,7 +223,8 @@ public class ElasticCollisionSweepPrune extends Collision{
      }*/
 	
 	public void check(ArrayList<Particle2D> parlist, Force f, Solver s, double step) {
-		sweep = new SweepAndPrune(parlist);
+		sweep = new SweepAndPrune();
+		sweep.add(parlist);
 		sweep.run();
 		ArrayList<Pair<Particle2D, Particle2D>> aktiveCollisions = sweep.getOverlappedPairs();
 		
