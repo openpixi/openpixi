@@ -62,6 +62,9 @@ public class MainControlApplet extends JApplet {
 	private JComboBox algorithmComboBox;
 	private JCheckBox traceCheck;
 	
+	private JRadioButton hardBoundaries;
+	private JRadioButton periodicBoundaries;
+	
 	private JTabbedPane tabs;
 	
 	private Particle2DPanel particlePanel;
@@ -201,6 +204,18 @@ public class MainControlApplet extends JApplet {
 		}
 	}
 	
+	class SelectBoundaries implements ActionListener {
+		public void actionPerformed(ActionEvent eve) {
+			AbstractButton abut = (AbstractButton) eve.getSource();
+			if(abut.equals(hardBoundaries)) {
+				particlePanel.boundariesChange(0);
+			}
+			else if(abut.equals(periodicBoundaries)) {
+				particlePanel.boundariesChange(1);
+			}
+		}
+	}
+	
 	class DrawCurrentGridListener implements ItemListener {
 		public void itemStateChanged(ItemEvent eve){
 				particlePanel.drawCurrentGrid();
@@ -222,6 +237,7 @@ public class MainControlApplet extends JApplet {
 			}
 		}
 	}
+	
 	
 	
 	class DragListener implements ChangeListener{
@@ -475,6 +491,20 @@ public class MainControlApplet extends JApplet {
 		filedirectory.addActionListener(new WriteFilename());
 		filedirectory.setToolTipText("Please enter an existing directory");
 		
+		hardBoundaries = new JRadioButton("Hardwall");
+		periodicBoundaries = new JRadioButton("Period");
+		
+		ButtonGroup bgroup = new ButtonGroup();
+		
+		bgroup.add(hardBoundaries);
+		bgroup.add(periodicBoundaries);
+		
+		hardBoundaries.addActionListener(new SelectBoundaries());
+		periodicBoundaries.addActionListener(new SelectBoundaries());
+		
+		JPanel boundaries = new JPanel();
+		boundaries.add(hardBoundaries);
+		boundaries.add(periodicBoundaries);
 		
 		JLabel xboxentryLabel = new JLabel("Cell width");
 		JLabel yboxentryLabel = new JLabel("Cell height");
@@ -557,6 +587,7 @@ public class MainControlApplet extends JApplet {
 		
 		tabs.addTab("Fields", fieldsBox);
 		tabs.addTab("Settings", settingControls);
+		tabs.addTab("Boundaries", boundaries);
 		
 		this.setLayout(new BorderLayout());
 		this.add(panelBox, BorderLayout.SOUTH);

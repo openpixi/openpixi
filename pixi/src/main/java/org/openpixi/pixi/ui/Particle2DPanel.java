@@ -247,6 +247,17 @@ public class Particle2DPanel extends JPanel {
 
 		ParticleMover.prepareAllParticles(s);
 	}
+	
+	public void boundariesChange(int i) {
+		switch(i) {
+		case 0:
+			InitialConditions.setHardWallBoundary(s);
+			break;
+		case 1:
+			InitialConditions.setPeriodicBoundary(s);
+		}
+		
+	}
 
 	/** Display the particles */
 	public void paintComponent(Graphics graph1) {
