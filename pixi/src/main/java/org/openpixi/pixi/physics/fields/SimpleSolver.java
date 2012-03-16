@@ -1,7 +1,6 @@
 package org.openpixi.pixi.physics.fields;
 
 import org.openpixi.pixi.physics.CurrentGrid;
-import org.openpixi.pixi.physics.Simulation;
 
 public class SimpleSolver extends FieldSolver {
 	
@@ -29,7 +28,7 @@ public class SimpleSolver extends FieldSolver {
 				/**Maxwell equations*/
 				//g.Bx[i][j] += -Simulation.tstep * cx;
 				//g.By[i][j] += -Simulation.tstep * cy;
-				g.Bz[i][j] += -Simulation.tstep * cz;
+				g.Bz[i][j] += -g.s.tstep * cz;
 
 				/**curl of the B field using center difference*/
 				cx = (g.Bz[i][j+1] - g.Bz[i][j-1]) / ( 2 * g.cellHeight);
@@ -38,8 +37,8 @@ public class SimpleSolver extends FieldSolver {
 				//		(g.Bx[i][j+1] - g.Bx[i][j-1]) / ( 2 * g.cellHeight);
 				
 				/**Maxwell EQ*/
-				g.Ex[i][j] += Simulation.tstep * (cx - g.jx[i][j]);
-				g.Ey[i][j] += Simulation.tstep * (cy - g.jy[i][j]);
+				g.Ex[i][j] += g.s.tstep * (cx - g.jx[i][j]);
+				g.Ey[i][j] += g.s.tstep * (cy - g.jy[i][j]);
 				//g.Ez[i][j] += Simulation.tstep * (cz);
 			}
 		}

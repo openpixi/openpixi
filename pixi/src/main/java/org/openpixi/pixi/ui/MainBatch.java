@@ -29,39 +29,42 @@ public class MainBatch {
 	public static final double particle_radius = 0.1;
 	/**Total number of timesteps*/
 	public static final int steps = 1000;
+	
+	public static Simulation s1;
 
 	public static void main(String[] args) {
-		Simulation.setSize(100, 100);
+		
+		s1 = new Simulation();
 				
-		InitialConditions.createRandomParticles(num_particles, particle_radius);
-		Simulation.f.bz = 0.001;
-		Simulation.f.ex = 0.1;
-		ParticleMover.prepareAllParticles();
+		InitialConditions.createRandomParticles(s1, num_particles, particle_radius);
+		s1.f.bz = 0.001;
+		s1.f.ex = 0.1;
+		ParticleMover.prepareAllParticles(s1);
 		
 		System.out.println("-------- INITIAL CONDITIONS--------");		
 		
 		for (int i=0; i < 10; i++) {
-			System.out.println(Simulation.particles.get(i).x);	
+			System.out.println(s1.particles.get(i).x);	
 		}
 		
-		System.out.println("\n-------- SIMULATION RESULTS --------");			
+		System.out.println("\n-------- SIMULATION RESULTS --------");		
 		
 		long start = System.currentTimeMillis();
 		
 		for (int i = 0; i < steps; i++) {
-			Simulation.step();
+			s1.step();
 		}
 		
 		long elapsed = System.currentTimeMillis()-start;
 		
 		for (int i=0; i < 10; i++) {
-			System.out.println(Simulation.particles.get(i).x);	
+			System.out.println(s1.particles.get(i).x);	
 		}
 		
 		System.out.println("\nCurrent: ");
 		
-		for (int i = 0; i < Simulation.currentGrid.numCellsX; i++) {
-				System.out.println(Simulation.currentGrid.jx[i][0]);
+		for (int i = 0; i < s1.currentGrid.numCellsX; i++) {
+				System.out.println(s1.currentGrid.jx[i][0]);
 		}
 		
 		System.out.println("\nCalculation time: "+elapsed);

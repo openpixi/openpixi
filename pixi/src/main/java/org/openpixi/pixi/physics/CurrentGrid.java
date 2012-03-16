@@ -53,11 +53,14 @@ public class CurrentGrid {
 	public double cellWidth;
 	public double cellHeight;
 	
-	public FieldSolver fsolver = new SimpleSolver();
+	public Simulation s;
+	
 	
 	//the constructor
-	public CurrentGrid() {
-	
+	public CurrentGrid(Simulation s) {
+		
+		this.s = s;
+		
 		cellWidth = 0;
 		cellHeight = 0;
 		
@@ -126,7 +129,7 @@ public class CurrentGrid {
 			rho[xCellPosition][yCellPosition] += p.charge;
 		}
 		
-		fsolver.step(this);		
+		s.fsolver.step(this);		
 	}
 
 	private void reset() {

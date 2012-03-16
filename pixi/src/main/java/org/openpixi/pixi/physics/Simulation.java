@@ -22,34 +22,56 @@ package org.openpixi.pixi.physics;
 import java.util.ArrayList;
 import org.openpixi.pixi.physics.boundary.*;
 import org.openpixi.pixi.physics.collision.*;
+import org.openpixi.pixi.physics.fields.FieldSolver;
+import org.openpixi.pixi.physics.fields.SimpleSolver;
 import org.openpixi.pixi.physics.force.Force;
+import org.openpixi.pixi.physics.solver.*;
 
 public class Simulation {
 	
 	/**Timestep*/
-	public static double tstep = 1;
+	public double tstep;
 	/**Width of simulated area*/
-	public static double width = 100;
+	public double width;
 	/**Height of simulated area*/
-	public static double  height = 100;
+	public double  height;
 
 	/**Contains all Particle2D objects*/
-	public static ArrayList<Particle2D> particles = new ArrayList<Particle2D>(0);
-	public static Force  f= new Force();
-	public static Boundary boundary = new HardWallBoundary();
+	public ArrayList<Particle2D> particles;
+	public Force  f;
+	public Boundary boundary;
+	
+	public Solver psolver;
+	public FieldSolver fsolver;
+	public CurrentGrid currentGrid;
+	private Collision collision;
 
-	public static CurrentGrid currentGrid = new CurrentGrid();
-	private static Collision collision = new ElasticCollisionSweepPrune();
+	public Simulation () {
+	
+		tstep = 1;
+		width = 100;
+		height = 100;
 
-	public static void setSize(double width, double height) {
-		Simulation.width = width;
-		Simulation.height = height;
-		Simulation.boundary.setBoundaries(0, 0, width, height);
-		Simulation.currentGrid.setGrid(width, height);
+		/**Contains all Particle2D objects*/
+		particles = new ArrayList<Particle2D>(0);
+		f= new Force();
+		boundary = new HardWallBoundary();
+		
+		psolver = new Boris();
+		fsolver = new SimpleSolver();
+		currentGrid = new CurrentGrid(this);
+		collision = new ElasticCollisionSweepPrune();
+	}
+	
+	public void setSize(double width, double height) {
+		this.width = width;
+		this.height = height;
+		this.boundary.setBoundaries(0, 0, width, height);
+		this.currentGrid.setGrid(width, height);
 	}
 
-	public static void step() {
-		ParticleMover.particlePush();
+	public void step() {
+		ParticleMover.particlePush(this);
 		//collision.check(particles, f, ParticleMover.solver, tstep);
 		currentGrid.updateGrid(particles);
 	}

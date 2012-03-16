@@ -19,31 +19,26 @@
 
 package org.openpixi.pixi.physics;
 
-import org.openpixi.pixi.physics.solver.*;
 
 public class ParticleMover {
 
-	/**Contains current solver algorithm*/
-	public static Solver solver = new Boris();
-	
-	public static void particlePush() {
-		
-		for (Particle2D p : Simulation.particles) {
-			solver.step(p, Simulation.f, Simulation.tstep);
-			Simulation.boundary.check(p, Simulation.f, solver, Simulation.tstep);
+	public static void particlePush(Simulation s) {
+		for (Particle2D p : s.particles) {
+			s.psolver.step(p, s.f, s.tstep);
+			s.boundary.check(p, s.f, s.psolver, s.tstep);
 		}
 		
 	}
 
-	public static void prepareAllParticles() {
-		for (Particle2D p : Simulation.particles) {
-			solver.prepare(p, Simulation.f, Simulation.tstep);
+	public static void prepareAllParticles(Simulation s) {
+		for (Particle2D p : s.particles) {
+			s.psolver.prepare(p, s.f, s.tstep);
 		}
 	}
 
-	public static void completeAllParticles() {
-		for (Particle2D p : Simulation.particles) {
-			solver.complete(p, Simulation.f, Simulation.tstep);
+	public static void completeAllParticles(Simulation s) {
+		for (Particle2D p : s.particles) {
+			s.psolver.complete(p, s.f, s.tstep);
 		}
 	}
 }

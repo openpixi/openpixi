@@ -227,7 +227,7 @@ public class MainControlApplet extends JApplet {
 			if(source.getValueIsAdjusting())
 			{
 				double value = source.getValue() * dragSliderScaling;
-				Simulation.f.drag = value;
+				particlePanel.s.f.drag = value;
 			}
 		}
 	}
@@ -238,7 +238,7 @@ public class MainControlApplet extends JApplet {
 			if(source.getValueIsAdjusting())
 			{
 				double value = source.getValue() * exSliderScaling;
-				Simulation.f.ex = value;
+				particlePanel.s.f.ex = value;
 			}
 		}
 	}
@@ -249,7 +249,7 @@ public class MainControlApplet extends JApplet {
 			if(source.getValueIsAdjusting())
 			{
 				double value = source.getValue() * eySliderScaling;
-				Simulation.f.ey = value;
+				particlePanel.s.f.ey = value;
 			}
 		}
 	}
@@ -260,7 +260,7 @@ public class MainControlApplet extends JApplet {
 			if(source.getValueIsAdjusting())
 			{
 				double value = source.getValue() * bzSliderScaling;
-				Simulation.f.bz = value;
+				particlePanel.s.f.bz = value;
 			}
 		}
 	}
@@ -271,7 +271,7 @@ public class MainControlApplet extends JApplet {
 			if(source.getValueIsAdjusting())
 			{
 				double value = source.getValue() * gxSliderScaling;
-				Simulation.f.gx = value;
+				particlePanel.s.f.gx = value;
 			}
 		}
 	}
@@ -282,7 +282,7 @@ public class MainControlApplet extends JApplet {
 			if(source.getValueIsAdjusting())
 			{
 				double value = source.getValue() * gySliderScaling;
-				Simulation.f.gy = value;
+				particlePanel.s.f.gy = value;
 			}
 		}
 	}
@@ -293,7 +293,7 @@ public class MainControlApplet extends JApplet {
 			if(source.getValueIsAdjusting())
 			{
 				double value = source.getValue() * stepSliderScaling;
-				Simulation.tstep = value;
+				particlePanel.s.tstep = value;
 			}
 		}
 	}
@@ -302,8 +302,8 @@ public class MainControlApplet extends JApplet {
 		public void actionPerformed(ActionEvent eve) {
 			int xbox = Integer.parseInt(xboxentry.getText());
 			int ybox = Integer.parseInt(yboxentry.getText());
-			Simulation.currentGrid.changeDimension(xbox, ybox);
-			Simulation.currentGrid.setGrid(particlePanel.getWidth(), particlePanel.getHeight());
+			particlePanel.s.currentGrid.changeDimension(xbox, ybox);
+			particlePanel.s.currentGrid.setGrid(particlePanel.getWidth(), particlePanel.getHeight());
 		}
 	}
 
@@ -349,7 +349,7 @@ public class MainControlApplet extends JApplet {
 		stepSlider.addChangeListener(new StepListener());
 		stepSlider.setMinimum(1);
 		stepSlider.setMaximum(100);
-		stepSlider.setValue((int) (100 * (Simulation.tstep = 0.5)));
+		stepSlider.setValue((int) (100 * (particlePanel.s.tstep = 0.5)));
 		stepSlider.setMajorTickSpacing(10);
 		stepSlider.setMinorTickSpacing(2);
 		stepSlider.setPaintTicks(true);
@@ -362,7 +362,7 @@ public class MainControlApplet extends JApplet {
 		dragSlider.addChangeListener(new DragListener());
 		dragSlider.setMinimum(0);
 		dragSlider.setMaximum(100);
-		dragSlider.setValue((int) Simulation.f.drag);
+		dragSlider.setValue((int) particlePanel.s.f.drag);
 		dragSlider.setMajorTickSpacing(10);
 		dragSlider.setMinorTickSpacing(2);
 		dragSlider.setPaintTicks(true);
@@ -372,7 +372,7 @@ public class MainControlApplet extends JApplet {
 		efieldXSlider.addChangeListener(new EFieldXListener());
 		efieldXSlider.setMinimum(-100);
 		efieldXSlider.setMaximum(100);
-		efieldXSlider.setValue((int) Simulation.f.ex);
+		efieldXSlider.setValue((int) particlePanel.s.f.ex);
 		efieldXSlider.setMajorTickSpacing(20);
 		efieldXSlider.setMinorTickSpacing(5);
 		efieldXSlider.setPaintTicks(true);
@@ -381,7 +381,7 @@ public class MainControlApplet extends JApplet {
 		efieldYSlider.addChangeListener(new EFieldYListener());
 		efieldYSlider.setMinimum(-100);
 		efieldYSlider.setMaximum(100);
-		efieldYSlider.setValue((int) Simulation.f.ey);
+		efieldYSlider.setValue((int) particlePanel.s.f.ey);
 		efieldYSlider.setMajorTickSpacing(20);
 		efieldYSlider.setMinorTickSpacing(5);
 		efieldYSlider.setPaintTicks(true);
@@ -390,7 +390,7 @@ public class MainControlApplet extends JApplet {
 		bfieldZSlider.addChangeListener(new BFieldZListener());
 		bfieldZSlider.setMinimum(-100);
 		bfieldZSlider.setMaximum(100);
-		bfieldZSlider.setValue((int) Simulation.f.bz);
+		bfieldZSlider.setValue((int) particlePanel.s.f.bz);
 		bfieldZSlider.setMajorTickSpacing(20);
 		bfieldZSlider.setMinorTickSpacing(5);
 		bfieldZSlider.setPaintTicks(true);
@@ -399,7 +399,7 @@ public class MainControlApplet extends JApplet {
 		gfieldXSlider.addChangeListener(new GFieldXListener());
 		gfieldXSlider.setMinimum(-100);
 		gfieldXSlider.setMaximum(100);
-		gfieldXSlider.setValue((int) Simulation.f.gx);
+		gfieldXSlider.setValue((int) particlePanel.s.f.gx);
 		gfieldXSlider.setMajorTickSpacing(20);
 		gfieldXSlider.setMinorTickSpacing(5);
 		gfieldXSlider.setPaintTicks(true);
@@ -408,7 +408,7 @@ public class MainControlApplet extends JApplet {
 		gfieldYSlider.addChangeListener(new GFieldYListener());
 		gfieldYSlider.setMinimum(-100);
 		gfieldYSlider.setMaximum(100);
-		gfieldYSlider.setValue((int) Simulation.f.gy);
+		gfieldYSlider.setValue((int) particlePanel.s.f.gy);
 		gfieldYSlider.setMajorTickSpacing(20);
 		gfieldYSlider.setMinorTickSpacing(5);
 		gfieldYSlider.setPaintTicks(true);
@@ -558,22 +558,22 @@ public class MainControlApplet extends JApplet {
 	
 	public void setSlidersValue()
 	{
-		Simulation.tstep = 0.5;
+		particlePanel.s.tstep = 0.5;
 		stepSlider.setValue(50);
-		efieldXSlider.setValue((int) (Simulation.f.ex / exSliderScaling));
-		efieldYSlider.setValue((int) (Simulation.f.ey / eySliderScaling));
-		bfieldZSlider.setValue((int) (Simulation.f.bz / bzSliderScaling));
-		gfieldXSlider.setValue((int) (Simulation.f.gx / gxSliderScaling));
-		gfieldYSlider.setValue((int) (Simulation.f.gy / gySliderScaling));
-		dragSlider.setValue((int) (Simulation.f.drag / dragSliderScaling));
+		efieldXSlider.setValue((int) (particlePanel.s.f.ex / exSliderScaling));
+		efieldYSlider.setValue((int) (particlePanel.s.f.ey / eySliderScaling));
+		bfieldZSlider.setValue((int) (particlePanel.s.f.bz / bzSliderScaling));
+		gfieldXSlider.setValue((int) (particlePanel.s.f.gx / gxSliderScaling));
+		gfieldYSlider.setValue((int) (particlePanel.s.f.gy / gySliderScaling));
+		dragSlider.setValue((int) (particlePanel.s.f.drag / dragSliderScaling));
 		//int delay = particlePanel.timer.getDelay();
 		//speedSlider.setValue((int) (-Math.log(delay / 1000.) / speedSliderScaling));
 		speedSlider.setValue(50);
 		particlePanel.timer.setDelay((int) (1000 * Math.exp(-50 * speedSliderScaling)));
 		xboxentry.setText("10");
 		yboxentry.setText("10");
-		Simulation.currentGrid.changeDimension(10, 10);
-		Simulation.currentGrid.setGrid(particlePanel.getWidth(), particlePanel.getHeight());
+		particlePanel.s.currentGrid.changeDimension(10, 10);
+		particlePanel.s.currentGrid.setGrid(particlePanel.getWidth(), particlePanel.getHeight());
 		writePositionCheck.setSelected(false);
 		filename.setEditable(false);
 		filename.setEnabled(false);

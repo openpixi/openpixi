@@ -26,69 +26,69 @@ import org.openpixi.pixi.physics.force.SpringForce;
 
 public class InitialConditions {
 
-	public static void initRandomParticles(int count, int radius) {
-		Simulation.f = new Force();
-		Simulation.f.reset();
-		Simulation.f.gy = - 1; //-ConstantsSI.g;
+	public static void initRandomParticles(Simulation s, int count, int radius) {
+		s.f = new Force();
+		s.f.reset();
+		s.f.gy = - 1; //-ConstantsSI.g;
 		//f.bz = 1;
 		
-		InitialConditions.createRandomParticles(count, radius);
-		InitialConditions.setHardWallBoundary();
+		InitialConditions.createRandomParticles(s, count, radius);
+		InitialConditions.setHardWallBoundary(s);
 	}
 
-	public static void initGravity(int count) {
-		Simulation.f = new Force();
-		Simulation.f.reset();
-		Simulation.f.gy = -1; // -ConstantsSI.g;
+	public static void initGravity(Simulation s, int count) {
+		s.f = new Force();
+		s.f.reset();
+		s.f.gy = -1; // -ConstantsSI.g;
 		
-		InitialConditions.createRandomParticles(count, 15);
-		InitialConditions.setHardWallBoundary();
+		InitialConditions.createRandomParticles(s, count, 15);
+		InitialConditions.setHardWallBoundary(s);
 	}
 
-	public static void initElectric(int count) {
-		Simulation.f = new Force();
-		Simulation.f.reset();
-		Simulation.f.ey = -1;
+	public static void initElectric(Simulation s, int count) {
+		s.f = new Force();
+		s.f.reset();
+		s.f.ey = -1;
 		
-		InitialConditions.createRandomParticles(count, 15);
-		InitialConditions.setHardWallBoundary();
+		InitialConditions.createRandomParticles(s, count, 15);
+		InitialConditions.setHardWallBoundary(s);
 	}
 
-	public static void initMagnetic(int count) {
-		Simulation.f = new Force();
-		Simulation.f.reset();
-		Simulation.f.bz = .1;
+	public static void initMagnetic(Simulation s, int count) {
+		s.f = new Force();
+		s.f.reset();
+		s.f.bz = .1;
 		
-		InitialConditions.createRandomParticles(count, 15);
-		InitialConditions.setPeriodicBoundary();
+		InitialConditions.createRandomParticles(s, count, 15);
+		InitialConditions.setPeriodicBoundary(s);
 	}
 
-	public static void initSpring(int count) {
-		Simulation.particles.clear();
-		Simulation.f = new SpringForce();
-		Simulation.f.reset();
+	public static void initSpring(Simulation s, int count) {
+		s.particles.clear();
+		s.f = new SpringForce();
+		s.f.reset();
 		
 		for (int k = 0; k < count; k++) {
 			Particle2D par = new Particle2D();
-			par.x = Simulation.width * Math.random();
-			par.y = Simulation.height * Math.random();
+			par.x = s.width * Math.random();
+			par.y = s.height * Math.random();
 			par.radius = 15;
 			par.vx = 10 * Math.random();
 			par.vy = 0;
 			par.mass = 1;
 			par.charge = 0;
-			Simulation.particles.add(par);
+			s.particles.add(par);
 		}
 	
-		InitialConditions.setPeriodicBoundary();
+		InitialConditions.setPeriodicBoundary(s);
 	}
 
-	public static void createRandomParticles(int count, double radius) {
-		Simulation.particles.clear();
+	public static void createRandomParticles(Simulation s, int count, double radius) {
+		s.particles.clear();
 		for (int k = 0; k < count; k++) {
 			Particle2D par = new Particle2D();
-			par.x = Simulation.width * Math.random();
-			par.y = Simulation.height * Math.random();
+			par.x = s.width * Math.random();
+			par.y = s.height * Math.random();
 			par.radius = radius;
 			par.vx = 10 * Math.random();
 			par.vy = 10 * Math.random();
@@ -98,16 +98,16 @@ public class InitialConditions {
 			} else {
 				par.charge = -1;
 			}
-			Simulation.particles.add(par);
+			s.particles.add(par);
 		}
 	}
 
-	public static void setHardWallBoundary() {
-		Simulation.boundary = new HardWallBoundary();
+	public static void setHardWallBoundary(Simulation s) {
+		s.boundary = new HardWallBoundary();
 	}
 
-	public static void setPeriodicBoundary() {
-		Simulation.boundary = new PeriodicBoundary();
+	public static void setPeriodicBoundary(Simulation s) {
+		s.boundary = new PeriodicBoundary();
 	}
 
 }

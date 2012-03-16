@@ -33,6 +33,8 @@ import java.lang.Math;
  * Displays 2D particles.
  */
 public class Particle2DPanel extends JPanel {
+	
+	public Simulation s;
 
 	public String fileName;
 	
@@ -83,12 +85,12 @@ public class Particle2DPanel extends JPanel {
 //					Simulation.boundary.check(par, Simulation.f, ParticleMover.solver, Simulation.tstep);
 //				}
 //			}
-			Simulation.step();
+			s.step();
 			frameratedetector.update();
 			repaint();
 			if(writePosition)
 			{
-				Particle2D par = (Particle2D) Simulation.particles.get(0);
+				Particle2D par = (Particle2D) s.particles.get(0);
 				System.out.println(par.x + " " + par.y);
 				file.writeFile(fileName, fileDirectory, par.x + " " + par.y);
 			}
@@ -98,22 +100,23 @@ public class Particle2DPanel extends JPanel {
 	/** Constructor */
 	public Particle2DPanel() {
 		timer = new Timer(interval, new TimerListener());
-
+		s = new Simulation();
+		
 		// Set properties of the panel
 		this.setVisible(true);
 		this.setSize(700, 500);
 		updateSimulationSize();
 
-		ParticleMover.solver = new EulerRichardson();
+		s.psolver = new EulerRichardson();
 
 		// Create all particles
-		InitialConditions.initRandomParticles(10, 8);
+		InitialConditions.initRandomParticles(s, 10, 8);
 		
 		frameratedetector = new FrameRateDetector(500);
 	}
 
 	private void updateSimulationSize() {
-		Simulation.setSize(getWidth(), getHeight());
+		s.setSize(getWidth(), getHeight());
 	}
 
 	public void startAnimation() {
@@ -131,41 +134,41 @@ public class Particle2DPanel extends JPanel {
 		reset_trace = true;
 		switch(id) {
 		case 0:
-			InitialConditions.initRandomParticles(10, 8);
+			InitialConditions.initRandomParticles(s,10, 8);
 			break;
 		case 1:
-			InitialConditions.initRandomParticles(100, 5);
+			InitialConditions.initRandomParticles(s, 100, 5);
 			break;
 		case 2:
-			InitialConditions.initRandomParticles(1000, 3);
+			InitialConditions.initRandomParticles(s,1000, 3);
 			break;
 		case 3:
-			InitialConditions.initRandomParticles(10000, 1);
+			InitialConditions.initRandomParticles(s, 10000, 1);
 			break;
 		case 4:
-			InitialConditions.initGravity(1);
+			InitialConditions.initGravity(s, 1);
 			break;
 		case 5:
-			InitialConditions.initElectric(1);
+			InitialConditions.initElectric(s, 1);
 			break;
 		case 6:
-			InitialConditions.initMagnetic(3);
+			InitialConditions.initMagnetic(s, 3);
 			break;
 		case 7:
-			InitialConditions.initSpring(1);
+			InitialConditions.initSpring(s, 1);
 			break;
 		}
-		ParticleMover.prepareAllParticles();
+		ParticleMover.prepareAllParticles(s);
 		timer.start();
 	}
 	
 	public void testSolver()
 	{
 		test = true;
-		InitialConditions.createRandomParticles(2, 10);
-		Simulation.f.reset();
-		for (int i = 0; i < Simulation.particles.size(); i++) {
-			Particle2D par = (Particle2D) Simulation.particles.get(i);
+		InitialConditions.createRandomParticles(s, 2, 10);
+		s.f.reset();
+		for (int i = 0; i < s.particles.size(); i++) {
+			Particle2D par = (Particle2D) s.particles.get(i);
 			par.x = (100);
 			par.y = (100 + 100 * i);
 			par.vx = 10;
@@ -176,7 +179,7 @@ public class Particle2DPanel extends JPanel {
 			else
 				par.charge = -1;
 		}
-		InitialConditions.setPeriodicBoundary();
+		InitialConditions.setPeriodicBoundary(s);
 	}
 	
 
@@ -197,9 +200,9 @@ public class Particle2DPanel extends JPanel {
 		writePosition =! writePosition;
 		if(writePosition)
 		{
-			Simulation.f.reset();
-			InitialConditions.createRandomParticles(1, 10);
-			Particle2D par = (Particle2D) Simulation.particles.get(0);
+			s.f.reset();
+			InitialConditions.createRandomParticles(s, 1, 10);
+			Particle2D par = (Particle2D) s.particles.get(0);
 			par.x = 0;
 			par.y = this.getHeight() * 0.5;
 			par.vx = 10;
@@ -213,36 +216,36 @@ public class Particle2DPanel extends JPanel {
 	
 	public void algorithmChange(int id)
 	{
-		ParticleMover.completeAllParticles();
+		ParticleMover.completeAllParticles(s);
 		
 		switch(id) {
 		case 0:
-			ParticleMover.solver = new EulerRichardson();
+			s.psolver = new EulerRichardson();
 			break;
 		case 1:
-			ParticleMover.solver = new LeapFrog();
+			s.psolver = new LeapFrog();
 			break;
 		case 2:
-			ParticleMover.solver = new LeapFrogDamped();
+			s.psolver = new LeapFrogDamped();
 			break;
 		case 3:
-			ParticleMover.solver = new LeapFrogHalfStep();
+			s.psolver = new LeapFrogHalfStep();
 			break;
 		case 4:
-			ParticleMover.solver = new Boris();
+			s.psolver = new Boris();
 			break;
 		case 5:
-			ParticleMover.solver = new BorisDamped();
+			s.psolver = new BorisDamped();
 			break;
 		case 6:
-			ParticleMover.solver = new SemiImplicitEuler();
+			s.psolver = new SemiImplicitEuler();
 			break;
 		case 7:
-			ParticleMover.solver = new Euler();
+			s.psolver = new Euler();
 			break;
 			}
 
-		ParticleMover.prepareAllParticles();
+		ParticleMover.prepareAllParticles(s);
 	}
 
 	/** Display the particles */
@@ -263,8 +266,8 @@ public class Particle2DPanel extends JPanel {
 		}
 		
 		//if(!drawCurrentGrid) {
-		for (int i = 0; i < Simulation.particles.size(); i++) {
-			Particle2D par = (Particle2D) Simulation.particles.get(i);
+		for (int i = 0; i < s.particles.size(); i++) {
+			Particle2D par = (Particle2D) s.particles.get(i);
 			if (par.charge > 0) {
 				graph.setColor(Color.blue);
 			} else {
@@ -289,12 +292,12 @@ public class Particle2DPanel extends JPanel {
 		if(drawCurrentGrid)
 		{
 			graph.setColor(Color.black);
-			for(int i = 1; i < Simulation.currentGrid.numCellsX + 1; i++)
-				for(int k = 1; k < Simulation.currentGrid.numCellsY + 1; k++)
+			for(int i = 1; i < s.currentGrid.numCellsX + 1; i++)
+				for(int k = 1; k < s.currentGrid.numCellsY + 1; k++)
 				{
-					int xstart = (int) (Simulation.currentGrid.cellWidth * (i - 0.5));
-					int ystart = (int) (Simulation.currentGrid.cellHeight * (k - 0.5));
-					drawArrow(graph, xstart, ystart, (int) Math.round(Simulation.currentGrid.jx[i][k] + xstart), (int) Math.round(Simulation.currentGrid.jy[i][k] + ystart));
+					int xstart = (int) (s.currentGrid.cellWidth * (i - 0.5));
+					int ystart = (int) (s.currentGrid.cellHeight * (k - 0.5));
+					drawArrow(graph, xstart, ystart, (int) Math.round(s.currentGrid.jx[i][k] + xstart), (int) Math.round(s.currentGrid.jy[i][k] + ystart));
 				}
 			//return;
 		}
@@ -302,12 +305,12 @@ public class Particle2DPanel extends JPanel {
 		if(drawFields)
 		{
 			graph.setColor(Color.black);
-			for(int i = 1; i < Simulation.currentGrid.numCellsX + 1; i++)
-				for(int k = 1; k < Simulation.currentGrid.numCellsY + 1; k++)
+			for(int i = 1; i < s.currentGrid.numCellsX + 1; i++)
+				for(int k = 1; k < s.currentGrid.numCellsY + 1; k++)
 				{
-					int xstart = (int) (Simulation.currentGrid.cellWidth * (i - 0.5));
-					int ystart = (int) (Simulation.currentGrid.cellHeight * (k - 0.5));
-					drawArrow(graph, xstart, ystart, (int) Math.round(Simulation.currentGrid.Ex[i][k] + xstart), (int) Math.round(Simulation.currentGrid.Ey[i][k] + ystart));
+					int xstart = (int) (s.currentGrid.cellWidth * (i - 0.5));
+					int ystart = (int) (s.currentGrid.cellHeight * (k - 0.5));
+					drawArrow(graph, xstart, ystart, (int) Math.round(s.currentGrid.Ex[i][k] + xstart), (int) Math.round(s.currentGrid.Ey[i][k] + ystart));
 				}
 			//return;
 		}
@@ -317,7 +320,7 @@ public class Particle2DPanel extends JPanel {
 			graph.scale(1.0, -1.0);
 			graph.setColor(darkGreen);
 			graph.drawString("Frame rate: " + frameratedetector.getRateString() + " fps", 30, 30);
-			graph.drawString("Time step: " + (float) Simulation.tstep, 30, 50);
+			graph.drawString("Time step: " + (float) s.tstep, 30, 50);
 
 			Runtime runtime = Runtime.getRuntime();
 			long maxMemory = runtime.maxMemory();
