@@ -44,7 +44,7 @@ public class Collision {
 	{
 		det.add(parlist);
 		det.run();
-		alg.doCollision(det.getOverlappedPairs(), f, s, step);
+		//alg.doCollision(det.getOverlappedPairs(), f, s, step);
 	}
 	
 	public void collide(ArrayList<Pair<Particle2D, Particle2D>> pairs)

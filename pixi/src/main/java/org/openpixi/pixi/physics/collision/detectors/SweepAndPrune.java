@@ -182,6 +182,7 @@ public class SweepAndPrune extends Detector{
 				}
 			}
 		}
+		//System.out.println(overlaps.size());
 	}
 	
 	public ArrayList<Pair<Particle2D, Particle2D>> getOverlappedPairs() {
