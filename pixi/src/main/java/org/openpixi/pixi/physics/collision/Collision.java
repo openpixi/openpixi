@@ -19,24 +19,34 @@
 package org.openpixi.pixi.physics.collision;
 
 import org.openpixi.pixi.physics.*;
+import org.openpixi.pixi.physics.collision.Algorithms.CollisionAlgorithm;
+import org.openpixi.pixi.physics.collision.detectors.*;
+import org.openpixi.pixi.physics.collision.util.Pair;
 import org.openpixi.pixi.physics.force.Force;
 import org.openpixi.pixi.physics.solver.*;
+//import org.openpixi.pixi.collision.detectors.*;
 
 import java.util.ArrayList;
 
 
 public class Collision {
 	
-	public Collision() {
+	private Detector det;
+	private CollisionAlgorithm alg;
+	
+	public Collision(Detector det, CollisionAlgorithm alg) {
 		
+		this.det = det;
+		this.alg = alg;
 	}
 	
-	public void check(ArrayList<Particle2D> parlist, Force f, Solver s, double step)
+	public void check(ArrayList<Particle2D> parlist)
 	{
-		
+		det.add(parlist);
+		det.run();
 	}
 	
-	public void doCollision(Particle2D p1, Particle2D p2)
+	public void collide(ArrayList<Pair<Particle2D, Particle2D>> pairs)
 	{
 		
 	}
