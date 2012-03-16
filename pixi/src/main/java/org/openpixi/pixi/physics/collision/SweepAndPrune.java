@@ -91,9 +91,6 @@ public class SweepAndPrune {
 				}
 			}
 		}
-		 else {
-				throw new IllegalArgumentException("Given geometry does not exist");
-			}
 	}
 	
 	//adding a method for sorting the lists
@@ -101,14 +98,14 @@ public class SweepAndPrune {
 		
 		for(int i = 1; i < list.size(); i++) {
 			
-			final SweepParticle sweepPar = list.get(i);
+			SweepParticle sweepPar = list.get(i);
 			double sweepParValue = sweepPar.updateGetValue();
 			
 			int j = i - 1;
 			
 			while(j >= 0 && (list.get(j).updateGetValue() > sweepParValue)) {
 				
-				final SweepParticle swapPar = list.get(j);
+				SweepParticle swapPar = list.get(j);
 				
 				if(sweepPar.begin && !swapPar.begin) {
 					
