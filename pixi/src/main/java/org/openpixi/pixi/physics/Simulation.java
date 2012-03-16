@@ -22,6 +22,8 @@ package org.openpixi.pixi.physics;
 import java.util.ArrayList;
 import org.openpixi.pixi.physics.boundary.*;
 import org.openpixi.pixi.physics.collision.*;
+import org.openpixi.pixi.physics.collision.Algorithms.*;
+import org.openpixi.pixi.physics.collision.detectors.*;
 import org.openpixi.pixi.physics.fields.FieldSolver;
 import org.openpixi.pixi.physics.fields.SimpleSolver;
 import org.openpixi.pixi.physics.force.Force;
@@ -45,6 +47,8 @@ public class Simulation {
 	public FieldSolver fsolver;
 	public CurrentGrid currentGrid;
 	private Collision collision;
+	private Detector detector;
+	private CollisionAlgorithm algorithm;
 
 	public Simulation () {
 	
@@ -60,7 +64,10 @@ public class Simulation {
 		psolver = new Boris();
 		fsolver = new SimpleSolver();
 		currentGrid = new CurrentGrid(this);
-		collision = new ElasticCollisionSweepPrune();
+		detector = new SweepAndPrune();
+		algorithm = new TransformationMatrix();
+		//collision = new Collision(detector, algorithm);
+		collision = new ElasticCollisionSweepPrune(detector, algorithm);
 	}
 	
 	public void setSize(double width, double height) {
@@ -72,7 +79,7 @@ public class Simulation {
 
 	public void step() {
 		ParticleMover.particlePush(this);
-		//collision.check(particles, f, ParticleMover.solver, tstep);
+		collision.check(particles, f, psolver, tstep);
 		currentGrid.updateGrid(particles);
 	}
 
