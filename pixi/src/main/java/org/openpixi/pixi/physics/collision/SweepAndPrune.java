@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -44,16 +45,18 @@ public class SweepAndPrune {
 			axisX.add(new SweepParticle(box, 0, false));
 			axisY.add(new SweepParticle(box, 1, true));
 			axisY.add(new SweepParticle(box, 1, false));
+			//System.out.println("Particles added");
 		}
 	}
 	
 	//method to remove sweep particles from list, it is used when a bounding box is removed
-	private void removeSweepParticle(ArrayList<SweepParticle> list, BoundingBox box) {
+	private void removeSweepParticle(List<SweepParticle> list, BoundingBox box) {
 		ListIterator<SweepParticle> iterator = list.listIterator();
 		while(iterator.hasNext()) {
 			SweepParticle spar = iterator.next();
 			if(spar.bb == box) {
 				iterator.remove();
+				System.out.println("Sweep particle removed");
 			}
 		}
 	}
@@ -82,21 +85,24 @@ public class SweepAndPrune {
 				}
 			}
 		}
+		 else {
+				throw new IllegalArgumentException("Given geometry does not exist");
+			}
 	}
 	
 	//adding a method for sorting the lists
 	private void sortList(ArrayList<SweepParticle> list) {
 		
-		for(int i = 0; i < list.size(); i++) {
+		for(int i = 1; i < list.size(); i++) {
 			
-			SweepParticle sweepPar = list.get(i);
+			final SweepParticle sweepPar = list.get(i);
 			double sweepParValue = sweepPar.updateGetValue();
 			
 			int j = i - 1;
 			
-			while(i >= 0 && (list.get(i).updateGetValue() > sweepParValue)) {
+			while(j >= 0 && (list.get(j).updateGetValue() > sweepParValue)) {
 				
-				SweepParticle swapPar = list.get(i);
+				final SweepParticle swapPar = list.get(j);
 				
 				if(sweepPar.begin && !swapPar.begin) {
 					
