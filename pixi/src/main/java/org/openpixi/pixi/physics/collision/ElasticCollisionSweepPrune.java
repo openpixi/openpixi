@@ -8,7 +8,7 @@
 package org.openpixi.pixi.physics.collision;
 
 import org.openpixi.pixi.physics.*;
-import org.openpixi.pixi.physics.collision.Algorithms.CollisionAlgorithm;
+import org.openpixi.pixi.physics.collision.algorithms.CollisionAlgorithm;
 import org.openpixi.pixi.physics.collision.detectors.Detector;
 import org.openpixi.pixi.physics.collision.detectors.SweepAndPrune;
 import org.openpixi.pixi.physics.collision.util.Pair;
@@ -26,9 +26,9 @@ public class ElasticCollisionSweepPrune extends Collision{
 	//Particle2D [][] col = new Particle2D [100][2];
 	SweepAndPrune sweep;
 	
-	public ElasticCollisionSweepPrune(Detector det, CollisionAlgorithm alg) {
+	public ElasticCollisionSweepPrune() {
 		
-		super(det, alg);
+		super();
 	}
 	
 	

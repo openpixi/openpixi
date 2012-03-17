@@ -8,7 +8,7 @@
 package org.openpixi.pixi.physics.collision;
 
 import org.openpixi.pixi.physics.*;
-import org.openpixi.pixi.physics.collision.Algorithms.CollisionAlgorithm;
+import org.openpixi.pixi.physics.collision.algorithms.CollisionAlgorithm;
 import org.openpixi.pixi.physics.collision.detectors.Detector;
 import org.openpixi.pixi.physics.force.Force;
 import org.openpixi.pixi.physics.solver.*;
@@ -18,8 +18,8 @@ import java.util.ArrayList;
 
 public class ElasticCollision extends Collision{
 	
-	public ElasticCollision(Detector det, CollisionAlgorithm alg) {
-		super(det, alg);
+	public ElasticCollision() {
+		super();
 	}
 	
 	/*public void doCollision(Particle2D p1, Particle2D p2)
