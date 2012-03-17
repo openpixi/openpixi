@@ -44,6 +44,10 @@ public class AllListParticles extends Detector{
 		}
 	}
 	
+	public void reset() {
+		particlelist = new ArrayList<Particle2D>();
+	}
+	
 	public ArrayList<Pair<Particle2D, Particle2D>> getOverlappedPairs() {
 		
 		return overlappedPairs;
