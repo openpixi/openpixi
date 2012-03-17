@@ -64,7 +64,7 @@ public class Simulation {
 		psolver = new Boris();
 		fsolver = new SimpleSolver();
 		currentGrid = new CurrentGrid(this);
-		detector = new SweepAndPrune();
+		detector = new Detector();
 		algorithm = new TransformationMatrix();
 		collision = new Collision(detector, algorithm);
 		
