@@ -161,7 +161,7 @@ public class SweepAndPrune extends Detector{
 		//sorting the axes lists
 		sortList(axisX);
 		sortList(axisY);
-		//System.out.println("Axes sorted");
+		System.out.println("Axes sorted");
 		
 		int countOverlaps = 0;
 		//one needs to look at the counters (similar like with the remove method)
