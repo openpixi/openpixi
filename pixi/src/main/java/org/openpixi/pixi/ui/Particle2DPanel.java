@@ -284,6 +284,8 @@ public class Particle2DPanel extends JPanel {
 	public void algorithmCollisionChange(int i) {
 		switch(i) {
 		case 0:
+			s.collision.alg = new SimpleCollision();
+		case 1:
 			s.collision.alg = new TransformationMatrix();
 			break;
 		}
