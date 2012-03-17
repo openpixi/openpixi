@@ -85,7 +85,7 @@ public class InitialConditions {
 
 	public static void createRandomParticles(Simulation s, int count, double radius) {
 		s.particles.clear();
-		//s.detector.reset();
+		//s.collision.det.reset();
 		for (int k = 0; k < count; k++) {
 			Particle2D par = new Particle2D();
 			par.x = s.width * Math.random();
@@ -101,7 +101,7 @@ public class InitialConditions {
 			}
 			s.particles.add(par);
 		}
-		//s.detector.add(s.particles);
+		//s.collision.det.add(s.particles);
 	}
 
 	public static void setHardWallBoundary(Simulation s) {

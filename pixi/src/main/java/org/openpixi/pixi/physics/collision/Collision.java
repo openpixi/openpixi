@@ -46,6 +46,7 @@ public class Collision {
 	{
 		det.reset();
 		det.add(parlist);
+		//det.addEveryStep(parlist);
 		det.run();
 		//System.out.println("Particles added");
 		alg.collide(det.getOverlappedPairs(), f, s, step);
