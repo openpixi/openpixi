@@ -24,5 +24,8 @@ public class Detector {
 	public ArrayList<Pair<Particle2D, Particle2D>> getOverlappedPairs() {
 		return overlappedPairs;
 	}
+	public void reset() {
+		
+	}
 
 }
