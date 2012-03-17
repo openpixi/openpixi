@@ -26,9 +26,9 @@ public class ElasticCollisionSweepPrune extends Collision{
 	//Particle2D [][] col = new Particle2D [100][2];
 	SweepAndPrune sweep;
 	
-	public ElasticCollisionSweepPrune(Detector det, CollisionAlgorithm alg) {
+	public ElasticCollisionSweepPrune() {
 		
-		super(det, alg);
+		super();
 	}
 	
 	
