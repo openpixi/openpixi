@@ -26,6 +26,8 @@ import javax.swing.event.*;
 
 import org.openpixi.pixi.physics.Simulation;
 import org.openpixi.pixi.physics.boundary.*;
+import org.openpixi.pixi.physics.collision.detectors.*;
+import org.openpixi.pixi.physics.collision.algorithms.*;
 
 /**
  * Displays the animation of particles.
@@ -62,6 +64,9 @@ public class MainControlApplet extends JApplet {
 	private JComboBox initComboBox;
 	private JComboBox algorithmComboBox;
 	private JCheckBox traceCheck;
+	private JComboBox collisionComboBox;
+	private JComboBox collisionDetector;
+	private JComboBox collisionAlgorithm;
 	
 	private JRadioButton hardBoundaries;
 	private JRadioButton periodicBoundaries;
@@ -98,6 +103,20 @@ public class MainControlApplet extends JApplet {
 			"Boris Damped",
 			"Semi Implicit Euler",
 			"Euler"};
+	
+	String[] collisionsString = {
+			"No collisions",
+			"Elastic collisions"
+	};
+	
+	String[] collisiondetectorString = {
+			"All particles",
+			"Sweep & Prune"
+	};
+	
+	String[] collisionalgorithmString = {
+			"With matrices"
+	};
 
 	/**
 	 * Listener for slider.
@@ -132,6 +151,30 @@ public class MainControlApplet extends JApplet {
 			//particlePanel.algorithm_change = id;
 		}
 	}
+	class Collisions implements ActionListener {
+		public void actionPerformed(ActionEvent eve) {
+			JComboBox cbox = (JComboBox) eve.getSource();
+			int i = cbox.getSelectedIndex();
+			particlePanel.collisionChange(i);
+		}
+	}
+	
+	class CollisionDetector implements ActionListener {
+		public void actionPerformed(ActionEvent eve) {
+			JComboBox cbox = (JComboBox) eve.getSource();
+			int i = cbox.getSelectedIndex();
+			particlePanel.detectorChange(i);
+		}
+	}
+	
+	class CollisionAlgorithm implements ActionListener {
+		public void actionPerformed(ActionEvent eve) {
+			JComboBox cbox = (JComboBox) eve.getSource();
+			int i = cbox.getSelectedIndex();
+			particlePanel.algorithmCollisionChange(i);
+		}
+	}
+
 
 	/**
 	 * Listener for start button.
@@ -451,6 +494,33 @@ public class MainControlApplet extends JApplet {
 		algorithmBox.add(algorithmLabel);
 		algorithmBox.add(algorithmComboBox);
 		
+		collisionComboBox = new JComboBox(collisionsString);
+		collisionComboBox.setSelectedIndex(0);
+		collisionComboBox.addActionListener(new Collisions());
+		//collisionComboBox.setPreferredSize(new Dimension(collisionComboBox.getPreferredSize().width, 5));
+		JLabel collisionsLabel = new JLabel("Collisions");
+		
+		collisionDetector = new JComboBox(collisiondetectorString);
+		collisionDetector.setSelectedIndex(0);
+		collisionDetector.addActionListener(new CollisionDetector());
+		JLabel colDetectorLabel = new JLabel("Detection method");
+		
+		collisionAlgorithm = new JComboBox(collisionalgorithmString);
+		collisionAlgorithm.setSelectedIndex(0);
+		collisionAlgorithm.addActionListener(new CollisionAlgorithm());
+		JLabel colAlgorithmLabel = new JLabel("Algorithm for the collisions");
+		
+		Box collisionBox = Box.createVerticalBox();
+		collisionBox.add(collisionsLabel);
+		collisionBox.add(collisionComboBox);
+		collisionBox.add(Box.createHorizontalGlue());
+		collisionBox.add(colDetectorLabel);
+		collisionBox.add(collisionDetector);
+		collisionBox.add(Box.createHorizontalGlue());
+		collisionBox.add(colAlgorithmLabel);
+		collisionBox.add(collisionAlgorithm);
+		collisionBox.add(Box.createHorizontalGlue());
+		
 		startButton.addActionListener(new StartListener());
 		stopButton.addActionListener(new StopListener());
 		resetButton.addActionListener(new ResetListener());
@@ -588,10 +658,11 @@ public class MainControlApplet extends JApplet {
 		
 		fieldsBox.setPreferredSize(new Dimension(250, 100));
 		settingControls.setPreferredSize(new Dimension (250, 100));
+		collisionBox.setPreferredSize(new Dimension (250, 100));
 		
 		tabs.addTab("Fields", fieldsBox);
 		tabs.addTab("Settings", settingControls);
-		//tabs.addTab("Boundaries", boundaries);
+		tabs.addTab("Collisions", collisionBox);
 		
 		this.setLayout(new BorderLayout());
 		this.add(panelBox, BorderLayout.SOUTH);
@@ -642,6 +713,12 @@ public class MainControlApplet extends JApplet {
 			hardBoundaries.setSelected(false);
 			periodicBoundaries.setSelected(true);
 		}
+		//particlePanel.s.collision.alg = new CollisionAlgorithm();
+		particlePanel.s.collision.det = new Detector();
+		collisionComboBox.setSelectedIndex(0);
+		collisionDetector.setSelectedIndex(0);
+		collisionDetector.setSelectedIndex(0);
+		
 	}
 	
 	@Override

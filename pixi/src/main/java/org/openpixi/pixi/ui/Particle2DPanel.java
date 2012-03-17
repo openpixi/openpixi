@@ -19,7 +19,7 @@
 package org.openpixi.pixi.ui;
 
 import org.openpixi.pixi.physics.*;
-import org.openpixi.pixi.physics.collision.Algorithms.*;
+import org.openpixi.pixi.physics.collision.algorithms.*;
 import org.openpixi.pixi.physics.collision.detectors.*;
 import org.openpixi.pixi.physics.solver.*;
 import org.openpixi.pixi.ui.util.*;
@@ -253,21 +253,23 @@ public class Particle2DPanel extends JPanel {
 	public void collisionChange(int i) {
 		switch(i) {
 		case 0:
-			s.detector = new Detector();
-			s.algorithm = new CollisionAlgorithm();
+			s.collision.det = new Detector();
+			s.collision.alg = new CollisionAlgorithm();
 			break;
 		case 1:
-			s.detector = new AllListParticles();
+			s.collision.det = new AllListParticles();
+			s.collision.alg = new TransformationMatrix();
+			break;
 		}
 	}
 	
 	public void detectorChange(int i) {
 		switch(i) {
 		case 0:
-			s.detector = new AllListParticles();
+			s.collision.det = new AllListParticles();
 			break;
 		case 1:
-			s.detector = new SweepAndPrune();
+			s.collision.det = new SweepAndPrune();
 			break;
 		}
 	}
@@ -275,7 +277,7 @@ public class Particle2DPanel extends JPanel {
 	public void algorithmCollisionChange(int i) {
 		switch(i) {
 		case 0:
-			s.algorithm = new TransformationMatrix();
+			s.collision.alg = new TransformationMatrix();
 			break;
 		}
 	}
