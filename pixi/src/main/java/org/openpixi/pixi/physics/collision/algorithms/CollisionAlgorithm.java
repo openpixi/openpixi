@@ -1,4 +1,4 @@
-package org.openpixi.pixi.physics.collision.Algorithms;
+package org.openpixi.pixi.physics.collision.algorithms;
 
 import java.util.ArrayList;
 

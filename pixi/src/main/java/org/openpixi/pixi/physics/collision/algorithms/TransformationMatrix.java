@@ -1,4 +1,4 @@
-package org.openpixi.pixi.physics.collision.Algorithms;
+package org.openpixi.pixi.physics.collision.algorithms;
 
 import java.util.ArrayList;
 
@@ -92,7 +92,7 @@ public class TransformationMatrix extends CollisionAlgorithm{
 				s.complete(p1, f, step);
 				s.complete(p2, f, step);
 				doCollision(p1, p2);
-				System.out.println("Collision! -> " + distance);
+				//System.out.println("Collision! -> " + distance);
 				s.prepare(p1, f, step);
 				s.prepare(p2, f, step);
 			}
