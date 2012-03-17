@@ -19,7 +19,8 @@
 package org.openpixi.pixi.physics.collision;
 
 import org.openpixi.pixi.physics.*;
-import org.openpixi.pixi.physics.collision.Algorithms.CollisionAlgorithm;
+import org.openpixi.pixi.physics.collision.Algorithms.*;
+
 import org.openpixi.pixi.physics.collision.detectors.*;
 import org.openpixi.pixi.physics.collision.util.Pair;
 import org.openpixi.pixi.physics.force.Force;
@@ -36,16 +37,18 @@ public class Collision {
 	//private ArrayList<Pair<Particle2D, Particle2D>> pairs;
 	
 	public Collision(Detector det, CollisionAlgorithm alg) {
-		
 		this.det = det;
 		this.alg = alg;
+		
 	}
 	
 	public void check(ArrayList<Particle2D> parlist, Force f, Solver s, double step)
 	{
-		det.add(parlist);
-		det.run();
-		alg.collide(det.getOverlappedPairs(), f, s, step);
+		det.reset();
+		this.det.add(parlist);
+		this.det.run();
+		//System.out.println("Particles added");
+		this.alg.collide(det.getOverlappedPairs(), f, s, step);
 	}
 
 }
