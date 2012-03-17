@@ -16,7 +16,7 @@ public class AllListParticles extends Detector{
 		super();
 	}
 	
-	public void add(ArrayList<Particle2D> parlist) {
+	public void addEveryStep(ArrayList<Particle2D> parlist) {
 		
 		for(int i = 0; i < parlist.size(); i++) {
 			Particle2D par = (Particle2D) parlist.get(i);

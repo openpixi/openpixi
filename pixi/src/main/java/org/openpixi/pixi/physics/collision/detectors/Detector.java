@@ -17,6 +17,10 @@ public class Detector {
 		
 	}
 	
+	public void addEveryStep(ArrayList<Particle2D> parlist) {
+		
+	}
+	
 	public void run() {
 		
 	}

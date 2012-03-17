@@ -85,7 +85,7 @@ public class SweepAndPrune extends Detector{
 				OverlapCounter counter = entry.getValue();
 				Pair<BoundingBox, BoundingBox> pairbox = entry.getKey();
 				if(pairbox.getFirst() == box || pairbox.getSecond() == box) {
-					if(counter.overlapping) {
+					if(counter.overlappedBoolean) {
 						overlaps.remove(pairbox);
 					}
 					
@@ -114,19 +114,19 @@ public class SweepAndPrune extends Detector{
 		
 		for(int i = 1; i < list.size(); i++) {
 			
-			final SweepParticle sweepPar = list.get(i);
+			SweepParticle sweepPar = list.get(i);
 			double sweepParValue = sweepPar.updateGetValue();
 			
 			int j = i - 1;
 			
 			while(j >= 0 && (list.get(j).updateGetValue() > sweepParValue)) {
 				
-				final SweepParticle swapPar = list.get(j);
+				SweepParticle swapPar = list.get(j);
 				
 				if(sweepPar.begin && !swapPar.begin) {
 					
 					//creating a pair of the possibly overlapping particles
-					final Pair<BoundingBox, BoundingBox> pairbox = new Pair<BoundingBox, BoundingBox>(sweepPar.bb, swapPar.bb);
+					Pair<BoundingBox, BoundingBox> pairbox = new Pair<BoundingBox, BoundingBox>(sweepPar.bb, swapPar.bb);
 					
 					//setting them into a list
 					if(overlapCounter.containsKey(pairbox)) {
@@ -140,7 +140,7 @@ public class SweepAndPrune extends Detector{
 				}
 				
 				if(!sweepPar.begin && swapPar.begin) {
-					final Pair<BoundingBox, BoundingBox> pairbox = new Pair<BoundingBox, BoundingBox>(sweepPar.bb, swapPar.bb);
+					Pair<BoundingBox, BoundingBox> pairbox = new Pair<BoundingBox, BoundingBox>(sweepPar.bb, swapPar.bb);
 					
 					if(overlapCounter.containsKey(pairbox)) {
 						overlapCounter.get(pairbox).overlaps--;
@@ -176,23 +176,23 @@ public class SweepAndPrune extends Detector{
 				countOverlaps++;
 			}
 			
-			if(counter.overlapping) {
+			if(counter.overlappedBoolean) {
 				if(counter.overlaps < 2) {
 					overlaps.remove(pairbox);
-					counter.overlapping = false;
+					counter.overlappedBoolean = false;
 				}
 			}
 			else {
 				if(counter.overlaps > 1) {
 					overlaps.add(pairbox);
-					counter.overlapping = true;
+					counter.overlappedBoolean = true;
 				}
 			}
 			if(counter.overlaps < 1) {
 				iterator.remove();
 			}
 		}
-		//System.out.println(overlaps.size());
+		System.out.println(boxlist.size());
 	}
 	
 	public ArrayList<Pair<Particle2D, Particle2D>> getOverlappedPairs() {
