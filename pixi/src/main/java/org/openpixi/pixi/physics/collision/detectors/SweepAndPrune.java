@@ -34,13 +34,6 @@ public class SweepAndPrune extends Detector{
 	public SweepAndPrune() {
 		
 		super();
-		
-		/*for(int i = 0; i < parlist.size(); i++) {
-			Particle2D par = (Particle2D) parlist.get(i);
-			BoundingBox box = new BoundingBox(par);
-			//boxlist.add(box);
-			add(box);
-		}*/
 	}
 	
 	//method to add a box to the axes
@@ -102,24 +95,38 @@ public class SweepAndPrune extends Detector{
 		}
 	}
 	
+	public void reset() {
+		boxlist = new ArrayList<BoundingBox>();
+		
+		axisX = new ArrayList<SweepParticle>();
+		axisY = new ArrayList<SweepParticle>();
+		
+		overlaps = new ArrayList<Pair<BoundingBox, BoundingBox>>();
+		
+		overlappedPairs = new ArrayList<Pair<Particle2D, Particle2D>>();
+		
+		overlapCounter = new HashMap<Pair<BoundingBox, BoundingBox>, OverlapCounter>();
+		
+	}
+	
 	//adding a method for sorting the lists
 	private void sortList(ArrayList<SweepParticle> list) {
 		
 		for(int i = 1; i < list.size(); i++) {
 			
-			SweepParticle sweepPar = list.get(i);
+			final SweepParticle sweepPar = list.get(i);
 			double sweepParValue = sweepPar.updateGetValue();
 			
 			int j = i - 1;
 			
 			while(j >= 0 && (list.get(j).updateGetValue() > sweepParValue)) {
 				
-				SweepParticle swapPar = list.get(j);
+				final SweepParticle swapPar = list.get(j);
 				
 				if(sweepPar.begin && !swapPar.begin) {
 					
 					//creating a pair of the possibly overlapping particles
-					Pair<BoundingBox, BoundingBox> pairbox = new Pair<BoundingBox, BoundingBox>(sweepPar.bb, swapPar.bb);
+					final Pair<BoundingBox, BoundingBox> pairbox = new Pair<BoundingBox, BoundingBox>(sweepPar.bb, swapPar.bb);
 					
 					//setting them into a list
 					if(overlapCounter.containsKey(pairbox)) {
@@ -133,7 +140,7 @@ public class SweepAndPrune extends Detector{
 				}
 				
 				if(!sweepPar.begin && swapPar.begin) {
-					Pair<BoundingBox, BoundingBox> pairbox = new Pair<BoundingBox, BoundingBox>(sweepPar.bb, swapPar.bb);
+					final Pair<BoundingBox, BoundingBox> pairbox = new Pair<BoundingBox, BoundingBox>(sweepPar.bb, swapPar.bb);
 					
 					if(overlapCounter.containsKey(pairbox)) {
 						overlapCounter.get(pairbox).overlaps--;
@@ -141,7 +148,7 @@ public class SweepAndPrune extends Detector{
 				}
 				
 				list.set(j + 1, swapPar);
-				j = j -1;
+				j = j - 1;
 			}
 			
 			list.set(j + 1, sweepPar);
@@ -180,6 +187,9 @@ public class SweepAndPrune extends Detector{
 					overlaps.add(pairbox);
 					counter.overlapping = true;
 				}
+			}
+			if(counter.overlaps < 1) {
+				iterator.remove();
 			}
 		}
 		//System.out.println(overlaps.size());
