@@ -70,7 +70,7 @@ public class SweepAndPrune extends Detector{
 			SweepParticle spar = iterator.next();
 			if(spar.bb == box) {
 				iterator.remove();
-				System.out.println("Sweep particle removed");
+				//System.out.println("Sweep particle removed");
 			}
 		}
 	}
@@ -83,7 +83,7 @@ public class SweepAndPrune extends Detector{
 			//removing the sweep particles from the lists of the axes
 			removeSweepParticle(axisX, box);
 			removeSweepParticle(axisY, box);
-			System.out.println("Particle removed");
+			//System.out.println("Particle removed");
 			
 			//one needs to clean the counters too
 			Iterator<Entry<Pair<BoundingBox, BoundingBox>, OverlapCounter>> iterator = overlapCounter.entrySet().iterator();
