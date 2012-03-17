@@ -8,7 +8,7 @@ import org.openpixi.pixi.physics.collision.util.Pair;
 import org.openpixi.pixi.physics.force.Force;
 import org.openpixi.pixi.physics.solver.Solver;
 
-public abstract class CollisionAlgorithm {
+public class CollisionAlgorithm {
 	
 	public CollisionAlgorithm() {
 		
