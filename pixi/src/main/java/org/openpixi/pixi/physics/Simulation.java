@@ -46,9 +46,9 @@ public class Simulation {
 	public Solver psolver;
 	public FieldSolver fsolver;
 	public CurrentGrid currentGrid;
-	private Collision collision;
-	private Detector detector;
-	private CollisionAlgorithm algorithm;
+	public Collision collision;
+	public Detector detector;
+	public CollisionAlgorithm algorithm;
 
 	public Simulation () {
 	
@@ -67,7 +67,14 @@ public class Simulation {
 		detector = new SweepAndPrune();
 		algorithm = new TransformationMatrix();
 		collision = new Collision(detector, algorithm);
-		//collision = new ElasticCollisionSweepPrune(detector, algorithm);
+		
+		//collision = new ElasticCollisionSweepPrune();
+	}
+	
+	public void addParticleList(ArrayList<Particle2D> plist)
+	{
+		particles = plist;
+		detector.add(particles);
 	}
 	
 	public void setSize(double width, double height) {
@@ -79,7 +86,7 @@ public class Simulation {
 
 	public void step() {
 		ParticleMover.particlePush(this);
-		//collision.check(particles, f, psolver, tstep);
+		collision.check(particles, f, psolver, tstep);
 		currentGrid.updateGrid(particles);
 	}
 
