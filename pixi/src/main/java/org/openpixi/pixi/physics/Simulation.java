@@ -22,7 +22,7 @@ package org.openpixi.pixi.physics;
 import java.util.ArrayList;
 import org.openpixi.pixi.physics.boundary.*;
 import org.openpixi.pixi.physics.collision.*;
-import org.openpixi.pixi.physics.collision.Algorithms.*;
+import org.openpixi.pixi.physics.collision.algorithms.*;
 import org.openpixi.pixi.physics.collision.detectors.*;
 import org.openpixi.pixi.physics.fields.FieldSolver;
 import org.openpixi.pixi.physics.fields.SimpleSolver;
@@ -47,8 +47,8 @@ public class Simulation {
 	public FieldSolver fsolver;
 	public CurrentGrid currentGrid;
 	public Collision collision;
-	public Detector detector;
-	public CollisionAlgorithm algorithm;
+	//public Detector detector;
+	//public CollisionAlgorithm algorithm;
 
 	public Simulation () {
 	
@@ -64,17 +64,11 @@ public class Simulation {
 		psolver = new Boris();
 		fsolver = new SimpleSolver();
 		currentGrid = new CurrentGrid(this);
-		detector = new Detector();
-		algorithm = new TransformationMatrix();
-		collision = new Collision(detector, algorithm);
+		//detector = new Detector();
+		//algorithm = new CollisionAlgorithm();
+		collision = new Collision();
 		
 		//collision = new ElasticCollisionSweepPrune();
-	}
-	
-	public void addParticleList(ArrayList<Particle2D> plist)
-	{
-		particles = plist;
-		detector.add(particles);
 	}
 	
 	public void setSize(double width, double height) {
