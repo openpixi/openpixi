@@ -258,8 +258,8 @@ public class Particle2DPanel extends JPanel {
 			break;
 		case 1:
 			s.collision.det = new AllListParticles();
-			//s.collision.det.reset();
-			//s.collision.det.add(s.particles);
+			s.collision.det.reset();
+			s.collision.det.add(s.particles);
 			s.collision.alg = new TransformationMatrix();
 			break;
 		}
@@ -275,8 +275,8 @@ public class Particle2DPanel extends JPanel {
 			break;
 		case 1:
 			s.collision.det = new SweepAndPrune();
-			//s.collision.det.reset();
-			//s.collision.det.add(s.particles);
+			s.collision.det.reset();
+			s.collision.det.add(s.particles);
 			break;
 		}
 	}
