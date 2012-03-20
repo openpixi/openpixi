@@ -1,3 +1,6 @@
+LICENSE
+=======
+
 OpenPixi - Open Particle-in-Cell (PIC) simulator.
 Copyright (C) 2012  OpenPixi.org
 
@@ -15,7 +18,9 @@ You should have received a copy of the GNU General Public License along
 with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
----------------------
+
+INTRODUCTION
+============
 
 OpenPixi is an open Particle-In-Cell (PIC) simulator. 
 
@@ -23,6 +28,31 @@ Please try out the live version at
 
   http://www.openpixi.org
 
+
+BUILD INSTRUCTIONS
+==================
+
+OpenPixi uses Maven for building ( http://maven.apache.org/ ).
+
+To build Pixi:
+    cd pixi
+    mvn package
+
+To launch Pixi:
+    java -jar target/pixi-x.x-SNAPSHOT.jar
+
+
+DEVELOP IN ECLIPSE
+==================
+
+To launch Pixi in Eclipse ( http://www.eclipse.org/ ) do the following:
+
+1) Menu > File > Import > Select root directory ..../pixi
+2) Menu > Run > Run.
+
+
+VERSION HISTORY
+===============
 
 ---
 Version 0.3 - ?
@@ -45,3 +75,4 @@ Version 0.1 - March 5, 2012
 * Quick settings with particles of two different charges.
 * Set frame rate and time step.
 * Show frame rate and memory information.
+

@@ -1,6 +1,9 @@
 OpenPixi - Open Particle-in-Cell (PIC) simulator.
 Copyright (C) 2012  OpenPixi.org
 
+INTRODUCTION
+============
+
 OpenPixi is an open Particle-In-Cell (PIC) simulator. It simulates the
 motion of a large number of charged particles in an electro-magnetic
 background. Currently the simulation supports tracking thousands of
@@ -13,9 +16,15 @@ applet. Please try out the live version at
 
   http://www.openpixi.org
 
----------------------
+
+INSTRUCTIONS
+============
+
+Please refer to pixi/README.txt
+
 
 LICENSE
+=======
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
