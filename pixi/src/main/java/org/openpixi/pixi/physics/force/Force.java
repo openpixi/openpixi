@@ -27,12 +27,12 @@ public class Force {
 	public Force() {
 	}
 
-	// getting the force in the x - direction
+	/** Total force in the x-direction */
 	public double getForceX(Particle2D p) {
 		return getPositionComponentofForceX(p) + getNormalVelocityComponentofForceX(p) + getTangentVelocityComponentOfForceX(p);
 	}
 
-	// getting the force in the y - direction
+	/** Total force in the y-direction */
 	public double getForceY(Particle2D p) {
 		return getPositionComponentofForceY(p) + getNormalVelocityComponentofForceY(p) + getTangentVelocityComponentOfForceY(p);
 	}
