@@ -12,6 +12,20 @@ public class Pair<A, B> {
 
 	@Override
 	public int hashCode() {
+		
+		return first.hashCode() * second.hashCode();
+	}
+	
+	@Override
+	public boolean equals(Object obj) {
+		 if (this == obj) return true;
+		    if (obj == null ) return false;
+		    return this.hashCode() == obj.hashCode();
+	}
+	
+	/*
+	@Override
+	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
 		result = prime * result + ((first == null) ? 0 : first.hashCode());
@@ -40,7 +54,7 @@ public class Pair<A, B> {
 			return false;
 		return true;
 	}
-	
+	*/
 	/*
 	 * @Override public int hashCode() {
 		int hashFirst = first != null ? first.hashCode() : 0;
