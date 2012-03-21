@@ -111,4 +111,12 @@ public class CombinedForce extends Force {
 		return sum;
 	}
 
+	@Override
+	public double getLinearDragCoefficient(Particle2D p) {
+		double sum = 0;
+		for (Force f : forces) {
+			sum += f.getLinearDragCoefficient(p);
+		}
+		return sum;
+	}
 }
