@@ -10,24 +10,28 @@ public class Pair<A, B> {
 		this.second = second;
 	}
 
-	public int hashCode() {
+	@Override public int hashCode() {
 		int hashFirst = first != null ? first.hashCode() : 0;
 		int hashSecond = second != null ? second.hashCode() : 0;
 		
 		return (hashFirst + hashSecond) * hashFirst + hashSecond;
 	}
 	
-	public boolean equals (Object another) {
+	@Override public boolean equals (Object another) {
 		if(another != null && this.getClass() == another.getClass()) {
 			Pair anotherPair = (Pair) another;
-			return
+			/*return
 					((this.first == anotherPair.first || (this.first != null && anotherPair.first != null && 
 					this.first.equals(anotherPair.first))) &&
 					(this.second == anotherPair.second || (this.second != null && anotherPair.second != null &&
 					this.second.equals(anotherPair.second))));
-		}
-		
+					*/
+			return
+					this.first == anotherPair.first && this.second == anotherPair.second;
+					//this.hashCode() == anotherPair.hashCode();
+		} else {		
 		return false;
+		}
 	}
 	
 	public int compareTo(Pair<A, B> another) {
