@@ -20,7 +20,6 @@ package org.openpixi.pixi.physics;
 
 import java.util.ArrayList;
 
-import org.openpixi.pixi.physics.fields.FieldSolver;
 import org.openpixi.pixi.physics.fields.*;
 
 
@@ -118,6 +117,29 @@ public class CurrentGrid {
 		}
 		
 		s.fsolver.step(this);		
+	}
+	
+	public int checkCellX(Particle2D p) {
+			int xCellPosition = (int) (p.x / cellWidth) + 1;
+			if(xCellPosition >= numCellsX+1) {
+				xCellPosition = numCellsX+1;
+			} else if(xCellPosition < 0) {
+					xCellPosition = 0;
+			}
+			
+			return xCellPosition;
+	}
+	
+	public int checkCellY(Particle2D p) {
+			int yCellPosition = (int) (p.y / cellHeight) + 1;
+			if(yCellPosition >= numCellsY+1) {
+				yCellPosition = numCellsY+1;
+			} else if(yCellPosition < 0) {
+				yCellPosition = 0;
+			}
+			
+			return yCellPosition;
+			
 	}
 
 	private void reset() {

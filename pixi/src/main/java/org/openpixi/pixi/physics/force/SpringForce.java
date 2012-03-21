@@ -1,12 +1,13 @@
 package org.openpixi.pixi.physics.force;
 
 import org.openpixi.pixi.physics.Particle2D;
+import org.openpixi.pixi.physics.Simulation;
 
 public class SpringForce extends Force{
 	
-	public SpringForce()
+	public SpringForce(Simulation s)
 	{
-		super();
+		super(s);
 	}
 	
 	//getting the force in the x - direction
