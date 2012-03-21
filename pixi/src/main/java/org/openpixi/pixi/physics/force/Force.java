@@ -29,12 +29,12 @@ public class Force {
 
 	// getting the force in the x - direction
 	public double getForceX(Particle2D p) {
-		return 0;
+		return getPositionComponentofForceX(p) + getNormalVelocityComponentofForceX(p) + getTangentVelocityComponentOfForceX(p);
 	}
 
 	// getting the force in the y - direction
 	public double getForceY(Particle2D p) {
-		return 0;
+		return getPositionComponentofForceY(p) + getNormalVelocityComponentofForceY(p) + getTangentVelocityComponentOfForceY(p);
 	}
 
 	public double getPositionComponentofForceX(Particle2D p) {
@@ -46,19 +46,19 @@ public class Force {
 	}
 
 	public double getTangentVelocityComponentOfForceX(Particle2D p) {
-		return 0;
+		return -getLinearDragCoefficient(p) * p.vx;
 	}
 
 	public double getTangentVelocityComponentOfForceY(Particle2D p) {
-		return 0;
+		return -getLinearDragCoefficient(p) * p.vy;
 	}
 
 	public double getNormalVelocityComponentofForceX(Particle2D p) {
-		return 0;
+		return p.charge * p.vy * getBz(p);
 	}
 
 	public double getNormalVelocityComponentofForceY(Particle2D p) {
-		return 0;
+		return - p.charge * p.vx * getBz(p);
 	}
 
 	public double getBz(Particle2D p) {
