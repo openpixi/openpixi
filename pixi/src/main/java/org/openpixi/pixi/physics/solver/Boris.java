@@ -54,7 +54,7 @@ public class Boris extends Solver{
 		double vyplus;
 		double vyprime;
 		
-		double t_z = p.charge * f.getB(p) * step / (2.0 * p.mass);   //t vector
+		double t_z = p.charge * f.getBz(p) * step / (2.0 * p.mass);   //t vector
 		
 		double s_z = 2 * t_z / (1 + t_z * t_z);               //s vector
 		
@@ -64,8 +64,8 @@ public class Boris extends Solver{
 		vxplus = vxminus + vyprime * s_z;
 		vyplus = vyminus - vxprime * s_z;
 		
-		p.vx = vxplus + f.getPositionComponentofForceX(p) * step / (2.0 * p.mass) + f.getTangentVelocityComponentOfForceX(p) / p.mass;
-		p.vy = vyplus + f.getPositionComponentofForceY(p) * step / (2.0 * p.mass) + f.getTangentVelocityComponentOfForceY(p) / p.mass;
+		p.vx = vxplus + f.getPositionComponentofForceX(p) * step / (2.0 * p.mass) + f.getTangentVelocityComponentOfForceX(p) * step / p.mass;
+		p.vy = vyplus + f.getPositionComponentofForceY(p) * step / (2.0 * p.mass) + f.getTangentVelocityComponentOfForceY(p) * step / p.mass;
 		
 		p.x += p.vx * step;
 		p.y += p.vy * step;
