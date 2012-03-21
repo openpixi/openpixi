@@ -2,6 +2,7 @@ package org.openpixi.pixi.physics.collision.detectors;
 
 import org.openpixi.pixi.physics.*;
 import org.openpixi.pixi.physics.collision.util.*;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -127,7 +128,7 @@ public class SweepAndPrune extends Detector{
 				if(sweepPar.begin && !swapPar.begin) {
 					
 					//creating a pair of the possibly overlapping particles
-					
+					//Pair<BoundingBox, BoundingBox> pairbox = new Pair<BoundingBox, BoundingBox>(sweepPar.bb, swapPar.bb);
 					
 					//setting them into a list
 					if(overlapCounter.containsKey(pairbox)) {
@@ -141,7 +142,7 @@ public class SweepAndPrune extends Detector{
 				}
 				
 				if(!sweepPar.begin && swapPar.begin) {
-					
+					//Pair<BoundingBox, BoundingBox> pairbox = new Pair<BoundingBox, BoundingBox>(sweepPar.bb, swapPar.bb);
 					if(overlapCounter.containsKey(pairbox)) {
 						overlapCounter.get(pairbox).overlaps--;
 					}
@@ -175,7 +176,7 @@ public class SweepAndPrune extends Detector{
 			/*if(counter.overlaps == 2) {
 				//countOverlaps++;
 			}*/
-			
+			System.out.println(counter.overlaps);
 			if(counter.overlappedBoolean) {
 				if(counter.overlaps < 2) {
 					overlaps.remove(pairbox);
@@ -197,6 +198,7 @@ public class SweepAndPrune extends Detector{
 			}
 		}
 		System.out.println(boxlist.size());
+		
 		//System.out.println(boxlist.get(1).particle.x);
 		System.out.println(overlaps.size());
 	}
