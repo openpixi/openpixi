@@ -200,6 +200,15 @@ public class Particle2DPanel extends JPanel {
 	
 	public void drawFields() {
 		drawFields =! drawFields;
+		if (drawFields) {
+			s.f.add(new SimpleGridForce(s));
+		} else {
+			// Remove all forces
+			s.f.clear();
+
+			// only add constant force
+			s.f.add(force);
+		}
 	}
 	
 	public void writePosition() {
