@@ -58,7 +58,7 @@ public class Simulation {
 
 		/**Contains all Particle2D objects*/
 		particles = new ArrayList<Particle2D>(0);
-		f= new Force();
+		f= new Force(this);
 		boundary = new HardWallBoundary();
 		
 		psolver = new Boris();

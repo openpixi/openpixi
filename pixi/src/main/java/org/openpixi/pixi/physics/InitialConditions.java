@@ -27,7 +27,7 @@ import org.openpixi.pixi.physics.force.SpringForce;
 public class InitialConditions {
 
 	public static void initRandomParticles(Simulation s, int count, int radius) {
-		s.f = new Force();
+		s.f = new Force(s);
 		s.f.reset();
 		s.f.gy = - 1; //-ConstantsSI.g;
 		//f.bz = 1;
@@ -37,7 +37,7 @@ public class InitialConditions {
 	}
 
 	public static void initGravity(Simulation s, int count) {
-		s.f = new Force();
+		s.f = new Force(s);
 		s.f.reset();
 		s.f.gy = -1; // -ConstantsSI.g;
 		
@@ -46,7 +46,7 @@ public class InitialConditions {
 	}
 
 	public static void initElectric(Simulation s, int count) {
-		s.f = new Force();
+		s.f = new Force(s);
 		s.f.reset();
 		s.f.ey = -1;
 		
@@ -55,7 +55,7 @@ public class InitialConditions {
 	}
 
 	public static void initMagnetic(Simulation s, int count) {
-		s.f = new Force();
+		s.f = new Force(s);
 		s.f.reset();
 		s.f.bz = .1;
 		
@@ -65,7 +65,7 @@ public class InitialConditions {
 
 	public static void initSpring(Simulation s, int count) {
 		s.particles.clear();
-		s.f = new SpringForce();
+		s.f = new SpringForce(s);
 		s.f.reset();
 		
 		for (int k = 0; k < count; k++) {
