@@ -157,6 +157,13 @@ public class MainControlApplet extends JApplet {
 			JComboBox cbox = (JComboBox) eve.getSource();
 			int i = cbox.getSelectedIndex();
 			particlePanel.collisionChange(i);
+			if(i == 0) {
+				collisionDetector.setEnabled(false);
+				collisionAlgorithm.setEnabled(false);
+			} else {
+				collisionDetector.setEnabled(true);
+				collisionAlgorithm.setEnabled(true);
+			}
 		}
 	}
 	
