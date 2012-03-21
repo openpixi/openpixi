@@ -172,15 +172,18 @@ public class SweepAndPrune extends Detector{
 			OverlapCounter counter = entry.getValue();
 			Pair<BoundingBox, BoundingBox> pairbox = entry.getKey();
 			
-			if(counter.overlaps == 2) {
+			/*if(counter.overlaps == 2) {
 				//countOverlaps++;
-			}
+			}*/
 			
 			if(counter.overlappedBoolean) {
 				if(counter.overlaps < 2) {
 					overlaps.remove(pairbox);
 					counter.overlappedBoolean = false;
+
 				}
+				else if (counter.overlaps > 1)
+					counter.overlappedBoolean = false;
 			}
 			else {
 				if(counter.overlaps > 1) {
