@@ -82,7 +82,7 @@ public class InitialConditions {
 			par.vx = 10 * Math.random();
 			par.vy = 0;
 			par.mass = 1;
-			par.charge = 0;
+			par.charge = .1;
 			s.particles.add(par);
 		}
 	
