@@ -270,7 +270,7 @@ public class Particle2DPanel extends JPanel {
 			s.collision.alg = new CollisionAlgorithm();
 			break;
 		case 1:
-			s.collision.det = new AllListParticles();
+			s.collision.det = new AllParticles();
 			s.collision.det.reset();
 			s.collision.det.add(s.particles);
 			s.collision.alg = new TransformationMatrix();
@@ -282,7 +282,7 @@ public class Particle2DPanel extends JPanel {
 		switch(i) {
 		case 0:
 			
-			s.collision.det = new AllListParticles();
+			s.collision.det = new AllParticles();
 			//s.collision.det.reset();
 			//s.collision.det.add(s.particles);
 			break;

@@ -5,13 +5,13 @@ import org.openpixi.pixi.physics.*;
 import org.openpixi.pixi.physics.collision.util.BoundingBox;
 import org.openpixi.pixi.physics.collision.util.Pair;
 
-public class AllListParticles extends Detector{
+public class AllParticles extends Detector{
 	
 	//private ArrayList<Pair<Particle2D, Particle2D>> overlappedPairs = new ArrayList<Pair<Particle2D, Particle2D>>();
 	
 	private ArrayList<Particle2D> particlelist = new ArrayList<Particle2D>();
 	
-	public AllListParticles() {
+	public AllParticles() {
 	
 		super();
 	}
