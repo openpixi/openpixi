@@ -17,6 +17,7 @@ public class SweepParticle {
 	}
 	
 	public double updateGetValue() {
+		bb.update();
 		if(this.begin) {
 			if(this.axis == 0) {
 				return bb.xMin;

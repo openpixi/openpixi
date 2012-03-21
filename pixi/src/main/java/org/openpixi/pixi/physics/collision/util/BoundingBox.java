@@ -13,6 +13,10 @@ public class BoundingBox {
 	public BoundingBox(Particle2D particle) {
 		
 		this.particle = particle;
+		update();
+	}
+
+	public void update() {
 		this.xMin = particle.x - particle.radius;
 		this.xMax = particle.x + particle.radius;
 		this.yMin = particle.y - particle.radius;
