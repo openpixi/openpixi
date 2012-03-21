@@ -5,8 +5,7 @@ import junit.framework.TestCase;
 import junit.framework.TestSuite;
 
 import org.openpixi.pixi.physics.Particle2D;
-import org.openpixi.pixi.physics.Simulation;
-import org.openpixi.pixi.physics.force.Force;
+import org.openpixi.pixi.physics.force.ConstantForce;
 
 /**
  * Unit test for Solver.
@@ -48,7 +47,7 @@ public class SolverTest extends TestCase {
 	 */
 	public void testPrepareComplete() {
 		Particle2D p = new Particle2D();
-		Force f = new Force(new Simulation());
+		ConstantForce f = new ConstantForce();
 		double step = 1.0;
 
 		f.ex = 1.234;

@@ -21,6 +21,7 @@ package org.openpixi.pixi.ui;
 import org.openpixi.pixi.physics.*;
 import org.openpixi.pixi.physics.collision.algorithms.*;
 import org.openpixi.pixi.physics.collision.detectors.*;
+import org.openpixi.pixi.physics.force.*;
 import org.openpixi.pixi.physics.solver.*;
 import org.openpixi.pixi.ui.util.*;
 import java.awt.*;
@@ -37,6 +38,8 @@ import java.lang.Math;
 public class Particle2DPanel extends JPanel {
 	
 	public Simulation s;
+
+	public ConstantForce force;
 
 	public String fileName;
 	
@@ -103,6 +106,7 @@ public class Particle2DPanel extends JPanel {
 	public Particle2DPanel() {
 		timer = new Timer(interval, new TimerListener());
 		s = new Simulation();
+		force = new ConstantForce();
 		
 		// Set properties of the panel
 		this.setVisible(true);
@@ -112,7 +116,7 @@ public class Particle2DPanel extends JPanel {
 		s.psolver = new EulerRichardson();
 
 		// Create all particles
-		InitialConditions.initRandomParticles(s, 10, 8);
+		InitialConditions.initRandomParticles(s, force, 10, 8);
 		
 		frameratedetector = new FrameRateDetector(500);
 	}
@@ -136,28 +140,28 @@ public class Particle2DPanel extends JPanel {
 		reset_trace = true;
 		switch(id) {
 		case 0:
-			InitialConditions.initRandomParticles(s,10, 8);
+			InitialConditions.initRandomParticles(s, force, 10, 8);
 			break;
 		case 1:
-			InitialConditions.initRandomParticles(s, 100, 5);
+			InitialConditions.initRandomParticles(s, force, 100, 5);
 			break;
 		case 2:
-			InitialConditions.initRandomParticles(s,1000, 3);
+			InitialConditions.initRandomParticles(s,force, 1000, 3);
 			break;
 		case 3:
-			InitialConditions.initRandomParticles(s, 10000, 1);
+			InitialConditions.initRandomParticles(s, force, 10000, 1);
 			break;
 		case 4:
-			InitialConditions.initGravity(s, 1);
+			InitialConditions.initGravity(s, force, 1);
 			break;
 		case 5:
-			InitialConditions.initElectric(s, 1);
+			InitialConditions.initElectric(s, force, 1);
 			break;
 		case 6:
-			InitialConditions.initMagnetic(s, 3);
+			InitialConditions.initMagnetic(s, force, 3);
 			break;
 		case 7:
-			InitialConditions.initSpring(s, 1);
+			InitialConditions.initSpring(s, force, 1);
 			break;
 		}
 		ParticleMover.prepareAllParticles(s);
@@ -168,7 +172,7 @@ public class Particle2DPanel extends JPanel {
 	{
 		test = true;
 		InitialConditions.createRandomParticles(s, 2, 10);
-		s.f.reset();
+		force.reset();
 		for (int i = 0; i < s.particles.size(); i++) {
 			Particle2D par = (Particle2D) s.particles.get(i);
 			par.x = (100);
@@ -202,7 +206,7 @@ public class Particle2DPanel extends JPanel {
 		writePosition =! writePosition;
 		if(writePosition)
 		{
-			s.f.reset();
+			force.reset();
 			InitialConditions.createRandomParticles(s, 1, 10);
 			Particle2D par = (Particle2D) s.particles.get(0);
 			par.x = 0;

@@ -54,7 +54,7 @@ public class Boris extends Solver{
 		double vyplus;
 		double vyprime;
 		
-		double t_z = p.charge * f.getB(p) * step / (2.0 * p.mass);   //t vector
+		double t_z = p.charge * f.getBz(p) * step / (2.0 * p.mass);   //t vector
 		
 		double s_z = 2 * t_z / (1 + t_z * t_z);               //s vector
 		

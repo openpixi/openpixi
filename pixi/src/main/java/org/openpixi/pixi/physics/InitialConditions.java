@@ -21,52 +21,58 @@ package org.openpixi.pixi.physics;
 
 import org.openpixi.pixi.physics.boundary.HardWallBoundary;
 import org.openpixi.pixi.physics.boundary.PeriodicBoundary;
-import org.openpixi.pixi.physics.force.Force;
+import org.openpixi.pixi.physics.force.ConstantForce;
 import org.openpixi.pixi.physics.force.SpringForce;
 
 public class InitialConditions {
 
-	public static void initRandomParticles(Simulation s, int count, int radius) {
-		s.f = new Force(s);
-		s.f.reset();
-		s.f.gy = - 1; //-ConstantsSI.g;
-		//f.bz = 1;
+	public static void initRandomParticles(Simulation s, ConstantForce force, int count, int radius) {
+		s.f.clear();
+		force.reset();
+		force.gy = -1; // -ConstantsSI.g;
+		s.f.add(force);
 		
 		InitialConditions.createRandomParticles(s, count, radius);
 		InitialConditions.setHardWallBoundary(s);
 	}
 
-	public static void initGravity(Simulation s, int count) {
-		s.f = new Force(s);
-		s.f.reset();
-		s.f.gy = -1; // -ConstantsSI.g;
+	public static void initGravity(Simulation s, ConstantForce force, int count) {
+		s.f.clear();
+		force.reset();
+		force.gy = -1; // -ConstantsSI.g;
+		s.f.add(force);
 		
 		InitialConditions.createRandomParticles(s, count, 15);
 		InitialConditions.setHardWallBoundary(s);
 	}
 
-	public static void initElectric(Simulation s, int count) {
-		s.f = new Force(s);
-		s.f.reset();
-		s.f.ey = -1;
+	public static void initElectric(Simulation s, ConstantForce force, int count) {
+		s.f.clear();
+		force.reset();
+		force.ey = -1;
+		s.f.add(force);
 		
 		InitialConditions.createRandomParticles(s, count, 15);
 		InitialConditions.setHardWallBoundary(s);
 	}
 
-	public static void initMagnetic(Simulation s, int count) {
-		s.f = new Force(s);
-		s.f.reset();
-		s.f.bz = .1;
+	public static void initMagnetic(Simulation s, ConstantForce force, int count) {
+		s.f.clear();
+		force.reset();
+		force.bz = .1;
+		s.f.add(force);
 		
 		InitialConditions.createRandomParticles(s, count, 15);
 		InitialConditions.setPeriodicBoundary(s);
 	}
 
-	public static void initSpring(Simulation s, int count) {
+	public static void initSpring(Simulation s, ConstantForce force, int count) {
+		s.f.clear();
+		force.reset();
+		s.f.add(force);
+		s.f.add(new SpringForce());
+		
 		s.particles.clear();
-		s.f = new SpringForce(s);
-		s.f.reset();
 		
 		for (int k = 0; k < count; k++) {
 			Particle2D par = new Particle2D();
@@ -95,9 +101,9 @@ public class InitialConditions {
 			par.vy = 10 * Math.random();
 			par.mass = 1;
 			if (Math.random() > 0.5) {
-				par.charge = 1;
+				par.charge = .1;
 			} else {
-				par.charge = -1;
+				par.charge = -.1;
 			}
 			s.particles.add(par);
 		}

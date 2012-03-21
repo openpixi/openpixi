@@ -26,7 +26,7 @@ import org.openpixi.pixi.physics.collision.algorithms.*;
 import org.openpixi.pixi.physics.collision.detectors.*;
 import org.openpixi.pixi.physics.fields.FieldSolver;
 import org.openpixi.pixi.physics.fields.SimpleSolver;
-import org.openpixi.pixi.physics.force.Force;
+import org.openpixi.pixi.physics.force.*;
 import org.openpixi.pixi.physics.solver.*;
 
 public class Simulation {
@@ -40,7 +40,7 @@ public class Simulation {
 
 	/**Contains all Particle2D objects*/
 	public ArrayList<Particle2D> particles;
-	public Force  f;
+	public CombinedForce  f;
 	public Boundary boundary;
 	
 	public Solver psolver;
@@ -58,7 +58,7 @@ public class Simulation {
 
 		/**Contains all Particle2D objects*/
 		particles = new ArrayList<Particle2D>(0);
-		f= new Force(this);
+		f= new CombinedForce();
 		boundary = new HardWallBoundary();
 		
 		psolver = new Boris();

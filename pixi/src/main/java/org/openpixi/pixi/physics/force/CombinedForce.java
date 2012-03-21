@@ -3,7 +3,6 @@ package org.openpixi.pixi.physics.force;
 import java.util.ArrayList;
 
 import org.openpixi.pixi.physics.Particle2D;
-import org.openpixi.pixi.physics.Simulation;
 
 /**
  * Combines various forces into a single force.
@@ -12,8 +11,8 @@ public class CombinedForce extends Force {
 
 	ArrayList<Force> forces = new ArrayList<Force>();
 
-	public CombinedForce(Simulation s) {
-		super(s);
+	public CombinedForce() {
+		super();
 	}
 
 	/**
@@ -22,6 +21,13 @@ public class CombinedForce extends Force {
 	 */
 	public void add(Force force) {
 		forces.add(force);
+	}
+
+	/**
+	 * Clears all forces.
+	 */
+	public void clear() {
+		forces.clear();
 	}
 
 	@Override
@@ -97,10 +103,10 @@ public class CombinedForce extends Force {
 	}
 
 	@Override
-	public double getB(Particle2D p) {
+	public double getBz(Particle2D p) {
 		double sum = 0;
 		for (Force f : forces) {
-			sum += f.getB(p);
+			sum += f.getBz(p);
 		}
 		return sum;
 	}

@@ -47,8 +47,8 @@ public class BorisDamped extends Solver{
 		p.ay = (f.getPositionComponentofForceY(p) + f.getNormalVelocityComponentofForceY(p)) / p.mass;
 		
 		//help coefficients for the dragging
-		double help1_coef = 1 - f.drag * step / (2 * p.mass);
-		double help2_coef = 1 + f.drag * step / (2 * p.mass);
+		double help1_coef = 1 - f.getLinearDragCoefficient(p) * step / (2 * p.mass);
+		double help2_coef = 1 + f.getLinearDragCoefficient(p) * step / (2 * p.mass);
 		
 		double vxminus1 = help1_coef * p.vx / help2_coef + f.getPositionComponentofForceX(p) * step / (2.0 * p.mass * help2_coef);
 		double vxminus = p.vx + f.getPositionComponentofForceX(p) * step / (2.0 * p.mass);
@@ -60,7 +60,7 @@ public class BorisDamped extends Solver{
 		double vyplus;
 		double vyprime;
 		
-		double t_z = p.charge * f.bz * step / (2.0 * p.mass);   //t vector
+		double t_z = p.charge * f.getBz(p) * step / (2.0 * p.mass);   //t vector
 		
 		double s_z = 2 * t_z / (1 + t_z * t_z);               //s vector
 		
@@ -84,8 +84,8 @@ public class BorisDamped extends Solver{
 	 */
 	public void prepare(Particle2D p, Force f, double dt)
 	{
-		double help1_coef = 1 - f.drag * dt / (2 * p.mass);
-		double help2_coef = 1 + f.drag * dt / (2 * p.mass);
+		double help1_coef = 1 - f.getLinearDragCoefficient(p) * dt / (2 * p.mass);
+		double help2_coef = 1 + f.getLinearDragCoefficient(p) * dt / (2 * p.mass);
 		
 		//a(t) = F(v(t), x(t)) / m
 		p.ax = (f.getPositionComponentofForceX(p) + f.getNormalVelocityComponentofForceX(p)) / p.mass;
@@ -102,8 +102,8 @@ public class BorisDamped extends Solver{
 	 */
 	public void complete(Particle2D p, Force f, double dt)
 	{
-		double help1_coef = 1 - f.drag * dt / (2 * p.mass);
-		double help2_coef = 1 + f.drag * dt / (2 * p.mass);
+		double help1_coef = 1 - f.getLinearDragCoefficient(p) * dt / (2 * p.mass);
+		double help2_coef = 1 + f.getLinearDragCoefficient(p) * dt / (2 * p.mass);
 		
 		//v(t) = v(t - dt / 2) + a(t)*dt / 2
 		p.vx = (p.vx * help1_coef + p.ax * dt * 0.5) / help2_coef;
