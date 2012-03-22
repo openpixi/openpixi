@@ -45,7 +45,18 @@ public class SimpleCollision extends CollisionAlgorithm{
 		double y21 = p2.y - p1.y;
 		double vx21 = p2.vx - p1.vx;
 		double vy21 = p2.vy - p1.vy;
-			    
+		
+		double helpCoef = 1.0e-5 * Math.abs(y21); 
+		//int sign = 1;
+		if(Math.abs(x21) < helpCoef) {
+			if(x21 < 0) {
+				helpCoef = - helpCoef;
+			} //else {
+				//sign = 1;
+			//}
+			x21 = helpCoef;
+		}
+		
 	    double angle = y21 / x21;
 	    double dvx2 = -2 * (vx21 + angle * vy21) / ((1 + angle * angle) * (1 + m21)) ;
 	    p2.vx += dvx2;
