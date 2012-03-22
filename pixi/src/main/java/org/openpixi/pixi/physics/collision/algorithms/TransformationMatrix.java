@@ -17,6 +17,26 @@ public class TransformationMatrix extends CollisionAlgorithm{
 		super();
 	}
 	
+	private static double calculateAngle(double dx, double dy) {
+		
+		double angle = 0.0;
+		if(dx < 0.) {
+			angle = Math.PI + Math.atan(dy / dx);
+		} else if(dx > 0. && dy > 0.) {
+			angle = Math.atan(dy / dx);
+		} else if(dx > 0. && dy < 0.) {
+			angle = 2 * Math.PI + Math.atan(dy / dx);
+		} else if( dx == 0. && dy == 0.) {
+			angle = 0.0;
+		} else if(dx == 0. && dy >= 0.) {
+			angle = 0.5 * Math.PI;
+		} else {
+			angle = 3 * 0.5 * Math.PI;
+		}
+		
+		return angle;
+	}
+	
 	public void doCollision(Particle2D p1, Particle2D p2) {
 		
 		//distance between the particles
@@ -48,25 +68,28 @@ public class TransformationMatrix extends CollisionAlgorithm{
 		
 		//finding the angle between the normal coordinate system and the system, where the x - axis is the collision line
 		if(dx == 0.)
-			phi = Math.PI;
+			phi = Math.PI * 0.5;
 		else
 			phi = Math.atan(dy / dx);
 		
-		//double v1 = Math.sqrt(p1.vx * p1.vx + p1.vy * p1.vy);
-		//double v2 = Math.sqrt(p2.vx * p2.vx + p2.vy * p2.vy);
+		double v1 = Math.sqrt(p1.vx * p1.vx + p1.vy * p1.vy);
+		double v2 = Math.sqrt(p2.vx * p2.vx + p2.vy * p2.vy);
 		
 		//double theta1 = Math.atan(p1.vy / p1.vx);
 		//double theta2 = Math.atan(p2.vy / p2.vx);
 		
+		double theta1 = calculateAngle(p1.vx, p1.vy);
+		double theta2 = calculateAngle(p2.vx, p2.vy);
+		
 		//calculating the velocities in the new coordinate system
-		//double v1xNewCoor = v1 * Math.cos(theta1 - phi);
-		//double v1yNewCoor = v1 * Math.sin(theta1 - phi);
-		//double v2xNewCoor = v2 * Math.cos(theta2 - phi);
-		//double v2yNewCoor = v2 * Math.sin(theta2 - phi);
-		double v1xNewCoor = p1.vx * Math.cos(phi) + p1.vy * Math.sin(phi);
-		double v1yNewCoor = - p1.vx * Math.sin(phi) + p1.vy * Math.cos(phi);
-		double v2xNewCoor = p2.vx * Math.cos(phi) + p2.vy * Math.sin(phi);
-		double v2yNewCoor = - p2.vx * Math.sin(phi) + p2.vy * Math.sin(phi);
+		double v1xNewCoor = v1 * Math.cos(theta1 - phi);
+		double v1yNewCoor = v1 * Math.sin(theta1 - phi);
+		double v2xNewCoor = v2 * Math.cos(theta2 - phi);
+		double v2yNewCoor = v2 * Math.sin(theta2 - phi);
+		//double v1xNewCoor = p1.vx * Math.cos(phi) + p1.vy * Math.sin(phi);
+		//double v1yNewCoor = - p1.vx * Math.sin(phi) + p1.vy * Math.cos(phi);
+		//double v2xNewCoor = p2.vx * Math.cos(phi) + p2.vy * Math.sin(phi);
+		//double v2yNewCoor = - p2.vx * Math.sin(phi) + p2.vy * Math.sin(phi);
 		
 		//calculating the new velocities in the new coordinate system
 		//http://en.wikipedia.org/wiki/Elastic_collision
