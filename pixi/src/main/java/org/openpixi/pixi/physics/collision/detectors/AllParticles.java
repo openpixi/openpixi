@@ -45,7 +45,8 @@ public class AllParticles extends Detector{
 	}
 	
 	public void resetEveryStep() {
-		particlelist = new ArrayList<Particle2D>();
+		
+		particlelist.clear();
 	}
 	
 	public ArrayList<Pair<Particle2D, Particle2D>> getOverlappedPairs() {
