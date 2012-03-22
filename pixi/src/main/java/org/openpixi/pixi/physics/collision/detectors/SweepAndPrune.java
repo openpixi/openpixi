@@ -97,16 +97,16 @@ public class SweepAndPrune extends Detector{
 	}
 	
 	public void reset() {
-		boxlist = new ArrayList<BoundingBox>();
+		boxlist.clear();// = new ArrayList<BoundingBox>();
 		
-		axisX = new ArrayList<SweepParticle>();
-		axisY = new ArrayList<SweepParticle>();
+		axisX.clear();// = new ArrayList<SweepParticle>();
+		axisY.clear();// = new ArrayList<SweepParticle>();
 		
-		overlaps = new ArrayList<Pair<BoundingBox, BoundingBox>>();
+		overlaps.clear();// = new ArrayList<Pair<BoundingBox, BoundingBox>>();
 		
-		overlappedPairs = new ArrayList<Pair<Particle2D, Particle2D>>();
+		overlappedPairs.clear();// = new ArrayList<Pair<Particle2D, Particle2D>>();
 		
-		overlapCounter = new HashMap<Pair<BoundingBox, BoundingBox>, OverlapCounter>();
+		overlapCounter.clear();// = new HashMap<Pair<BoundingBox, BoundingBox>, OverlapCounter>();
 		
 	}
 	
