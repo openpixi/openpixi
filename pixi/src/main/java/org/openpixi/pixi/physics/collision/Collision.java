@@ -44,9 +44,8 @@ public class Collision {
 	
 	public void check(ArrayList<Particle2D> parlist, Force f, Solver s, double step)
 	{
-		det.reset();
-		det.add(parlist);
-		//det.addEveryStep(parlist);
+		det.resetEveryStep();
+		det.addEveryStep(parlist);
 		det.run();
 		//System.out.println("Particles added");
 		alg.collide(det.getOverlappedPairs(), f, s, step);
