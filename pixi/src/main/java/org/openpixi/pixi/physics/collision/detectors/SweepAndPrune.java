@@ -123,11 +123,12 @@ public class SweepAndPrune extends Detector{
 			while(j >= 0 && (list.get(j).updateGetValue() > sweepParValue)) {
 				
 				SweepParticle swapPar = list.get(j);
+				
+				//creating a pair of the possibly overlapping particles
 				Pair<BoundingBox, BoundingBox> pairbox = new Pair<BoundingBox, BoundingBox>(sweepPar.bb, swapPar.bb);
 				
 				if(sweepPar.begin && !swapPar.begin) {
 					
-					//creating a pair of the possibly overlapping particles
 					//Pair<BoundingBox, BoundingBox> pairbox = new Pair<BoundingBox, BoundingBox>(sweepPar.bb, swapPar.bb);
 					
 					//setting them into a list
@@ -162,9 +163,8 @@ public class SweepAndPrune extends Detector{
 		//sorting the axes lists
 		sortList(axisX);
 		sortList(axisY);
-		System.out.println("Axes sorted");
+		//System.out.println("Axes sorted");
 		
-		//int countOverlaps = 0;
 		//one needs to look at the counters (similar like with the remove method)
 		Iterator<Entry<Pair<BoundingBox, BoundingBox>, OverlapCounter>> iterator = overlapCounter.entrySet().iterator();
 		
@@ -173,10 +173,7 @@ public class SweepAndPrune extends Detector{
 			OverlapCounter counter = entry.getValue();
 			Pair<BoundingBox, BoundingBox> pairbox = entry.getKey();
 			
-			/*if(counter.overlaps == 2) {
-				//countOverlaps++;
-			}*/
-			System.out.println(counter.overlaps);
+			//System.out.println(counter.overlaps);
 			if(counter.overlappedBoolean) {
 				if(counter.overlaps < 2) {
 					overlaps.remove(pairbox);
@@ -197,10 +194,10 @@ public class SweepAndPrune extends Detector{
 				iterator.remove();
 			}
 		}
-		System.out.println(boxlist.size());
 		
+		//System.out.println(boxlist.size());
 		//System.out.println(boxlist.get(1).particle.x);
-		System.out.println(overlaps.size());
+		//System.out.println(overlaps.size());
 	}
 	
 	public ArrayList<Pair<Particle2D, Particle2D>> getOverlappedPairs() {
