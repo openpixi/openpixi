@@ -31,5 +31,9 @@ public class Detector {
 	public void reset() {
 		
 	}
+	
+	public void resetEveryStep() {
+		
+	}
 
 }
