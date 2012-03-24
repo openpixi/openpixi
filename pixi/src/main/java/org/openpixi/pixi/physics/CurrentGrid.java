@@ -57,12 +57,12 @@ public class CurrentGrid {
 		cellWidth = 0;
 		cellHeight = 0;
 		
-		jx = new double[numCellsX+2][numCellsY+2];
-		jy = new double[numCellsX+2][numCellsY+2];
-		rho = new double[numCellsX+2][numCellsY+2];
-		Ex = new double[numCellsX+2][numCellsY+2];
-		Ey = new double[numCellsX+2][numCellsY+2];
-		Bz = new double[numCellsX+2][numCellsY+2];
+		jx = new double[numCellsX+3][numCellsY+3];
+		jy = new double[numCellsX+3][numCellsY+3];
+		rho = new double[numCellsX+3][numCellsY+3];
+		Ex = new double[numCellsX+3][numCellsY+3];
+		Ey = new double[numCellsX+3][numCellsY+3];
+		Bz = new double[numCellsX+3][numCellsY+3];
 		initFields();
 	}
 	
@@ -72,12 +72,12 @@ public class CurrentGrid {
 		numCellsX = xbox;
 		numCellsY = ybox;
 		
-		jx = new double[numCellsX+2][numCellsY+2];
-		jy = new double[numCellsX+2][numCellsY+2];
-		rho = new double[numCellsX+2][numCellsY+2];
-		Ex = new double[numCellsX+2][numCellsY+2];
-		Ey = new double[numCellsX+2][numCellsY+2];
-		Bz = new double[numCellsX+2][numCellsY+2];
+		jx = new double[numCellsX+3][numCellsY+3];
+		jy = new double[numCellsX+3][numCellsY+3];
+		rho = new double[numCellsX+3][numCellsY+3];
+		Ex = new double[numCellsX+3][numCellsY+3];
+		Ey = new double[numCellsX+3][numCellsY+3];
+		Bz = new double[numCellsX+3][numCellsY+3];
 		initFields();
 		
 		//this.setGrid() should be called here since changeDimension() can not appear alone. This would cause dualities with MainControlApplet
@@ -98,25 +98,85 @@ public class CurrentGrid {
 		
 		for(Particle2D p : particles)
 		{
-			int xCellPosition = (int) (p.x / cellWidth) + 1;
-			int yCellPosition = (int) (p.y / cellHeight) + 1;
-			if(xCellPosition >= numCellsX+1) {
-				xCellPosition = numCellsX+1;
-			} else if(xCellPosition < 0) {
-					xCellPosition = 0;
+			int xCellPosition = (int) (p.x / cellWidth + 1);
+			int yCellPosition = (int) (p.y / cellHeight + 1);
+			if(xCellPosition >= numCellsX + 1) {
+				xCellPosition = numCellsX + 1;
+			} else if(xCellPosition < 1) {
+					xCellPosition = 1;
 			}
-			if(yCellPosition >= numCellsY+1) {
-				yCellPosition = numCellsY+1;
-			} else if(yCellPosition < 0) {
-				yCellPosition = 0;
+			if(yCellPosition >= numCellsY + 1) {
+				yCellPosition = numCellsY + 1;
+			} else if(yCellPosition < 1) {
+				yCellPosition = 1;
 			}
-			//System.out.println("x: " + xCellPosition + ", y: " + yCellPosition);
-			jx[xCellPosition][yCellPosition] += p.charge * p.vx;
-			jy[xCellPosition][yCellPosition] += p.charge * p.vy;
-			rho[xCellPosition][yCellPosition] += p.charge;
-		}
+
+			jx[xCellPosition][yCellPosition] += p.charge * p.vx * ((xCellPosition + 1) * cellWidth - p.x) *
+					((yCellPosition + 1) * cellHeight - p.y) / (cellWidth * cellHeight);
+			jx[xCellPosition + 1][yCellPosition] += p.charge * p.vx * (p.x - xCellPosition * cellWidth) *
+					((yCellPosition + 1) * cellHeight - p.y) / (cellWidth * cellHeight);
+			jx[xCellPosition][yCellPosition + 1] += p.charge * p.vx * ((xCellPosition + 1) * cellWidth - p.x) *
+					(p.y - yCellPosition * cellHeight) / (cellWidth * cellHeight);
+			jx[xCellPosition + 1][yCellPosition + 1] += p.charge * p.vx * (p.x - xCellPosition * cellWidth) *
+					(p.y - yCellPosition * cellHeight) / (cellWidth * cellHeight);
+			
+			jy[xCellPosition][yCellPosition] += p.charge * p.vy * ((xCellPosition + 1) * cellWidth - p.x) *
+					((yCellPosition + 1) * cellHeight - p.y) / (cellWidth * cellHeight);
+			jy[xCellPosition + 1][yCellPosition] += p.charge * p.vy * (p.x - xCellPosition * cellWidth) *
+					((yCellPosition + 1) * cellHeight - p.y) / (cellWidth * cellHeight);
+			jy[xCellPosition][yCellPosition + 1] += p.charge * p.vy * ((xCellPosition + 1) * cellWidth - p.x) *
+					(p.y - yCellPosition * cellHeight) / (cellWidth * cellHeight);
+			jy[xCellPosition + 1][yCellPosition + 1] += p.charge * p.vy * (p.x - xCellPosition * cellWidth) *
+					(p.y - yCellPosition * cellHeight) / (cellWidth * cellHeight);
+		}	
 		
 		s.fsolver.step(this);		
+	}
+	
+	public double[] interpolateToParticle(Particle2D p) {
+		
+		double[] fields = new double[3];
+		int xCellPosition = (int) (p.x / cellWidth) + 1;
+		int yCellPosition = (int) (p.y / cellHeight) + 1;
+		if(xCellPosition >= numCellsX + 1) {
+			xCellPosition = numCellsX + 1;
+		} else if(xCellPosition < 1) {
+				xCellPosition = 1;
+		}
+		if(yCellPosition >= numCellsY + 1) {
+			yCellPosition = numCellsY + 1;
+		} else if(yCellPosition < 1) {
+			yCellPosition = 1;
+		}
+		
+		fields[0] = ( Ex[xCellPosition][yCellPosition] * ((xCellPosition + 1) * cellWidth - p.x) *
+				((yCellPosition + 1) * cellHeight - p.y) +
+				Ex[xCellPosition + 1][yCellPosition] * (p.x - xCellPosition * cellWidth) *
+				((yCellPosition + 1) * cellHeight - p.y) +
+				Ex[xCellPosition][yCellPosition + 1] * ((xCellPosition + 1) * cellWidth - p.x) *
+				(p.y - yCellPosition * cellHeight) +
+				Ex[xCellPosition + 1][yCellPosition + 1] * (p.x - xCellPosition * cellWidth) *
+				(p.y - yCellPosition * cellHeight) ) / (cellWidth * cellHeight);
+		
+		fields[1] = ( Ey[xCellPosition][yCellPosition] * ((xCellPosition + 1) * cellWidth - p.x) *
+				((yCellPosition + 1) * cellHeight - p.y) +
+				Ey[xCellPosition + 1][yCellPosition] * (p.x - xCellPosition * cellWidth) *
+				((yCellPosition + 1) * cellHeight - p.y) +
+				Ey[xCellPosition][yCellPosition + 1] * ((xCellPosition + 1) * cellWidth - p.x) *
+				(p.y - yCellPosition * cellHeight) +
+				Ey[xCellPosition + 1][yCellPosition + 1] * (p.x - xCellPosition * cellWidth) *
+				(p.y - yCellPosition * cellHeight) ) / (cellWidth * cellHeight);
+		
+		fields[2] = ( Bz[xCellPosition][yCellPosition] * ((xCellPosition + 1) * cellWidth - p.x) *
+				((yCellPosition + 1) * cellHeight - p.y) +
+				Bz[xCellPosition + 1][yCellPosition] * (p.x - xCellPosition * cellWidth) *
+				((yCellPosition + 1) * cellHeight - p.y) +
+				Bz[xCellPosition][yCellPosition + 1] * ((xCellPosition + 1) * cellWidth - p.x) *
+				(p.y - yCellPosition * cellHeight) +
+				Bz[xCellPosition + 1][yCellPosition + 1] * (p.x - xCellPosition * cellWidth) *
+				(p.y - yCellPosition * cellHeight) ) / (cellWidth * cellHeight);
+		
+		return fields;	
 	}
 	
 	public int checkCellX(Particle2D p) {
@@ -143,8 +203,8 @@ public class CurrentGrid {
 	}
 
 	private void reset() {
-		for(int i = 0; i < numCellsX + 2; i++) {
-			for(int k = 0; k < numCellsY + 2; k++) {
+		for(int i = 0; i < numCellsX + 3; i++) {
+			for(int k = 0; k < numCellsY + 3; k++) {
 				jx[i][k] = 0.0;
 				jy[i][k] = 0.0;
 				rho[i][k] = 0.0;
@@ -153,8 +213,8 @@ public class CurrentGrid {
 	}
 	
 	private void initFields() {
-		for (int i = 0; i < numCellsX + 2; i++) {
-			for (int j = 0; j < numCellsY + 2; j++) {
+		for (int i = 0; i < numCellsX + 3; i++) {
+			for (int j = 0; j < numCellsY + 3; j++) {
 				Ex[i][j] = 0.0;
 				Ey[i][j] = 0.0;
 				Bz[i][j] = 0.0;
