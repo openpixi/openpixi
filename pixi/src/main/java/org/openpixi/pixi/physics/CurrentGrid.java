@@ -25,9 +25,9 @@ import org.openpixi.pixi.physics.fields.*;
 
 public class CurrentGrid {
 	
-	/**Electric current in the middle of a cell in x-Direction*/
+	/**Electric current in x-Direction*/
 	public double [][] jx;
-	/**Electric current in the middle of a cell in y-Direction*/
+	/**Electric current in y-Direction*/
 	public double [][] jy;
 
 	/**Electric charge sum of a cell*/
