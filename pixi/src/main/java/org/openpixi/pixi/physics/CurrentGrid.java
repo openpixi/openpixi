@@ -111,23 +111,23 @@ public class CurrentGrid {
 				yCellPosition = 1;
 			}
 
-			jx[xCellPosition][yCellPosition] += p.charge * p.vx * ((xCellPosition + 1) * cellWidth - p.x) *
-					((yCellPosition + 1) * cellHeight - p.y) / (cellWidth * cellHeight);
-			jx[xCellPosition + 1][yCellPosition] += p.charge * p.vx * (p.x - xCellPosition * cellWidth) *
-					((yCellPosition + 1) * cellHeight - p.y) / (cellWidth * cellHeight);
-			jx[xCellPosition][yCellPosition + 1] += p.charge * p.vx * ((xCellPosition + 1) * cellWidth - p.x) *
-					(p.y - yCellPosition * cellHeight) / (cellWidth * cellHeight);
-			jx[xCellPosition + 1][yCellPosition + 1] += p.charge * p.vx * (p.x - xCellPosition * cellWidth) *
-					(p.y - yCellPosition * cellHeight) / (cellWidth * cellHeight);
+			jx[xCellPosition][yCellPosition] += p.charge * p.vx * (xCellPosition * cellWidth - p.x) *
+					(yCellPosition * cellHeight - p.y) / (cellWidth * cellHeight);
+			jx[xCellPosition + 1][yCellPosition] += p.charge * p.vx * (p.x - (xCellPosition-1) * cellWidth) *
+					(yCellPosition * cellHeight - p.y) / (cellWidth * cellHeight);
+			jx[xCellPosition][yCellPosition + 1] += p.charge * p.vx * (xCellPosition * cellWidth - p.x) *
+					(p.y - (yCellPosition-1) * cellHeight) / (cellWidth * cellHeight);
+			jx[xCellPosition + 1][yCellPosition + 1] += p.charge * p.vx * (p.x - (xCellPosition-1) * cellWidth) *
+					(p.y - (yCellPosition-1) * cellHeight) / (cellWidth * cellHeight);
 			
-			jy[xCellPosition][yCellPosition] += p.charge * p.vy * ((xCellPosition + 1) * cellWidth - p.x) *
-					((yCellPosition + 1) * cellHeight - p.y) / (cellWidth * cellHeight);
-			jy[xCellPosition + 1][yCellPosition] += p.charge * p.vy * (p.x - xCellPosition * cellWidth) *
-					((yCellPosition + 1) * cellHeight - p.y) / (cellWidth * cellHeight);
-			jy[xCellPosition][yCellPosition + 1] += p.charge * p.vy * ((xCellPosition + 1) * cellWidth - p.x) *
-					(p.y - yCellPosition * cellHeight) / (cellWidth * cellHeight);
-			jy[xCellPosition + 1][yCellPosition + 1] += p.charge * p.vy * (p.x - xCellPosition * cellWidth) *
-					(p.y - yCellPosition * cellHeight) / (cellWidth * cellHeight);
+			jy[xCellPosition][yCellPosition] += p.charge * p.vy * (xCellPosition * cellWidth - p.x) *
+					(yCellPosition * cellHeight - p.y) / (cellWidth * cellHeight);
+			jy[xCellPosition + 1][yCellPosition] += p.charge * p.vy * (p.x - (xCellPosition-1) * cellWidth) *
+					(yCellPosition * cellHeight - p.y) / (cellWidth * cellHeight);
+			jy[xCellPosition][yCellPosition + 1] += p.charge * p.vy * (xCellPosition * cellWidth - p.x) *
+					(p.y - (yCellPosition-1) * cellHeight) / (cellWidth * cellHeight);
+			jy[xCellPosition + 1][yCellPosition + 1] += p.charge * p.vy * (p.x - (xCellPosition-1) * cellWidth) *
+					(p.y - (yCellPosition-1) * cellHeight) / (cellWidth * cellHeight);
 		}	
 		
 		s.fsolver.step(this);		
