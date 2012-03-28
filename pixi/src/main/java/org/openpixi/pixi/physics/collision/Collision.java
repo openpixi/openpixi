@@ -37,8 +37,8 @@ public class Collision {
 	//private ArrayList<Pair<Particle2D, Particle2D>> pairs;
 	
 	public Collision() {
-		this.det = new Detector();
-		this.alg = new CollisionAlgorithm();
+		//this.det = new Detector();
+		//this.alg = new CollisionAlgorithm();
 		
 	}
 	
