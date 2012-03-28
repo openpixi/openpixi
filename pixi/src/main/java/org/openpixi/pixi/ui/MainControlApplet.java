@@ -487,7 +487,7 @@ public class MainControlApplet extends JApplet {
 		initComboBox = new JComboBox(initStrings);
 		initComboBox.setSelectedIndex(0);
 		initComboBox.addActionListener(new ComboBoxListener());
-		initComboBox.setPreferredSize(new Dimension(initComboBox.getPreferredSize().width, 5));
+		//initComboBox.setPreferredSize(new Dimension(initComboBox.getPreferredSize().width, 5));
 		JLabel initComboBoxLabel = new JLabel("Initial conditions");
 		Box initBox = Box.createVerticalBox();
 		initBox.add(initComboBoxLabel);
@@ -521,13 +521,13 @@ public class MainControlApplet extends JApplet {
 		Box collisionBox = Box.createVerticalBox();
 		collisionBox.add(collisionsLabel);
 		collisionBox.add(collisionComboBox);
-		collisionBox.add(Box.createHorizontalGlue());
+		collisionBox.add(Box.createVerticalGlue());
 		collisionBox.add(colDetectorLabel);
 		collisionBox.add(collisionDetector);
-		collisionBox.add(Box.createHorizontalGlue());
+		collisionBox.add(Box.createVerticalGlue());
 		collisionBox.add(colAlgorithmLabel);
 		collisionBox.add(collisionAlgorithm);
-		collisionBox.add(Box.createHorizontalGlue());
+		collisionBox.add(Box.createVerticalStrut(170));
 		
 		startButton.addActionListener(new StartListener());
 		stopButton.addActionListener(new StopListener());
@@ -601,30 +601,31 @@ public class MainControlApplet extends JApplet {
 		controlPanelUp.add(startButton);
 		controlPanelUp.add(stopButton);
 		controlPanelUp.add(resetButton);
+		controlPanelUp.add(initBox);
 //		controlPanelUp.add(testButton);
-		controlPanelUp.add(traceCheck);
-		controlPanelUp.add(framerateCheck);
+		//controlPanelUp.add(traceCheck);
+		//controlPanelUp.add(framerateCheck);
 //		controlPanelUp.add(writePositionCheck);
 //		controlPanelUp.add(filename);
 //		controlPanelUp.add(filedirectory);
-		controlPanelUp.add(Box.createHorizontalGlue());
-		controlPanelUp.add(currentgridCheck);	
-		controlPanelUp.add(fieldsCheck);	
-		controlPanelUp.add(Box.createHorizontalGlue());
+		//controlPanelUp.add(Box.createHorizontalGlue());
+		//controlPanelUp.add(currentgridCheck);	
+		//controlPanelUp.add(fieldsCheck);	
+		//controlPanelUp.add(Box.createHorizontalGlue());
 		//controlPanelUp.add(currentBox);
-		controlPanelUp.add(xboxentryLabel);
-		controlPanelUp.add(xboxentry);
-		controlPanelUp.add(Box.createHorizontalGlue());
-		controlPanelUp.add(yboxentryLabel);
-		controlPanelUp.add(yboxentry);
+		//controlPanelUp.add(xboxentryLabel);
+		//controlPanelUp.add(xboxentry);
+		//controlPanelUp.add(Box.createHorizontalGlue());
+		//controlPanelUp.add(yboxentryLabel);
+		//controlPanelUp.add(yboxentry);
 		
 		Box settingControls = Box.createVerticalBox();
 		JPanel controlPanelDown = new JPanel();
 		controlPanelDown.setLayout(new FlowLayout());
 		//controlPanelDown.add(traceCheck);
 		//controlPanelDown.add(framerateCheck);
-		settingControls.add(initBox);
-		settingControls.add(Box.createVerticalGlue());
+		//settingControls.add(initBox);
+		//settingControls.add(Box.createVerticalGlue());
 		settingControls.add(algorithmBox);
 		settingControls.add(Box.createVerticalGlue());
 		settingControls.add(speed);
@@ -633,6 +634,8 @@ public class MainControlApplet extends JApplet {
 		settingControls.add(Box.createVerticalGlue());
 		settingControls.add(boundariesLabel);
 		settingControls.add(boundaries);
+		settingControls.add(traceCheck);
+		settingControls.add(framerateCheck);
 		
 		Box panelBox = Box.createVerticalBox();
 		panelBox.add(controlPanelUp);
@@ -664,6 +667,33 @@ public class MainControlApplet extends JApplet {
 		fieldsBox.add(dragSlider);
 		fieldsBox.add(Box.createVerticalGlue());
 		
+		Box xbox = Box.createHorizontalBox();
+		Box ybox = Box.createHorizontalBox();
+		xbox.add(Box.createHorizontalStrut(50));
+		xbox.add(xboxentryLabel);
+		xbox.add(Box.createHorizontalStrut(100));
+		xbox.add(xboxentry);
+		ybox.add(Box.createHorizontalStrut(50));
+		ybox.add(yboxentryLabel);
+		ybox.add(Box.createHorizontalStrut(96));
+		ybox.add(yboxentry);
+		
+		Box cellSettings = Box.createVerticalBox();
+		cellSettings.add(currentgridCheck);
+		cellSettings.add(Box.createVerticalGlue());
+		cellSettings.add(Box.createVerticalGlue());
+		cellSettings.add(Box.createVerticalGlue());
+		cellSettings.add(fieldsCheck);
+		cellSettings.add(Box.createVerticalStrut(20));
+		cellSettings.add(xbox);
+		//cellSettings.add(xboxentryLabel);
+		//cellSettings.add(xboxentry);
+		cellSettings.add(Box.createVerticalStrut(10));
+		cellSettings.add(ybox);
+		//cellSettings.add(yboxentryLabel);
+		//cellSettings.add(yboxentry);
+		cellSettings.add(Box.createVerticalStrut(200));
+		
 		fieldsBox.setPreferredSize(new Dimension(250, 100));
 		settingControls.setPreferredSize(new Dimension (250, 100));
 		collisionBox.setPreferredSize(new Dimension (250, 100));
@@ -671,6 +701,7 @@ public class MainControlApplet extends JApplet {
 		tabs.addTab("Fields", fieldsBox);
 		tabs.addTab("Settings", settingControls);
 		tabs.addTab("Collisions", collisionBox);
+		tabs.addTab("Cell", cellSettings);
 		
 		this.setLayout(new BorderLayout());
 		this.add(panelBox, BorderLayout.SOUTH);
