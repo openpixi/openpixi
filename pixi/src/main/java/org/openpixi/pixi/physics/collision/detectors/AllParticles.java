@@ -7,7 +7,7 @@ import org.openpixi.pixi.physics.collision.util.Pair;
 
 public class AllParticles extends Detector{
 	
-	//private ArrayList<Pair<Particle2D, Particle2D>> overlappedPairs = new ArrayList<Pair<Particle2D, Particle2D>>();
+	private ArrayList<Pair<Particle2D, Particle2D>> overlappedPairs = new ArrayList<Pair<Particle2D, Particle2D>>();
 	
 	private ArrayList<Particle2D> particlelist = new ArrayList<Particle2D>();
 	
