@@ -164,6 +164,7 @@ public class Particle2DPanel extends JPanel {
 			InitialConditions.initSpring(s, force, 1);
 			break;
 		}
+		updateFieldForce();
 		ParticleMover.prepareAllParticles(s);
 		timer.start();
 	}
@@ -200,6 +201,10 @@ public class Particle2DPanel extends JPanel {
 	
 	public void drawFields() {
 		drawFields =! drawFields;
+		updateFieldForce();
+	}
+
+	private void updateFieldForce() {
 		if (drawFields) {
 			s.f.add(new SimpleGridForce(s));
 		} else {
