@@ -49,6 +49,7 @@ public class Simulation {
 	public Collision collision;
 	//public Detector detector;
 	//public CollisionAlgorithm algorithm;
+	public boolean collisionBoolean = false;
 
 	public Simulation () {
 	
@@ -80,7 +81,9 @@ public class Simulation {
 
 	public void step() {
 		ParticleMover.particlePush(this);
-		collision.check(particles, f, psolver, tstep);
+		if(collisionBoolean) {
+			collision.check(particles, f, psolver, tstep);
+		}
 		currentGrid.updateGrid(particles);
 	}
 
