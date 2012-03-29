@@ -310,7 +310,7 @@ public class Particle2DPanel extends JPanel {
 			s.collision.alg = new VectorTransformation();
 			break;
 		case 2:
-			s.collision.alg = new TransformationMatrix();
+			s.collision.alg = new MatrixTransformation();
 			break;
 		}
 	}

@@ -8,11 +8,11 @@ import org.openpixi.pixi.physics.collision.util.Pair;
 import org.openpixi.pixi.physics.force.Force;
 import org.openpixi.pixi.physics.solver.Solver;
 
-public class TransformationMatrix extends CollisionAlgorithm{
+public class MatrixTransformation extends CollisionAlgorithm{
 	
 	//private Detector det;
 	
-	public TransformationMatrix() {
+	public MatrixTransformation() {
 		
 		super();
 	}
