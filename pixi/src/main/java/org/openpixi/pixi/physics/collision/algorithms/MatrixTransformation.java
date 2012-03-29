@@ -38,7 +38,8 @@ public class MatrixTransformation extends CollisionAlgorithm{
 	}
 	
 	public void doCollision(Particle2D p1, Particle2D p2) {
-		
+		//double ekinBefore = p1.vx * p1.vx + p1.vy * p1.vy + p2.vx * p2.vx + p2.vy * p2.vy;
+		//System.out.println(ekinBefore);
 		//distance between the particles
 		double distance = Math.sqrt((p1.x - p2.x) * (p1.x - p2.x) + (p1.y - p2.y) * (p1.y - p2.y));
 		
@@ -102,6 +103,8 @@ public class MatrixTransformation extends CollisionAlgorithm{
 		p1.vy = newv1xNewCoor * Math.sin(phi) + v1yNewCoor * Math.sin(phi + Math.PI);
 		p2.vx = newv2xNewCoor * Math.cos(phi) + v2yNewCoor * Math.cos(phi + Math.PI);
 		p2.vy = newv2xNewCoor * Math.sin(phi) + v2yNewCoor * Math.sin(phi + Math.PI);
+		//double ekinAfter = p1.vx * p1.vx + p1.vy * p1.vy + p2.vx * p2.vx + p2.vy * p2.vy;
+		//System.out.println(ekinAfter);
 	}
 	
 	public void collide(ArrayList<Pair<Particle2D, Particle2D>> pairs, Force f, Solver s, double step) {
