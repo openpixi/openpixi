@@ -116,6 +116,7 @@ public class MainControlApplet extends JApplet {
 	
 	String[] collisionalgorithmString = {
 			"Simple collision",
+			"With vectors",
 			"With matrices"
 	};
 
