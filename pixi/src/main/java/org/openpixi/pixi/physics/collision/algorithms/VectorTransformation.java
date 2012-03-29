@@ -15,28 +15,8 @@ public class VectorTransformation extends CollisionAlgorithm{
 	public VectorTransformation() {
 		
 		super();
-	}
-	
-	private static double calculateAngle(double dx, double dy) {
+	}		
 		
-		double angle = 0.0;
-		if(dx < 0.) {
-			angle = Math.PI + Math.atan(dy / dx);
-		} else if(dx > 0. && dy > 0.) {
-			angle = Math.atan(dy / dx);
-		} else if(dx > 0. && dy < 0.) {
-			angle = 2 * Math.PI + Math.atan(dy / dx);
-		} else if( dx == 0. && dy == 0.) {
-			angle = 0.0;
-		} else if(dx == 0. && dy >= 0.) {
-			angle = 0.5 * Math.PI;
-		} else {
-			angle = 3 * 0.5 * Math.PI;
-		}
-		
-		return angle;
-	}
-	
 	public void doCollision(Particle2D p1, Particle2D p2) {
 		
 		//distance between the particles
