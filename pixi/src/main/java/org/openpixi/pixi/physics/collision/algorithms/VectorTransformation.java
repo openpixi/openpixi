@@ -53,17 +53,17 @@ public class VectorTransformation extends CollisionAlgorithm{
 		double v2TY = dtY * (p2.vx * dtX + p2.vy * dtY);
 		
 		//calculating the new velocities
-		p1.vx = v1TX + dnX * ((p1.mass - p2.mass) * Math.sqrt(v1NX * v1NX + v1NY * v1NY) / (p1.mass + p2.mass) +
-				2 * p2.mass * Math.sqrt(v2NX * v2NX + v2NY * v2NY) / (p1.mass + p2.mass));
+		p1.vx = v1TX + dnX * ((p1.mass - p2.mass) * Math.sqrt(v1NX * v1NX + v1NY * v1NY) +
+				2 * p2.mass * Math.sqrt(v2NX * v2NX + v2NY * v2NY)) / (p1.mass + p2.mass);
 		
-		p1.vy = v1TY + dnY * ((p1.mass - p2.mass) * Math.sqrt(v1NX * v1NX + v1NY * v1NY) / (p1.mass + p2.mass) +
-				2 * p2.mass * Math.sqrt(v2NX * v2NX + v2NY * v2NY) / (p1.mass + p2.mass));
+		p1.vy = v1TY + dnY * ((p1.mass - p2.mass) * Math.sqrt(v1NX * v1NX + v1NY * v1NY) +
+				2 * p2.mass * Math.sqrt(v2NX * v2NX + v2NY * v2NY)) / (p1.mass + p2.mass);
 		
-		p2.vx = v2TX - dnX * ((p2.mass - p1.mass) * Math.sqrt(v2NX * v2NX + v2NY * v2NY) / (p1.mass + p2.mass) +
-				2 * p1.mass * Math.sqrt(v1NX * v1NX + v1NY * v1NY) / (p1.mass + p2.mass));
+		p2.vx = v2TX - dnX * ((p2.mass - p1.mass) * Math.sqrt(v2NX * v2NX + v2NY * v2NY) +
+				2 * p1.mass * Math.sqrt(v1NX * v1NX + v1NY * v1NY)) / (p1.mass + p2.mass);
 		
-		p2.vy = v2TY - dnY * ((p2.mass - p1.mass) * Math.sqrt(v2NX * v2NX + v2NY * v2NY) / (p1.mass + p2.mass) +
-				2 * p1.mass * Math.sqrt(v1NX * v1NX + v1NY * v1NY) / (p1.mass + p2.mass));
+		p2.vy = v2TY - dnY * ((p2.mass - p1.mass) * Math.sqrt(v2NX * v2NX + v2NY * v2NY) +
+				2 * p1.mass * Math.sqrt(v1NX * v1NX + v1NY * v1NY)) / (p1.mass + p2.mass);
 	}
 	
 	public void collide(ArrayList<Pair<Particle2D, Particle2D>> pairs, Force f, Solver s, double step) {
