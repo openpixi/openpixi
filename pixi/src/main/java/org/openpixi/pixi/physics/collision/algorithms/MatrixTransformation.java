@@ -50,14 +50,14 @@ public class MatrixTransformation extends CollisionAlgorithm{
 		
 		phi = Math.atan2(dy, dx);
 		
-		double v1 = Math.sqrt(p1.vx * p1.vx + p1.vy * p1.vy);
-		double v2 = Math.sqrt(p2.vx * p2.vx + p2.vy * p2.vy);
+		//double v1 = Math.sqrt(p1.vx * p1.vx + p1.vy * p1.vy);
+		//double v2 = Math.sqrt(p2.vx * p2.vx + p2.vy * p2.vy);
 		
 		//double theta1 = Math.atan(p1.vy / p1.vx);
 		//double theta2 = Math.atan(p2.vy / p2.vx);
 		
-		double theta1 = Math.atan2(p1.vy, p1.vx);//;calculateAngle(p1.vx, p1.vy);
-		double theta2 = Math.atan2(p2.vy, p2.vx);//calculateAngle(p2.vx, p2.vy);
+		//double theta1 = Math.atan2(p1.vy, p1.vx);//;calculateAngle(p1.vx, p1.vy);
+		//double theta2 = Math.atan2(p2.vy, p2.vx);//calculateAngle(p2.vx, p2.vy);
 		
 		//calculating the velocities in the new coordinate system
 		//double v1xNewCoor = v1 * Math.cos(theta1 - phi);
