@@ -111,10 +111,10 @@ public class CurrentGrid {
 				yCellPosition = 1;
 			}
 
-			assert(xCellPosition * cellWidth > p.x);
-			assert(p.x > (xCellPosition - 1) * cellWidth);
-			assert(yCellPosition * cellHeight > p.y);
-			assert(p.y > (xCellPosition - 1) * cellHeight);
+			if (Debug.asserts) assert xCellPosition * cellWidth > p.x;
+			if (Debug.asserts) assert p.x > (xCellPosition - 1) * cellWidth;
+			if (Debug.asserts) assert yCellPosition * cellHeight > p.y;
+			if (Debug.asserts) assert p.y > (xCellPosition - 1) * cellHeight;
 
 			jx[xCellPosition][yCellPosition] += p.charge * p.vx * (xCellPosition * cellWidth - p.x) *
 					(yCellPosition * cellHeight - p.y) / (cellWidth * cellHeight);

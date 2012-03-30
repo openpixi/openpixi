@@ -19,6 +19,7 @@
 
 package org.openpixi.pixi.ui;
 
+import org.openpixi.pixi.physics.Debug;
 import org.openpixi.pixi.physics.InitialConditions;
 import org.openpixi.pixi.physics.ParticleMover;
 import org.openpixi.pixi.physics.Simulation;
@@ -35,9 +36,10 @@ public class MainBatch {
 	public static Simulation s1;
 
 	public static void main(String[] args) {
-		
+		Debug.checkAssertsEnabled();
+
 		s1 = new Simulation();
-				
+
 		InitialConditions.createRandomParticles(s1, num_particles, particle_radius);
 		ConstantForce force = new ConstantForce();
 		force.bz = 0.001;

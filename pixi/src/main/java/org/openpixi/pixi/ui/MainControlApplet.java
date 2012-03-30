@@ -24,10 +24,9 @@ import java.awt.event.*;
 
 import javax.swing.event.*;
 
-import org.openpixi.pixi.physics.Simulation;
+import org.openpixi.pixi.physics.Debug;
 import org.openpixi.pixi.physics.boundary.*;
 import org.openpixi.pixi.physics.collision.detectors.*;
-import org.openpixi.pixi.physics.collision.algorithms.*;
 
 /**
  * Displays the animation of particles.
@@ -384,6 +383,8 @@ public class MainControlApplet extends JApplet {
 	 * Constructor.
 	 */
 	public MainControlApplet() {
+		Debug.checkAssertsEnabled();
+
 		particlePanel = new Particle2DPanel();
 
 		this.setVisible(true);
