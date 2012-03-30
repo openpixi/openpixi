@@ -68,10 +68,11 @@ public class MatrixTransformation extends CollisionAlgorithm{
 		double dy = p2.y - p1.y;
 		
 		//finding the angle between the normal coordinate system and the system, where the x - axis is the collision line
-		if(dx == 0.)
-			phi = Math.PI * 0.5;
-		else
-			phi = Math.atan(dy / dx);
+		//if(dx == 0.)
+		//	phi = Math.PI * 0.5;
+		//else
+		//	phi = Math.atan(dy / dx);
+		phi = Math.atan2(dy, dx);
 		
 		double v1 = Math.sqrt(p1.vx * p1.vx + p1.vy * p1.vy);
 		double v2 = Math.sqrt(p2.vx * p2.vx + p2.vy * p2.vy);
@@ -79,8 +80,8 @@ public class MatrixTransformation extends CollisionAlgorithm{
 		//double theta1 = Math.atan(p1.vy / p1.vx);
 		//double theta2 = Math.atan(p2.vy / p2.vx);
 		
-		double theta1 = calculateAngle(p1.vx, p1.vy);
-		double theta2 = calculateAngle(p2.vx, p2.vy);
+		double theta1 = Math.atan2(p1.vy, p1.vx);//;calculateAngle(p1.vx, p1.vy);
+		double theta2 = Math.atan2(p2.vy, p2.vx);//calculateAngle(p2.vx, p2.vy);
 		
 		//calculating the velocities in the new coordinate system
 		double v1xNewCoor = v1 * Math.cos(theta1 - phi);
@@ -99,10 +100,10 @@ public class MatrixTransformation extends CollisionAlgorithm{
 		
 		//going in the old coordinate system, do not forget that the y coordinates in the new coordinate system have not changed
 		//also I am using here that cos(pi + x) = - sin(x) & sin(pi + x) = cos(x)
-		p1.vx = newv1xNewCoor * Math.cos(phi) + v1yNewCoor * Math.cos(phi + Math.PI);
-		p1.vy = newv1xNewCoor * Math.sin(phi) + v1yNewCoor * Math.sin(phi + Math.PI);
-		p2.vx = newv2xNewCoor * Math.cos(phi) + v2yNewCoor * Math.cos(phi + Math.PI);
-		p2.vy = newv2xNewCoor * Math.sin(phi) + v2yNewCoor * Math.sin(phi + Math.PI);
+		p1.vx = newv1xNewCoor * Math.cos(phi) - v1yNewCoor * Math.sin(phi);
+		p1.vy = newv1xNewCoor * Math.sin(phi) + v1yNewCoor * Math.cos(phi);
+		p2.vx = newv2xNewCoor * Math.cos(phi) - v2yNewCoor * Math.sin(phi);
+		p2.vy = newv2xNewCoor * Math.sin(phi) + v2yNewCoor * Math.cos(phi);
 		//double ekinAfter = p1.vx * p1.vx + p1.vy * p1.vy + p2.vx * p2.vx + p2.vy * p2.vy;
 		//System.out.println(ekinAfter);
 	}
