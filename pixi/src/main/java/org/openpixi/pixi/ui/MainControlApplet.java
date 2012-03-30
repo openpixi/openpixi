@@ -491,8 +491,9 @@ public class MainControlApplet extends JApplet {
 		initComboBox.addActionListener(new ComboBoxListener());
 		//initComboBox.setPreferredSize(new Dimension(initComboBox.getPreferredSize().width, 5));
 		JLabel initComboBoxLabel = new JLabel("Initial conditions");
-		Box initBox = Box.createVerticalBox();
+		Box initBox = Box.createHorizontalBox();
 		initBox.add(initComboBoxLabel);
+		initBox.add(Box.createHorizontalGlue());
 		initBox.add(initComboBox);
 		
 		algorithmComboBox = new JComboBox(solverString);
@@ -603,6 +604,8 @@ public class MainControlApplet extends JApplet {
 		controlPanelUp.add(startButton);
 		controlPanelUp.add(stopButton);
 		controlPanelUp.add(resetButton);
+		//controlPanelUp.add(Box.createHorizontalGlue());
+		controlPanelUp.add(Box.createHorizontalStrut(25));
 		controlPanelUp.add(initBox);
 //		controlPanelUp.add(testButton);
 		//controlPanelUp.add(traceCheck);
@@ -758,7 +761,7 @@ public class MainControlApplet extends JApplet {
 		particlePanel.s.collision.det = new Detector();
 		collisionComboBox.setSelectedIndex(0);
 		collisionDetector.setSelectedIndex(0);
-		collisionDetector.setSelectedIndex(0);
+		collisionAlgorithm.setSelectedIndex(0);
 		
 	}
 	
