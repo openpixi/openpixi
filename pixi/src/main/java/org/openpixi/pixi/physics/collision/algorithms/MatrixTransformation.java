@@ -17,29 +17,10 @@ public class MatrixTransformation extends CollisionAlgorithm{
 		super();
 	}
 	
-	private static double calculateAngle(double dx, double dy) {
-		
-		double angle = 0.0;
-		if(dx < 0.) {
-			angle = Math.PI + Math.atan(dy / dx);
-		} else if(dx > 0. && dy > 0.) {
-			angle = Math.atan(dy / dx);
-		} else if(dx > 0. && dy < 0.) {
-			angle = 2 * Math.PI + Math.atan(dy / dx);
-		} else if( dx == 0. && dy == 0.) {
-			angle = 0.0;
-		} else if(dx == 0. && dy >= 0.) {
-			angle = 0.5 * Math.PI;
-		} else {
-			angle = 3 * 0.5 * Math.PI;
-		}
-		
-		return angle;
-	}
-	
 	public void doCollision(Particle2D p1, Particle2D p2) {
 		//double ekinBefore = p1.vx * p1.vx + p1.vy * p1.vy + p2.vx * p2.vx + p2.vy * p2.vy;
 		//System.out.println(ekinBefore);
+		
 		//distance between the particles
 		double distance = Math.sqrt((p1.x - p2.x) * (p1.x - p2.x) + (p1.y - p2.y) * (p1.y - p2.y));
 		
@@ -67,11 +48,6 @@ public class MatrixTransformation extends CollisionAlgorithm{
 		double dx = p2.x - p1.x;
 		double dy = p2.y - p1.y;
 		
-		//finding the angle between the normal coordinate system and the system, where the x - axis is the collision line
-		//if(dx == 0.)
-		//	phi = Math.PI * 0.5;
-		//else
-		//	phi = Math.atan(dy / dx);
 		phi = Math.atan2(dy, dx);
 		
 		double v1 = Math.sqrt(p1.vx * p1.vx + p1.vy * p1.vy);
@@ -84,14 +60,14 @@ public class MatrixTransformation extends CollisionAlgorithm{
 		double theta2 = Math.atan2(p2.vy, p2.vx);//calculateAngle(p2.vx, p2.vy);
 		
 		//calculating the velocities in the new coordinate system
-		double v1xNewCoor = v1 * Math.cos(theta1 - phi);
-		double v1yNewCoor = v1 * Math.sin(theta1 - phi);
-		double v2xNewCoor = v2 * Math.cos(theta2 - phi);
-		double v2yNewCoor = v2 * Math.sin(theta2 - phi);
-		//double v1xNewCoor = p1.vx * Math.cos(phi) + p1.vy * Math.sin(phi);
-		//double v1yNewCoor = - p1.vx * Math.sin(phi) + p1.vy * Math.cos(phi);
-		//double v2xNewCoor = p2.vx * Math.cos(phi) + p2.vy * Math.sin(phi);
-		//double v2yNewCoor = - p2.vx * Math.sin(phi) + p2.vy * Math.sin(phi);
+		//double v1xNewCoor = v1 * Math.cos(theta1 - phi);
+		//double v1yNewCoor = v1 * Math.sin(theta1 - phi);
+		//double v2xNewCoor = v2 * Math.cos(theta2 - phi);
+		//double v2yNewCoor = v2 * Math.sin(theta2 - phi);
+		double v1xNewCoor = p1.vx * Math.cos(phi) + p1.vy * Math.sin(phi);
+		double v1yNewCoor = - p1.vx * Math.sin(phi) + p1.vy * Math.cos(phi);
+		double v2xNewCoor = p2.vx * Math.cos(phi) + p2.vy * Math.sin(phi);
+		double v2yNewCoor = - p2.vx * Math.sin(phi) + p2.vy * Math.sin(phi);
 		
 		//calculating the new velocities in the new coordinate system
 		//http://en.wikipedia.org/wiki/Elastic_collision
@@ -99,7 +75,6 @@ public class MatrixTransformation extends CollisionAlgorithm{
 		double newv2xNewCoor = (2 * p1.mass * v1xNewCoor + (p2.mass - p1.mass) * v2xNewCoor) / (p1.mass + p2.mass);
 		
 		//going in the old coordinate system, do not forget that the y coordinates in the new coordinate system have not changed
-		//also I am using here that cos(pi + x) = - sin(x) & sin(pi + x) = cos(x)
 		p1.vx = newv1xNewCoor * Math.cos(phi) - v1yNewCoor * Math.sin(phi);
 		p1.vy = newv1xNewCoor * Math.sin(phi) + v1yNewCoor * Math.cos(phi);
 		p2.vx = newv2xNewCoor * Math.cos(phi) - v2yNewCoor * Math.sin(phi);
