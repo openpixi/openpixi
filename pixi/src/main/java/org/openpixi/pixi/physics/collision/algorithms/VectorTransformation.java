@@ -21,6 +21,7 @@ public class VectorTransformation extends CollisionAlgorithm{
 		
 		//distance between the particles
 		double distance = Math.sqrt((p1.x - p2.x) * (p1.x - p2.x) + (p1.y - p2.y) * (p1.y - p2.y));
+		//System.out.println(distance);
 		
 		//finding the unit distance vector
 		double dnX = (p1.x - p2.x) / distance;
@@ -53,13 +54,16 @@ public class VectorTransformation extends CollisionAlgorithm{
 		
 		//calculating the new velocities
 		p1.vx = v1TX + dnX * ((p1.mass - p2.mass) * Math.sqrt(v1NX * v1NX + v1NY * v1NY) / (p1.mass + p2.mass) +
-				2 * p2.mass * Math.sqrt(v2NX * v2NX + v2NY * v2NY));
+				2 * p2.mass * Math.sqrt(v2NX * v2NX + v2NY * v2NY) / (p1.mass + p2.mass));
+		
 		p1.vy = v1TY + dnY * ((p1.mass - p2.mass) * Math.sqrt(v1NX * v1NX + v1NY * v1NY) / (p1.mass + p2.mass) +
-				2 * p2.mass * Math.sqrt(v2NX * v2NX + v2NY * v2NY));
-		p2.vx = v2TX + dnX * ((p2.mass - p1.mass) * Math.sqrt(v2NX * v2NX + v2NY * v2NY) / (p1.mass + p2.mass) +
-				2 * p1.mass * Math.sqrt(v1NX * v1NX + v1NY * v1NY));
-		p2.vy = v2TY + dnY * ((p2.mass - p1.mass) * Math.sqrt(v2NX * v2NX + v2NY * v2NY) / (p1.mass + p2.mass) +
-				2 * p1.mass * Math.sqrt(v1NX * v1NX + v1NY * v1NY));
+				2 * p2.mass * Math.sqrt(v2NX * v2NX + v2NY * v2NY) / (p1.mass + p2.mass));
+		
+		p2.vx = v2TX - dnX * ((p2.mass - p1.mass) * Math.sqrt(v2NX * v2NX + v2NY * v2NY) / (p1.mass + p2.mass) +
+				2 * p1.mass * Math.sqrt(v1NX * v1NX + v1NY * v1NY) / (p1.mass + p2.mass));
+		
+		p2.vy = v2TY - dnY * ((p2.mass - p1.mass) * Math.sqrt(v2NX * v2NX + v2NY * v2NY) / (p1.mass + p2.mass) +
+				2 * p1.mass * Math.sqrt(v1NX * v1NX + v1NY * v1NY) / (p1.mass + p2.mass));
 	}
 	
 	public void collide(ArrayList<Pair<Particle2D, Particle2D>> pairs, Force f, Solver s, double step) {
