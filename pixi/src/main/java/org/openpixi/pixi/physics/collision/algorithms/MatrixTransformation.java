@@ -9,16 +9,12 @@ import org.openpixi.pixi.physics.solver.Solver;
 
 public class MatrixTransformation extends CollisionAlgorithm{
 	
-	//private Detector det;
-	
 	public MatrixTransformation() {
 		
 		super();
 	}
 	
 	public void doCollision(Particle2D p1, Particle2D p2) {
-		//double ekinBefore = p1.vx * p1.vx + p1.vy * p1.vy + p2.vx * p2.vx + p2.vy * p2.vy;
-		//System.out.println(ekinBefore);
 		
 		//distance between the particles
 		double distance = Math.sqrt((p1.x - p2.x) * (p1.x - p2.x) + (p1.y - p2.y) * (p1.y - p2.y));
@@ -41,7 +37,6 @@ public class MatrixTransformation extends CollisionAlgorithm{
 		p2.x -= minDistanceX * p1.mass / (p1.mass + p2.mass);
 		p2.y -= minDistanceY * p1.mass / (p1.mass + p2.mass);
 		
-		//double convert = Math.PI / 180;
 		double phi = 0.0;
 		
 		double dx = p2.x - p1.x;
@@ -52,17 +47,16 @@ public class MatrixTransformation extends CollisionAlgorithm{
 		double v1 = Math.sqrt(p1.vx * p1.vx + p1.vy * p1.vy);
 		double v2 = Math.sqrt(p2.vx * p2.vx + p2.vy * p2.vy);
 		
-		//double theta1 = Math.atan(p1.vy / p1.vx);
-		//double theta2 = Math.atan(p2.vy / p2.vx);
-		
-		double theta1 = Math.atan2(p1.vy, p1.vx);//;calculateAngle(p1.vx, p1.vy);
-		double theta2 = Math.atan2(p2.vy, p2.vx);//calculateAngle(p2.vx, p2.vy);
+		double theta1 = Math.atan2(p1.vy, p1.vx);
+		double theta2 = Math.atan2(p2.vy, p2.vx);
 		
 		//calculating the velocities in the new coordinate system
 		double v1xNewCoor = v1 * Math.cos(theta1 - phi);
 		double v1yNewCoor = v1 * Math.sin(theta1 - phi);
 		double v2xNewCoor = v2 * Math.cos(theta2 - phi);
 		double v2yNewCoor = v2 * Math.sin(theta2 - phi);
+		
+		//another transformation to go in the new coordinate system
 		//double v1xNewCoor = p1.vx * Math.cos(phi) + p1.vy * Math.sin(phi);
 		//double v1yNewCoor = - p1.vx * Math.sin(phi) + p1.vy * Math.cos(phi);
 		//double v2xNewCoor = p2.vx * Math.cos(phi) + p2.vy * Math.sin(phi);
@@ -78,8 +72,6 @@ public class MatrixTransformation extends CollisionAlgorithm{
 		p1.vy = newv1xNewCoor * Math.sin(phi) + v1yNewCoor * Math.cos(phi);
 		p2.vx = newv2xNewCoor * Math.cos(phi) - v2yNewCoor * Math.sin(phi);
 		p2.vy = newv2xNewCoor * Math.sin(phi) + v2yNewCoor * Math.cos(phi);
-		//double ekinAfter = p1.vx * p1.vx + p1.vy * p1.vy + p2.vx * p2.vx + p2.vy * p2.vy;
-		//System.out.println(ekinAfter);
 	}
 	
 	public void collide(ArrayList<Pair<Particle2D, Particle2D>> pairs, Force f, Solver s, double step) {
@@ -93,7 +85,6 @@ public class MatrixTransformation extends CollisionAlgorithm{
 				s.complete(p1, f, step);
 				s.complete(p2, f, step);
 				doCollision(p1, p2);
-				//System.out.println("Collision! -> " + distance);
 				s.prepare(p1, f, step);
 				s.prepare(p2, f, step);
 			}
