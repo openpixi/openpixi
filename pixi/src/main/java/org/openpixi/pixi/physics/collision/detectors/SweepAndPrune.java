@@ -6,7 +6,6 @@ import org.openpixi.pixi.physics.collision.util.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
@@ -14,10 +13,6 @@ import java.util.Map.Entry;
 
 public class SweepAndPrune extends Detector{
 	
-	//private final int MAX_PARTICLES = 10;
-	//private OverlapCounter count = new OverlapCounter();
-	//private SweepParticle [] axisX = new SweepParticle[MAX_PARTICLES];
-	//SweepParticle [] axisY = new SweepParticle[MAX_PARTICLES];
 	private ArrayList<Pair<Particle2D, Particle2D>> overlappedPairs = new ArrayList<Pair<Particle2D, Particle2D>>();
 
 	private ArrayList<BoundingBox> boxlist = new ArrayList<BoundingBox>();
@@ -44,7 +39,6 @@ public class SweepAndPrune extends Detector{
 		for(int i = 0; i < parlist.size(); i++) {
 			Particle2D par = (Particle2D) parlist.get(i);
 			BoundingBox box = new BoundingBox(par);
-			//boxlist.add(box);
 		
 			if(!boxlist.contains(box)) {
 				boxlist.add(box);
@@ -98,16 +92,16 @@ public class SweepAndPrune extends Detector{
 	}
 	
 	public void reset() {
-		boxlist.clear();// = new ArrayList<BoundingBox>();
+		boxlist.clear();
 		
-		axisX.clear();// = new ArrayList<SweepParticle>();
-		axisY.clear();// = new ArrayList<SweepParticle>();
+		axisX.clear();
+		axisY.clear();
 		
-		overlaps.clear();// = new ArrayList<Pair<BoundingBox, BoundingBox>>();
+		overlaps.clear();
 		
-		overlappedPairs.clear();// = new ArrayList<Pair<Particle2D, Particle2D>>();
+		overlappedPairs.clear();
 		
-		overlapCounter.clear();// = new HashMap<Pair<BoundingBox, BoundingBox>, OverlapCounter>();
+		overlapCounter.clear();
 		
 	}
 	
@@ -130,8 +124,6 @@ public class SweepAndPrune extends Detector{
 				
 				if(sweepPar.begin && !swapPar.begin) {
 					
-					//Pair<BoundingBox, BoundingBox> pairbox = new Pair<BoundingBox, BoundingBox>(sweepPar.bb, swapPar.bb);
-					
 					//setting them into a list
 					if(overlapCounter.containsKey(pairbox)) {
 						overlapCounter.get(pairbox).overlaps++;
@@ -142,9 +134,7 @@ public class SweepAndPrune extends Detector{
 						overlapCounter.put(pairbox, newOverlapCounter);
 					}
 				}
-				
 				if(!sweepPar.begin && swapPar.begin) {
-					//Pair<BoundingBox, BoundingBox> pairbox = new Pair<BoundingBox, BoundingBox>(sweepPar.bb, swapPar.bb);
 					if(overlapCounter.containsKey(pairbox)) {
 						overlapCounter.get(pairbox).overlaps--;
 					}
@@ -182,7 +172,6 @@ public class SweepAndPrune extends Detector{
 
 				}
 				else if (counter.overlaps > 1) {
-					//counter.overlappedBoolean = false;
 				}
 			}
 			else {
@@ -195,10 +184,6 @@ public class SweepAndPrune extends Detector{
 				iterator.remove();
 			}
 		}
-		
-		//System.out.println(boxlist.size());
-		//System.out.println(boxlist.get(1).particle.x);
-		//System.out.println(overlaps.size());
 	}
 	
 	public ArrayList<Pair<Particle2D, Particle2D>> getOverlappedPairs() {
