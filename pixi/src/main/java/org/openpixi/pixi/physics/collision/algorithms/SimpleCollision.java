@@ -9,8 +9,6 @@ import org.openpixi.pixi.physics.solver.Solver;
 
 public class SimpleCollision extends CollisionAlgorithm{
 	
-	//private Detector det;
-	
 	public SimpleCollision() {
 		
 		super();
@@ -25,10 +23,6 @@ public class SimpleCollision extends CollisionAlgorithm{
 		double dnX = (p1.x - p2.x) / distance;
 		double dnY = (p1.y - p2.y) / distance;
 		
-		//finding the tangential vector;
-		//double dtX = dnY;
-		//double dtY = - dtX;
-		
 		//finding the minimal distance if the ball are overlapping
 		double minDistanceX = dnX * (p1.radius + p2.radius - distance);
 		double minDistanceY = dnY * (p1.radius + p2.radius - distance);
@@ -39,23 +33,23 @@ public class SimpleCollision extends CollisionAlgorithm{
 		p2.x -= minDistanceX * p1.mass / (p1.mass + p2.mass);
 		p2.y -= minDistanceY * p1.mass / (p1.mass + p2.mass);
 		
+		//defining variables for cleaner calculation
 		double m21 = p2.mass / p1.mass;
 		double x21 = p2.x - p1.x;
 		double y21 = p2.y - p1.y;
 		double vx21 = p2.vx - p1.vx;
 		double vy21 = p2.vy - p1.vy;
 		
+		//avoiding dividing with zero
 		double helpCoef = 1.0e-5 * Math.abs(y21); 
-		//int sign = 1;
 		if(Math.abs(x21) < helpCoef) {
 			if(x21 < 0) {
 				helpCoef = - helpCoef;
-			} //else {
-				//sign = 1;
-			//}
+			}
 			x21 = helpCoef;
 		}
 		
+		//doing the calculation
 	    double angle = y21 / x21;
 	    double dvx2 = -2 * (vx21 + angle * vy21) / ((1 + angle * angle) * (1 + m21)) ;
 	    p2.vx += dvx2;
@@ -75,7 +69,6 @@ public class SimpleCollision extends CollisionAlgorithm{
 				s.complete(p1, f, step);
 				s.complete(p2, f, step);
 				doCollision(p1, p2);
-				//System.out.println("Collision! -> " + distance);
 				s.prepare(p1, f, step);
 				s.prepare(p2, f, step);
 			}
