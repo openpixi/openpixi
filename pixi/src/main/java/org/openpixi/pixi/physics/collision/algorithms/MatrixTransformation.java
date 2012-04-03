@@ -23,10 +23,6 @@ public class MatrixTransformation extends CollisionAlgorithm{
 		double dnX = (p1.x - p2.x) / distance;
 		double dnY = (p1.y - p2.y) / distance;
 		
-		//finding the tangential vector;
-		//double dtX = dnY;
-		//double dtY = - dtX;
-		
 		//finding the minimal distance if the ball are overlapping
 		double minDistanceX = dnX * (p1.radius + p2.radius - distance);
 		double minDistanceY = dnY * (p1.radius + p2.radius - distance);
