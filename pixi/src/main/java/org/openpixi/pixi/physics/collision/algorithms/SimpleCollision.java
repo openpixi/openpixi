@@ -64,8 +64,8 @@ public class SimpleCollision extends CollisionAlgorithm{
 			Particle2D p1 = (Particle2D) pairs.get(i).getFirst();
 			Particle2D p2 = (Particle2D) pairs.get(i).getSecond();
 		
-			double distance = Math.sqrt((p1.x - p2.x) * (p1.x - p2.x) + (p1.y - p2.y) * (p1.y - p2.y));
-			if(distance <= (p1.radius + p2.radius)) {
+			double distance = ((p1.x - p2.x) * (p1.x - p2.x) + (p1.y - p2.y) * (p1.y - p2.y));
+			if(distance <= ((p1.radius + p2.radius) * (p1.radius + p2.radius))) {
 				s.complete(p1, f, step);
 				s.complete(p2, f, step);
 				doCollision(p1, p2);
