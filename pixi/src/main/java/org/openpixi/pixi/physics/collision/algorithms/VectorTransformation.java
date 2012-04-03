@@ -9,8 +9,6 @@ import org.openpixi.pixi.physics.solver.Solver;
 
 public class VectorTransformation extends CollisionAlgorithm{
 	
-	//private Detector det;
-	
 	public VectorTransformation() {
 		
 		super();
@@ -20,7 +18,6 @@ public class VectorTransformation extends CollisionAlgorithm{
 		
 		//distance between the particles
 		double distance = Math.sqrt((p1.x - p2.x) * (p1.x - p2.x) + (p1.y - p2.y) * (p1.y - p2.y));
-		//System.out.println(distance);
 		
 		//finding the unit distance vector
 		double dnX = (p1.x - p2.x) / distance;
@@ -76,7 +73,6 @@ public class VectorTransformation extends CollisionAlgorithm{
 				s.complete(p1, f, step);
 				s.complete(p2, f, step);
 				doCollision(p1, p2);
-				//System.out.println("Collision! -> " + distance);
 				s.prepare(p1, f, step);
 				s.prepare(p2, f, step);
 			}
