@@ -50,24 +50,24 @@ public class MatrixTransformation extends CollisionAlgorithm{
 		
 		phi = Math.atan2(dy, dx);
 		
-		//double v1 = Math.sqrt(p1.vx * p1.vx + p1.vy * p1.vy);
-		//double v2 = Math.sqrt(p2.vx * p2.vx + p2.vy * p2.vy);
+		double v1 = Math.sqrt(p1.vx * p1.vx + p1.vy * p1.vy);
+		double v2 = Math.sqrt(p2.vx * p2.vx + p2.vy * p2.vy);
 		
 		//double theta1 = Math.atan(p1.vy / p1.vx);
 		//double theta2 = Math.atan(p2.vy / p2.vx);
 		
-		//double theta1 = Math.atan2(p1.vy, p1.vx);//;calculateAngle(p1.vx, p1.vy);
-		//double theta2 = Math.atan2(p2.vy, p2.vx);//calculateAngle(p2.vx, p2.vy);
+		double theta1 = Math.atan2(p1.vy, p1.vx);//;calculateAngle(p1.vx, p1.vy);
+		double theta2 = Math.atan2(p2.vy, p2.vx);//calculateAngle(p2.vx, p2.vy);
 		
 		//calculating the velocities in the new coordinate system
-		//double v1xNewCoor = v1 * Math.cos(theta1 - phi);
-		//double v1yNewCoor = v1 * Math.sin(theta1 - phi);
-		//double v2xNewCoor = v2 * Math.cos(theta2 - phi);
-		//double v2yNewCoor = v2 * Math.sin(theta2 - phi);
-		double v1xNewCoor = p1.vx * Math.cos(phi) + p1.vy * Math.sin(phi);
-		double v1yNewCoor = - p1.vx * Math.sin(phi) + p1.vy * Math.cos(phi);
-		double v2xNewCoor = p2.vx * Math.cos(phi) + p2.vy * Math.sin(phi);
-		double v2yNewCoor = - p2.vx * Math.sin(phi) + p2.vy * Math.sin(phi);
+		double v1xNewCoor = v1 * Math.cos(theta1 - phi);
+		double v1yNewCoor = v1 * Math.sin(theta1 - phi);
+		double v2xNewCoor = v2 * Math.cos(theta2 - phi);
+		double v2yNewCoor = v2 * Math.sin(theta2 - phi);
+		//double v1xNewCoor = p1.vx * Math.cos(phi) + p1.vy * Math.sin(phi);
+		//double v1yNewCoor = - p1.vx * Math.sin(phi) + p1.vy * Math.cos(phi);
+		//double v2xNewCoor = p2.vx * Math.cos(phi) + p2.vy * Math.sin(phi);
+		//double v2yNewCoor = - p2.vx * Math.sin(phi) + p2.vy * Math.sin(phi);
 		
 		//calculating the new velocities in the new coordinate system
 		//http://en.wikipedia.org/wiki/Elastic_collision
