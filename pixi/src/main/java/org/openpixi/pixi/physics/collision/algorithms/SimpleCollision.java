@@ -26,8 +26,8 @@ public class SimpleCollision extends CollisionAlgorithm{
 		double dnY = (p1.y - p2.y) / distance;
 		
 		//finding the tangential vector;
-		double dtX = dnY;
-		double dtY = - dtX;
+		//double dtX = dnY;
+		//double dtY = - dtX;
 		
 		//finding the minimal distance if the ball are overlapping
 		double minDistanceX = dnX * (p1.radius + p2.radius - distance);
