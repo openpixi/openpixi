@@ -77,9 +77,9 @@ public class MainControlApplet extends JApplet {
 	private static final double speedSliderScaling = 0.07;
 	private static final double stepSliderScaling = 0.01;
 	private static final double dragSliderScaling = 0.01;
-	private static final double exSliderScaling = 0.05;
-	private static final double eySliderScaling = 0.05;
-	private static final double bzSliderScaling = 0.005;
+	private static final double exSliderScaling = 0.5;
+	private static final double eySliderScaling = 0.5;
+	private static final double bzSliderScaling = 0.05;
 	private static final double gxSliderScaling = 0.01;
 	private static final double gySliderScaling = 0.01;
 
