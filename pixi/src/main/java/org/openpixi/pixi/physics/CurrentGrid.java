@@ -100,6 +100,10 @@ public class CurrentGrid {
 		{
 			int xCellPosition = (int) (p.x / cellWidth + 1);
 			int yCellPosition = (int) (p.y / cellHeight + 1);
+			
+			int xCellPosition2 = xCellPosition;
+			int yCellPosition2 = yCellPosition;
+			
 			if(xCellPosition >= numCellsX + 1) {
 				xCellPosition = numCellsX + 1;
 			} else if(xCellPosition < 1) {
@@ -110,29 +114,29 @@ public class CurrentGrid {
 			} else if(yCellPosition < 1) {
 				yCellPosition = 1;
 			}
-
+						
 			if (Debug.asserts) assert xCellPosition * cellWidth > p.x;
 			if (Debug.asserts) assert p.x > (xCellPosition - 1) * cellWidth;
 			if (Debug.asserts) assert yCellPosition * cellHeight > p.y;
 			if (Debug.asserts) assert p.y > (xCellPosition - 1) * cellHeight;
 
-			jx[xCellPosition][yCellPosition] += p.charge * p.vx * (xCellPosition * cellWidth - p.x) *
-					(yCellPosition * cellHeight - p.y) / (cellWidth * cellHeight);
-			jx[xCellPosition + 1][yCellPosition] += p.charge * p.vx * (p.x - (xCellPosition-1) * cellWidth) *
-					(yCellPosition * cellHeight - p.y) / (cellWidth * cellHeight);
-			jx[xCellPosition][yCellPosition + 1] += p.charge * p.vx * (xCellPosition * cellWidth - p.x) *
-					(p.y - (yCellPosition-1) * cellHeight) / (cellWidth * cellHeight);
-			jx[xCellPosition + 1][yCellPosition + 1] += p.charge * p.vx * (p.x - (xCellPosition-1) * cellWidth) *
-					(p.y - (yCellPosition-1) * cellHeight) / (cellWidth * cellHeight);
+			jx[xCellPosition][yCellPosition] += p.charge * p.vx * (xCellPosition2 * cellWidth - p.x) *
+					(yCellPosition2 * cellHeight - p.y) / (cellWidth * cellHeight);
+			jx[xCellPosition + 1][yCellPosition] += p.charge * p.vx * (p.x - (xCellPosition2-1) * cellWidth) *
+					(yCellPosition2 * cellHeight - p.y) / (cellWidth * cellHeight);
+			jx[xCellPosition][yCellPosition + 1] += p.charge * p.vx * (xCellPosition2 * cellWidth - p.x) *
+					(p.y - (yCellPosition2-1) * cellHeight) / (cellWidth * cellHeight);
+			jx[xCellPosition + 1][yCellPosition + 1] += p.charge * p.vx * (p.x - (xCellPosition2-1) * cellWidth) *
+					(p.y - (yCellPosition2-1) * cellHeight) / (cellWidth * cellHeight);
 			
-			jy[xCellPosition][yCellPosition] += p.charge * p.vy * (xCellPosition * cellWidth - p.x) *
-					(yCellPosition * cellHeight - p.y) / (cellWidth * cellHeight);
-			jy[xCellPosition + 1][yCellPosition] += p.charge * p.vy * (p.x - (xCellPosition-1) * cellWidth) *
-					(yCellPosition * cellHeight - p.y) / (cellWidth * cellHeight);
-			jy[xCellPosition][yCellPosition + 1] += p.charge * p.vy * (xCellPosition * cellWidth - p.x) *
-					(p.y - (yCellPosition-1) * cellHeight) / (cellWidth * cellHeight);
-			jy[xCellPosition + 1][yCellPosition + 1] += p.charge * p.vy * (p.x - (xCellPosition-1) * cellWidth) *
-					(p.y - (yCellPosition-1) * cellHeight) / (cellWidth * cellHeight);
+			jy[xCellPosition][yCellPosition] += p.charge * p.vy * (xCellPosition2 * cellWidth - p.x) *
+					(yCellPosition2 * cellHeight - p.y) / (cellWidth * cellHeight);
+			jy[xCellPosition + 1][yCellPosition] += p.charge * p.vy * (p.x - (xCellPosition2-1) * cellWidth) *
+					(yCellPosition2 * cellHeight - p.y) / (cellWidth * cellHeight);
+			jy[xCellPosition][yCellPosition + 1] += p.charge * p.vy * (xCellPosition2 * cellWidth - p.x) *
+					(p.y - (yCellPosition2-1) * cellHeight) / (cellWidth * cellHeight);
+			jy[xCellPosition + 1][yCellPosition + 1] += p.charge * p.vy * (p.x - (xCellPosition2-1) * cellWidth) *
+					(p.y - (yCellPosition2-1) * cellHeight) / (cellWidth * cellHeight);
 		}	
 		
 		s.fsolver.step(this);		
@@ -143,6 +147,10 @@ public class CurrentGrid {
 		double[] fields = new double[3];
 		int xCellPosition = (int) (p.x / cellWidth) + 1;
 		int yCellPosition = (int) (p.y / cellHeight) + 1;
+		
+		int xCellPosition2 = xCellPosition;
+		int yCellPosition2 = yCellPosition;
+		
 		if(xCellPosition >= numCellsX + 1) {
 			xCellPosition = numCellsX + 1;
 		} else if(xCellPosition < 1) {
@@ -154,32 +162,32 @@ public class CurrentGrid {
 			yCellPosition = 1;
 		}
 		
-		fields[0] = ( Ex[xCellPosition][yCellPosition] * ((xCellPosition + 1) * cellWidth - p.x) *
-				((yCellPosition + 1) * cellHeight - p.y) +
-				Ex[xCellPosition + 1][yCellPosition] * (p.x - xCellPosition * cellWidth) *
-				((yCellPosition + 1) * cellHeight - p.y) +
-				Ex[xCellPosition][yCellPosition + 1] * ((xCellPosition + 1) * cellWidth - p.x) *
-				(p.y - yCellPosition * cellHeight) +
-				Ex[xCellPosition + 1][yCellPosition + 1] * (p.x - xCellPosition * cellWidth) *
-				(p.y - yCellPosition * cellHeight) ) / (cellWidth * cellHeight);
+		fields[0] = ( Ex[xCellPosition][yCellPosition] * (xCellPosition2 * cellWidth - p.x) *
+				(yCellPosition2 * cellHeight - p.y) +
+				Ex[xCellPosition + 1][yCellPosition] * (p.x - (xCellPosition2 - 1) * cellWidth) *
+				(yCellPosition2 * cellHeight - p.y) +
+				Ex[xCellPosition][yCellPosition + 1] * (xCellPosition2 * cellWidth - p.x) *
+				(p.y - (yCellPosition2 - 1) * cellHeight) +
+				Ex[xCellPosition + 1][yCellPosition + 1] * (p.x - (xCellPosition2 - 1) * cellWidth) *
+				(p.y - (yCellPosition2 - 1) * cellHeight) ) / (cellWidth * cellHeight);
 		
-		fields[1] = ( Ey[xCellPosition][yCellPosition] * ((xCellPosition + 1) * cellWidth - p.x) *
-				((yCellPosition + 1) * cellHeight - p.y) +
-				Ey[xCellPosition + 1][yCellPosition] * (p.x - xCellPosition * cellWidth) *
-				((yCellPosition + 1) * cellHeight - p.y) +
-				Ey[xCellPosition][yCellPosition + 1] * ((xCellPosition + 1) * cellWidth - p.x) *
-				(p.y - yCellPosition * cellHeight) +
-				Ey[xCellPosition + 1][yCellPosition + 1] * (p.x - xCellPosition * cellWidth) *
-				(p.y - yCellPosition * cellHeight) ) / (cellWidth * cellHeight);
+		fields[1] = ( Ey[xCellPosition][yCellPosition] * (xCellPosition2 * cellWidth - p.x) *
+				(yCellPosition2 * cellHeight - p.y) +
+				Ey[xCellPosition + 1][yCellPosition] * (p.x - (xCellPosition2 - 1) * cellWidth) *
+				(yCellPosition2 * cellHeight - p.y) +
+				Ey[xCellPosition][yCellPosition + 1] * (xCellPosition2 * cellWidth - p.x) *
+				(p.y - (yCellPosition2 - 1) * cellHeight) +
+				Ey[xCellPosition + 1][yCellPosition + 1] * (p.x - (xCellPosition2 - 1) * cellWidth) *
+				(p.y - (yCellPosition2 - 1) * cellHeight) ) / (cellWidth * cellHeight);
 		
-		fields[2] = ( Bz[xCellPosition][yCellPosition] * ((xCellPosition + 1) * cellWidth - p.x) *
-				((yCellPosition + 1) * cellHeight - p.y) +
-				Bz[xCellPosition + 1][yCellPosition] * (p.x - xCellPosition * cellWidth) *
-				((yCellPosition + 1) * cellHeight - p.y) +
-				Bz[xCellPosition][yCellPosition + 1] * ((xCellPosition + 1) * cellWidth - p.x) *
-				(p.y - yCellPosition * cellHeight) +
-				Bz[xCellPosition + 1][yCellPosition + 1] * (p.x - xCellPosition * cellWidth) *
-				(p.y - yCellPosition * cellHeight) ) / (cellWidth * cellHeight);
+		fields[2] = ( Bz[xCellPosition][yCellPosition] * (xCellPosition2 * cellWidth - p.x) *
+				(yCellPosition2 * cellHeight - p.y) +
+				Bz[xCellPosition + 1][yCellPosition] * (p.x - (xCellPosition2 - 1) * cellWidth) *
+				(yCellPosition2 * cellHeight - p.y) +
+				Bz[xCellPosition][yCellPosition + 1] * (xCellPosition2 * cellWidth - p.x) *
+				(p.y - (yCellPosition2 - 1) * cellHeight) +
+				Bz[xCellPosition + 1][yCellPosition + 1] * (p.x - (xCellPosition2 -1) * cellWidth) *
+				(p.y - (yCellPosition2 -1) * cellHeight) ) / (cellWidth * cellHeight);
 		
 		return fields;	
 	}
