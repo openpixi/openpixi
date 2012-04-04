@@ -55,6 +55,9 @@ VERSION HISTORY
 ===============
 
 ---
+Version 0.4 - ?
+
+---
 Version 0.3 - April 4, 2012
 
 * Interface organized in tabs: Fields, Settings, Collisions, Cell

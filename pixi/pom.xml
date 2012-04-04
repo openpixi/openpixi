@@ -4,7 +4,7 @@
   <groupId>org.openpixi.pixi</groupId>
   <artifactId>pixi</artifactId>
   <packaging>jar</packaging>
-  <version>0.3</version>
+  <version>0.4-SNAPSHOT</version>
   <name>pixi</name>
   <url>http://maven.apache.org</url>
   <dependencies>
