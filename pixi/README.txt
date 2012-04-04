@@ -55,7 +55,13 @@ VERSION HISTORY
 ===============
 
 ---
-Version 0.3 - ?
+Version 0.3 - April 4, 2012
+
+* Interface organized in tabs: Fields, Settings, Collisions, Cell
+* Collision: simple collision, with vectors, with matrices
+* Collision detection: all particles, sweep and prune
+* Calculate and display fields
+* Field force on particles (work in progress)
 
 ---
 Version 0.2 - March 14, 2012
