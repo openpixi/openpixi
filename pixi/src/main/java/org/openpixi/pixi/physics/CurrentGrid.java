@@ -21,6 +21,7 @@ package org.openpixi.pixi.physics;
 import java.util.ArrayList;
 
 import org.openpixi.pixi.physics.fields.*;
+import org.openpixi.pixi.physics.interpolation.*;
 
 
 public class CurrentGrid {
@@ -47,12 +48,14 @@ public class CurrentGrid {
 	public double cellHeight;
 	
 	public Simulation s;
+	private Interpolator intp; 
 	
 	
 	//the constructor
 	public CurrentGrid(Simulation s) {
 		
 		this.s = s;
+		intp = new CloudInCell();
 		
 		cellWidth = 0;
 		cellHeight = 0;
@@ -95,53 +98,7 @@ public class CurrentGrid {
 	public void updateGrid(ArrayList<Particle2D> particles)
 	{
 		reset();
-		
-		for(Particle2D p : particles)
-		{
-			int xCellPosition = (int) (p.x / cellWidth + 1);
-			int yCellPosition = (int) (p.y / cellHeight + 1);
-			
-			int xCellPosition2 = xCellPosition;
-			int yCellPosition2 = yCellPosition;
-			
-			if(xCellPosition >= numCellsX + 1) {
-				xCellPosition = numCellsX + 1;
-			} else if(xCellPosition < 1) {
-					xCellPosition = 1;
-			}
-			if(yCellPosition >= numCellsY + 1) {
-				yCellPosition = numCellsY + 1;
-			} else if(yCellPosition < 1) {
-				yCellPosition = 1;
-			}
-
-			if (Debug.asserts) {
-				// Assert conditions for interpolation
-				assert xCellPosition2 * cellWidth > p.x;
-				assert p.x > (xCellPosition2 - 1) * cellWidth;
-				assert yCellPosition2 * cellHeight > p.y;
-				assert p.y > (yCellPosition2 - 1) * cellHeight;
-			}
-
-			jx[xCellPosition][yCellPosition] += p.charge * p.vx * (xCellPosition2 * cellWidth - p.x) *
-					(yCellPosition2 * cellHeight - p.y) / (cellWidth * cellHeight);
-			jx[xCellPosition + 1][yCellPosition] += p.charge * p.vx * (p.x - (xCellPosition2-1) * cellWidth) *
-					(yCellPosition2 * cellHeight - p.y) / (cellWidth * cellHeight);
-			jx[xCellPosition][yCellPosition + 1] += p.charge * p.vx * (xCellPosition2 * cellWidth - p.x) *
-					(p.y - (yCellPosition2-1) * cellHeight) / (cellWidth * cellHeight);
-			jx[xCellPosition + 1][yCellPosition + 1] += p.charge * p.vx * (p.x - (xCellPosition2-1) * cellWidth) *
-					(p.y - (yCellPosition2-1) * cellHeight) / (cellWidth * cellHeight);
-			
-			jy[xCellPosition][yCellPosition] += p.charge * p.vy * (xCellPosition2 * cellWidth - p.x) *
-					(yCellPosition2 * cellHeight - p.y) / (cellWidth * cellHeight);
-			jy[xCellPosition + 1][yCellPosition] += p.charge * p.vy * (p.x - (xCellPosition2-1) * cellWidth) *
-					(yCellPosition2 * cellHeight - p.y) / (cellWidth * cellHeight);
-			jy[xCellPosition][yCellPosition + 1] += p.charge * p.vy * (xCellPosition2 * cellWidth - p.x) *
-					(p.y - (yCellPosition2-1) * cellHeight) / (cellWidth * cellHeight);
-			jy[xCellPosition + 1][yCellPosition + 1] += p.charge * p.vy * (p.x - (xCellPosition2-1) * cellWidth) *
-					(p.y - (yCellPosition2-1) * cellHeight) / (cellWidth * cellHeight);
-		}	
-		
+		intp.interpolateToGrid(particles, this);		
 		s.fsolver.step(this);		
 	}
 	
