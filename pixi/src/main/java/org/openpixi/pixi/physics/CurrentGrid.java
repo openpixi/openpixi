@@ -114,11 +114,14 @@ public class CurrentGrid {
 			} else if(yCellPosition < 1) {
 				yCellPosition = 1;
 			}
-						
-			if (Debug.asserts) assert xCellPosition * cellWidth > p.x;
-			if (Debug.asserts) assert p.x > (xCellPosition - 1) * cellWidth;
-			if (Debug.asserts) assert yCellPosition * cellHeight > p.y;
-			if (Debug.asserts) assert p.y > (xCellPosition - 1) * cellHeight;
+
+			if (Debug.asserts) {
+				// Assert conditions for interpolation
+				assert xCellPosition2 * cellWidth > p.x;
+				assert p.x > (xCellPosition2 - 1) * cellWidth;
+				assert yCellPosition2 * cellHeight > p.y;
+				assert p.y > (yCellPosition2 - 1) * cellHeight;
+			}
 
 			jx[xCellPosition][yCellPosition] += p.charge * p.vx * (xCellPosition2 * cellWidth - p.x) *
 					(yCellPosition2 * cellHeight - p.y) / (cellWidth * cellHeight);
