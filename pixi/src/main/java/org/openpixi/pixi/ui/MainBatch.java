@@ -31,7 +31,7 @@ public class MainBatch {
 	public static final int num_particles = 1000;
 	public static final double particle_radius = 0.1;
 	/**Total number of timesteps*/
-	public static final int steps = 1000;
+	public static final int steps = 10;
 	
 	public static Simulation s1;
 
@@ -39,7 +39,8 @@ public class MainBatch {
 		Debug.checkAssertsEnabled();
 
 		s1 = new Simulation();
-
+		
+		s1.setSize(s1.width, s1.height);
 		InitialConditions.createRandomParticles(s1, num_particles, particle_radius);
 		ConstantForce force = new ConstantForce();
 		force.bz = 0.001;
@@ -75,6 +76,8 @@ public class MainBatch {
 		}
 		
 		System.out.println("\nCalculation time: "+elapsed);
+		System.out.println(s1.currentGrid.cellWidth);
+		System.out.println(s1.currentGrid.cellHeight);
 	}
 
 }

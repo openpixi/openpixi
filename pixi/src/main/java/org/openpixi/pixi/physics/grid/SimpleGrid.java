@@ -34,6 +34,8 @@ public class SimpleGrid extends Grid {
 		
 		cellWidth = 0;
 		cellHeight = 0;
+		numCellsX = 10;
+		numCellsY = 10;
 		
 		jx = new double[numCellsX+3][numCellsY+3];
 		jy = new double[numCellsX+3][numCellsY+3];
