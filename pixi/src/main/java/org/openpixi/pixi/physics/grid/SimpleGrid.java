@@ -23,8 +23,6 @@ import java.util.ArrayList;
 import org.openpixi.pixi.physics.Particle2D;
 import org.openpixi.pixi.physics.Simulation;
 import org.openpixi.pixi.physics.fields.*;
-import org.openpixi.pixi.physics.interpolation.*;
-import org.openpixi.pixi.physics.grid.*;
 
 
 public class SimpleGrid extends Grid {
