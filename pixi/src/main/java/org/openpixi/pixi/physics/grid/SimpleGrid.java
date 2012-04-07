@@ -32,10 +32,10 @@ public class SimpleGrid extends Grid {
 		super(s);
 		interp = new CloudInCell();
 		
-		cellWidth = 0;
-		cellHeight = 0;
 		numCellsX = 10;
 		numCellsY = 10;
+		cellWidth = s.width/numCellsX;
+		cellHeight = s.height/numCellsY;
 		
 		jx = new double[numCellsX+3][numCellsY+3];
 		jy = new double[numCellsX+3][numCellsY+3];
