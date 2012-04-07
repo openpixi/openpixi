@@ -31,11 +31,12 @@ public class GaussSeidel extends FieldSolver {
 	}
 
 	public void step(double [][] phi, double [][] b, int nx, int ny, double dx, double dy) {
-		
-		/*previous = new double[nx][ny];
+		/*
+		previous = new double[nx][ny];
 		for (int i = 1; i < nx-1; i++) {
 			for (int j = 1; j < ny-1; j++) {
 				previous[i][j] = 0;
+				//System.out.println(b[i][j]);
 			}
 		}
 		System.out.println(previous[3] == phi[3]);
@@ -53,9 +54,11 @@ public class GaussSeidel extends FieldSolver {
 				}
 			}
 			
-			/*for (int i = 0; i < nx; i++) {
+			/*
+			for (int i = 0; i < nx; i++) {
 					previous[i] = phi[i].clone();
-			}*/
+			}
+			*/
 			/*
 			for (int i = 1; i < nx-1; i++) {
 				for (int j = 1; j < ny-1; j++) {

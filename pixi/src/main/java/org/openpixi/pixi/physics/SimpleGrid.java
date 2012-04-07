@@ -25,9 +25,9 @@ import org.openpixi.pixi.physics.interpolation.*;
 import org.openpixi.pixi.physics.grid.*;
 
 
-public class CurrentGrid extends Grid {
+public class SimpleGrid extends Grid {
 
-	public CurrentGrid(Simulation s) {
+	public SimpleGrid(Simulation s) {
 		
 		super(s);
 		interp = new CloudInCell();

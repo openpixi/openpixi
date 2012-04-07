@@ -45,7 +45,7 @@ public class Simulation {
 	
 	public Solver psolver;
 	public FieldSolver fsolver;
-	public CurrentGrid currentGrid;
+	public SimpleGrid currentGrid;
 	public Collision collision;
 	//public Detector detector;
 	//public CollisionAlgorithm algorithm;
@@ -64,7 +64,7 @@ public class Simulation {
 		
 		psolver = new Boris();
 		fsolver = new SimpleSolver();
-		currentGrid = new CurrentGrid(this);
+		currentGrid = new SimpleGrid(this);
 		//detector = new Detector();
 		//algorithm = new CollisionAlgorithm();
 		collision = new Collision();

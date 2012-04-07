@@ -11,7 +11,7 @@ public class Interpolator {
 		
 	}
 	
-	public void interpolateToGrid(ArrayList<Particle2D> particles, CurrentGrid g) {
+	public void interpolateToGrid(ArrayList<Particle2D> particles, SimpleGrid g) {
 		
 	}
 	

@@ -2,7 +2,7 @@ package org.openpixi.pixi.physics.interpolation;
 
 import java.util.ArrayList;
 
-import org.openpixi.pixi.physics.CurrentGrid;
+import org.openpixi.pixi.physics.SimpleGrid;
 import org.openpixi.pixi.physics.Debug;
 import org.openpixi.pixi.physics.Particle2D;
 
@@ -12,7 +12,7 @@ public class CloudInCell extends Interpolator {
 		super();
 	}
 	
-	public void interpolateToGrid(ArrayList<Particle2D> particles, CurrentGrid g) {
+	public void interpolateToGrid(ArrayList<Particle2D> particles, SimpleGrid g) {
 		
 		for(Particle2D p : particles)
 		{

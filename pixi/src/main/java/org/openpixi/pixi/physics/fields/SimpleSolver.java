@@ -1,6 +1,6 @@
 package org.openpixi.pixi.physics.fields;
 
-import org.openpixi.pixi.physics.CurrentGrid;
+import org.openpixi.pixi.physics.SimpleGrid;
 
 public class SimpleSolver extends FieldSolver {
 	
@@ -14,7 +14,7 @@ public class SimpleSolver extends FieldSolver {
 	 * @param p before the update: E(t), B(t+dt/2);
 	 * 						after the update: E(t+dt), B(t+3dt/2)
 	*/
-	public void step(CurrentGrid g) {
+	public void step(SimpleGrid g) {
 		
 		for (int i = 1; i < g.numCellsX + 1; i++) {
 			for (int j = 1; j < g.numCellsY + 1; j++) {
