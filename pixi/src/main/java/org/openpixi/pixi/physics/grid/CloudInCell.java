@@ -1,10 +1,9 @@
-package org.openpixi.pixi.physics.interpolation;
+package org.openpixi.pixi.physics.grid;
 
 import java.util.ArrayList;
 
 import org.openpixi.pixi.physics.Debug;
 import org.openpixi.pixi.physics.Particle2D;
-import org.openpixi.pixi.physics.grid.SimpleGrid;
 
 public class CloudInCell extends Interpolator {
 	

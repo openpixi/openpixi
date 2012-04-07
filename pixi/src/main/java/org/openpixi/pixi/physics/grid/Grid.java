@@ -2,7 +2,6 @@ package org.openpixi.pixi.physics.grid;
 
 import java.util.ArrayList;
 import org.openpixi.pixi.physics.Simulation;
-import org.openpixi.pixi.physics.interpolation.Interpolator;
 import org.openpixi.pixi.physics.grid.*;
 
 public class Grid {
