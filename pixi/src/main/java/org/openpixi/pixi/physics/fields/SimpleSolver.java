@@ -1,6 +1,6 @@
 package org.openpixi.pixi.physics.fields;
 
-import org.openpixi.pixi.physics.SimpleGrid;
+import org.openpixi.pixi.physics.grid.SimpleGrid;
 
 public class SimpleSolver extends FieldSolver {
 	

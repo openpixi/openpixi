@@ -27,6 +27,7 @@ import org.openpixi.pixi.physics.collision.detectors.*;
 import org.openpixi.pixi.physics.fields.FieldSolver;
 import org.openpixi.pixi.physics.fields.SimpleSolver;
 import org.openpixi.pixi.physics.force.*;
+import org.openpixi.pixi.physics.grid.SimpleGrid;
 import org.openpixi.pixi.physics.solver.*;
 
 public class Simulation {
