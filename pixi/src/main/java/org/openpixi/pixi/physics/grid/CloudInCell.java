@@ -11,7 +11,7 @@ public class CloudInCell extends Interpolator {
 		super();
 	}
 	
-	public void interpolateToGrid(ArrayList<Particle2D> particles, SimpleGrid g) {
+	public void interpolateToGrid(ArrayList<Particle2D> particles, Grid g) {
 		
 		for(Particle2D p : particles)
 		{
