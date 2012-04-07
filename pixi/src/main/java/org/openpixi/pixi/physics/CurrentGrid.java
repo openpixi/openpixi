@@ -22,40 +22,15 @@ import java.util.ArrayList;
 
 import org.openpixi.pixi.physics.fields.*;
 import org.openpixi.pixi.physics.interpolation.*;
+import org.openpixi.pixi.physics.grid.*;
 
 
-public class CurrentGrid {
-	
-	/**Electric current in x-Direction*/
-	public double [][] jx;
-	/**Electric current in y-Direction*/
-	public double [][] jy;
+public class CurrentGrid extends Grid {
 
-	/**Electric charge sum of a cell*/
-	public double [][] rho;
-	
-	/**Electric field in x direction*/
-	public double [][] Ex;
-	/**Electric field in y direction*/
-	public double [][] Ey;
-	/**Magnetic field in z direction*/
-	public double [][] Bz;
-	
-	public int numCellsX = 10;
-	public int numCellsY = 10;
-	
-	public double cellWidth;
-	public double cellHeight;
-	
-	public Simulation s;
-	private Interpolator intp; 
-	
-	
-	//the constructor
 	public CurrentGrid(Simulation s) {
 		
-		this.s = s;
-		intp = new CloudInCell();
+		super(s);
+		interp = new CloudInCell();
 		
 		cellWidth = 0;
 		cellHeight = 0;
@@ -98,7 +73,7 @@ public class CurrentGrid {
 	public void updateGrid(ArrayList<Particle2D> particles)
 	{
 		reset();
-		intp.interpolateToGrid(particles, this);		
+		interp.interpolateToGrid(particles, this);		
 		s.fsolver.step(this);		
 	}
 	
