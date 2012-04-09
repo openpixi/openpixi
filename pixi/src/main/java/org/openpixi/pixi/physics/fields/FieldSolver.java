@@ -19,7 +19,7 @@
 
 package org.openpixi.pixi.physics.fields;
 
-import org.openpixi.pixi.physics.grid.SimpleGrid;
+import org.openpixi.pixi.physics.grid.*;
 
 public abstract class FieldSolver {
 	
@@ -27,7 +27,7 @@ public abstract class FieldSolver {
 		
 	}
 	
-	public void step(SimpleGrid g) {
+	public void step(Grid g) {
 		
 	}
 	
