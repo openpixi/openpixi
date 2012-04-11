@@ -10,6 +10,9 @@ public class ChargeConservingAreaWeighting extends Interpolator {
 		
 		super(g);
 		g.particledata = new ArrayList<Particle2DData>(g.s.particles.size());
+		for (Particle2D p: g.s.particles){
+			g.particledata.add(new Particle2DData());
+		}
 		
 	}
 	
