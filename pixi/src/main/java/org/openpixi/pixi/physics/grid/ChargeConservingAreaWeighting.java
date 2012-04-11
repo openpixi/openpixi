@@ -66,8 +66,8 @@ public class ChargeConservingAreaWeighting extends Interpolator {
 						
 					}
 						
-			pd.x = p.x;
-			pd.y = p.y;
+			g.particledata.get(i).x = p.x;
+			g.particledata.get(i).y = p.y;
 			
 		}
 	}
