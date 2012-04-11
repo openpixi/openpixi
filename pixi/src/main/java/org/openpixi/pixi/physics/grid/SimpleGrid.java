@@ -30,7 +30,7 @@ public class SimpleGrid extends Grid {
 	public SimpleGrid(Simulation s) {
 		
 		super(s);
-		interp = new CloudInCell();
+		interp = new CloudInCell(this);
 		
 		numCellsX = 10;
 		numCellsY = 10;
@@ -75,7 +75,7 @@ public class SimpleGrid extends Grid {
 	public void updateGrid(ArrayList<Particle2D> particles)
 	{
 		reset();
-		interp.interpolateToGrid(particles, this);		
+		interp.interpolateToGrid(particles);		
 		s.fsolver.step(this);		
 	}
 	
