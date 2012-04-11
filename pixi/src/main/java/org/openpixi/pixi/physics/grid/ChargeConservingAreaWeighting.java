@@ -62,7 +62,7 @@ public class ChargeConservingAreaWeighting extends Interpolator {
 				// 10-boundary move
 					else {
 						
-						tenBoundaryMove(xStart, yStart, xEnd, yEnd, deltaX, deltaY, pd);
+						tenBoundaryMove(xStart, yStart, xEnd, yEnd, deltaX, deltaY, pd, p);
 						
 					}
 						
@@ -82,7 +82,8 @@ public class ChargeConservingAreaWeighting extends Interpolator {
 	 * @param deltaY y distance covered by particle (not absolute but only for this 4-boundary move)
 	 * @param p Particle2D
 	 */
-	private void fourBoundaryMove(int lx, int ly, double x, double y, double deltaX, double deltaY) {
+	private void fourBoundaryMove(int lx, int ly, double x, double y, 
+			double deltaX, double deltaY) {
 		//will lead to boundary problems!
 		g.jx[lx][ly-1] += deltaX * ((g.cellHeight - deltaY) / 2 - y);
 		g.jx[lx][ly] += deltaX * ((g.cellHeight + deltaY) / 2 + y);
@@ -90,7 +91,8 @@ public class ChargeConservingAreaWeighting extends Interpolator {
 		g.jy[lx][ly] += deltaY * ((g.cellWidth + deltaX) / 2 + x);
 	}
 	
-	private void sevenBoundaryMove(int xStart, int yStart, int xEnd, int yEnd, double deltaX, double deltaY, Particle2DData pd) {
+	private void sevenBoundaryMove(int xStart, int yStart, int xEnd, int yEnd, 
+			double deltaX, double deltaY, Particle2DData pd) {
 		
 		/**local x coordinate BEFORE particle push*/
 		double x = pd.x - xStart * g.cellWidth;
@@ -151,22 +153,102 @@ public class ChargeConservingAreaWeighting extends Interpolator {
 				deltaX -= deltaX1;
 				deltaY -= deltaY1;
 				y += deltaY1;
-				fourBoundaryMove(xEnd, yEnd, x, (g.cellWidth / 2), deltaX, deltaY);
+				fourBoundaryMove(xEnd, yEnd, x, (g.cellHeight / 2), deltaX, deltaY);
 				
 			}
 		}
 
 	}
 	
-	private void tenBoundaryMove (int xStart, int yStart, int xEnd, int yEnd, double deltaX, double deltaY, Particle2DData pd) {
+	private void tenBoundaryMove (int xStart, int yStart, int xEnd, int yEnd, 
+			double deltaX, double deltaY, Particle2DData pd, Particle2D p) {
 		
 		/**local x coordinate BEFORE particle push*/
 		double x = pd.x - xStart * g.cellWidth;
 		/**local y coordinate BEFORE particle push*/
 		double y = pd.y - yStart * g.cellHeight;
+		boolean b = p.x > (xEnd*g.cellWidth);
 		
-		
-		
+		/**
+		//moved right?
+		if (xEnd == (xStart+1)) {
+			//moved up?
+			if (yEnd == (yStart+1)) {
+				//right?
+				if(b) {
+					
+					double deltaX1 = (g.cellWidth / 2) - x;
+					double deltaY1 = (deltaY / deltaX) * deltaX1;
+					fourBoundaryMove(xStart, yStart, x, y, deltaX1, deltaY1);
+					
+					double deltaY2 = g.cellHeight - y -deltaY1;
+					double deltaX2 = (deltaX1 / deltaY1) * deltaY;
+					y += deltaY1;
+					fourBoundaryMove(xStart+1, yStart, -(g.cellWidth / 2), y, deltaX2, deltaY2);
+					
+					deltaX -= (deltaX1 + deltaX2);
+					deltaY -= (deltaY1 + deltaY1);
+					x = deltaX - (g.cellWidth / 2);					
+					fourBoundaryMove(xEnd, yEnd, x, (g.cellHeight / 2), deltaX, deltaY);
+					
+				}
+				//left
+				else {
+					
+					double deltaY1 = (g.cellHeight / 2) - y;
+					double deltaX1 = (deltaX / deltaY) * deltaY1;
+					fourBoundaryMove(xStart, yStart, x, y, deltaX1, deltaY1);
+					
+					double deltaY2 = g.cellHeight - y -deltaY1;
+					double deltaX2 = (deltaX1 / deltaY1) * deltaY;
+					y += deltaY1;
+					fourBoundaryMove(xStart, yStart+1, -(g.cellWidth / 2), y, deltaX2, deltaY2);
+					
+					deltaX -= (deltaX1 + deltaX2);
+					deltaY -= (deltaY1 + deltaY1);
+					x = deltaX - (g.cellWidth / 2);					
+					fourBoundaryMove(xEnd, yEnd, x, (g.cellHeight / 2), deltaX, deltaY);
+					
+				}
+			}
+			//moved down
+			else {
+				//right?
+				if(b) {
+					
+				}
+				//left
+				else {
+					
+				}				
+			}
+			
+		}
+		//moved left
+		else {
+			//moved up?
+			if (yEnd == (yStart+1)) {
+				//right?
+				if(b) {
+					
+				}
+				//left
+				else {
+					
+				}				
+			}
+			//moved down
+			else {
+				//right?
+				if(b) {
+					
+				}
+				//left
+				else {
+					
+				}			
+			}
+		}*/
 	}
 
 	
