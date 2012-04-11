@@ -6,11 +6,14 @@ import org.openpixi.pixi.physics.*;
 
 public class Interpolator {
 	
-	public Interpolator() {
+	Grid g;
+	
+	public Interpolator(Grid g) {
 		
+		this.g = g;
 	}
 	
-	public void interpolateToGrid(ArrayList<Particle2D> particles, Grid g) {
+	public void interpolateToGrid(ArrayList<Particle2D> particles) {
 		
 	}
 	
