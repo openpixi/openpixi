@@ -7,16 +7,16 @@ import org.openpixi.pixi.physics.Particle2D;
 
 public class CloudInCell extends Interpolator {
 	
-	public CloudInCell() {
-		super();
+	public CloudInCell(Grid g) {
+		super(g);
 	}
 	
-	public void interpolateToGrid(ArrayList<Particle2D> particles, Grid g) {
+	public void interpolateToGrid(ArrayList<Particle2D> particles) {
 		
 		for(Particle2D p : particles)
 		{
-			int xCellPosition = (int) (p.x / g.cellWidth + 1);
-			int yCellPosition = (int) (p.y / g.cellHeight + 1);
+			int xCellPosition = (int) (Math.floor((p.x / g.cellWidth + 1)));
+			int yCellPosition = (int) (Math.floor((p.y / g.cellHeight + 1)));
 			
 			int xCellPosition2 = xCellPosition;
 			int yCellPosition2 = yCellPosition;
@@ -34,9 +34,9 @@ public class CloudInCell extends Interpolator {
 
 			if (Debug.asserts) {
 				// Assert conditions for interpolation
-				assert xCellPosition2 * g.cellWidth > p.x;
+				assert xCellPosition2 * g.cellWidth > p.x : p.x;
 				assert p.x > (xCellPosition2 - 1) * g.cellWidth : p.x;
-				assert yCellPosition2 * g.cellHeight > p.y;
+				assert yCellPosition2 * g.cellHeight > p.y : p.y;
 				assert p.y > (yCellPosition2 - 1) * g.cellHeight : p.y;
 			}
 
