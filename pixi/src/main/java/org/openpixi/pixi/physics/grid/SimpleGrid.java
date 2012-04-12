@@ -20,6 +20,7 @@ package org.openpixi.pixi.physics.grid;
 
 import java.util.ArrayList;
 
+import org.openpixi.pixi.physics.Debug;
 import org.openpixi.pixi.physics.Particle2D;
 import org.openpixi.pixi.physics.Simulation;
 import org.openpixi.pixi.physics.fields.*;
@@ -98,7 +99,15 @@ public class SimpleGrid extends Grid {
 		} else if(yCellPosition < 1) {
 			yCellPosition = 1;
 		}
-		
+
+		if (Debug.asserts) {
+			// Assert conditions for interpolation
+			assert xCellPosition2 * cellWidth > p.x : p.x;
+			assert p.x > (xCellPosition2 - 1) * cellWidth : p.x;
+			assert yCellPosition2 * cellHeight > p.y : p.y;
+			assert p.y > (yCellPosition2 - 1) * cellHeight : p.y;
+		}
+
 		fields[0] = ( Ex[xCellPosition][yCellPosition] * (xCellPosition2 * cellWidth - p.x) *
 				(yCellPosition2 * cellHeight - p.y) +
 				Ex[xCellPosition + 1][yCellPosition] * (p.x - (xCellPosition2 - 1) * cellWidth) *
