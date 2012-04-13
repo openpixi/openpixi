@@ -41,8 +41,9 @@ public class ChargeConservingAreaWeighting extends Interpolator {
 			int xStart = (int) (pd.x / g.cellWidth + 0.5 );
 			int yStart = (int) (pd.y / g.cellHeight+ 0.5);
 			
-			int xEnd = (int) (pd.x / g.cellWidth + 0.5 );
-			int yEnd = (int) (pd.y / g.cellHeight+ 0.5);
+			//local origin i.e. nearest grid point AFTER particle push
+			int xEnd = (int) (p.x / g.cellWidth + 0.5 );
+			int yEnd = (int) (p.y / g.cellHeight+ 0.5);
 			
 			double deltaX = p.x - pd.x;
 			double deltaY = p.y - pd.y;
