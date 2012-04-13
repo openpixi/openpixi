@@ -53,6 +53,18 @@ public class ChargeConservingAreaWeightingTest extends TestCase {
 		testMove(5.7, 5.8, 5.3, 5.2, +1, "ten boundary");
 	}
 
+	public void testRandomMoves() {
+		for (int i = 0; i < 10; i++) {
+			double x1 = 2 + 6 * Math.random();
+			double y1 = 2 + 6 * Math.random();
+			double phi = 2 * Math.PI * Math.random();
+			double distance = 1 * Math.random();
+			double x2 = x1 + distance * Math.cos(phi);
+			double y2 = y1 + distance * Math.sin(phi);
+			testMove(x1, y1, x2, y2, +1, "random boundary");
+		}
+	}
+
 	private void testMove(double x1, double y1, double x2, double y2, double charge, String text) {
 		Simulation s = new Simulation();
 
@@ -83,7 +95,8 @@ public class ChargeConservingAreaWeightingTest extends TestCase {
 		double jx = getSum(grid.jx);
 		double jy = getSum(grid.jy);
 
-		System.out.println("Total current " + text + ": jx = " + jx + ", jy = " + jy);
+		System.out.println("Total current " + text + ": jx = " + jx + ", jy = " + jy
+				+ " (from " + x1 + ", " + y1 + " to " + x2 + ", " + y2 + ")");
 
 		assertAlmostEquals(text + ", jx", charge * (x2 - x1), jx, ACCURACY_LIMIT);
 		assertAlmostEquals(text + ", jy", charge * (y2 - y1), jy, ACCURACY_LIMIT);
