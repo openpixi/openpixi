@@ -83,8 +83,8 @@ public class SimpleGrid extends Grid {
 	public double[] interpolateToParticle(Particle2D p) {
 		
 		double[] fields = new double[3];
-		int xCellPosition = (int) (p.x / cellWidth) + 1;
-		int yCellPosition = (int) (p.y / cellHeight) + 1;
+		int xCellPosition = (int) Math.floor(p.x / cellWidth + 1);
+		int yCellPosition = (int) Math.floor(p.y / cellHeight + 1);
 		
 		int xCellPosition2 = xCellPosition;
 		int yCellPosition2 = yCellPosition;
