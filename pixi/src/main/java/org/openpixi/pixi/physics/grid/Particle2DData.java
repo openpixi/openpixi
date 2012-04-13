@@ -7,6 +7,9 @@ public class Particle2DData {
 	/**previous y position of particle*/
 	public double y;
 	
+	/**charge density of particle for a specific form factor*/
+	public double cd;
+	
 	public double Ex;
 	public double Ey;
 	public double Bz;
