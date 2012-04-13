@@ -8,13 +8,14 @@ public class YeeGrid extends Grid {
 	public YeeGrid(Simulation s) {
 		
 		super(s);
-		interp = new ChargeConservingAreaWeighting(this);
-		
+
 		numCellsX = 10;
 		numCellsY = 10;
 		cellWidth = s.width/numCellsX;
 		cellHeight = s.height/numCellsY;
-		
+
+		interp = new ChargeConservingAreaWeighting(this);
+
 		jx = new double[numCellsX+2][numCellsY+2];
 		jy = new double[numCellsX+2][numCellsY+2];
 		rho = new double[numCellsX+2][numCellsY+2];
