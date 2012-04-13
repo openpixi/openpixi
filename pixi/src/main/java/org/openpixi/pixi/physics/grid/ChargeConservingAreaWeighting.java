@@ -15,7 +15,7 @@ public class ChargeConservingAreaWeighting extends Interpolator {
 			Particle2DData pd = new Particle2DData();
 			//assuming rectangular particle shape i.e. area weighting
 			pd.cd = p.charge / (g.cellWidth * g.cellHeight);
-			g.particledata.add(new Particle2DData());
+			g.particledata.add(pd);
 		}
 		
 	}
