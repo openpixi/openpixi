@@ -2,6 +2,7 @@ package org.openpixi.pixi.physics.grid;
 
 import java.util.ArrayList;
 
+import org.openpixi.pixi.physics.Debug;
 import org.openpixi.pixi.physics.Particle2D;
 
 public class ChargeConservingAreaWeighting extends Interpolator {
@@ -170,59 +171,132 @@ public class ChargeConservingAreaWeighting extends Interpolator {
 		double x = pd.x - xStart * g.cellWidth;
 		/**local y coordinate BEFORE particle push*/
 		double y = pd.y - yStart * g.cellHeight;
-		boolean b = p.x > (xEnd*g.cellWidth);
 		
-		/**
 		//moved right?
 		if (xEnd == (xStart+1)) {
 			//moved up?
 			if (yEnd == (yStart+1)) {
-				//right?
-				if(b) {
+
+				double deltaX1 = (g.cellWidth / 2) - x;
+				
+				//lower local origin
+				if(((deltaY / deltaX) * deltaX1 + y) < (g.cellHeight / 2)) {
 					
-					double deltaX1 = (g.cellWidth / 2) - x;
 					double deltaY1 = (deltaY / deltaX) * deltaX1;
 					fourBoundaryMove(xStart, yStart, x, y, deltaX1, deltaY1);
 					
-					double deltaY2 = g.cellHeight - y -deltaY1;
-					double deltaX2 = (deltaX1 / deltaY1) * deltaY;
+					double deltaY2 = (g.cellHeight / 2) - y - deltaY1;
+					double deltaX2 = (deltaX1 / deltaY1) * deltaY2;
 					y += deltaY1;
 					fourBoundaryMove(xStart+1, yStart, -(g.cellWidth / 2), y, deltaX2, deltaY2);
 					
 					deltaX -= (deltaX1 + deltaX2);
 					deltaY -= (deltaY1 + deltaY1);
-					x = deltaX - (g.cellWidth / 2);					
-					fourBoundaryMove(xEnd, yEnd, x, (g.cellHeight / 2), deltaX, deltaY);
+					x = deltaX2 - (g.cellWidth / 2);					
+					fourBoundaryMove(xEnd, yEnd, x, -(g.cellHeight / 2), deltaX, deltaY);
+					
+					if (Debug.asserts) {
+						assert deltaX1 >= 0: deltaX1;
+						assert deltaY1 >= 0: deltaY1;
+						assert y >= 0 && y <= (g.cellHeight / 2);
+						assert deltaX2 >= 0: deltaX2;
+						assert deltaY2 >= 0: deltaY2;
+						assert deltaX >= 0: deltaX;
+						assert deltaY >=0: deltaY;
+						assert x <= 0 && x >= -(g.cellWidth / 2);
+					}
 					
 				}
-				//left
+				//upper local origin
 				else {
 					
 					double deltaY1 = (g.cellHeight / 2) - y;
-					double deltaX1 = (deltaX / deltaY) * deltaY1;
+					deltaX1 = (deltaX / deltaY) * deltaY1;
 					fourBoundaryMove(xStart, yStart, x, y, deltaX1, deltaY1);
 					
-					double deltaY2 = g.cellHeight - y -deltaY1;
-					double deltaX2 = (deltaX1 / deltaY1) * deltaY;
-					y += deltaY1;
-					fourBoundaryMove(xStart, yStart+1, -(g.cellWidth / 2), y, deltaX2, deltaY2);
+					double deltaX2 = (g.cellWidth / 2) - x - deltaX1;
+					double deltaY2 = (deltaY1 / deltaX1) * deltaX2;
+					x += deltaX1;
+					fourBoundaryMove(xStart, yStart+1, x, -(g.cellHeight / 2), deltaX2, deltaY2);
 					
 					deltaX -= (deltaX1 + deltaX2);
 					deltaY -= (deltaY1 + deltaY1);
-					x = deltaX - (g.cellWidth / 2);					
-					fourBoundaryMove(xEnd, yEnd, x, (g.cellHeight / 2), deltaX, deltaY);
+					y = deltaY2 - (g.cellHeight / 2);					
+					fourBoundaryMove(xEnd, yEnd, -(g.cellWidth / 2), y, deltaX, deltaY);
+					
+					if (Debug.asserts) {
+						assert deltaX1 >= 0: deltaX1;
+						assert deltaY1 >= 0: deltaY1;
+						assert x >= 0 && x <= (g.cellWidth / 2);
+						assert deltaX2 >= 0: deltaX2;
+						assert deltaY2 >= 0: deltaY2;
+						assert deltaX >=0: deltaX;
+						assert deltaY >=0: deltaY;
+						assert y <= 0 && y >= -(g.cellHeight / 2);
+					}
 					
 				}
 			}
 			//moved down
 			else {
-				//right?
-				if(b) {
+
+				double deltaY1 = -((g.cellHeight / 2) + y);
+				
+				//lower local origin
+				if(((deltaX / deltaY) * deltaY1 + x) < (g.cellWidth / 2)) {
+					
+					double deltaX1 = (deltaX / deltaY) * deltaY1;
+					fourBoundaryMove(xStart, yStart, x, y, deltaX1, deltaY1);
+					
+					double deltaX2 = (g.cellWidth / 2) - x - deltaX1;
+					double deltaY2 = (deltaY / deltaX) * deltaX2;
+					x += deltaX1;
+					fourBoundaryMove(xStart, yStart-1, x, (g.cellHeight / 2), deltaX2, deltaY2);
+					
+					deltaX -= (deltaX1 + deltaX2);
+					deltaY -= (deltaY1 + deltaY1);
+					y = -deltaY2 - (g.cellHeight / 2);					
+					fourBoundaryMove(xEnd, yEnd, -(g.cellWidth / 2), y, deltaX, deltaY);
+					
+					if (Debug.asserts) {
+						assert deltaY1 <= 0: deltaY1;
+						assert x >= 0 && x <= (g.cellWidth / 2);
+						assert deltaX1 >= 0: deltaX1;
+						assert deltaX2 >= 0: deltaX2;
+						assert deltaY2 <= 0: deltaY2;
+						assert deltaX >= 0: deltaX;
+						assert deltaY <=0: deltaY;
+						assert y >= 0 && y <= (g.cellHeight / 2);
+					}
 					
 				}
-				//left
+				//upper local origin
 				else {
 					
+					double deltaX1 = (g.cellWidth /2) - x;
+					deltaY1 = (deltaY / deltaX) * deltaX1;
+					fourBoundaryMove(xStart, yStart, x, y, deltaX1, deltaY1);
+					
+					double deltaY2 = -((g.cellHeight / 2) + y + deltaY1);
+					double deltaX2 = (deltaX1 / deltaY1) * deltaY2;
+					y += deltaY1;
+					fourBoundaryMove(xStart+1, yStart, -(g.cellWidth / 2), y, deltaX2, deltaY2);
+					
+					deltaX -= (deltaX1 + deltaX2);
+					deltaY -= (deltaY1 + deltaY1);
+					x = deltaX2 - (g.cellWidth / 2);					
+					fourBoundaryMove(xEnd, yEnd, x, (g.cellHeight / 2), deltaX, deltaY);
+					
+					if (Debug.asserts) {
+						assert deltaX1 >= 0: deltaX1;
+						assert deltaY1 <= 0: deltaY1;
+						assert y <= 0 && y >= -(g.cellHeight /2);
+						assert deltaX2 >= 0: deltaX2;
+						assert deltaY2 <= 0: deltaY2;
+						assert deltaX >= 0: deltaX;
+						assert deltaY <=0: deltaY;
+						assert x <= 0 && x >= -(g.cellWidth / 2);
+					}
 				}				
 			}
 			
@@ -231,27 +305,127 @@ public class ChargeConservingAreaWeighting extends Interpolator {
 		else {
 			//moved up?
 			if (yEnd == (yStart+1)) {
-				//right?
-				if(b) {
+				
+				double deltaX1 = -((g.cellWidth / 2) + x);
+				//lower local origin
+				if(((deltaY / deltaX) * deltaX1 + y) < (g.cellHeight/ 2)) {
 					
+					double deltaY1 = (deltaY / deltaX) * deltaX1;
+					fourBoundaryMove(xStart, yStart, x, y, deltaX1, deltaY1);
+					
+					double deltaY2 = (g.cellHeight / 2) - y - deltaY1;
+					double deltaX2 = (deltaX1 / deltaY1) * deltaY2;
+					y += deltaY1;
+					fourBoundaryMove(xStart-1, yStart, (g.cellWidth / 2), y, deltaX2, deltaY2);
+					
+					deltaX -= (deltaX1 + deltaX2);
+					deltaY -= (deltaY1 + deltaY1);
+					x = (g.cellWidth / 2) + deltaX2;					
+					fourBoundaryMove(xEnd, yEnd, x, -(g.cellHeight / 2), deltaX, deltaY);
+					
+					if (Debug.asserts) {
+						assert deltaX1 <= 0: deltaX1;
+						assert deltaY1 >= 0: deltaY1;
+						assert y >= 0 && y <= (g.cellHeight / 2);
+						assert deltaX2 <= 0: deltaX2;
+						assert deltaY2 >= 0: deltaY2;
+						assert deltaX <= 0: deltaX;
+						assert deltaY >=0: deltaY;
+						assert x >= 0 && x <= (g.cellWidth / 2);
+					}
 				}
-				//left
+				//upper local origin
 				else {
 					
+					double deltaY1 = (g.cellHeight / 2) - y;
+					deltaX1 = (deltaX / deltaY) * deltaY1;
+					fourBoundaryMove(xStart, yStart, x, y, deltaX1, deltaY1);
+					
+					double deltaX2 = (g.cellWidth / 2) - x - deltaX1;
+					double deltaY2 = (deltaY1 / deltaX1) * deltaX2;
+					x += deltaX1;
+					fourBoundaryMove(xStart, yStart+1, x, -(g.cellHeight / 2), deltaX2, deltaY2);
+					
+					deltaX -= (deltaX1 + deltaX2);
+					deltaY -= (deltaY1 + deltaY1);
+					y = deltaY2 - (g.cellHeight / 2);					
+					fourBoundaryMove(xEnd, yEnd, -(g.cellWidth / 2), y, deltaX, deltaY);
+					
+					if (Debug.asserts) {
+						assert deltaX1 <= 0: deltaX1;
+						assert deltaY1 >= 0: deltaY1;
+						assert x <= 0 && x >= -(g.cellWidth / 2);
+						assert deltaX2 <= 0: deltaX2;
+						assert deltaY2 >= 0: deltaY2;
+						assert deltaX <=0: deltaX;
+						assert deltaY >=0: deltaY;
+						assert y <= 0 && y >= -(g.cellHeight / 2);
+					}
 				}				
 			}
 			//moved down
 			else {
-				//right?
-				if(b) {
+				
+				double deltaY1 = -((g.cellHeight / 2) + y);
+				//lower local origin
+				if((-(deltaX / deltaY) * deltaY1 - x) < (g.cellWidth/ 2)) {
+					
+					double deltaX1 = (deltaX / deltaY) * deltaY1;
+					fourBoundaryMove(xStart, yStart, x, y, deltaX1, deltaY1);
+					
+					double deltaX2 = (g.cellWidth / 2) + x + deltaX1;
+					double deltaY2 = (deltaY / deltaX) * deltaX2;
+					x += deltaX1;
+					fourBoundaryMove(xStart, yStart-1, x, (g.cellHeight / 2), deltaX2, deltaY2);
+					
+					deltaX -= (deltaX1 + deltaX2);
+					deltaY -= (deltaY1 + deltaY1);
+					y = (g.cellHeight / 2) + deltaY2;					
+					fourBoundaryMove(xEnd, yEnd, (g.cellWidth / 2), y, deltaX, deltaY);
+					
+					if (Debug.asserts) {
+						assert deltaY1 <= 0: deltaY1;
+						assert deltaX1 <= 0: deltaX1;
+						assert x <= 0 && x >= -(g.cellWidth / 2);
+						assert deltaX2 <= 0: deltaX2;
+						assert deltaY2 <= 0: deltaY2;
+						assert deltaX <= 0: deltaX;
+						assert deltaY <= 0: deltaY;
+						assert y >= 0 && y <= (g.cellHeight / 2);
+					}
 					
 				}
-				//left
+				//upper local origin
 				else {
+					
+					double deltaX1 = -((g.cellWidth /2) + x);
+					deltaY1 = (deltaY / deltaX) * deltaX1;
+					fourBoundaryMove(xStart, yStart, x, y, deltaX1, deltaY1);
+					
+					double deltaY2 = -((g.cellHeight / 2) + y + deltaY1);
+					double deltaX2 = (deltaX1 / deltaY1) * deltaY2;
+					y += deltaY1;
+					fourBoundaryMove(xStart+1, yStart, (g.cellWidth / 2), y, deltaX2, deltaY2);
+					
+					deltaX -= (deltaX1 + deltaX2);
+					deltaY -= (deltaY1 + deltaY1);
+					x = (g.cellWidth / 2) + deltaX2;					
+					fourBoundaryMove(xEnd, yEnd, x, (g.cellHeight / 2), deltaX, deltaY);
+					
+					if (Debug.asserts) {
+						assert deltaX1 <= 0: deltaX1;
+						assert deltaY1 <= 0: deltaY1;
+						assert y <= 0 && y >= -(g.cellHeight /2);
+						assert deltaX2 <= 0: deltaX2;
+						assert deltaY2 <= 0: deltaY2;
+						assert deltaX <= 0: deltaX;
+						assert deltaY <= 0: deltaY;
+						assert x >= 0 && x <= (g.cellWidth / 2);
+					}
 					
 				}			
 			}
-		}*/
+		}
 	}
 
 	
