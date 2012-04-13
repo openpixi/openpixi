@@ -15,7 +15,9 @@ public class ChargeConservingAreaWeightingTest extends TestCase {
 	double ACCURACY_LIMIT = 1.e-14;
 
 	void assertAlmostEquals(String text, double x, double y, double limit) {
-		if (Math.abs(x - y) / Math.abs(x + y) > limit) {
+		if ((Math.abs(x - y) / Math.abs(x + y) > limit)
+				|| (Double.isNaN(x) != Double.isNaN(y))
+				|| (Double.isInfinite(x) != Double.isInfinite(y))) {
 			assertTrue(text + " expected:<" + x + "> but was:<" + y + ">", false);
 		}
 	}
