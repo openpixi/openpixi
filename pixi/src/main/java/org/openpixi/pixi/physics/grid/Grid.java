@@ -45,6 +45,10 @@ public class Grid {
 		
 	}
 	
+	public void setGrid(double width, double height) {
+		
+	}
+	
 	public void updateGrid() {
 		
 	}
