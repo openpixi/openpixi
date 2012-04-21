@@ -23,7 +23,7 @@ import java.util.ArrayList;
 
 import org.openpixi.pixi.physics.Particle2D;
 
-public class Force {
+public class Force{
 
 	/** Constant gravity in x-direction */
 	public double gx;
@@ -42,6 +42,15 @@ public class Force {
 
 	/** New empty force */
 	public Force() {
+	}
+	
+	public void add(Force force) {
+		
+	}
+
+	
+	public void clear() {
+		
 	}
 
 	/** Total force in the x-direction */

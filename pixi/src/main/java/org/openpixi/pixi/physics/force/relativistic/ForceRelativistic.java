@@ -23,8 +23,9 @@ import java.util.ArrayList;
 
 import org.openpixi.pixi.physics.ConstantsSI;
 import org.openpixi.pixi.physics.Particle2D;
+import org.openpixi.pixi.physics.force.Force;
 
-public class ForceRelativistic {
+public class ForceRelativistic extends Force {
 
 	/** Constant gravity in x-direction */
 	public double gx;
