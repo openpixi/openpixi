@@ -82,14 +82,14 @@ public class ChargeConservingAreaWeighting extends Interpolator {
 		int lxm = lx - 1;
 		int lym = ly - 1;
 		
-		System.out.println(lx + " " + lxm + " " + ly + " " + lym);
+		//System.out.println(lx + " " + lxm + " " + ly + " " + lym);
 		
 		lx = checkPeriodicBoundary(lx, g.numCellsX);
 		lxm = checkPeriodicBoundary(lxm, g.numCellsX);
 		ly = checkPeriodicBoundary(ly, g.numCellsY);
 		lym = checkPeriodicBoundary(lym, g.numCellsY);
 		
-		System.out.println(lx + " " + lxm + " " + ly + " " + lym);
+		//System.out.println(lx + " " + lxm + " " + ly + " " + lym);
 		
 		g.jx[lx][lym] += p.pd.cd * deltaX * ((g.cellHeight - deltaY) / 2 - y);
 		g.jx[lx][ly] += p.pd.cd * deltaX * ((g.cellHeight + deltaY) / 2 + y);
