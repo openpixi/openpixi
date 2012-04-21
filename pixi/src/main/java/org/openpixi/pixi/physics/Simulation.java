@@ -22,8 +22,6 @@ package org.openpixi.pixi.physics;
 import java.util.ArrayList;
 import org.openpixi.pixi.physics.boundary.*;
 import org.openpixi.pixi.physics.collision.*;
-import org.openpixi.pixi.physics.collision.algorithms.*;
-import org.openpixi.pixi.physics.collision.detectors.*;
 import org.openpixi.pixi.physics.fields.FieldSolver;
 import org.openpixi.pixi.physics.fields.SimpleSolver;
 import org.openpixi.pixi.physics.force.*;
