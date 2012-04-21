@@ -26,7 +26,7 @@ import org.openpixi.pixi.physics.force.Force;
  * http://ptsg.eecs.berkeley.edu/publications/Verboncoeur2005IOP.pdf
  */
 public class BorisRelativistic extends SolverRelativistic{
-
+	
 	public BorisRelativistic()
 	{
 		super();
@@ -46,11 +46,14 @@ public class BorisRelativistic extends SolverRelativistic{
 		p.ax = f.getForceX(p) / p.mass;
 		p.ay = f.getForceY(p) / p.mass;
 		
-		double vxminus = p.vx + f.getPositionComponentofForceX(p) * step / (2.0 * p.mass);
+		double ux = p.vx * Math.sqrt(1 / (1 - (p.vx / ConstantsSI.c) * (p.vx / ConstantsSI.c)));
+		double uy = p.vy * Math.sqrt(1 / (1 - (p.vy / ConstantsSI.c) * (p.vy / ConstantsSI.c)));
+		
+		double vxminus = ux + f.getPositionComponentofForceX(p) * step / (2.0 * p.mass);
 		double vxplus;
 		double vxprime;
 		
-		double vyminus = p.vy + f.getPositionComponentofForceY(p) * step / (2.0 * p.mass);
+		double vyminus = uy + f.getPositionComponentofForceY(p) * step / (2.0 * p.mass);
 		double vyplus;
 		double vyprime;
 		
@@ -64,8 +67,10 @@ public class BorisRelativistic extends SolverRelativistic{
 		vxplus = vxminus + vyprime * s_z;
 		vyplus = vyminus - vxprime * s_z;
 		
-		p.vx = vxplus + f.getPositionComponentofForceX(p) * step / (2.0 * p.mass) + f.getTangentVelocityComponentOfForceX(p) * step / p.mass;
-		p.vy = vyplus + f.getPositionComponentofForceY(p) * step / (2.0 * p.mass) + f.getTangentVelocityComponentOfForceY(p) * step / p.mass;
+		p.vx = (vxplus + f.getPositionComponentofForceX(p) * step / (2.0 * p.mass) 
+				+ f.getTangentVelocityComponentOfForceX(p) * step / p.mass) / Math.sqrt(1 / (1 - (p.vx / ConstantsSI.c) * (p.vx / ConstantsSI.c)));
+		p.vy = (vyplus + f.getPositionComponentofForceY(p) * step / (2.0 * p.mass) 
+				+ f.getTangentVelocityComponentOfForceY(p) * step / p.mass) / Math.sqrt(1 / (1 - (p.vy / ConstantsSI.c) * (p.vy / ConstantsSI.c)));
 		
 		p.x += p.vx * step;
 		p.y += p.vy * step;
@@ -82,8 +87,8 @@ public class BorisRelativistic extends SolverRelativistic{
 		p.ay = f.getForceY(p) / p.mass;
 
 		//v(t - dt / 2) = v(t) - a(t)*dt / 2
-		p.vx -= p.ax * dt / 2;
-		p.vy -= p.ay * dt / 2;
+		p.vx -= (p.ax * dt / 2) / Math.sqrt(1 / (1 - (p.vx / ConstantsSI.c) * (p.vx / ConstantsSI.c)));
+		p.vy -= (p.ay * dt / 2) / Math.sqrt(1 / (1 - (p.vy / ConstantsSI.c) * (p.vy / ConstantsSI.c)));
 	}
 
 	/**
@@ -94,7 +99,7 @@ public class BorisRelativistic extends SolverRelativistic{
 	public void complete(Particle2D p, Force f, double dt)
 	{
 		//v(t) = v(t - dt / 2) + a(t)*dt / 2
-		p.vx += p.ax * dt / 2;
-		p.vy += p.ay * dt / 2;
+		p.vx += (p.ax * dt / 2) / Math.sqrt(1 / (1 - (p.vx / ConstantsSI.c) * (p.vx / ConstantsSI.c)));
+		p.vy += (p.ay * dt / 2) / Math.sqrt(1 / (1 - (p.vy / ConstantsSI.c) * (p.vy / ConstantsSI.c)));
 	}
 }
