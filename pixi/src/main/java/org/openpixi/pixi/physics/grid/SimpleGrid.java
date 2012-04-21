@@ -88,64 +88,6 @@ public class SimpleGrid extends Grid {
 		interp.interpolateToParticle(particles);
 	}
 	
-	public double[] interpolateToParticle(Particle2D p) {
-		
-		double[] fields = new double[3];
-		int xCellPosition = (int) Math.floor(p.x / cellWidth + 1);
-		int yCellPosition = (int) Math.floor(p.y / cellHeight + 1);
-		
-		int xCellPosition2 = xCellPosition;
-		int yCellPosition2 = yCellPosition;
-		
-		if(xCellPosition >= numCellsX + 1) {
-			xCellPosition = numCellsX + 1;
-		} else if(xCellPosition < 1) {
-				xCellPosition = 1;
-		}
-		if(yCellPosition >= numCellsY + 1) {
-			yCellPosition = numCellsY + 1;
-		} else if(yCellPosition < 1) {
-			yCellPosition = 1;
-		}
-
-		if (Debug.asserts) {
-			// Assert conditions for interpolation
-			assert xCellPosition2 * cellWidth > p.x : p.x;
-			assert p.x > (xCellPosition2 - 1) * cellWidth : p.x;
-			assert yCellPosition2 * cellHeight > p.y : p.y;
-			assert p.y > (yCellPosition2 - 1) * cellHeight : p.y;
-		}
-
-		fields[0] = ( Ex[xCellPosition][yCellPosition] * (xCellPosition2 * cellWidth - p.x) *
-				(yCellPosition2 * cellHeight - p.y) +
-				Ex[xCellPosition + 1][yCellPosition] * (p.x - (xCellPosition2 - 1) * cellWidth) *
-				(yCellPosition2 * cellHeight - p.y) +
-				Ex[xCellPosition][yCellPosition + 1] * (xCellPosition2 * cellWidth - p.x) *
-				(p.y - (yCellPosition2 - 1) * cellHeight) +
-				Ex[xCellPosition + 1][yCellPosition + 1] * (p.x - (xCellPosition2 - 1) * cellWidth) *
-				(p.y - (yCellPosition2 - 1) * cellHeight) ) / (cellWidth * cellHeight);
-		
-		fields[1] = ( Ey[xCellPosition][yCellPosition] * (xCellPosition2 * cellWidth - p.x) *
-				(yCellPosition2 * cellHeight - p.y) +
-				Ey[xCellPosition + 1][yCellPosition] * (p.x - (xCellPosition2 - 1) * cellWidth) *
-				(yCellPosition2 * cellHeight - p.y) +
-				Ey[xCellPosition][yCellPosition + 1] * (xCellPosition2 * cellWidth - p.x) *
-				(p.y - (yCellPosition2 - 1) * cellHeight) +
-				Ey[xCellPosition + 1][yCellPosition + 1] * (p.x - (xCellPosition2 - 1) * cellWidth) *
-				(p.y - (yCellPosition2 - 1) * cellHeight) ) / (cellWidth * cellHeight);
-		
-		fields[2] = ( Bz[xCellPosition][yCellPosition] * (xCellPosition2 * cellWidth - p.x) *
-				(yCellPosition2 * cellHeight - p.y) +
-				Bz[xCellPosition + 1][yCellPosition] * (p.x - (xCellPosition2 - 1) * cellWidth) *
-				(yCellPosition2 * cellHeight - p.y) +
-				Bz[xCellPosition][yCellPosition + 1] * (xCellPosition2 * cellWidth - p.x) *
-				(p.y - (yCellPosition2 - 1) * cellHeight) +
-				Bz[xCellPosition + 1][yCellPosition + 1] * (p.x - (xCellPosition2 -1) * cellWidth) *
-				(p.y - (yCellPosition2 -1) * cellHeight) ) / (cellWidth * cellHeight);
-		
-		return fields;	
-	}
-	
 	public int checkCellX(Particle2D p) {
 			int xCellPosition = (int) (p.x / cellWidth) + 1;
 			if(xCellPosition >= numCellsX+1) {
