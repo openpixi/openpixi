@@ -2,6 +2,7 @@ package org.openpixi.pixi.physics.grid;
 
 import java.util.ArrayList;
 import org.openpixi.pixi.physics.*;
+import org.openpixi.pixi.physics.force.SimpleGridForce;
 
 public class YeeGrid extends Grid {
 	
@@ -15,6 +16,8 @@ public class YeeGrid extends Grid {
 		cellHeight = s.height/numCellsY;
 
 		interp = new ChargeConservingAreaWeighting(this);
+		SimpleGridForce force = new SimpleGridForce(s);
+		s.f.add(force);
 
 		jx = new double[numCellsX][numCellsY];
 		jy = new double[numCellsX][numCellsY];
