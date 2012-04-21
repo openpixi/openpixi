@@ -21,55 +21,63 @@ package org.openpixi.pixi.physics;
 
 import org.openpixi.pixi.physics.boundary.HardWallBoundary;
 import org.openpixi.pixi.physics.boundary.PeriodicBoundary;
-import org.openpixi.pixi.physics.force.ConstantForce;
-import org.openpixi.pixi.physics.force.SpringForce;
+import org.openpixi.pixi.physics.force.*;
 
 public class InitialConditions {
+	
+	/**
+	 * Creates all particles, initializes boundary and force
+	 * @param s Simulation
+	 * @param count number of particles
+	 * @param radius radius of each particle
+	 */
+	public static void initRandomParticles(Simulation s, int count, double radius) {
 
-	public static void initRandomParticles(Simulation s, ConstantForce force, int count, int radius) {
-		s.f.clear();
-		force.reset();
+		ConstantForce force = new ConstantForce();
 		force.gy = -1; // -ConstantsSI.g;
+		s.f.clear();
 		s.f.add(force);
 		
 		InitialConditions.createRandomParticles(s, count, radius);
 		InitialConditions.setHardWallBoundary(s);
 	}
 
-	public static void initGravity(Simulation s, ConstantForce force, int count) {
-		s.f.clear();
-		force.reset();
+	public static void initGravity(Simulation s, int count) {
+		
+		ConstantForce force = new ConstantForce();
 		force.gy = -1; // -ConstantsSI.g;
+		s.f.clear();
 		s.f.add(force);
 		
 		InitialConditions.createRandomParticles(s, count, 15);
 		InitialConditions.setHardWallBoundary(s);
 	}
 
-	public static void initElectric(Simulation s, ConstantForce force, int count) {
+	public static void initElectric(Simulation s, int count) {
+		
+		ConstantForce force = new ConstantForce();
+		force.ey = -1; // -ConstantsSI.g;
 		s.f.clear();
-		force.reset();
-		force.ey = -1;
 		s.f.add(force);
 		
 		InitialConditions.createRandomParticles(s, count, 15);
 		InitialConditions.setHardWallBoundary(s);
 	}
 
-	public static void initMagnetic(Simulation s, ConstantForce force, int count) {
+	public static void initMagnetic(Simulation s, int count) {
+		
+		ConstantForce force = new ConstantForce();
+		force.bz = .1; // -ConstantsSI.g;
 		s.f.clear();
-		force.reset();
-		force.bz = .1;
 		s.f.add(force);
 		
 		InitialConditions.createRandomParticles(s, count, 15);
 		InitialConditions.setPeriodicBoundary(s);
 	}
 
-	public static void initSpring(Simulation s, ConstantForce force, int count) {
+	public static void initSpring(Simulation s, int count) {
+
 		s.f.clear();
-		force.reset();
-		s.f.add(force);
 		s.f.add(new SpringForce());
 		
 		s.particles.clear();

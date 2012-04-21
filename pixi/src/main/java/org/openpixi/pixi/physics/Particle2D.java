@@ -19,6 +19,7 @@
 package org.openpixi.pixi.physics;
 
 import java.lang.Math;
+import org.openpixi.pixi.physics.grid.Particle2DData;
 
 	
 public class Particle2D{
@@ -49,10 +50,11 @@ public class Particle2D{
 
 	/** electric charge of the particle */
 	public double charge;
+	
+	public Particle2DData pd;
 
 	/** Empty constructor */
-	public Particle2D()
-	{
+	public Particle2D() {
 	}
 
 	/** Copy constructor */

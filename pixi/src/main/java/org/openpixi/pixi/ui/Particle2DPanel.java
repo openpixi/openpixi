@@ -30,6 +30,9 @@ import java.awt.event.*;
 import java.awt.geom.AffineTransform;
 import static java.awt.geom.AffineTransform.*;
 import java.lang.Math;
+import java.util.ArrayList;
+
+import org.openpixi.pixi.physics.grid.*;
 
 
 /**
@@ -38,8 +41,6 @@ import java.lang.Math;
 public class Particle2DPanel extends JPanel {
 	
 	public Simulation s;
-
-	public ConstantForce force;
 
 	public String fileName;
 	
@@ -54,6 +55,8 @@ public class Particle2DPanel extends JPanel {
 	private boolean drawCurrentGrid = false;
 	
 	private boolean drawFields = false;
+	
+	private boolean calculateFields = false;
 	
 	private boolean writePosition = false;
 
@@ -105,19 +108,15 @@ public class Particle2DPanel extends JPanel {
 	/** Constructor */
 	public Particle2DPanel() {
 		timer = new Timer(interval, new TimerListener());
-		s = new Simulation();
-		force = new ConstantForce();
+		s = new Simulation(700, 500, 10, 8);
 		
 		// Set properties of the panel
 		this.setVisible(true);
-		this.setSize(700, 500);
+		//this.setSize(700, 500);
 		updateSimulationSize();
 
 		s.psolver = new EulerRichardson();
 
-		// Create all particles
-		InitialConditions.initRandomParticles(s, force, 10, 8);
-		
 		frameratedetector = new FrameRateDetector(500);
 	}
 
@@ -140,28 +139,28 @@ public class Particle2DPanel extends JPanel {
 		reset_trace = true;
 		switch(id) {
 		case 0:
-			InitialConditions.initRandomParticles(s, force, 10, 8);
+			InitialConditions.initRandomParticles(s, 10, 8);
 			break;
 		case 1:
-			InitialConditions.initRandomParticles(s, force, 100, 5);
+			InitialConditions.initRandomParticles(s, 100, 5);
 			break;
 		case 2:
-			InitialConditions.initRandomParticles(s,force, 1000, 3);
+			InitialConditions.initRandomParticles(s, 1000, 3);
 			break;
 		case 3:
-			InitialConditions.initRandomParticles(s, force, 10000, 1);
+			InitialConditions.initRandomParticles(s, 10000, 1);
 			break;
 		case 4:
-			InitialConditions.initGravity(s, force, 1);
+			InitialConditions.initGravity(s, 1);
 			break;
 		case 5:
-			InitialConditions.initElectric(s, force, 1);
+			InitialConditions.initElectric(s, 1);
 			break;
 		case 6:
-			InitialConditions.initMagnetic(s, force, 3);
+			InitialConditions.initMagnetic(s, 3);
 			break;
 		case 7:
-			InitialConditions.initSpring(s, force, 1);
+			InitialConditions.initSpring(s, 1);
 			break;
 		}
 		updateFieldForce();
@@ -173,7 +172,7 @@ public class Particle2DPanel extends JPanel {
 	{
 		test = true;
 		InitialConditions.createRandomParticles(s, 2, 10);
-		force.reset();
+		s.f.clear();
 		for (int i = 0; i < s.particles.size(); i++) {
 			Particle2D par = (Particle2D) s.particles.get(i);
 			par.x = (100);
@@ -201,18 +200,33 @@ public class Particle2DPanel extends JPanel {
 	
 	public void drawFields() {
 		drawFields =! drawFields;
+	}
+	
+	public void calculateFields() {
+		calculateFields =! calculateFields;
 		updateFieldForce();
 	}
 
 	private void updateFieldForce() {
-		if (drawFields) {
-			s.f.add(new SimpleGridForce(s));
-		} else {
-			// Remove all forces
-			s.f.clear();
-
-			// only add constant force
-			s.f.add(force);
+		
+		if(calculateFields) {
+			s.grid = null;
+			s.grid = new SimpleGrid(s);
+			updateSimulationSize();
+		}
+		else {
+			s.grid = null;
+			s.grid = new Grid(s);
+			//clears forces ArrayList of all GridForces
+			for (int i = 0; i < s.f.forces.size(); i++) {
+				if (s.f.forces.get(i) instanceof SimpleGridForce){
+					s.f.forces.remove(i);
+				}
+			}
+			//clears Particle2DData variable
+			for (Particle2D p : s.particles) {
+				p.pd = null;
+			}
 		}
 	}
 	
@@ -220,7 +234,7 @@ public class Particle2DPanel extends JPanel {
 		writePosition =! writePosition;
 		if(writePosition)
 		{
-			force.reset();
+			s.f.clear();
 			InitialConditions.createRandomParticles(s, 1, 10);
 			Particle2D par = (Particle2D) s.particles.get(0);
 			par.x = 0;
@@ -370,12 +384,12 @@ public class Particle2DPanel extends JPanel {
 		if(drawCurrentGrid)
 		{
 			graph.setColor(Color.black);
-			for(int i = 1; i < s.currentGrid.numCellsX + 3; i++)
-				for(int k = 1; k < s.currentGrid.numCellsY + 3; k++)
+			for(int i = 1; i < s.grid.numCellsX + 3; i++)
+				for(int k = 1; k < s.grid.numCellsY + 3; k++)
 				{
-					int xstart = (int) (s.currentGrid.cellWidth * (i - 1));
-					int ystart = (int) (s.currentGrid.cellHeight * (k - 1));
-					drawArrow(graph, xstart, ystart, (int) Math.round(s.currentGrid.jx[i][k] + xstart), (int) Math.round(s.currentGrid.jy[i][k] + ystart));
+					int xstart = (int) (s.grid.cellWidth * (i - 1));
+					int ystart = (int) (s.grid.cellHeight * (k - 1));
+					drawArrow(graph, xstart, ystart, (int) Math.round(s.grid.jx[i][k] + xstart), (int) Math.round(s.grid.jy[i][k] + ystart));
 				}
 			//return;
 		}
@@ -383,12 +397,12 @@ public class Particle2DPanel extends JPanel {
 		if(drawFields)
 		{
 			graph.setColor(Color.black);
-			for(int i = 1; i < s.currentGrid.numCellsX + 3; i++)
-				for(int k = 1; k < s.currentGrid.numCellsY + 3; k++)
+			for(int i = 1; i < s.grid.numCellsX + 3; i++)
+				for(int k = 1; k < s.grid.numCellsY + 3; k++)
 				{
-					int xstart = (int) (s.currentGrid.cellWidth * (i - 1));
-					int ystart = (int) (s.currentGrid.cellHeight * (k - 1));
-					drawArrow(graph, xstart, ystart, (int) Math.round(s.currentGrid.Ex[i][k] + xstart), (int) Math.round(s.currentGrid.Ey[i][k] + ystart));
+					int xstart = (int) (s.grid.cellWidth * (i - 1));
+					int ystart = (int) (s.grid.cellHeight * (k - 1));
+					drawArrow(graph, xstart, ystart, (int) Math.round(s.grid.Ex[i][k] + xstart), (int) Math.round(s.grid.Ey[i][k] + ystart));
 				}
 			//return;
 		}

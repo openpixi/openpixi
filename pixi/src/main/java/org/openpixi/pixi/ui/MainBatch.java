@@ -25,6 +25,7 @@ import org.openpixi.pixi.physics.ParticleMover;
 import org.openpixi.pixi.physics.Simulation;
 import org.openpixi.pixi.physics.force.ConstantForce;
 import org.openpixi.pixi.physics.force.SimpleGridForce;
+import org.openpixi.pixi.physics.grid.*;
 
 public class MainBatch {
 
@@ -38,15 +39,10 @@ public class MainBatch {
 	public static void main(String[] args) {
 		Debug.checkAssertsEnabled();
 
-		s1 = new Simulation();
-		
-		s1.setSize(s1.width, s1.height);
-		InitialConditions.createRandomParticles(s1, num_particles, particle_radius);
-		ConstantForce force = new ConstantForce();
-		force.bz = 0.001;
-		force.ex = 0.1;
-		s1.f.add(force);
-		s1.f.add(new SimpleGridForce(s1));
+		s1 = new Simulation(100, 100, num_particles, particle_radius);
+		s1.grid = null;
+		s1.grid = new SimpleGrid(s1);
+		//Should be moved to simulation, watch out for Particle2DPanel
 		ParticleMover.prepareAllParticles(s1);
 		
 		System.out.println("-------- INITIAL CONDITIONS--------");		
@@ -71,13 +67,13 @@ public class MainBatch {
 		
 		System.out.println("\nCurrent: ");
 		
-		for (int i = 0; i < s1.currentGrid.numCellsX; i++) {
-				System.out.println(s1.currentGrid.jx[i][0]);
+		for (int i = 0; i < s1.grid.numCellsX; i++) {
+				System.out.println(s1.grid.jx[i][2]);
 		}
 		
 		System.out.println("\nCalculation time: "+elapsed);
-		System.out.println(s1.currentGrid.cellWidth);
-		System.out.println(s1.currentGrid.cellHeight);
+		System.out.println(s1.grid.cellWidth);
+		System.out.println(s1.grid.cellHeight);
 	}
 
 }

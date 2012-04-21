@@ -1,6 +1,5 @@
 package org.openpixi.pixi.physics.force;
 
-import java.util.ArrayList;
 
 import org.openpixi.pixi.physics.Particle2D;
 
@@ -8,8 +7,6 @@ import org.openpixi.pixi.physics.Particle2D;
  * Combines various forces into a single force.
  */
 public class CombinedForce extends Force {
-
-	ArrayList<Force> forces = new ArrayList<Force>();
 
 	public CombinedForce() {
 		super();

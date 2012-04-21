@@ -15,39 +15,38 @@ public class SimpleGridForce extends Force {
 
 	//getting the force in the x - direction
 	@Override
-	public double getForceX(Particle2D par) {
-		return par.charge * fields[0] + par.charge * par.vy * fields[2];
+	public double getForceX(Particle2D p) {
+		return p.charge * ( p.pd.Ex + p.vy * p.pd.Bz);
 	}
 
 	//getting the force in the y - direction
 	@Override
-	public double getForceY(Particle2D par) {
-		return par.charge * fields[1] -
-				par.charge * par.vx * fields[2];
+	public double getForceY(Particle2D p) {
+		return p.charge * (p.pd.Ey - p.vx * p.pd.Bz);
 	}
 
 	@Override
-	public double getPositionComponentofForceX(Particle2D par) {
-		return par.charge * fields[0];
+	public double getPositionComponentofForceX(Particle2D p) {
+		return p.charge * p.pd.Ex;
 	}
 
 	@Override
-	public double getPositionComponentofForceY(Particle2D par) {
-		return par.charge * fields[1];
+	public double getPositionComponentofForceY(Particle2D p) {
+		return p.charge * p.pd.Ey;
 	}
 
 	@Override
-	public double getNormalVelocityComponentofForceX(Particle2D par) {
-		return par.charge * par.vy * fields[2];
+	public double getNormalVelocityComponentofForceX(Particle2D p) {
+		return p.charge * p.vy * p.pd.Bz;
 	}
 
 	@Override
-	public double getNormalVelocityComponentofForceY(Particle2D par) {
-		return - par.charge * par.vx * fields[2];
+	public double getNormalVelocityComponentofForceY(Particle2D p) {
+		return - p.charge * p.vx * p.pd.Bz;
 	}
 
 	@Override
-	public double getBz(Particle2D par) {
-		return fields[2];
+	public double getBz(Particle2D p) {
+		return p.pd.Bz;
 	}
 }

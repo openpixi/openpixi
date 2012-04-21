@@ -24,6 +24,7 @@ import org.openpixi.pixi.physics.Debug;
 import org.openpixi.pixi.physics.Particle2D;
 import org.openpixi.pixi.physics.Simulation;
 import org.openpixi.pixi.physics.fields.*;
+import org.openpixi.pixi.physics.force.SimpleGridForce;
 
 
 public class SimpleGrid extends Grid {
@@ -32,6 +33,8 @@ public class SimpleGrid extends Grid {
 		
 		super(s);
 		interp = new CloudInCell(this);
+		SimpleGridForce force = new SimpleGridForce(s);
+		s.f.add(force);
 		
 		numCellsX = 10;
 		numCellsY = 10;
@@ -69,7 +72,7 @@ public class SimpleGrid extends Grid {
 		cellWidth = width / numCellsX;
 		cellHeight = height / numCellsY;
 
-		
+		//update pd.charge!!!
 		//include updateGrid() and the first calculation of Fields here
 	}
 	
@@ -77,7 +80,8 @@ public class SimpleGrid extends Grid {
 	{
 		reset();
 		interp.interpolateToGrid(particles);		
-		s.fsolver.step(this);		
+		s.fsolver.step(this);
+		interp.interpolateToParticle(particles);
 	}
 	
 	public double[] interpolateToParticle(Particle2D p) {

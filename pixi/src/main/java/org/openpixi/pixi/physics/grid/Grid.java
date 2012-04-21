@@ -11,9 +11,6 @@ public class Grid {
 	public Simulation s;
 	public Interpolator interp;
 	
-	/**Contains interpolated fields for each particle*/
-	public ArrayList<Particle2DData> particledata;
-	
 	/**Electric current in x-Direction*/
 	public double [][] jx;
 	/**Electric current in y-Direction*/

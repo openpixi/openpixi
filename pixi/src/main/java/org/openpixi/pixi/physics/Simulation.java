@@ -27,7 +27,7 @@ import org.openpixi.pixi.physics.collision.detectors.*;
 import org.openpixi.pixi.physics.fields.FieldSolver;
 import org.openpixi.pixi.physics.fields.SimpleSolver;
 import org.openpixi.pixi.physics.force.*;
-import org.openpixi.pixi.physics.grid.SimpleGrid;
+import org.openpixi.pixi.physics.grid.*;
 import org.openpixi.pixi.physics.solver.*;
 
 public class Simulation {
@@ -46,38 +46,41 @@ public class Simulation {
 	
 	public Solver psolver;
 	public FieldSolver fsolver;
-	public SimpleGrid currentGrid;
+	public Grid grid;
 	public Collision collision;
 	//public Detector detector;
 	//public CollisionAlgorithm algorithm;
 	public boolean collisionBoolean = false;
 
-	public Simulation () {
+	public Simulation (int swidth, int sheight, int pcount, double pradius) {
 	
 		tstep = 1;
-		width = 100;
-		height = 100;
-
-		/**Contains all Particle2D objects*/
+		width = swidth;
+		height = sheight;
+		
 		particles = new ArrayList<Particle2D>(0);
-		f= new CombinedForce();
-		boundary = new HardWallBoundary();
+		f= new CombinedForce();		
+		InitialConditions.initRandomParticles(this, pcount, pradius);
 		
 		psolver = new Boris();
 		fsolver = new SimpleSolver();
-		currentGrid = new SimpleGrid(this);
+		grid = new Grid(this);
 		//detector = new Detector();
 		//algorithm = new CollisionAlgorithm();
 		collision = new Collision();
 		
 		//collision = new ElasticCollisionSweepPrune();
+		
+		//should be placed at the beginning but that is impossible because of dependencies on boundaries and Grid
+		setSize(width, height);
+		
 	}
 	
 	public void setSize(double width, double height) {
 		this.width = width;
 		this.height = height;
 		this.boundary.setBoundaries(0, 0, width, height);
-		this.currentGrid.setGrid(width, height);
+		this.grid.setGrid(width, height);
 	}
 
 	public void step() {
@@ -85,7 +88,7 @@ public class Simulation {
 		if(collisionBoolean) {
 			collision.check(particles, f, psolver, tstep);
 		}
-		currentGrid.updateGrid(particles);
+		grid.updateGrid(particles);
 	}
 
 }

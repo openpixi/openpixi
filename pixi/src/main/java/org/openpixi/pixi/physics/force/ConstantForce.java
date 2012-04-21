@@ -4,25 +4,6 @@ import org.openpixi.pixi.physics.Particle2D;
 
 public class ConstantForce extends Force {
 
-	/** Constant gravity in x-direction */
-	public double gx;
-
-	/** Constant gravity in y-direction */
-	public double gy;
-
-	/** Drag coefficient */
-	public double drag;
-
-	/** Electric field in x - direction */
-	public double ex;
-
-	/** Electric field in y - direction */
-	public double ey;
-
-	/** Magnetic field in z - direction */
-	public double bz;
-	
-	
 	/** New empty force */
 	public ConstantForce()
 	{
