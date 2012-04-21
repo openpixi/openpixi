@@ -32,14 +32,14 @@ public class SimpleGrid extends Grid {
 	public SimpleGrid(Simulation s) {
 		
 		super(s);
-		interp = new CloudInCell(this);
-		SimpleGridForce force = new SimpleGridForce(s);
-		s.f.add(force);
-		
 		numCellsX = 10;
 		numCellsY = 10;
 		cellWidth = s.width/numCellsX;
 		cellHeight = s.height/numCellsY;
+		
+		interp = new CloudInCell(this);
+		SimpleGridForce force = new SimpleGridForce(s);
+		s.f.add(force);
 		
 		jx = new double[numCellsX+3][numCellsY+3];
 		jy = new double[numCellsX+3][numCellsY+3];
