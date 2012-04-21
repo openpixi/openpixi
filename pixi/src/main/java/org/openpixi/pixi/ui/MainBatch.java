@@ -40,7 +40,7 @@ public class MainBatch {
 		Debug.checkAssertsEnabled();
 
 		s1 = new Simulation(100, 100, num_particles, particle_radius);
-		s1.grid = new SimpleGrid(s1);
+		s1.grid = new YeeGrid(s1);
 
 		ParticleMover.prepareAllParticles(s1);
 		
