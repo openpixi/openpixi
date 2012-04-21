@@ -1,6 +1,5 @@
 package org.openpixi.pixi.physics.collision.util;
 
-import org.openpixi.pixi.physics.*;
 
 public class SweepParticle {
 	
