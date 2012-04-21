@@ -22,7 +22,9 @@ import org.openpixi.pixi.physics.*;
 import org.openpixi.pixi.physics.collision.algorithms.*;
 import org.openpixi.pixi.physics.collision.detectors.*;
 import org.openpixi.pixi.physics.force.*;
+import org.openpixi.pixi.physics.force.relativistic.*;
 import org.openpixi.pixi.physics.solver.*;
+import org.openpixi.pixi.physics.solver.relativistic.*;
 import org.openpixi.pixi.ui.util.*;
 import java.awt.*;
 import javax.swing.*;
@@ -47,6 +49,8 @@ public class Particle2DPanel extends JPanel {
 	public String fileDirectory;
 	
 	private WriteFile file = new WriteFile();
+	
+	private boolean relativistic = false;
 
 	private boolean reset_trace;
 	
@@ -280,6 +284,23 @@ public class Particle2DPanel extends JPanel {
 			}
 
 		ParticleMover.prepareAllParticles(s);
+	}
+	
+	public void relativisticEffects(int i) {
+		relativistic =! relativistic;
+		
+		if(relativistic == false) {
+		//s.f = new CombinedForce();
+		}
+		
+		if(relativistic == true) {
+			//s.f = new CombinedForceRelativistic();
+			switch(i) {
+			case 4:
+				s.psolver = new BorisRelativistic();			
+			}
+		}
+		
 	}
 	
 	public void collisionChange(int i) {

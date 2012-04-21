@@ -27,6 +27,7 @@ import javax.swing.event.*;
 import org.openpixi.pixi.physics.Debug;
 import org.openpixi.pixi.physics.boundary.*;
 import org.openpixi.pixi.physics.collision.detectors.*;
+import org.openpixi.pixi.physics.force.CombinedForce;
 
 /**
  * Displays the animation of particles.
@@ -54,6 +55,7 @@ public class MainControlApplet extends JApplet {
 	private JCheckBox drawFieldsCheck;
 	private JCheckBox calculateFieldsCheck;
 	private JCheckBox writePositionCheck;
+	private JCheckBox relativisticCheck;
 	
 	private JTextField xboxentry;
 	private JTextField yboxentry;
@@ -149,6 +151,12 @@ public class MainControlApplet extends JApplet {
 			JComboBox cbox = (JComboBox) eve.getSource();
 			int id = cbox.getSelectedIndex();
 			particlePanel.algorithmChange(id);
+			if ( id == 4) {
+				relativisticCheck.setEnabled(true);
+			}
+			else {
+				relativisticCheck.setEnabled(false);
+			}
 			//one can use this instead of the method, just need to change algorithm_change to public
 			//particlePanel.algorithm_change = id;
 		}
@@ -266,6 +274,13 @@ public class MainControlApplet extends JApplet {
 			else if(abut.equals(periodicBoundaries)) {
 				particlePanel.boundariesChange(1);
 			}
+		}
+	}
+	
+	class RelativisticEffects implements ItemListener {
+		public void itemStateChanged(ItemEvent eve){
+			int i = (int)algorithmComboBox.getSelectedIndex();
+			particlePanel.relativisticEffects(i);
 		}
 	}
 	
@@ -544,6 +559,10 @@ public class MainControlApplet extends JApplet {
 		resetButton.addActionListener(new ResetListener());
 		testButton.addActionListener(new TestListener());
 		
+		relativisticCheck = new JCheckBox("Relativistic Version");
+		relativisticCheck.addItemListener(new RelativisticEffects());
+		relativisticCheck.setEnabled(false);
+		
 		traceCheck = new JCheckBox("Trace");
 		traceCheck.addItemListener(new CheckListener());
 		
@@ -642,6 +661,8 @@ public class MainControlApplet extends JApplet {
 		//settingControls.add(initBox);
 		//settingControls.add(Box.createVerticalGlue());
 		settingControls.add(algorithmBox);
+		settingControls.add(Box.createVerticalGlue());
+		settingControls.add(relativisticCheck);
 		settingControls.add(Box.createVerticalGlue());
 		settingControls.add(speed);
 		settingControls.add(Box.createVerticalGlue());
@@ -772,7 +793,7 @@ public class MainControlApplet extends JApplet {
 		collisionComboBox.setSelectedIndex(0);
 		collisionDetector.setSelectedIndex(0);
 		collisionAlgorithm.setSelectedIndex(0);
-		
+		//particlePanel.s.f = new CombinedForce();
 	}
 	
 	@Override
