@@ -22,6 +22,9 @@ public class YeeGrid extends Grid {
 		Ex = new double[numCellsX][numCellsY];
 		Ey = new double[numCellsX][numCellsY];
 		Bz = new double[numCellsX][numCellsY];
+		Exo = new double[numCellsX][numCellsY];
+		Eyo = new double[numCellsX][numCellsY];
+		Bzo = new double[numCellsX][numCellsY];
 		initFields();
 		
 	}
@@ -38,6 +41,9 @@ public class YeeGrid extends Grid {
 		Ex = new double[numCellsX][numCellsY];
 		Ey = new double[numCellsX][numCellsY];
 		Bz = new double[numCellsX][numCellsY];
+		Exo = new double[numCellsX][numCellsY];
+		Eyo = new double[numCellsX][numCellsY];
+		Bzo = new double[numCellsX][numCellsY];
 		initFields();
 		
 		setGrid(width, height);
@@ -60,6 +66,7 @@ public class YeeGrid extends Grid {
 		
 		reset();
 		interp.interpolateToGrid(particles);
+		save();
 		s.fsolver.step(this);
 		interp.interpolateToParticle(particles);
 	}
@@ -82,6 +89,17 @@ public class YeeGrid extends Grid {
 				Bz[i][j] = 0.0;
 			}
 		}
+	}
+	
+	private void save() {
+		for (int i = 0; i < numCellsX; i++) {
+			for (int j = 0; j < numCellsY; j++) {
+				Exo[i][j] = Ex[i][j];
+				Eyo[i][j] = Ey[i][j];
+				Bzo[i][j] = Bz[i][j];
+			}
+		}
+		
 	}
 
 }
