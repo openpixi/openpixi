@@ -47,6 +47,9 @@ public class SimpleGrid extends Grid {
 		Ex = new double[numCellsX+3][numCellsY+3];
 		Ey = new double[numCellsX+3][numCellsY+3];
 		Bz = new double[numCellsX+3][numCellsY+3];
+		Exo = new double[numCellsX][numCellsY];
+		Eyo = new double[numCellsX][numCellsY];
+		Bzo = new double[numCellsX][numCellsY];
 		initFields();
 	}
 	
@@ -62,6 +65,9 @@ public class SimpleGrid extends Grid {
 		Ex = new double[numCellsX+3][numCellsY+3];
 		Ey = new double[numCellsX+3][numCellsY+3];
 		Bz = new double[numCellsX+3][numCellsY+3];
+		Exo = new double[numCellsX][numCellsY];
+		Eyo = new double[numCellsX][numCellsY];
+		Bzo = new double[numCellsX][numCellsY];
 		initFields();
 		
 		setGrid(width, height);
