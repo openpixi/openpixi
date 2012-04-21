@@ -21,6 +21,7 @@ package org.openpixi.pixi.physics.force.relativistic;
 
 import java.util.ArrayList;
 
+import org.openpixi.pixi.physics.ConstantsSI;
 import org.openpixi.pixi.physics.Particle2D;
 
 public class ForceRelativistic {
@@ -37,6 +38,7 @@ public class ForceRelativistic {
 	public double ey;
 	/** Magnetic field in z - direction */
 	public double bz;
+	
 	
 	public ArrayList<ForceRelativistic> forces = new ArrayList<ForceRelativistic>();
 
@@ -63,19 +65,27 @@ public class ForceRelativistic {
 	}
 
 	public double getTangentVelocityComponentOfForceX(Particle2D p) {
-		return -getLinearDragCoefficient(p) * p.vx;
+		double ux = p.vx * Math.sqrt(1 / (1 - (p.vx / ConstantsSI.c) * (p.vx / ConstantsSI.c)));
+		
+		return -getLinearDragCoefficient(p) * ux;
 	}
 
 	public double getTangentVelocityComponentOfForceY(Particle2D p) {
-		return -getLinearDragCoefficient(p) * p.vy;
+		double uy = p.vy * Math.sqrt(1 / (1 - (p.vy / ConstantsSI.c) * (p.vy / ConstantsSI.c)));
+		
+		return -getLinearDragCoefficient(p) * uy;
 	}
 
 	public double getNormalVelocityComponentofForceX(Particle2D p) {
-		return p.charge * p.vy * getBz(p);
+		double uy = p.vy * Math.sqrt(1 / (1 - (p.vy / ConstantsSI.c) * (p.vy / ConstantsSI.c)));
+		
+		return p.charge * uy * getBz(p);
 	}
 
 	public double getNormalVelocityComponentofForceY(Particle2D p) {
-		return - p.charge * p.vx * getBz(p);
+		double ux = p.vx * Math.sqrt(1 / (1 - (p.vx / ConstantsSI.c) * (p.vx / ConstantsSI.c)));
+		
+		return - p.charge * ux * getBz(p);
 	}
 
 	public double getBz(Particle2D p) {

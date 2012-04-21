@@ -1,9 +1,11 @@
 package org.openpixi.pixi.physics.force.relativistic;
 
 import org.openpixi.pixi.physics.Particle2D;
+import org.openpixi.pixi.physics.ConstantsSI;
+import java.lang.Math;
 
 public class ConstantForceRelativistic extends ForceRelativistic {
-
+	
 	/** New empty force */
 	public ConstantForceRelativistic()
 	{
@@ -24,15 +26,23 @@ public class ConstantForceRelativistic extends ForceRelativistic {
 	//getting the force in the x - direction
 	@Override
 	public double getForceX(Particle2D p) {
-		return -drag * p.vx + p.mass * gx + p.charge * ex +
-				p.charge * p.vy * bz;
+		
+		double ux = p.vx * Math.sqrt(1 / (1 - (p.vx / ConstantsSI.c) * (p.vx / ConstantsSI.c)));
+		double uy = p.vy * Math.sqrt(1 / (1 - (p.vy / ConstantsSI.c) * (p.vy / ConstantsSI.c)));
+		
+		return -drag * ux + p.mass * gx + p.charge * ex +
+				p.charge * uy * bz;
 	}
 	
 	//getting the force in the y - direction
 	@Override
 	public double getForceY(Particle2D p) {
-		return - drag * p.vy + p.mass * gy + p.charge * ey -
-				p.charge * p.vx * bz;
+		
+		double ux = p.vx * Math.sqrt(1 / (1 - (p.vx / ConstantsSI.c) * (p.vx / ConstantsSI.c)));
+		double uy = p.vy * Math.sqrt(1 / (1 - (p.vy / ConstantsSI.c) * (p.vy / ConstantsSI.c)));
+		
+		return - drag * uy + p.mass * gy + p.charge * ey -
+				p.charge * ux * bz;
 	}
 
 	@Override
@@ -47,24 +57,30 @@ public class ConstantForceRelativistic extends ForceRelativistic {
 
 	@Override
 	public double getTangentVelocityComponentOfForceX(Particle2D p) {
+		double ux = p.vx * Math.sqrt(1 / (1 - (p.vx / ConstantsSI.c) * (p.vx / ConstantsSI.c)));
 		
-		return - drag * p.vx;
+		return - drag * ux;
 	}
 
 	@Override
 	public double getTangentVelocityComponentOfForceY(Particle2D p) {
+		double uy = p.vy * Math.sqrt(1 / (1 - (p.vy / ConstantsSI.c) * (p.vy / ConstantsSI.c)));
 		
-		return - drag * p.vy;
+		return - drag * uy;
 	}
 
 	@Override
 	public double getNormalVelocityComponentofForceX(Particle2D p) {
-		return p.charge * p.vy * bz;
+		double uy = p.vy * Math.sqrt(1 / (1 - (p.vy / ConstantsSI.c) * (p.vy / ConstantsSI.c)));
+		
+		return p.charge * uy * bz;
 	}
 
 	@Override
 	public double getNormalVelocityComponentofForceY(Particle2D p) {
-		return - p.charge * p.vx * bz;
+		double ux = p.vx * Math.sqrt(1 / (1 - (p.vx / ConstantsSI.c) * (p.vx / ConstantsSI.c)));
+		
+		return - p.charge * ux * bz;
 	}
 
 	@Override

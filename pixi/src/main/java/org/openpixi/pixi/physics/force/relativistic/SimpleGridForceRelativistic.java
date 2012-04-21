@@ -1,5 +1,6 @@
 package org.openpixi.pixi.physics.force.relativistic;
 
+import org.openpixi.pixi.physics.ConstantsSI;
 import org.openpixi.pixi.physics.Particle2D;
 import org.openpixi.pixi.physics.Simulation;
 
@@ -16,13 +17,17 @@ public class SimpleGridForceRelativistic extends ForceRelativistic {
 	//getting the force in the x - direction
 	@Override
 	public double getForceX(Particle2D p) {
-		return p.charge * ( p.pd.Ex + p.vy * p.pd.Bz);
+		double uy = p.vy * Math.sqrt(1 / (1 - (p.vy / ConstantsSI.c) * (p.vy / ConstantsSI.c)));
+		
+		return p.charge * ( p.pd.Ex + uy * p.pd.Bz);
 	}
 
 	//getting the force in the y - direction
 	@Override
 	public double getForceY(Particle2D p) {
-		return p.charge * (p.pd.Ey - p.vx * p.pd.Bz);
+		double ux = p.vx * Math.sqrt(1 / (1 - (p.vx / ConstantsSI.c) * (p.vx / ConstantsSI.c)));
+		
+		return p.charge * (p.pd.Ey - ux * p.pd.Bz);
 	}
 
 	@Override
@@ -37,12 +42,16 @@ public class SimpleGridForceRelativistic extends ForceRelativistic {
 
 	@Override
 	public double getNormalVelocityComponentofForceX(Particle2D p) {
-		return p.charge * p.vy * p.pd.Bz;
+		double uy = p.vy * Math.sqrt(1 / (1 - (p.vy / ConstantsSI.c) * (p.vy / ConstantsSI.c)));
+		
+		return p.charge * uy * p.pd.Bz;
 	}
 
 	@Override
 	public double getNormalVelocityComponentofForceY(Particle2D p) {
-		return - p.charge * p.vx * p.pd.Bz;
+		double ux = p.vx * Math.sqrt(1 / (1 - (p.vx / ConstantsSI.c) * (p.vx / ConstantsSI.c)));
+		
+		return - p.charge * ux * p.pd.Bz;
 	}
 
 	@Override
