@@ -26,6 +26,13 @@ public class Grid {
 	/**Magnetic field in z direction*/
 	public double [][] Bz;
 	
+	/** old electric field in x direction*/
+	public double [][] Exo;
+	/**old electric field in y direction*/
+	public double [][] Eyo;
+	/**old magnetic field in z direction*/
+	public double [][] Bzo;
+	
 	/**Number of cells in x direction*/
 	public int numCellsX;
 	/**Number of cells in x direction*/
