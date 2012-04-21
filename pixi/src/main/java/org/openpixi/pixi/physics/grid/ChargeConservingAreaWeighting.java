@@ -115,7 +115,6 @@ public class ChargeConservingAreaWeighting extends Interpolator {
 			}
 		}
 		System.out.println(lx + " " + idown + " " + ly + " " + ileft);
-		//will lead to boundary problems!
 		g.jx[lx][ileft] += p.pd.cd * deltaX * ((g.cellHeight - deltaY) / 2 - y);
 		g.jx[lx][ly] += p.pd.cd * deltaX * ((g.cellHeight + deltaY) / 2 + y);
 		g.jy[idown][ly] += p.pd.cd * deltaY * ((g.cellWidth - deltaX) / 2 - x);
