@@ -2,7 +2,7 @@ package org.openpixi.pixi.physics.fields;
 
 import org.openpixi.pixi.physics.grid.Grid;
 
-public class YeeSolver {
+public class YeeSolver extends FieldSolver {
 
 	double cx, cy, cz;
 	
