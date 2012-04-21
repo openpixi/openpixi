@@ -39,7 +39,7 @@ public class Simulation {
 
 	/**Contains all Particle2D objects*/
 	public ArrayList<Particle2D> particles;
-	public CombinedForce  f;
+	public Force  f;
 	public Boundary boundary;
 	
 	public Solver psolver;
@@ -57,7 +57,7 @@ public class Simulation {
 		height = sheight;
 		
 		particles = new ArrayList<Particle2D>(0);
-		f= new CombinedForce();		
+		f = new CombinedForce();		
 		InitialConditions.initRandomParticles(this, pcount, pradius);
 		
 		psolver = new Boris();
