@@ -87,29 +87,6 @@ public class SimpleGrid extends Grid {
 		s.fsolver.step(this);
 		interp.interpolateToParticle(particles);
 	}
-	
-	public int checkCellX(Particle2D p) {
-			int xCellPosition = (int) (p.x / cellWidth) + 1;
-			if(xCellPosition >= numCellsX+1) {
-				xCellPosition = numCellsX+1;
-			} else if(xCellPosition < 0) {
-					xCellPosition = 0;
-			}
-			
-			return xCellPosition;
-	}
-	
-	public int checkCellY(Particle2D p) {
-			int yCellPosition = (int) (p.y / cellHeight) + 1;
-			if(yCellPosition >= numCellsY+1) {
-				yCellPosition = numCellsY+1;
-			} else if(yCellPosition < 0) {
-				yCellPosition = 0;
-			}
-			
-			return yCellPosition;
-			
-	}
 
 	private void reset() {
 		for(int i = 0; i < numCellsX + 3; i++) {
