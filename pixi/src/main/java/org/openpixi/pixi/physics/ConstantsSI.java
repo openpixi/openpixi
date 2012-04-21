@@ -31,4 +31,7 @@ public final class ConstantsSI {
 	
 	/**Vacuum permittivity*/
 	public static final double e0 = 8.854e-12;
+	
+	/**Speed of light*/
+	public static final double c = 299792458;
 }
