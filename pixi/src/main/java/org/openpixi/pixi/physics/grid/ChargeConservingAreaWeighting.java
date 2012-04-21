@@ -15,13 +15,6 @@ public class ChargeConservingAreaWeighting extends Interpolator {
 	
 	public void interpolateToGrid(ArrayList<Particle2D> particles) {
 		
-		for(int i = 0; i < g.numCellsX + 2; i++) {
-			for(int k = 0; k < g.numCellsY + 2; k++) {
-				g.jx[i][k] = 0.0;
-				g.jy[i][k] = 0.0;
-			}
-		}
-
 		//assuming rectangular particle shape i.e. area weighting
 		for (int i = 0; i < particles.size(); i++) {
 			
@@ -85,10 +78,47 @@ public class ChargeConservingAreaWeighting extends Interpolator {
 	 */
 	private void fourBoundaryMove(int lx, int ly, double x, double y, 
 			double deltaX, double deltaY, Particle2D p) {
+		
+		int ileft = ly - 1;
+		int idown = lx - 1;
+		System.out.println(lx + " " + idown + " " + ly + " " + ileft);
+		if (lx >= g.numCellsX) {
+			lx -= g.numCellsX;
+		}
+		else {
+			if (lx < 0) {
+				lx += g.numCellsX;
+			}
+		}
+		if (idown >= g.numCellsX) {
+			idown -= g.numCellsX;
+		}
+		else {
+			if (idown < 0) {
+				idown += g.numCellsX;
+			}
+		}
+		if (ly >= g.numCellsY) {
+			ly -= g.numCellsY;
+		}
+		else {
+			if (ly < 0) {
+				ly += g.numCellsY;
+			}
+		}
+		if (ileft >= g.numCellsY) {
+			ileft -= g.numCellsY;
+		}
+		else {
+			if (ileft < 0) {
+				ileft += g.numCellsY;
+			}
+		}
+		System.out.println(lx + " " + idown + " " + ly + " " + ileft);
 		//will lead to boundary problems!
-		g.jx[lx][ly-1] += p.pd.cd * deltaX * ((g.cellHeight - deltaY) / 2 - y);
+		g.jx[lx][ileft] += p.pd.cd * deltaX * ((g.cellHeight - deltaY) / 2 - y);
 		g.jx[lx][ly] += p.pd.cd * deltaX * ((g.cellHeight + deltaY) / 2 + y);
-		g.jy[lx-1][ly] += p.pd.cd * deltaY * ((g.cellWidth - deltaX) / 2 - x);
+		g.jy[idown][ly] += p.pd.cd * deltaY * ((g.cellWidth - deltaX) / 2 - x);
 		g.jy[lx][ly] += p.pd.cd * deltaY * ((g.cellWidth + deltaX) / 2 + x);
 	}
 	
