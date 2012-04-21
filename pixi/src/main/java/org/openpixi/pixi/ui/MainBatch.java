@@ -40,9 +40,8 @@ public class MainBatch {
 		Debug.checkAssertsEnabled();
 
 		s1 = new Simulation(100, 100, num_particles, particle_radius);
-		s1.grid = null;
 		s1.grid = new SimpleGrid(s1);
-		//Should be moved to simulation, watch out for Particle2DPanel
+
 		ParticleMover.prepareAllParticles(s1);
 		
 		System.out.println("-------- INITIAL CONDITIONS--------");		
