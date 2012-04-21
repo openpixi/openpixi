@@ -22,7 +22,6 @@ import org.openpixi.pixi.physics.*;
 
 import org.openpixi.pixi.physics.collision.algorithms.*;
 import org.openpixi.pixi.physics.collision.detectors.*;
-import org.openpixi.pixi.physics.collision.util.Pair;
 import org.openpixi.pixi.physics.force.Force;
 import org.openpixi.pixi.physics.solver.*;
 //import org.openpixi.pixi.collision.detectors.*;
