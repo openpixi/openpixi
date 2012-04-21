@@ -40,7 +40,7 @@ public class Grid {
 		
 	}
 	
-	public void changeDimension(int x, int y) {
+	public void changeDimension(double width, double height, int xbox, int ybox) {
 		
 	}
 	

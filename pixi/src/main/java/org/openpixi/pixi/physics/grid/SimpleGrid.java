@@ -51,7 +51,7 @@ public class SimpleGrid extends Grid {
 	}
 	
 	//a method to change the dimensions of the cells, i.e. the width and the height
-	public void changeDimension(int xbox, int ybox)
+	public void changeDimension(double width, double height, int xbox, int ybox)
 	{
 		numCellsX = xbox;
 		numCellsY = ybox;
@@ -64,15 +64,19 @@ public class SimpleGrid extends Grid {
 		Bz = new double[numCellsX+3][numCellsY+3];
 		initFields();
 		
-		//this.setGrid() should be called here since changeDimension() can not appear alone. This would cause dualities with MainControlApplet
+		setGrid(width, height);
 	}
 	
 	public void setGrid(double width, double height)
 	{
 		cellWidth = width / numCellsX;
 		cellHeight = height / numCellsY;
-
-		//update pd.charge!!!
+		
+		for (Particle2D p: s.particles){
+			//assuming rectangular particle shape i.e. area weighting
+			p.pd.cd = p.charge / (cellWidth * cellHeight);
+		}
+		
 		//include updateGrid() and the first calculation of Fields here
 	}
 	
