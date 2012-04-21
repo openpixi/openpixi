@@ -299,6 +299,14 @@ public class MainControlApplet extends JApplet {
 	class CalculateFieldsListener implements ItemListener {
 		public void itemStateChanged(ItemEvent eve){
 				particlePanel.calculateFields();
+				if(eve.getStateChange() == ItemEvent.SELECTED) {
+					currentgridCheck.setEnabled(true);
+					drawFieldsCheck.setEnabled(true);
+				}
+				if(eve.getStateChange() == ItemEvent.DESELECTED) {
+					currentgridCheck.setEnabled(false);
+					drawFieldsCheck.setEnabled(false);
+				}
 		}
 	}
 	
@@ -568,9 +576,11 @@ public class MainControlApplet extends JApplet {
 		
 		currentgridCheck = new JCheckBox("Current");
 		currentgridCheck.addItemListener(new DrawCurrentGridListener());
+		currentgridCheck.setEnabled(false);
 		
 		drawFieldsCheck = new JCheckBox("Draw fields");
 		drawFieldsCheck.addItemListener(new DrawFieldsListener());
+		drawFieldsCheck.setEnabled(false);
 		
 		calculateFieldsCheck = new JCheckBox("Calculate Fields");
 		calculateFieldsCheck.addItemListener(new CalculateFieldsListener());
