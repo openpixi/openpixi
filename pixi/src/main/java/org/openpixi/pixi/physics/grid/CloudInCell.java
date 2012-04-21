@@ -8,7 +8,9 @@ import org.openpixi.pixi.physics.Particle2D;
 public class CloudInCell extends Interpolator {
 	
 	public CloudInCell(Grid g) {
+		
 		super(g);
+	
 	}
 	
 	public void interpolateToGrid(ArrayList<Particle2D> particles) {
@@ -58,10 +60,6 @@ public class CloudInCell extends Interpolator {
 			g.jy[xCellPosition + 1][yCellPosition + 1] += p.charge * p.vy * (p.x - (xCellPosition2-1) * g.cellWidth) *
 					(p.y - (yCellPosition2-1) * g.cellHeight) / (g.cellWidth * g.cellHeight);
 		}
-		
-	}
-	
-	public void interpolateToParticle(ArrayList<Particle2D> particles) {
 		
 	}
 
