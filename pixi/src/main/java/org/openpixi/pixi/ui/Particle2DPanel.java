@@ -290,11 +290,15 @@ public class Particle2DPanel extends JPanel {
 		relativistic =! relativistic;
 		
 		if(relativistic == false) {
-		s.f = new CombinedForce();
+			ConstantForce force = new ConstantForce();
+			s.f.clear();
+			s.f.add(force);
 		}
 		
 		if(relativistic == true) {
-			s.f = new CombinedForceRelativistic();
+			ConstantForceRelativistic force = new ConstantForceRelativistic();
+			s.f.clear();
+			s.f.add(force);
 			switch(i) {
 			case 4:
 				s.psolver = new BorisRelativistic();			
