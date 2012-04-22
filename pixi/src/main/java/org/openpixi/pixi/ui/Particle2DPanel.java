@@ -19,7 +19,6 @@
 package org.openpixi.pixi.ui;
 
 import org.openpixi.pixi.physics.*;
-import org.openpixi.pixi.physics.boundary.PeriodicBoundary;
 import org.openpixi.pixi.physics.collision.algorithms.*;
 import org.openpixi.pixi.physics.collision.detectors.*;
 import org.openpixi.pixi.physics.force.*;
@@ -216,8 +215,7 @@ public class Particle2DPanel extends JPanel {
 		
 		if(calculateFields) {
 			s.grid = null;
-			s.grid = new YeeGrid(s);
-			s.boundary = new PeriodicBoundary();
+			s.grid = new SimpleGrid(s);
 			updateSimulationSize();
 		}
 		else {
@@ -292,9 +290,17 @@ public class Particle2DPanel extends JPanel {
 		relativistic =! relativistic;
 		
 		if(relativistic == false) {
-			ConstantForce force = new ConstantForce();
-			s.f.clear();
-			s.f.add(force);
+			for (int j = 0; j < s.f.forces.size(); j++) {
+				if (s.f.forces.get(j) instanceof ConstantForceRelativistic){
+					s.f.forces.set(j, new ConstantForce());
+				}
+				if (s.f.forces.get(j) instanceof SimpleGridForceRelativistic){
+					s.f.forces.set(j, new SimpleGridForce(s));
+				}
+				if (s.f.forces.get(j) instanceof SpringForceRelativistic){
+					s.f.forces.set(j, new SpringForce());
+				}
+			}
 			switch(i) {
 			case 4:
 				s.psolver = new Boris();			
@@ -302,9 +308,17 @@ public class Particle2DPanel extends JPanel {
 		}
 		
 		if(relativistic == true) {
-			ConstantForceRelativistic force = new ConstantForceRelativistic();
-			s.f.clear();
-			s.f.add(force);
+			for (int j = 0; j < s.f.forces.size(); j++) {
+				if (s.f.forces.get(j) instanceof ConstantForce){
+					s.f.forces.set(j, new ConstantForceRelativistic());
+				}
+				if (s.f.forces.get(j) instanceof SimpleGridForce){
+					s.f.forces.set(j, new SimpleGridForceRelativistic(s));
+				}
+				if (s.f.forces.get(j) instanceof SpringForce){
+					s.f.forces.set(j, new SpringForceRelativistic());
+				}
+			}
 			switch(i) {
 			case 4:
 				s.psolver = new BorisRelativistic();			
@@ -415,11 +429,11 @@ public class Particle2DPanel extends JPanel {
 		if(drawCurrentGrid)
 		{
 			graph.setColor(Color.black);
-			for(int i = 0; i < s.grid.numCellsX; i++)
-				for(int k = 0; k < s.grid.numCellsY; k++)
+			for(int i = 1; i < s.grid.numCellsX + 3; i++)
+				for(int k = 1; k < s.grid.numCellsY + 3; k++)
 				{
-					int xstart = (int) (s.grid.cellWidth * (i + 0.5));
-					int ystart = (int) (s.grid.cellHeight * (k + 0.5));
+					int xstart = (int) (s.grid.cellWidth * (i - 1));
+					int ystart = (int) (s.grid.cellHeight * (k - 1));
 					drawArrow(graph, xstart, ystart, (int) Math.round(s.grid.jx[i][k] + xstart), (int) Math.round(s.grid.jy[i][k] + ystart));
 				}
 			//return;
@@ -428,11 +442,11 @@ public class Particle2DPanel extends JPanel {
 		if(drawFields)
 		{
 			graph.setColor(Color.black);
-			for(int i = 0; i < s.grid.numCellsX; i++)
-				for(int k = 0; k < s.grid.numCellsY; k++)
+			for(int i = 1; i < s.grid.numCellsX + 3; i++)
+				for(int k = 1; k < s.grid.numCellsY + 3; k++)
 				{
-					int xstart = (int) (s.grid.cellWidth * (i + 0.5));
-					int ystart = (int) (s.grid.cellHeight * (k + 0.5));
+					int xstart = (int) (s.grid.cellWidth * (i - 1));
+					int ystart = (int) (s.grid.cellHeight * (k - 1));
 					drawArrow(graph, xstart, ystart, (int) Math.round(s.grid.Ex[i][k] + xstart), (int) Math.round(s.grid.Ey[i][k] + ystart));
 				}
 			//return;
