@@ -38,15 +38,13 @@ public class Simulation {
 
 	/**Contains all Particle2D objects*/
 	public ArrayList<Particle2D> particles;
-	public Force  f;
+	public Force f;
 	public Boundary boundary;
 	
 	public Solver psolver;
 	public FieldSolver fsolver;
 	public Grid grid;
 	public Collision collision;
-	//public Detector detector;
-	//public CollisionAlgorithm algorithm;
 	public boolean collisionBoolean = false;
 
 	public Simulation (int swidth, int sheight, int pcount, double pradius) {
@@ -62,11 +60,7 @@ public class Simulation {
 		psolver = new Boris();
 		fsolver = new YeeSolver();
 		grid = new Grid(this);
-		//detector = new Detector();
-		//algorithm = new CollisionAlgorithm();
 		collision = new Collision();
-		
-		//collision = new ElasticCollisionSweepPrune();
 		
 		//should be placed at the beginning but that is impossible because of dependencies on boundaries and Grid
 		setSize(width, height);
