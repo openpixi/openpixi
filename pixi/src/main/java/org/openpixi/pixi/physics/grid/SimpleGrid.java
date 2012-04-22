@@ -47,9 +47,9 @@ public class SimpleGrid extends Grid {
 		Ex = new double[numCellsX+3][numCellsY+3];
 		Ey = new double[numCellsX+3][numCellsY+3];
 		Bz = new double[numCellsX+3][numCellsY+3];
-		Exo = new double[numCellsX][numCellsY];
-		Eyo = new double[numCellsX][numCellsY];
-		Bzo = new double[numCellsX][numCellsY];
+		Exo = new double[numCellsX+3][numCellsY+3];
+		Eyo = new double[numCellsX+3][numCellsY+3];
+		Bzo = new double[numCellsX+3][numCellsY+3];
 		initFields();
 	}
 	
@@ -65,9 +65,9 @@ public class SimpleGrid extends Grid {
 		Ex = new double[numCellsX+3][numCellsY+3];
 		Ey = new double[numCellsX+3][numCellsY+3];
 		Bz = new double[numCellsX+3][numCellsY+3];
-		Exo = new double[numCellsX][numCellsY];
-		Eyo = new double[numCellsX][numCellsY];
-		Bzo = new double[numCellsX][numCellsY];
+		Exo = new double[numCellsX+3][numCellsY+3];
+		Eyo = new double[numCellsX+3][numCellsY+3];
+		Bzo = new double[numCellsX+3][numCellsY+3];
 		initFields();
 		
 		setGrid(width, height);
@@ -89,7 +89,8 @@ public class SimpleGrid extends Grid {
 	public void updateGrid(ArrayList<Particle2D> particles)
 	{
 		reset();
-		interp.interpolateToGrid(particles);		
+		interp.interpolateToGrid(particles);
+		save();
 		s.fsolver.step(this);
 		interp.interpolateToParticle(particles);
 	}
@@ -112,6 +113,17 @@ public class SimpleGrid extends Grid {
 				Bz[i][j] = 0.0;
 			}
 		}
+	}
+	
+	private void save() {
+		for (int i = 0; i < numCellsX + 3; i++) {
+			for (int j = 0; j < numCellsY + 3; j++) {
+				Exo[i][j] = Ex[i][j];
+				Eyo[i][j] = Ey[i][j];
+				Bzo[i][j] = Bz[i][j];
+			}
+		}
+		
 	}
 	
 	/*
