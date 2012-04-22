@@ -19,6 +19,7 @@
 package org.openpixi.pixi.ui;
 
 import org.openpixi.pixi.physics.*;
+import org.openpixi.pixi.physics.boundary.PeriodicBoundary;
 import org.openpixi.pixi.physics.collision.algorithms.*;
 import org.openpixi.pixi.physics.collision.detectors.*;
 import org.openpixi.pixi.physics.force.*;
@@ -215,7 +216,8 @@ public class Particle2DPanel extends JPanel {
 		
 		if(calculateFields) {
 			s.grid = null;
-			s.grid = new SimpleGrid(s);
+			s.grid = new YeeGrid(s);
+			s.boundary = new PeriodicBoundary();
 			updateSimulationSize();
 		}
 		else {
@@ -413,11 +415,11 @@ public class Particle2DPanel extends JPanel {
 		if(drawCurrentGrid)
 		{
 			graph.setColor(Color.black);
-			for(int i = 1; i < s.grid.numCellsX + 3; i++)
-				for(int k = 1; k < s.grid.numCellsY + 3; k++)
+			for(int i = 0; i < s.grid.numCellsX; i++)
+				for(int k = 0; k < s.grid.numCellsY; k++)
 				{
-					int xstart = (int) (s.grid.cellWidth * (i - 1));
-					int ystart = (int) (s.grid.cellHeight * (k - 1));
+					int xstart = (int) (s.grid.cellWidth * (i + 0.5));
+					int ystart = (int) (s.grid.cellHeight * (k + 0.5));
 					drawArrow(graph, xstart, ystart, (int) Math.round(s.grid.jx[i][k] + xstart), (int) Math.round(s.grid.jy[i][k] + ystart));
 				}
 			//return;
@@ -426,11 +428,11 @@ public class Particle2DPanel extends JPanel {
 		if(drawFields)
 		{
 			graph.setColor(Color.black);
-			for(int i = 1; i < s.grid.numCellsX + 3; i++)
-				for(int k = 1; k < s.grid.numCellsY + 3; k++)
+			for(int i = 0; i < s.grid.numCellsX; i++)
+				for(int k = 0; k < s.grid.numCellsY; k++)
 				{
-					int xstart = (int) (s.grid.cellWidth * (i - 1));
-					int ystart = (int) (s.grid.cellHeight * (k - 1));
+					int xstart = (int) (s.grid.cellWidth * (i + 0.5));
+					int ystart = (int) (s.grid.cellHeight * (k + 0.5));
 					drawArrow(graph, xstart, ystart, (int) Math.round(s.grid.Ex[i][k] + xstart), (int) Math.round(s.grid.Ey[i][k] + ystart));
 				}
 			//return;

@@ -22,8 +22,7 @@ package org.openpixi.pixi.physics;
 import java.util.ArrayList;
 import org.openpixi.pixi.physics.boundary.*;
 import org.openpixi.pixi.physics.collision.*;
-import org.openpixi.pixi.physics.fields.FieldSolver;
-import org.openpixi.pixi.physics.fields.SimpleSolver;
+import org.openpixi.pixi.physics.fields.*;
 import org.openpixi.pixi.physics.force.*;
 import org.openpixi.pixi.physics.grid.*;
 import org.openpixi.pixi.physics.solver.*;
@@ -61,7 +60,7 @@ public class Simulation {
 		InitialConditions.initRandomParticles(this, pcount, pradius);
 		
 		psolver = new Boris();
-		fsolver = new SimpleSolver();
+		fsolver = new YeeSolver();
 		grid = new Grid(this);
 		//detector = new Detector();
 		//algorithm = new CollisionAlgorithm();
