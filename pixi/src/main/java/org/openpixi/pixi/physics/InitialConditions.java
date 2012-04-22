@@ -34,7 +34,7 @@ public class InitialConditions {
 	public static void initRandomParticles(Simulation s, int count, double radius) {
 
 		ConstantForce force = new ConstantForce();
-		force.gy = -1; // -ConstantsSI.g;
+		force.gy = 0; // -ConstantsSI.g;
 		s.f.clear();
 		s.f.add(force);
 		
