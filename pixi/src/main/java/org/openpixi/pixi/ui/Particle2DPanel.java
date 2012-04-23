@@ -305,7 +305,10 @@ public class Particle2DPanel extends JPanel {
 			}
 			switch(i) {
 			case 4:
-				s.psolver = new BorisRelativistic();
+				s.psolver = new Boris();
+				break;
+			case 6:
+				s.psolver = new SemiImplicitEuler();
 				break;
 			}
 		}
@@ -325,7 +328,10 @@ public class Particle2DPanel extends JPanel {
 			}
 			switch(i) {
 			case 4:
-				s.psolver = new Boris();
+				s.psolver = new BorisRelativistic();
+				break;
+			case 6:
+				s.psolver = new SemiImplicitEulerRelativistic();
 				break;
 			}
 		}
