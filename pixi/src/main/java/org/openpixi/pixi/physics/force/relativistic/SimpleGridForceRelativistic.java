@@ -3,8 +3,9 @@ package org.openpixi.pixi.physics.force.relativistic;
 import org.openpixi.pixi.physics.ConstantsSI;
 import org.openpixi.pixi.physics.Particle2D;
 import org.openpixi.pixi.physics.Simulation;
+import org.openpixi.pixi.physics.force.Force;
 
-public class SimpleGridForceRelativistic extends ForceRelativistic {
+public class SimpleGridForceRelativistic extends Force {
 
 	Simulation s;
 
@@ -57,5 +58,17 @@ public class SimpleGridForceRelativistic extends ForceRelativistic {
 	@Override
 	public double getBz(Particle2D p) {
 		return p.pd.Bz;
+	}
+	
+	public double getTangentVelocityComponentOfForceX(Particle2D p) {
+		double ux = p.vx * Math.sqrt(1 / (1 - (p.vx / ConstantsSI.c) * (p.vx / ConstantsSI.c)));
+		
+		return -getLinearDragCoefficient(p) * ux;
+	}
+
+	public double getTangentVelocityComponentOfForceY(Particle2D p) {
+		double uy = p.vy * Math.sqrt(1 / (1 - (p.vy / ConstantsSI.c) * (p.vy / ConstantsSI.c)));
+		
+		return -getLinearDragCoefficient(p) * uy;
 	}
 }

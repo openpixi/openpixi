@@ -2,9 +2,11 @@ package org.openpixi.pixi.physics.force.relativistic;
 
 import org.openpixi.pixi.physics.Particle2D;
 import org.openpixi.pixi.physics.ConstantsSI;
+import org.openpixi.pixi.physics.force.Force;
+
 import java.lang.Math;
 
-public class ConstantForceRelativistic extends ForceRelativistic {
+public class ConstantForceRelativistic extends Force {
 	
 	/** New empty force */
 	public ConstantForceRelativistic()
