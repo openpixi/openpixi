@@ -46,7 +46,7 @@ public class SemiImplicitEulerRelativistic extends Solver {
 		
 		// v(t+dt) = v(t) + a(t)*dt
 		p.vx += p.ax * step / Math.sqrt(1 / (1 - (p.vx / ConstantsSI.c) * (p.vx / ConstantsSI.c)));
-		p.vy += p.ay * step / Math.sqrt(1 / (1 - (p.vx / ConstantsSI.c) * (p.vx / ConstantsSI.c)));
+		p.vy += p.ay * step / Math.sqrt(1 / (1 - (p.vy / ConstantsSI.c) * (p.vy / ConstantsSI.c)));
 		
 		// x(t+dt) = x(t) + v(t+dt)*dt
 		p.x += p.vx * step;
