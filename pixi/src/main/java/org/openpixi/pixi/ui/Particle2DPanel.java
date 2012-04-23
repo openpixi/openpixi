@@ -304,6 +304,8 @@ public class Particle2DPanel extends JPanel {
 				}
 			}
 			switch(i) {
+			case 1:
+				s.psolver = new LeapFrog();
 			case 4:
 				s.psolver = new Boris();
 				break;
@@ -327,6 +329,8 @@ public class Particle2DPanel extends JPanel {
 				}
 			}
 			switch(i) {
+			case 1:
+				s.psolver = new LeapFrogRelativistic();
 			case 4:
 				s.psolver = new BorisRelativistic();
 				break;

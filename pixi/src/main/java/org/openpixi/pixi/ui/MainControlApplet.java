@@ -152,7 +152,7 @@ public class MainControlApplet extends JApplet {
 			JComboBox cbox = (JComboBox) eve.getSource();
 			int id = cbox.getSelectedIndex();
 			particlePanel.algorithmChange(id);
-			if ((id == 4) || (id == 6)) {
+			if ((id == 1) || (id == 4) || (id == 6)) {
 				relativisticCheck.setEnabled(true);
 			}
 			else {
