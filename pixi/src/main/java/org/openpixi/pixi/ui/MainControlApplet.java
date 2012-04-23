@@ -27,7 +27,8 @@ import javax.swing.event.*;
 import org.openpixi.pixi.physics.Debug;
 import org.openpixi.pixi.physics.boundary.*;
 import org.openpixi.pixi.physics.collision.detectors.*;
-import org.openpixi.pixi.physics.force.CombinedForce;
+import org.openpixi.pixi.physics.force.*;
+import org.openpixi.pixi.physics.force.relativistic.*;
 
 /**
  * Displays the animation of particles.
@@ -340,7 +341,14 @@ public class MainControlApplet extends JApplet {
 			if(source.getValueIsAdjusting())
 			{
 				double value = source.getValue() * exSliderScaling;
-				particlePanel.s.f.forces.get(0).ex = value;
+				for(int i = 0; i < particlePanel.s.f.forces.size(); i++) {
+					if((particlePanel.s.f.forces.get(i) instanceof ConstantForce) || 
+							(particlePanel.s.f.forces.get(i) instanceof ConstantForceRelativistic)) {
+						particlePanel.s.f.forces.get(i).ex = value;
+						//System.out.println(particlePanel.s.f.forces.get(i).ex);
+					}
+				}
+				//particlePanel.s.f.forces.get(0).ex = value;
 			}
 		}
 	}
@@ -351,7 +359,14 @@ public class MainControlApplet extends JApplet {
 			if(source.getValueIsAdjusting())
 			{
 				double value = source.getValue() * eySliderScaling;
-				particlePanel.s.f.forces.get(0).ey = value;
+				for(int i = 0; i < particlePanel.s.f.forces.size(); i++) {
+					if((particlePanel.s.f.forces.get(i) instanceof ConstantForce) || 
+							(particlePanel.s.f.forces.get(i) instanceof ConstantForceRelativistic)) {
+						particlePanel.s.f.forces.get(i).ey = value;
+						//System.out.println(particlePanel.s.f.forces.get(i).ey);
+					}
+				}
+				//particlePanel.s.f.forces.get(0).ey = value;
 			}
 		}
 	}
@@ -362,7 +377,14 @@ public class MainControlApplet extends JApplet {
 			if(source.getValueIsAdjusting())
 			{
 				double value = source.getValue() * bzSliderScaling;
-				particlePanel.s.f.forces.get(0).bz = value;
+				for(int i = 0; i < particlePanel.s.f.forces.size(); i++) {
+					if((particlePanel.s.f.forces.get(i) instanceof ConstantForce) || 
+							(particlePanel.s.f.forces.get(i) instanceof ConstantForceRelativistic)) {
+						particlePanel.s.f.forces.get(i).bz = value;
+						//System.out.println(particlePanel.s.f.forces.get(i).bz);
+					}
+				}
+				//particlePanel.s.f.forces.get(0).bz = value;
 			}
 		}
 	}
@@ -373,7 +395,14 @@ public class MainControlApplet extends JApplet {
 			if(source.getValueIsAdjusting())
 			{
 				double value = source.getValue() * gxSliderScaling;
-				particlePanel.s.f.forces.get(0).gx = value;
+				for(int i = 0; i < particlePanel.s.f.forces.size(); i++) {
+					if((particlePanel.s.f.forces.get(i) instanceof ConstantForce) || 
+							(particlePanel.s.f.forces.get(i) instanceof ConstantForceRelativistic)) {
+						particlePanel.s.f.forces.get(i).gx = value;
+						//System.out.println(particlePanel.s.f.forces.get(i).gx);
+					}
+				}
+				//particlePanel.s.f.forces.get(0).gx = value;
 			}
 		}
 	}
@@ -384,7 +413,14 @@ public class MainControlApplet extends JApplet {
 			if(source.getValueIsAdjusting())
 			{
 				double value = source.getValue() * gySliderScaling;
-				particlePanel.s.f.forces.get(0).gy = value;
+				for(int i = 0; i < particlePanel.s.f.forces.size(); i++) {
+					if((particlePanel.s.f.forces.get(i) instanceof ConstantForce) || 
+							(particlePanel.s.f.forces.get(i) instanceof ConstantForceRelativistic)) {
+						particlePanel.s.f.forces.get(i).bz = value;
+						//System.out.println(particlePanel.s.f.forces.get(i).gy);
+					}
+				}
+				//particlePanel.s.f.forces.get(0).gy = value;
 			}
 		}
 	}

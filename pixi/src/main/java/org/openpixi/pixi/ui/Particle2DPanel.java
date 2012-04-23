@@ -305,12 +305,13 @@ public class Particle2DPanel extends JPanel {
 			}
 			switch(i) {
 			case 4:
-				s.psolver = new Boris();
+				s.psolver = new BorisRelativistic();
 				break;
 			}
 		}
 		
 		if(relativistic == true) {
+			//System.out.println("relativistic version on");
 			for (int j = 0; j < s.f.forces.size(); j++) {
 				if (s.f.forces.get(j) instanceof ConstantForce){
 					s.f.forces.set(j, new ConstantForceRelativistic());
@@ -324,7 +325,7 @@ public class Particle2DPanel extends JPanel {
 			}
 			switch(i) {
 			case 4:
-				s.psolver = new BorisRelativistic();
+				s.psolver = new Boris();
 				break;
 			}
 		}
