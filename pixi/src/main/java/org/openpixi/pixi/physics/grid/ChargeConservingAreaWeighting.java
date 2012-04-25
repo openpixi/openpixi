@@ -193,7 +193,7 @@ public class ChargeConservingAreaWeighting extends Interpolator {
 					fourBoundaryMove(xStart+1, yStart, -(g.cellWidth / 2), y, deltaX2, deltaY2, p);
 					
 					deltaX -= (deltaX1 + deltaX2);
-					deltaY -= (deltaY1 + deltaY1);
+					deltaY -= (deltaY1 + deltaY2);
 					x = deltaX2 - (g.cellWidth / 2);					
 					fourBoundaryMove(xEnd, yEnd, x, -(g.cellHeight / 2), deltaX, deltaY, p);
 					
@@ -222,7 +222,7 @@ public class ChargeConservingAreaWeighting extends Interpolator {
 					fourBoundaryMove(xStart, yStart+1, x, -(g.cellHeight / 2), deltaX2, deltaY2, p);
 					
 					deltaX -= (deltaX1 + deltaX2);
-					deltaY -= (deltaY1 + deltaY1);
+					deltaY -= (deltaY1 + deltaY2);
 					y = deltaY2 - (g.cellHeight / 2);					
 					fourBoundaryMove(xEnd, yEnd, -(g.cellWidth / 2), y, deltaX, deltaY, p);
 					
@@ -256,7 +256,7 @@ public class ChargeConservingAreaWeighting extends Interpolator {
 					fourBoundaryMove(xStart, yStart-1, x, (g.cellHeight / 2), deltaX2, deltaY2, p);
 					
 					deltaX -= (deltaX1 + deltaX2);
-					deltaY -= (deltaY1 + deltaY1);
+					deltaY -= (deltaY1 + deltaY2);
 					y = -deltaY2 - (g.cellHeight / 2);					
 					fourBoundaryMove(xEnd, yEnd, -(g.cellWidth / 2), y, deltaX, deltaY, p);
 					
@@ -285,7 +285,7 @@ public class ChargeConservingAreaWeighting extends Interpolator {
 					fourBoundaryMove(xStart+1, yStart, -(g.cellWidth / 2), y, deltaX2, deltaY2, p);
 					
 					deltaX -= (deltaX1 + deltaX2);
-					deltaY -= (deltaY1 + deltaY1);
+					deltaY -= (deltaY1 + deltaY2);
 					x = deltaX2 - (g.cellWidth / 2);					
 					fourBoundaryMove(xEnd, yEnd, x, (g.cellHeight / 2), deltaX, deltaY, p);
 					
@@ -321,7 +321,7 @@ public class ChargeConservingAreaWeighting extends Interpolator {
 					fourBoundaryMove(xStart-1, yStart, (g.cellWidth / 2), y, deltaX2, deltaY2, p);
 					
 					deltaX -= (deltaX1 + deltaX2);
-					deltaY -= (deltaY1 + deltaY1);
+					deltaY -= (deltaY1 + deltaY2);
 					x = (g.cellWidth / 2) + deltaX2;					
 					fourBoundaryMove(xEnd, yEnd, x, -(g.cellHeight / 2), deltaX, deltaY, p);
 					
@@ -349,7 +349,7 @@ public class ChargeConservingAreaWeighting extends Interpolator {
 					fourBoundaryMove(xStart, yStart+1, x, -(g.cellHeight / 2), deltaX2, deltaY2, p);
 					
 					deltaX -= (deltaX1 + deltaX2);
-					deltaY -= (deltaY1 + deltaY1);
+					deltaY -= (deltaY1 + deltaY2);
 					y = deltaY2 - (g.cellHeight / 2);					
 					fourBoundaryMove(xEnd, yEnd, -(g.cellWidth / 2), y, deltaX, deltaY,p);
 					
@@ -381,7 +381,7 @@ public class ChargeConservingAreaWeighting extends Interpolator {
 					fourBoundaryMove(xStart, yStart-1, x, (g.cellHeight / 2), deltaX2, deltaY2, p);
 					
 					deltaX -= (deltaX1 + deltaX2);
-					deltaY -= (deltaY1 + deltaY1);
+					deltaY -= (deltaY1 + deltaY2);
 					y = (g.cellHeight / 2) + deltaY2;					
 					fourBoundaryMove(xEnd, yEnd, (g.cellWidth / 2), y, deltaX, deltaY, p);
 					
@@ -410,7 +410,7 @@ public class ChargeConservingAreaWeighting extends Interpolator {
 					fourBoundaryMove(xStart+1, yStart, (g.cellWidth / 2), y, deltaX2, deltaY2, p);
 					
 					deltaX -= (deltaX1 + deltaX2);
-					deltaY -= (deltaY1 + deltaY1);
+					deltaY -= (deltaY1 + deltaY2);
 					x = (g.cellWidth / 2) + deltaX2;					
 					fourBoundaryMove(xEnd, yEnd, x, (g.cellHeight / 2), deltaX, deltaY, p);
 					
