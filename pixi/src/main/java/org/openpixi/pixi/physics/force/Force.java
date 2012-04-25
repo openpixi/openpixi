@@ -25,19 +25,6 @@ import org.openpixi.pixi.physics.Particle2D;
 
 public class Force{
 
-	/** Constant gravity in x-direction */
-	public double gx;
-	/** Constant gravity in y-direction */
-	public double gy;
-	/** Drag coefficient */
-	public double drag;
-	/** Electric field in x - direction */
-	public double ex;
-	/** Electric field in y - direction */
-	public double ey;
-	/** Magnetic field in z - direction */
-	public double bz;
-	
 	public ArrayList<Force> forces = new ArrayList<Force>();
 
 	/** New empty force */

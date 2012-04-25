@@ -123,13 +123,13 @@ public class MainControlApplet extends JApplet {
 			"With matrices"
 	};
 
-	private Force force = null;
+	private ConstantForce force = null;
 
 	private void linkConstantForce() {
 		for(int i = 0; i < particlePanel.s.f.forces.size(); i++) {
 			if((particlePanel.s.f.forces.get(i) instanceof ConstantForce) ||
 					(particlePanel.s.f.forces.get(i) instanceof ConstantForceRelativistic)) {
-				force = particlePanel.s.f.forces.get(i);
+				force = (ConstantForce) particlePanel.s.f.forces.get(i);
 				return;
 			}
 		}
@@ -345,8 +345,7 @@ public class MainControlApplet extends JApplet {
 			if(source.getValueIsAdjusting())
 			{
 				double value = source.getValue() * dragSliderScaling;
-				particlePanel.s.f.forces.get(0).drag = value;
-				
+				force.drag = value;
 			}
 		}
 	}
@@ -368,13 +367,13 @@ public class MainControlApplet extends JApplet {
 			if(source.getValueIsAdjusting())
 			{
 				double value = source.getValue() * eySliderScaling;
-				for(int i = 0; i < particlePanel.s.f.forces.size(); i++) {
-					if((particlePanel.s.f.forces.get(i) instanceof ConstantForce) || 
-							(particlePanel.s.f.forces.get(i) instanceof ConstantForceRelativistic)) {
-						particlePanel.s.f.forces.get(i).ey = value;
-						//System.out.println(particlePanel.s.f.forces.get(i).ey);
-					}
-				}
+//				for(int i = 0; i < particlePanel.s.f.forces.size(); i++) {
+//					if((particlePanel.s.f.forces.get(i) instanceof ConstantForce) || 
+//							(particlePanel.s.f.forces.get(i) instanceof ConstantForceRelativistic)) {
+//						particlePanel.s.f.forces.get(i).ey = value;
+//						//System.out.println(particlePanel.s.f.forces.get(i).ey);
+//					}
+//				}
 				//particlePanel.s.f.forces.get(0).ey = value;
 			}
 		}
@@ -389,7 +388,7 @@ public class MainControlApplet extends JApplet {
 				for(int i = 0; i < particlePanel.s.f.forces.size(); i++) {
 					if((particlePanel.s.f.forces.get(i) instanceof ConstantForce) || 
 							(particlePanel.s.f.forces.get(i) instanceof ConstantForceRelativistic)) {
-						particlePanel.s.f.forces.get(i).bz = value;
+//						particlePanel.s.f.forces.get(i).bz = value;
 						//System.out.println(particlePanel.s.f.forces.get(i).bz);
 					}
 				}
@@ -404,13 +403,13 @@ public class MainControlApplet extends JApplet {
 			if(source.getValueIsAdjusting())
 			{
 				double value = source.getValue() * gxSliderScaling;
-				for(int i = 0; i < particlePanel.s.f.forces.size(); i++) {
-					if((particlePanel.s.f.forces.get(i) instanceof ConstantForce) || 
-							(particlePanel.s.f.forces.get(i) instanceof ConstantForceRelativistic)) {
-						particlePanel.s.f.forces.get(i).gx = value;
-						//System.out.println(particlePanel.s.f.forces.get(i).gx);
-					}
-				}
+//				for(int i = 0; i < particlePanel.s.f.forces.size(); i++) {
+//					if((particlePanel.s.f.forces.get(i) instanceof ConstantForce) || 
+//							(particlePanel.s.f.forces.get(i) instanceof ConstantForceRelativistic)) {
+//						particlePanel.s.f.forces.get(i).gx = value;
+//						//System.out.println(particlePanel.s.f.forces.get(i).gx);
+//					}
+//				}
 				//particlePanel.s.f.forces.get(0).gx = value;
 			}
 		}
@@ -422,13 +421,13 @@ public class MainControlApplet extends JApplet {
 			if(source.getValueIsAdjusting())
 			{
 				double value = source.getValue() * gySliderScaling;
-				for(int i = 0; i < particlePanel.s.f.forces.size(); i++) {
-					if((particlePanel.s.f.forces.get(i) instanceof ConstantForce) || 
-							(particlePanel.s.f.forces.get(i) instanceof ConstantForceRelativistic)) {
-						particlePanel.s.f.forces.get(i).bz = value;
-						//System.out.println(particlePanel.s.f.forces.get(i).gy);
-					}
-				}
+//				for(int i = 0; i < particlePanel.s.f.forces.size(); i++) {
+//					if((particlePanel.s.f.forces.get(i) instanceof ConstantForce) || 
+//							(particlePanel.s.f.forces.get(i) instanceof ConstantForceRelativistic)) {
+//						particlePanel.s.f.forces.get(i).bz = value;
+//						//System.out.println(particlePanel.s.f.forces.get(i).gy);
+//					}
+//				}
 				//particlePanel.s.f.forces.get(0).gy = value;
 			}
 		}
@@ -461,6 +460,7 @@ public class MainControlApplet extends JApplet {
 		Debug.checkAssertsEnabled();
 
 		particlePanel = new Particle2DPanel();
+		linkConstantForce();
 
 		this.setVisible(true);
 		this.setSize(1000, 500);
@@ -510,7 +510,7 @@ public class MainControlApplet extends JApplet {
 		dragSlider.addChangeListener(new DragListener());
 		dragSlider.setMinimum(0);
 		dragSlider.setMaximum(100);
-		dragSlider.setValue((int) particlePanel.s.f.forces.get(0).drag);
+		dragSlider.setValue((int) force.drag);
 		dragSlider.setMajorTickSpacing(10);
 		dragSlider.setMinorTickSpacing(2);
 		dragSlider.setPaintTicks(true);
@@ -520,7 +520,7 @@ public class MainControlApplet extends JApplet {
 		efieldXSlider.addChangeListener(new EFieldXListener());
 		efieldXSlider.setMinimum(-100);
 		efieldXSlider.setMaximum(100);
-		efieldXSlider.setValue((int) particlePanel.s.f.forces.get(0).ex);
+		efieldXSlider.setValue((int) force.ex);
 		efieldXSlider.setMajorTickSpacing(20);
 		efieldXSlider.setMinorTickSpacing(5);
 		efieldXSlider.setPaintTicks(true);
@@ -529,7 +529,7 @@ public class MainControlApplet extends JApplet {
 		efieldYSlider.addChangeListener(new EFieldYListener());
 		efieldYSlider.setMinimum(-100);
 		efieldYSlider.setMaximum(100);
-		efieldYSlider.setValue((int) particlePanel.s.f.forces.get(0).ey);
+		efieldYSlider.setValue((int) force.ey);
 		efieldYSlider.setMajorTickSpacing(20);
 		efieldYSlider.setMinorTickSpacing(5);
 		efieldYSlider.setPaintTicks(true);
@@ -538,7 +538,7 @@ public class MainControlApplet extends JApplet {
 		bfieldZSlider.addChangeListener(new BFieldZListener());
 		bfieldZSlider.setMinimum(-100);
 		bfieldZSlider.setMaximum(100);
-		bfieldZSlider.setValue((int) particlePanel.s.f.forces.get(0).bz);
+		bfieldZSlider.setValue((int) force.bz);
 		bfieldZSlider.setMajorTickSpacing(20);
 		bfieldZSlider.setMinorTickSpacing(5);
 		bfieldZSlider.setPaintTicks(true);
@@ -547,7 +547,7 @@ public class MainControlApplet extends JApplet {
 		gfieldXSlider.addChangeListener(new GFieldXListener());
 		gfieldXSlider.setMinimum(-100);
 		gfieldXSlider.setMaximum(100);
-		gfieldXSlider.setValue((int) particlePanel.s.f.forces.get(0).gx);
+		gfieldXSlider.setValue((int) force.gx);
 		gfieldXSlider.setMajorTickSpacing(20);
 		gfieldXSlider.setMinorTickSpacing(5);
 		gfieldXSlider.setPaintTicks(true);
@@ -556,7 +556,7 @@ public class MainControlApplet extends JApplet {
 		gfieldYSlider.addChangeListener(new GFieldYListener());
 		gfieldYSlider.setMinimum(-100);
 		gfieldYSlider.setMaximum(100);
-		gfieldYSlider.setValue((int) particlePanel.s.f.forces.get(0).gy);
+		gfieldYSlider.setValue((int) force.gy);
 		gfieldYSlider.setMajorTickSpacing(20);
 		gfieldYSlider.setMinorTickSpacing(5);
 		gfieldYSlider.setPaintTicks(true);
@@ -816,12 +816,12 @@ public class MainControlApplet extends JApplet {
 	{
 		particlePanel.s.tstep = 0.5;
 		stepSlider.setValue(50);
-		efieldXSlider.setValue((int) (particlePanel.s.f.forces.get(0).ex / exSliderScaling));
-		efieldYSlider.setValue((int) (particlePanel.s.f.forces.get(0).ey / eySliderScaling));
-		bfieldZSlider.setValue((int) (particlePanel.s.f.forces.get(0).bz / bzSliderScaling));
-		gfieldXSlider.setValue((int) (particlePanel.s.f.forces.get(0).gx / gxSliderScaling));
-		gfieldYSlider.setValue((int) (particlePanel.s.f.forces.get(0).gy / gySliderScaling));
-		dragSlider.setValue((int) (particlePanel.s.f.forces.get(0).drag / dragSliderScaling));
+		efieldXSlider.setValue((int) (force.ex / exSliderScaling));
+		efieldYSlider.setValue((int) (force.ey / eySliderScaling));
+		bfieldZSlider.setValue((int) (force.bz / bzSliderScaling));
+		gfieldXSlider.setValue((int) (force.gx / gxSliderScaling));
+		gfieldYSlider.setValue((int) (force.gy / gySliderScaling));
+		dragSlider.setValue((int) (force.drag / dragSliderScaling));
 		//int delay = particlePanel.timer.getDelay();
 		//speedSlider.setValue((int) (-Math.log(delay / 1000.) / speedSliderScaling));
 		speedSlider.setValue(50);
