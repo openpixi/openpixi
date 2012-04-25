@@ -123,6 +123,19 @@ public class MainControlApplet extends JApplet {
 			"With matrices"
 	};
 
+	private Force force = null;
+
+	private void linkConstantForce() {
+		for(int i = 0; i < particlePanel.s.f.forces.size(); i++) {
+			if((particlePanel.s.f.forces.get(i) instanceof ConstantForce) ||
+					(particlePanel.s.f.forces.get(i) instanceof ConstantForceRelativistic)) {
+				force = particlePanel.s.f.forces.get(i);
+				return;
+			}
+		}
+		assert false : "no force found";
+	}
+
 	/**
 	 * Listener for slider.
 	 */
@@ -143,6 +156,7 @@ public class MainControlApplet extends JApplet {
 			int id  = cb.getSelectedIndex();
 			particlePanel.resetAnimation(id);
 			particlePanel.resetAnimation(initComboBox.getSelectedIndex());
+			linkConstantForce();
 			setSlidersValue();
 		}
 	}
@@ -218,6 +232,7 @@ public class MainControlApplet extends JApplet {
 	class ResetListener implements ActionListener {
 		public void actionPerformed(ActionEvent eve) {
 			particlePanel.resetAnimation(initComboBox.getSelectedIndex());
+			linkConstantForce();
 			setSlidersValue();
 			testButton.setEnabled(true);
 		}
@@ -282,6 +297,7 @@ public class MainControlApplet extends JApplet {
 		public void itemStateChanged(ItemEvent eve){
 			int i = (int)algorithmComboBox.getSelectedIndex();
 			particlePanel.relativisticEffects(i);
+			linkConstantForce();
 		}
 	}
 	
@@ -341,18 +357,11 @@ public class MainControlApplet extends JApplet {
 			if(source.getValueIsAdjusting())
 			{
 				double value = source.getValue() * exSliderScaling;
-				for(int i = 0; i < particlePanel.s.f.forces.size(); i++) {
-					if((particlePanel.s.f.forces.get(i) instanceof ConstantForce) || 
-							(particlePanel.s.f.forces.get(i) instanceof ConstantForceRelativistic)) {
-						particlePanel.s.f.forces.get(i).ex = value;
-						//System.out.println(particlePanel.s.f.forces.get(i).ex);
-					}
-				}
-				//particlePanel.s.f.forces.get(0).ex = value;
+				force.ex = value;
 			}
 		}
 	}
-	
+
 	class EFieldYListener implements ChangeListener{
 		public void stateChanged(ChangeEvent eve) {
 			JSlider source = (JSlider) eve.getSource();
@@ -841,6 +850,7 @@ public class MainControlApplet extends JApplet {
 		collisionDetector.setSelectedIndex(0);
 		collisionAlgorithm.setSelectedIndex(0);
 		//particlePanel.s.f = new CombinedForce();
+		linkConstantForce();
 	}
 	
 	@Override
