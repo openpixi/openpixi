@@ -68,7 +68,7 @@ public class ChargeConservingAreaWeightingTest extends TestCase {
 	}
 
 	private void testMove(double x1, double y1, double x2, double y2, double charge, String text) {
-		Simulation s = new Simulation();
+		Simulation s = new Simulation(100, 100, 0, 1);
 
 		// Add single particle
 		Particle2D p = new Particle2D();
@@ -85,8 +85,8 @@ public class ChargeConservingAreaWeightingTest extends TestCase {
 		YeeGrid grid = new YeeGrid(s); // 10x10 grid
 
 		// Remember old values
-		grid.particledata.get(0).x = s.particles.get(0).x;
-		grid.particledata.get(0).y = s.particles.get(0).y;
+		s.particles.get(0).pd.x = s.particles.get(0).x;
+		s.particles.get(0).pd.y = s.particles.get(0).y;
 
 		// Advance particle
 		ParticleMover.particlePush(s);
