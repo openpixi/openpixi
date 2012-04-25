@@ -56,14 +56,14 @@ public class ChargeConservingAreaWeightingTest extends TestCase {
 	}
 
 	public void testRandomMoves() {
-		for (int i = 0; i < 10; i++) {
+		for (int i = 0; i < 1000; i++) {
 			double x1 = 2 + 6 * Math.random();
 			double y1 = 2 + 6 * Math.random();
 			double phi = 2 * Math.PI * Math.random();
 			double distance = 1 * Math.random();
 			double x2 = x1 + distance * Math.cos(phi);
 			double y2 = y1 + distance * Math.sin(phi);
-			testMove(x1, y1, x2, y2, +1, "random boundary");
+			testMove(x1, y1, x2, y2, +1, "random boundary " + i);
 		}
 	}
 
