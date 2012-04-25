@@ -275,6 +275,7 @@ public class MainControlApplet extends JApplet {
 				particlePanel.fileName = filename.getText();
 				particlePanel.fileDirectory = filedirectory.getText();
 				particlePanel.writePosition();
+				linkConstantForce();
 				filename.setEditable(false);
 				filename.setEnabled(false);
 				filedirectory.setEditable(false);
