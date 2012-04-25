@@ -68,13 +68,11 @@ public class BorisRelativistic extends Solver{
 		vxplus = vxminus + vyprime * s_z;
 		vyplus = vyminus - vxprime * s_z;
 		
-		p.vx = (vxplus + f.getPositionComponentofForceX(p) * step / (2.0 * p.mass) 
-				+ f.getTangentVelocityComponentOfForceX(p) * step / p.mass) / Math.sqrt(1 / (1 - (p.vx / ConstantsSI.c) * (p.vx / ConstantsSI.c)));
-		p.vy = (vyplus + f.getPositionComponentofForceY(p) * step / (2.0 * p.mass) 
-				+ f.getTangentVelocityComponentOfForceY(p) * step / p.mass) / Math.sqrt(1 / (1 - (p.vy / ConstantsSI.c) * (p.vy / ConstantsSI.c)));
+		p.vx = vxplus + f.getPositionComponentofForceX(p) * step / (2.0 * p.mass) + f.getTangentVelocityComponentOfForceX(p) * step / p.mass;
+		p.vy = vyplus + f.getPositionComponentofForceY(p) * step / (2.0 * p.mass) + f.getTangentVelocityComponentOfForceY(p) * step / p.mass;
 		
-		p.x += p.vx * step;
-		p.y += p.vy * step;
+		p.x += p.vx * step / Math.sqrt(1 / (1 - (p.vx / ConstantsSI.c) * (p.vx / ConstantsSI.c)));
+		p.y += p.vy * step / Math.sqrt(1 / (1 - (p.vy / ConstantsSI.c) * (p.vy / ConstantsSI.c)));
 	}	
 	/**
 	 * prepare method for bringing the velocity in the desired half step

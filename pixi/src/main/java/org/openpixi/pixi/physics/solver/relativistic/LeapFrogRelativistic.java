@@ -42,8 +42,8 @@ public class LeapFrogRelativistic extends Solver{
 	 */
 	public void step(Particle2D p, Force f, double dt) {
 		// x(t+dt) = x(t) + v(t+dt/2)*dt
-		p.x += p.vx * dt;
-		p.y += p.vy * dt;
+		p.x += p.vx * dt / Math.sqrt(1 / (1 - (p.vx / ConstantsSI.c) * (p.vx / ConstantsSI.c)));
+		p.y += p.vy * dt / Math.sqrt(1 / (1 - (p.vy / ConstantsSI.c) * (p.vy / ConstantsSI.c)));
 
 		// a(t+dt) = F(v(t+dt/2), x(t+dt)) / m
 		// WARNING: Force is evaluated at two different times t+dt/2 and t+dt!
@@ -51,8 +51,8 @@ public class LeapFrogRelativistic extends Solver{
 		p.ay = f.getForceY(p) / p.mass;
 
 		// v(t+3*dt/2) = v(t+dt/2) + a(t+dt)*dt
-		p.vx += p.ax * dt / Math.sqrt(1 / (1 - (p.vx / ConstantsSI.c) * (p.vx / ConstantsSI.c)));
-		p.vy += p.ay * dt / Math.sqrt(1 / (1 - (p.vy / ConstantsSI.c) * (p.vy / ConstantsSI.c)));
+		p.vx += p.ax * dt;
+		p.vy += p.ay * dt;
 		
 	}
 	/**
@@ -67,8 +67,8 @@ public class LeapFrogRelativistic extends Solver{
 		p.ay = f.getForceY(p) / p.mass;
 		
 		//v(t + dt / 2) = v(t) + a(t)*dt / 2
-		p.vx += p.ax * dt / (2 * Math.sqrt(1 / (1 - (p.vx / ConstantsSI.c) * (p.vx / ConstantsSI.c))));
-		p.vy += p.ay * dt / (2 * Math.sqrt(1 / (1 - (p.vy / ConstantsSI.c) * (p.vy / ConstantsSI.c))));
+		p.vx += p.ax * dt;
+		p.vy += p.ay * dt;
 	}
 	/**
 	 * complete method for bringing the velocity in the desired half step
@@ -78,8 +78,8 @@ public class LeapFrogRelativistic extends Solver{
 	public void complete(Particle2D p, Force f, double dt)
 	{
 		//v(t) = v(t + dt / 2) - a(t)*dt / 2
-		p.vx -= p.ax * dt / (2 * Math.sqrt(1 / (1 - (p.vx / ConstantsSI.c) * (p.vx / ConstantsSI.c))));
-		p.vy -= p.ay * dt / (2 * Math.sqrt(1 / (1 - (p.vy / ConstantsSI.c) * (p.vy / ConstantsSI.c))));
+		p.vx -= p.ax * dt;
+		p.vy -= p.ay * dt;
 	}
 
 }

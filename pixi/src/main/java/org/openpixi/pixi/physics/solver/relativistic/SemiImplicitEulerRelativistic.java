@@ -45,12 +45,12 @@ public class SemiImplicitEulerRelativistic extends Solver {
 		p.ay = f.getForceY(p) / p.mass;
 		
 		// v(t+dt) = v(t) + a(t)*dt
-		p.vx += p.ax * step / Math.sqrt(1 / (1 - (p.vx / ConstantsSI.c) * (p.vx / ConstantsSI.c)));
-		p.vy += p.ay * step / Math.sqrt(1 / (1 - (p.vy / ConstantsSI.c) * (p.vy / ConstantsSI.c)));
+		p.vx += p.ax * step;
+		p.vy += p.ay * step;
 		
 		// x(t+dt) = x(t) + v(t+dt)*dt
-		p.x += p.vx * step;
-		p.y += p.vy * step;
+		p.x += p.vx * step / Math.sqrt(1 / (1 - (p.vx / ConstantsSI.c) * (p.vx / ConstantsSI.c)));
+		p.y += p.vy * step / Math.sqrt(1 / (1 - (p.vy / ConstantsSI.c) * (p.vy / ConstantsSI.c)));
 		
 	}
 	
