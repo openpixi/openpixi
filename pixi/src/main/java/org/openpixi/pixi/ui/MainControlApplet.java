@@ -86,6 +86,8 @@ public class MainControlApplet extends JApplet {
 	private static final double bzSliderScaling = 0.05;
 	private static final double gxSliderScaling = 0.01;
 	private static final double gySliderScaling = 0.01;
+	
+	private ConstantForce force = null;
 
 	String[] initStrings = {
 			"10 random particles",
@@ -123,7 +125,7 @@ public class MainControlApplet extends JApplet {
 			"With matrices"
 	};
 
-	private ConstantForce force = null;
+
 
 	private void linkConstantForce() {
 		for(int i = 0; i < particlePanel.s.f.forces.size(); i++) {
@@ -367,14 +369,7 @@ public class MainControlApplet extends JApplet {
 			if(source.getValueIsAdjusting())
 			{
 				double value = source.getValue() * eySliderScaling;
-//				for(int i = 0; i < particlePanel.s.f.forces.size(); i++) {
-//					if((particlePanel.s.f.forces.get(i) instanceof ConstantForce) || 
-//							(particlePanel.s.f.forces.get(i) instanceof ConstantForceRelativistic)) {
-//						particlePanel.s.f.forces.get(i).ey = value;
-//						//System.out.println(particlePanel.s.f.forces.get(i).ey);
-//					}
-//				}
-				//particlePanel.s.f.forces.get(0).ey = value;
+				force.ey = value;
 			}
 		}
 	}
@@ -385,14 +380,7 @@ public class MainControlApplet extends JApplet {
 			if(source.getValueIsAdjusting())
 			{
 				double value = source.getValue() * bzSliderScaling;
-				for(int i = 0; i < particlePanel.s.f.forces.size(); i++) {
-					if((particlePanel.s.f.forces.get(i) instanceof ConstantForce) || 
-							(particlePanel.s.f.forces.get(i) instanceof ConstantForceRelativistic)) {
-//						particlePanel.s.f.forces.get(i).bz = value;
-						//System.out.println(particlePanel.s.f.forces.get(i).bz);
-					}
-				}
-				//particlePanel.s.f.forces.get(0).bz = value;
+				force.bz = value;
 			}
 		}
 	}
@@ -403,14 +391,7 @@ public class MainControlApplet extends JApplet {
 			if(source.getValueIsAdjusting())
 			{
 				double value = source.getValue() * gxSliderScaling;
-//				for(int i = 0; i < particlePanel.s.f.forces.size(); i++) {
-//					if((particlePanel.s.f.forces.get(i) instanceof ConstantForce) || 
-//							(particlePanel.s.f.forces.get(i) instanceof ConstantForceRelativistic)) {
-//						particlePanel.s.f.forces.get(i).gx = value;
-//						//System.out.println(particlePanel.s.f.forces.get(i).gx);
-//					}
-//				}
-				//particlePanel.s.f.forces.get(0).gx = value;
+				force.gx = value;
 			}
 		}
 	}
@@ -421,14 +402,7 @@ public class MainControlApplet extends JApplet {
 			if(source.getValueIsAdjusting())
 			{
 				double value = source.getValue() * gySliderScaling;
-//				for(int i = 0; i < particlePanel.s.f.forces.size(); i++) {
-//					if((particlePanel.s.f.forces.get(i) instanceof ConstantForce) || 
-//							(particlePanel.s.f.forces.get(i) instanceof ConstantForceRelativistic)) {
-//						particlePanel.s.f.forces.get(i).bz = value;
-//						//System.out.println(particlePanel.s.f.forces.get(i).gy);
-//					}
-//				}
-				//particlePanel.s.f.forces.get(0).gy = value;
+				force.gy = value;
 			}
 		}
 	}
