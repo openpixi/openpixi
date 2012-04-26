@@ -19,9 +19,12 @@
 
 package org.openpixi.pixi.physics;
 
-import org.openpixi.pixi.physics.boundary.HardWallBoundary;
-import org.openpixi.pixi.physics.boundary.PeriodicBoundary;
+import org.openpixi.pixi.physics.boundary.*;
+import org.openpixi.pixi.physics.collision.*;
+import org.openpixi.pixi.physics.fields.*;
 import org.openpixi.pixi.physics.force.*;
+import org.openpixi.pixi.physics.grid.*;
+import org.openpixi.pixi.physics.solver.*;
 
 public class InitialConditions {
 	
@@ -117,7 +120,27 @@ public class InitialConditions {
 		}
 		//s.collision.det.add(s.particles);
 	}
+	
+	public static void constForce10ParticlesGrid(Simulation s) {
+		
+		s.tstep = 1;
+		s.width = 256;
+		s.height = 256;
+		
+		ConstantForce cf = new ConstantForce();
 
+		s.f.clear();
+		s.f.add(cf);
+		
+		s.grid = new YeeGrid(s);
+		s.fsolver = new YeeSolver();
+		s.psolver = new Boris();
+		
+		s.boundary = new HardWallBoundary();
+		
+		createRandomParticles(s, 10, 1);
+	}
+	
 	public static void setHardWallBoundary(Simulation s) {
 		s.boundary = new HardWallBoundary();
 	}
