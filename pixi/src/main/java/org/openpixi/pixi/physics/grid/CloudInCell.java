@@ -67,7 +67,7 @@ public class CloudInCell extends Interpolator {
 		
 		for (int i = 0; i < particles.size(); i++) {
 			
-		Particle2D p = g.s.particles.get(i);
+		Particle2D p = g.simulation.particles.get(i);
 		int xCellPosition = (int) Math.floor(p.x / g.cellWidth + 1);
 		int yCellPosition = (int) Math.floor(p.y / g.cellHeight + 1);
 		

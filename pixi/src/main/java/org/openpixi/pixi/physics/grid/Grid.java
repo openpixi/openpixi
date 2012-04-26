@@ -8,7 +8,7 @@ import org.openpixi.pixi.physics.grid.*;
 
 public class Grid {
 	
-	public Simulation s;
+	public Simulation simulation;
 	public Interpolator interp;
 	
 	/**Electric current in x-Direction*/
@@ -43,7 +43,7 @@ public class Grid {
 	
 	public Grid(Simulation s) {
 		
-		this.s = s;
+		this.simulation = s;
 		
 	}
 	

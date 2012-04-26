@@ -22,7 +22,7 @@ public class ChargeConservingAreaWeighting extends Interpolator {
 			//Particle2DData pd = g.particledata.get(i);
 			
 			//boundary check
-			if (p.x < 0 || p.x > g.s.width || p.y < 0 || p.y > g.s.height) {
+			if (p.x < 0 || p.x > g.simulation.width || p.y < 0 || p.y > g.simulation.height) {
 				break;
 			}
 			

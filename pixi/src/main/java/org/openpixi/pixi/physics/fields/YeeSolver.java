@@ -35,15 +35,15 @@ public class YeeSolver extends FieldSolver {
 					(g.Exo[i][1] - g.Exo[i][g.numCellsY-1]) / ( 2 * g.cellHeight);
 			
 			/**Maxwell EQ*/
-			g.Bz[i][0] += -g.s.tstep * cz;
+			g.Bz[i][0] += -g.simulation.tstep * cz;
 
 			/**curl of the B field using center difference*/
 			cx = (g.Bzo[i][1] - g.Bzo[i][g.numCellsY-1]) / ( 2 * g.cellHeight);
 			cy = -(g.Bzo[ip][0] - g.Bzo[im][0]) / ( 2 * g.cellWidth);
 			
 			/**Maxwell EQ*/
-			g.Ex[i][0] += g.s.tstep * (cx - g.jx[i][0]);
-			g.Ey[i][0] += g.s.tstep * (cy - g.jy[i][0]);
+			g.Ex[i][0] += g.simulation.tstep * (cx - g.jx[i][0]);
+			g.Ey[i][0] += g.simulation.tstep * (cy - g.jy[i][0]);
 			
 			//upper border
 			/**curl of the E field using center difference*/
@@ -51,15 +51,15 @@ public class YeeSolver extends FieldSolver {
 					(g.Exo[i][0] - g.Exo[i][g.numCellsY-2]) / ( 2 * g.cellHeight);
 			
 			/**Maxwell EQ*/
-			g.Bz[i][g.numCellsY-1] += -g.s.tstep * cz;
+			g.Bz[i][g.numCellsY-1] += -g.simulation.tstep * cz;
 
 			/**curl of the B field using center difference*/
 			cx = (g.Bzo[i][0] - g.Bzo[i][g.numCellsY-2]) / ( 2 * g.cellHeight);
 			cy = -(g.Bzo[ip][g.numCellsY-1] - g.Bzo[im][g.numCellsY-1]) / ( 2 * g.cellWidth);
 			
 			/**Maxwell EQ*/
-			g.Ex[i][g.numCellsY-1] += g.s.tstep * (cx - g.jx[i][g.numCellsY-1]);
-			g.Ey[i][g.numCellsY-1] += g.s.tstep * (cy - g.jy[i][g.numCellsY-1]);
+			g.Ex[i][g.numCellsY-1] += g.simulation.tstep * (cx - g.jx[i][g.numCellsY-1]);
+			g.Ey[i][g.numCellsY-1] += g.simulation.tstep * (cy - g.jy[i][g.numCellsY-1]);
 			
 		}
 		
@@ -72,15 +72,15 @@ public class YeeSolver extends FieldSolver {
 					(g.Exo[0][j+1] - g.Exo[0][j-1]) / ( 2 * g.cellHeight);
 			
 			/**Maxwell EQ*/
-			g.Bz[0][j] += -g.s.tstep * cz;
+			g.Bz[0][j] += -g.simulation.tstep * cz;
 
 			/**curl of the B field using center difference*/
 			cx = (g.Bzo[0][j+1] - g.Bzo[0][j-1]) / ( 2 * g.cellHeight);
 			cy = -(g.Bzo[1][j] - g.Bzo[g.numCellsX-1][j]) / ( 2 * g.cellWidth);
 			
 			/**Maxwell EQ*/
-			g.Ex[0][j] += g.s.tstep * (cx - g.jx[0][j]);
-			g.Ey[0][j] += g.s.tstep * (cy - g.jy[0][j]);
+			g.Ex[0][j] += g.simulation.tstep * (cx - g.jx[0][j]);
+			g.Ey[0][j] += g.simulation.tstep * (cy - g.jy[0][j]);
 			
 			//right border
 			/**curl of the E field using center difference*/
@@ -88,15 +88,15 @@ public class YeeSolver extends FieldSolver {
 					(g.Exo[g.numCellsX-1][j+1] - g.Exo[g.numCellsX-1][j-1]) / ( 2 * g.cellHeight);
 			
 			/**Maxwell EQ*/
-			g.Bz[g.numCellsX-1][j] += -g.s.tstep * cz;
+			g.Bz[g.numCellsX-1][j] += -g.simulation.tstep * cz;
 
 			/**curl of the B field using center difference*/
 			cx = (g.Bzo[g.numCellsX-1][j+1] - g.Bzo[g.numCellsX-1][j-1]) / ( 2 * g.cellHeight);
 			cy = -(g.Bzo[0][j] - g.Bzo[g.numCellsX-2][j]) / ( 2 * g.cellWidth);
 			
 			/**Maxwell EQ*/
-			g.Ex[g.numCellsX-1][j] += g.s.tstep * (cx - g.jx[g.numCellsX-1][j]);
-			g.Ey[g.numCellsX-1][j] += g.s.tstep * (cy - g.jy[g.numCellsX-1][j]);
+			g.Ex[g.numCellsX-1][j] += g.simulation.tstep * (cx - g.jx[g.numCellsX-1][j]);
+			g.Ey[g.numCellsX-1][j] += g.simulation.tstep * (cy - g.jy[g.numCellsX-1][j]);
 			
 		}
 		
@@ -109,15 +109,15 @@ public class YeeSolver extends FieldSolver {
 						(g.Exo[i][j+1] - g.Exo[i][j-1]) / ( 2 * g.cellHeight);
 				
 				/**Maxwell EQ*/
-				g.Bz[i][j] += -g.s.tstep * cz;
+				g.Bz[i][j] += -g.simulation.tstep * cz;
 
 				/**curl of the B field using center difference*/
 				cx = (g.Bzo[i][j+1] - g.Bzo[i][j-1]) / ( 2 * g.cellHeight);
 				cy = -(g.Bzo[i+1][j] - g.Bzo[i-1][j]) / ( 2 * g.cellWidth);
 				
 				/**Maxwell EQ*/
-				g.Ex[i][j] += g.s.tstep * (cx - g.jx[i][j]);
-				g.Ey[i][j] += g.s.tstep * (cy - g.jy[i][j]);
+				g.Ex[i][j] += g.simulation.tstep * (cx - g.jx[i][j]);
+				g.Ey[i][j] += g.simulation.tstep * (cy - g.jy[i][j]);
 			}
 		}
 	}

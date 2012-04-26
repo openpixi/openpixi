@@ -24,15 +24,15 @@ public class SimpleSolver extends FieldSolver {
 						(g.Exo[i][j+1] - g.Exo[i][j-1]) / ( 2 * g.cellHeight);
 				
 				/**Maxwell equations*/
-				g.Bz[i][j] += -g.s.tstep * cz;
+				g.Bz[i][j] += -g.simulation.tstep * cz;
 
 				/**curl of the B field using center difference*/
 				cx = (g.Bzo[i][j+1] - g.Bzo[i][j-1]) / ( 2 * g.cellHeight);
 				cy = -(g.Bzo[i+1][j] - g.Bzo[i-1][j]) / ( 2 * g.cellWidth);
 				
 				/**Maxwell EQ*/
-				g.Ex[i][j] += g.s.tstep * (cx - g.jx[i][j]);
-				g.Ey[i][j] += g.s.tstep * (cy - g.jy[i][j]);
+				g.Ex[i][j] += g.simulation.tstep * (cx - g.jx[i][j]);
+				g.Ey[i][j] += g.simulation.tstep * (cy - g.jy[i][j]);
 			}
 		}
 	}

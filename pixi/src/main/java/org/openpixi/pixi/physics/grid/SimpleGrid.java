@@ -78,7 +78,7 @@ public class SimpleGrid extends Grid {
 		cellWidth = width / numCellsX;
 		cellHeight = height / numCellsY;
 		
-		for (Particle2D p: s.particles){
+		for (Particle2D p: simulation.particles){
 			//assuming rectangular particle shape i.e. area weighting
 			p.pd.cd = p.charge / (cellWidth * cellHeight);
 		}
@@ -91,7 +91,7 @@ public class SimpleGrid extends Grid {
 		reset();
 		interp.interpolateToGrid(particles);
 		save();
-		s.fsolver.step(this);
+		simulation.fsolver.step(this);
 		interp.interpolateToParticle(particles);
 	}
 
