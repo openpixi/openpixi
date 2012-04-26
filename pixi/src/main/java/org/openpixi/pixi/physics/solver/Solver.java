@@ -22,7 +22,7 @@ package org.openpixi.pixi.physics.solver;
 import org.openpixi.pixi.physics.Particle2D;
 import org.openpixi.pixi.physics.force.Force;
 
-public abstract class Solver {
+public class Solver {
 	
 	public Solver()
 	{

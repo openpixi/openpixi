@@ -21,7 +21,7 @@ package org.openpixi.pixi.physics.fields;
 
 import org.openpixi.pixi.physics.grid.*;
 
-public abstract class FieldSolver {
+public class FieldSolver {
 	
 	public FieldSolver() {
 		
