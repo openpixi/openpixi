@@ -241,9 +241,12 @@ public class Particle2DPanel extends JPanel {
 		if(writePosition)
 		{
 			s.f.clear();
+			ConstantForce force = new ConstantForce();
+			//force.bz = - 0.23; // -ConstantsSI.g;
+			s.f.add(force);
 			InitialConditions.createRandomParticles(s, 1, 10);
 			Particle2D par = (Particle2D) s.particles.get(0);
-			par.x = 0;
+			par.x = this.getWidth() * 0.5;;
 			par.y = this.getHeight() * 0.5;
 			par.vx = 10;
 			par.vy = 10;
