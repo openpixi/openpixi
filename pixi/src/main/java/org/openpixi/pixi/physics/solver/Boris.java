@@ -87,11 +87,11 @@ public class Boris extends Solver{
 //		p.vy -= p.ay * dt / 2;
 		
 		dt = dt * 0.5;
-		double vxminus = p.vx - f.getPositionComponentofForceX(p) * dt / (2.0 * p.mass);
+		double vxminus = p.vx + f.getPositionComponentofForceX(p) * dt / (2.0 * p.mass);
 		double vxplus;
 		double vxprime;
 		
-		double vyminus = p.vy - f.getPositionComponentofForceY(p) * dt / (2.0 * p.mass);
+		double vyminus = p.vy + f.getPositionComponentofForceY(p) * dt / (2.0 * p.mass);
 		double vyplus;
 		double vyprime;
 		
@@ -105,8 +105,13 @@ public class Boris extends Solver{
 		vxplus = vxminus + vyprime * s_z;
 		vyplus = vyminus - vxprime * s_z;
 		
-		p.vx = vxplus - f.getPositionComponentofForceX(p) * dt / (2.0 * p.mass) + f.getTangentVelocityComponentOfForceX(p) * dt / p.mass;
-		p.vy = vyplus - f.getPositionComponentofForceY(p) * dt / (2.0 * p.mass) + f.getTangentVelocityComponentOfForceY(p) * dt / p.mass;
+		double vx = vxplus + f.getPositionComponentofForceX(p) * dt / (2.0 * p.mass) + f.getTangentVelocityComponentOfForceX(p) * dt / p.mass;
+		double vy = vyplus + f.getPositionComponentofForceY(p) * dt / (2.0 * p.mass) + f.getTangentVelocityComponentOfForceY(p) * dt / p.mass;
+		
+		//v(t - dt / 2) = 2 * v(t) - v(t + dt / 2 )
+		p.vx = 2 * p.vx - vx;
+		p.vy = 2 * p.vy - vy;
+		
 	}
 
 	/**
