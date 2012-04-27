@@ -50,13 +50,19 @@ public class SpringForceRelativistic extends Force{
 	}
 	
 	public double getNormalVelocityComponentofForceX(Particle2D p) {
-		double uy = p.vy * Math.sqrt(1 / (1 - (p.vy / ConstantsSI.c) * (p.vy / ConstantsSI.c)));
+		double v = Math.sqrt(p.vx * p.vx + p.vy * p.vy);
+		double gamma = Math.sqrt(1 / (1 - (v / ConstantsSI.c) * (v / ConstantsSI.c)));
+		
+		double uy = p.vy * gamma;
 		
 		return p.charge * uy * getBz(p);
 	}
 
 	public double getNormalVelocityComponentofForceY(Particle2D p) {
-		double ux = p.vx * Math.sqrt(1 / (1 - (p.vx / ConstantsSI.c) * (p.vx / ConstantsSI.c)));
+		double v = Math.sqrt(p.vx * p.vx + p.vy * p.vy);
+		double gamma = Math.sqrt(1 / (1 - (v / ConstantsSI.c) * (v / ConstantsSI.c)));
+		
+		double ux = p.vx * gamma;
 		
 		return - p.charge * ux * getBz(p);
 	}

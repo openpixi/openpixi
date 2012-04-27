@@ -40,6 +40,9 @@ public class SemiImplicitEulerRelativistic extends Solver {
 	 */
 	public void step(Particle2D p, Force f, double step)
 	{
+		double v = Math.sqrt(p.vx * p.vx + p.vy * p.vy);
+		double gamma = Math.sqrt(1 / (1 - (v / ConstantsSI.c) * (v / ConstantsSI.c)));
+		
 		//a(t) = F(v(t), x(t)) / m
 		p.ax = f.getForceX(p) / p.mass;
 		p.ay = f.getForceY(p) / p.mass;
@@ -49,8 +52,8 @@ public class SemiImplicitEulerRelativistic extends Solver {
 		p.vy += p.ay * step;
 		
 		// x(t+dt) = x(t) + v(t+dt)*dt
-		p.x += p.vx * step / Math.sqrt(1 / (1 - (p.vx / ConstantsSI.c) * (p.vx / ConstantsSI.c)));
-		p.y += p.vy * step / Math.sqrt(1 / (1 - (p.vy / ConstantsSI.c) * (p.vy / ConstantsSI.c)));
+		p.x += p.vx * step / gamma;
+		p.y += p.vy * step / gamma;
 		
 	}
 	

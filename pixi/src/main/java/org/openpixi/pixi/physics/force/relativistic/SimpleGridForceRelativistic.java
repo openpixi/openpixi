@@ -18,7 +18,10 @@ public class SimpleGridForceRelativistic extends Force {
 	//getting the force in the x - direction
 	@Override
 	public double getForceX(Particle2D p) {
-		double uy = p.vy * Math.sqrt(1 / (1 - (p.vy / ConstantsSI.c) * (p.vy / ConstantsSI.c)));
+		double v = Math.sqrt(p.vx * p.vx + p.vy * p.vy);
+		double gamma = Math.sqrt(1 / (1 - (v / ConstantsSI.c) * (v / ConstantsSI.c)));
+		
+		double uy = p.vy * gamma;
 		
 		return p.charge * ( p.pd.Ex + uy * p.pd.Bz);
 	}
@@ -26,7 +29,10 @@ public class SimpleGridForceRelativistic extends Force {
 	//getting the force in the y - direction
 	@Override
 	public double getForceY(Particle2D p) {
-		double ux = p.vx * Math.sqrt(1 / (1 - (p.vx / ConstantsSI.c) * (p.vx / ConstantsSI.c)));
+		double v = Math.sqrt(p.vx * p.vx + p.vy * p.vy);
+		double gamma = Math.sqrt(1 / (1 - (v / ConstantsSI.c) * (v / ConstantsSI.c)));
+		
+		double ux = p.vx * gamma;
 		
 		return p.charge * (p.pd.Ey - ux * p.pd.Bz);
 	}
@@ -43,14 +49,20 @@ public class SimpleGridForceRelativistic extends Force {
 
 	@Override
 	public double getNormalVelocityComponentofForceX(Particle2D p) {
-		double uy = p.vy * Math.sqrt(1 / (1 - (p.vy / ConstantsSI.c) * (p.vy / ConstantsSI.c)));
+		double v = Math.sqrt(p.vx * p.vx + p.vy * p.vy);
+		double gamma = Math.sqrt(1 / (1 - (v / ConstantsSI.c) * (v / ConstantsSI.c)));
+		
+		double uy = p.vy * gamma;
 		
 		return p.charge * uy * p.pd.Bz;
 	}
 
 	@Override
 	public double getNormalVelocityComponentofForceY(Particle2D p) {
-		double ux = p.vx * Math.sqrt(1 / (1 - (p.vx / ConstantsSI.c) * (p.vx / ConstantsSI.c)));
+		double v = Math.sqrt(p.vx * p.vx + p.vy * p.vy);
+		double gamma = Math.sqrt(1 / (1 - (v / ConstantsSI.c) * (v / ConstantsSI.c)));
+		
+		double ux = p.vx * gamma;
 		
 		return - p.charge * ux * p.pd.Bz;
 	}
@@ -61,13 +73,19 @@ public class SimpleGridForceRelativistic extends Force {
 	}
 	
 	public double getTangentVelocityComponentOfForceX(Particle2D p) {
-		double ux = p.vx * Math.sqrt(1 / (1 - (p.vx / ConstantsSI.c) * (p.vx / ConstantsSI.c)));
+		double v = Math.sqrt(p.vx * p.vx + p.vy * p.vy);
+		double gamma = Math.sqrt(1 / (1 - (v / ConstantsSI.c) * (v / ConstantsSI.c)));
+		
+		double ux = p.vx * gamma;
 		
 		return -getLinearDragCoefficient(p) * ux;
 	}
 
 	public double getTangentVelocityComponentOfForceY(Particle2D p) {
-		double uy = p.vy * Math.sqrt(1 / (1 - (p.vy / ConstantsSI.c) * (p.vy / ConstantsSI.c)));
+		double v = Math.sqrt(p.vx * p.vx + p.vy * p.vy);
+		double gamma = Math.sqrt(1 / (1 - (v / ConstantsSI.c) * (v / ConstantsSI.c)));
+		
+		double uy = p.vy * gamma;
 		
 		return -getLinearDragCoefficient(p) * uy;
 	}
