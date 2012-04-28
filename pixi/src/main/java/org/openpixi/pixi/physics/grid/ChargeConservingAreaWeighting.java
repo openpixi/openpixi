@@ -10,6 +10,10 @@ public class ChargeConservingAreaWeighting extends Interpolator {
 	public ChargeConservingAreaWeighting(Grid g) {
 		
 		super(g);
+		for(Particle2D p : g.simulation.particles) {
+			p.pd.x = p.x;
+			p.pd.y = p.y;
+		}
 
 	}
 	
@@ -105,10 +109,10 @@ public class ChargeConservingAreaWeighting extends Interpolator {
 		/**local y coordinate BEFORE particle push*/
 		double y = p.pd.y - yStart * g.cellHeight;
 		
-		//7-boundary move with equal x?
-		if (xStart == xEnd) {
-			//particle moves to the right?
-			if (yEnd > yStart) {
+		//7-boundary move with equal y?
+		if (yStart == yEnd) {
+			//particle moves up?
+			if (xEnd > xStart) {
 			
 				double deltaX1 = (g.cellWidth / 2) - x;
 				double deltaY1 = (deltaY / deltaX) * deltaX1;
@@ -120,7 +124,7 @@ public class ChargeConservingAreaWeighting extends Interpolator {
 				fourBoundaryMove(xEnd, yEnd, -(g.cellWidth / 2), y, deltaX, deltaY, p);
 							
 			}
-			//particle moves to the left
+			//particle moves down
 			else {
 				
 				double deltaX1 = -((g.cellWidth / 2) + x);
@@ -134,13 +138,13 @@ public class ChargeConservingAreaWeighting extends Interpolator {
 				
 			}
 		}
-		//7-boundary move with equal y?
-		if (yStart == yEnd) {
-			//particle moves up?
-			if (xEnd > xStart) {
+		//7-boundary move with equal x?
+		if (xStart == xEnd) {
+			//particle moves right?
+			if (yEnd > yStart) {
 				
 				double deltaY1 = (g.cellHeight / 2) - y;
-				double deltaX1 = (deltaX / deltaY) * deltaY1;
+				double deltaX1 = deltaX  * (deltaY1 / deltaY);
 				fourBoundaryMove(xStart, yStart, x, y, deltaX1, deltaY1, p);
 				
 				deltaX -= deltaX1;
@@ -149,7 +153,7 @@ public class ChargeConservingAreaWeighting extends Interpolator {
 				fourBoundaryMove(xEnd, yEnd, x, -(g.cellHeight / 2), deltaX, deltaY, p);
 				
 			}
-			//particle moves down
+			//particle moves left
 			else {
 				
 				double deltaY1 = -((g.cellHeight / 2) + y);
