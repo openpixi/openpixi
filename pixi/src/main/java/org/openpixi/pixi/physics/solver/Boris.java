@@ -26,6 +26,7 @@ import org.openpixi.pixi.physics.force.Force;
  * http://ptsg.eecs.berkeley.edu/publications/Verboncoeur2005IOP.pdf
  */
 public class Boris extends Solver{
+	
 
 	public Boris()
 	{
@@ -77,13 +78,40 @@ public class Boris extends Solver{
 	 */
 	public void prepare(Particle2D p, Force f, double dt)
 	{
-		//a(t) = F(v(t), x(t)) / m
-		p.ax = f.getForceX(p) / p.mass;
-		p.ay = f.getForceY(p) / p.mass;
-
-		//v(t - dt / 2) = v(t) - a(t)*dt / 2
-		p.vx -= p.ax * dt / 2;
-		p.vy -= p.ay * dt / 2;
+//		//a(t) = F(v(t), x(t)) / m
+//		p.ax = f.getForceX(p) / p.mass;
+//		p.ay = f.getForceY(p) / p.mass;
+//
+//		//v(t - dt / 2) = v(t) - a(t)*dt / 2
+//		p.vx -= p.ax * dt / 2;
+//		p.vy -= p.ay * dt / 2;
+		
+		dt = dt * 0.5;
+		double vxminus = p.vx + f.getPositionComponentofForceX(p) * dt / (2.0 * p.mass);
+		double vxplus;
+		double vxprime;
+		
+		double vyminus = p.vy + f.getPositionComponentofForceY(p) * dt / (2.0 * p.mass);
+		double vyplus;
+		double vyprime;
+		
+		double t_z = p.charge * f.getBz(p) * dt / (2.0 * p.mass);   //t vector
+		
+		double s_z = 2 * t_z / (1 + t_z * t_z);               //s vector
+		
+		vxprime = vxminus + vyminus * t_z;
+		vyprime = vyminus - vxminus * t_z;
+		
+		vxplus = vxminus + vyprime * s_z;
+		vyplus = vyminus - vxprime * s_z;
+		
+		double vx = vxplus + f.getPositionComponentofForceX(p) * dt / (2.0 * p.mass) + f.getTangentVelocityComponentOfForceX(p) * dt / p.mass;
+		double vy = vyplus + f.getPositionComponentofForceY(p) * dt / (2.0 * p.mass) + f.getTangentVelocityComponentOfForceY(p) * dt / p.mass;
+		
+		//v(t - dt / 2) = 2 * v(t) - v(t + dt / 2 )
+		p.vx = 2 * p.vx - vx;
+		p.vy = 2 * p.vy - vy;
+		
 	}
 
 	/**
@@ -93,8 +121,30 @@ public class Boris extends Solver{
 	 */
 	public void complete(Particle2D p, Force f, double dt)
 	{
-		//v(t) = v(t - dt / 2) + a(t)*dt / 2
-		p.vx += p.ax * dt / 2;
-		p.vy += p.ay * dt / 2;
+//		//v(t) = v(t - dt / 2) + a(t)*dt / 2
+//		p.vx += p.ax * dt / 2;
+//		p.vy += p.ay * dt / 2;
+		
+		dt = dt * 0.5;
+		double vxminus = p.vx + f.getPositionComponentofForceX(p) * dt / (2.0 * p.mass);
+		double vxplus;
+		double vxprime;
+		
+		double vyminus = p.vy + f.getPositionComponentofForceY(p) * dt / (2.0 * p.mass);
+		double vyplus;
+		double vyprime;
+		
+		double t_z = p.charge * f.getBz(p) * dt / (2.0 * p.mass);   //t vector
+		
+		double s_z = 2 * t_z / (1 + t_z * t_z);               //s vector
+		
+		vxprime = vxminus + vyminus * t_z;
+		vyprime = vyminus - vxminus * t_z;
+		
+		vxplus = vxminus + vyprime * s_z;
+		vyplus = vyminus - vxprime * s_z;
+		
+		p.vx = vxplus + f.getPositionComponentofForceX(p) * dt / (2.0 * p.mass) + f.getTangentVelocityComponentOfForceX(p) * dt / p.mass;
+		p.vy = vyplus + f.getPositionComponentofForceY(p) * dt / (2.0 * p.mass) + f.getTangentVelocityComponentOfForceY(p) * dt / p.mass;
 	}
 }

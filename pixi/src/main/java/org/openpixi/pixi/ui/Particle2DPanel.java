@@ -242,7 +242,8 @@ public class Particle2DPanel extends JPanel {
 		{
 			s.f.clear();
 			ConstantForce force = new ConstantForce();
-			//force.bz = - 0.23; // -ConstantsSI.g;
+			force.bz = - 0.23; // -ConstantsSI.g;
+			//force.drag = 0.08;
 			s.f.add(force);
 			InitialConditions.createRandomParticles(s, 1, 10);
 			Particle2D par = (Particle2D) s.particles.get(0);

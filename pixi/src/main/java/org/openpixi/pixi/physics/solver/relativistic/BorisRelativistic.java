@@ -47,8 +47,17 @@ public class BorisRelativistic extends Solver{
 		p.ax = f.getForceX(p) / p.mass;
 		p.ay = f.getForceY(p) / p.mass;
 		
-		double ux = p.vx * Math.sqrt(1 / (1 - (p.vx / ConstantsSI.c) * (p.vx / ConstantsSI.c)));
-		double uy = p.vy * Math.sqrt(1 / (1 - (p.vy / ConstantsSI.c) * (p.vy / ConstantsSI.c)));
+		//double ux = p.vx * Math.sqrt(1 / (1 - (p.vx / ConstantsSI.c) * (p.vx / ConstantsSI.c)));
+		//double uy = p.vy * Math.sqrt(1 / (1 - (p.vy / ConstantsSI.c) * (p.vy / ConstantsSI.c)));
+		//finding v(t) in order to calculate gamma(t)
+		double vx = p.vx + (p.ax * step / 2);
+		double vy = p.vy + (p.ay * step / 2);
+		
+		double v = Math.sqrt(vx * vx + vy * vy);
+		double gamma = Math.sqrt(1 / (1 - (v / ConstantsSI.c) * (v / ConstantsSI.c)));
+		
+		double ux = p.vx * gamma;
+		double uy = p.vy * gamma;
 		
 		double vxminus = ux + f.getPositionComponentofForceX(p) * step / (2.0 * p.mass);
 		double vxplus;
@@ -58,7 +67,7 @@ public class BorisRelativistic extends Solver{
 		double vyplus;
 		double vyprime;
 		
-		double t_z = p.charge * f.getBz(p) * step / (2.0 * p.mass);   //t vector
+		double t_z = p.charge * f.getBz(p) * step / (2.0 * p.mass * gamma);   //t vector
 		
 		double s_z = 2 * t_z / (1 + t_z * t_z);               //s vector
 		
@@ -80,14 +89,14 @@ public class BorisRelativistic extends Solver{
 	 *                 after the update: v(t-dt/2)
 	 */
 	public void prepare(Particle2D p, Force f, double dt)
-	{
+	{	
 		//a(t) = F(v(t), x(t)) / m
 		p.ax = f.getForceX(p) / p.mass;
 		p.ay = f.getForceY(p) / p.mass;
 
 		//v(t - dt / 2) = v(t) - a(t)*dt / 2
-		p.vx -= (p.ax * dt / 2) / Math.sqrt(1 / (1 - (p.vx / ConstantsSI.c) * (p.vx / ConstantsSI.c)));
-		p.vy -= (p.ay * dt / 2) / Math.sqrt(1 / (1 - (p.vy / ConstantsSI.c) * (p.vy / ConstantsSI.c)));
+		p.vx -= (p.ax * dt / 2);
+		p.vy -= (p.ay * dt / 2);
 	}
 
 	/**
@@ -98,7 +107,7 @@ public class BorisRelativistic extends Solver{
 	public void complete(Particle2D p, Force f, double dt)
 	{
 		//v(t) = v(t - dt / 2) + a(t)*dt / 2
-		p.vx += (p.ax * dt / 2) / Math.sqrt(1 / (1 - (p.vx / ConstantsSI.c) * (p.vx / ConstantsSI.c)));
-		p.vy += (p.ay * dt / 2) / Math.sqrt(1 / (1 - (p.vy / ConstantsSI.c) * (p.vy / ConstantsSI.c)));
+		p.vx += (p.ax * dt / 2);
+		p.vy += (p.ay * dt / 2);
 	}
 }

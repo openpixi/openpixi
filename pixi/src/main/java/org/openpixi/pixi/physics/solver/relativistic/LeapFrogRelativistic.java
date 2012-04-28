@@ -41,9 +41,12 @@ public class LeapFrogRelativistic extends Solver{
 	 *                 after the update: x(t+dt), v(t+3*dt/2), a(t+dt)
 	 */
 	public void step(Particle2D p, Force f, double dt) {
+		double v = Math.sqrt(p.vx * p.vx + p.vy * p.vy);
+		double gamma = Math.sqrt(1 / (1 - (v / ConstantsSI.c) * (v / ConstantsSI.c)));
+		
 		// x(t+dt) = x(t) + v(t+dt/2)*dt
-		p.x += p.vx * dt / Math.sqrt(1 / (1 - (p.vx / ConstantsSI.c) * (p.vx / ConstantsSI.c)));
-		p.y += p.vy * dt / Math.sqrt(1 / (1 - (p.vy / ConstantsSI.c) * (p.vy / ConstantsSI.c)));
+		p.x += p.vx * dt / gamma;
+		p.y += p.vy * dt / gamma;
 
 		// a(t+dt) = F(v(t+dt/2), x(t+dt)) / m
 		// WARNING: Force is evaluated at two different times t+dt/2 and t+dt!
