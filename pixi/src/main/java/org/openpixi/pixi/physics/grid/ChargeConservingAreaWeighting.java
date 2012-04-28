@@ -347,7 +347,7 @@ public class ChargeConservingAreaWeighting extends Interpolator {
 					deltaX1 = (deltaX / deltaY) * deltaY1;
 					fourBoundaryMove(xStart, yStart, x, y, deltaX1, deltaY1, p);
 					
-					double deltaX2 = (g.cellWidth / 2) - x - deltaX1;
+					double deltaX2 = (g.cellWidth / 2) + x + deltaX1;
 					double deltaY2 = (deltaY1 / deltaX1) * deltaX2;
 					x += deltaX1;
 					fourBoundaryMove(xStart, yStart+1, x, -(g.cellHeight / 2), deltaX2, deltaY2, p);
