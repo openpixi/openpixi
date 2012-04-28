@@ -111,7 +111,7 @@ public class ChargeConservingAreaWeighting extends Interpolator {
 		
 		//7-boundary move with equal y?
 		if (yStart == yEnd) {
-			//particle moves up?
+			//particle moves right?
 			if (xEnd > xStart) {
 			
 				double deltaX1 = (g.cellWidth / 2) - x;
@@ -124,7 +124,7 @@ public class ChargeConservingAreaWeighting extends Interpolator {
 				fourBoundaryMove(xEnd, yEnd, -(g.cellWidth / 2), y, deltaX, deltaY, p);
 							
 			}
-			//particle moves down
+			//particle moves left
 			else {
 				
 				double deltaX1 = -((g.cellWidth / 2) + x);
@@ -140,7 +140,7 @@ public class ChargeConservingAreaWeighting extends Interpolator {
 		}
 		//7-boundary move with equal x?
 		if (xStart == xEnd) {
-			//particle moves right?
+			//particle moves up?
 			if (yEnd > yStart) {
 				
 				double deltaY1 = (g.cellHeight / 2) - y;
@@ -153,7 +153,7 @@ public class ChargeConservingAreaWeighting extends Interpolator {
 				fourBoundaryMove(xEnd, yEnd, x, -(g.cellHeight / 2), deltaX, deltaY, p);
 				
 			}
-			//particle moves left
+			//particle moves down
 			else {
 				
 				double deltaY1 = -((g.cellHeight / 2) + y);
