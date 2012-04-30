@@ -247,8 +247,10 @@ public class Particle2DPanel extends JPanel {
 			s.f.add(force);
 			InitialConditions.createRandomParticles(s, 1, 10);
 			Particle2D par = (Particle2D) s.particles.get(0);
-			par.x = this.getWidth() * 0.5;;
+			par.x = this.getWidth() * 0.5;
 			par.y = this.getHeight() * 0.5;
+			//System.out.println(this.getWidth() * 0.5 + " x0");
+			//System.out.println(this.getHeight() * 0.5 + " y0");
 			par.vx = 10;
 			par.vy = 10;
 			par.mass = 1;
