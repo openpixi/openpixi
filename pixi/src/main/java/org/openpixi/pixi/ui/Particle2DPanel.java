@@ -256,8 +256,10 @@ public class Particle2DPanel extends JPanel {
 			par.mass = 1;
 			par.charge = 1;
 		}
-		else
+		else {
 			resetAnimation(0);
+		}
+		ParticleMover.prepareAllParticles(s);
 	}
 	
 	public void algorithmChange(int id)
