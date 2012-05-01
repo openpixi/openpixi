@@ -95,10 +95,26 @@ public class ChargeConservingAreaWeighting extends Interpolator {
 		
 		//System.out.println(lx + " " + lxm + " " + ly + " " + lym);
 		
-		g.jx[lx][lym] += p.pd.cd * deltaX * ((g.cellHeight - deltaY) / 2 - y);
-		g.jx[lx][ly] += p.pd.cd * deltaX * ((g.cellHeight + deltaY) / 2 + y);
-		g.jy[lxm][ly] += p.pd.cd * deltaY * ((g.cellWidth - deltaX) / 2 - x);
-		g.jy[lx][ly] += p.pd.cd * deltaY * ((g.cellWidth + deltaX) / 2 + x);
+//		g.jx[lx][lym] += p.pd.cd * deltaX * ((g.cellHeight - deltaY) / 2 - y);
+//		g.jx[lx][ly] += p.pd.cd * deltaX * ((g.cellHeight + deltaY) / 2 + y);
+//		g.jy[lxm][ly] += p.pd.cd * deltaY * ((g.cellWidth - deltaX) / 2 - x);
+//		g.jy[lx][ly] += p.pd.cd * deltaY * ((g.cellWidth + deltaX) / 2 + x);
+		
+//		g.jx[lx][lym] += p.pd.cd * g.cellWidth * deltaX * ((g.cellHeight - deltaY) / 2 - y);
+//		g.jx[lx][ly] += p.pd.cd  * g.cellWidth * deltaX * ((g.cellHeight + deltaY) / 2 + y);
+//		g.jy[lxm][ly] += p.pd.cd * g.cellHeight * deltaY * ((g.cellWidth - deltaX) / 2 - x);
+//		g.jy[lx][ly] += p.pd.cd  * g.cellHeight * deltaY * ((g.cellWidth + deltaX) / 2 + x);
+		
+		g.jx[lx][lym] += p.pd.cd * g.cellWidth * deltaX * (g.cellHeight * (1 - deltaY) / 2 - y);
+		g.jx[lx][ly] += p.pd.cd  * g.cellWidth * deltaX * (g.cellHeight * (1 + deltaY) / 2 + y);
+		g.jy[lxm][ly] += p.pd.cd * g.cellHeight * deltaY * (g.cellWidth * (1 - deltaX) / 2 - x);
+		g.jy[lx][ly] += p.pd.cd  * g.cellHeight * deltaY * (g.cellWidth * (1 + deltaX) / 2 + x);
+		
+//		g.jx[lx][lym] += p.charge * deltaX * ((1 - deltaY) / 2 - y);
+//		g.jx[lx][ly] += p.charge * deltaX * ((1 + deltaY) / 2 + y);
+//		g.jy[lxm][ly] += p.charge * deltaY * ((1 - deltaX) / 2 - x);
+//		g.jy[lx][ly] += p.charge * deltaY * ((1 + deltaX) / 2 + x);
+		
 	}
 	
 	private void sevenBoundaryMove(int xStart, int yStart, int xEnd, int yEnd, 
