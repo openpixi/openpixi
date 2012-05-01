@@ -5,6 +5,7 @@ import junit.framework.TestCase;
 import org.openpixi.pixi.physics.Particle2D;
 import org.openpixi.pixi.physics.ParticleMover;
 import org.openpixi.pixi.physics.Simulation;
+import org.openpixi.pixi.physics.boundary.PeriodicBoundary;
 import org.openpixi.pixi.physics.force.*;
 import org.openpixi.pixi.physics.solver.*;
 
@@ -97,6 +98,8 @@ public class ChargeConservingAreaWeightingTest extends TestCase {
 		
 	private void testMove(double x1, double y1, double x2, double y2, double charge, String text) {
 		Simulation s = new Simulation(10, 10, 0, 1);
+		s.psolver = new Boris();
+		s.boundary = new PeriodicBoundary();
 
 		// Add single particle
 		Particle2D p = new Particle2D();
@@ -111,16 +114,19 @@ public class ChargeConservingAreaWeightingTest extends TestCase {
 		ParticleMover.prepareAllParticles(s);
 		
 		// Use Yeegrid
-		s.setSize(10, 10);
+		s.setSize(17, 31);
 		YeeGrid grid = new YeeGrid(s); // 10x10 grid
 
 		// Remember old values
-		double sx = p.x;
-		double sy = p.y;
+		p.pd.x = p.x;
+		p.pd.y = p.y;
 
 		// Advance particle
-
 		ParticleMover.particlePush(s);
+		
+		//Remember old values after boundary check
+		double sx = p.pd.x;
+		double sy = p.pd.y;
 
 		// Calculate current
 		grid.interp.interpolateToGrid(s.particles);
@@ -135,15 +141,22 @@ public class ChargeConservingAreaWeightingTest extends TestCase {
 		assertAlmostEquals(text + ", jy", charge * (p.y - sy), jy, ACCURACY_LIMIT);
 	}
 
+	public void testPeriodicBoundary() {
+		int charge = 1;
+		testMoveForce(0.3, 5.2, -2, 0.1, 1, 2, charge, "boundary");
+		testMove(9.8, 5.2, 10.3, 5.2, charge, "boundary");
+		testMove(5.2, 9.3, 5.2, 10.6, charge, "boundary");
+	}
+	
 	public void testFourBoundaryMovesForce() {
 		// Positive charge
 		//bottom up
 		int charge = 1;
-		testMoveForce(4.8, 4.8, 0.2, 0.5, charge, -0.1, 0.1, "four boundary: x=const");
+		testMoveForce(4, 4, 0.09, 0.01, -0.1, 0.1, charge, "four boundary: x=const");
 	}
 	
 	public void testRandomMovesForce() {
-		for (int i = 0; i < 100000; i++) {
+		for (int i = 0; i < 1000; i++) {
 			double x1 = 2 + 6 * Math.random();
 			double y1 = 2 + 6 * Math.random();
 			double phi = 2 * Math.PI * Math.random();
@@ -168,6 +181,7 @@ public class ChargeConservingAreaWeightingTest extends TestCase {
 	private void testMoveForce(double x1, double y1, double vx, double vy, double ex, double bz, double charge, String text) {
 		Simulation s = new Simulation(10, 10, 0, 1);
 		s.psolver = new Boris();
+		s.boundary = new PeriodicBoundary();
 
 		// Add single particle
 		Particle2D p = new Particle2D();
@@ -189,14 +203,19 @@ public class ChargeConservingAreaWeightingTest extends TestCase {
 		// Use Yeegrid
 		s.setSize(10, 10);
 		YeeGrid grid = new YeeGrid(s); // 10x10 grid
+		grid.changeDimension(10, 10, 100, 100);
 
 		// Remember old values
-		double sx = p.x;
-		double sy = p.y;
+		p.pd.x = p.x;
+		p.pd.y = p.y;
 
 		// Advance particle
 		ParticleMover.particlePush(s);
-
+		
+		//Remember old values after boundary check
+		double sx = p.pd.x;
+		double sy = p.pd.y;
+		
 		// Calculate current
 		grid.interp.interpolateToGrid(s.particles);
 
