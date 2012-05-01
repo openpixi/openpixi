@@ -34,18 +34,32 @@ public class PeriodicBoundary extends Boundary {
 	public void check(Particle2D particle, Force f, Solver s, double step) {
 
 		//if the particle hits the walls
-		if(particle.x < xmin)
-		{
+		if(particle.x < xmin) {
+			
+			if (particle.pd != null) {
+				particle.pd.x += xmax - xmin;
+				
+			}
 			particle.x += xmax - xmin;
-		} else if(particle.x > xmax)
-		{
+			
+		} else if(particle.x > xmax) {
+			
+			if (particle.pd != null) {
+				particle.pd.x -= xmax - xmin;
+			}
 			particle.x -= xmax - xmin;
+			
 		}
-		if(particle.y < ymin)
-		{
+		if(particle.y < ymin) {
+			if (particle.pd != null) {
+				particle.pd.y += ymax - ymin;
+			}
 			particle.y += ymax - ymin;
-		} else if(particle.y > ymax)
-		{
+			
+		} else if(particle.y > ymax) {
+			if (particle.pd != null) {
+				particle.pd.y -= ymax - ymin;
+			}
 			particle.y -= ymax - ymin;
 		}
 	}
