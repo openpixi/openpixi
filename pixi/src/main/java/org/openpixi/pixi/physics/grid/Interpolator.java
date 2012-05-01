@@ -54,9 +54,10 @@ public class Interpolator {
 			assert p.x > (xCellPosition2 - 1) * g.cellWidth : p.x;
 			assert yCellPosition2 * g.cellHeight > p.y : p.y;
 			assert p.y > (yCellPosition2 - 1) * g.cellHeight : p.y;
+			assert p.pd != null;
 		}
 
-		particles.get(i).pd.Ex = ( g.Ex[xCellPosition][yCellPosition] * (xCellPosition2 * g.cellWidth - p.x) *
+		p.pd.Ex = ( g.Ex[xCellPosition][yCellPosition] * (xCellPosition2 * g.cellWidth - p.x) *
 				(yCellPosition2 * g.cellHeight - p.y) +
 				g.Ex[xp][yCellPosition] * (p.x - (xCellPosition2 - 1) * g.cellWidth) *
 				(yCellPosition2 * g.cellHeight - p.y) +
@@ -65,7 +66,7 @@ public class Interpolator {
 				g.Ex[xp][yp] * (p.x - (xCellPosition2 - 1) * g.cellWidth) *
 				(p.y - (yCellPosition2 - 1) * g.cellHeight) ) / (g.cellWidth * g.cellHeight);
 		
-		particles.get(i).pd.Ey = ( g.Ey[xCellPosition][yCellPosition] * (xCellPosition2 * g.cellWidth - p.x) *
+		p.pd.Ey = ( g.Ey[xCellPosition][yCellPosition] * (xCellPosition2 * g.cellWidth - p.x) *
 				(yCellPosition2 * g.cellHeight - p.y) +
 				g.Ey[xp][yCellPosition] * (p.x - (xCellPosition2 - 1) * g.cellWidth) *
 				(yCellPosition2 * g.cellHeight - p.y) +
@@ -74,7 +75,7 @@ public class Interpolator {
 				g.Ey[xp][yp] * (p.x - (xCellPosition2 - 1) * g.cellWidth) *
 				(p.y - (yCellPosition2 - 1) * g.cellHeight) ) / (g.cellWidth * g.cellHeight);
 		
-		particles.get(i).pd.Bz = ( g.Bz[xCellPosition][yCellPosition] * (xCellPosition2 * g.cellWidth - p.x) *
+		p.pd.Bz = ( g.Bz[xCellPosition][yCellPosition] * (xCellPosition2 * g.cellWidth - p.x) *
 				(yCellPosition2 * g.cellHeight - p.y) +
 				g.Bz[xp][yCellPosition] * (p.x - (xCellPosition2 - 1) * g.cellWidth) *
 				(yCellPosition2 * g.cellHeight - p.y) +
