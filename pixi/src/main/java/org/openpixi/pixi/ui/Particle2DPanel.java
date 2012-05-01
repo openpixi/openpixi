@@ -243,6 +243,7 @@ public class Particle2DPanel extends JPanel {
 			s.f.clear();
 			ConstantForce force = new ConstantForce();
 			force.bz = - 0.23; // -ConstantsSI.g;
+			//force.gy = -1;
 			//force.drag = 0.08;
 			s.f.add(force);
 			InitialConditions.createRandomParticles(s, 1, 10);
@@ -260,7 +261,10 @@ public class Particle2DPanel extends JPanel {
 			resetAnimation(0);
 		}
 		ParticleMover.prepareAllParticles(s);
-	}
+/*		ConstantForce force = new ConstantForce();
+		force.bz = - 0.23;
+		s.f.add(force);
+*/	}
 	
 	public void algorithmChange(int id)
 	{
