@@ -23,23 +23,23 @@ public class ChargeConservingAreaWeighting extends Interpolator {
 		for (int i = 0; i < particles.size(); i++) {
 			
 			Particle2D p = particles.get(i);
-			//Particle2DData pd = g.particledata.get(i);
-			
-			//boundary check
-			if (p.x < 0 || p.x > g.simulation.width || p.y < 0 || p.y > g.simulation.height) {
-				break;
-			}
 			
 			//local origin i.e. nearest grid point BEFORE particle push
-			int xStart = (int) (p.pd.x / g.cellWidth + 0.5 );
-			int yStart = (int) (p.pd.y / g.cellHeight+ 0.5);
+			int xStart = (int) Math.floor(p.pd.x / g.cellWidth + 0.5);
+			int yStart = (int) Math.floor(p.pd.y / g.cellHeight + 0.5);
 			
 			//local origin i.e. nearest grid point AFTER particle push
-			int xEnd = (int) (p.x / g.cellWidth + 0.5 );
-			int yEnd = (int) (p.y / g.cellHeight+ 0.5);
+			int xEnd = (int) Math.floor(p.x / g.cellWidth + 0.5);
+			int yEnd = (int) Math.floor(p.y / g.cellHeight + 0.5);
 			
 			double deltaX = p.x - p.pd.x;
 			double deltaY = p.y - p.pd.y;
+			
+			//check if particle moves further than one cell
+			if (Debug.asserts) {
+				assert Math.sqrt(deltaX * deltaX + deltaY * deltaY) >
+				Math.sqrt(g.cellWidth * g.cellWidth + g.cellHeight * g.cellHeight) : "particle too fast";
+			}
 			
 			//4-boundary move?
 			if (xStart == xEnd && yStart == yEnd) {	
