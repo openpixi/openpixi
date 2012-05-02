@@ -44,8 +44,8 @@ public class Boris extends Solver{
 
 		// remember for complete()
 		//a(t) = F(v(t), x(t)) / m
-		p.ax = f.getForceX(p) / p.mass;
-		p.ay = f.getForceY(p) / p.mass;
+		//p.ax = f.getForceX(p) / p.mass;
+		//p.ay = f.getForceY(p) / p.mass;
 		
 		double vxminus = p.vx + f.getPositionComponentofForceX(p) * step / (2.0 * p.mass);
 		double vxplus;
