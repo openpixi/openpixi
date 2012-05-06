@@ -37,8 +37,7 @@ public class ChargeConservingAreaWeighting extends Interpolator {
 			
 			//check if particle moves further than one cell
 			if (Debug.asserts) {
-				assert Math.sqrt(deltaX * deltaX + deltaY * deltaY) >
-				Math.sqrt(g.cellWidth * g.cellWidth + g.cellHeight * g.cellHeight) : "particle too fast";
+				assert Math.abs(deltaX) <= g.cellWidth || Math.abs(deltaY) <= g.cellHeight: "particle too fast";
 			}
 			
 			//4-boundary move?
@@ -95,15 +94,15 @@ public class ChargeConservingAreaWeighting extends Interpolator {
 		
 		//System.out.println(lx + " " + lxm + " " + ly + " " + lym);
 		
-		g.jx[lx][lym] += p.pd.cd * deltaX * ((g.cellHeight - deltaY) / 2 - y) / g.simulation.tstep;
-		g.jx[lx][ly] += p.pd.cd * deltaX * ((g.cellHeight + deltaY) / 2 + y) / g.simulation.tstep;
-		g.jy[lxm][ly] += p.pd.cd * deltaY * ((g.cellWidth - deltaX) / 2 - x) / g.simulation.tstep;
-		g.jy[lx][ly] += p.pd.cd * deltaY * ((g.cellWidth + deltaX) / 2 + x) / g.simulation.tstep;
+//		g.jx[lx][lym] += p.pd.cd * deltaX * ((g.cellHeight - deltaY) / 2 - y) / g.simulation.tstep;
+//		g.jx[lx][ly] += p.pd.cd * deltaX * ((g.cellHeight + deltaY) / 2 + y) / g.simulation.tstep;
+//		g.jy[lxm][ly] += p.pd.cd * deltaY * ((g.cellWidth - deltaX) / 2 - x) / g.simulation.tstep;
+//		g.jy[lx][ly] += p.pd.cd * deltaY * ((g.cellWidth + deltaX) / 2 + x) / g.simulation.tstep;
 		
-//		g.jx[lx][lym] += p.pd.cd * g.cellWidth * deltaX * ((g.cellHeight - deltaY) / 2 - y) / g.simulation.tstep;
-//		g.jx[lx][ly] += p.pd.cd  * g.cellWidth * deltaX * ((g.cellHeight + deltaY) / 2 + y) / g.simulation.tstep;
-//		g.jy[lxm][ly] += p.pd.cd * g.cellHeight * deltaY * ((g.cellWidth - deltaX) / 2 - x) / g.simulation.tstep;
-//		g.jy[lx][ly] += p.pd.cd  * g.cellHeight * deltaY * ((g.cellWidth + deltaX) / 2 + x) / g.simulation.tstep;
+		g.jx[lx][lym] += p.pd.cd * g.cellWidth * deltaX * ((g.cellHeight - deltaY) / 2 - y) / g.simulation.tstep;
+		g.jx[lx][ly] += p.pd.cd  * g.cellWidth * deltaX * ((g.cellHeight + deltaY) / 2 + y) / g.simulation.tstep;
+		g.jy[lxm][ly] += p.pd.cd * g.cellHeight * deltaY * ((g.cellWidth - deltaX) / 2 - x) / g.simulation.tstep;
+		g.jy[lx][ly] += p.pd.cd  * g.cellHeight * deltaY * ((g.cellWidth + deltaX) / 2 + x) / g.simulation.tstep;
 		
 //		g.jx[lx][lym] += p.pd.cd * g.cellWidth * deltaX * (g.cellHeight * (1 - deltaY) / 2 - y) / g.simulation.tstep;
 //		g.jx[lx][ly] += p.pd.cd  * g.cellWidth * deltaX * (g.cellHeight * (1 + deltaY) / 2 + y) / g.simulation.tstep;
