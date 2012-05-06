@@ -82,7 +82,7 @@ public class SimpleGrid extends Grid {
 		
 		for (Particle2D p: simulation.particles){
 			//assuming rectangular particle shape i.e. area weighting
-			p.data.cd = p.charge / (cellWidth * cellHeight);
+			p.data.chargedensity = p.charge / (cellWidth * cellHeight);
 		}
 		
 		//include updateGrid() and the first calculation of Fields here

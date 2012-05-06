@@ -8,7 +8,7 @@ public class Particle2DData {
 	public double y;
 	
 	/**charge density of particle for a specific form factor*/
-	public double cd;
+	public double chargedensity;
 	
 	public double Ex;
 	public double Ey;

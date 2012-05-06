@@ -15,7 +15,7 @@ public class Interpolator {
 		for (Particle2D p: g.simulation.particles){
 			p.data = new Particle2DData();
 			//assuming rectangular particle shape i.e. area weighting
-			p.data.cd = p.charge / (g.cellWidth * g.cellHeight);
+			p.data.chargedensity = p.charge / (g.cellWidth * g.cellHeight);
 			p.data.x = p.x;
 			p.data.y = p.y;
 		}
