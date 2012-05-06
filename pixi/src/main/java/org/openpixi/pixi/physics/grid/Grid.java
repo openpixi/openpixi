@@ -64,5 +64,36 @@ public class Grid {
 	public void updateGrid(ArrayList<Particle2D> particles) {
 		
 	}
+	
+	public void reset() {
+		for(int i = 0; i < numCellsX; i++) {
+			for(int k = 0; k < numCellsY; k++) {
+				jx[i][k] = 0.0;
+				jy[i][k] = 0.0;
+				rho[i][k] = 0.0;
+			}
+		}
+	}
+	
+	public void initFields() {
+		for (int i = 0; i < numCellsX; i++) {
+			for (int j = 0; j < numCellsY; j++) {
+				Ex[i][j] = 0.0;
+				Ey[i][j] = 0.0;
+				Bz[i][j] = 0.0;
+			}
+		}
+	}
+	
+	public void save() {
+		for (int i = 0; i < numCellsX; i++) {
+			for (int j = 0; j < numCellsY; j++) {
+				Exo[i][j] = Ex[i][j];
+				Eyo[i][j] = Ey[i][j];
+				Bzo[i][j] = Bz[i][j];
+			}
+		}
+		
+	}
 
 }

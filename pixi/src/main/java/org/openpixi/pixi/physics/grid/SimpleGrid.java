@@ -96,36 +96,4 @@ public class SimpleGrid extends Grid {
 		fsolver.step(this);
 		interp.interpolateToParticle(particles);
 	}
-
-	private void reset() {
-		for(int i = 0; i < numCellsX; i++) {
-			for(int k = 0; k < numCellsY; k++) {
-				jx[i][k] = 0.0;
-				jy[i][k] = 0.0;
-				rho[i][k] = 0.0;
-			}
-		}
-	}
-	
-	private void initFields() {
-		for (int i = 0; i < numCellsX; i++) {
-			for (int j = 0; j < numCellsY; j++) {
-				Ex[i][j] = 0.0;
-				Ey[i][j] = 0.0;
-				Bz[i][j] = 0.0;
-			}
-		}
-	}
-	
-	private void save() {
-		for (int i = 0; i < numCellsX; i++) {
-			for (int j = 0; j < numCellsY; j++) {
-				Exo[i][j] = Ex[i][j];
-				Eyo[i][j] = Ey[i][j];
-				Bzo[i][j] = Bz[i][j];
-			}
-		}
-		
-	}
-
 }
