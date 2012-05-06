@@ -8,6 +8,7 @@ import org.openpixi.pixi.physics.Simulation;
 import org.openpixi.pixi.physics.boundary.PeriodicBoundary;
 import org.openpixi.pixi.physics.force.*;
 import org.openpixi.pixi.physics.solver.*;
+import org.openpixi.pixi.physics.Debug;
 
 /**
  * Unit test for Solver.
@@ -35,9 +36,9 @@ public class ChargeConservingAreaWeightingTest extends TestCase {
 		super(testName);
 	}
 
-	public void testFourBoundaryMoves() {
+	public void testFourBountdaryMoves() {
 		// Positive charge
-		for (int charge = -1; charge <=1; charge++){
+		for (int charge = 1; charge <=1; charge++){
 		//bottom up
 		testMove(4.8, 4.8, 4.8, 5.2, charge, "four boundary: x=const");
 		testMove(5.3, 5.2, 5.3, 4.8, charge, "four boundary: x=const");
@@ -89,11 +90,28 @@ public class ChargeConservingAreaWeightingTest extends TestCase {
 			double x1 = 2 + 6 * Math.random();
 			double y1 = 2 + 6 * Math.random();
 			double phi = 2 * Math.PI * Math.random();
-			double distance = 1 * Math.random();
+			double distance = 0.5 * Math.random();
 			double x2 = x1 + distance * Math.cos(phi);
 			double y2 = y1 + distance * Math.sin(phi);
 			testMove(x1, y1, x2, y2, +1, "random boundary " + i);
 		}
+	}
+	
+	public void testRandomMoves2() {
+		for (int i = 0; i < 100000; i++) {
+			double x1 = 2 + 6 * Math.random();
+			double y1 = 2 + 6 * Math.random();
+			double x2 = x1 + 10 * Math.random() / 4;
+			double y2 = y1 + 10 * Math.random() / 6;
+			testMove(x1, y1, x2, y2, +1, "random boundary " + i);
+		}
+	}
+	
+	
+	public void testSpecific() {
+		testMove(3.6374390759171615, 6.441039158290589, 3.1049714386963867, 6.686037692843083, 1, "s");
+		testMove(7.762230349789808, 2.4447032134825077, 6.940823082228207, 2.800297294538329, 1, "s2");
+//		testMove(-cellWidth/2 -0.4957224966229246 , -0.3950285613036133, 0.18176018946600775
 	}
 		
 	private void testMove(double x1, double y1, double x2, double y2, double charge, String text) {
@@ -114,7 +132,7 @@ public class ChargeConservingAreaWeightingTest extends TestCase {
 		ParticleMover.prepareAllParticles(s);
 		
 		// Use Yeegrid
-		s.setSize(17, 31);
+		s.setSize(10, 10);
 		YeeGrid grid = new YeeGrid(s); // 10x10 grid
 
 		// Remember old values
@@ -136,9 +154,12 @@ public class ChargeConservingAreaWeightingTest extends TestCase {
 
 		System.out.println("Total current " + text + ": jx = " + jx + ", jy = " + jy
 				+ " (from " + sx + ", " + sy + " to " + p.x + ", " + p.y + ")");
-
-		assertAlmostEquals(text + ", jx", charge * (p.x - sx), jx, ACCURACY_LIMIT);
-		assertAlmostEquals(text + ", jy", charge * (p.y - sy), jy, ACCURACY_LIMIT);
+		
+		check(grid.jx);
+		check(grid.jy);
+		
+		assertAlmostEquals(text + ", jx", charge * (p.x - sx) / grid.simulation.tstep, jx, ACCURACY_LIMIT);
+		assertAlmostEquals(text + ", jy", charge * (p.y - sy) / grid.simulation.tstep, jy, ACCURACY_LIMIT);
 	}
 
 	public void testPeriodicBoundary() {
@@ -156,7 +177,7 @@ public class ChargeConservingAreaWeightingTest extends TestCase {
 	}
 	
 	public void testRandomMovesForce() {
-		for (int i = 0; i < 1000; i++) {
+		for (int i = 0; i < 10000; i++) {
 			double x1 = 2 + 6 * Math.random();
 			double y1 = 2 + 6 * Math.random();
 			double phi = 2 * Math.PI * Math.random();
@@ -203,7 +224,7 @@ public class ChargeConservingAreaWeightingTest extends TestCase {
 		// Use Yeegrid
 		s.setSize(10, 10);
 		YeeGrid grid = new YeeGrid(s); // 10x10 grid
-		grid.changeDimension(10, 10, 100, 100);
+		grid.changeDimension(10, 10, 10, 10);
 
 		// Remember old values
 		p.pd.x = p.x;
@@ -224,9 +245,12 @@ public class ChargeConservingAreaWeightingTest extends TestCase {
 		
 		System.out.println("Total current " + text + ": jx = " + jx + ", jy = " + jy
 				+ " (from " + sx + ", " + sy + " to " + p.x + ", " + p.y + ")");
+		
+		check(grid.jx);
+		check(grid.jy);
 
-		assertAlmostEquals(text + ", jx", charge * (p.x - sx), jx, ACCURACY_LIMIT);
-		assertAlmostEquals(text + ", jy", charge * (p.y - sy), jy, ACCURACY_LIMIT);
+		assertAlmostEquals(text + ", jx", charge * (p.x - sx) / grid.simulation.tstep, jx, ACCURACY_LIMIT);
+		assertAlmostEquals(text + ", jy", charge * (p.y - sy) / grid.simulation.tstep, jy, ACCURACY_LIMIT);
 	}	
 	
 	private double getSum(double[][] field) {
@@ -238,5 +262,26 @@ public class ChargeConservingAreaWeightingTest extends TestCase {
 		}
 		return sum;
 	}
-
+	
+	private void check(double[][] field) {
+		double s = 0;
+		for (int i = 0; i < field.length; i++) {
+			for(int j = 0; j < field[0].length; j++) {
+				if(field[i][j] != 0){
+					s = Math.signum(field[i][j]);
+//					System.out.println(s + " " + field[i][j] + " " + i + " " + j);
+				}
+			}
+		}
+		for (int i = 0; i < field.length; i++) {
+			for(int j = 0; j < field[0].length; j++) {
+				if(field[i][j] != 0){
+					if( s != Math.signum(field[i][j])) {
+						assertTrue("wrong sign", false);
+					}
+				}
+			}
+		}
+	}
+	
 }
