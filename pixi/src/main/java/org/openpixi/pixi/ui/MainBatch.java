@@ -34,20 +34,20 @@ public class MainBatch {
 	/**Total number of timesteps*/
 	public static final int steps = 10;
 	
-	public static Simulation s1;
+	public static Simulation s;
 
 	public static void main(String[] args) {
 		Debug.checkAssertsEnabled();
 
-		s1 = new Simulation(100, 100, num_particles, particle_radius);
-		s1.grid = new YeeGrid(s1);
+		s = new Simulation(100, 100, num_particles, particle_radius);
+		s.grid = new YeeGrid(s);
 
-		ParticleMover.prepareAllParticles(s1);
+		ParticleMover.prepareAllParticles(s);
 		
 		System.out.println("-------- INITIAL CONDITIONS--------");		
 		
 		for (int i=0; i < 10; i++) {
-			System.out.println(s1.particles.get(i).x);	
+			System.out.println(s.particles.get(i).x);	
 		}
 		
 		System.out.println("\n-------- SIMULATION RESULTS --------");		
@@ -55,24 +55,24 @@ public class MainBatch {
 		long start = System.currentTimeMillis();
 		
 		for (int i = 0; i < steps; i++) {
-			s1.step();
+			s.step();
 		}
 		
 		long elapsed = System.currentTimeMillis()-start;
 		
 		for (int i=0; i < 10; i++) {
-			System.out.println(s1.particles.get(i).x);	
+			System.out.println(s.particles.get(i).x);	
 		}
 		
 		System.out.println("\nCurrent: ");
 		
-		for (int i = 0; i < s1.grid.numCellsX; i++) {
-				System.out.println(s1.grid.jx[i][2]);
+		for (int i = 0; i < s.grid.numCellsX; i++) {
+				System.out.println(s.grid.jx[i][2]);
 		}
 		
 		System.out.println("\nCalculation time: "+elapsed);
-		System.out.println(s1.grid.cellWidth);
-		System.out.println(s1.grid.cellHeight);
+		System.out.println(s.grid.cellWidth);
+		System.out.println(s.grid.cellHeight);
 	}
 
 }
