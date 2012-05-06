@@ -10,10 +10,6 @@ public class ChargeConservingAreaWeighting extends Interpolator {
 	public ChargeConservingAreaWeighting(Grid g) {
 		
 		super(g);
-		for(Particle2D p : g.simulation.particles) {
-			p.pd.x = p.x;
-			p.pd.y = p.y;
-		}
 
 	}
 	

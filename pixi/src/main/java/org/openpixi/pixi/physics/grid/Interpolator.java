@@ -16,6 +16,8 @@ public class Interpolator {
 			p.pd = new Particle2DData();
 			//assuming rectangular particle shape i.e. area weighting
 			p.pd.cd = p.charge / (g.cellWidth * g.cellHeight);
+			p.pd.x = p.x;
+			p.pd.y = p.y;
 		}
 		
 	}
