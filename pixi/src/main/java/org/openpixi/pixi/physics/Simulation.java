@@ -42,7 +42,6 @@ public class Simulation {
 	public Boundary boundary;
 	
 	public Solver psolver;
-	public FieldSolver fsolver;
 	public Grid grid;
 	public Collision collision;
 	public boolean collisionBoolean = false;
@@ -58,7 +57,6 @@ public class Simulation {
 		InitialConditions.initRandomParticles(this, pcount, pradius);
 		
 		psolver = new Boris();
-		fsolver = new YeeSolver();
 		grid = new Grid(this);
 		collision = new Collision();
 		

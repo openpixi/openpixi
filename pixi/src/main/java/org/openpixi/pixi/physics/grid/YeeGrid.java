@@ -2,6 +2,7 @@ package org.openpixi.pixi.physics.grid;
 
 import java.util.ArrayList;
 import org.openpixi.pixi.physics.*;
+import org.openpixi.pixi.physics.fields.YeeSolver;
 import org.openpixi.pixi.physics.force.SimpleGridForce;
 
 public class YeeGrid extends Grid {
@@ -14,7 +15,8 @@ public class YeeGrid extends Grid {
 		numCellsY = 10;
 		cellWidth = s.width/numCellsX;
 		cellHeight = s.height/numCellsY;
-
+		
+		fsolver = new YeeSolver();
 		interp = new ChargeConservingAreaWeighting(this);
 		SimpleGridForce force = new SimpleGridForce(s);
 		s.f.add(force);
@@ -70,7 +72,7 @@ public class YeeGrid extends Grid {
 		reset();
 		interp.interpolateToGrid(particles);
 		save();
-		simulation.fsolver.step(this);
+		fsolver.step(this);
 		interp.interpolateToParticle(particles);
 	}
 	

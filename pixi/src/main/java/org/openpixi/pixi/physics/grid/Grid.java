@@ -4,12 +4,17 @@ import java.util.ArrayList;
 
 import org.openpixi.pixi.physics.Particle2D;
 import org.openpixi.pixi.physics.Simulation;
+import org.openpixi.pixi.physics.fields.FieldSolver;
 import org.openpixi.pixi.physics.grid.*;
 
 public class Grid {
 	
+	/**contains the simulation instance that this grid belongs to*/
 	public Simulation simulation;
+	/**interpolation algorithm for current, charge density and force calculation*/
 	public Interpolator interp;
+	/**solver algorithm for the maxwell equations*/
+	public FieldSolver fsolver;
 	
 	/**electric current in x-Direction*/
 	public double [][] jx;

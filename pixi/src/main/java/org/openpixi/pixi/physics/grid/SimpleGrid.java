@@ -32,42 +32,44 @@ public class SimpleGrid extends Grid {
 	public SimpleGrid(Simulation s) {
 		
 		super(s);
-		numCellsX = 10;
-		numCellsY = 10;
+		
+		numCellsX = 10 + 3;
+		numCellsY = 10 + 3;
 		cellWidth = s.width/numCellsX;
 		cellHeight = s.height/numCellsY;
 		
+		fsolver = new SimpleSolver();
 		interp = new CloudInCell(this);
 		SimpleGridForce force = new SimpleGridForce(s);
 		s.f.add(force);
 		
-		jx = new double[numCellsX+3][numCellsY+3];
-		jy = new double[numCellsX+3][numCellsY+3];
-		rho = new double[numCellsX+3][numCellsY+3];
-		Ex = new double[numCellsX+3][numCellsY+3];
-		Ey = new double[numCellsX+3][numCellsY+3];
-		Bz = new double[numCellsX+3][numCellsY+3];
-		Exo = new double[numCellsX+3][numCellsY+3];
-		Eyo = new double[numCellsX+3][numCellsY+3];
-		Bzo = new double[numCellsX+3][numCellsY+3];
+		jx = new double[numCellsX][numCellsY];
+		jy = new double[numCellsX][numCellsY];
+		rho = new double[numCellsX][numCellsY];
+		Ex = new double[numCellsX][numCellsY];
+		Ey = new double[numCellsX][numCellsY];
+		Bz = new double[numCellsX][numCellsY];
+		Exo = new double[numCellsX][numCellsY];
+		Eyo = new double[numCellsX][numCellsY];
+		Bzo = new double[numCellsX][numCellsY];
 		initFields();
 	}
 	
 	//a method to change the dimensions of the cells, i.e. the width and the height
 	public void changeDimension(double width, double height, int xbox, int ybox)
 	{
-		numCellsX = xbox;
-		numCellsY = ybox;
+		numCellsX = xbox + 3;
+		numCellsY = ybox + 3;
 		
-		jx = new double[numCellsX+3][numCellsY+3];
-		jy = new double[numCellsX+3][numCellsY+3];
-		rho = new double[numCellsX+3][numCellsY+3];
-		Ex = new double[numCellsX+3][numCellsY+3];
-		Ey = new double[numCellsX+3][numCellsY+3];
-		Bz = new double[numCellsX+3][numCellsY+3];
-		Exo = new double[numCellsX+3][numCellsY+3];
-		Eyo = new double[numCellsX+3][numCellsY+3];
-		Bzo = new double[numCellsX+3][numCellsY+3];
+		jx = new double[numCellsX][numCellsY];
+		jy = new double[numCellsX][numCellsY];
+		rho = new double[numCellsX][numCellsY];
+		Ex = new double[numCellsX][numCellsY];
+		Ey = new double[numCellsX][numCellsY];
+		Bz = new double[numCellsX][numCellsY];
+		Exo = new double[numCellsX][numCellsY];
+		Eyo = new double[numCellsX][numCellsY];
+		Bzo = new double[numCellsX][numCellsY];
 		initFields();
 		
 		setGrid(width, height);
@@ -75,8 +77,8 @@ public class SimpleGrid extends Grid {
 	
 	public void setGrid(double width, double height)
 	{
-		cellWidth = width / numCellsX;
-		cellHeight = height / numCellsY;
+		cellWidth = width / (numCellsX - 3);
+		cellHeight = height / (numCellsY - 3);
 		
 		for (Particle2D p: simulation.particles){
 			//assuming rectangular particle shape i.e. area weighting
@@ -91,13 +93,13 @@ public class SimpleGrid extends Grid {
 		reset();
 		interp.interpolateToGrid(particles);
 		save();
-		simulation.fsolver.step(this);
+		fsolver.step(this);
 		interp.interpolateToParticle(particles);
 	}
 
 	private void reset() {
-		for(int i = 0; i < numCellsX + 3; i++) {
-			for(int k = 0; k < numCellsY + 3; k++) {
+		for(int i = 0; i < numCellsX; i++) {
+			for(int k = 0; k < numCellsY; k++) {
 				jx[i][k] = 0.0;
 				jy[i][k] = 0.0;
 				rho[i][k] = 0.0;
@@ -106,8 +108,8 @@ public class SimpleGrid extends Grid {
 	}
 	
 	private void initFields() {
-		for (int i = 0; i < numCellsX + 3; i++) {
-			for (int j = 0; j < numCellsY + 3; j++) {
+		for (int i = 0; i < numCellsX; i++) {
+			for (int j = 0; j < numCellsY; j++) {
 				Ex[i][j] = 0.0;
 				Ey[i][j] = 0.0;
 				Bz[i][j] = 0.0;
@@ -116,8 +118,8 @@ public class SimpleGrid extends Grid {
 	}
 	
 	private void save() {
-		for (int i = 0; i < numCellsX + 3; i++) {
-			for (int j = 0; j < numCellsY + 3; j++) {
+		for (int i = 0; i < numCellsX; i++) {
+			for (int j = 0; j < numCellsY; j++) {
 				Exo[i][j] = Ex[i][j];
 				Eyo[i][j] = Ey[i][j];
 				Bzo[i][j] = Bz[i][j];
@@ -125,22 +127,5 @@ public class SimpleGrid extends Grid {
 		}
 		
 	}
-	
-	/*
-	//Dirichlet boundary conditions - will be moved to a different class later on.
-	private void initPotentialDirichlet() {
-		for (int i = 0; i < numCellsX; i++) {
-			phi[i][0] = phi[i][numCellsY-1] = 1;
-		}
-		for (int i = 1; i < numCellsY-1; i++) {
-			phi[0][i] = phi[numCellsX-1][i] = 1;
-		}
-	
-		for (int i = 1; i < (numCellsX-1); i++) {
-			for (int j = 1; j < (numCellsY-1); j++) {
-				phi[i][j] = 0;
-			}
-		}
-	}*/
 
 }

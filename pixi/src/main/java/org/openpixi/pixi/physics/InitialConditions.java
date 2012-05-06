@@ -133,7 +133,6 @@ public class InitialConditions {
 		s.f.add(cf);
 		
 		s.grid = new YeeGrid(s);
-		s.fsolver = new YeeSolver();
 		s.psolver = new Boris();
 		
 		s.boundary = new HardWallBoundary();

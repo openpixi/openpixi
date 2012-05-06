@@ -16,8 +16,8 @@ public class SimpleSolver extends FieldSolver {
 	*/
 	public void step(Grid g) {
 		
-		for (int i = 1; i < g.numCellsX + 1; i++) {
-			for (int j = 1; j < g.numCellsY + 1; j++) {
+		for (int i = 1; i < g.numCellsX - 1; i++) {
+			for (int j = 1; j < g.numCellsY - 1; j++) {
 				
 				/**curl of the E field using center difference*/
 				cz = (g.Eyo[i+1][j] - g.Eyo[i-1][j]) / ( 2 * g.cellWidth) - 
