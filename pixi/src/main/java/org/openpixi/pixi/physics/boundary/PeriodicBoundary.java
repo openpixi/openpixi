@@ -36,29 +36,29 @@ public class PeriodicBoundary extends Boundary {
 		//if the particle hits the walls
 		if(particle.x < xmin) {
 			
-			if (particle.pd != null) {
-				particle.pd.x += xmax - xmin;
+			if (particle.data != null) {
+				particle.data.x += xmax - xmin;
 				
 			}
 			particle.x += xmax - xmin;
 			
 		} else if(particle.x > xmax) {
 			
-			if (particle.pd != null) {
-				particle.pd.x -= xmax - xmin;
+			if (particle.data != null) {
+				particle.data.x -= xmax - xmin;
 			}
 			particle.x -= xmax - xmin;
 			
 		}
 		if(particle.y < ymin) {
-			if (particle.pd != null) {
-				particle.pd.y += ymax - ymin;
+			if (particle.data != null) {
+				particle.data.y += ymax - ymin;
 			}
 			particle.y += ymax - ymin;
 			
 		} else if(particle.y > ymax) {
-			if (particle.pd != null) {
-				particle.pd.y -= ymax - ymin;
+			if (particle.data != null) {
+				particle.data.y -= ymax - ymin;
 			}
 			particle.y -= ymax - ymin;
 		}

@@ -136,15 +136,15 @@ public class ChargeConservingAreaWeightingTest extends TestCase {
 		YeeGrid grid = new YeeGrid(s); // 10x10 grid
 
 		// Remember old values
-		p.pd.x = p.x;
-		p.pd.y = p.y;
+		p.data.x = p.x;
+		p.data.y = p.y;
 
 		// Advance particle
 		ParticleMover.particlePush(s);
 		
 		//Remember old values after boundary check
-		double sx = p.pd.x;
-		double sy = p.pd.y;
+		double sx = p.data.x;
+		double sy = p.data.y;
 
 		// Calculate current
 		grid.interp.interpolateToGrid(s.particles);
@@ -227,15 +227,15 @@ public class ChargeConservingAreaWeightingTest extends TestCase {
 		grid.changeDimension(10, 10, 10, 10);
 
 		// Remember old values
-		p.pd.x = p.x;
-		p.pd.y = p.y;
+		p.data.x = p.x;
+		p.data.y = p.y;
 
 		// Advance particle
 		ParticleMover.particlePush(s);
 		
 		//Remember old values after boundary check
-		double sx = p.pd.x;
-		double sy = p.pd.y;
+		double sx = p.data.x;
+		double sy = p.data.y;
 		
 		// Calculate current
 		grid.interp.interpolateToGrid(s.particles);

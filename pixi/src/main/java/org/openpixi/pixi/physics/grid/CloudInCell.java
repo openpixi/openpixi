@@ -93,7 +93,7 @@ public class CloudInCell extends Interpolator {
 			assert p.y > (yCellPosition2 - 1) * g.cellHeight : p.y;
 		}
 
-		particles.get(i).pd.Ex = ( g.Ex[xCellPosition][yCellPosition] * (xCellPosition2 * g.cellWidth - p.x) *
+		particles.get(i).data.Ex = ( g.Ex[xCellPosition][yCellPosition] * (xCellPosition2 * g.cellWidth - p.x) *
 				(yCellPosition2 * g.cellHeight - p.y) +
 				g.Ex[xCellPosition + 1][yCellPosition] * (p.x - (xCellPosition2 - 1) * g.cellWidth) *
 				(yCellPosition2 * g.cellHeight - p.y) +
@@ -102,7 +102,7 @@ public class CloudInCell extends Interpolator {
 				g.Ex[xCellPosition + 1][yCellPosition + 1] * (p.x - (xCellPosition2 - 1) * g.cellWidth) *
 				(p.y - (yCellPosition2 - 1) * g.cellHeight) ) / (g.cellWidth * g.cellHeight);
 		
-		particles.get(i).pd.Ey = ( g.Ey[xCellPosition][yCellPosition] * (xCellPosition2 * g.cellWidth - p.x) *
+		particles.get(i).data.Ey = ( g.Ey[xCellPosition][yCellPosition] * (xCellPosition2 * g.cellWidth - p.x) *
 				(yCellPosition2 * g.cellHeight - p.y) +
 				g.Ey[xCellPosition + 1][yCellPosition] * (p.x - (xCellPosition2 - 1) * g.cellWidth) *
 				(yCellPosition2 * g.cellHeight - p.y) +
@@ -111,7 +111,7 @@ public class CloudInCell extends Interpolator {
 				g.Ey[xCellPosition + 1][yCellPosition + 1] * (p.x - (xCellPosition2 - 1) * g.cellWidth) *
 				(p.y - (yCellPosition2 - 1) * g.cellHeight) ) / (g.cellWidth * g.cellHeight);
 		
-		particles.get(i).pd.Bz = ( g.Bz[xCellPosition][yCellPosition] * (xCellPosition2 * g.cellWidth - p.x) *
+		particles.get(i).data.Bz = ( g.Bz[xCellPosition][yCellPosition] * (xCellPosition2 * g.cellWidth - p.x) *
 				(yCellPosition2 * g.cellHeight - p.y) +
 				g.Bz[xCellPosition + 1][yCellPosition] * (p.x - (xCellPosition2 - 1) * g.cellWidth) *
 				(yCellPosition2 * g.cellHeight - p.y) +

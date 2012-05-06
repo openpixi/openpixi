@@ -150,8 +150,8 @@ public class CloudInCellTest extends TestCase {
 		SimpleGrid grid = new SimpleGrid(s); // 10x10 grid
 
 		// Remember old values
-		s.particles.get(0).pd.x = s.particles.get(0).x;
-		s.particles.get(0).pd.y = s.particles.get(0).y;
+		s.particles.get(0).data.x = s.particles.get(0).x;
+		s.particles.get(0).data.y = s.particles.get(0).y;
 
 		// Advance particle
 		ParticleMover.prepareAllParticles(s);

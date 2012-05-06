@@ -231,7 +231,7 @@ public class Particle2DPanel extends JPanel {
 			}
 			//clears Particle2DData variable
 			for (Particle2D p : s.particles) {
-				p.pd = null;
+				p.data = null;
 			}
 		}
 	}

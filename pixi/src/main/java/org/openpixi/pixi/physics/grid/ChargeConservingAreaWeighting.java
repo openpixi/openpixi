@@ -21,15 +21,15 @@ public class ChargeConservingAreaWeighting extends Interpolator {
 			Particle2D p = particles.get(i);
 			
 			//local origin i.e. nearest grid point BEFORE particle push
-			int xStart = (int) Math.floor(p.pd.x / g.cellWidth + 0.5);
-			int yStart = (int) Math.floor(p.pd.y / g.cellHeight + 0.5);
+			int xStart = (int) Math.floor(p.data.x / g.cellWidth + 0.5);
+			int yStart = (int) Math.floor(p.data.y / g.cellHeight + 0.5);
 			
 			//local origin i.e. nearest grid point AFTER particle push
 			int xEnd = (int) Math.floor(p.x / g.cellWidth + 0.5);
 			int yEnd = (int) Math.floor(p.y / g.cellHeight + 0.5);
 			
-			double deltaX = p.x - p.pd.x;
-			double deltaY = p.y - p.pd.y;
+			double deltaX = p.x - p.data.x;
+			double deltaY = p.y - p.data.y;
 			
 			//check if particle moves further than one cell
 			if (Debug.asserts) {
@@ -39,9 +39,9 @@ public class ChargeConservingAreaWeighting extends Interpolator {
 			//4-boundary move?
 			if (xStart == xEnd && yStart == yEnd) {	
 				/**local x coordinate BEFORE particle push*/
-				double x = p.pd.x - xStart * g.cellWidth;
+				double x = p.data.x - xStart * g.cellWidth;
 				/**local y coordinate BEFORE particle push*/
-				double y = p.pd.y - yStart * g.cellHeight;
+				double y = p.data.y - yStart * g.cellHeight;
 				
 				fourBoundaryMove(xStart, yStart, x, y, deltaX, deltaY, p);				
 				
@@ -59,8 +59,8 @@ public class ChargeConservingAreaWeighting extends Interpolator {
 						
 					}
 						
-			p.pd.x = p.x;
-			p.pd.y = p.y;
+			p.data.x = p.x;
+			p.data.y = p.y;
 			
 		}
 	}
@@ -73,7 +73,7 @@ public class ChargeConservingAreaWeighting extends Interpolator {
 	 * @param y local y coordinate relative to ly BEFORE particle push
 	 * @param deltaX x distance covered by particle (not absolute but only for this 4-boundary move)
 	 * @param deltaY y distance covered by particle (not absolute but only for this 4-boundary move)
-	 * @param pd Particle2DData
+	 * @param data Particle2DData
 	 */
 	private void fourBoundaryMove(int lx, int ly, double x, double y, 
 			double deltaX, double deltaY, Particle2D p) {
@@ -95,10 +95,10 @@ public class ChargeConservingAreaWeighting extends Interpolator {
 //		g.jy[lxm][ly] += p.pd.cd * deltaY * ((g.cellWidth - deltaX) / 2 - x) / g.simulation.tstep;
 //		g.jy[lx][ly] += p.pd.cd * deltaY * ((g.cellWidth + deltaX) / 2 + x) / g.simulation.tstep;
 		
-		g.jx[lx][lym] += p.pd.cd * g.cellWidth * deltaX * ((g.cellHeight - deltaY) / 2 - y) / g.simulation.tstep;
-		g.jx[lx][ly] += p.pd.cd  * g.cellWidth * deltaX * ((g.cellHeight + deltaY) / 2 + y) / g.simulation.tstep;
-		g.jy[lxm][ly] += p.pd.cd * g.cellHeight * deltaY * ((g.cellWidth - deltaX) / 2 - x) / g.simulation.tstep;
-		g.jy[lx][ly] += p.pd.cd  * g.cellHeight * deltaY * ((g.cellWidth + deltaX) / 2 + x) / g.simulation.tstep;
+		g.jx[lx][lym] += p.data.cd * g.cellWidth * deltaX * ((g.cellHeight - deltaY) / 2 - y) / g.simulation.tstep;
+		g.jx[lx][ly] += p.data.cd  * g.cellWidth * deltaX * ((g.cellHeight + deltaY) / 2 + y) / g.simulation.tstep;
+		g.jy[lxm][ly] += p.data.cd * g.cellHeight * deltaY * ((g.cellWidth - deltaX) / 2 - x) / g.simulation.tstep;
+		g.jy[lx][ly] += p.data.cd  * g.cellHeight * deltaY * ((g.cellWidth + deltaX) / 2 + x) / g.simulation.tstep;
 		
 //		g.jx[lx][lym] += p.pd.cd * g.cellWidth * deltaX * (g.cellHeight * (1 - deltaY) / 2 - y) / g.simulation.tstep;
 //		g.jx[lx][ly] += p.pd.cd  * g.cellWidth * deltaX * (g.cellHeight * (1 + deltaY) / 2 + y) / g.simulation.tstep;
@@ -116,9 +116,9 @@ public class ChargeConservingAreaWeighting extends Interpolator {
 			double deltaX, double deltaY, Particle2D p) {
 		
 		/**local x coordinate BEFORE particle push*/
-		double x = p.pd.x - xStart * g.cellWidth;
+		double x = p.data.x - xStart * g.cellWidth;
 		/**local y coordinate BEFORE particle push*/
-		double y = p.pd.y - yStart * g.cellHeight;
+		double y = p.data.y - yStart * g.cellHeight;
 		
 		//7-boundary move with equal y?
 		if (yStart == yEnd) {
@@ -185,9 +185,9 @@ public class ChargeConservingAreaWeighting extends Interpolator {
 			double deltaX, double deltaY, Particle2D p) {
 		
 		/**local x coordinate BEFORE particle push*/
-		double x = p.pd.x - xStart * g.cellWidth;
+		double x = p.data.x - xStart * g.cellWidth;
 		/**local y coordinate BEFORE particle push*/
-		double y = p.pd.y - yStart * g.cellHeight;
+		double y = p.data.y - yStart * g.cellHeight;
 		
 		//moved right?
 		if (xEnd == (xStart+1)) {

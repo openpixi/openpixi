@@ -51,7 +51,7 @@ public class Particle2D{
 	/** electric charge of the particle */
 	public double charge;
 	
-	public Particle2DData pd;
+	public Particle2DData data;
 
 	/** Empty constructor */
 	public Particle2D() {

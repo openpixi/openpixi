@@ -23,7 +23,7 @@ public class SimpleGridForceRelativistic extends Force {
 		
 		double uy = p.vy * gamma;
 		
-		return p.charge * ( p.pd.Ex + uy * p.pd.Bz);
+		return p.charge * ( p.data.Ex + uy * p.data.Bz);
 	}
 
 	//getting the force in the y - direction
@@ -34,17 +34,17 @@ public class SimpleGridForceRelativistic extends Force {
 		
 		double ux = p.vx * gamma;
 		
-		return p.charge * (p.pd.Ey - ux * p.pd.Bz);
+		return p.charge * (p.data.Ey - ux * p.data.Bz);
 	}
 
 	@Override
 	public double getPositionComponentofForceX(Particle2D p) {
-		return p.charge * p.pd.Ex;
+		return p.charge * p.data.Ex;
 	}
 
 	@Override
 	public double getPositionComponentofForceY(Particle2D p) {
-		return p.charge * p.pd.Ey;
+		return p.charge * p.data.Ey;
 	}
 
 	@Override
@@ -54,7 +54,7 @@ public class SimpleGridForceRelativistic extends Force {
 		
 		double uy = p.vy * gamma;
 		
-		return p.charge * uy * p.pd.Bz;
+		return p.charge * uy * p.data.Bz;
 	}
 
 	@Override
@@ -64,12 +64,12 @@ public class SimpleGridForceRelativistic extends Force {
 		
 		double ux = p.vx * gamma;
 		
-		return - p.charge * ux * p.pd.Bz;
+		return - p.charge * ux * p.data.Bz;
 	}
 
 	@Override
 	public double getBz(Particle2D p) {
-		return p.pd.Bz;
+		return p.data.Bz;
 	}
 	
 	public double getTangentVelocityComponentOfForceX(Particle2D p) {
