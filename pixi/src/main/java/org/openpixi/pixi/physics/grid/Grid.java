@@ -11,34 +11,35 @@ public class Grid {
 	public Simulation simulation;
 	public Interpolator interp;
 	
-	/**Electric current in x-Direction*/
+	/**electric current in x-Direction*/
 	public double [][] jx;
-	/**Electric current in y-Direction*/
+	/**electric current in y-Direction*/
 	public double [][] jy;
 
-	/**Electric charge sum of a cell*/
+	/**sum of electric charges in a cell*/
 	public double [][] rho;
 	
-	/**Electric field in x direction*/
+	/**electric field in x direction at time t+dt*/
 	public double [][] Ex;
-	/**Electric field in y direction*/
+	/**electric field in y direction at time t+dt*/
 	public double [][] Ey;
-	/**Magnetic field in z direction*/
+	/**magnetic field in z direction at time t+dt*/
 	public double [][] Bz;
 	
-	/** old electric field in x direction*/
+	/**electric field in x direction at time t*/
 	public double [][] Exo;
-	/**old electric field in y direction*/
+	/**electric field in y direction at time t*/
 	public double [][] Eyo;
-	/**old magnetic field in z direction*/
+	/**magnetic field in z direction at time t*/
 	public double [][] Bzo;
 	
-	/**Number of cells in x direction*/
+	/**number of cells in x direction*/
 	public int numCellsX;
-	/**Number of cells in x direction*/
+	/**number of cells in x direction*/
 	public int numCellsY;
-	
+	/**width of each cell*/
 	public double cellWidth;
+	/**height of each cell*/
 	public double cellHeight;
 	
 	public Grid(Simulation s) {
