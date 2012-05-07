@@ -4,7 +4,7 @@ public class Debug {
 	/**
 	 * Turns on assert commands.
 	 */
-	public static final boolean asserts = true;
+	public static final boolean asserts = false;
 
 	/**
 	 * Checks that assertions are enabled.

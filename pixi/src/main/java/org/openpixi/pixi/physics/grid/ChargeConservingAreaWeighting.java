@@ -33,7 +33,7 @@ public class ChargeConservingAreaWeighting extends Interpolator {
 			
 			//check if particle moves further than one cell
 			if (Debug.asserts) {
-				assert Math.abs(deltaX) <= g.cellWidth || Math.abs(deltaY) <= g.cellHeight: "particle too fast";
+				assert (Math.abs(deltaX) <= g.cellWidth) & (Math.abs(deltaY) <= g.cellHeight): "particle too fast";
 			}
 			
 			//4-boundary move?
