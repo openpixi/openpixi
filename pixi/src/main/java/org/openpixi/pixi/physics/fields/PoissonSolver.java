@@ -15,6 +15,7 @@ public class PoissonSolver {
 		int columns = 2 * rho[0].length;
 		int n = 0;
 		double[][] trho = new double[rows][columns];
+		double[][] phi = new double[rows][columns];
 
 		DoubleFFT_2D fft = new DoubleFFT_2D(rows, columns);
 		
@@ -34,9 +35,13 @@ public class PoissonSolver {
 		//solve Poisson equation in Fourier space
 		for(int i = 0; i < rows; i++) {
 			for(int j = 0; j < columns; j += 2) {
-				
+				phi[i][j] = (cellWidth * cellHeigth * trho[i][j]) /
+						(4 - Math.cos(2 * Math.PI * i * numCellsX) - Math.cos(2 * Math.PI * j * numCellsY))
 			}
 		}
+		
+		//perform inverse Fourier transform
+		fft.complexInverse(phi, true);
 		
 		
 	}
