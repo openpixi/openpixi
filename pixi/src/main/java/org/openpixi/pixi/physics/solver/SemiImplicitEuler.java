@@ -25,7 +25,7 @@ import org.openpixi.pixi.physics.force.Force;
  * For more information: 
  * http://en.wikipedia.org/wiki/Semi-implicit_Euler_method
  */
-public class SemiImplicitEuler extends Solver {
+public class SemiImplicitEuler implements Solver {
 	
 	public SemiImplicitEuler()
 	{
@@ -52,5 +52,10 @@ public class SemiImplicitEuler extends Solver {
 		p.y += p.vy * step;
 		
 	}
-	
+
+	public void prepare(Particle2D p, Force f, double step) {
+	}
+
+	public void complete(Particle2D p, Force f, double step){
+	}
 }

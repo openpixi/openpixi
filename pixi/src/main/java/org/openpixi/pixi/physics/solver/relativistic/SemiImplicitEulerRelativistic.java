@@ -26,7 +26,7 @@ import org.openpixi.pixi.physics.solver.Solver;
  * For more information: 
  * http://en.wikipedia.org/wiki/Semi-implicit_Euler_method
  */
-public class SemiImplicitEulerRelativistic extends Solver {
+public class SemiImplicitEulerRelativistic implements Solver {
 	
 	public SemiImplicitEulerRelativistic()
 	{
@@ -56,5 +56,10 @@ public class SemiImplicitEulerRelativistic extends Solver {
 		p.y += p.vy * step / gamma;
 		
 	}
-	
+
+	public void prepare(Particle2D p, Force f, double step) {
+	}
+
+	public void complete(Particle2D p, Force f, double step){
+	}
 }

@@ -24,7 +24,7 @@ import org.openpixi.pixi.physics.force.Force;
 /**This class represents the simple Euler algorithm.
  *
  */
-public class Euler extends Solver {
+public class Euler implements Solver {
 
 	public Euler()
 	{
@@ -52,4 +52,9 @@ public class Euler extends Solver {
 
 	}
 
+	public void prepare(Particle2D p, Force f, double step) {
+	}
+
+	public void complete(Particle2D p, Force f, double step){
+	}
 }

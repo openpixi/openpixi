@@ -26,7 +26,7 @@ import org.openpixi.pixi.physics.force.Force;
  * and also here:
  * http://www.artcompsci.org/vol_1/v1_web/node34.html#leapfrog-step2
  */
-public class LeapFrogHalfStep extends Solver{
+public class LeapFrogHalfStep implements Solver{
 	
 	public LeapFrogHalfStep()
 	{
@@ -60,4 +60,9 @@ public class LeapFrogHalfStep extends Solver{
 		
 	}
 
+	public void prepare(Particle2D p, Force f, double step) {
+	}
+
+	public void complete(Particle2D p, Force f, double step){
+	}
 }

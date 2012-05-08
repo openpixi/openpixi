@@ -26,7 +26,7 @@ import org.openpixi.pixi.physics.solver.Solver;
 /**The calculation is due to Boris and the equations((7) - (10)) can be found here:
  * http://ptsg.eecs.berkeley.edu/publications/Verboncoeur2005IOP.pdf
  */
-public class BorisRelativistic extends Solver{
+public class BorisRelativistic implements Solver{
 	
 	public BorisRelativistic()
 	{

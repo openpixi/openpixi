@@ -31,7 +31,7 @@ import org.openpixi.pixi.physics.force.Force;
  * http://www.physics.udel.edu/~bnikolic/teaching/phys660/numerical_ode/node4.html</a>
  * </p>
  */
-public class EulerRichardson extends Solver{
+public class EulerRichardson implements Solver{
 	
 	public EulerRichardson()
 	{
@@ -78,4 +78,9 @@ public class EulerRichardson extends Solver{
 		
 	}
 
+	public void prepare(Particle2D p, Force f, double step) {
+	}
+
+	public void complete(Particle2D p, Force f, double step){
+	}
 }

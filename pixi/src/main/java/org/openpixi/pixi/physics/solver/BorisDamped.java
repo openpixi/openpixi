@@ -25,7 +25,7 @@ import org.openpixi.pixi.physics.force.Force;
 /**The calculation is due to Boris and the equations((7) - (10)) can be found here:
  * http://ptsg.eecs.berkeley.edu/publications/Verboncoeur2005IOP.pdf
  */
-public class BorisDamped extends Solver{
+public class BorisDamped implements Solver{
 	
 	public BorisDamped()
 	{

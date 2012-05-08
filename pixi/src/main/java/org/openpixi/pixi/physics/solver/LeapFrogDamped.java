@@ -26,7 +26,7 @@ import org.openpixi.pixi.physics.force.Force;
  * and also here:
  * http://www.artcompsci.org/vol_1/v1_web/node34.html#leapfrog-step2
  */
-public class LeapFrogDamped extends Solver{
+public class LeapFrogDamped implements Solver{
 	
 	public LeapFrogDamped()
 	{

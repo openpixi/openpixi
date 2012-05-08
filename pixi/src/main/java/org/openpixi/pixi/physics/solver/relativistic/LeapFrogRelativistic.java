@@ -27,7 +27,7 @@ import org.openpixi.pixi.physics.solver.Solver;
  * and also here:
  * http://www.artcompsci.org/vol_1/v1_web/node34.html#leapfrog-step2
  */
-public class LeapFrogRelativistic extends Solver{
+public class LeapFrogRelativistic implements Solver{
 	
 	public LeapFrogRelativistic()
 	{
