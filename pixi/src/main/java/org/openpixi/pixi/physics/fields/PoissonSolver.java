@@ -36,13 +36,13 @@ public class PoissonSolver {
 		//solve Poisson equation in Fourier space
 		for(int i = 0; i < rows; i++) {
 			for(int j = 0; j < columns; j += 2) {
-				double d = (4 - 2 * Math.cos(2 * Math.PI * i / g.numCellsX) - 2 * Math.cos(2 * Math.PI * j / g.numCellsY));
+				double d = (4 - 2 * Math.cos((2 * Math.PI * i) / g.numCellsX) - 2 * Math.cos((2 * Math.PI * (j/2)) / g.numCellsY));
 				if (d != 0) {
 				phi[i][j] = (g.cellWidth * g.cellHeight * trho[i][j]) / d;						;
 //				phi[i][j+1] = (g.cellWidth * g.cellHeight * trho[i][j+1]) / d;
 				} else {
-					phi[i][j] = 0;
-					phi[i][j+1] = 0;
+					phi[i][j] = trho[i][j];
+					phi[i][j+1] = trho[i][j+1];
 				}
 //				System.out.println(trho[i][j] + " " + trho[i][j+1]);
 			}
