@@ -128,14 +128,29 @@ public class MainControlApplet extends JApplet {
 
 
 	private void linkConstantForce() {
-		for(int i = 0; i < particlePanel.s.f.forces.size(); i++) {
-			if((particlePanel.s.f.forces.get(i) instanceof ConstantForce) ||
-					(particlePanel.s.f.forces.get(i) instanceof ConstantForceRelativistic)) {
-				force = (ConstantForce) particlePanel.s.f.forces.get(i);
-				return;
+		force = getFirstConstantForce(particlePanel.s.f);
+		assert force != null : "no force found";
+	}
+
+	/**
+	 * Returns the first constant force encountered. Scans recursively through
+	 * all CombindeForces.
+	 * @param force
+	 * @return
+	 */
+	private ConstantForce getFirstConstantForce(Force force) {
+		ConstantForce firstconstantforce = null;
+		if (force instanceof ConstantForce) {
+			firstconstantforce = (ConstantForce) force;
+		} else if (force instanceof CombinedForce) {
+			for (Force f : ((CombinedForce) force).forces) {
+				firstconstantforce = getFirstConstantForce(f);
+				if (firstconstantforce != null) {
+					break;
+				}
 			}
 		}
-		assert false : "no force found";
+		return firstconstantforce;
 	}
 
 	/**

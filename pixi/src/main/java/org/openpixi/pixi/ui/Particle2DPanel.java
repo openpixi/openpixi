@@ -224,9 +224,12 @@ public class Particle2DPanel extends JPanel {
 			s.grid = null;
 			s.grid = new Grid(s);
 			//clears forces ArrayList of all GridForces
-			for (int i = 0; i < s.f.forces.size(); i++) {
-				if (s.f.forces.get(i) instanceof SimpleGridForce){
-					s.f.forces.remove(i);
+			if (s.f instanceof CombinedForce) {
+				ArrayList<Force> forces = ((CombinedForce) s.f).forces;
+				for (int i = 0; i < forces.size(); i++) {
+					if (forces.get(i) instanceof SimpleGridForce){
+						forces.remove(i);
+					}
 				}
 			}
 			//clears Particle2DData variable
@@ -304,15 +307,18 @@ public class Particle2DPanel extends JPanel {
 		relativistic =! relativistic;
 		
 		if(relativistic == false) {
-			for (int j = 0; j < s.f.forces.size(); j++) {
-				if (s.f.forces.get(j) instanceof ConstantForceRelativistic){
-					s.f.forces.set(j, new ConstantForce());
-				}
-				if (s.f.forces.get(j) instanceof SimpleGridForceRelativistic){
-					s.f.forces.set(j, new SimpleGridForce(s));
-				}
-				if (s.f.forces.get(j) instanceof SpringForceRelativistic){
-					s.f.forces.set(j, new SpringForce());
+			if (s.f instanceof CombinedForce) {
+				ArrayList<Force> forces = ((CombinedForce) s.f).forces;
+				for (int j = 0; j < forces.size(); j++) {
+					if (forces.get(j) instanceof ConstantForceRelativistic){
+						forces.set(j, new ConstantForce());
+					}
+					if (forces.get(j) instanceof SimpleGridForceRelativistic){
+						forces.set(j, new SimpleGridForce(s));
+					}
+					if (forces.get(j) instanceof SpringForceRelativistic){
+						forces.set(j, new SpringForce());
+					}
 				}
 			}
 			switch(i) {
@@ -329,15 +335,18 @@ public class Particle2DPanel extends JPanel {
 		
 		if(relativistic == true) {
 			//System.out.println("relativistic version on");
-			for (int j = 0; j < s.f.forces.size(); j++) {
-				if (s.f.forces.get(j) instanceof ConstantForce){
-					s.f.forces.set(j, new ConstantForceRelativistic());
-				}
-				if (s.f.forces.get(j) instanceof SimpleGridForce){
-					s.f.forces.set(j, new SimpleGridForceRelativistic(s));
-				}
-				if (s.f.forces.get(j) instanceof SpringForce){
-					s.f.forces.set(j, new SpringForceRelativistic());
+			if (s.f instanceof CombinedForce) {
+				ArrayList<Force> forces = ((CombinedForce) s.f).forces;
+				for (int j = 0; j < forces.size(); j++) {
+					if (forces.get(j) instanceof ConstantForce){
+						forces.set(j, new ConstantForceRelativistic());
+					}
+					if (forces.get(j) instanceof SimpleGridForce){
+						forces.set(j, new SimpleGridForceRelativistic(s));
+					}
+					if (forces.get(j) instanceof SpringForce){
+						forces.set(j, new SpringForceRelativistic());
+					}
 				}
 			}
 			switch(i) {
