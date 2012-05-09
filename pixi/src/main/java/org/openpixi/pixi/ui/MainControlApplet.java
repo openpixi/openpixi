@@ -554,7 +554,6 @@ public class MainControlApplet extends JApplet {
 		initComboBox = new JComboBox(initStrings);
 		initComboBox.setSelectedIndex(0);
 		initComboBox.addActionListener(new ComboBoxListener());
-		//initComboBox.setPreferredSize(new Dimension(initComboBox.getPreferredSize().width, 5));
 		JLabel initComboBoxLabel = new JLabel("Initial conditions");
 		Box initBox = Box.createHorizontalBox();
 		initBox.add(initComboBoxLabel);
@@ -638,7 +637,6 @@ public class MainControlApplet extends JApplet {
 		filename.setText("Filename");
 		filename.setEnabled(false);
 		filename.setEditable(false);
-		//filename.addActionListener(new WriteFilename());
 		
 		filedirectory = new JTextField(10);
 		filedirectory.setText("Dir., ex. C:\\Pixi");
@@ -665,47 +663,22 @@ public class MainControlApplet extends JApplet {
 		
 		JLabel xboxentryLabel = new JLabel("Cell width");
 		JLabel yboxentryLabel = new JLabel("Cell height");
-		/*Box currentBox = Box.createHorizontalBox();
-		currentBox.add(currentgridCheck);
-		currentBox.add(xboxentryLabel);
-		currentBox.add(xboxentry);
-		currentBox.add(Box.createHorizontalGlue());
-		currentBox.add(yboxentryLabel);
-		currentBox.add(yboxentry);*/
 
 		JPanel controlPanelUp = new JPanel();
 		controlPanelUp.setLayout(new FlowLayout());
 		controlPanelUp.add(startButton);
 		controlPanelUp.add(stopButton);
 		controlPanelUp.add(resetButton);
-		//controlPanelUp.add(Box.createHorizontalGlue());
 		controlPanelUp.add(Box.createHorizontalStrut(25));
 		controlPanelUp.add(initBox);
-//		controlPanelUp.add(testButton);
-		//controlPanelUp.add(traceCheck);
-		//controlPanelUp.add(framerateCheck);
 		controlPanelUp.add(Box.createHorizontalStrut(25));
 		controlPanelUp.add(writePositionCheck);
 		controlPanelUp.add(filename);
 		controlPanelUp.add(filedirectory);
-		//controlPanelUp.add(Box.createHorizontalGlue());
-		//controlPanelUp.add(currentgridCheck);	
-		//controlPanelUp.add(fieldsCheck);	
-		//controlPanelUp.add(Box.createHorizontalGlue());
-		//controlPanelUp.add(currentBox);
-		//controlPanelUp.add(xboxentryLabel);
-		//controlPanelUp.add(xboxentry);
-		//controlPanelUp.add(Box.createHorizontalGlue());
-		//controlPanelUp.add(yboxentryLabel);
-		//controlPanelUp.add(yboxentry);
 		
 		Box settingControls = Box.createVerticalBox();
 		JPanel controlPanelDown = new JPanel();
 		controlPanelDown.setLayout(new FlowLayout());
-		//controlPanelDown.add(traceCheck);
-		//controlPanelDown.add(framerateCheck);
-		//settingControls.add(initBox);
-		//settingControls.add(Box.createVerticalGlue());
 		settingControls.add(algorithmBox);
 		settingControls.add(Box.createVerticalGlue());
 		settingControls.add(relativisticCheck);
@@ -769,12 +742,8 @@ public class MainControlApplet extends JApplet {
 		cellSettings.add(calculateFieldsCheck);
 		cellSettings.add(Box.createVerticalStrut(20));
 		cellSettings.add(xbox);
-		//cellSettings.add(xboxentryLabel);
-		//cellSettings.add(xboxentry);
 		cellSettings.add(Box.createVerticalStrut(10));
 		cellSettings.add(ybox);
-		//cellSettings.add(yboxentryLabel);
-		//cellSettings.add(yboxentry);
 		cellSettings.add(Box.createVerticalStrut(200));
 		
 		fieldsBox.setPreferredSize(new Dimension(250, 100));
@@ -839,7 +808,6 @@ public class MainControlApplet extends JApplet {
 		collisionComboBox.setSelectedIndex(0);
 		collisionDetector.setSelectedIndex(0);
 		collisionAlgorithm.setSelectedIndex(0);
-		//particlePanel.s.f = new CombinedForce();
 		linkConstantForce();
 	}
 	
