@@ -14,7 +14,7 @@ public class VectorTransformation extends CollisionAlgorithm{
 		super();
 	}		
 		
-	public void doCollision(Particle2D p1, Particle2D p2) {
+	private void doCollision(Particle2D p1, Particle2D p2) {
 		
 		//distance between the particles
 		double distance = Math.sqrt((p1.x - p2.x) * (p1.x - p2.x) + (p1.y - p2.y) * (p1.y - p2.y));
