@@ -28,13 +28,14 @@ public class SweepAndPrune extends Detector{
 			new HashMap<Pair<BoundingBox, BoundingBox>, OverlapCounter>();
 	
 	//constructor
-	public SweepAndPrune() {
+	public SweepAndPrune(ArrayList<Particle2D> parlist) {
 		
-		super();
-	}
-	
-	//method to add a box to the axes
-	public void add(ArrayList<Particle2D> parlist) {
+		boxlist.clear();
+		axisX.clear();
+		axisY.clear();
+		overlaps.clear();
+		overlappedPairs.clear();
+		overlapCounter.clear();
 		
 		for(int i = 0; i < parlist.size(); i++) {
 			Particle2D par = (Particle2D) parlist.get(i);
@@ -52,58 +53,6 @@ public class SweepAndPrune extends Detector{
 		}
 	}
 	
-	//method to remove sweep particles from list, it is used when a bounding box is removed
-	private void removeSweepParticle(List<SweepParticle> list, BoundingBox box) {
-		ListIterator<SweepParticle> iterator = list.listIterator();
-		while(iterator.hasNext()) {
-			SweepParticle spar = iterator.next();
-			if(spar.bb == box) {
-				iterator.remove();
-				//System.out.println("Sweep particle removed");
-			}
-		}
-	}
-	
-	//method to remove a bounding box from list
-	public void remove(BoundingBox box) {
-		if(boxlist.contains(box)) {
-			boxlist.remove(box);
-			
-			//removing the sweep particles from the lists of the axes
-			removeSweepParticle(axisX, box);
-			removeSweepParticle(axisY, box);
-			//System.out.println("Particle removed");
-			
-			//one needs to clean the counters too
-			Iterator<Entry<Pair<BoundingBox, BoundingBox>, OverlapCounter>> iterator = overlapCounter.entrySet().iterator();
-			while(iterator.hasNext()) {
-				Entry<Pair<BoundingBox, BoundingBox>, OverlapCounter> entry = iterator.next();
-				OverlapCounter counter = entry.getValue();
-				Pair<BoundingBox, BoundingBox> pairbox = entry.getKey();
-				if(pairbox.getFirst() == box || pairbox.getSecond() == box) {
-					if(counter.overlappedBoolean) {
-						overlaps.remove(pairbox);
-					}
-					
-					iterator.remove();
-				}
-			}
-		}
-	}
-	
-	public void reset() {
-		boxlist.clear();
-		
-		axisX.clear();
-		axisY.clear();
-		
-		overlaps.clear();
-		
-		overlappedPairs.clear();
-		
-		overlapCounter.clear();
-		
-	}
 	
 	//adding a method for sorting the lists
 	private void sortList(ArrayList<SweepParticle> list) {

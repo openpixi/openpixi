@@ -10,17 +10,14 @@ public class AllParticles extends Detector{
 	
 	private ArrayList<Particle2D> particlelist = new ArrayList<Particle2D>();
 	
-	public AllParticles() {
-	
-		super();
-	}
-	
-	public void addEveryStep(ArrayList<Particle2D> parlist) {
+	public AllParticles(ArrayList<Particle2D> parlist) {
+		particlelist.clear();
 		
 		for(int i = 0; i < parlist.size(); i++) {
 			Particle2D par = (Particle2D) parlist.get(i);
 			this.particlelist.add(par);
 		}
+		
 	}
 	
 	public void run() {
@@ -44,11 +41,6 @@ public class AllParticles extends Detector{
 			}
 			
 		}
-	}
-	
-	public void resetEveryStep() {
-		
-		particlelist.clear();
 	}
 	
 	public ArrayList<Pair<Particle2D, Particle2D>> getOverlappedPairs() {

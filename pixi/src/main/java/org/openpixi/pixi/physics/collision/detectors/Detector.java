@@ -10,14 +10,7 @@ public class Detector {
 	public ArrayList<Pair<Particle2D, Particle2D>> overlappedPairs;// = new ArrayList<Pair<Particle2D, Particle2D>>();
 	
 	public Detector() {
-		
-	}
-	
-	public void add(ArrayList<Particle2D> parlist) {
-		
-	}
-	
-	public void addEveryStep(ArrayList<Particle2D> parlist) {
+
 		
 	}
 	
@@ -27,13 +20,6 @@ public class Detector {
 	
 	public ArrayList<Pair<Particle2D, Particle2D>> getOverlappedPairs() {
 		return overlappedPairs;
-	}
-	public void reset() {
-		
-	}
-	
-	public void resetEveryStep() {
-		
 	}
 
 }
