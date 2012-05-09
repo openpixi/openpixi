@@ -22,6 +22,8 @@ package org.openpixi.pixi.physics;
 import java.util.ArrayList;
 import org.openpixi.pixi.physics.boundary.*;
 import org.openpixi.pixi.physics.collision.*;
+import org.openpixi.pixi.physics.collision.algorithms.CollisionAlgorithm;
+import org.openpixi.pixi.physics.collision.detectors.Detector;
 import org.openpixi.pixi.physics.fields.*;
 import org.openpixi.pixi.physics.force.*;
 import org.openpixi.pixi.physics.grid.*;
@@ -43,7 +45,8 @@ public class Simulation {
 	
 	public Solver psolver;
 	public Grid grid;
-	public Collision collision;
+	public Detector detector;
+	public CollisionAlgorithm collisionalgorithm;
 	public boolean collisionBoolean = false;
 
 	public Simulation (int swidth, int sheight, int pcount, double pradius) {
@@ -58,7 +61,8 @@ public class Simulation {
 		
 		psolver = new Boris();
 		grid = new Grid(this);
-		collision = new Collision();
+		detector = new Detector();
+		collisionalgorithm = new CollisionAlgorithm();
 		
 		//should be placed at the beginning but that is impossible because of dependencies on boundaries and Grid
 		setSize(width, height);
@@ -75,7 +79,8 @@ public class Simulation {
 	public void step() {
 		ParticleMover.particlePush(this);
 		if(collisionBoolean) {
-			collision.check(particles, f, psolver, tstep);
+			detector.run();
+			collisionalgorithm.collide(detector.getOverlappedPairs(), f, psolver, tstep);
 		}
 		grid.updateGrid(particles);
 	}

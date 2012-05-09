@@ -835,7 +835,7 @@ public class MainControlApplet extends JApplet {
 			periodicBoundaries.setSelected(true);
 		}
 		//particlePanel.s.collision.alg = new CollisionAlgorithm();
-		particlePanel.s.collision.det = new Detector();
+		//particlePanel.s.detector = new Detector();
 		collisionComboBox.setSelectedIndex(0);
 		collisionDetector.setSelectedIndex(0);
 		collisionAlgorithm.setSelectedIndex(0);
