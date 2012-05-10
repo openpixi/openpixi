@@ -38,7 +38,6 @@ public class MainControlApplet extends JApplet {
 	private JButton startButton;
 	private JButton stopButton;
 	private JButton resetButton;
-	private JButton testButton;
 	
 	private JSlider speedSlider;
 	private JSlider stepSlider;
@@ -251,14 +250,6 @@ public class MainControlApplet extends JApplet {
 			particlePanel.resetAnimation(initComboBox.getSelectedIndex());
 			linkConstantForce();
 			setSlidersValue();
-			testButton.setEnabled(true);
-		}
-	}
-	
-	class TestListener implements ActionListener {
-		public void actionPerformed(ActionEvent eve) {
-				testButton.setEnabled(false);
-				particlePanel.testSolver();
 		}
 	}
 	
@@ -458,8 +449,6 @@ public class MainControlApplet extends JApplet {
 		startButton = new JButton("start");
 		stopButton = new JButton("stop");
 		resetButton = new JButton("reset");
-		testButton = new JButton("Test");
-		testButton.setToolTipText("Click the reset button afterwards to exit the test");
 
 		/**one can also write a constructor for a JSlider as:
 		 * JSlider slider = new JSlider(int min, int max, int value);
@@ -599,7 +588,6 @@ public class MainControlApplet extends JApplet {
 		startButton.addActionListener(new StartListener());
 		stopButton.addActionListener(new StopListener());
 		resetButton.addActionListener(new ResetListener());
-		testButton.addActionListener(new TestListener());
 		
 		relativisticCheck = new JCheckBox("Relativistic Version");
 		relativisticCheck.addItemListener(new RelativisticEffects());

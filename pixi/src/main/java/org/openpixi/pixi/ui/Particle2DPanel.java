@@ -85,19 +85,6 @@ public class Particle2DPanel extends JPanel {
 		public void actionPerformed(ActionEvent eve) {
 
 			updateSimulationSize();
-//			for (int i = 0; i < Simulation.particles.size(); i++) {
-//				Particle2D par = (Particle2D) Simulation.particles.get(i);
-//				if(test && i == 0)
-//					for(int k = 0; k < 100; k++)
-//					{
-//						ParticleMover.solver.step(par, Simulation.f, Simulation.tstep / 100);
-//						Simulation.boundary.check(par, Simulation.f, ParticleMover.solver, Simulation.tstep / 100);
-//					}
-//				else {
-//					ParticleMover.solver.step(par, Simulation.f, Simulation.tstep);
-//					Simulation.boundary.check(par, Simulation.f, ParticleMover.solver, Simulation.tstep);
-//				}
-//			}
 			s.step();
 			frameratedetector.update();
 			repaint();
@@ -171,28 +158,7 @@ public class Particle2DPanel extends JPanel {
 		updateFieldForce();
 		s.prepareAllParticles();
 		timer.start();
-	}
-	
-	public void testSolver()
-	{
-		test = true;
-		InitialConditions.createRandomParticles(s, 2, 10);
-		s.f.clear();
-		for (int i = 0; i < s.particles.size(); i++) {
-			Particle2D par = (Particle2D) s.particles.get(i);
-			par.x = (100);
-			par.y = (100 + 100 * i);
-			par.vx = 10;
-			par.vy = 0;
-			par.mass = 1;
-			if(i == 0)
-				par.charge = 1;
-			else
-				par.charge = -1;
-		}
-		InitialConditions.setPeriodicBoundary(s);
-	}
-	
+	}	
 
 	public void checkTrace() {
 		paint_trace =! paint_trace;
