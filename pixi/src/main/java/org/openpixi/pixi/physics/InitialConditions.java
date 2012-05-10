@@ -258,13 +258,5 @@ public class InitialConditions {
 		
 		return particlelist;
 	}
-		
-	public static void setHardWallBoundary(Simulation s) {
-		s.boundary = new HardWallBoundary(s);
-	}
-
-	public static void setPeriodicBoundary(Simulation s) {
-		s.boundary = new PeriodicBoundary(s);
-	}
 
 }

@@ -19,6 +19,7 @@
 package org.openpixi.pixi.ui;
 
 import org.openpixi.pixi.physics.*;
+import org.openpixi.pixi.physics.boundary.HardWallBoundary;
 import org.openpixi.pixi.physics.boundary.PeriodicBoundary;
 import org.openpixi.pixi.physics.collision.algorithms.*;
 import org.openpixi.pixi.physics.collision.detectors.*;
@@ -370,10 +371,10 @@ public class Particle2DPanel extends JPanel {
 	public void boundariesChange(int i) {
 		switch(i) {
 		case 0:
-			InitialConditions.setHardWallBoundary(s);
+			s.boundary = new HardWallBoundary(s);
 			break;
 		case 1:
-			InitialConditions.setPeriodicBoundary(s);
+			s.boundary = new PeriodicBoundary(s);
 		}
 		
 	}
