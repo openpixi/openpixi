@@ -62,5 +62,17 @@ public class PeriodicBoundary extends Boundary {
 			}
 			particle.y -= ymax - ymin;
 		}
+		
+		//safety code for particles that cover a distance
+		//greater than 2*xmax during one timestep
+		if (particle.x < xmin || particle.x > xmax) {
+			particle.x = xmax / 2.0;
+			particle.vx = 0;
+		}
+		
+		if (particle.y < ymin || particle.y > ymax) {
+			particle.y = ymax / 2.0;
+			particle.vy = 0;
+		}
 	}
 }
