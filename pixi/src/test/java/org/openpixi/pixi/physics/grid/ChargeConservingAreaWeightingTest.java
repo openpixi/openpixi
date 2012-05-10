@@ -2,6 +2,7 @@ package org.openpixi.pixi.physics.grid;
 
 import junit.framework.TestCase;
 
+import org.openpixi.pixi.physics.InitialConditions;
 import org.openpixi.pixi.physics.Particle2D;
 import org.openpixi.pixi.physics.Simulation;
 import org.openpixi.pixi.physics.boundary.PeriodicBoundary;
@@ -114,9 +115,9 @@ public class ChargeConservingAreaWeightingTest extends TestCase {
 	}
 		
 	private void testMove(double x1, double y1, double x2, double y2, double charge, String text) {
-		Simulation s = new Simulation(10, 10, 0, 1);
+		Simulation s = InitialConditions.initBasicSimulation();
 		s.psolver = new Boris();
-		s.boundary = new PeriodicBoundary();
+		s.boundary = new PeriodicBoundary(s);
 
 		// Add single particle
 		Particle2D p = new Particle2D();
@@ -199,9 +200,9 @@ public class ChargeConservingAreaWeightingTest extends TestCase {
 	 * @param text
 	 */
 	private void testMoveForce(double x1, double y1, double vx, double vy, double ex, double bz, double charge, String text) {
-		Simulation s = new Simulation(10, 10, 0, 1);
+		Simulation s = InitialConditions.initBasicSimulation();
 		s.psolver = new Boris();
-		s.boundary = new PeriodicBoundary();
+		s.boundary = new PeriodicBoundary(s);
 
 		// Add single particle
 		Particle2D p = new Particle2D();

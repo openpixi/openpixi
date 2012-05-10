@@ -24,8 +24,8 @@ import org.openpixi.pixi.physics.solver.*;
 
 public class PeriodicBoundary extends Boundary {
 
-	public PeriodicBoundary() {
-		super();
+	public PeriodicBoundary(Simulation s) {
+		super(s);
 	}
 
 	/**

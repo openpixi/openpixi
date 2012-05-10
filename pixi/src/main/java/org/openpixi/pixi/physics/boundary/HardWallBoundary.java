@@ -24,8 +24,8 @@ import org.openpixi.pixi.physics.solver.*;
 
 public class HardWallBoundary extends Boundary {
 
-	public HardWallBoundary() {
-		super();
+	public HardWallBoundary(Simulation s) {
+		super(s);
 	}
 
 	/**

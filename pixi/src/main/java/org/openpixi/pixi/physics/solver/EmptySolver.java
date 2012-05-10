@@ -16,35 +16,23 @@
  * with this program; if not, write to the Free Software Foundation, Inc.,
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
-package org.openpixi.pixi.physics.boundary;
+package org.openpixi.pixi.physics.solver;
 
-import org.openpixi.pixi.physics.*;
+import org.openpixi.pixi.physics.Particle2D;
 import org.openpixi.pixi.physics.force.Force;
-import org.openpixi.pixi.physics.solver.*;
 
-public class Boundary {
-	public double xmin;
-	public double xmax;
-	public double ymin;
-	public double ymax;
-
-	public Boundary(Simulation s) {
-		
-		xmin = 0;
-		ymin = 0;
-		xmax = s.width;
-		ymax = s.height;
-		
+/**This class is empty and does not solve the equations
+ *of motion. It implements the Solver interface.
+ */
+public class EmptySolver implements Solver {
+	
+	public void step(Particle2D p, Force f, double step) {
+	}
+	
+	public void prepare(Particle2D p, Force f, double step) {		
+	}
+	
+	public void complete(Particle2D p, Force f, double step) {
 	}
 
-	public void setBoundaries(double xmin, double ymin, double xmax, double ymax) {
-		this.xmin = xmin;
-		this.ymin = ymin;
-		this.xmax = xmax;
-		this.ymax = ymax;
-	}
-
-	public void check(Particle2D particle, Force f, Solver s, double step) {
-		
-	}
 }

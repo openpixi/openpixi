@@ -37,36 +37,41 @@ public class Simulation {
 	public double width;
 	/**Height of simulated area*/
 	public double  height;
+	/**Speed of light*/
+	public double c;
 
 	/**Contains all Particle2D objects*/
 	public ArrayList<Particle2D> particles;
 	public Force f;
 	public Boundary boundary;
-	
+	/**Solver for the particle equations of motion*/
 	public Solver psolver;
+	/**Grid for dynamic field calculation*/
 	public Grid grid;
 	public Detector detector;
 	public CollisionAlgorithm collisionalgorithm;
 	public boolean collisionBoolean = false;
 
-	public Simulation (int swidth, int sheight, int pcount, double pradius) {
+	/**Creates a basic simulation and initializes all 
+	 * necessary variables. All solvers are set to their
+	 * empty versions.
+	 * This constructor should be called from a factory class
+	 */
+	Simulation () {
 	
-		tstep = 1;
-		width = swidth;
-		height = sheight;
+		tstep = 0;
+		width = 0;
+		height = 0;
 		
 		particles = new ArrayList<Particle2D>(0);
 		f = new CombinedForce();		
-		InitialConditions.initRandomParticles(this, pcount, pradius);
 		
-		psolver = new Boris();
+		psolver = new EmptySolver();
 		grid = new Grid(this);
+		boundary = new Boundary(this);
 		detector = new Detector();
 		collisionalgorithm = new CollisionAlgorithm();
-		
-		//should be placed at the beginning but that is impossible because of dependencies on boundaries and Grid
-		setSize(width, height);
-		
+
 	}
 	
 	public void step() {

@@ -19,6 +19,8 @@
 
 package org.openpixi.pixi.physics;
 
+import java.util.ArrayList;
+
 import org.openpixi.pixi.physics.boundary.*;
 import org.openpixi.pixi.physics.collision.*;
 import org.openpixi.pixi.physics.fields.*;
@@ -28,61 +30,167 @@ import org.openpixi.pixi.physics.solver.*;
 
 public class InitialConditions {
 	
-	/**
-	 * Creates all particles, initializes boundary and force
-	 * @param s Simulation
-	 * @param count number of particles
-	 * @param radius radius of each particle
-	 */
-	public static void initRandomParticles(Simulation s, int count, double radius) {
+	/**Random angle*/
+	private static double phi;
 
-		ConstantForce force = new ConstantForce();
-		force.gy = 0; // -ConstantsSI.g;
-		s.f.clear();
-		s.f.add(force);
+	public static Simulation initEverything() {
 		
-		InitialConditions.createRandomParticles(s, count, radius);
-		InitialConditions.setHardWallBoundary(s);
+		Simulation s = new Simulation();
+		
+		//basic simulation parameters
+		s.tstep = 1;
+		s.c = 1;
+		s.width = 2 * s.c;
+		s.height = 2 * s.c;
+		
+		//external forces
+		s.f.clear();
+		ConstantForce cf = new ConstantForce();
+		s.f.add(cf);
+		
+		//creates 10 particles in simulation area
+		s.particles = createRandomParticles(s.width, s.height, s.c, 10, 1);
+		
+		s.psolver = new Boris();
+		//always do prepareAllParticles when psolver algorithm is changed!
+		s.prepareAllParticles();
+		
+		//also adds a SimpleGridForce to the forces list
+		s.grid = new YeeGrid(s);		
+		s.boundary = new PeriodicBoundary(s);
+		
+		return s;
+	}
+	
+	public static Simulation initRandomParticles(int count, int radius) {
+		
+		Simulation s = new Simulation();
+		
+		//basic simulation parameters
+		s.tstep = 1;
+		s.c = 3;
+		s.width = 700;
+		s.height = 500;
+		
+		//external forces
+		s.f.clear();
+		ConstantForce cf = new ConstantForce();
+		s.f.add(cf);
+		
+		//creates 10 particles in simulation area
+		s.particles = createRandomParticles(s.width, s.height, s.c, count, radius);
+		
+		s.psolver = new EulerRichardson();
+		//always do prepareAllParticles when psolver algorithm is changed!
+		s.prepareAllParticles();
+		
+		s.boundary = new HardWallBoundary(s);
+				
+		return s;
+	}
+	
+	public static Simulation initGravity(int count, int radius) {
+
+		Simulation s = new Simulation();
+		
+		//basic simulation parameters
+		s.tstep = 1;
+		s.c = 3;
+		s.width = 700;
+		s.height = 500;
+		
+		//external forces
+		s.f.clear();
+		ConstantForce cf = new ConstantForce();
+		cf.gy = -1;
+		s.f.add(cf);
+		
+		//creates 10 particles in simulation area
+		s.particles = createRandomParticles(s.width, s.height, s.c, count, radius);
+		
+		s.psolver = new EulerRichardson();
+		//always do prepareAllParticles when psolver algorithm is changed!
+		s.prepareAllParticles();
+		
+		s.boundary = new HardWallBoundary(s);
+				
+		return s;
 	}
 
-	public static void initGravity(Simulation s, int count) {
+	public static Simulation initElectric(int count, int radius) {
+
+		Simulation s = new Simulation();
 		
-		ConstantForce force = new ConstantForce();
-		force.gy = -1; // -ConstantsSI.g;
+		//basic simulation parameters
+		s.tstep = 1;
+		s.c = 3;
+		s.width = 700;
+		s.height = 500;
+		
+		//external forces
 		s.f.clear();
-		s.f.add(force);
+		ConstantForce cf = new ConstantForce();
+		cf.ey = -1;
+		s.f.add(cf);
 		
-		InitialConditions.createRandomParticles(s, count, 15);
-		InitialConditions.setHardWallBoundary(s);
+		//creates 10 particles in simulation area
+		s.particles = createRandomParticles(s.width, s.height, s.c, count, radius);
+		
+		s.psolver = new EulerRichardson();
+		//always do prepareAllParticles when psolver algorithm is changed!
+		s.prepareAllParticles();
+		
+		s.boundary = new HardWallBoundary(s);
+				
+		return s;
 	}
 
-	public static void initElectric(Simulation s, int count) {
+	public static Simulation initMagnetic(int count, int radius) {
+
+		Simulation s = new Simulation();
 		
-		ConstantForce force = new ConstantForce();
-		force.ey = -1; // -ConstantsSI.g;
+		//basic simulation parameters
+		s.tstep = 1;
+		s.c = 3;
+		s.width = 700;
+		s.height = 500;
+		
+		//external forces
 		s.f.clear();
-		s.f.add(force);
+		ConstantForce cf = new ConstantForce();
+		cf.bz = -1;
+		s.f.add(cf);
 		
-		InitialConditions.createRandomParticles(s, count, 15);
-		InitialConditions.setHardWallBoundary(s);
+		//creates 10 particles in simulation area
+		s.particles = createRandomParticles(s.width, s.height, s.c, count, radius);
+		
+		s.psolver = new EulerRichardson();
+		//always do prepareAllParticles when psolver algorithm is changed!
+		s.prepareAllParticles();
+		
+		s.boundary = new HardWallBoundary(s);
+				
+		return s;
 	}
 
-	public static void initMagnetic(Simulation s, int count) {
+	public static Simulation initSpring(int count, int radius) {
 		
-		ConstantForce force = new ConstantForce();
-		force.bz = .1; // -ConstantsSI.g;
+		Simulation s = new Simulation();
+		
+		//basic simulation parameters
+		s.tstep = 1;
+		s.c = 3;
+		s.width = 700;
+		s.height = 500;
+		
+		//external forces
 		s.f.clear();
-		s.f.add(force);
+		SpringForce sf = new SpringForce();
+		s.f.add(sf);
+		ConstantForce cf = new ConstantForce();
+		s.f.add(cf);
 		
-		InitialConditions.createRandomParticles(s, count, 15);
-		InitialConditions.setPeriodicBoundary(s);
-	}
-
-	public static void initSpring(Simulation s, int count) {
-
-		s.f.clear();
-		s.f.add(new SpringForce());
-		
+		//creates one particle
 		s.particles.clear();
 		
 		for (int k = 0; k < count; k++) {
@@ -96,56 +204,67 @@ public class InitialConditions {
 			par.charge = .001;
 			s.particles.add(par);
 		}
-	
-		InitialConditions.setPeriodicBoundary(s);
+		
+		s.psolver = new EulerRichardson();
+		//always do prepareAllParticles when psolver algorithm is changed!
+		s.prepareAllParticles();
+		
+		s.boundary = new PeriodicBoundary(s);
+				
+		return s;
 	}
 
-	public static void createRandomParticles(Simulation s, int count, double radius) {
-		s.particles.clear();
-		//s.collision.det.reset();
-		for (int k = 0; k < count; k++) {
-			Particle2D par = new Particle2D();
-			par.x = s.width * Math.random();
-			par.y = s.height * Math.random();
-			par.radius = radius;
-			par.vx = 10 * Math.random();
-			par.vy = 10 * Math.random();
-			par.mass = 1;
-			if (Math.random() > 0.5) {
-				par.charge = .1;
-			} else {
-				par.charge = -.1;
-			}
-			s.particles.add(par);
-		}
-		//s.collision.det.add(s.particles);
-	}
-	
-	public static void constForce10ParticlesGrid(Simulation s) {
+	public static Simulation initBasicSimulation() {
 		
+		Simulation s = new Simulation();
+		
+		//basic simulation parameters
 		s.tstep = 1;
-		s.width = 256;
-		s.height = 256;
+		s.c = 3;
+		s.width = 700;
+		s.height = 500;
 		
-		ConstantForce cf = new ConstantForce();
-
-		s.f.clear();
-		s.f.add(cf);
-		
-		s.grid = new YeeGrid(s);
-		s.psolver = new Boris();
-		
-		s.boundary = new HardWallBoundary();
-		
-		createRandomParticles(s, 10, 1);
+		return s;
 	}
 	
+	/**Creates particles on random positions with random speeds
+	 * @param width		maximal x-coodrinate
+	 * @param height	maximal y-coordinate
+	 * @param maxspeed	maximal particle speed
+	 * @param count		number of particles to be created
+	 * @param radius	particle radius
+	 * @return ArrayList of Particle2D
+	 */
+	public static ArrayList<Particle2D> createRandomParticles(double width, double height, double maxspeed, int count, double radius) {
+		
+		ArrayList<Particle2D> particlelist = new ArrayList<Particle2D>(count);
+		
+		for (int k = 0; k < count; k++) {
+			Particle2D p = new Particle2D();
+			p.x = width * Math.random();
+			p.y = height * Math.random();
+			p.radius = radius;
+			phi = 2 * Math.PI * Math.random();
+			p.vx = maxspeed * Math.cos(phi);
+			p.vy = maxspeed * Math.sin(phi);
+			p.mass = 1;
+			if (Math.random() > 0.5) {
+				p.charge = .1;
+			} else {
+				p.charge = -.1;
+			}
+			particlelist.add(p);
+		}
+		
+		return particlelist;
+	}
+		
 	public static void setHardWallBoundary(Simulation s) {
-		s.boundary = new HardWallBoundary();
+		s.boundary = new HardWallBoundary(s);
 	}
 
 	public static void setPeriodicBoundary(Simulation s) {
-		s.boundary = new PeriodicBoundary();
+		s.boundary = new PeriodicBoundary(s);
 	}
 
 }

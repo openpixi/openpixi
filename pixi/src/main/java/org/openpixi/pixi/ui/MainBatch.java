@@ -28,7 +28,7 @@ import org.openpixi.pixi.physics.grid.*;
 
 public class MainBatch {
 
-	public static final int num_particles = 1000;
+	public static final int num_particles = 100;
 	public static final double particle_radius = 0.1;
 	/**Total number of timesteps*/
 	public static final int steps = 10;
@@ -38,10 +38,7 @@ public class MainBatch {
 	public static void main(String[] args) {
 		Debug.checkAssertsEnabled();
 
-		s = new Simulation(100, 100, num_particles, particle_radius);
-		s.grid = new YeeGrid(s);
-
-		s.prepareAllParticles();
+		s = InitialConditions.initEverything();
 		
 		System.out.println("-------- INITIAL CONDITIONS--------");		
 		

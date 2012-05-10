@@ -104,8 +104,7 @@ public class Particle2DPanel extends JPanel {
 		this.setVisible(true);
 		frameratedetector = new FrameRateDetector(500);
 		
-		s = new Simulation(700, 500, 10, 8);
-		s.psolver = new EulerRichardson();
+		s = InitialConditions.initRandomParticles(10, 8);
 		updateSimulationSize();
 
 	}
@@ -129,30 +128,31 @@ public class Particle2DPanel extends JPanel {
 		reset_trace = true;
 		switch(id) {
 		case 0:
-			InitialConditions.initRandomParticles(s, 10, 8);
+			s = InitialConditions.initRandomParticles(10, 8);
 			break;
 		case 1:
-			InitialConditions.initRandomParticles(s, 100, 5);
+			s = InitialConditions.initRandomParticles(100, 5);
 			break;
 		case 2:
-			InitialConditions.initRandomParticles(s, 1000, 3);
+			s = InitialConditions.initRandomParticles(1000, 3);
 			break;
 		case 3:
-			InitialConditions.initRandomParticles(s, 10000, 1);
+			s = InitialConditions.initRandomParticles(10000, 1);
 			break;
 		case 4:
-			InitialConditions.initGravity(s, 1);
+			s = InitialConditions.initGravity(1, 8);
 			break;
 		case 5:
-			InitialConditions.initElectric(s, 1);
+			s = InitialConditions.initElectric(1, 8);
 			break;
 		case 6:
-			InitialConditions.initMagnetic(s, 3);
+			s = InitialConditions.initMagnetic(3, 8);
 			break;
 		case 7:
-			InitialConditions.initSpring(s, 1);
+			s = InitialConditions.initSpring(1, 8);
 			break;
 		}
+		updateSimulationSize();
 		updateFieldForce();
 		s.prepareAllParticles();
 		timer.start();
@@ -181,7 +181,7 @@ public class Particle2DPanel extends JPanel {
 		if(calculateFields) {
 			s.grid = null;
 			s.grid = new YeeGrid(s);
-			s.boundary = new PeriodicBoundary();
+			s.boundary = new PeriodicBoundary(s);
 			updateSimulationSize();
 		}
 		else {
@@ -213,7 +213,7 @@ public class Particle2DPanel extends JPanel {
 			//force.gy = -1;
 			//force.drag = 0.08;
 			s.f.add(force);
-			InitialConditions.createRandomParticles(s, 1, 10);
+			InitialConditions.createRandomParticles(s.width, s.height, s.c, 1, 10);
 			Particle2D par = (Particle2D) s.particles.get(0);
 			par.x = this.getWidth() * 0.5;
 			par.y = this.getHeight() * 0.5;
