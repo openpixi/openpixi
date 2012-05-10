@@ -169,7 +169,7 @@ public class Particle2DPanel extends JPanel {
 			break;
 		}
 		updateFieldForce();
-		ParticleMover.prepareAllParticles(s);
+		s.prepareAllParticles();
 		timer.start();
 	}
 	
@@ -263,7 +263,7 @@ public class Particle2DPanel extends JPanel {
 		else {
 			resetAnimation(0);
 		}
-		ParticleMover.prepareAllParticles(s);
+		s.prepareAllParticles();
 /*		ConstantForce force = new ConstantForce();
 		force.bz = - 0.23;
 		s.f.add(force);
@@ -271,7 +271,7 @@ public class Particle2DPanel extends JPanel {
 	
 	public void algorithmChange(int id)
 	{
-		ParticleMover.completeAllParticles(s);
+		s.completeAllParticles();
 		
 		switch(id) {
 		case 0:
@@ -300,7 +300,7 @@ public class Particle2DPanel extends JPanel {
 			break;
 			}
 
-		ParticleMover.prepareAllParticles(s);
+		s.prepareAllParticles();
 	}
 	
 	public void relativisticEffects(int i) {

@@ -3,7 +3,6 @@ package org.openpixi.pixi.physics.grid;
 import junit.framework.TestCase;
 
 import org.openpixi.pixi.physics.Particle2D;
-import org.openpixi.pixi.physics.ParticleMover;
 import org.openpixi.pixi.physics.Simulation;
 import org.openpixi.pixi.physics.force.*;
 import org.openpixi.pixi.physics.solver.*;
@@ -103,7 +102,7 @@ public class CloudInCellTest extends TestCase {
 		force.ex= 0.1;
 		s.f.add(force);
 		
-		ParticleMover.prepareAllParticles(s);
+		s.prepareAllParticles();
 		
 		// Use Yeegrid
 		s.setSize(10, 10);
@@ -115,7 +114,7 @@ public class CloudInCellTest extends TestCase {
 
 		// Advance particle
 
-		ParticleMover.particlePush(s);
+		s.particlePush();
 
 		// Calculate current
 		grid.interp.interpolateToGrid(s.particles);
@@ -154,8 +153,8 @@ public class CloudInCellTest extends TestCase {
 		s.particles.get(0).data.y = s.particles.get(0).y;
 
 		// Advance particle
-		ParticleMover.prepareAllParticles(s);
-		ParticleMover.particlePush(s);
+		s.prepareAllParticles();
+		s.particlePush();
 
 		// Calculate current
 		grid.interp.interpolateToGrid(s.particles);

@@ -3,7 +3,6 @@ package org.openpixi.pixi.physics.grid;
 import junit.framework.TestCase;
 
 import org.openpixi.pixi.physics.Particle2D;
-import org.openpixi.pixi.physics.ParticleMover;
 import org.openpixi.pixi.physics.Simulation;
 import org.openpixi.pixi.physics.boundary.PeriodicBoundary;
 import org.openpixi.pixi.physics.force.*;
@@ -129,7 +128,7 @@ public class ChargeConservingAreaWeightingTest extends TestCase {
 		p.charge = charge;
 		s.particles.add(p);
 
-		ParticleMover.prepareAllParticles(s);
+		s.prepareAllParticles();
 		
 		// Use Yeegrid
 		s.setSize(10, 10);
@@ -140,7 +139,7 @@ public class ChargeConservingAreaWeightingTest extends TestCase {
 		p.data.y = p.y;
 
 		// Advance particle
-		ParticleMover.particlePush(s);
+		s.particlePush();
 		
 		//Remember old values after boundary check
 		double sx = p.data.x;
@@ -219,7 +218,7 @@ public class ChargeConservingAreaWeightingTest extends TestCase {
 		force.bz = bz;
 		s.f.add(force);
 		
-		ParticleMover.prepareAllParticles(s);
+		s.prepareAllParticles();
 
 		// Use Yeegrid
 		s.setSize(10, 10);
@@ -231,7 +230,7 @@ public class ChargeConservingAreaWeightingTest extends TestCase {
 		p.data.y = p.y;
 
 		// Advance particle
-		ParticleMover.particlePush(s);
+		s.particlePush();
 		
 		//Remember old values after boundary check
 		double sx = p.data.x;

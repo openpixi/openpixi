@@ -21,7 +21,6 @@ package org.openpixi.pixi.ui;
 
 import org.openpixi.pixi.physics.Debug;
 import org.openpixi.pixi.physics.InitialConditions;
-import org.openpixi.pixi.physics.ParticleMover;
 import org.openpixi.pixi.physics.Simulation;
 import org.openpixi.pixi.physics.force.ConstantForce;
 import org.openpixi.pixi.physics.force.SimpleGridForce;
@@ -42,7 +41,7 @@ public class MainBatch {
 		s = new Simulation(100, 100, num_particles, particle_radius);
 		s.grid = new YeeGrid(s);
 
-		ParticleMover.prepareAllParticles(s);
+		s.prepareAllParticles();
 		
 		System.out.println("-------- INITIAL CONDITIONS--------");		
 		

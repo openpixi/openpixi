@@ -69,20 +69,39 @@ public class Simulation {
 		
 	}
 	
+	public void step() {
+		particlePush();
+		if(collisionBoolean) {
+			detector.run();
+			collisionalgorithm.collide(detector.getOverlappedPairs(), f, psolver, tstep);
+		}
+		grid.updateGrid(particles);
+	}
+	
 	public void setSize(double width, double height) {
 		this.width = width;
 		this.height = height;
 		this.boundary.setBoundaries(0, 0, width, height);
 		this.grid.setGrid(width, height);
 	}
-
-	public void step() {
-		ParticleMover.particlePush(this);
-		if(collisionBoolean) {
-			detector.run();
-			collisionalgorithm.collide(detector.getOverlappedPairs(), f, psolver, tstep);
+	
+	public void particlePush() {
+		for (Particle2D p : particles) {
+			psolver.step(p, f, tstep);
+			boundary.check(p, f, psolver, tstep);
+		}		
+	}
+	
+	public void prepareAllParticles() {
+		for (Particle2D p : particles) {
+			psolver.prepare(p, f, tstep);
 		}
-		grid.updateGrid(particles);
+	}
+
+	public void completeAllParticles() {
+		for (Particle2D p : particles) {
+			psolver.complete(p, f, tstep);
+		}
 	}
 
 }
