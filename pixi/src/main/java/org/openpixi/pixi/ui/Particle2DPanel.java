@@ -99,17 +99,15 @@ public class Particle2DPanel extends JPanel {
 
 	/** Constructor */
 	public Particle2DPanel() {
-		timer = new Timer(interval, new TimerListener());
-		s = new Simulation(700, 500, 10, 8);
 		
-		// Set properties of the panel
+		timer = new Timer(interval, new TimerListener());
 		this.setVisible(true);
-		//this.setSize(700, 500);
+		frameratedetector = new FrameRateDetector(500);
+		
+		s = new Simulation(700, 500, 10, 8);
+		s.psolver = new EulerRichardson();
 		updateSimulationSize();
 
-		s.psolver = new EulerRichardson();
-
-		frameratedetector = new FrameRateDetector(500);
 	}
 
 	private void updateSimulationSize() {
