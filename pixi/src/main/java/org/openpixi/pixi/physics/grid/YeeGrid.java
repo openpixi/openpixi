@@ -7,6 +7,10 @@ import org.openpixi.pixi.physics.force.SimpleGridForce;
 
 public class YeeGrid extends Grid {
 	
+	/**Creates a 10x10 Grid for a given simulation(area)
+	 * and adds a SimpleGridForce to the forces list.
+	 * @param s Simulation
+	 */
 	public YeeGrid(Simulation s) {
 		
 		super(s);
