@@ -8,13 +8,9 @@ import org.openpixi.pixi.physics.Particle2D;
 /**
  * Combines various forces into a single force.
  */
-public class CombinedForce extends Force {
+public class CombinedForce implements Force {
 
 	public ArrayList<Force> forces = new ArrayList<Force>();
-
-	public CombinedForce() {
-		super();
-	}
 
 	/**
 	 * Adds another force.
@@ -31,7 +27,6 @@ public class CombinedForce extends Force {
 		forces.clear();
 	}
 
-	@Override
 	public double getForceX(Particle2D p) {
 		double sum = 0;
 		for (Force f : forces) {
@@ -40,7 +35,6 @@ public class CombinedForce extends Force {
 		return sum;
 	}
 
-	@Override
 	public double getForceY(Particle2D p) {
 		double sum = 0;
 		for (Force f : forces) {
@@ -49,7 +43,6 @@ public class CombinedForce extends Force {
 		return sum;
 	}
 
-	@Override
 	public double getPositionComponentofForceX(Particle2D p) {
 		double sum = 0;
 		for (Force f : forces) {
@@ -58,7 +51,6 @@ public class CombinedForce extends Force {
 		return sum;
 	}
 
-	@Override
 	public double getPositionComponentofForceY(Particle2D p) {
 		double sum = 0;
 		for (Force f : forces) {
@@ -67,7 +59,6 @@ public class CombinedForce extends Force {
 		return sum;
 	}
 
-	@Override
 	public double getTangentVelocityComponentOfForceX(Particle2D p) {
 		double sum = 0;
 		for (Force f : forces) {
@@ -76,7 +67,6 @@ public class CombinedForce extends Force {
 		return sum;
 	}
 
-	@Override
 	public double getTangentVelocityComponentOfForceY(Particle2D p) {
 		double sum = 0;
 		for (Force f : forces) {
@@ -85,7 +75,6 @@ public class CombinedForce extends Force {
 		return sum;
 	}
 
-	@Override
 	public double getNormalVelocityComponentofForceX(Particle2D p) {
 		double sum = 0;
 		for (Force f : forces) {
@@ -94,7 +83,6 @@ public class CombinedForce extends Force {
 		return sum;
 	}
 
-	@Override
 	public double getNormalVelocityComponentofForceY(Particle2D p) {
 		double sum = 0;
 		for (Force f : forces) {
@@ -103,7 +91,6 @@ public class CombinedForce extends Force {
 		return sum;
 	}
 
-	@Override
 	public double getBz(Particle2D p) {
 		double sum = 0;
 		for (Force f : forces) {
@@ -112,7 +99,6 @@ public class CombinedForce extends Force {
 		return sum;
 	}
 
-	@Override
 	public double getLinearDragCoefficient(Particle2D p) {
 		double sum = 0;
 		for (Force f : forces) {
