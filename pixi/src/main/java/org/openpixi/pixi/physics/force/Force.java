@@ -26,15 +26,6 @@ public class Force{
 	/** New empty force */
 	public Force() {
 	}
-	
-	public void add(Force force) {
-		
-	}
-
-	
-	public void clear() {
-		
-	}
 
 	/** Total force in the x-direction */
 	public double getForceX(Particle2D p) {

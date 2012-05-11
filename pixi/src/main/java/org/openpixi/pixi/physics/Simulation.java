@@ -42,7 +42,7 @@ public class Simulation {
 
 	/**Contains all Particle2D objects*/
 	public ArrayList<Particle2D> particles;
-	public Force f;
+	public CombinedForce f;
 	public Boundary boundary;
 	/**Solver for the particle equations of motion*/
 	public Solver psolver;
