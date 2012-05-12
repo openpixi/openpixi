@@ -21,61 +21,87 @@ package org.openpixi.pixi.physics.force;
 
 import org.openpixi.pixi.physics.Particle2D;
 
-public class Force{
+public interface Force {
 
-	/** New empty force */
-	public Force() {
-	}
-	
-	public void add(Force force) {
-		
-	}
+	/**
+	 * Total force in the x-direction.
+	 *
+	 * This should always equal getPositionComponentofForceX(p) +
+	 * getNormalVelocityComponentofForceX(p) +
+	 * getTangentVelocityComponentOfForceX(p).
+	 */
+	public double getForceX(Particle2D p);
 
-	
-	public void clear() {
-		
-	}
+	/**
+	 * Total force in the y-direction.
+	 *
+	 * This should always equal getPositionComponentofForceY(p) +
+	 * getNormalVelocityComponentofForceY(p) +
+	 * getTangentVelocityComponentOfForceY(p).
+	 */
+	public double getForceY(Particle2D p);
 
-	/** Total force in the x-direction */
-	public double getForceX(Particle2D p) {
-		return getPositionComponentofForceX(p) + getNormalVelocityComponentofForceX(p) + getTangentVelocityComponentOfForceX(p);
-	}
+	/**
+	 * Position dependent component of the force in x-direction.
+	 */
+	public double getPositionComponentofForceX(Particle2D p);
 
-	/** Total force in the y-direction */
-	public double getForceY(Particle2D p) {
-		return getPositionComponentofForceY(p) + getNormalVelocityComponentofForceY(p) + getTangentVelocityComponentOfForceY(p);
-	}
+	/**
+	 * Position dependent component of the force in y-direction.
+	 */
+	public double getPositionComponentofForceY(Particle2D p);
 
-	public double getPositionComponentofForceX(Particle2D p) {
-		return 0;
-	}
+	/**
+	 * Velocity dependent component of the force in the propagating direction of
+	 * the particle (x-component).
+	 *
+	 * This should always equal -getLinearDragCoefficient(p) * p.vx.
+	 */
+	public double getTangentVelocityComponentOfForceX(Particle2D p);
 
-	public double getPositionComponentofForceY(Particle2D p) {
-		return 0;
-	}
+	/**
+	 * Velocity dependent component of the force in the propagating direction of
+	 * the particle (y-component).
+	 *
+	 * This should always equal -getLinearDragCoefficient(p) * p.vy.
+	 *
+	 * @param p
+	 * @return
+	 */
+	public double getTangentVelocityComponentOfForceY(Particle2D p);
 
-	public double getTangentVelocityComponentOfForceX(Particle2D p) {
-		return -getLinearDragCoefficient(p) * p.vx;
-	}
+	/**
+	 * Velocity dependent component of the force orthogonal to the propagating
+	 * direction of the particle (x-component).
+	 *
+	 * This should always equal p.charge * p.vy * getBz(p).
+	 *
+	 * @param p
+	 * @return
+	 */
+	public double getNormalVelocityComponentofForceX(Particle2D p);
 
-	public double getTangentVelocityComponentOfForceY(Particle2D p) {
-		return -getLinearDragCoefficient(p) * p.vy;
-	}
+	/**
+	 * 
+	 * Velocity dependent component of the force orthogonal to the propagating
+	 * direction of the particle (y-component).
+	 *
+	 * This should always equal -p.charge * p.vx * getBz(p)
+	 *
+	 * @param p
+	 * @return
+	 */
+	public double getNormalVelocityComponentofForceY(Particle2D p);
 
-	public double getNormalVelocityComponentofForceX(Particle2D p) {
-		return p.charge * p.vy * getBz(p);
-	}
+	/**
+	 * Magnetic field the particle is exposed to.
+	 */
+	public double getBz(Particle2D p);
 
-	public double getNormalVelocityComponentofForceY(Particle2D p) {
-		return - p.charge * p.vx * getBz(p);
-	}
-
-	public double getBz(Particle2D p) {
-		return 0;
-	}
-
-	public double getLinearDragCoefficient(Particle2D p) {
-		return 0;
-	}
+	/**
+	 * Drag coefficient for a drag term that is linear in the velocity of the
+	 * particle.
+	 */
+	public double getLinearDragCoefficient(Particle2D p);
 
 }
