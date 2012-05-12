@@ -84,13 +84,15 @@ public class ChargeConservingAreaWeightingTest extends TestCase {
 		testMove(2.515455551020562, 4.096749046269608, 2.4949265893858295, 4.9716269624132305, +1, "special");
 		
 	}
-
+//	Initializes one particle and moves it in a random direction
+//	This test may fail with a "wrong sign" assertion if "distance" is chosen gerater than
+//	either cell width or cell height.
 	public void testRandomMoves() {
 		for (int i = 0; i < 100000; i++) {
 			double x1 = 2 + 6 * Math.random();
 			double y1 = 2 + 6 * Math.random();
 			double phi = 2 * Math.PI * Math.random();
-			double distance = 0.5 * Math.random();
+			double distance = 1 * Math.random();
 			double x2 = x1 + distance * Math.cos(phi);
 			double y2 = y1 + distance * Math.sin(phi);
 			testMove(x1, y1, x2, y2, +1, "random boundary " + i);
@@ -101,8 +103,8 @@ public class ChargeConservingAreaWeightingTest extends TestCase {
 		for (int i = 0; i < 100000; i++) {
 			double x1 = 2 + 6 * Math.random();
 			double y1 = 2 + 6 * Math.random();
-			double x2 = x1 + 10 * Math.random() / 4;
-			double y2 = y1 + 10 * Math.random() / 6;
+			double x2 = x1 + 1 * Math.random();
+			double y2 = y1 + 1 * Math.random();
 			testMove(x1, y1, x2, y2, +1, "random boundary " + i);
 		}
 	}
@@ -113,9 +115,22 @@ public class ChargeConservingAreaWeightingTest extends TestCase {
 		testMove(7.762230349789808, 2.4447032134825077, 6.940823082228207, 2.800297294538329, 1, "s2");
 //		testMove(-cellWidth/2 -0.4957224966229246 , -0.3950285613036133, 0.18176018946600775
 	}
+	
+	public void testPeriodicBoundary() {
+		int charge = 1;
+		testMoveForce(0.3, 5.2, -2, 0.1, 1, 2, charge, "boundary");
+		testMove(9.8, 5.2, 10.3, 5.2, charge, "boundary");
+		testMove(5.2, 9.3, 5.2, 10.6, charge, "boundary");
+	}
 		
 	private void testMove(double x1, double y1, double x2, double y2, double charge, String text) {
-		Simulation s = InitialConditions.initBasicSimulation();
+		Simulation s = InitialConditions.initEmptySimulation();
+		
+		//basic simulation parameters
+		s.tstep = 1;
+		s.c = 0.7;
+		s.width = 10;
+		s.height = 10;
 		s.psolver = new Boris();
 		s.boundary = new PeriodicBoundary(s);
 
@@ -132,8 +147,9 @@ public class ChargeConservingAreaWeightingTest extends TestCase {
 		s.prepareAllParticles();
 		
 		// Use Yeegrid
-		s.setSize(10, 10);
 		YeeGrid grid = new YeeGrid(s); // 10x10 grid
+		//change default grid parameters here
+		grid.changeDimension(10, 10, 10, 10);
 
 		// Remember old values
 		p.data.x = p.x;
@@ -155,18 +171,11 @@ public class ChargeConservingAreaWeightingTest extends TestCase {
 		System.out.println("Total current " + text + ": jx = " + jx + ", jy = " + jy
 				+ " (from " + sx + ", " + sy + " to " + p.x + ", " + p.y + ")");
 		
-		check(grid.jx);
-		check(grid.jy);
+		checkSign(grid.jx);
+		checkSign(grid.jy);
 		
 		assertAlmostEquals(text + ", jx", charge * (p.x - sx) / grid.simulation.tstep, jx, ACCURACY_LIMIT);
 		assertAlmostEquals(text + ", jy", charge * (p.y - sy) / grid.simulation.tstep, jy, ACCURACY_LIMIT);
-	}
-
-	public void testPeriodicBoundary() {
-		int charge = 1;
-		testMoveForce(0.3, 5.2, -2, 0.1, 1, 2, charge, "boundary");
-		testMove(9.8, 5.2, 10.3, 5.2, charge, "boundary");
-		testMove(5.2, 9.3, 5.2, 10.6, charge, "boundary");
 	}
 	
 	public void testFourBoundaryMovesForce() {
@@ -176,12 +185,15 @@ public class ChargeConservingAreaWeightingTest extends TestCase {
 		testMoveForce(4, 4, 0.09, 0.01, -0.1, 0.1, charge, "four boundary: x=const");
 	}
 	
+//	Initializes one particle and moves it in a random direction
+//	This test may fail with a "wrong sign" assertion if "distance" is chosen gerater than
+//	either cell width or cell height. This also happens if the forces are too strong.
 	public void testRandomMovesForce() {
 		for (int i = 0; i < 10000; i++) {
 			double x1 = 2 + 6 * Math.random();
 			double y1 = 2 + 6 * Math.random();
 			double phi = 2 * Math.PI * Math.random();
-			double distance = 1 * Math.random();
+			double distance = 0.8 * Math.random();
 			double vx = distance * Math.cos(phi);
 			double vy = distance * Math.sin(phi);
 			testMoveForce(x1, y1, vx, vy, 0.5*Math.random(), 0.5*Math.random(), +1, "random boundary " + i);
@@ -200,7 +212,13 @@ public class ChargeConservingAreaWeightingTest extends TestCase {
 	 * @param text
 	 */
 	private void testMoveForce(double x1, double y1, double vx, double vy, double ex, double bz, double charge, String text) {
-		Simulation s = InitialConditions.initBasicSimulation();
+		Simulation s = InitialConditions.initEmptySimulation();
+		
+		//basic simulation parameters
+		s.tstep = 1;
+		s.c = 0.7;
+		s.width = 10;
+		s.height = 10;
 		s.psolver = new Boris();
 		s.boundary = new PeriodicBoundary(s);
 
@@ -222,8 +240,8 @@ public class ChargeConservingAreaWeightingTest extends TestCase {
 		s.prepareAllParticles();
 
 		// Use Yeegrid
-		s.setSize(10, 10);
 		YeeGrid grid = new YeeGrid(s); // 10x10 grid
+		//change default grid parameters here
 		grid.changeDimension(10, 10, 10, 10);
 
 		// Remember old values
@@ -246,8 +264,8 @@ public class ChargeConservingAreaWeightingTest extends TestCase {
 		System.out.println("Total current " + text + ": jx = " + jx + ", jy = " + jy
 				+ " (from " + sx + ", " + sy + " to " + p.x + ", " + p.y + ")");
 		
-		check(grid.jx);
-		check(grid.jy);
+		checkSign(grid.jx);
+		checkSign(grid.jy);
 
 		assertAlmostEquals(text + ", jx", charge * (p.x - sx) / grid.simulation.tstep, jx, ACCURACY_LIMIT);
 		assertAlmostEquals(text + ", jy", charge * (p.y - sy) / grid.simulation.tstep, jy, ACCURACY_LIMIT);
@@ -263,7 +281,7 @@ public class ChargeConservingAreaWeightingTest extends TestCase {
 		return sum;
 	}
 	
-	private void check(double[][] field) {
+	private void checkSign(double[][] field) {
 		double s = 0;
 		for (int i = 0; i < field.length; i++) {
 			for(int j = 0; j < field[0].length; j++) {
