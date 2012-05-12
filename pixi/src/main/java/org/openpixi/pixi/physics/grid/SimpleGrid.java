@@ -40,7 +40,7 @@ public class SimpleGrid extends Grid {
 		
 		fsolver = new SimpleSolver();
 		interp = new CloudInCell(this);
-		SimpleGridForce force = new SimpleGridForce(s);
+		SimpleGridForce force = new SimpleGridForce();
 		s.f.add(force);
 		
 		jx = new double[numCellsX][numCellsY];

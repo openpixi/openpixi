@@ -5,13 +5,6 @@ import org.openpixi.pixi.physics.Simulation;
 
 public class SimpleGridForce implements Force {
 
-	Simulation s;
-
-	/** New empty force */
-	public SimpleGridForce(Simulation s) {
-		this.s = s;
-	}
-
 	public double getForceX(Particle2D p) {
 		return p.charge * ( p.data.Ex + p.vy * p.data.Bz);
 	}

@@ -22,7 +22,7 @@ public class YeeGrid extends Grid {
 		
 		fsolver = new YeeSolver();
 		interp = new ChargeConservingAreaWeighting(this);
-		SimpleGridForce force = new SimpleGridForce(s);
+		SimpleGridForce force = new SimpleGridForce();
 		s.f.add(force);
 
 		jx = new double[numCellsX][numCellsY];
