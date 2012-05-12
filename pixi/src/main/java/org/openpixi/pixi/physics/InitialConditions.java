@@ -214,16 +214,9 @@ public class InitialConditions {
 		return s;
 	}
 
-	public static Simulation initBasicSimulation() {
+	public static Simulation initEmptySimulation() {
 		
-		Simulation s = new Simulation();
-		
-		//basic simulation parameters
-		s.tstep = 1;
-		s.c = 3;
-		s.width = 700;
-		s.height = 500;
-		
+		Simulation s = new Simulation();		
 		return s;
 	}
 	
