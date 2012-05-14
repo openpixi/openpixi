@@ -78,18 +78,94 @@ public class CloudInCellTest extends TestCase {
 		}
 	}
 	
+	private void testMove(double x1, double y1, double x2, double y2, double charge, String text) {
+		Simulation s = InitialConditions.initEmptySimulation();
+		
+		//basic simulation parameters
+		s.tstep = 1;
+		s.c = 0.7;
+		s.width = 10;
+		s.height = 10;
+		s.psolver = new Boris();
+		s.boundary = new PeriodicBoundary(s);
+
+		// Add single particle
+		Particle2D p = new Particle2D();
+		p.x = x1;
+		p.y = y1;
+		p.vx = (x2 - x1) / s.tstep;
+		p.vy = (y2 - y1) / s.tstep;
+		p.mass = 1;
+		p.charge = charge;
+		s.particles.add(p);
+
+		s.prepareAllParticles();
+		
+		// Use Yeegrid
+		SimpleGrid grid = new SimpleGrid(s); // 10x10 grid
+		//change default grid parameters here
+		grid.changeDimension(10, 10, 10, 10);
+
+		// Remember old values
+		p.data.x = p.x;
+		p.data.y = p.y;
+
+		// Advance particle
+		s.particlePush();
+		
+		//Remember old values after boundary check
+		double sx = p.data.x;
+		double sy = p.data.y;
+
+		// Calculate current
+		grid.interp.interpolateToGrid(s.particles);
+
+		double jx = getSum(grid.jx);
+		double jy = getSum(grid.jy);
+
+		System.out.println("Total current " + text + ": jx = " + jx + ", jy = " + jy
+				+ " (from " + sx + ", " + sy + " to " + p.x + ", " + p.y + ")");
+
+		checkSign(grid.jx);
+		checkSign(grid.jy);
+
+//		This is what ChargeConservingAreaWeightningTest test for (current during timestep)
+//		assertAlmostEquals(text + ", jx", charge * (p.x - sx), jx, ACCURACY_LIMIT);
+//		assertAlmostEquals(text + ", jy", charge * (p.y - sy), jy, ACCURACY_LIMIT);
+//		This is what is appropriate for CIC: momentary current
+		assertAlmostEquals(text + ", jx", charge * p.vx, jx, ACCURACY_LIMIT);
+		assertAlmostEquals(text + ", jy", charge * p.vy, jy, ACCURACY_LIMIT);
+	}
+	
 	public void testFourBoundtatryMovesForce() {
 		// Positive charge
 		//bottom up
 		int charge = 1;
-		testMoveForce(4.8, 4.8, 0.2, 0, charge, "four boundary: x=const");
+		testMoveForce(4.8, 4.8, 0.2, 0, -1, 1, charge, "four boundary: x=const");
 	}
-
 	
-	private void testMoveForce(double x1, double y1, double vx, double vy, double charge, String text) {
-		Simulation s = InitialConditions.initBasicSimulation();
+	public void testRandomMovesForce() {
+		for (int i = 0; i < 10000; i++) {
+			double x1 = 2 + 6 * Math.random();
+			double y1 = 2 + 6 * Math.random();
+			double phi = 2 * Math.PI * Math.random();
+			double distance = 0.8 * Math.random();
+			double vx = distance * Math.cos(phi);
+			double vy = distance * Math.sin(phi);
+			testMoveForce(x1, y1, vx, vy, 0.5*Math.random(), 0.5*Math.random(), +1, "random boundary " + i);
+		}
+	}
+	
+	private void testMoveForce(double x1, double y1, double vx, double vy, double ex, double bz, double charge, String text) {
+Simulation s = InitialConditions.initEmptySimulation();
+		
+		//basic simulation parameters
+		s.tstep = 1;
+		s.c = 0.7;
+		s.width = 10;
+		s.height = 10;
 		s.psolver = new Boris();
-		s.boundary = new HardWallBoundary(s);
+		s.boundary = new PeriodicBoundary(s);
 
 		// Add single particle
 		Particle2D p = new Particle2D();
@@ -102,23 +178,28 @@ public class CloudInCellTest extends TestCase {
 		s.particles.add(p);
 		
 		ConstantForce force = new ConstantForce();
-		force.ex= 0.1;
+		force.ex = ex;
+		force.bz = bz;
 		s.f.add(force);
 		
 		s.prepareAllParticles();
-		
+
 		// Use Yeegrid
-		s.setSize(10, 10);
 		SimpleGrid grid = new SimpleGrid(s); // 10x10 grid
+		//change default grid parameters here
+		grid.changeDimension(10, 10, 10, 10);
 
 		// Remember old values
-		double sx = p.x;
-		double sy = p.y;
+		p.data.x = p.x;
+		p.data.y = p.y;
 
 		// Advance particle
-
 		s.particlePush();
-
+		
+		//Remember old values after boundary check
+		double sx = p.data.x;
+		double sy = p.data.y;
+		
 		// Calculate current
 		grid.interp.interpolateToGrid(s.particles);
 
@@ -127,52 +208,18 @@ public class CloudInCellTest extends TestCase {
 		
 		System.out.println("Total current " + text + ": jx = " + jx + ", jy = " + jy
 				+ " (from " + sx + ", " + sy + " to " + p.x + ", " + p.y + ")");
-
+		
+		checkSign(grid.jx);
+		checkSign(grid.jy);
+		
+//		This is what ChargeConservingAreaWeightningTest test for (current during timestep)
 //		assertAlmostEquals(text + ", jx", charge * (p.x - sx), jx, ACCURACY_LIMIT);
 //		assertAlmostEquals(text + ", jy", charge * (p.y - sy), jy, ACCURACY_LIMIT);
+//		This is what is appropriate for CIC: momentary current
 		assertAlmostEquals(text + ", jx", charge * p.vx, jx, ACCURACY_LIMIT);
 		assertAlmostEquals(text + ", jy", charge * p.vy, jy, ACCURACY_LIMIT);
 	}
-	
-	private void testMove(double x1, double y1, double x2, double y2, double charge, String text) {
-		Simulation s = InitialConditions.initBasicSimulation();
-		s.psolver = new Boris();
-		s.boundary = new HardWallBoundary(s);
 
-		// Add single particle
-		Particle2D p = new Particle2D();
-		p.x = x1;
-		p.y = y1;
-		p.vx = (x2 - x1) / s.tstep;
-		p.vy = (y2 - y1) / s.tstep;
-		p.mass = 1;
-		p.charge = charge;
-		s.particles.add(p);
-
-		// Use Yeegrid
-		s.setSize(10, 10);
-		SimpleGrid grid = new SimpleGrid(s); // 10x10 grid
-
-		// Remember old values
-		s.particles.get(0).data.x = s.particles.get(0).x;
-		s.particles.get(0).data.y = s.particles.get(0).y;
-
-		// Advance particle
-		s.prepareAllParticles();
-		s.particlePush();
-
-		// Calculate current
-		grid.interp.interpolateToGrid(s.particles);
-
-		double jx = getSum(grid.jx);
-		double jy = getSum(grid.jy);
-
-		System.out.println("Total current " + text + ": jx = " + jx + ", jy = " + jy
-				+ " (from " + x1 + ", " + y1 + " to " + x2 + ", " + y2 + ")");
-
-		assertAlmostEquals(text + ", jx", charge * (x2 - x1), jx, ACCURACY_LIMIT);
-		assertAlmostEquals(text + ", jy", charge * (y2 - y1), jy, ACCURACY_LIMIT);
-	}
 
 	private double getSum(double[][] field) {
 		double sum = 0;
@@ -182,6 +229,27 @@ public class CloudInCellTest extends TestCase {
 			}
 		}
 		return sum;
+	}
+	
+	private void checkSign(double[][] field) {
+		double s = 0;
+		for (int i = 0; i < field.length; i++) {
+			for(int j = 0; j < field[0].length; j++) {
+				if(field[i][j] != 0){
+					s = Math.signum(field[i][j]);
+//					System.out.println(s + " " + field[i][j] + " " + i + " " + j);
+				}
+			}
+		}
+		for (int i = 0; i < field.length; i++) {
+			for(int j = 0; j < field[0].length; j++) {
+				if(field[i][j] != 0){
+					if( s != Math.signum(field[i][j])) {
+						assertTrue("wrong sign", false);
+					}
+				}
+			}
+		}
 	}
 
 }

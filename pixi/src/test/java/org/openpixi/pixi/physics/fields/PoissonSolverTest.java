@@ -16,7 +16,9 @@ public class PoissonSolverTest extends TestCase {
 	
 	public void testPointcharge() {
 		
-		Simulation s = InitialConditions.initBasicSimulation();
+		Simulation s = InitialConditions.initEmptySimulation();
+		s.width = 100;
+		s.height = 100;
 		
 		Grid g = new Grid(s);
 		g.numCellsX = 10;
