@@ -20,14 +20,13 @@
 package org.openpixi.pixi.physics;
 
 import java.util.ArrayList;
-import org.openpixi.pixi.physics.boundary.*;
-import org.openpixi.pixi.physics.collision.*;
+import org.openpixi.pixi.physics.boundary.Boundary;
 import org.openpixi.pixi.physics.collision.algorithms.CollisionAlgorithm;
 import org.openpixi.pixi.physics.collision.detectors.Detector;
-import org.openpixi.pixi.physics.fields.*;
-import org.openpixi.pixi.physics.force.*;
-import org.openpixi.pixi.physics.grid.*;
-import org.openpixi.pixi.physics.solver.*;
+import org.openpixi.pixi.physics.force.CombinedForce;
+import org.openpixi.pixi.physics.grid.Grid;
+import org.openpixi.pixi.physics.solver.EmptySolver;
+import org.openpixi.pixi.physics.solver.Solver;
 
 public class Simulation {
 	
