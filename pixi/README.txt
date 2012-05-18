@@ -47,8 +47,14 @@ DEVELOP IN ECLIPSE
 
 To launch Pixi in Eclipse ( http://www.eclipse.org/ ) do the following:
 
-1) Menu > File > Import > Select root directory ..../pixi
-2) Menu > Run > Run.
+1) Clone the GitHub repository to a local folder with
+	cd "path to local folder"
+	git clone git://github.com/openpixi/openpixi.git
+2) Open Eclipse and go to Help > Install New Software
+3) Choose "All Available Sites" from the dropdown menu
+4) Search for "maven", choose the desired result and press finish
+5) File > Import > Maven > Existing Maven Projects
+6) Select the local folder that you have chosen previously
 
 
 VERSION HISTORY
