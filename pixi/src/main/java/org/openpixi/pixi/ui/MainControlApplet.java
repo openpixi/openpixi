@@ -25,6 +25,7 @@ import java.awt.event.*;
 import javax.swing.event.*;
 
 import org.openpixi.pixi.physics.Debug;
+import org.openpixi.pixi.physics.InitialConditions;
 import org.openpixi.pixi.physics.boundary.*;
 import org.openpixi.pixi.physics.collision.detectors.*;
 import org.openpixi.pixi.physics.force.*;
@@ -797,6 +798,7 @@ public class MainControlApplet extends JApplet {
 		collisionDetector.setSelectedIndex(0);
 		collisionAlgorithm.setSelectedIndex(0);
 		linkConstantForce();
+		particlePanel.resetAnimation((int)initComboBox.getSelectedIndex()); 
 	}
 	
 	@Override
