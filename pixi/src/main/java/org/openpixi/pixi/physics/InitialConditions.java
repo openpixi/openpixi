@@ -22,6 +22,8 @@ package org.openpixi.pixi.physics;
 import java.util.ArrayList;
 
 import org.openpixi.pixi.physics.boundary.*;
+import org.openpixi.pixi.physics.collision.algorithms.SimpleCollision;
+import org.openpixi.pixi.physics.collision.detectors.AllParticles;
 import org.openpixi.pixi.physics.force.*;
 import org.openpixi.pixi.physics.grid.*;
 import org.openpixi.pixi.physics.solver.*;
@@ -83,7 +85,7 @@ public class InitialConditions {
 		s.prepareAllParticles();
 		
 		s.boundary = new HardWallBoundary(s);
-				
+
 		return s;
 	}
 	
