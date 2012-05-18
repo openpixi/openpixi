@@ -18,7 +18,7 @@
  */
 package org.openpixi.pixi.physics;
 
-	
+
 public class Particle{
 
 	/** x-coordinate */
@@ -26,7 +26,7 @@ public class Particle{
 
 	/** y-coordinate */
 	private double y;
-	
+
 	/** radius of particle */
 	private double radius;
 
@@ -47,20 +47,20 @@ public class Particle{
 
 	/** electric charge of the particle */
 	private double charge;
-	
+
 	/**previous x position of particle*/
 	private double prevX;
 	/**previous y position of particle*/
 	private double prevY;
-	
+
 	/**charge density of particle for a specific form factor*/
 	private double chargedensity;
-	
+
 	private double Ex;
 	private double Ey;
 	private double Bz;
-	
-	
+
+
 	public double getX() {
 		return x;
 	}
@@ -180,12 +180,12 @@ public class Particle{
 	public void setBz(double Bz) {
 		this.Bz = Bz;
 	}
-	
-	
+
+
 	/** Empty constructor */
 	public Particle() {
-	}	
-	
+	}
+
 	/** Copy constructor */
 	public Particle(Particle p) {
 		x = p.x;
@@ -197,9 +197,9 @@ public class Particle{
 		ay = p.ay;
 		mass = p.mass;
 		charge = p.charge;
-	}		
+	}
 
-	
+
 	public void storePosition() {
 		prevX = x;
 		prevY = y;
