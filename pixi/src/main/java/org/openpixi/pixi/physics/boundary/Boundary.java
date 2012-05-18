@@ -44,7 +44,7 @@ public class Boundary {
 		this.ymax = ymax;
 	}
 
-	public void check(Particle2D particle, Force f, Solver s, double step) {
+	public void check(Particle particle, Force f, Solver s, double step) {
 		
 	}
 }

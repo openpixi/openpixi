@@ -39,19 +39,19 @@ public class LeapFrog implements Solver{
 	 * @param p before the update: x(t), v(t+dt/2), a(t);
 	 *                 after the update: x(t+dt), v(t+3*dt/2), a(t+dt)
 	 */
-	public void step(Particle2D p, Force f, double dt) {
+	public void step(Particle p, Force f, double dt) {
 		// x(t+dt) = x(t) + v(t+dt/2)*dt
-		p.x += p.vx * dt;
-		p.y += p.vy * dt;
+		p.setX(p.getX() + p.getVx() * dt);
+		p.setY(p.getY() + p.getVy() * dt);
 
 		// a(t+dt) = F(v(t+dt/2), x(t+dt)) / m
 		// WARNING: Force is evaluated at two different times t+dt/2 and t+dt!
-		p.ax = f.getForceX(p) / p.mass;
-		p.ay = f.getForceY(p) / p.mass;
+		p.setAx(f.getForceX(p) / p.getMass());
+		p.setAy(f.getForceY(p) / p.getMass());
 
 		// v(t+3*dt/2) = v(t+dt/2) + a(t+dt)*dt
-		p.vx += p.ax * dt;
-		p.vy += p.ay * dt;
+		p.setVx(p.getVx() + p.getAx() * dt);
+		p.setVy(p.getVy() + p.getAy() * dt);
 		
 	}
 	/**
@@ -59,26 +59,26 @@ public class LeapFrog implements Solver{
 	 * @param p before the update: v(t);
 	 *                 after the update: v(t+dt/2)
 	 */
-	public void prepare(Particle2D p, Force f, double dt)
+	public void prepare(Particle p, Force f, double dt)
 	{
 		//a(t) = F(v(t), x(t)) / m
-		p.ax = f.getForceX(p) / p.mass;
-		p.ay = f.getForceY(p) / p.mass;
+		p.setAx(f.getForceX(p) / p.getMass());
+		p.setAy(f.getForceY(p) / p.getMass());
 		
 		//v(t + dt / 2) = v(t) + a(t)*dt / 2
-		p.vx += p.ax * dt / 2;
-		p.vy += p.ay * dt / 2;
+		p.setVx(p.getVx() + p.getAx() * dt / 2);
+		p.setVy(p.getVy() + p.getAy() * dt / 2);
 	}
 	/**
 	 * complete method for bringing the velocity in the desired half step
 	 * @param p before the update: v(t+dt/2);
 	 *                 after the update: v(t)
 	 */
-	public void complete(Particle2D p, Force f, double dt)
+	public void complete(Particle p, Force f, double dt)
 	{
 		//v(t) = v(t + dt / 2) - a(t)*dt / 2
-		p.vx -= p.ax * dt / 2;
-		p.vy -= p.ay * dt / 2;
+		p.setVx(p.getVx() - p.getAx() * dt / 2);
+		p.setVy(p.getVy() - p.getAy() * dt / 2);
 	}
 
 }

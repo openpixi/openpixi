@@ -13,7 +13,7 @@ import java.util.Map.Entry;
 
 public class SweepAndPrune extends Detector{
 	
-	private ArrayList<Pair<Particle2D, Particle2D>> overlappedPairs = new ArrayList<Pair<Particle2D, Particle2D>>();
+	private ArrayList<Pair<Particle, Particle>> overlappedPairs = new ArrayList<Pair<Particle, Particle>>();
 
 	private ArrayList<BoundingBox> boxlist = new ArrayList<BoundingBox>();
 	
@@ -28,7 +28,7 @@ public class SweepAndPrune extends Detector{
 			new HashMap<Pair<BoundingBox, BoundingBox>, OverlapCounter>();
 	
 	//constructor
-	public SweepAndPrune(ArrayList<Particle2D> parlist) {
+	public SweepAndPrune(ArrayList<Particle> parlist) {
 		
 		boxlist.clear();
 		axisX.clear();
@@ -38,7 +38,7 @@ public class SweepAndPrune extends Detector{
 		overlapCounter.clear();
 		
 		for(int i = 0; i < parlist.size(); i++) {
-			Particle2D par = (Particle2D) parlist.get(i);
+			Particle par = (Particle) parlist.get(i);
 			BoundingBox box = new BoundingBox(par);
 		
 			if(!boxlist.contains(box)) {
@@ -135,14 +135,14 @@ public class SweepAndPrune extends Detector{
 		}
 	}
 	
-	public ArrayList<Pair<Particle2D, Particle2D>> getOverlappedPairs() {
+	public ArrayList<Pair<Particle, Particle>> getOverlappedPairs() {
 		
 		overlappedPairs.clear();
 		
 		for(int i = 0; i < overlaps.size(); i++) {
 			BoundingBox box1 = (BoundingBox) overlaps.get(i).getFirst();
 			BoundingBox box2 = (BoundingBox) overlaps.get(i).getSecond();
-			Pair<Particle2D, Particle2D> pairpar = new Pair<Particle2D, Particle2D>(box1.particle, box2.particle);
+			Pair<Particle, Particle> pairpar = new Pair<Particle, Particle>(box1.particle, box2.particle);
 			overlappedPairs.add(pairpar);
 		}
 		return overlappedPairs;
