@@ -19,7 +19,7 @@
 //First I would like to start with very simple class Force.java, so we could see the graphic result.
 package org.openpixi.pixi.physics.force;
 
-import org.openpixi.pixi.physics.Particle2D;
+import org.openpixi.pixi.physics.Particle;
 
 public interface Force {
 
@@ -30,7 +30,7 @@ public interface Force {
 	 * getNormalVelocityComponentofForceX(p) +
 	 * getTangentVelocityComponentOfForceX(p).
 	 */
-	public double getForceX(Particle2D p);
+	public double getForceX(Particle p);
 
 	/**
 	 * Total force in the y-direction.
@@ -39,17 +39,17 @@ public interface Force {
 	 * getNormalVelocityComponentofForceY(p) +
 	 * getTangentVelocityComponentOfForceY(p).
 	 */
-	public double getForceY(Particle2D p);
+	public double getForceY(Particle p);
 
 	/**
 	 * Position dependent component of the force in x-direction.
 	 */
-	public double getPositionComponentofForceX(Particle2D p);
+	public double getPositionComponentofForceX(Particle p);
 
 	/**
 	 * Position dependent component of the force in y-direction.
 	 */
-	public double getPositionComponentofForceY(Particle2D p);
+	public double getPositionComponentofForceY(Particle p);
 
 	/**
 	 * Velocity dependent component of the force in the propagating direction of
@@ -57,7 +57,7 @@ public interface Force {
 	 *
 	 * This should always equal -getLinearDragCoefficient(p) * p.vx.
 	 */
-	public double getTangentVelocityComponentOfForceX(Particle2D p);
+	public double getTangentVelocityComponentOfForceX(Particle p);
 
 	/**
 	 * Velocity dependent component of the force in the propagating direction of
@@ -68,7 +68,7 @@ public interface Force {
 	 * @param p
 	 * @return
 	 */
-	public double getTangentVelocityComponentOfForceY(Particle2D p);
+	public double getTangentVelocityComponentOfForceY(Particle p);
 
 	/**
 	 * Velocity dependent component of the force orthogonal to the propagating
@@ -79,7 +79,7 @@ public interface Force {
 	 * @param p
 	 * @return
 	 */
-	public double getNormalVelocityComponentofForceX(Particle2D p);
+	public double getNormalVelocityComponentofForceX(Particle p);
 
 	/**
 	 * 
@@ -91,17 +91,17 @@ public interface Force {
 	 * @param p
 	 * @return
 	 */
-	public double getNormalVelocityComponentofForceY(Particle2D p);
+	public double getNormalVelocityComponentofForceY(Particle p);
 
 	/**
 	 * Magnetic field the particle is exposed to.
 	 */
-	public double getBz(Particle2D p);
+	public double getBz(Particle p);
 
 	/**
 	 * Drag coefficient for a drag term that is linear in the velocity of the
 	 * particle.
 	 */
-	public double getLinearDragCoefficient(Particle2D p);
+	public double getLinearDragCoefficient(Particle p);
 
 }

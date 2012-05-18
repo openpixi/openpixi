@@ -39,7 +39,7 @@ public class LeapFrog implements Solver{
 	 * @param p before the update: x(t), v(t+dt/2), a(t);
 	 *                 after the update: x(t+dt), v(t+3*dt/2), a(t+dt)
 	 */
-	public void step(Particle2D p, Force f, double dt) {
+	public void step(Particle p, Force f, double dt) {
 		// x(t+dt) = x(t) + v(t+dt/2)*dt
 		p.x += p.vx * dt;
 		p.y += p.vy * dt;
@@ -59,7 +59,7 @@ public class LeapFrog implements Solver{
 	 * @param p before the update: v(t);
 	 *                 after the update: v(t+dt/2)
 	 */
-	public void prepare(Particle2D p, Force f, double dt)
+	public void prepare(Particle p, Force f, double dt)
 	{
 		//a(t) = F(v(t), x(t)) / m
 		p.ax = f.getForceX(p) / p.mass;
@@ -74,7 +74,7 @@ public class LeapFrog implements Solver{
 	 * @param p before the update: v(t+dt/2);
 	 *                 after the update: v(t)
 	 */
-	public void complete(Particle2D p, Force f, double dt)
+	public void complete(Particle p, Force f, double dt)
 	{
 		//v(t) = v(t + dt / 2) - a(t)*dt / 2
 		p.vx -= p.ax * dt / 2;

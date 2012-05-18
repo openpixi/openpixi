@@ -21,7 +21,7 @@ package org.openpixi.pixi.physics.grid;
 import java.util.ArrayList;
 
 import org.openpixi.pixi.physics.Debug;
-import org.openpixi.pixi.physics.Particle2D;
+import org.openpixi.pixi.physics.Particle;
 import org.openpixi.pixi.physics.Simulation;
 import org.openpixi.pixi.physics.fields.*;
 import org.openpixi.pixi.physics.force.SimpleGridForce;
@@ -80,7 +80,7 @@ public class SimpleGrid extends Grid {
 		cellWidth = width / (numCellsX - 3);
 		cellHeight = height / (numCellsY - 3);
 		
-		for (Particle2D p: simulation.particles){
+		for (Particle p: simulation.particles){
 			//assuming rectangular particle shape i.e. area weighting
 			p.data.chargedensity = p.charge / (cellWidth * cellHeight);
 		}
@@ -88,7 +88,7 @@ public class SimpleGrid extends Grid {
 		//include updateGrid() and the first calculation of Fields here
 	}
 	
-	public void updateGrid(ArrayList<Particle2D> particles)
+	public void updateGrid(ArrayList<Particle> particles)
 	{
 		reset();
 		interp.interpolateToGrid(particles);

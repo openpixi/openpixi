@@ -36,7 +36,7 @@ public class Euler implements Solver {
 	 * @param p before the update: x(t), v(t), a(t);
 	 *                 after the update: x(t+dt), v(t+dt), a(t);
 	 */
-	public void step(Particle2D p, Force f, double step)
+	public void step(Particle p, Force f, double step)
 	{
 		//a(t) = F(v(t), x(t)) / m
 		p.ax = f.getForceX(p) / p.mass;
@@ -52,9 +52,9 @@ public class Euler implements Solver {
 
 	}
 
-	public void prepare(Particle2D p, Force f, double step) {
+	public void prepare(Particle p, Force f, double step) {
 	}
 
-	public void complete(Particle2D p, Force f, double step){
+	public void complete(Particle p, Force f, double step){
 	}
 }

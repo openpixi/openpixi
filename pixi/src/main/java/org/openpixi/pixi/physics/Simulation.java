@@ -40,7 +40,7 @@ public class Simulation {
 	public double c;
 
 	/**Contains all Particle2D objects*/
-	public ArrayList<Particle2D> particles;
+	public ArrayList<Particle> particles;
 	public CombinedForce f;
 	public Boundary boundary;
 	/**Solver for the particle equations of motion*/
@@ -62,7 +62,7 @@ public class Simulation {
 		width = 0;
 		height = 0;
 		
-		particles = new ArrayList<Particle2D>(0);
+		particles = new ArrayList<Particle>(0);
 		f = new CombinedForce();		
 		
 		psolver = new EmptySolver();
@@ -90,20 +90,20 @@ public class Simulation {
 	}
 	
 	public void particlePush() {
-		for (Particle2D p : particles) {
+		for (Particle p : particles) {
 			psolver.step(p, f, tstep);
 			boundary.check(p, f, psolver, tstep);
 		}		
 	}
 	
 	public void prepareAllParticles() {
-		for (Particle2D p : particles) {
+		for (Particle p : particles) {
 			psolver.prepare(p, f, tstep);
 		}
 	}
 
 	public void completeAllParticles() {
-		for (Particle2D p : particles) {
+		for (Particle p : particles) {
 			psolver.complete(p, f, tstep);
 		}
 	}

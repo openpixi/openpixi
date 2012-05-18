@@ -91,7 +91,7 @@ public class Particle2DPanel extends JPanel {
 			repaint();
 			if(writePosition)
 			{
-				Particle2D par = (Particle2D) s.particles.get(0);
+				Particle par = (Particle) s.particles.get(0);
 				System.out.println(par.x + " " + par.y);
 				file.writeFile(fileName, fileDirectory, par.x + " " + par.y);
 			}
@@ -198,7 +198,7 @@ public class Particle2DPanel extends JPanel {
 				}
 			}
 			//clears Particle2DData variable
-			for (Particle2D p : s.particles) {
+			for (Particle p : s.particles) {
 				p.data = null;
 			}
 		}
@@ -215,7 +215,7 @@ public class Particle2DPanel extends JPanel {
 			//force.drag = 0.08;
 			s.f.add(force);
 			InitialConditions.createRandomParticles(s.width, s.height, s.c, 1, 10);
-			Particle2D par = (Particle2D) s.particles.get(0);
+			Particle par = (Particle) s.particles.get(0);
 			par.x = this.getWidth() * 0.5;
 			par.y = this.getHeight() * 0.5;
 			//System.out.println(this.getWidth() * 0.5 + " x0");
@@ -398,7 +398,7 @@ public class Particle2DPanel extends JPanel {
 		
 		//if(!drawCurrentGrid) {
 		for (int i = 0; i < s.particles.size(); i++) {
-			Particle2D par = (Particle2D) s.particles.get(i);
+			Particle par = (Particle) s.particles.get(i);
 			if (par.charge > 0) {
 				graph.setColor(Color.blue);
 			} else {

@@ -63,7 +63,7 @@ public class YeeGrid extends Grid {
 		cellWidth = width / numCellsX;
 		cellHeight = height / numCellsY;
 		
-		for (Particle2D p: simulation.particles){
+		for (Particle p: simulation.particles){
 			//assuming rectangular particle shape i.e. area weighting
 			p.data.chargedensity = p.charge / (cellWidth * cellHeight);
 		}
@@ -71,7 +71,7 @@ public class YeeGrid extends Grid {
 		//include updateGrid() and the first calculation of Fields here
 	}
 	
-	public void updateGrid(ArrayList<Particle2D> particles) {
+	public void updateGrid(ArrayList<Particle> particles) {
 		
 		reset();
 		interp.interpolateToGrid(particles);

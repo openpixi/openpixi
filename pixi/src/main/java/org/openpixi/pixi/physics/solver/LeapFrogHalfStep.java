@@ -18,7 +18,7 @@
  */
 package org.openpixi.pixi.physics.solver;
 
-import org.openpixi.pixi.physics.Particle2D;
+import org.openpixi.pixi.physics.Particle;
 import org.openpixi.pixi.physics.force.Force;
 
 /**This class represents the LeapFrog algorithm and the equations that are used one can be find here:
@@ -32,7 +32,7 @@ public class LeapFrogHalfStep implements Solver{
 	{
 		super();
 	}
-	public void step(Particle2D p, Force f, double dt) {
+	public void step(Particle p, Force f, double dt) {
 		
 		/**
 		 * LeapFrog algorithm.
@@ -60,9 +60,9 @@ public class LeapFrogHalfStep implements Solver{
 		
 	}
 
-	public void prepare(Particle2D p, Force f, double step) {
+	public void prepare(Particle p, Force f, double step) {
 	}
 
-	public void complete(Particle2D p, Force f, double step){
+	public void complete(Particle p, Force f, double step){
 	}
 }

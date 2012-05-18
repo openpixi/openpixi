@@ -40,7 +40,7 @@ public class LeapFrogRelativistic implements Solver{
 	 * @param p before the update: x(t), v(t+dt/2), a(t);
 	 *                 after the update: x(t+dt), v(t+3*dt/2), a(t+dt)
 	 */
-	public void step(Particle2D p, Force f, double dt) {
+	public void step(Particle p, Force f, double dt) {
 		double v = Math.sqrt(p.vx * p.vx + p.vy * p.vy);
 		double gamma = Math.sqrt(1 / (1 - (v / ConstantsSI.c) * (v / ConstantsSI.c)));
 		
@@ -63,7 +63,7 @@ public class LeapFrogRelativistic implements Solver{
 	 * @param p before the update: v(t);
 	 *                 after the update: v(t+dt/2)
 	 */
-	public void prepare(Particle2D p, Force f, double dt)
+	public void prepare(Particle p, Force f, double dt)
 	{
 		//a(t) = F(v(t), x(t)) / m
 		p.ax = f.getForceX(p) / p.mass;
@@ -78,7 +78,7 @@ public class LeapFrogRelativistic implements Solver{
 	 * @param p before the update: v(t+dt/2);
 	 *                 after the update: v(t)
 	 */
-	public void complete(Particle2D p, Force f, double dt)
+	public void complete(Particle p, Force f, double dt)
 	{
 		//v(t) = v(t + dt / 2) - a(t)*dt / 2
 		p.vx -= p.ax * dt;

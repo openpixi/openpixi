@@ -1,6 +1,6 @@
 package org.openpixi.pixi.physics.force.relativistic;
 
-import org.openpixi.pixi.physics.Particle2D;
+import org.openpixi.pixi.physics.Particle;
 import org.openpixi.pixi.physics.ConstantsSI;
 import org.openpixi.pixi.physics.force.ConstantForce;
 
@@ -27,7 +27,7 @@ public class ConstantForceRelativistic extends ConstantForce {
 	
 	//getting the force in the x - direction
 	@Override
-	public double getForceX(Particle2D p) {
+	public double getForceX(Particle p) {
 		double v = Math.sqrt(p.vx * p.vx + p.vy * p.vy);
 		double gamma = Math.sqrt(1 / (1 - (v / ConstantsSI.c) * (v / ConstantsSI.c)));
 		
@@ -40,7 +40,7 @@ public class ConstantForceRelativistic extends ConstantForce {
 	
 	//getting the force in the y - direction
 	@Override
-	public double getForceY(Particle2D p) {
+	public double getForceY(Particle p) {
 		double v = Math.sqrt(p.vx * p.vx + p.vy * p.vy);
 		double gamma = Math.sqrt(1 / (1 - (v / ConstantsSI.c) * (v / ConstantsSI.c)));
 		
@@ -52,17 +52,17 @@ public class ConstantForceRelativistic extends ConstantForce {
 	}
 
 	@Override
-	public double getPositionComponentofForceX(Particle2D p) {
+	public double getPositionComponentofForceX(Particle p) {
 		return p.mass * gx + p.charge * ex;
 	}
 
 	@Override
-	public double getPositionComponentofForceY(Particle2D p) {
+	public double getPositionComponentofForceY(Particle p) {
 		return p.mass * gy + p.charge * ey;
 	}
 
 	@Override
-	public double getTangentVelocityComponentOfForceX(Particle2D p) {
+	public double getTangentVelocityComponentOfForceX(Particle p) {
 		double v = Math.sqrt(p.vx * p.vx + p.vy * p.vy);
 		double gamma = Math.sqrt(1 / (1 - (v / ConstantsSI.c) * (v / ConstantsSI.c)));
 		
@@ -72,7 +72,7 @@ public class ConstantForceRelativistic extends ConstantForce {
 	}
 
 	@Override
-	public double getTangentVelocityComponentOfForceY(Particle2D p) {
+	public double getTangentVelocityComponentOfForceY(Particle p) {
 		double v = Math.sqrt(p.vx * p.vx + p.vy * p.vy);
 		double gamma = Math.sqrt(1 / (1 - (v / ConstantsSI.c) * (v / ConstantsSI.c)));
 		
@@ -82,7 +82,7 @@ public class ConstantForceRelativistic extends ConstantForce {
 	}
 
 	@Override
-	public double getNormalVelocityComponentofForceX(Particle2D p) {
+	public double getNormalVelocityComponentofForceX(Particle p) {
 		double v = Math.sqrt(p.vx * p.vx + p.vy * p.vy);
 		double gamma = Math.sqrt(1 / (1 - (v / ConstantsSI.c) * (v / ConstantsSI.c)));
 		
@@ -92,7 +92,7 @@ public class ConstantForceRelativistic extends ConstantForce {
 	}
 
 	@Override
-	public double getNormalVelocityComponentofForceY(Particle2D p) {
+	public double getNormalVelocityComponentofForceY(Particle p) {
 		double v = Math.sqrt(p.vx * p.vx + p.vy * p.vy);
 		double gamma = Math.sqrt(1 / (1 - (v / ConstantsSI.c) * (v / ConstantsSI.c)));
 		
@@ -102,12 +102,12 @@ public class ConstantForceRelativistic extends ConstantForce {
 	}
 
 	@Override
-	public double getBz(Particle2D p) {
+	public double getBz(Particle p) {
 		return bz;
 	}
 
 	@Override
-	public double getLinearDragCoefficient(Particle2D p) {
+	public double getLinearDragCoefficient(Particle p) {
 		return drag;
 	}
 	

@@ -3,7 +3,7 @@ package org.openpixi.pixi.physics.grid;
 import junit.framework.TestCase;
 
 import org.openpixi.pixi.physics.InitialConditions;
-import org.openpixi.pixi.physics.Particle2D;
+import org.openpixi.pixi.physics.Particle;
 import org.openpixi.pixi.physics.Simulation;
 import org.openpixi.pixi.physics.boundary.*;
 import org.openpixi.pixi.physics.force.*;
@@ -90,7 +90,7 @@ public class CloudInCellTest extends TestCase {
 		s.boundary = new PeriodicBoundary(s);
 
 		// Add single particle
-		Particle2D p = new Particle2D();
+		Particle p = new Particle();
 		p.x = x1;
 		p.y = y1;
 		p.vx = (x2 - x1) / s.tstep;
@@ -168,7 +168,7 @@ Simulation s = InitialConditions.initEmptySimulation();
 		s.boundary = new PeriodicBoundary(s);
 
 		// Add single particle
-		Particle2D p = new Particle2D();
+		Particle p = new Particle();
 		p.x = x1;
 		p.y = y1;
 		p.vx = vx;

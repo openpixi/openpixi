@@ -39,7 +39,7 @@ public class LeapFrogDamped implements Solver{
 	 * @param p before the update: x(t), v(t+dt/2), a(t);
 	 *                 after the update: x(t+dt), v(t+3*dt/2), a(t+dt)
 	 */
-	public void step(Particle2D p, Force f, double dt) {
+	public void step(Particle p, Force f, double dt) {
 		
 		//help coefficients for the dragging
 		double help1_coef = 1 - f.getLinearDragCoefficient(p) * dt / (2 * p.mass);
@@ -65,7 +65,7 @@ public class LeapFrogDamped implements Solver{
 	 * @param p before the update: v(t);
 	 *                 after the update: v(t+dt/2)
 	 */
-	public void prepare(Particle2D p, Force f, double dt)
+	public void prepare(Particle p, Force f, double dt)
 	{
 		double help1_coef = 1 - f.getLinearDragCoefficient(p) * dt / (2 * p.mass);
 		double help2_coef = 1 + f.getLinearDragCoefficient(p) * dt / (2 * p.mass);
@@ -84,7 +84,7 @@ public class LeapFrogDamped implements Solver{
 	 * @param p before the update: v(t+dt/2);
 	 *                 after the update: v(t)
 	 */
-	public void complete(Particle2D p, Force f, double dt)
+	public void complete(Particle p, Force f, double dt)
 	{
 		double help1_coef = 1 - f.getLinearDragCoefficient(p) * dt / (2 * p.mass);
 		double help2_coef = 1 + f.getLinearDragCoefficient(p) * dt / (2 * p.mass);

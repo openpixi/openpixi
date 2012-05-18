@@ -2,7 +2,7 @@ package org.openpixi.pixi.physics.collision.algorithms;
 
 import java.util.ArrayList;
 
-import org.openpixi.pixi.physics.Particle2D;
+import org.openpixi.pixi.physics.Particle;
 import org.openpixi.pixi.physics.collision.util.Pair;
 import org.openpixi.pixi.physics.force.Force;
 import org.openpixi.pixi.physics.solver.Solver;
@@ -14,7 +14,7 @@ public class VectorTransformation extends CollisionAlgorithm{
 		super();
 	}		
 		
-	private void doCollision(Particle2D p1, Particle2D p2) {
+	private void doCollision(Particle p1, Particle p2) {
 		
 		//distance between the particles
 		double distance = Math.sqrt((p1.x - p2.x) * (p1.x - p2.x) + (p1.y - p2.y) * (p1.y - p2.y));
@@ -62,11 +62,11 @@ public class VectorTransformation extends CollisionAlgorithm{
 				2 * p1.mass * Math.sqrt(v1NX * v1NX + v1NY * v1NY)) / (p1.mass + p2.mass);
 	}
 	
-	public void collide(ArrayList<Pair<Particle2D, Particle2D>> pairs, Force f, Solver s, double step) {
+	public void collide(ArrayList<Pair<Particle, Particle>> pairs, Force f, Solver s, double step) {
 		
 		for(int i = 0; i < pairs.size(); i++) {
-			Particle2D p1 = (Particle2D) pairs.get(i).getFirst();
-			Particle2D p2 = (Particle2D) pairs.get(i).getSecond();
+			Particle p1 = (Particle) pairs.get(i).getFirst();
+			Particle p2 = (Particle) pairs.get(i).getSecond();
 		
 			double distanceSquare = ((p1.x - p2.x) * (p1.x - p2.x) + (p1.y - p2.y) * (p1.y - p2.y));
 			if(distanceSquare <= ((p1.radius + p2.radius) * (p1.radius + p2.radius))) {

@@ -192,7 +192,7 @@ public class InitialConditions {
 		s.particles.clear();
 		
 		for (int k = 0; k < count; k++) {
-			Particle2D par = new Particle2D();
+			Particle par = new Particle();
 			par.x = s.width * Math.random();
 			par.y = s.height * Math.random();
 			par.radius = 15;
@@ -226,12 +226,12 @@ public class InitialConditions {
 	 * @param radius	particle radius
 	 * @return ArrayList of Particle2D
 	 */
-	public static ArrayList<Particle2D> createRandomParticles(double width, double height, double maxspeed, int count, double radius) {
+	public static ArrayList<Particle> createRandomParticles(double width, double height, double maxspeed, int count, double radius) {
 		
-		ArrayList<Particle2D> particlelist = new ArrayList<Particle2D>(count);
+		ArrayList<Particle> particlelist = new ArrayList<Particle>(count);
 		
 		for (int k = 0; k < count; k++) {
-			Particle2D p = new Particle2D();
+			Particle p = new Particle();
 			p.x = width * Math.random();
 			p.y = height * Math.random();
 			p.radius = radius;

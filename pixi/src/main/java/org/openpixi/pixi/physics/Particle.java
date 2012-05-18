@@ -22,7 +22,7 @@ import java.lang.Math;
 import org.openpixi.pixi.physics.grid.Particle2DData;
 
 	
-public class Particle2D{
+public class Particle{
 
 	/** x-coordinate */
 	public double x;
@@ -54,11 +54,11 @@ public class Particle2D{
 	public Particle2DData data;
 
 	/** Empty constructor */
-	public Particle2D() {
+	public Particle() {
 	}
 
 	/** Copy constructor */
-	public Particle2D(Particle2D p) {
+	public Particle(Particle p) {
 		x = p.x;
 		y = p.y;
 		radius = p.radius;
@@ -78,7 +78,7 @@ public class Particle2D{
 	
 	
 	//a method that calculates the range between two particles in 2-dim
-	public double rangeBetween2D(Particle2D a)
+	public double rangeBetween2D(Particle a)
 	{
 		double range;
 		range = Math.pow(this.x - a.x, 2) + Math.pow(this.y - this.y, 2);

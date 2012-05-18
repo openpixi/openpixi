@@ -3,7 +3,7 @@ package org.openpixi.pixi.physics.grid;
 import java.util.ArrayList;
 
 import org.openpixi.pixi.physics.Debug;
-import org.openpixi.pixi.physics.Particle2D;
+import org.openpixi.pixi.physics.Particle;
 
 public class CloudInCell extends Interpolator {
 	
@@ -13,9 +13,9 @@ public class CloudInCell extends Interpolator {
 	
 	}
 	
-	public void interpolateToGrid(ArrayList<Particle2D> particles) {
+	public void interpolateToGrid(ArrayList<Particle> particles) {
 		
-		for(Particle2D p : particles)
+		for(Particle p : particles)
 		{
 			int xCellPosition = (int) (Math.floor((p.x / g.cellWidth + 1)));
 			int yCellPosition = (int) (Math.floor((p.y / g.cellHeight + 1)));
@@ -63,11 +63,11 @@ public class CloudInCell extends Interpolator {
 		
 	}
 
-	public void interpolateToParticle(ArrayList<Particle2D> particles) {
+	public void interpolateToParticle(ArrayList<Particle> particles) {
 		
 		for (int i = 0; i < particles.size(); i++) {
 			
-		Particle2D p = g.simulation.particles.get(i);
+		Particle p = g.simulation.particles.get(i);
 		int xCellPosition = (int) Math.floor(p.x / g.cellWidth + 1);
 		int yCellPosition = (int) Math.floor(p.y / g.cellHeight + 1);
 		

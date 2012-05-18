@@ -12,7 +12,7 @@ public class Interpolator {
 		
 		this.g = g;
 		
-		for (Particle2D p: g.simulation.particles){
+		for (Particle p: g.simulation.particles){
 			p.data = new Particle2DData();
 			//assuming rectangular particle shape i.e. area weighting
 			p.data.chargedensity = p.charge / (g.cellWidth * g.cellHeight);
@@ -22,15 +22,15 @@ public class Interpolator {
 		
 	}
 	
-	public void interpolateToGrid(ArrayList<Particle2D> particles) {
+	public void interpolateToGrid(ArrayList<Particle> particles) {
 		
 	}
 	
-	public void interpolateToParticle(ArrayList<Particle2D> particles) {
+	public void interpolateToParticle(ArrayList<Particle> particles) {
 		
 		for (int i = 0; i < particles.size(); i++) {
 			
-		Particle2D p = g.simulation.particles.get(i);
+		Particle p = g.simulation.particles.get(i);
 		int xCellPosition = (int) Math.floor(p.x / g.cellWidth);
 		int yCellPosition = (int) Math.floor(p.y / g.cellHeight);
 		

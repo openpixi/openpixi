@@ -3,7 +3,7 @@ package org.openpixi.pixi.physics.grid;
 import java.util.ArrayList;
 
 import org.openpixi.pixi.physics.Debug;
-import org.openpixi.pixi.physics.Particle2D;
+import org.openpixi.pixi.physics.Particle;
 
 public class ChargeConservingAreaWeighting extends Interpolator {
 	
@@ -13,12 +13,12 @@ public class ChargeConservingAreaWeighting extends Interpolator {
 
 	}
 	
-	public void interpolateToGrid(ArrayList<Particle2D> particles) {
+	public void interpolateToGrid(ArrayList<Particle> particles) {
 		
 		//assuming rectangular particle shape i.e. area weighting
 		for (int i = 0; i < particles.size(); i++) {
 			
-			Particle2D p = particles.get(i);
+			Particle p = particles.get(i);
 			
 			//local origin i.e. nearest grid point BEFORE particle push
 			int xStart = (int) Math.floor(p.data.x / g.cellWidth + 0.5);
@@ -76,7 +76,7 @@ public class ChargeConservingAreaWeighting extends Interpolator {
 	 * @param data Particle2DData
 	 */
 	private void fourBoundaryMove(int lx, int ly, double x, double y, 
-			double deltaX, double deltaY, Particle2D p) {
+			double deltaX, double deltaY, Particle p) {
 		
 		int lxm = lx - 1;
 		int lym = ly - 1;
@@ -113,7 +113,7 @@ public class ChargeConservingAreaWeighting extends Interpolator {
 	}
 	
 	private void sevenBoundaryMove(int xStart, int yStart, int xEnd, int yEnd, 
-			double deltaX, double deltaY, Particle2D p) {
+			double deltaX, double deltaY, Particle p) {
 		
 		/**local x coordinate BEFORE particle push*/
 		double x = p.data.x - xStart * g.cellWidth;
@@ -182,7 +182,7 @@ public class ChargeConservingAreaWeighting extends Interpolator {
 	}
 	
 	private void tenBoundaryMove (int xStart, int yStart, int xEnd, int yEnd, 
-			double deltaX, double deltaY, Particle2D p) {
+			double deltaX, double deltaY, Particle p) {
 		
 		/**local x coordinate BEFORE particle push*/
 		double x = p.data.x - xStart * g.cellWidth;

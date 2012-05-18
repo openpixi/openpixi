@@ -38,7 +38,7 @@ public class SemiImplicitEulerRelativistic implements Solver {
 	 * @param p before the update: x(t), v(t), a(t);
 	 *                 after the update: x(t+dt), v(t+dt), a(t);
 	 */
-	public void step(Particle2D p, Force f, double step)
+	public void step(Particle p, Force f, double step)
 	{
 		double v = Math.sqrt(p.vx * p.vx + p.vy * p.vy);
 		double gamma = Math.sqrt(1 / (1 - (v / ConstantsSI.c) * (v / ConstantsSI.c)));
@@ -57,9 +57,9 @@ public class SemiImplicitEulerRelativistic implements Solver {
 		
 	}
 
-	public void prepare(Particle2D p, Force f, double step) {
+	public void prepare(Particle p, Force f, double step) {
 	}
 
-	public void complete(Particle2D p, Force f, double step){
+	public void complete(Particle p, Force f, double step){
 	}
 }

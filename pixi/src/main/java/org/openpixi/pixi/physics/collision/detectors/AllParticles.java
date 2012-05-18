@@ -6,15 +6,15 @@ import org.openpixi.pixi.physics.collision.util.Pair;
 
 public class AllParticles extends Detector{
 	
-	private ArrayList<Pair<Particle2D, Particle2D>> overlappedPairs = new ArrayList<Pair<Particle2D, Particle2D>>();
+	private ArrayList<Pair<Particle, Particle>> overlappedPairs = new ArrayList<Pair<Particle, Particle>>();
 	
-	private ArrayList<Particle2D> particlelist = new ArrayList<Particle2D>();
+	private ArrayList<Particle> particlelist = new ArrayList<Particle>();
 	
-	public AllParticles(ArrayList<Particle2D> parlist) {
+	public AllParticles(ArrayList<Particle> parlist) {
 		particlelist.clear();
 		
 		for(int i = 0; i < parlist.size(); i++) {
-			Particle2D par = (Particle2D) parlist.get(i);
+			Particle par = (Particle) parlist.get(i);
 			this.particlelist.add(par);
 		}
 		
@@ -23,18 +23,18 @@ public class AllParticles extends Detector{
 	public void run() {
 		for(int i = 0; i < (particlelist.size() - 1); i++)
 		{
-			Particle2D p1 = (Particle2D) particlelist.get(i);
+			Particle p1 = (Particle) particlelist.get(i);
 			
 			for(int k = (i + 1); k < particlelist.size(); k++)
 			{
-				Particle2D p2 = (Particle2D) particlelist.get(k);
+				Particle p2 = (Particle) particlelist.get(k);
 				//double distance = Math.sqrt((p1.x - p2.x) * (p1.x - p2.x) + (p1.y - p2.y) * (p1.y - p2.y));
 				
 				if(Math.abs(p1.x - p2.x) <= (p1.radius + p2.radius)) {
 					
 					if(Math.abs(p1.y - p2.y) <= (p1.radius + p2.radius)) {
 						
-						Pair<Particle2D, Particle2D> pair = new Pair<Particle2D, Particle2D>(p1, p2);
+						Pair<Particle, Particle> pair = new Pair<Particle, Particle>(p1, p2);
 						overlappedPairs.add(pair);
 					}					
 				}
@@ -43,7 +43,7 @@ public class AllParticles extends Detector{
 		}
 	}
 	
-	public ArrayList<Pair<Particle2D, Particle2D>> getOverlappedPairs() {
+	public ArrayList<Pair<Particle, Particle>> getOverlappedPairs() {
 		
 		return overlappedPairs;
 	}

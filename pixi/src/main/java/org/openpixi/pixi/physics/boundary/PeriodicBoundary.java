@@ -31,7 +31,7 @@ public class PeriodicBoundary extends Boundary {
 	/**
 	 * Reflect a particle off the boundaries.
 	 */
-	public void check(Particle2D particle, Force f, Solver s, double step) {
+	public void check(Particle particle, Force f, Solver s, double step) {
 
 		//if the particle hits the walls
 		if(particle.x < xmin) {
