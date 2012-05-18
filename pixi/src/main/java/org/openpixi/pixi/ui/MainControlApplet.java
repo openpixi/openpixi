@@ -443,9 +443,6 @@ public class MainControlApplet extends JApplet {
 		particlePanel = new Particle2DPanel();
 		linkConstantForce();
 
-		this.setVisible(true);
-		this.setSize(1000, 500);
-
 		startButton = new JButton("start");
 		stopButton = new JButton("stop");
 		resetButton = new JButton("reset");
@@ -822,6 +819,7 @@ public class MainControlApplet extends JApplet {
 		web.pack();
 		web.setVisible(true);
 		web.setSize(1000, 500);
+		web.setResizable(true);
 
 		applet.init();
 	}

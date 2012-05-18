@@ -13,7 +13,7 @@ public class CollisionAlgorithm {
 		
 	}
 	
-	public void collide(ArrayList<Pair<Particle2D, Particle2D>> parlist, Force f, Solver s, double step) {
+	public void collide(ArrayList<Pair<Particle, Particle>> parlist, Force f, Solver s, double step) {
 		
 	}
 

@@ -31,48 +31,41 @@ public class PeriodicBoundary extends Boundary {
 	/**
 	 * Reflect a particle off the boundaries.
 	 */
-	public void check(Particle2D particle, Force f, Solver s, double step) {
+	public void check(Particle particle, Force f, Solver s, double step) {
 
 		//if the particle hits the walls
-		if(particle.x < xmin) {
+		if(particle.getX() < xmin) {
 			
-			if (particle.data != null) {
-				particle.data.x += xmax - xmin;
-				
-			}
-			particle.x += xmax - xmin;
+			particle.setPrevX(particle.getPrevX() + xmax - xmin);
+			particle.setX(particle.getX() + xmax - xmin);
 			
-		} else if(particle.x > xmax) {
+		} else if(particle.getX() > xmax) {
 			
-			if (particle.data != null) {
-				particle.data.x -= xmax - xmin;
-			}
-			particle.x -= xmax - xmin;
+			particle.setPrevX(particle.getPrevX() - xmax - xmin);
+			particle.setX(particle.getX() - xmax - xmin);
 			
 		}
-		if(particle.y < ymin) {
-			if (particle.data != null) {
-				particle.data.y += ymax - ymin;
-			}
-			particle.y += ymax - ymin;
+		if(particle.getY() < ymin) {
+
+			particle.setPrevY(particle.getPrevY() + ymax - ymin);
+			particle.setY(particle.getY() + ymax - ymin);
 			
-		} else if(particle.y > ymax) {
-			if (particle.data != null) {
-				particle.data.y -= ymax - ymin;
-			}
-			particle.y -= ymax - ymin;
+		} else if(particle.getY() > ymax) {
+			
+			particle.setPrevY(particle.getPrevY() - ymax - ymin);
+			particle.setY(particle.getY() - ymax - ymin);
 		}
 		
 		//safety code for particles that cover a distance
 		//greater than 2*xmax during one timestep
-		if (particle.x < xmin || particle.x > xmax) {
-			particle.x = xmax / 2.0;
-			particle.vx = 0;
+		if (particle.getX() < xmin || particle.getX() > xmax) {
+			particle.setX(xmax / 2.0);
+			particle.setVx(0);
 		}
 		
-		if (particle.y < ymin || particle.y > ymax) {
-			particle.y = ymax / 2.0;
-			particle.vy = 0;
+		if (particle.getY() < ymin || particle.getY() > ymax) {
+			particle.setY(ymax / 2.0);
+			particle.setVy(0);
 		}
 	}
 }

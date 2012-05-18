@@ -60,15 +60,15 @@ public class InitialConditions {
 		return s;
 	}
 	
-	public static Simulation initRandomParticles(int count, int radius) {
+	public static Simulation initRandomParticles(int count, double radius) {
 		
 		Simulation s = new Simulation();
 		
 		//basic simulation parameters
 		s.tstep = 1;
 		s.c = 3;
-		s.width = 700;
-		s.height = 500;
+		s.width = 100;
+		s.height = 100;
 		
 		//external forces
 		s.f.clear();
@@ -87,7 +87,7 @@ public class InitialConditions {
 		return s;
 	}
 	
-	public static Simulation initGravity(int count, int radius) {
+	public static Simulation initGravity(int count, double radius) {
 
 		Simulation s = new Simulation();
 		
@@ -115,7 +115,7 @@ public class InitialConditions {
 		return s;
 	}
 
-	public static Simulation initElectric(int count, int radius) {
+	public static Simulation initElectric(int count, double radius) {
 
 		Simulation s = new Simulation();
 		
@@ -143,7 +143,7 @@ public class InitialConditions {
 		return s;
 	}
 
-	public static Simulation initMagnetic(int count, int radius) {
+	public static Simulation initMagnetic(int count, double radius) {
 
 		Simulation s = new Simulation();
 		
@@ -171,7 +171,7 @@ public class InitialConditions {
 		return s;
 	}
 
-	public static Simulation initSpring(int count, int radius) {
+	public static Simulation initSpring(int count, double radius) {
 		
 		Simulation s = new Simulation();
 		
@@ -192,14 +192,14 @@ public class InitialConditions {
 		s.particles.clear();
 		
 		for (int k = 0; k < count; k++) {
-			Particle2D par = new Particle2D();
-			par.x = s.width * Math.random();
-			par.y = s.height * Math.random();
-			par.radius = 15;
-			par.vx = 10 * Math.random();
-			par.vy = 0;
-			par.mass = 1;
-			par.charge = .001;
+			Particle par = new Particle();
+			par.setX(s.width * Math.random());
+			par.setY(s.height * Math.random());
+			par.setRadius(15);
+			par.setVx(10 * Math.random());
+			par.setVy(0);
+			par.setMass(1);
+			par.setCharge(.001);
 			s.particles.add(par);
 		}
 		
@@ -226,23 +226,23 @@ public class InitialConditions {
 	 * @param radius	particle radius
 	 * @return ArrayList of Particle2D
 	 */
-	public static ArrayList<Particle2D> createRandomParticles(double width, double height, double maxspeed, int count, double radius) {
+	public static ArrayList<Particle> createRandomParticles(double width, double height, double maxspeed, int count, double radius) {
 		
-		ArrayList<Particle2D> particlelist = new ArrayList<Particle2D>(count);
+		ArrayList<Particle> particlelist = new ArrayList<Particle>(count);
 		
 		for (int k = 0; k < count; k++) {
-			Particle2D p = new Particle2D();
-			p.x = width * Math.random();
-			p.y = height * Math.random();
-			p.radius = radius;
+			Particle p = new Particle();
+			p.setX(width * Math.random());
+			p.setY(height * Math.random());
+			p.setRadius(radius);
 			phi = 2 * Math.PI * Math.random();
-			p.vx = maxspeed * Math.cos(phi);
-			p.vy = maxspeed * Math.sin(phi);
-			p.mass = 1;
+			p.setVx(maxspeed * Math.cos(phi));
+			p.setVy(maxspeed * Math.sin(phi));
+			p.setMass(1);
 			if (Math.random() > 0.5) {
-				p.charge = .1;
+				p.setCharge(.1);
 			} else {
-				p.charge = -.1;
+				p.setCharge(-.1);
 			}
 			particlelist.add(p);
 		}
