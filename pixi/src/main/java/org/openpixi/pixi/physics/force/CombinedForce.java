@@ -3,7 +3,7 @@ package org.openpixi.pixi.physics.force;
 
 import java.util.ArrayList;
 
-import org.openpixi.pixi.physics.Particle2D;
+import org.openpixi.pixi.physics.Particle;
 
 /**
  * Combines various forces into a single force.
@@ -27,7 +27,7 @@ public class CombinedForce implements Force {
 		forces.clear();
 	}
 
-	public double getForceX(Particle2D p) {
+	public double getForceX(Particle p) {
 		double sum = 0;
 		for (Force f : forces) {
 			sum += f.getForceX(p);
@@ -35,7 +35,7 @@ public class CombinedForce implements Force {
 		return sum;
 	}
 
-	public double getForceY(Particle2D p) {
+	public double getForceY(Particle p) {
 		double sum = 0;
 		for (Force f : forces) {
 			sum += f.getForceY(p);
@@ -43,7 +43,7 @@ public class CombinedForce implements Force {
 		return sum;
 	}
 
-	public double getPositionComponentofForceX(Particle2D p) {
+	public double getPositionComponentofForceX(Particle p) {
 		double sum = 0;
 		for (Force f : forces) {
 			sum += f.getPositionComponentofForceX(p);
@@ -51,7 +51,7 @@ public class CombinedForce implements Force {
 		return sum;
 	}
 
-	public double getPositionComponentofForceY(Particle2D p) {
+	public double getPositionComponentofForceY(Particle p) {
 		double sum = 0;
 		for (Force f : forces) {
 			sum += f.getPositionComponentofForceY(p);
@@ -59,7 +59,7 @@ public class CombinedForce implements Force {
 		return sum;
 	}
 
-	public double getTangentVelocityComponentOfForceX(Particle2D p) {
+	public double getTangentVelocityComponentOfForceX(Particle p) {
 		double sum = 0;
 		for (Force f : forces) {
 			sum += f.getTangentVelocityComponentOfForceX(p);
@@ -67,7 +67,7 @@ public class CombinedForce implements Force {
 		return sum;
 	}
 
-	public double getTangentVelocityComponentOfForceY(Particle2D p) {
+	public double getTangentVelocityComponentOfForceY(Particle p) {
 		double sum = 0;
 		for (Force f : forces) {
 			sum += f.getTangentVelocityComponentOfForceY(p);
@@ -75,7 +75,7 @@ public class CombinedForce implements Force {
 		return sum;
 	}
 
-	public double getNormalVelocityComponentofForceX(Particle2D p) {
+	public double getNormalVelocityComponentofForceX(Particle p) {
 		double sum = 0;
 		for (Force f : forces) {
 			sum += f.getNormalVelocityComponentofForceX(p);
@@ -83,7 +83,7 @@ public class CombinedForce implements Force {
 		return sum;
 	}
 
-	public double getNormalVelocityComponentofForceY(Particle2D p) {
+	public double getNormalVelocityComponentofForceY(Particle p) {
 		double sum = 0;
 		for (Force f : forces) {
 			sum += f.getNormalVelocityComponentofForceY(p);
@@ -91,7 +91,7 @@ public class CombinedForce implements Force {
 		return sum;
 	}
 
-	public double getBz(Particle2D p) {
+	public double getBz(Particle p) {
 		double sum = 0;
 		for (Force f : forces) {
 			sum += f.getBz(p);
@@ -99,7 +99,7 @@ public class CombinedForce implements Force {
 		return sum;
 	}
 
-	public double getLinearDragCoefficient(Particle2D p) {
+	public double getLinearDragCoefficient(Particle p) {
 		double sum = 0;
 		for (Force f : forces) {
 			sum += f.getLinearDragCoefficient(p);

@@ -18,7 +18,7 @@
  */
 package org.openpixi.pixi.physics.solver;
 
-import org.openpixi.pixi.physics.Particle2D;
+import org.openpixi.pixi.physics.Particle;
 import org.openpixi.pixi.physics.force.Force;
 
 /**This class represents the LeapFrog algorithm and the equations that are used one can be find here:
@@ -32,7 +32,7 @@ public class LeapFrogHalfStep implements Solver{
 	{
 		super();
 	}
-	public void step(Particle2D p, Force f, double dt) {
+	public void step(Particle p, Force f, double dt) {
 		
 		/**
 		 * LeapFrog algorithm.
@@ -41,28 +41,28 @@ public class LeapFrogHalfStep implements Solver{
 		 *                 after the update: x(t+dt), v(t+dt), a(t+dt)
 		 */
 		// v(t+dt/2) = v(t) + a(t)*dt/2
-		p.vx += p.ax * dt / 2.0;
-		p.vy += p.ay * dt / 2.0;
+		p.setVx(p.getVx() + p.getAx() * dt / 2.0);
+		p.setVy(p.getVy() + p.getAy() * dt / 2.0);
 
 		// x(t+dt) = x(t) + v(t+dt/2)*dt
-		p.x += p.vx * dt;
-		p.y += p.vy * dt;
+		p.setX(p.getX() + p.getVx() * dt);
+		p.setY(p.getY() + p.getVy() * dt);
 
 		// a(t+dt) = F(v(t+dt/2), x(t+dt)) / m
 		// WARNING: Force is evaluated at two different times t+dt/2 and t+dt!
-		p.ax = f.getForceX(p) / p.mass;
-		p.ay = f.getForceY(p) / p.mass;
+		p.setAx(f.getForceX(p) / p.getMass());
+		p.setAy(f.getForceY(p) / p.getMass());
 
 		// v(t+dt) = v(t+dt/2) + a(t+dt)*dt/2
-		p.vx += p.ax * dt / 2.0;
-		p.vy += p.ay * dt / 2.0;
+		p.setVx(p.getVx() + p.getAx() * dt / 2.0);
+		p.setVy(p.getVy() + p.getAy() * dt / 2.0);
 		
 		
 	}
 
-	public void prepare(Particle2D p, Force f, double step) {
+	public void prepare(Particle p, Force f, double step) {
 	}
 
-	public void complete(Particle2D p, Force f, double step){
+	public void complete(Particle p, Force f, double step){
 	}
 }
