@@ -20,14 +20,13 @@
 package org.openpixi.pixi.physics;
 
 import java.util.ArrayList;
-import org.openpixi.pixi.physics.boundary.*;
-import org.openpixi.pixi.physics.collision.*;
+import org.openpixi.pixi.physics.boundary.Boundary;
 import org.openpixi.pixi.physics.collision.algorithms.CollisionAlgorithm;
 import org.openpixi.pixi.physics.collision.detectors.Detector;
-import org.openpixi.pixi.physics.fields.*;
-import org.openpixi.pixi.physics.force.*;
-import org.openpixi.pixi.physics.grid.*;
-import org.openpixi.pixi.physics.solver.*;
+import org.openpixi.pixi.physics.force.CombinedForce;
+import org.openpixi.pixi.physics.grid.Grid;
+import org.openpixi.pixi.physics.solver.EmptySolver;
+import org.openpixi.pixi.physics.solver.Solver;
 
 public class Simulation {
 	
@@ -41,7 +40,7 @@ public class Simulation {
 	public double c;
 
 	/**Contains all Particle2D objects*/
-	public ArrayList<Particle2D> particles;
+	public ArrayList<Particle> particles;
 	public CombinedForce f;
 	public Boundary boundary;
 	/**Solver for the particle equations of motion*/
@@ -63,7 +62,7 @@ public class Simulation {
 		width = 0;
 		height = 0;
 		
-		particles = new ArrayList<Particle2D>(0);
+		particles = new ArrayList<Particle>(0);
 		f = new CombinedForce();		
 		
 		psolver = new EmptySolver();
@@ -91,20 +90,22 @@ public class Simulation {
 	}
 	
 	public void particlePush() {
-		for (Particle2D p : particles) {
+		for (Particle p : particles) {
+			// Before we move the particle we store its position
+			p.storePosition();
 			psolver.step(p, f, tstep);
 			boundary.check(p, f, psolver, tstep);
 		}		
 	}
 	
 	public void prepareAllParticles() {
-		for (Particle2D p : particles) {
+		for (Particle p : particles) {
 			psolver.prepare(p, f, tstep);
 		}
 	}
 
 	public void completeAllParticles() {
-		for (Particle2D p : particles) {
+		for (Particle p : particles) {
 			psolver.complete(p, f, tstep);
 		}
 	}

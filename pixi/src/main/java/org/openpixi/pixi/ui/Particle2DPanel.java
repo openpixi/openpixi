@@ -33,7 +33,6 @@ import javax.swing.*;
 import java.awt.event.*;
 import java.awt.geom.AffineTransform;
 import static java.awt.geom.AffineTransform.*;
-import java.lang.Math;
 import java.util.ArrayList;
 
 import org.openpixi.pixi.physics.grid.*;
@@ -97,9 +96,9 @@ public class Particle2DPanel extends JPanel {
 			repaint();
 			if(writePosition)
 			{
-				Particle2D par = (Particle2D) s.particles.get(0);
-				System.out.println(par.x + " " + par.y);
-				file.writeFile(fileName, fileDirectory, par.x + " " + par.y);
+				Particle par = (Particle) s.particles.get(0);
+				System.out.println(par.getX() + " " + par.getY());
+				file.writeFile(fileName, fileDirectory, par.getX() + " " + par.getY());
 			}
 		}
 	}
@@ -195,11 +194,7 @@ public class Particle2DPanel extends JPanel {
 						forces.remove(i);
 					}
 				}
-			}
-			//clears Particle2DData variable
-			for (Particle2D p : s.particles) {
-				p.data = null;
-			}
+			}			
 		}
 	}
 	
@@ -214,15 +209,15 @@ public class Particle2DPanel extends JPanel {
 			//force.drag = 0.08;
 			s.f.add(force);
 			InitialConditions.createRandomParticles(s.width, s.height, s.c, 1, 10);
-			Particle2D par = (Particle2D) s.particles.get(0);
-			par.x = this.getWidth() * 0.5;
-			par.y = this.getHeight() * 0.5;
+			Particle par = (Particle) s.particles.get(0);
+			par.setX(this.getWidth() * 0.5);
+			par.setY(this.getHeight() * 0.5);
 			//System.out.println(this.getWidth() * 0.5 + " x0");
 			//System.out.println(this.getHeight() * 0.5 + " y0");
-			par.vx = 10;
-			par.vy = 10;
-			par.mass = 1;
-			par.charge = 1;
+			par.setVx(10);
+			par.setVy(10);
+			par.setMass(1);
+			par.setCharge(1);
 		}
 		else {
 			resetAnimation(0);
@@ -396,21 +391,20 @@ public class Particle2DPanel extends JPanel {
 		}
 		
 		for (int i = 0; i < s.particles.size(); i++) {
-			Particle2D par = (Particle2D) s.particles.get(i);
-			if (par.charge > 0) {
+			Particle par = (Particle) s.particles.get(i);
+			if (par.getCharge() > 0) {
 				graph.setColor(Color.red);
 			} else {
 				graph.setColor(Color.blue);
 			}
-			
-			double radius = par.radius;
+			double radius = par.getRadius();
 			int width = (int) (2*sx*radius);
 			int height = (int) (2*sy*radius);
 			if(width > 2 && height > 2 && !paint_trace) {
-				graph.fillOval((int) (par.x*sx) - width/2, (int) (par.y*sy) - height/2,  width,  height);
+				graph.fillOval((int) (par.getX()*sx) - width/2, (int) (par.getY()*sy) - height/2,  width,  height);
 			}
 			else {
-				graph.drawRect((int) (par.x*sx), (int) (par.y*sy), 0, 0);
+				graph.drawRect((int) (par.getX()*sx), (int) (par.getY()*sy), 0, 0);
 			}
 		}
 		

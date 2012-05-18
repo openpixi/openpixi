@@ -2,7 +2,7 @@ package org.openpixi.pixi.physics.grid;
 
 import java.util.ArrayList;
 
-import org.openpixi.pixi.physics.Particle2D;
+import org.openpixi.pixi.physics.Particle;
 import org.openpixi.pixi.physics.Simulation;
 import org.openpixi.pixi.physics.fields.FieldSolver;
 import org.openpixi.pixi.physics.grid.*;
@@ -63,7 +63,7 @@ public class Grid {
 		
 	}
 	
-	public void updateGrid(ArrayList<Particle2D> particles) {
+	public void updateGrid(ArrayList<Particle> particles) {
 		
 	}
 	

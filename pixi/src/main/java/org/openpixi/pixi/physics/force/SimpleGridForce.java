@@ -1,47 +1,46 @@
 package org.openpixi.pixi.physics.force;
 
-import org.openpixi.pixi.physics.Particle2D;
-import org.openpixi.pixi.physics.Simulation;
+import org.openpixi.pixi.physics.Particle;
 
 public class SimpleGridForce implements Force {
 
-	public double getForceX(Particle2D p) {
-		return p.charge * ( p.data.Ex + p.vy * p.data.Bz);
+	public double getForceX(Particle p) {
+		return p.getCharge() * ( p.getEx() + p.getVy() * p.getBz());
 	}
 
-	public double getForceY(Particle2D p) {
-		return p.charge * (p.data.Ey - p.vx * p.data.Bz);
+	public double getForceY(Particle p) {
+		return p.getCharge() * (p.getEy() - p.getVx() * p.getBz());
 	}
 
-	public double getPositionComponentofForceX(Particle2D p) {
-		return p.charge * p.data.Ex;
+	public double getPositionComponentofForceX(Particle p) {
+		return p.getCharge() * p.getEx();
 	}
 
-	public double getPositionComponentofForceY(Particle2D p) {
-		return p.charge * p.data.Ey;
+	public double getPositionComponentofForceY(Particle p) {
+		return p.getCharge() * p.getEy();
 	}
 
-	public double getNormalVelocityComponentofForceX(Particle2D p) {
-		return p.charge * p.vy * p.data.Bz;
+	public double getNormalVelocityComponentofForceX(Particle p) {
+		return p.getCharge() * p.getVy() * p.getBz();
 	}
 
-	public double getNormalVelocityComponentofForceY(Particle2D p) {
-		return - p.charge * p.vx * p.data.Bz;
+	public double getNormalVelocityComponentofForceY(Particle p) {
+		return - p.getCharge() * p.getVx() * p.getBz();
 	}
 
-	public double getBz(Particle2D p) {
-		return p.data.Bz;
+	public double getBz(Particle p) {
+		return p.getBz();
 	}
 
-	public double getTangentVelocityComponentOfForceX(Particle2D p) {
+	public double getTangentVelocityComponentOfForceX(Particle p) {
 		return 0;
 	}
 
-	public double getTangentVelocityComponentOfForceY(Particle2D p) {
+	public double getTangentVelocityComponentOfForceY(Particle p) {
 		return 0;
 	}
 
-	public double getLinearDragCoefficient(Particle2D p) {
+	public double getLinearDragCoefficient(Particle p) {
 		return 0;
 	}
 }
