@@ -35,26 +35,26 @@ public class HardWallBoundary extends Boundary {
 		
 		
 		//if the particle hits the walls
-		if(particle.x - particle.radius < xmin)
+		if(particle.getX() - particle.getRadius() < xmin)
 		{
 			s.complete(particle, f, step);
-			particle.vx = Math.abs(particle.vx);
+			particle.setVx(Math.abs(particle.getVx()));
 			s.prepare(particle, f, step);
-		} else if(particle.x + particle.radius > xmax)
+		} else if(particle.getX() + particle.getRadius() > xmax)
 		{
 			s.complete(particle, f, step);
-			particle.vx = - Math.abs(particle.vx);
+			particle.setVx(- Math.abs(particle.getVx()));
 			s.prepare(particle, f, step);
 		}
-		if(particle.y - particle.radius < ymin)
+		if(particle.getY() - particle.getRadius() < ymin)
 		{
 			s.complete(particle, f, step);
-			particle.vy = Math.abs(particle.vy);
+			particle.setVy(Math.abs(particle.getVy()));
 			s.prepare(particle, f, step);
-		} else if(particle.y + particle.radius > ymax)
+		} else if(particle.getY() + particle.getRadius() > ymax)
 		{
 			s.complete(particle, f, step);
-			particle.vy = - Math.abs(particle.vy);
+			particle.setVy(- Math.abs(particle.getVy()));
 			s.prepare(particle, f, step);
 		}
 		

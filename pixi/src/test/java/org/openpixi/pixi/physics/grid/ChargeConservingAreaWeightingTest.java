@@ -136,12 +136,12 @@ public class ChargeConservingAreaWeightingTest extends TestCase {
 
 		// Add single particle
 		Particle p = new Particle();
-		p.x = x1;
-		p.y = y1;
-		p.vx = (x2 - x1) / s.tstep;
-		p.vy = (y2 - y1) / s.tstep;
-		p.mass = 1;
-		p.charge = charge;
+		p.setX(x1);
+		p.setY(y1);
+		p.setVx((x2 - x1) / s.tstep);
+		p.setVy((y2 - y1) / s.tstep);
+		p.setMass(1);
+		p.setCharge(charge);
 		s.particles.add(p);
 
 		s.prepareAllParticles();
@@ -152,15 +152,15 @@ public class ChargeConservingAreaWeightingTest extends TestCase {
 		grid.changeDimension(10, 10, 10, 10);
 
 		// Remember old values
-		p.prevX = p.x;
-		p.prevY = p.y;
+		p.setPrevX(p.getX());
+		p.setPrevY(p.getY());
 
 		// Advance particle
 		s.particlePush();
 		
 		//Remember old values after boundary check
-		double sx = p.prevX;
-		double sy = p.prevY;
+		double sx = p.getPrevX();
+		double sy = p.getPrevY();
 
 		// Calculate current
 		grid.interp.interpolateToGrid(s.particles);
@@ -169,13 +169,13 @@ public class ChargeConservingAreaWeightingTest extends TestCase {
 		double jy = getSum(grid.jy);
 
 		System.out.println("Total current " + text + ": jx = " + jx + ", jy = " + jy
-				+ " (from " + sx + ", " + sy + " to " + p.x + ", " + p.y + ")");
+				+ " (from " + sx + ", " + sy + " to " + p.getX() + ", " + p.getY() + ")");
 		
 		checkSign(grid.jx);
 		checkSign(grid.jy);
 		
-		assertAlmostEquals(text + ", jx", charge * (p.x - sx) / grid.simulation.tstep, jx, ACCURACY_LIMIT);
-		assertAlmostEquals(text + ", jy", charge * (p.y - sy) / grid.simulation.tstep, jy, ACCURACY_LIMIT);
+		assertAlmostEquals(text + ", jx", charge * (p.getX() - sx) / grid.simulation.tstep, jx, ACCURACY_LIMIT);
+		assertAlmostEquals(text + ", jy", charge * (p.getY() - sy) / grid.simulation.tstep, jy, ACCURACY_LIMIT);
 	}
 	
 	public void testFourBoundaryMovesForce() {
@@ -224,12 +224,12 @@ public class ChargeConservingAreaWeightingTest extends TestCase {
 
 		// Add single particle
 		Particle p = new Particle();
-		p.x = x1;
-		p.y = y1;
-		p.vx = vx;
-		p.vy = vy;
-		p.mass = 1;
-		p.charge = charge;
+		p.setX(x1);
+		p.setY(y1);
+		p.setVx(vx);
+		p.setVy(vy);
+		p.setMass(1);
+		p.setCharge(charge);
 		s.particles.add(p);
 		
 		ConstantForce force = new ConstantForce();
@@ -245,15 +245,15 @@ public class ChargeConservingAreaWeightingTest extends TestCase {
 		grid.changeDimension(10, 10, 10, 10);
 
 		// Remember old values
-		p.prevX = p.x;
-		p.prevY = p.y;
+		p.setPrevX(p.getX());
+		p.setPrevY(p.getY());
 
 		// Advance particle
 		s.particlePush();
 		
 		//Remember old values after boundary check
-		double sx = p.prevX;
-		double sy = p.prevY;
+		double sx = p.getPrevX();
+		double sy = p.getPrevY();
 		
 		// Calculate current
 		grid.interp.interpolateToGrid(s.particles);
@@ -262,13 +262,13 @@ public class ChargeConservingAreaWeightingTest extends TestCase {
 		double jy = getSum(grid.jy);
 		
 		System.out.println("Total current " + text + ": jx = " + jx + ", jy = " + jy
-				+ " (from " + sx + ", " + sy + " to " + p.x + ", " + p.y + ")");
+				+ " (from " + sx + ", " + sy + " to " + p.getX() + ", " + p.getY() + ")");
 		
 		checkSign(grid.jx);
 		checkSign(grid.jy);
 
-		assertAlmostEquals(text + ", jx", charge * (p.x - sx) / grid.simulation.tstep, jx, ACCURACY_LIMIT);
-		assertAlmostEquals(text + ", jy", charge * (p.y - sy) / grid.simulation.tstep, jy, ACCURACY_LIMIT);
+		assertAlmostEquals(text + ", jx", charge * (p.getX() - sx) / grid.simulation.tstep, jx, ACCURACY_LIMIT);
+		assertAlmostEquals(text + ", jy", charge * (p.getY() - sy) / grid.simulation.tstep, jy, ACCURACY_LIMIT);
 	}	
 	
 	private double getSum(double[][] field) {

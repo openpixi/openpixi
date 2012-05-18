@@ -46,35 +46,35 @@ public class EulerRichardson implements Solver{
 	public void step(Particle p, Force f, double step)
 	{
 		//saving the starting value of the position & velocity
-		double xstart = p.x;
-		double ystart = p.y;
-		double vxstart = p.vx;
-		double vystart = p.vy;
+		double xstart = p.getX();
+		double ystart = p.getY();
+		double vxstart = p.getVx();
+		double vystart = p.getVy();
 		
 		//a(t) = F(v(t), x(t)) / m
-		p.ax = f.getForceX(p) / p.mass;
-		p.ay = f.getForceY(p) / p.mass;
+		p.setAx(f.getForceX(p) / p.getMass());
+		p.setAy(f.getForceY(p) / p.getMass());
 		
 		//starting the Euler-Richardson algorithm (the equations correspond with the ones on the above mentioned website)
 		//v(t + dt / 2) = v(t) + a(t) * dt / 2
-		p.vx += p.ax * step / 2;
-		p.vy += p.ay * step / 2;
+		p.setVx(p.getVx() + p.getAx() * step / 2);
+		p.setVy(p.getVy() + p.getAy() * step / 2);
 		
 		//x(t + dt / 2) = x(t) + v(t) * dt / 2
-		p.x += p.vx * step / 2;
-		p.y += p.vy * step / 2; 
+		p.setX(p.getX() + p.getVx() * step / 2);
+		p.setY(p.getY() + p.getVy() * step / 2); 
 		
 		//a(t + dt / 2) = F(v(t + dt / 2), x(t + dt / 2)) / m
-		p.ax = f.getForceX(p) / p.mass;
-		p.ay = f.getForceY(p) / p.mass;
+		p.setAx(f.getForceX(p) / p.getMass());
+		p.setAy(f.getForceY(p) / p.getMass());
 		
 		//x(t + dt) = x(t) + v(t + dt / 2) * dt
-		p.x = xstart + p.vx * step;
-		p.y = ystart + p.vy * step;
+		p.setX(xstart + p.getVx() * step);
+		p.setY(ystart + p.getVy() * step);
 		
 		//v(t + dt) = v(t) + a(t + dt / 2) * dt
-		p.vx = vxstart + p.ax * step;
-		p.vy = vystart + p.ay * step;
+		p.setVx(vxstart + p.getAx() * step);
+		p.setVy(vystart + p.getAy() * step);
 		
 	}
 

@@ -82,7 +82,7 @@ public class SimpleGrid extends Grid {
 		
 		for (Particle p: simulation.particles){
 			//assuming rectangular particle shape i.e. area weighting
-			p.chargedensity = p.charge / (cellWidth * cellHeight);
+			p.setChargedensity(p.getCharge() / (cellWidth * cellHeight));
 		}
 		
 		//include updateGrid() and the first calculation of Fields here

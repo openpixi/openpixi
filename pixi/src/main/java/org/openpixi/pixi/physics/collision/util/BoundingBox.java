@@ -17,10 +17,10 @@ public class BoundingBox {
 	}
 
 	public void update() {
-		this.xMin = particle.x - particle.radius;
-		this.xMax = particle.x + particle.radius;
-		this.yMin = particle.y - particle.radius;
-		this.yMax = particle.y + particle.radius;
+		this.xMin = particle.getX() - particle.getRadius();
+		this.xMax = particle.getX() + particle.getRadius();
+		this.yMin = particle.getY() - particle.getRadius();
+		this.yMax = particle.getY() + particle.getRadius();
 	}
 	
 	

@@ -11,7 +11,7 @@ public class SpringForce implements Force {
 
 	public double getForceY(Particle par)
 	{
-		return - 0.01 * (par.y - 200);
+		return - 0.01 * (par.getY() - 200);
 	}
 
 	public double getPositionComponentofForceX(Particle par)
@@ -21,7 +21,7 @@ public class SpringForce implements Force {
 
 	public double getPositionComponentofForceY(Particle par)
 	{
-		return - 0.01 * (par.y - 200);
+		return - 0.01 * (par.getY() - 200);
 	}
 
 	public double getTangentVelocityComponentOfForceX(Particle par)

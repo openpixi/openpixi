@@ -30,9 +30,9 @@ public class AllParticles extends Detector{
 				Particle p2 = (Particle) particlelist.get(k);
 				//double distance = Math.sqrt((p1.x - p2.x) * (p1.x - p2.x) + (p1.y - p2.y) * (p1.y - p2.y));
 				
-				if(Math.abs(p1.x - p2.x) <= (p1.radius + p2.radius)) {
+				if(Math.abs(p1.getX() - p2.getX()) <= (p1.getRadius() + p2.getRadius())) {
 					
-					if(Math.abs(p1.y - p2.y) <= (p1.radius + p2.radius)) {
+					if(Math.abs(p1.getY() - p2.getY()) <= (p1.getRadius() + p2.getRadius())) {
 						
 						Pair<Particle, Particle> pair = new Pair<Particle, Particle>(p1, p2);
 						overlappedPairs.add(pair);

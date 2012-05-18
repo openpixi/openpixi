@@ -34,39 +34,39 @@ public class ConstantForce implements Force {
 	}
 
 	public double getForceX(Particle p) {
-		return -drag * p.vx + p.mass * gx + p.charge * ex +
-				p.charge * p.vy * bz;
+		return -drag * p.getVx() + p.getMass() * gx + p.getCharge() * ex +
+				p.getCharge() * p.getVy() * bz;
 	}
 
 	public double getForceY(Particle p) {
-		return - drag * p.vy + p.mass * gy + p.charge * ey -
-				p.charge * p.vx * bz;
+		return - drag * p.getVy() + p.getMass() * gy + p.getCharge() * ey -
+				p.getCharge() * p.getVx() * bz;
 	}
 
 	public double getPositionComponentofForceX(Particle p) {
-		return p.mass * gx + p.charge * ex;
+		return p.getMass() * gx + p.getCharge() * ex;
 	}
 
 	public double getPositionComponentofForceY(Particle p) {
-		return p.mass * gy + p.charge * ey;
+		return p.getMass() * gy + p.getCharge() * ey;
 	}
 
 	public double getTangentVelocityComponentOfForceX(Particle p) {
 		
-		return - drag * p.vx;
+		return - drag * p.getVx();
 	}
 
 	public double getTangentVelocityComponentOfForceY(Particle p) {
 		
-		return - drag * p.vy;
+		return - drag * p.getVy();
 	}
 
 	public double getNormalVelocityComponentofForceX(Particle p) {
-		return p.charge * p.vy * bz;
+		return p.getCharge() * p.getVy() * bz;
 	}
 
 	public double getNormalVelocityComponentofForceY(Particle p) {
-		return - p.charge * p.vx * bz;
+		return - p.getCharge() * p.getVx() * bz;
 	}
 
 	public double getBz(Particle p) {

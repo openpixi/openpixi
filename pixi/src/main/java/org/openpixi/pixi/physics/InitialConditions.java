@@ -193,13 +193,13 @@ public class InitialConditions {
 		
 		for (int k = 0; k < count; k++) {
 			Particle par = new Particle();
-			par.x = s.width * Math.random();
-			par.y = s.height * Math.random();
-			par.radius = 15;
-			par.vx = 10 * Math.random();
-			par.vy = 0;
-			par.mass = 1;
-			par.charge = .001;
+			par.setX(s.width * Math.random());
+			par.setY(s.height * Math.random());
+			par.setRadius(15);
+			par.setVx(10 * Math.random());
+			par.setVy(0);
+			par.setMass(1);
+			par.setCharge(.001);
 			s.particles.add(par);
 		}
 		
@@ -232,17 +232,17 @@ public class InitialConditions {
 		
 		for (int k = 0; k < count; k++) {
 			Particle p = new Particle();
-			p.x = width * Math.random();
-			p.y = height * Math.random();
-			p.radius = radius;
+			p.setX(width * Math.random());
+			p.setY(height * Math.random());
+			p.setRadius(radius);
 			phi = 2 * Math.PI * Math.random();
-			p.vx = maxspeed * Math.cos(phi);
-			p.vy = maxspeed * Math.sin(phi);
-			p.mass = 1;
+			p.setVx(maxspeed * Math.cos(phi));
+			p.setVy(maxspeed * Math.sin(phi));
+			p.setMass(1);
 			if (Math.random() > 0.5) {
-				p.charge = .1;
+				p.setCharge(.1);
 			} else {
-				p.charge = -.1;
+				p.setCharge(-.1);
 			}
 			particlelist.add(p);
 		}

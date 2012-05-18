@@ -91,12 +91,12 @@ public class CloudInCellTest extends TestCase {
 
 		// Add single particle
 		Particle p = new Particle();
-		p.x = x1;
-		p.y = y1;
-		p.vx = (x2 - x1) / s.tstep;
-		p.vy = (y2 - y1) / s.tstep;
-		p.mass = 1;
-		p.charge = charge;
+		p.setX(x1);
+		p.setY(y1);
+		p.setVx((x2 - x1) / s.tstep);
+		p.setVy((y2 - y1) / s.tstep);
+		p.setMass(1);
+		p.setCharge(charge);
 		s.particles.add(p);
 
 		s.prepareAllParticles();
@@ -107,15 +107,15 @@ public class CloudInCellTest extends TestCase {
 		grid.changeDimension(10, 10, 10, 10);
 
 		// Remember old values
-		p.prevX = p.x;
-		p.prevY = p.y;
+		p.setPrevX(p.getX());
+		p.setPrevY(p.getY());
 
 		// Advance particle
 		s.particlePush();
 		
 		//Remember old values after boundary check
-		double sx = p.prevX;
-		double sy = p.prevY;
+		double sx = p.getPrevX();
+		double sy = p.getPrevY();
 
 		// Calculate current
 		grid.interp.interpolateToGrid(s.particles);
@@ -124,7 +124,7 @@ public class CloudInCellTest extends TestCase {
 		double jy = getSum(grid.jy);
 
 		System.out.println("Total current " + text + ": jx = " + jx + ", jy = " + jy
-				+ " (from " + sx + ", " + sy + " to " + p.x + ", " + p.y + ")");
+				+ " (from " + sx + ", " + sy + " to " + p.getX() + ", " + p.getY() + ")");
 
 		checkSign(grid.jx);
 		checkSign(grid.jy);
@@ -133,8 +133,8 @@ public class CloudInCellTest extends TestCase {
 //		assertAlmostEquals(text + ", jx", charge * (p.x - sx), jx, ACCURACY_LIMIT);
 //		assertAlmostEquals(text + ", jy", charge * (p.y - sy), jy, ACCURACY_LIMIT);
 //		This is what is appropriate for CIC: momentary current
-		assertAlmostEquals(text + ", jx", charge * p.vx, jx, ACCURACY_LIMIT);
-		assertAlmostEquals(text + ", jy", charge * p.vy, jy, ACCURACY_LIMIT);
+		assertAlmostEquals(text + ", jx", charge * p.getVx(), jx, ACCURACY_LIMIT);
+		assertAlmostEquals(text + ", jy", charge * p.getVy(), jy, ACCURACY_LIMIT);
 	}
 	
 	public void testFourBoundtatryMovesForce() {
@@ -169,12 +169,12 @@ Simulation s = InitialConditions.initEmptySimulation();
 
 		// Add single particle
 		Particle p = new Particle();
-		p.x = x1;
-		p.y = y1;
-		p.vx = vx;
-		p.vy = vy;
-		p.mass = 1;
-		p.charge = charge;
+		p.setX(x1);
+		p.setY(y1);
+		p.setVx(vx);
+		p.setVy(vy);
+		p.setMass(1);
+		p.setCharge(charge);
 		s.particles.add(p);
 		
 		ConstantForce force = new ConstantForce();
@@ -190,15 +190,15 @@ Simulation s = InitialConditions.initEmptySimulation();
 		grid.changeDimension(10, 10, 10, 10);
 
 		// Remember old values
-		p.prevX = p.x;
-		p.prevY = p.y;
+		p.setPrevX(p.getX());
+		p.setPrevY(p.getY());
 
 		// Advance particle
 		s.particlePush();
 		
 		//Remember old values after boundary check
-		double sx = p.prevX;
-		double sy = p.prevY;
+		double sx = p.getPrevX();
+		double sy = p.getPrevY();
 		
 		// Calculate current
 		grid.interp.interpolateToGrid(s.particles);
@@ -207,7 +207,7 @@ Simulation s = InitialConditions.initEmptySimulation();
 		double jy = getSum(grid.jy);
 		
 		System.out.println("Total current " + text + ": jx = " + jx + ", jy = " + jy
-				+ " (from " + sx + ", " + sy + " to " + p.x + ", " + p.y + ")");
+				+ " (from " + sx + ", " + sy + " to " + p.getX() + ", " + p.getY() + ")");
 		
 		checkSign(grid.jx);
 		checkSign(grid.jy);
@@ -216,8 +216,8 @@ Simulation s = InitialConditions.initEmptySimulation();
 //		assertAlmostEquals(text + ", jx", charge * (p.x - sx), jx, ACCURACY_LIMIT);
 //		assertAlmostEquals(text + ", jy", charge * (p.y - sy), jy, ACCURACY_LIMIT);
 //		This is what is appropriate for CIC: momentary current
-		assertAlmostEquals(text + ", jx", charge * p.vx, jx, ACCURACY_LIMIT);
-		assertAlmostEquals(text + ", jy", charge * p.vy, jy, ACCURACY_LIMIT);
+		assertAlmostEquals(text + ", jx", charge * p.getVx(), jx, ACCURACY_LIMIT);
+		assertAlmostEquals(text + ", jy", charge * p.getVy(), jy, ACCURACY_LIMIT);
 	}
 
 

@@ -17,8 +17,8 @@ public class CloudInCell extends Interpolator {
 		
 		for(Particle p : particles)
 		{
-			int xCellPosition = (int) (Math.floor((p.x / g.cellWidth + 1)));
-			int yCellPosition = (int) (Math.floor((p.y / g.cellHeight + 1)));
+			int xCellPosition = (int) (Math.floor((p.getX() / g.cellWidth + 1)));
+			int yCellPosition = (int) (Math.floor((p.getY() / g.cellHeight + 1)));
 			
 			int xCellPosition2 = xCellPosition;
 			int yCellPosition2 = yCellPosition;
@@ -36,29 +36,29 @@ public class CloudInCell extends Interpolator {
 
 			if (Debug.asserts) {
 				// Assert conditions for interpolation
-				assert xCellPosition2 * g.cellWidth > p.x : p.x;
-				assert p.x > (xCellPosition2 - 1) * g.cellWidth : p.x;
-				assert yCellPosition2 * g.cellHeight > p.y : p.y;
-				assert p.y > (yCellPosition2 - 1) * g.cellHeight : p.y;
+				assert xCellPosition2 * g.cellWidth > p.getX() : p.getX();
+				assert p.getX() > (xCellPosition2 - 1) * g.cellWidth : p.getX();
+				assert yCellPosition2 * g.cellHeight > p.getY() : p.getY();
+				assert p.getY() > (yCellPosition2 - 1) * g.cellHeight : p.getY();
 			}
 
-			g.jx[xCellPosition][yCellPosition] += p.charge * p.vx * (xCellPosition2 * g.cellWidth - p.x) *
-					(yCellPosition2 * g.cellHeight - p.y) / (g.cellWidth * g.cellHeight);
-			g.jx[xCellPosition + 1][yCellPosition] += p.charge * p.vx * (p.x - (xCellPosition2-1) * g.cellWidth) *
-					(yCellPosition2 * g.cellHeight - p.y) / (g.cellWidth * g.cellHeight);
-			g.jx[xCellPosition][yCellPosition + 1] += p.charge * p.vx * (xCellPosition2 * g.cellWidth - p.x) *
-					(p.y - (yCellPosition2-1) * g.cellHeight) / (g.cellWidth * g.cellHeight);
-			g.jx[xCellPosition + 1][yCellPosition + 1] += p.charge * p.vx * (p.x - (xCellPosition2-1) * g.cellWidth) *
-					(p.y - (yCellPosition2-1) * g.cellHeight) / (g.cellWidth * g.cellHeight);
+			g.jx[xCellPosition][yCellPosition] += p.getCharge() * p.getVx() * (xCellPosition2 * g.cellWidth - p.getX()) *
+					(yCellPosition2 * g.cellHeight - p.getY()) / (g.cellWidth * g.cellHeight);
+			g.jx[xCellPosition + 1][yCellPosition] += p.getCharge() * p.getVx() * (p.getX() - (xCellPosition2-1) * g.cellWidth) *
+					(yCellPosition2 * g.cellHeight - p.getY()) / (g.cellWidth * g.cellHeight);
+			g.jx[xCellPosition][yCellPosition + 1] += p.getCharge() * p.getVx() * (xCellPosition2 * g.cellWidth - p.getX()) *
+					(p.getY() - (yCellPosition2-1) * g.cellHeight) / (g.cellWidth * g.cellHeight);
+			g.jx[xCellPosition + 1][yCellPosition + 1] += p.getCharge() * p.getVx() * (p.getX() - (xCellPosition2-1) * g.cellWidth) *
+					(p.getY() - (yCellPosition2-1) * g.cellHeight) / (g.cellWidth * g.cellHeight);
 			
-			g.jy[xCellPosition][yCellPosition] += p.charge * p.vy * (xCellPosition2 * g.cellWidth - p.x) *
-					(yCellPosition2 * g.cellHeight - p.y) / (g.cellWidth * g.cellHeight);
-			g.jy[xCellPosition + 1][yCellPosition] += p.charge * p.vy * (p.x - (xCellPosition2-1) * g.cellWidth) *
-					(yCellPosition2 * g.cellHeight - p.y) / (g.cellWidth * g.cellHeight);
-			g.jy[xCellPosition][yCellPosition + 1] += p.charge * p.vy * (xCellPosition2 * g.cellWidth - p.x) *
-					(p.y - (yCellPosition2-1) * g.cellHeight) / (g.cellWidth * g.cellHeight);
-			g.jy[xCellPosition + 1][yCellPosition + 1] += p.charge * p.vy * (p.x - (xCellPosition2-1) * g.cellWidth) *
-					(p.y - (yCellPosition2-1) * g.cellHeight) / (g.cellWidth * g.cellHeight);
+			g.jy[xCellPosition][yCellPosition] += p.getCharge() * p.getVy() * (xCellPosition2 * g.cellWidth - p.getX()) *
+					(yCellPosition2 * g.cellHeight - p.getY()) / (g.cellWidth * g.cellHeight);
+			g.jy[xCellPosition + 1][yCellPosition] += p.getCharge() * p.getVy() * (p.getX() - (xCellPosition2-1) * g.cellWidth) *
+					(yCellPosition2 * g.cellHeight - p.getY()) / (g.cellWidth * g.cellHeight);
+			g.jy[xCellPosition][yCellPosition + 1] += p.getCharge() * p.getVy() * (xCellPosition2 * g.cellWidth - p.getX()) *
+					(p.getY() - (yCellPosition2-1) * g.cellHeight) / (g.cellWidth * g.cellHeight);
+			g.jy[xCellPosition + 1][yCellPosition + 1] += p.getCharge() * p.getVy() * (p.getX() - (xCellPosition2-1) * g.cellWidth) *
+					(p.getY() - (yCellPosition2-1) * g.cellHeight) / (g.cellWidth * g.cellHeight);
 		}
 		
 	}
@@ -68,8 +68,8 @@ public class CloudInCell extends Interpolator {
 		for (int i = 0; i < particles.size(); i++) {
 			
 		Particle p = g.simulation.particles.get(i);
-		int xCellPosition = (int) Math.floor(p.x / g.cellWidth + 1);
-		int yCellPosition = (int) Math.floor(p.y / g.cellHeight + 1);
+		int xCellPosition = (int) Math.floor(p.getX() / g.cellWidth + 1);
+		int yCellPosition = (int) Math.floor(p.getY() / g.cellHeight + 1);
 		
 		int xCellPosition2 = xCellPosition;
 		int yCellPosition2 = yCellPosition;
@@ -87,38 +87,17 @@ public class CloudInCell extends Interpolator {
 
 		if (Debug.asserts) {
 			// Assert conditions for interpolation
-			assert xCellPosition2 * g.cellWidth > p.x : p.x;
-			assert p.x > (xCellPosition2 - 1) * g.cellWidth : p.x;
-			assert yCellPosition2 * g.cellHeight > p.y : p.y;
-			assert p.y > (yCellPosition2 - 1) * g.cellHeight : p.y;
+			assert xCellPosition2 * g.cellWidth > p.getX() : p.getX();
+			assert p.getX() > (xCellPosition2 - 1) * g.cellWidth : p.getX();
+			assert yCellPosition2 * g.cellHeight > p.getY() : p.getY();
+			assert p.getY() > (yCellPosition2 - 1) * g.cellHeight : p.getY();
 		}
 
-		particles.get(i).Ex = ( g.Ex[xCellPosition][yCellPosition] * (xCellPosition2 * g.cellWidth - p.x) *
-				(yCellPosition2 * g.cellHeight - p.y) +
-				g.Ex[xCellPosition + 1][yCellPosition] * (p.x - (xCellPosition2 - 1) * g.cellWidth) *
-				(yCellPosition2 * g.cellHeight - p.y) +
-				g.Ex[xCellPosition][yCellPosition + 1] * (xCellPosition2 * g.cellWidth - p.x) *
-				(p.y - (yCellPosition2 - 1) * g.cellHeight) +
-				g.Ex[xCellPosition + 1][yCellPosition + 1] * (p.x - (xCellPosition2 - 1) * g.cellWidth) *
-				(p.y - (yCellPosition2 - 1) * g.cellHeight) ) / (g.cellWidth * g.cellHeight);
+			particles.get(i).setEx((g.Ex[xCellPosition][yCellPosition] * (xCellPosition2 * g.cellWidth - p.getX()) * (yCellPosition2 * g.cellHeight - p.getY()) + g.Ex[xCellPosition + 1][yCellPosition] * (p.getX() - (xCellPosition2 - 1) * g.cellWidth) * (yCellPosition2 * g.cellHeight - p.getY()) + g.Ex[xCellPosition][yCellPosition + 1] * (xCellPosition2 * g.cellWidth - p.getX()) * (p.getY() - (yCellPosition2 - 1) * g.cellHeight) + g.Ex[xCellPosition + 1][yCellPosition + 1] * (p.getX() - (xCellPosition2 - 1) * g.cellWidth) * (p.getY() - (yCellPosition2 - 1) * g.cellHeight)) / (g.cellWidth * g.cellHeight));
 		
-		particles.get(i).Ey = ( g.Ey[xCellPosition][yCellPosition] * (xCellPosition2 * g.cellWidth - p.x) *
-				(yCellPosition2 * g.cellHeight - p.y) +
-				g.Ey[xCellPosition + 1][yCellPosition] * (p.x - (xCellPosition2 - 1) * g.cellWidth) *
-				(yCellPosition2 * g.cellHeight - p.y) +
-				g.Ey[xCellPosition][yCellPosition + 1] * (xCellPosition2 * g.cellWidth - p.x) *
-				(p.y - (yCellPosition2 - 1) * g.cellHeight) +
-				g.Ey[xCellPosition + 1][yCellPosition + 1] * (p.x - (xCellPosition2 - 1) * g.cellWidth) *
-				(p.y - (yCellPosition2 - 1) * g.cellHeight) ) / (g.cellWidth * g.cellHeight);
+			particles.get(i).setEy((g.Ey[xCellPosition][yCellPosition] * (xCellPosition2 * g.cellWidth - p.getX()) * (yCellPosition2 * g.cellHeight - p.getY()) + g.Ey[xCellPosition + 1][yCellPosition] * (p.getX() - (xCellPosition2 - 1) * g.cellWidth) * (yCellPosition2 * g.cellHeight - p.getY()) + g.Ey[xCellPosition][yCellPosition + 1] * (xCellPosition2 * g.cellWidth - p.getX()) * (p.getY() - (yCellPosition2 - 1) * g.cellHeight) + g.Ey[xCellPosition + 1][yCellPosition + 1] * (p.getX() - (xCellPosition2 - 1) * g.cellWidth) * (p.getY() - (yCellPosition2 - 1) * g.cellHeight)) / (g.cellWidth * g.cellHeight));
 		
-		particles.get(i).Bz = ( g.Bz[xCellPosition][yCellPosition] * (xCellPosition2 * g.cellWidth - p.x) *
-				(yCellPosition2 * g.cellHeight - p.y) +
-				g.Bz[xCellPosition + 1][yCellPosition] * (p.x - (xCellPosition2 - 1) * g.cellWidth) *
-				(yCellPosition2 * g.cellHeight - p.y) +
-				g.Bz[xCellPosition][yCellPosition + 1] * (xCellPosition2 * g.cellWidth - p.x) *
-				(p.y - (yCellPosition2 - 1) * g.cellHeight) +
-				g.Bz[xCellPosition + 1][yCellPosition + 1] * (p.x - (xCellPosition2 -1) * g.cellWidth) *
-				(p.y - (yCellPosition2 -1) * g.cellHeight) ) / (g.cellWidth * g.cellHeight);
+			particles.get(i).setBz((g.Bz[xCellPosition][yCellPosition] * (xCellPosition2 * g.cellWidth - p.getX()) * (yCellPosition2 * g.cellHeight - p.getY()) + g.Bz[xCellPosition + 1][yCellPosition] * (p.getX() - (xCellPosition2 - 1) * g.cellWidth) * (yCellPosition2 * g.cellHeight - p.getY()) + g.Bz[xCellPosition][yCellPosition + 1] * (xCellPosition2 * g.cellWidth - p.getX()) * (p.getY() - (yCellPosition2 - 1) * g.cellHeight) + g.Bz[xCellPosition + 1][yCellPosition + 1] * (p.getX() - (xCellPosition2 -1) * g.cellWidth) * (p.getY() - (yCellPosition2 -1) * g.cellHeight)) / (g.cellWidth * g.cellHeight));
 		
 		}
 		

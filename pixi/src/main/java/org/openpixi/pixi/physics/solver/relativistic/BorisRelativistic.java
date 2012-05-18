@@ -44,30 +44,30 @@ public class BorisRelativistic implements Solver{
 
 		// remember for complete()
 		//a(t) = F(v(t), x(t)) / m
-		p.ax = f.getForceX(p) / p.mass;
-		p.ay = f.getForceY(p) / p.mass;
+		p.setAx(f.getForceX(p) / p.getMass());
+		p.setAy(f.getForceY(p) / p.getMass());
 		
 		//double ux = p.vx * Math.sqrt(1 / (1 - (p.vx / ConstantsSI.c) * (p.vx / ConstantsSI.c)));
 		//double uy = p.vy * Math.sqrt(1 / (1 - (p.vy / ConstantsSI.c) * (p.vy / ConstantsSI.c)));
 		//finding v(t) in order to calculate gamma(t)
-		double vx = p.vx + (p.ax * step / 2);
-		double vy = p.vy + (p.ay * step / 2);
+		double vx = p.getVx() + (p.getAx() * step / 2);
+		double vy = p.getVy() + (p.getAy() * step / 2);
 		
 		double v = Math.sqrt(vx * vx + vy * vy);
 		double gamma = Math.sqrt(1 / (1 - (v / ConstantsSI.c) * (v / ConstantsSI.c)));
 		
-		double ux = p.vx * gamma;
-		double uy = p.vy * gamma;
+		double ux = p.getVx() * gamma;
+		double uy = p.getVy() * gamma;
 		
-		double vxminus = ux + f.getPositionComponentofForceX(p) * step / (2.0 * p.mass);
+		double vxminus = ux + f.getPositionComponentofForceX(p) * step / (2.0 * p.getMass());
 		double vxplus;
 		double vxprime;
 		
-		double vyminus = uy + f.getPositionComponentofForceY(p) * step / (2.0 * p.mass);
+		double vyminus = uy + f.getPositionComponentofForceY(p) * step / (2.0 * p.getMass());
 		double vyplus;
 		double vyprime;
 		
-		double t_z = p.charge * f.getBz(p) * step / (2.0 * p.mass * gamma);   //t vector
+		double t_z = p.getCharge() * f.getBz(p) * step / (2.0 * p.getMass() * gamma);   //t vector
 		
 		double s_z = 2 * t_z / (1 + t_z * t_z);               //s vector
 		
@@ -77,11 +77,11 @@ public class BorisRelativistic implements Solver{
 		vxplus = vxminus + vyprime * s_z;
 		vyplus = vyminus - vxprime * s_z;
 		
-		p.vx = vxplus + f.getPositionComponentofForceX(p) * step / (2.0 * p.mass) + f.getTangentVelocityComponentOfForceX(p) * step / p.mass;
-		p.vy = vyplus + f.getPositionComponentofForceY(p) * step / (2.0 * p.mass) + f.getTangentVelocityComponentOfForceY(p) * step / p.mass;
+		p.setVx(vxplus + f.getPositionComponentofForceX(p) * step / (2.0 * p.getMass()) + f.getTangentVelocityComponentOfForceX(p) * step / p.getMass());
+		p.setVy(vyplus + f.getPositionComponentofForceY(p) * step / (2.0 * p.getMass()) + f.getTangentVelocityComponentOfForceY(p) * step / p.getMass());
 		
-		p.x += p.vx * step / Math.sqrt(1 / (1 - (p.vx / ConstantsSI.c) * (p.vx / ConstantsSI.c)));
-		p.y += p.vy * step / Math.sqrt(1 / (1 - (p.vy / ConstantsSI.c) * (p.vy / ConstantsSI.c)));
+		p.setX(p.getX() + p.getVx() * step / Math.sqrt(1 / (1 - (p.getVx() / ConstantsSI.c) * (p.getVx() / ConstantsSI.c))));
+		p.setY(p.getY() + p.getVy() * step / Math.sqrt(1 / (1 - (p.getVy() / ConstantsSI.c) * (p.getVy() / ConstantsSI.c))));
 	}	
 	/**
 	 * prepare method for bringing the velocity in the desired half step
@@ -91,12 +91,12 @@ public class BorisRelativistic implements Solver{
 	public void prepare(Particle p, Force f, double dt)
 	{	
 		//a(t) = F(v(t), x(t)) / m
-		p.ax = f.getForceX(p) / p.mass;
-		p.ay = f.getForceY(p) / p.mass;
+		p.setAx(f.getForceX(p) / p.getMass());
+		p.setAy(f.getForceY(p) / p.getMass());
 
 		//v(t - dt / 2) = v(t) - a(t)*dt / 2
-		p.vx -= (p.ax * dt / 2);
-		p.vy -= (p.ay * dt / 2);
+		p.setVx(p.getVx() - (p.getAx() * dt / 2));
+		p.setVy(p.getVy() - (p.getAy() * dt / 2));
 	}
 
 	/**
@@ -107,7 +107,7 @@ public class BorisRelativistic implements Solver{
 	public void complete(Particle p, Force f, double dt)
 	{
 		//v(t) = v(t - dt / 2) + a(t)*dt / 2
-		p.vx += (p.ax * dt / 2);
-		p.vy += (p.ay * dt / 2);
+		p.setVx(p.getVx() + (p.getAx() * dt / 2));
+		p.setVy(p.getVy() + (p.getAy() * dt / 2));
 	}
 }

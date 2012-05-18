@@ -42,22 +42,22 @@ public class LeapFrogDamped implements Solver{
 	public void step(Particle p, Force f, double dt) {
 		
 		//help coefficients for the dragging
-		double help1_coef = 1 - f.getLinearDragCoefficient(p) * dt / (2 * p.mass);
-		double help2_coef = 1 + f.getLinearDragCoefficient(p) * dt / (2 * p.mass);
+		double help1_coef = 1 - f.getLinearDragCoefficient(p) * dt / (2 * p.getMass());
+		double help2_coef = 1 + f.getLinearDragCoefficient(p) * dt / (2 * p.getMass());
 		
 		// x(t+dt) = x(t) + v(t+dt/2)*dt
-		p.x += p.vx * dt;
-		p.y += p.vy * dt;
+		p.setX(p.getX() + p.getVx() * dt);
+		p.setY(p.getY() + p.getVy() * dt);
 
 		// a(t+dt) = F(v(t+dt/2), x(t+dt)) / m
 		// WARNING: Force is evaluated at two different times t+dt/2 and t+dt!
-		p.ax = (f.getPositionComponentofForceX(p) + f.getNormalVelocityComponentofForceX(p)) / p.mass;
-		p.ay = (f.getPositionComponentofForceY(p) + f.getNormalVelocityComponentofForceY(p)) / p.mass;
+		p.setAx((f.getPositionComponentofForceX(p) + f.getNormalVelocityComponentofForceX(p)) / p.getMass());
+		p.setAy((f.getPositionComponentofForceY(p) + f.getNormalVelocityComponentofForceY(p)) / p.getMass());
 
 
 		// v(t+3*dt/2) = v(t+dt/2) + a(t+dt)*dt
-		p.vx = (p.vx * help1_coef + p.ax * dt) / help2_coef;
-		p.vy = (p.vy * help1_coef + p.ay * dt) / help2_coef;
+		p.setVx((p.getVx() * help1_coef + p.getAx() * dt) / help2_coef);
+		p.setVy((p.getVy() * help1_coef + p.getAy() * dt) / help2_coef);
 		
 	}
 	/**
@@ -67,17 +67,17 @@ public class LeapFrogDamped implements Solver{
 	 */
 	public void prepare(Particle p, Force f, double dt)
 	{
-		double help1_coef = 1 - f.getLinearDragCoefficient(p) * dt / (2 * p.mass);
-		double help2_coef = 1 + f.getLinearDragCoefficient(p) * dt / (2 * p.mass);
+		double help1_coef = 1 - f.getLinearDragCoefficient(p) * dt / (2 * p.getMass());
+		double help2_coef = 1 + f.getLinearDragCoefficient(p) * dt / (2 * p.getMass());
 		
 		//a(t) = F(v(t), x(t)) / m
-		p.ax = (f.getPositionComponentofForceX(p) + f.getNormalVelocityComponentofForceX(p)) / p.mass;
-		p.ay = (f.getPositionComponentofForceY(p) + f.getNormalVelocityComponentofForceY(p)) / p.mass;
+		p.setAx((f.getPositionComponentofForceX(p) + f.getNormalVelocityComponentofForceX(p)) / p.getMass());
+		p.setAy((f.getPositionComponentofForceY(p) + f.getNormalVelocityComponentofForceY(p)) / p.getMass());
 
 		
 		//v(t + dt / 2) = v(t) + a(t)*dt / 2
-		p.vx = (p.vx * help1_coef + p.ax * dt * 0.5) / help2_coef;
-		p.vy = (p.vy * help1_coef + p.ay * dt * 0.5) / help2_coef;
+		p.setVx((p.getVx() * help1_coef + p.getAx() * dt * 0.5) / help2_coef);
+		p.setVy((p.getVy() * help1_coef + p.getAy() * dt * 0.5) / help2_coef);
 	}
 	/**
 	 * complete method for bringing the velocity in the desired half step
@@ -86,12 +86,12 @@ public class LeapFrogDamped implements Solver{
 	 */
 	public void complete(Particle p, Force f, double dt)
 	{
-		double help1_coef = 1 - f.getLinearDragCoefficient(p) * dt / (2 * p.mass);
-		double help2_coef = 1 + f.getLinearDragCoefficient(p) * dt / (2 * p.mass);
+		double help1_coef = 1 - f.getLinearDragCoefficient(p) * dt / (2 * p.getMass());
+		double help2_coef = 1 + f.getLinearDragCoefficient(p) * dt / (2 * p.getMass());
 		
 		//v(t) = v(t + dt / 2) - a(t)*dt / 2
-		p.vx = (p.vx * help2_coef - p.ax * dt * 0.5) / help1_coef;
-		p.vy = (p.vy * help2_coef - p.ay * dt * 0.5) / help1_coef;
+		p.setVx((p.getVx() * help2_coef - p.getAx() * dt * 0.5) / help1_coef);
+		p.setVy((p.getVy() * help2_coef - p.getAy() * dt * 0.5) / help1_coef);
 	}
 
 }

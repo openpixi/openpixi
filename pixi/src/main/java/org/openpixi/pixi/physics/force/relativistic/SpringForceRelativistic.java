@@ -13,7 +13,7 @@ public class SpringForceRelativistic implements Force {
 
 	public double getForceY(Particle par)
 	{
-		return - 0.01 * (par.y - 200);
+		return - 0.01 * (par.getY() - 200);
 	}
 
 	public double getPositionComponentofForceX(Particle par)
@@ -23,7 +23,7 @@ public class SpringForceRelativistic implements Force {
 
 	public double getPositionComponentofForceY(Particle par)
 	{
-		return - 0.01 * (par.y - 200);
+		return - 0.01 * (par.getY() - 200);
 	}
 
 	public double getTangentVelocityComponentOfForceX(Particle par)
@@ -37,17 +37,17 @@ public class SpringForceRelativistic implements Force {
 	}
 
 	public double getNormalVelocityComponentofForceX(Particle p) {
-		double v = Math.sqrt(p.vx * p.vx + p.vy * p.vy);
+		double v = Math.sqrt(p.getVx() * p.getVx() + p.getVy() * p.getVy());
 		double gamma = Math.sqrt(1 / (1 - (v / ConstantsSI.c) * (v / ConstantsSI.c)));
-		double uy = p.vy * gamma;
-		return p.charge * uy * getBz(p);
+		double uy = p.getVy() * gamma;
+		return p.getCharge() * uy * getBz(p);
 	}
 
 	public double getNormalVelocityComponentofForceY(Particle p) {
-		double v = Math.sqrt(p.vx * p.vx + p.vy * p.vy);
+		double v = Math.sqrt(p.getVx() * p.getVx() + p.getVy() * p.getVy());
 		double gamma = Math.sqrt(1 / (1 - (v / ConstantsSI.c) * (v / ConstantsSI.c)));
-		double ux = p.vx * gamma;
-		return - p.charge * ux * getBz(p);
+		double ux = p.getVx() * gamma;
+		return - p.getCharge() * ux * getBz(p);
 	}
 
 	public double getBz(Particle p) {

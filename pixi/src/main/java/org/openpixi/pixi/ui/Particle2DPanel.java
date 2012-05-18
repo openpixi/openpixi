@@ -91,8 +91,8 @@ public class Particle2DPanel extends JPanel {
 			if(writePosition)
 			{
 				Particle par = (Particle) s.particles.get(0);
-				System.out.println(par.x + " " + par.y);
-				file.writeFile(fileName, fileDirectory, par.x + " " + par.y);
+				System.out.println(par.getX() + " " + par.getY());
+				file.writeFile(fileName, fileDirectory, par.getX() + " " + par.getY());
 			}
 		}
 	}
@@ -211,14 +211,14 @@ public class Particle2DPanel extends JPanel {
 			s.f.add(force);
 			InitialConditions.createRandomParticles(s.width, s.height, s.c, 1, 10);
 			Particle par = (Particle) s.particles.get(0);
-			par.x = this.getWidth() * 0.5;
-			par.y = this.getHeight() * 0.5;
+			par.setX(this.getWidth() * 0.5);
+			par.setY(this.getHeight() * 0.5);
 			//System.out.println(this.getWidth() * 0.5 + " x0");
 			//System.out.println(this.getHeight() * 0.5 + " y0");
-			par.vx = 10;
-			par.vy = 10;
-			par.mass = 1;
-			par.charge = 1;
+			par.setVx(10);
+			par.setVy(10);
+			par.setMass(1);
+			par.setCharge(1);
 		}
 		else {
 			resetAnimation(0);
@@ -394,24 +394,24 @@ public class Particle2DPanel extends JPanel {
 		//if(!drawCurrentGrid) {
 		for (int i = 0; i < s.particles.size(); i++) {
 			Particle par = (Particle) s.particles.get(i);
-			if (par.charge > 0) {
+			if (par.getCharge() > 0) {
 				graph.setColor(Color.blue);
 			} else {
 				graph.setColor(Color.red);
 			}
-			int resize = 2 * (int) par.radius ;
+			int resize = 2 * (int) par.getRadius() ;
 			if(paint_trace)
 			{
 				resize = resize / 5;
 			}
 			if(resize > 2)
 			{
-				graph.fillOval((int) par.x - resize /2, (int) par.y - resize / 2,  resize,  resize);
+				graph.fillOval((int) par.getX() - resize /2, (int) par.getY() - resize / 2,  resize,  resize);
 			}
 			else {
 				// drawRect(x,y,0,0) is about 20% faster than fillRect(x,y,1,1)
 				//graph.fillRect((int) par.x, (int) par.y, 1, 1);
-				graph.drawRect((int) par.x, (int) par.y, 0, 0);
+				graph.drawRect((int) par.getX(), (int) par.getY(), 0, 0);
 			}
 		}
 		

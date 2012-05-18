@@ -15,67 +15,67 @@ public class SimpleGridForceRelativistic implements Force {
 	}
 
 	public double getForceX(Particle p) {
-		double v = Math.sqrt(p.vx * p.vx + p.vy * p.vy);
+		double v = Math.sqrt(p.getVx() * p.getVx() + p.getVy() * p.getVy());
 		double gamma = Math.sqrt(1 / (1 - (v / ConstantsSI.c) * (v / ConstantsSI.c)));
 		
-		double uy = p.vy * gamma;
+		double uy = p.getVy() * gamma;
 		
-		return p.charge * ( p.Ex + uy * p.Bz);
+		return p.getCharge() * ( p.getEx() + uy * p.getBz());
 	}
 
 	public double getForceY(Particle p) {
-		double v = Math.sqrt(p.vx * p.vx + p.vy * p.vy);
+		double v = Math.sqrt(p.getVx() * p.getVx() + p.getVy() * p.getVy());
 		double gamma = Math.sqrt(1 / (1 - (v / ConstantsSI.c) * (v / ConstantsSI.c)));
 		
-		double ux = p.vx * gamma;
+		double ux = p.getVx() * gamma;
 		
-		return p.charge * (p.Ey - ux * p.Bz);
+		return p.getCharge() * (p.getEy() - ux * p.getBz());
 	}
 
 	public double getPositionComponentofForceX(Particle p) {
-		return p.charge * p.Ex;
+		return p.getCharge() * p.getEx();
 	}
 
 	public double getPositionComponentofForceY(Particle p) {
-		return p.charge * p.Ey;
+		return p.getCharge() * p.getEy();
 	}
 
 	public double getNormalVelocityComponentofForceX(Particle p) {
-		double v = Math.sqrt(p.vx * p.vx + p.vy * p.vy);
+		double v = Math.sqrt(p.getVx() * p.getVx() + p.getVy() * p.getVy());
 		double gamma = Math.sqrt(1 / (1 - (v / ConstantsSI.c) * (v / ConstantsSI.c)));
 		
-		double uy = p.vy * gamma;
+		double uy = p.getVy() * gamma;
 		
-		return p.charge * uy * p.Bz;
+		return p.getCharge() * uy * p.getBz();
 	}
 
 	public double getNormalVelocityComponentofForceY(Particle p) {
-		double v = Math.sqrt(p.vx * p.vx + p.vy * p.vy);
+		double v = Math.sqrt(p.getVx() * p.getVx() + p.getVy() * p.getVy());
 		double gamma = Math.sqrt(1 / (1 - (v / ConstantsSI.c) * (v / ConstantsSI.c)));
 		
-		double ux = p.vx * gamma;
+		double ux = p.getVx() * gamma;
 		
-		return - p.charge * ux * p.Bz;
+		return - p.getCharge() * ux * p.getBz();
 	}
 
 	public double getBz(Particle p) {
-		return p.Bz;
+		return p.getBz();
 	}
 
 	public double getTangentVelocityComponentOfForceX(Particle p) {
-		double v = Math.sqrt(p.vx * p.vx + p.vy * p.vy);
+		double v = Math.sqrt(p.getVx() * p.getVx() + p.getVy() * p.getVy());
 		double gamma = Math.sqrt(1 / (1 - (v / ConstantsSI.c) * (v / ConstantsSI.c)));
 		
-		double ux = p.vx * gamma;
+		double ux = p.getVx() * gamma;
 		
 		return -getLinearDragCoefficient(p) * ux;
 	}
 
 	public double getTangentVelocityComponentOfForceY(Particle p) {
-		double v = Math.sqrt(p.vx * p.vx + p.vy * p.vy);
+		double v = Math.sqrt(p.getVx() * p.getVx() + p.getVy() * p.getVy());
 		double gamma = Math.sqrt(1 / (1 - (v / ConstantsSI.c) * (v / ConstantsSI.c)));
 		
-		double uy = p.vy * gamma;
+		double uy = p.getVy() * gamma;
 		
 		return -getLinearDragCoefficient(p) * uy;
 	}
