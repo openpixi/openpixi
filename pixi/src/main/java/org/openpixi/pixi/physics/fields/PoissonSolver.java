@@ -56,12 +56,6 @@ public class PoissonSolver {
 		//perform inverse Fourier transform
 		fft.complexInverse(phi, true);
 		
-		for(int i = 0; i < columns; i++) {
-			for(int j = 0; j < rows; j++) {
-				System.out.println(phi[i][2*j] + " " + phi[i][2*j+1]);
-			}
-		}
-		
 		//calculate and save electric fields
 
 		//simulation area without boundaries
@@ -72,7 +66,6 @@ public class PoissonSolver {
 				//using central difference, omitting imaginary part since it should be 0 anyway
 				g.Ex[i][j] = -(phi[i+1][2*j] - phi[i-1][2*j]) / (2 * g.cellWidth);
 				g.Ey[i][j] = -(phi[i][2*(j+1)] - phi[i][2*(j-1)]) / (2 * g.cellHeight);
-				System.out.println(g.Ex[i][j] + " " + g.Ey[i][j]);
 			}
 		}
 		
