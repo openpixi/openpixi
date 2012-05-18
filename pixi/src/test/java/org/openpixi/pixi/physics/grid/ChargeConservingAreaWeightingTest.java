@@ -151,10 +151,6 @@ public class ChargeConservingAreaWeightingTest extends TestCase {
 		//change default grid parameters here
 		grid.changeDimension(10, 10, 10, 10);
 
-		// Remember old values
-		p.setPrevX(p.getX());
-		p.setPrevY(p.getY());
-
 		// Advance particle
 		s.particlePush();
 		
@@ -243,10 +239,6 @@ public class ChargeConservingAreaWeightingTest extends TestCase {
 		YeeGrid grid = new YeeGrid(s); // 10x10 grid
 		//change default grid parameters here
 		grid.changeDimension(10, 10, 10, 10);
-
-		// Remember old values
-		p.setPrevX(p.getX());
-		p.setPrevY(p.getY());
 
 		// Advance particle
 		s.particlePush();

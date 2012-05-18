@@ -198,6 +198,12 @@ public class Particle{
 		mass = p.mass;
 		charge = p.charge;
 	}		
+
+	
+	public void storePosition() {
+		prevX = x;
+		prevY = y;
+	}
 	
 	//a method that calculates the range from the center 0.0 for 2-dim
 	public double rangeFromCenter2D()

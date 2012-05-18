@@ -91,6 +91,8 @@ public class Simulation {
 	
 	public void particlePush() {
 		for (Particle p : particles) {
+			// Before we move the particle we store its position
+			p.storePosition();
 			psolver.step(p, f, tstep);
 			boundary.check(p, f, psolver, tstep);
 		}		

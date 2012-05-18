@@ -58,10 +58,6 @@ public class ChargeConservingAreaWeighting extends Interpolator {
 						tenBoundaryMove(xStart, yStart, xEnd, yEnd, deltaX, deltaY, p);
 						
 					}
-						
-			p.setPrevX(p.getX());
-			p.setPrevY(p.getY());
-			
 		}
 	}
 	

@@ -106,10 +106,6 @@ public class CloudInCellTest extends TestCase {
 		//change default grid parameters here
 		grid.changeDimension(10, 10, 10, 10);
 
-		// Remember old values
-		p.setPrevX(p.getX());
-		p.setPrevY(p.getY());
-
 		// Advance particle
 		s.particlePush();
 		
@@ -188,10 +184,6 @@ Simulation s = InitialConditions.initEmptySimulation();
 		SimpleGrid grid = new SimpleGrid(s); // 10x10 grid
 		//change default grid parameters here
 		grid.changeDimension(10, 10, 10, 10);
-
-		// Remember old values
-		p.setPrevX(p.getX());
-		p.setPrevY(p.getY());
 
 		// Advance particle
 		s.particlePush();

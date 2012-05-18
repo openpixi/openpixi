@@ -15,8 +15,6 @@ public class Interpolator {
 		for (Particle p: g.simulation.particles){
 			//assuming rectangular particle shape i.e. area weighting
 			p.setChargedensity(p.getCharge() / (g.cellWidth * g.cellHeight));
-			p.setPrevX(p.getX());
-			p.setPrevY(p.getY());
 		}
 		
 	}
