@@ -50,8 +50,8 @@ public class Boris implements Solver{
 
 		/*// remember for complete()
 		//a(t) = F(v(t), x(t)) / m*/
-		p.ax = f.getForceX(p) / p.mass;
-		p.ay = f.getForceY(p) / p.mass;
+		/*p.ax = f.getForceX(p) / p.mass;
+		p.ay = f.getForceY(p) / p.mass;*/
 		
 		positionComponentForceX = f.getPositionComponentofForceX(p);
 		positionComponentForceY = f.getPositionComponentofForceY(p);
@@ -91,11 +91,11 @@ public class Boris implements Solver{
 	 */
 	public void prepare(Particle2D p, Force f, double dt)
 	{
-		p.ax = f.getForceX(p) / p.mass;
+		/*p.ax = f.getForceX(p) / p.mass;
 		p.ay = f.getForceY(p) / p.mass;
 		
 		double vx = p.vx - p.ax * dt / 2;
-		double vy = p.vy - p.ay * dt / 2;
+		double vy = p.vy - p.ay * dt / 2;*/
 		
 		double step = - dt * 0.5;
 		/*double vxminus = p.vx + positionComponentForceX * step / (2.0 * p.mass);
@@ -143,8 +143,8 @@ public class Boris implements Solver{
 		p.vx = vxplus + f.getPositionComponentofForceX(p) * step / (2.0 * p.mass) + f.getTangentVelocityComponentOfForceX(p) * step / p.mass;
 		p.vy = vyplus + f.getPositionComponentofForceY(p) * step / (2.0 * p.mass) + f.getTangentVelocityComponentOfForceY(p) * step / p.mass;
 		
-		System.out.println("prepare difference x " + (double)(p.vx - vx));
-		System.out.println("prepare difference y " + (double)(p.vy - vy));
+		//System.out.println("prepare difference x " + (double)(p.vx - vx));
+		//System.out.println("prepare difference y " + (double)(p.vy - vy));
 		/*System.out.println("prepare leapfrog x " + vx);
 		System.out.println("prepare leapfrog y " + vy);
 		System.out.println("prepare Boris x " + p.vx);
@@ -160,8 +160,8 @@ public class Boris implements Solver{
 	 */
 	public void complete(Particle2D p, Force f, double dt)
 	{
-		double vx = p.vx + p.ax * dt / 2;
-		double vy = p.vy + p.ay * dt / 2;
+		/*double vx = p.vx + p.ax * dt / 2;
+		double vy = p.vy + p.ay * dt / 2;*/
 		
 		double step = dt * 0.5;
 		double vxminus = p.vx + f.getPositionComponentofForceX(p) * step / (2.0 * p.mass);
@@ -186,8 +186,8 @@ public class Boris implements Solver{
 		p.vx = vxplus + f.getPositionComponentofForceX(p) * step / (2.0 * p.mass) + f.getTangentVelocityComponentOfForceX(p) * step / p.mass;
 		p.vy = vyplus + f.getPositionComponentofForceY(p) * step / (2.0 * p.mass) + f.getTangentVelocityComponentOfForceY(p) * step / p.mass;
 		
-		System.out.println("complete difference x " + (double)(p.vx - vx));
-		System.out.println("complete difference y " + (double)(p.vy - vy));
+		//System.out.println("complete difference x " + (double)(p.vx - vx));
+		//System.out.println("complete difference y " + (double)(p.vy - vy));
 
 
 	}
