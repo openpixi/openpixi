@@ -64,7 +64,12 @@ public class Particle2DPanel extends JPanel {
 	private boolean calculateFields = false;
 	
 	private boolean writePosition = false;
-
+	
+	/** Scaling factor for the displayed panel in x-direction*/
+	double sx;
+	/** Scaling factor for the displayed panel in y-direction*/
+	double sy;	
+	
 	/** Milliseconds between updates */
 	private int interval = 30;
 
@@ -84,9 +89,10 @@ public class Particle2DPanel extends JPanel {
 
 		public void actionPerformed(ActionEvent eve) {
 
-			updateSimulationSize();
 			s.step();
 			frameratedetector.update();
+			sx = getWidth() / s.width;
+			sy = getHeight() / s.height;
 			repaint();
 			if(writePosition)
 			{
@@ -104,13 +110,8 @@ public class Particle2DPanel extends JPanel {
 		this.setVisible(true);
 		frameratedetector = new FrameRateDetector(500);
 		
-		s = InitialConditions.initRandomParticles(10, 8);
-		updateSimulationSize();
+		s = InitialConditions.initRandomParticles(10, 1);
 
-	}
-
-	private void updateSimulationSize() {
-		s.setSize(getWidth(), getHeight());
 	}
 
 	public void startAnimation() {
@@ -128,31 +129,30 @@ public class Particle2DPanel extends JPanel {
 		reset_trace = true;
 		switch(id) {
 		case 0:
-			s = InitialConditions.initRandomParticles(10, 8);
+			s = InitialConditions.initRandomParticles(10, 1);
 			break;
 		case 1:
-			s = InitialConditions.initRandomParticles(100, 5);
+			s = InitialConditions.initRandomParticles(100, 1);
 			break;
 		case 2:
-			s = InitialConditions.initRandomParticles(1000, 3);
+			s = InitialConditions.initRandomParticles(1000, 0.5);
 			break;
 		case 3:
-			s = InitialConditions.initRandomParticles(10000, 1);
+			s = InitialConditions.initRandomParticles(10000, 0.01);
 			break;
 		case 4:
-			s = InitialConditions.initGravity(1, 8);
+			s = InitialConditions.initGravity(1, 1);
 			break;
 		case 5:
-			s = InitialConditions.initElectric(1, 8);
+			s = InitialConditions.initElectric(1, 1);
 			break;
 		case 6:
-			s = InitialConditions.initMagnetic(3, 8);
+			s = InitialConditions.initMagnetic(3, 1);
 			break;
 		case 7:
-			s = InitialConditions.initSpring(1, 8);
+			s = InitialConditions.initSpring(1, 1);
 			break;
 		}
-		updateSimulationSize();
 		updateFieldForce();
 		s.prepareAllParticles();
 		timer.start();
@@ -182,7 +182,6 @@ public class Particle2DPanel extends JPanel {
 			s.grid = null;
 			s.grid = new YeeGrid(s);
 			s.boundary = new PeriodicBoundary(s);
-			updateSimulationSize();
 		}
 		else {
 			s.grid = null;
@@ -378,8 +377,8 @@ public class Particle2DPanel extends JPanel {
 	public void paintComponent(Graphics graph1) {
 		Graphics2D graph = (Graphics2D) graph1;
 		setBackground(Color.white);
-		graph.translate(0.0, this.getHeight());
-		graph.scale(1.0, -1.0);
+		graph.translate(0, this.getHeight());
+		graph.scale(1, -1);
 
 		if(!paint_trace)
 		{
@@ -391,27 +390,21 @@ public class Particle2DPanel extends JPanel {
 			reset_trace = false;
 		}
 		
-		//if(!drawCurrentGrid) {
 		for (int i = 0; i < s.particles.size(); i++) {
 			Particle par = (Particle) s.particles.get(i);
 			if (par.getCharge() > 0) {
-				graph.setColor(Color.blue);
-			} else {
 				graph.setColor(Color.red);
+			} else {
+				graph.setColor(Color.blue);
 			}
-			int resize = 2 * (int) par.getRadius() ;
-			if(paint_trace)
-			{
-				resize = resize / 5;
-			}
-			if(resize > 2)
-			{
-				graph.fillOval((int) par.getX() - resize /2, (int) par.getY() - resize / 2,  resize,  resize);
+			double radius = par.getRadius();
+			int width = (int) (2*sx*radius);
+			int height = (int) (2*sy*radius);
+			if(width > 2 && height > 2 && !paint_trace) {
+				graph.fillOval((int) (par.getX()*sx) - width/2, (int) (par.getY()*sy) - height/2,  width,  height);
 			}
 			else {
-				// drawRect(x,y,0,0) is about 20% faster than fillRect(x,y,1,1)
-				//graph.fillRect((int) par.x, (int) par.y, 1, 1);
-				graph.drawRect((int) par.getX(), (int) par.getY(), 0, 0);
+				graph.drawRect((int) (par.getX()*sx), (int) (par.getY()*sy), 0, 0);
 			}
 		}
 		
@@ -421,9 +414,9 @@ public class Particle2DPanel extends JPanel {
 			for(int i = 0; i < s.grid.numCellsX; i++)
 				for(int k = 0; k < s.grid.numCellsY; k++)
 				{
-					int xstart = (int) (s.grid.cellWidth * (i + 0.5));
-					int ystart = (int) (s.grid.cellHeight * (k + 0.5));
-					drawArrow(graph, xstart, ystart, (int) Math.round(s.grid.jx[i][k] + xstart), (int) Math.round(s.grid.jy[i][k] + ystart));
+					int xstart = (int) (s.grid.cellWidth * (i + 0.5) * sx);
+					int ystart = (int) (s.grid.cellHeight * (k + 0.5) * sy);
+					drawArrow(graph, xstart, ystart, (int) Math.round(s.grid.jx[i][k]*sx + xstart), (int) Math.round(s.grid.jy[i][k]*sy + ystart));
 				}
 			//return;
 		}
@@ -434,9 +427,9 @@ public class Particle2DPanel extends JPanel {
 			for(int i = 0; i < s.grid.numCellsX; i++)
 				for(int k = 0; k < s.grid.numCellsY; k++)
 				{
-					int xstart = (int) (s.grid.cellWidth * (i + 0.5));
-					int ystart = (int) (s.grid.cellHeight * (k + 0.5));
-					drawArrow(graph, xstart, ystart, (int) Math.round(s.grid.Ex[i][k] + xstart), (int) Math.round(s.grid.Ey[i][k] + ystart));
+					int xstart = (int) (s.grid.cellWidth * (i + 0.5) * sx);
+					int ystart = (int) (s.grid.cellHeight * (k + 0.5) * sy);
+					drawArrow(graph, xstart, ystart, (int) Math.round(s.grid.Ex[i][k]*sx + xstart), (int) Math.round(s.grid.Ey[i][k]*sy + ystart));
 				}
 			//return;
 		}
@@ -461,6 +454,8 @@ public class Particle2DPanel extends JPanel {
 				(freeMemory + (maxMemory - allocatedMemory)) / 1024, 30, bottom - 30);
 		}		
 	}
+	
+	
 	private void drawArrow(Graphics2D g, int x1, int y1, int x2, int y2) {
 		
 		int ARR_SIZE = 5;
