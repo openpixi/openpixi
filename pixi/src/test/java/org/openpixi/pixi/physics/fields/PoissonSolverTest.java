@@ -27,22 +27,35 @@ public class PoissonSolverTest extends TestCase {
 		g.cellHeight = 1;
 		g.rho = new double[g.numCellsX][g.numCellsY];
 		g.phi = new double[g.numCellsX][g.numCellsY];
+		g.Ex = new double[g.numCellsX][g.numCellsY];
+		g.Ey = new double[g.numCellsX][g.numCellsY];
 		
 		for (int i = 0; i < g.numCellsX; i++) {
 			for (int j = 0; j < g.numCellsY; j++) {
 				g.rho[i][j] = 0;
 				g.phi[i][j] = 0;
+				g.Ex[i][j] = 0;
+				g.Ey[i][j] = 0;
 			}
 		}
 		
-		g.rho[5][5] = 1;
+		g.rho[5][5] = 50;
 		
 		PoissonSolver.solve2D(g);
 		
-		WriteFile file = new WriteFile();
-		for (double[] x : g.phi) {
-			for(double y : x) {
-				file.writeFile("potential", "C:\\out", y +"");
+		WriteFile potentialFile = new WriteFile();
+		for (int i = 0; i < g.numCellsX; i++) {
+			for(int j = 0; j < g.numCellsY; j++) {
+				potentialFile.writeFile("potential", "", g.numCellsX*i + "\t" + g.numCellsY*j +
+						"\t" +  g.phi[i][j]);
+			}
+		}
+		
+		WriteFile fieldFile = new WriteFile();
+		for (int i = 0; i < g.numCellsX; i++) {
+			for(int j = 0; j < g.numCellsY; j++) {
+				fieldFile.writeFile("efeld", "", g.numCellsX*i + "\t" + g.numCellsY*j +
+						"\t" + g.Ex[i][j] + "\t" + g.Ey[i][j]);
 			}
 		}
 		
