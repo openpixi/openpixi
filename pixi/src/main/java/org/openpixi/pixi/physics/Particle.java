@@ -18,9 +18,6 @@
  */
 package org.openpixi.pixi.physics;
 
-import java.lang.Math;
-import org.openpixi.pixi.physics.grid.Particle2DData;
-
 	
 public class Particle{
 
@@ -51,8 +48,19 @@ public class Particle{
 	/** electric charge of the particle */
 	public double charge;
 	
-	public Particle2DData data;
-
+	/**previous x position of particle*/
+	public double prevX;
+	/**previous y position of particle*/
+	public double prevY;
+	
+	/**charge density of particle for a specific form factor*/
+	public double chargedensity;
+	
+	public double Ex;
+	public double Ey;
+	public double Bz;
+	
+	
 	/** Empty constructor */
 	public Particle() {
 	}

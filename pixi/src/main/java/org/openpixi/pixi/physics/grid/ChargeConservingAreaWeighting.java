@@ -21,15 +21,15 @@ public class ChargeConservingAreaWeighting extends Interpolator {
 			Particle p = particles.get(i);
 			
 			//local origin i.e. nearest grid point BEFORE particle push
-			int xStart = (int) Math.floor(p.data.x / g.cellWidth + 0.5);
-			int yStart = (int) Math.floor(p.data.y / g.cellHeight + 0.5);
+			int xStart = (int) Math.floor(p.prevX / g.cellWidth + 0.5);
+			int yStart = (int) Math.floor(p.prevY / g.cellHeight + 0.5);
 			
 			//local origin i.e. nearest grid point AFTER particle push
 			int xEnd = (int) Math.floor(p.x / g.cellWidth + 0.5);
 			int yEnd = (int) Math.floor(p.y / g.cellHeight + 0.5);
 			
-			double deltaX = p.x - p.data.x;
-			double deltaY = p.y - p.data.y;
+			double deltaX = p.x - p.prevX;
+			double deltaY = p.y - p.prevY;
 			
 			//check if particle moves further than one cell
 			if (Debug.asserts) {
@@ -39,9 +39,9 @@ public class ChargeConservingAreaWeighting extends Interpolator {
 			//4-boundary move?
 			if (xStart == xEnd && yStart == yEnd) {	
 				/**local x coordinate BEFORE particle push*/
-				double x = p.data.x - xStart * g.cellWidth;
+				double x = p.prevX - xStart * g.cellWidth;
 				/**local y coordinate BEFORE particle push*/
-				double y = p.data.y - yStart * g.cellHeight;
+				double y = p.prevY - yStart * g.cellHeight;
 				
 				fourBoundaryMove(xStart, yStart, x, y, deltaX, deltaY, p);				
 				
@@ -59,8 +59,8 @@ public class ChargeConservingAreaWeighting extends Interpolator {
 						
 					}
 						
-			p.data.x = p.x;
-			p.data.y = p.y;
+			p.prevX = p.x;
+			p.prevY = p.y;
 			
 		}
 	}
@@ -95,10 +95,10 @@ public class ChargeConservingAreaWeighting extends Interpolator {
 //		g.jy[lxm][ly] += p.pd.cd * deltaY * ((g.cellWidth - deltaX) / 2 - x) / g.simulation.tstep;
 //		g.jy[lx][ly] += p.pd.cd * deltaY * ((g.cellWidth + deltaX) / 2 + x) / g.simulation.tstep;
 		
-		g.jx[lx][lym] += p.data.chargedensity * g.cellWidth * deltaX * ((g.cellHeight - deltaY) / 2 - y) / g.simulation.tstep;
-		g.jx[lx][ly] += p.data.chargedensity  * g.cellWidth * deltaX * ((g.cellHeight + deltaY) / 2 + y) / g.simulation.tstep;
-		g.jy[lxm][ly] += p.data.chargedensity * g.cellHeight * deltaY * ((g.cellWidth - deltaX) / 2 - x) / g.simulation.tstep;
-		g.jy[lx][ly] += p.data.chargedensity  * g.cellHeight * deltaY * ((g.cellWidth + deltaX) / 2 + x) / g.simulation.tstep;
+		g.jx[lx][lym] += p.chargedensity * g.cellWidth * deltaX * ((g.cellHeight - deltaY) / 2 - y) / g.simulation.tstep;
+		g.jx[lx][ly] += p.chargedensity  * g.cellWidth * deltaX * ((g.cellHeight + deltaY) / 2 + y) / g.simulation.tstep;
+		g.jy[lxm][ly] += p.chargedensity * g.cellHeight * deltaY * ((g.cellWidth - deltaX) / 2 - x) / g.simulation.tstep;
+		g.jy[lx][ly] += p.chargedensity  * g.cellHeight * deltaY * ((g.cellWidth + deltaX) / 2 + x) / g.simulation.tstep;
 		
 //		g.jx[lx][lym] += p.pd.cd * g.cellWidth * deltaX * (g.cellHeight * (1 - deltaY) / 2 - y) / g.simulation.tstep;
 //		g.jx[lx][ly] += p.pd.cd  * g.cellWidth * deltaX * (g.cellHeight * (1 + deltaY) / 2 + y) / g.simulation.tstep;
@@ -116,9 +116,9 @@ public class ChargeConservingAreaWeighting extends Interpolator {
 			double deltaX, double deltaY, Particle p) {
 		
 		/**local x coordinate BEFORE particle push*/
-		double x = p.data.x - xStart * g.cellWidth;
+		double x = p.prevX - xStart * g.cellWidth;
 		/**local y coordinate BEFORE particle push*/
-		double y = p.data.y - yStart * g.cellHeight;
+		double y = p.prevY - yStart * g.cellHeight;
 		
 		//7-boundary move with equal y?
 		if (yStart == yEnd) {
@@ -185,9 +185,9 @@ public class ChargeConservingAreaWeighting extends Interpolator {
 			double deltaX, double deltaY, Particle p) {
 		
 		/**local x coordinate BEFORE particle push*/
-		double x = p.data.x - xStart * g.cellWidth;
+		double x = p.prevX - xStart * g.cellWidth;
 		/**local y coordinate BEFORE particle push*/
-		double y = p.data.y - yStart * g.cellHeight;
+		double y = p.prevY - yStart * g.cellHeight;
 		
 		//moved right?
 		if (xEnd == (xStart+1)) {

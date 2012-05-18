@@ -1,36 +1,35 @@
 package org.openpixi.pixi.physics.force;
 
 import org.openpixi.pixi.physics.Particle;
-import org.openpixi.pixi.physics.Simulation;
 
 public class SimpleGridForce implements Force {
 
 	public double getForceX(Particle p) {
-		return p.charge * ( p.data.Ex + p.vy * p.data.Bz);
+		return p.charge * ( p.Ex + p.vy * p.Bz);
 	}
 
 	public double getForceY(Particle p) {
-		return p.charge * (p.data.Ey - p.vx * p.data.Bz);
+		return p.charge * (p.Ey - p.vx * p.Bz);
 	}
 
 	public double getPositionComponentofForceX(Particle p) {
-		return p.charge * p.data.Ex;
+		return p.charge * p.Ex;
 	}
 
 	public double getPositionComponentofForceY(Particle p) {
-		return p.charge * p.data.Ey;
+		return p.charge * p.Ey;
 	}
 
 	public double getNormalVelocityComponentofForceX(Particle p) {
-		return p.charge * p.vy * p.data.Bz;
+		return p.charge * p.vy * p.Bz;
 	}
 
 	public double getNormalVelocityComponentofForceY(Particle p) {
-		return - p.charge * p.vx * p.data.Bz;
+		return - p.charge * p.vx * p.Bz;
 	}
 
 	public double getBz(Particle p) {
-		return p.data.Bz;
+		return p.Bz;
 	}
 
 	public double getTangentVelocityComponentOfForceX(Particle p) {

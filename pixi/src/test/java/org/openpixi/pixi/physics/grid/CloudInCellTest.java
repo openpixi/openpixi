@@ -107,15 +107,15 @@ public class CloudInCellTest extends TestCase {
 		grid.changeDimension(10, 10, 10, 10);
 
 		// Remember old values
-		p.data.x = p.x;
-		p.data.y = p.y;
+		p.prevX = p.x;
+		p.prevY = p.y;
 
 		// Advance particle
 		s.particlePush();
 		
 		//Remember old values after boundary check
-		double sx = p.data.x;
-		double sy = p.data.y;
+		double sx = p.prevX;
+		double sy = p.prevY;
 
 		// Calculate current
 		grid.interp.interpolateToGrid(s.particles);
@@ -190,15 +190,15 @@ Simulation s = InitialConditions.initEmptySimulation();
 		grid.changeDimension(10, 10, 10, 10);
 
 		// Remember old values
-		p.data.x = p.x;
-		p.data.y = p.y;
+		p.prevX = p.x;
+		p.prevY = p.y;
 
 		// Advance particle
 		s.particlePush();
 		
 		//Remember old values after boundary check
-		double sx = p.data.x;
-		double sy = p.data.y;
+		double sx = p.prevX;
+		double sy = p.prevY;
 		
 		// Calculate current
 		grid.interp.interpolateToGrid(s.particles);

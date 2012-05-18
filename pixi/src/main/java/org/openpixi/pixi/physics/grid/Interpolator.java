@@ -13,11 +13,10 @@ public class Interpolator {
 		this.g = g;
 		
 		for (Particle p: g.simulation.particles){
-			p.data = new Particle2DData();
 			//assuming rectangular particle shape i.e. area weighting
-			p.data.chargedensity = p.charge / (g.cellWidth * g.cellHeight);
-			p.data.x = p.x;
-			p.data.y = p.y;
+			p.chargedensity = p.charge / (g.cellWidth * g.cellHeight);
+			p.prevX = p.x;
+			p.prevY = p.y;
 		}
 		
 	}
@@ -56,10 +55,9 @@ public class Interpolator {
 			assert p.x > (xCellPosition2 - 1) * g.cellWidth : p.x;
 			assert yCellPosition2 * g.cellHeight > p.y : p.y;
 			assert p.y > (yCellPosition2 - 1) * g.cellHeight : p.y;
-			assert p.data != null;
 		}
 
-		p.data.Ex = ( g.Ex[xCellPosition][yCellPosition] * (xCellPosition2 * g.cellWidth - p.x) *
+		p.Ex = ( g.Ex[xCellPosition][yCellPosition] * (xCellPosition2 * g.cellWidth - p.x) *
 				(yCellPosition2 * g.cellHeight - p.y) +
 				g.Ex[xp][yCellPosition] * (p.x - (xCellPosition2 - 1) * g.cellWidth) *
 				(yCellPosition2 * g.cellHeight - p.y) +
@@ -68,7 +66,7 @@ public class Interpolator {
 				g.Ex[xp][yp] * (p.x - (xCellPosition2 - 1) * g.cellWidth) *
 				(p.y - (yCellPosition2 - 1) * g.cellHeight) ) / (g.cellWidth * g.cellHeight);
 		
-		p.data.Ey = ( g.Ey[xCellPosition][yCellPosition] * (xCellPosition2 * g.cellWidth - p.x) *
+		p.Ey = ( g.Ey[xCellPosition][yCellPosition] * (xCellPosition2 * g.cellWidth - p.x) *
 				(yCellPosition2 * g.cellHeight - p.y) +
 				g.Ey[xp][yCellPosition] * (p.x - (xCellPosition2 - 1) * g.cellWidth) *
 				(yCellPosition2 * g.cellHeight - p.y) +
@@ -77,7 +75,7 @@ public class Interpolator {
 				g.Ey[xp][yp] * (p.x - (xCellPosition2 - 1) * g.cellWidth) *
 				(p.y - (yCellPosition2 - 1) * g.cellHeight) ) / (g.cellWidth * g.cellHeight);
 		
-		p.data.Bz = ( g.Bz[xCellPosition][yCellPosition] * (xCellPosition2 * g.cellWidth - p.x) *
+		p.Bz = ( g.Bz[xCellPosition][yCellPosition] * (xCellPosition2 * g.cellWidth - p.x) *
 				(yCellPosition2 * g.cellHeight - p.y) +
 				g.Bz[xp][yCellPosition] * (p.x - (xCellPosition2 - 1) * g.cellWidth) *
 				(yCellPosition2 * g.cellHeight - p.y) +

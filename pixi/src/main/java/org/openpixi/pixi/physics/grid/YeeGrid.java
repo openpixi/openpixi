@@ -1,7 +1,8 @@
 package org.openpixi.pixi.physics.grid;
 
 import java.util.ArrayList;
-import org.openpixi.pixi.physics.*;
+import org.openpixi.pixi.physics.Particle;
+import org.openpixi.pixi.physics.Simulation;
 import org.openpixi.pixi.physics.fields.YeeSolver;
 import org.openpixi.pixi.physics.force.SimpleGridForce;
 
@@ -39,6 +40,7 @@ public class YeeGrid extends Grid {
 	}
 	
 	//a method to change the dimensions of the cells, i.e. the width and the height
+	@Override
 	public void changeDimension(double width, double height, int xbox, int ybox)
 	{
 		numCellsX = xbox;
@@ -58,6 +60,7 @@ public class YeeGrid extends Grid {
 		setGrid(width, height);
 	}
 	
+	@Override
 	public void setGrid(double width, double height)
 	{
 		cellWidth = width / numCellsX;
@@ -65,12 +68,13 @@ public class YeeGrid extends Grid {
 		
 		for (Particle p: simulation.particles){
 			//assuming rectangular particle shape i.e. area weighting
-			p.data.chargedensity = p.charge / (cellWidth * cellHeight);
+			p.chargedensity = p.charge / (cellWidth * cellHeight);
 		}
 		
 		//include updateGrid() and the first calculation of Fields here
 	}
 	
+	@Override
 	public void updateGrid(ArrayList<Particle> particles) {
 		
 		reset();

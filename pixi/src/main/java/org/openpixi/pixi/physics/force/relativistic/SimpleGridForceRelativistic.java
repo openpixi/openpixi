@@ -20,7 +20,7 @@ public class SimpleGridForceRelativistic implements Force {
 		
 		double uy = p.vy * gamma;
 		
-		return p.charge * ( p.data.Ex + uy * p.data.Bz);
+		return p.charge * ( p.Ex + uy * p.Bz);
 	}
 
 	public double getForceY(Particle p) {
@@ -29,15 +29,15 @@ public class SimpleGridForceRelativistic implements Force {
 		
 		double ux = p.vx * gamma;
 		
-		return p.charge * (p.data.Ey - ux * p.data.Bz);
+		return p.charge * (p.Ey - ux * p.Bz);
 	}
 
 	public double getPositionComponentofForceX(Particle p) {
-		return p.charge * p.data.Ex;
+		return p.charge * p.Ex;
 	}
 
 	public double getPositionComponentofForceY(Particle p) {
-		return p.charge * p.data.Ey;
+		return p.charge * p.Ey;
 	}
 
 	public double getNormalVelocityComponentofForceX(Particle p) {
@@ -46,7 +46,7 @@ public class SimpleGridForceRelativistic implements Force {
 		
 		double uy = p.vy * gamma;
 		
-		return p.charge * uy * p.data.Bz;
+		return p.charge * uy * p.Bz;
 	}
 
 	public double getNormalVelocityComponentofForceY(Particle p) {
@@ -55,11 +55,11 @@ public class SimpleGridForceRelativistic implements Force {
 		
 		double ux = p.vx * gamma;
 		
-		return - p.charge * ux * p.data.Bz;
+		return - p.charge * ux * p.Bz;
 	}
 
 	public double getBz(Particle p) {
-		return p.data.Bz;
+		return p.Bz;
 	}
 
 	public double getTangentVelocityComponentOfForceX(Particle p) {

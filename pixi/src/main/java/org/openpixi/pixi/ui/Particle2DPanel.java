@@ -33,7 +33,6 @@ import javax.swing.*;
 import java.awt.event.*;
 import java.awt.geom.AffineTransform;
 import static java.awt.geom.AffineTransform.*;
-import java.lang.Math;
 import java.util.ArrayList;
 
 import org.openpixi.pixi.physics.grid.*;
@@ -196,11 +195,7 @@ public class Particle2DPanel extends JPanel {
 						forces.remove(i);
 					}
 				}
-			}
-			//clears Particle2DData variable
-			for (Particle p : s.particles) {
-				p.data = null;
-			}
+			}			
 		}
 	}
 	

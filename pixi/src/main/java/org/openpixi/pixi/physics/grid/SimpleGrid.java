@@ -19,11 +19,9 @@
 package org.openpixi.pixi.physics.grid;
 
 import java.util.ArrayList;
-
-import org.openpixi.pixi.physics.Debug;
 import org.openpixi.pixi.physics.Particle;
 import org.openpixi.pixi.physics.Simulation;
-import org.openpixi.pixi.physics.fields.*;
+import org.openpixi.pixi.physics.fields.SimpleSolver;
 import org.openpixi.pixi.physics.force.SimpleGridForce;
 
 
@@ -56,6 +54,7 @@ public class SimpleGrid extends Grid {
 	}
 	
 	//a method to change the dimensions of the cells, i.e. the width and the height
+	@Override
 	public void changeDimension(double width, double height, int xbox, int ybox)
 	{
 		numCellsX = xbox + 3;
@@ -75,6 +74,7 @@ public class SimpleGrid extends Grid {
 		setGrid(width, height);
 	}
 	
+	@Override
 	public void setGrid(double width, double height)
 	{
 		cellWidth = width / (numCellsX - 3);
@@ -82,12 +82,13 @@ public class SimpleGrid extends Grid {
 		
 		for (Particle p: simulation.particles){
 			//assuming rectangular particle shape i.e. area weighting
-			p.data.chargedensity = p.charge / (cellWidth * cellHeight);
+			p.chargedensity = p.charge / (cellWidth * cellHeight);
 		}
 		
 		//include updateGrid() and the first calculation of Fields here
 	}
 	
+	@Override
 	public void updateGrid(ArrayList<Particle> particles)
 	{
 		reset();
