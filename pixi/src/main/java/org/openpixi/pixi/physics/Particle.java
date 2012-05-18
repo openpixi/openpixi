@@ -204,18 +204,4 @@ public class Particle{
 		prevX = x;
 		prevY = y;
 	}
-	
-	//a method that calculates the range from the center 0.0 for 2-dim
-	public double rangeFromCenter2D()
-	{
-		return Math.sqrt(getX() * getX() + getY() * getY());
-	}
-	
-	//a method that calculates the range between two particles in 2-dim
-	public double rangeBetween2D(Particle a)
-	{
-		double range;
-		range = Math.pow(this.getX() - a.getX(), 2) + Math.pow(this.getY() - this.getY(), 2);
-		return Math.sqrt(range);
-	}	
 }
