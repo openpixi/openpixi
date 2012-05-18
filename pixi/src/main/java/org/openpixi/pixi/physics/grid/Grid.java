@@ -23,8 +23,6 @@ public class Grid {
 
 	/**sum of electric charges in a cell*/
 	public double [][] rho;
-	/**electrostatic potential*/
-	public double [][] phi;
 	
 	/**electric field in x direction at time t+dt*/
 	public double [][] Ex;
