@@ -1,6 +1,6 @@
 package org.openpixi.pixi.physics.force;
 
-import org.openpixi.pixi.physics.Particle2D;
+import org.openpixi.pixi.physics.Particle;
 
 public class ConstantForce implements Force {
 
@@ -33,47 +33,47 @@ public class ConstantForce implements Force {
 		bz = 0;
 	}
 
-	public double getForceX(Particle2D p) {
-		return -drag * p.vx + p.mass * gx + p.charge * ex +
-				p.charge * p.vy * bz;
+	public double getForceX(Particle p) {
+		return -drag * p.getVx() + p.getMass() * gx + p.getCharge() * ex +
+				p.getCharge() * p.getVy() * bz;
 	}
 
-	public double getForceY(Particle2D p) {
-		return - drag * p.vy + p.mass * gy + p.charge * ey -
-				p.charge * p.vx * bz;
+	public double getForceY(Particle p) {
+		return - drag * p.getVy() + p.getMass() * gy + p.getCharge() * ey -
+				p.getCharge() * p.getVx() * bz;
 	}
 
-	public double getPositionComponentofForceX(Particle2D p) {
-		return p.mass * gx + p.charge * ex;
+	public double getPositionComponentofForceX(Particle p) {
+		return p.getMass() * gx + p.getCharge() * ex;
 	}
 
-	public double getPositionComponentofForceY(Particle2D p) {
-		return p.mass * gy + p.charge * ey;
+	public double getPositionComponentofForceY(Particle p) {
+		return p.getMass() * gy + p.getCharge() * ey;
 	}
 
-	public double getTangentVelocityComponentOfForceX(Particle2D p) {
+	public double getTangentVelocityComponentOfForceX(Particle p) {
 		
-		return - drag * p.vx;
+		return - drag * p.getVx();
 	}
 
-	public double getTangentVelocityComponentOfForceY(Particle2D p) {
+	public double getTangentVelocityComponentOfForceY(Particle p) {
 		
-		return - drag * p.vy;
+		return - drag * p.getVy();
 	}
 
-	public double getNormalVelocityComponentofForceX(Particle2D p) {
-		return p.charge * p.vy * bz;
+	public double getNormalVelocityComponentofForceX(Particle p) {
+		return p.getCharge() * p.getVy() * bz;
 	}
 
-	public double getNormalVelocityComponentofForceY(Particle2D p) {
-		return - p.charge * p.vx * bz;
+	public double getNormalVelocityComponentofForceY(Particle p) {
+		return - p.getCharge() * p.getVx() * bz;
 	}
 
-	public double getBz(Particle2D p) {
+	public double getBz(Particle p) {
 		return bz;
 	}
 
-	public double getLinearDragCoefficient(Particle2D p) {
+	public double getLinearDragCoefficient(Particle p) {
 		return drag;
 	}
 	
