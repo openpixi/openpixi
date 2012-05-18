@@ -1,5 +1,7 @@
 package org.openpixi.pixi.physics.fields;
 
+import java.io.File;
+
 import junit.framework.TestCase;
 import org.openpixi.pixi.physics.*;
 import org.openpixi.pixi.physics.grid.*;
@@ -40,11 +42,14 @@ public class PoissonSolverTest extends TestCase {
 		g.rho[5][5] = 50;
 		
 		PoissonSolver.solve2D(g);
+				
+		File file = new File("\\efeld.dat");
+		file.delete();
 		
 		WriteFile fieldFile = new WriteFile();
 		for (int i = 0; i < g.numCellsX; i++) {
 			for(int j = 0; j < g.numCellsY; j++) {
-				fieldFile.writeFile("efeld", "", g.numCellsX*i + "\t" + g.numCellsY*j +
+				fieldFile.writeFile("efeld", "", i*g.cellWidth + "\t" + j*g.cellHeight +
 						"\t" + g.Ex[i][j] + "\t" + g.Ey[i][j]);
 			}
 		}
