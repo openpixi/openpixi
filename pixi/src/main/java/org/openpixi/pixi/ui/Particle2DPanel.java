@@ -70,8 +70,6 @@ public class Particle2DPanel extends JPanel {
 	double sx;
 	/** Scaling factor for the displayed panel in y-direction*/
 	double sy;	
-	/** Displayed particle radius (dependent on total number of particles*/
-	int resize;
 	
 	/** Milliseconds between updates */
 	private int interval = 30;
@@ -114,7 +112,6 @@ public class Particle2DPanel extends JPanel {
 		frameratedetector = new FrameRateDetector(500);
 		
 		s = InitialConditions.initRandomParticles(10, 1);
-		setParticleResize();
 
 	}
 
@@ -139,10 +136,10 @@ public class Particle2DPanel extends JPanel {
 			s = InitialConditions.initRandomParticles(100, 1);
 			break;
 		case 2:
-			s = InitialConditions.initRandomParticles(1000, 1);
+			s = InitialConditions.initRandomParticles(1000, 0.5);
 			break;
 		case 3:
-			s = InitialConditions.initRandomParticles(10000, 1);
+			s = InitialConditions.initRandomParticles(10000, 0.01);
 			break;
 		case 4:
 			s = InitialConditions.initGravity(1, 1);
@@ -159,29 +156,9 @@ public class Particle2DPanel extends JPanel {
 		}
 		updateFieldForce();
 		s.prepareAllParticles();
-		setParticleResize();
 		timer.start();
 	}	
-	
-	/**Defines the size of the particles depending on the total amount
-	 * of particles to increase clarity
-	 */
-	private void setParticleResize() {
-		int numParticles = s.particles.size();
-		if(numParticles < 10000) {
-			if(numParticles < 10) {
-				resize = 10;
-			} else if(numParticles < 100) {
-				resize = 8;
-			} else if(numParticles < 1000) {
-				resize = 5;
-			} else {
-				resize = 2;
-			}}
-		else {
-			resize = 0;
-		}
-	}
+
 	public void checkTrace() {
 		paint_trace =! paint_trace;
 		startAnimation();
@@ -426,9 +403,11 @@ public class Particle2DPanel extends JPanel {
 				graph.setColor(Color.blue);
 			}
 			
-			int radius = (int) par.radius * resize;
-			if(resize > 0 && !paint_trace) {
-				graph.fillOval((int) (par.x*sx) - resize, (int) (par.y*sy) - radius,  2*radius,  2*radius);
+			double radius = par.radius;
+			int width = (int) (2*sx*radius);
+			int height = (int) (2*sy*radius);
+			if(width > 2 && height > 2 && !paint_trace) {
+				graph.fillOval((int) (par.x*sx) - width/2, (int) (par.y*sy) - height/2,  width,  height);
 			}
 			else {
 				graph.drawRect((int) (par.x*sx), (int) (par.y*sy), 0, 0);

@@ -62,15 +62,15 @@ public class InitialConditions {
 		return s;
 	}
 	
-	public static Simulation initRandomParticles(int count, int radius) {
+	public static Simulation initRandomParticles(int count, double radius) {
 		
 		Simulation s = new Simulation();
 		
 		//basic simulation parameters
 		s.tstep = 1;
 		s.c = 3;
-		s.width = 700;
-		s.height = 500;
+		s.width = 100;
+		s.height = 100;
 		
 		//external forces
 		s.f.clear();
@@ -89,7 +89,7 @@ public class InitialConditions {
 		return s;
 	}
 	
-	public static Simulation initGravity(int count, int radius) {
+	public static Simulation initGravity(int count, double radius) {
 
 		Simulation s = new Simulation();
 		
@@ -117,7 +117,7 @@ public class InitialConditions {
 		return s;
 	}
 
-	public static Simulation initElectric(int count, int radius) {
+	public static Simulation initElectric(int count, double radius) {
 
 		Simulation s = new Simulation();
 		
@@ -145,7 +145,7 @@ public class InitialConditions {
 		return s;
 	}
 
-	public static Simulation initMagnetic(int count, int radius) {
+	public static Simulation initMagnetic(int count, double radius) {
 
 		Simulation s = new Simulation();
 		
@@ -173,7 +173,7 @@ public class InitialConditions {
 		return s;
 	}
 
-	public static Simulation initSpring(int count, int radius) {
+	public static Simulation initSpring(int count, double radius) {
 		
 		Simulation s = new Simulation();
 		
