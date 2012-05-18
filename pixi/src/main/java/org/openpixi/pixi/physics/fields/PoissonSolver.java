@@ -6,10 +6,16 @@ import java.math.*;
 
 public class PoissonSolver {
 	
-	public PoissonSolver() {
-		
-	}
-	
+	/**Solves the electrostatic Poisson equation with FFT
+	 * 
+	 * This method should be called every time when new particles
+	 * are loaded into the simulation area (i.e. a new charge
+	 * distribution is introduced) It calculates the electrostatic
+	 * potential caused by this distribution, calculates the electric
+	 * fields by applying the negative nabla operator and saves them
+	 * in the field variables of the Grid class
+	 * @param g
+	 */
 	public static void solve2D(Grid g) {
 		
 		int rows = g.rho.length;
