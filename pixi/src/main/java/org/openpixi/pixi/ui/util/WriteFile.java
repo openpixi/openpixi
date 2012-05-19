@@ -9,8 +9,35 @@ public class WriteFile {
 	File file;
 	
 	public WriteFile() {
-		
-	}//filename + ".dat"
+	}
+	
+	public WriteFile(String filename, String filedirectory) {
+		try {
+		file = new File(filedirectory + "\\" + filename + ".dat");
+		fstream = new FileWriter(file, true);
+		out = new BufferedWriter(fstream);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+	public void writeLine(String output) {
+		try{
+			out.write(output);
+			out.newLine();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public void closeFstream() {
+		try{
+			out.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
 	
 	public void writeFile(String filename, String filedirectory, String output) {
 		try {
