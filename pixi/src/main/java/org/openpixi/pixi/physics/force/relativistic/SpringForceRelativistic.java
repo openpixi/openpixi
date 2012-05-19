@@ -1,10 +1,20 @@
 package org.openpixi.pixi.physics.force.relativistic;
 
-import org.openpixi.pixi.physics.ConstantsSI;
 import org.openpixi.pixi.physics.Particle;
+import org.openpixi.pixi.physics.RelativisticVelocity;
 import org.openpixi.pixi.physics.force.Force;
 
 public class SpringForceRelativistic implements Force {
+	
+	RelativisticVelocity relvelocity;
+	
+	/** New empty force */
+	public SpringForceRelativistic(double c) {
+		
+		super();
+		
+		relvelocity = new RelativisticVelocity(c);
+	}
 
 	public double getForceX(Particle par)
 	{
@@ -37,17 +47,19 @@ public class SpringForceRelativistic implements Force {
 	}
 
 	public double getNormalVelocityComponentofForceX(Particle p) {
-		double v = Math.sqrt(p.getVx() * p.getVx() + p.getVy() * p.getVy());
-		double gamma = Math.sqrt(1 / (1 - (v / ConstantsSI.c) * (v / ConstantsSI.c)));
-		double uy = p.getVy() * gamma;
-		return p.getCharge() * uy * getBz(p);
+		double gamma = relvelocity.calculateGamma(p);
+		
+		//v = u / gamma
+		double vy = p.getVy() / gamma;
+		return p.getCharge() * vy * getBz(p);
 	}
 
 	public double getNormalVelocityComponentofForceY(Particle p) {
-		double v = Math.sqrt(p.getVx() * p.getVx() + p.getVy() * p.getVy());
-		double gamma = Math.sqrt(1 / (1 - (v / ConstantsSI.c) * (v / ConstantsSI.c)));
-		double ux = p.getVx() * gamma;
-		return - p.getCharge() * ux * getBz(p);
+		double gamma = relvelocity.calculateGamma(p);
+		
+		//v = u / gamma
+		double vx = p.getVx() / gamma;
+		return - p.getCharge() * vx * getBz(p);
 	}
 
 	public double getBz(Particle p) {
