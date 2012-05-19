@@ -296,13 +296,13 @@ public class Particle2DPanel extends JPanel {
 				ArrayList<Force> forces = ((CombinedForce) s.f).forces;
 				for (int j = 0; j < forces.size(); j++) {
 					if (forces.get(j) instanceof ConstantForce){
-						forces.set(j, new ConstantForceRelativistic());
+						forces.set(j, new ConstantForceRelativistic(s.c));
 					}
 					if (forces.get(j) instanceof SimpleGridForce){
 						forces.set(j, new SimpleGridForceRelativistic(s));
 					}
 					if (forces.get(j) instanceof SpringForce){
-						forces.set(j, new SpringForceRelativistic());
+						forces.set(j, new SpringForceRelativistic(s.c));
 					}
 				}
 			}
