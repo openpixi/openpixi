@@ -1,7 +1,6 @@
 package org.openpixi.pixi.physics.fields;
 
-import java.io.File;
-
+import java.io.*;
 import junit.framework.TestCase;
 import org.openpixi.pixi.physics.*;
 import org.openpixi.pixi.physics.grid.*;
@@ -62,6 +61,13 @@ public class PoissonSolverTest extends TestCase {
 			}
 		}
 		fieldFile.closeFstream();
+		try {
+		Runtime gnuplotrt = Runtime.getRuntime();
+		Process gnuplotpr = gnuplotrt.exec("gnuplot -e \"set term png; set output 'D:\\efield.png'; plot 'D:\\efeld.dat' using 1:2:3:4 with vectors head filled lt 2\"");
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
 		
 	}
 	
