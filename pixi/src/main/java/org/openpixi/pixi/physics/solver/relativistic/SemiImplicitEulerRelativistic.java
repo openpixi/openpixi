@@ -35,23 +35,25 @@ public class SemiImplicitEulerRelativistic implements Solver {
 	
 	/**
 	 * Semi Implicit Euler algorithm.
-	 * @param p before the update: x(t), v(t), a(t);
-	 *                 after the update: x(t+dt), v(t+dt), a(t);
+	 * @param p before the update: x(t), u(t), a(t);
+	 *                 after the update: x(t+dt), u(t+dt), a(t);
+	 *                  u(t) is the relativistic momentum
 	 */
 	public void step(Particle p, Force f, double step)
 	{
-		double v = Math.sqrt(p.getVx() * p.getVx() + p.getVy() * p.getVy());
-		double gamma = Math.sqrt(1 / (1 - (v / ConstantsSI.c) * (v / ConstantsSI.c)));
-		
-		//a(t) = F(v(t), x(t)) / m
+		//a(t) = F(u(t), x(t)) / m
 		p.setAx(f.getForceX(p) / p.getMass());
 		p.setAy(f.getForceY(p) / p.getMass());
 		
-		// v(t+dt) = v(t) + a(t)*dt
+		// u(t+dt) = u(t) + a(t)*dt
 		p.setVx(p.getVx() + p.getAx() * step);
 		p.setVy(p.getVy() + p.getAy() * step);
 		
-		// x(t+dt) = x(t) + v(t+dt)*dt
+		// gamma = sqrt[1 + (u / c)^2]
+		double v = Math.sqrt(p.getVx() * p.getVx() + p.getVy() * p.getVy());
+		double gamma = Math.sqrt(1 + (v / ConstantsSI.c) * (v / ConstantsSI.c));
+		
+		// x(t+dt) = x(t) + u(t+dt) * dt / gamma
 		p.setX(p.getX() + p.getVx() * step / gamma);
 		p.setY(p.getY() + p.getVy() * step / gamma);
 		

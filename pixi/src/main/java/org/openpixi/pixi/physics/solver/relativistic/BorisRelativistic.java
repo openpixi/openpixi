@@ -37,8 +37,9 @@ public class BorisRelativistic implements Solver{
 	 * Boris algorithm for implementing the electric and magnetic field.
 	 * The damping is implemented with an linear error O(dt).
 	 * Warning: the velocity is stored half a time step before of the position.
-	 * @param p before the update: x(t), v(t-dt/2);
-	 *                 after the update: x(t+dt), v(t+dt/2)
+	 * @param p before the update: x(t), u(t-dt/2);
+	 *                 after the update: x(t+dt), u(t+dt/2)
+	 *                 u(t) is the relativistic momentum
 	 */
 	public void step(Particle p, Force f, double step) {
 
@@ -47,23 +48,18 @@ public class BorisRelativistic implements Solver{
 		p.setAx(f.getForceX(p) / p.getMass());
 		p.setAy(f.getForceY(p) / p.getMass());
 		
-		//double ux = p.vx * Math.sqrt(1 / (1 - (p.vx / ConstantsSI.c) * (p.vx / ConstantsSI.c)));
-		//double uy = p.vy * Math.sqrt(1 / (1 - (p.vy / ConstantsSI.c) * (p.vy / ConstantsSI.c)));
-		//finding v(t) in order to calculate gamma(t)
+		//finding u(t) in order to calculate gamma(t)
 		double vx = p.getVx() + (p.getAx() * step / 2);
 		double vy = p.getVy() + (p.getAy() * step / 2);
 		
 		double v = Math.sqrt(vx * vx + vy * vy);
-		double gamma = Math.sqrt(1 / (1 - (v / ConstantsSI.c) * (v / ConstantsSI.c)));
+		double gamma = Math.sqrt(1 + (v / ConstantsSI.c) * (v / ConstantsSI.c));
 		
-		double ux = p.getVx() * gamma;
-		double uy = p.getVy() * gamma;
-		
-		double vxminus = ux + f.getPositionComponentofForceX(p) * step / (2.0 * p.getMass());
+		double vxminus = p.getVx() + f.getPositionComponentofForceX(p) * step / (2.0 * p.getMass());
 		double vxplus;
 		double vxprime;
 		
-		double vyminus = uy + f.getPositionComponentofForceY(p) * step / (2.0 * p.getMass());
+		double vyminus = p.getVy() + f.getPositionComponentofForceY(p) * step / (2.0 * p.getMass());
 		double vyplus;
 		double vyprime;
 		
@@ -80,8 +76,13 @@ public class BorisRelativistic implements Solver{
 		p.setVx(vxplus + f.getPositionComponentofForceX(p) * step / (2.0 * p.getMass()) + f.getTangentVelocityComponentOfForceX(p) * step / p.getMass());
 		p.setVy(vyplus + f.getPositionComponentofForceY(p) * step / (2.0 * p.getMass()) + f.getTangentVelocityComponentOfForceY(p) * step / p.getMass());
 		
-		p.setX(p.getX() + p.getVx() * step / Math.sqrt(1 / (1 - (p.getVx() / ConstantsSI.c) * (p.getVx() / ConstantsSI.c))));
-		p.setY(p.getY() + p.getVy() * step / Math.sqrt(1 / (1 - (p.getVy() / ConstantsSI.c) * (p.getVy() / ConstantsSI.c))));
+		//calculating gamma(t + dt / 2)
+		v = Math.sqrt(p.getVx() * p.getVx() + p.getVy() * p.getVy());
+		gamma = Math.sqrt(1 + (v / ConstantsSI.c) * (v / ConstantsSI.c));
+		
+		// x(t+dt) = u(t) + u(t+dt/2) * dt / gamma(t + dt / 2)
+		p.setX(p.getX() + p.getVx() * step / gamma);
+		p.setY(p.getY() + p.getVy() * step / gamma);
 	}	
 	/**
 	 * prepare method for bringing the velocity in the desired half step
