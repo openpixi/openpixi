@@ -22,8 +22,8 @@ public class PoissonSolverTest extends TestCase {
 		s.height = 100;
 		
 		Grid g = new Grid(s);
-		g.numCellsX = 10;
-		g.numCellsY = 10;
+		g.numCellsX = 100;
+		g.numCellsY = 100;
 		g.cellWidth = s.width / g.numCellsX;
 		g.cellHeight = s.height / g.numCellsY;
 		g.rho = new double[g.numCellsX][g.numCellsY];
@@ -54,9 +54,11 @@ public class PoissonSolverTest extends TestCase {
 		long elapsed = System.currentTimeMillis()-start;
 		System.out.println("\nCalculation time: "+elapsed);
 		
-		//deletes the old file
-		File file = new File("\\efeld.dat");
-		file.delete();
+		//deletes the old files
+		File file1 = new File("\\efeld.dat");
+		file1.delete();
+		File file2 = new File("\\potential.dat");
+		file2.delete();
 		
 		//creates new file "efield.dat" in working directory and writes
 		//field data to it
@@ -69,12 +71,27 @@ public class PoissonSolverTest extends TestCase {
 		}
 		fieldFile.closeFstream();
 		
+		WriteFile potentialFile = new WriteFile("potential", "");
+		for (int i = 0; i < g.numCellsX; i++) {
+			for(int j = 0; j < g.numCellsY; j++) {
+				potentialFile.writeLine(i*g.cellWidth + "\t" + j*g.cellHeight + "\t" + g.phi[i][j]);
+			}
+		}
+		potentialFile.closeFstream();
+		
 		//YOU NEED GNUPLOT FOR THIS http://www.gnuplot.info/
 		//NEEDS TO BE IN YOUR EXECUTION PATH (i.e. PATH variable on windows)
 		//plots the above output as vector field
 		try {
 		Runtime gnuplotrt = Runtime.getRuntime();
 		Process gnuplotpr = gnuplotrt.exec("gnuplot -e \"set term png; set output 'D:\\efield.png'; plot 'D:\\efeld.dat' using 1:2:3:4 with vectors head filled lt 2\"");
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		//plots potential
+		try {
+		Runtime gnuplotPotentialRt = Runtime.getRuntime();
+		Process gnuplotPotentialPr = gnuplotPotentialRt.exec("gnuplot -e \"set term png; set output 'D:\\potential.png'; plot 'D:\\potential.dat' using 1:2:3 with circles linetype palette \"");
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
