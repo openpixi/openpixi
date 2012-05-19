@@ -57,7 +57,6 @@ public class Boris implements Solver{
 		double vyprime;
 		
 		double t_z = p.getCharge() * f.getBz(p) * step / (2.0 * p.getMass());   //t vector
-		//double t_z = Math.atan2(p.charge * f.getBz(p) * step / (2.0 * p.mass), 1);   //t vector
 		
 		double s_z = 2 * t_z / (1 + t_z * t_z);               //s vector
 		
