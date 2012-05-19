@@ -26,11 +26,11 @@ import org.openpixi.pixi.physics.solver.Solver;
  * For more information: 
  * http://en.wikipedia.org/wiki/Semi-implicit_Euler_method
  */
-public class SemiImplicitEulerRelativistic implements Solver {
+public class SemiImplicitEulerRelativistic extends SolverRelativistic implements Solver {
 	
-	public SemiImplicitEulerRelativistic()
+	public SemiImplicitEulerRelativistic(double c)
 	{
-		super();
+		super(c);
 	}
 	
 	/**
@@ -49,9 +49,7 @@ public class SemiImplicitEulerRelativistic implements Solver {
 		p.setVx(p.getVx() + p.getAx() * step);
 		p.setVy(p.getVy() + p.getAy() * step);
 		
-		// gamma = sqrt[1 + (u / c)^2]
-		double v = Math.sqrt(p.getVx() * p.getVx() + p.getVy() * p.getVy());
-		double gamma = Math.sqrt(1 + (v / ConstantsSI.c) * (v / ConstantsSI.c));
+		double gamma = calculateGamma(p.getVx(), p.getVy());
 		
 		// x(t+dt) = x(t) + u(t+dt) * dt / gamma
 		p.setX(p.getX() + p.getVx() * step / gamma);

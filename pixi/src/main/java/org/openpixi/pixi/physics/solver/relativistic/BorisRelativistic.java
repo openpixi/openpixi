@@ -26,11 +26,13 @@ import org.openpixi.pixi.physics.solver.Solver;
 /**The calculation is due to Boris and the equations((7) - (10)) can be found here:
  * http://ptsg.eecs.berkeley.edu/publications/Verboncoeur2005IOP.pdf
  */
-public class BorisRelativistic implements Solver{
+public class BorisRelativistic extends SolverRelativistic implements Solver{
 	
-	public BorisRelativistic()
+	
+	
+	public BorisRelativistic(double c)
 	{
-		super();
+		super(c);
 	}
 	
 	/**
@@ -51,9 +53,8 @@ public class BorisRelativistic implements Solver{
 		//finding u(t) in order to calculate gamma(t)
 		double vx = p.getVx() + (p.getAx() * step / 2);
 		double vy = p.getVy() + (p.getAy() * step / 2);
-		
-		double v = Math.sqrt(vx * vx + vy * vy);
-		double gamma = Math.sqrt(1 + (v / ConstantsSI.c) * (v / ConstantsSI.c));
+
+		double gamma = calculateGamma(vx, vy);
 		
 		double vxminus = p.getVx() + f.getPositionComponentofForceX(p) * step / (2.0 * p.getMass());
 		double vxplus;
@@ -77,8 +78,7 @@ public class BorisRelativistic implements Solver{
 		p.setVy(vyplus + f.getPositionComponentofForceY(p) * step / (2.0 * p.getMass()) + f.getTangentVelocityComponentOfForceY(p) * step / p.getMass());
 		
 		//calculating gamma(t + dt / 2)
-		v = Math.sqrt(p.getVx() * p.getVx() + p.getVy() * p.getVy());
-		gamma = Math.sqrt(1 + (v / ConstantsSI.c) * (v / ConstantsSI.c));
+		gamma = calculateGamma(p.getVx(), p.getVy());
 		
 		// x(t+dt) = u(t) + u(t+dt/2) * dt / gamma(t + dt / 2)
 		p.setX(p.getX() + p.getVx() * step / gamma);
