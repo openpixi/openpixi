@@ -100,7 +100,15 @@ public class PoissonSolver {
 		g.Ey[columns-1][rows-1] = -(phi[columns-1][2*(rows-1)] - phi[columns-1][2*(rows-2)]) / g.cellHeight;		
 		
 		g.Ex[columns-1][0] = -(phi[columns-1][0] - phi[columns-2][0]) / g.cellWidth;
-		g.Ey[columns-1][0] = -(phi[columns-1][2] - phi[columns-1][0]) / g.cellHeight;		
+		g.Ey[columns-1][0] = -(phi[columns-1][2] - phi[columns-1][0]) / g.cellHeight;
+		
+		//prepare output
+		for(int i = 0; i < columns; i++) {
+			for(int j = 0; j < rows; j++) {
+				g.phi[i][j] = phi[i][2*j];
+			}
+		}
+		
 	}
 	
 }

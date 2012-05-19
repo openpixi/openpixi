@@ -27,12 +27,14 @@ public class PoissonSolverTest extends TestCase {
 		g.cellWidth = s.width / g.numCellsX;
 		g.cellHeight = s.height / g.numCellsY;
 		g.rho = new double[g.numCellsX][g.numCellsY];
+		g.phi = new double[g.numCellsX][g.numCellsY];
 		g.Ex = new double[g.numCellsX][g.numCellsY];
 		g.Ey = new double[g.numCellsX][g.numCellsY];
 		
 		for (int i = 0; i < g.numCellsX; i++) {
 			for (int j = 0; j < g.numCellsY; j++) {
 				g.rho[i][j] = 0;
+				g.phi[i][j] = 0;
 				g.Ex[i][j] = 0;
 				g.Ey[i][j] = 0;
 			}
