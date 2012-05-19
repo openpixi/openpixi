@@ -10,10 +10,9 @@ public class SolverRelativistic {
 		this.c = c;
 	}
 	
-	/**gamma = sqrt[1 + (u / c)^2]*/
+	/**gamma = sqrt[1 + (u / c)^2]. This expression is obtained by solving gamma = 1/sqrt(1-(v/c)^2) with v = u/gamma for gamma.*/
 	public double calculateGamma(double ux, double uy) {		
-		double v = Math.sqrt(ux * ux + uy * uy);
-		return Math.sqrt(1 + (v / c) * (v / c));
+		return Math.sqrt(1 + (ux * ux + uy * uy) / (c * c));
 	}
 
 }
