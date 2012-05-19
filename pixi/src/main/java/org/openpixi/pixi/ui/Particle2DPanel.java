@@ -55,8 +55,6 @@ public class Particle2DPanel extends JPanel {
 
 	private boolean reset_trace;
 	
-	private boolean test = false;
-	
 	private boolean drawCurrentGrid = false;
 	
 	private boolean drawFields = false;
@@ -310,12 +308,12 @@ public class Particle2DPanel extends JPanel {
 			}
 			switch(i) {
 			case 1:
-				s.psolver = new LeapFrogRelativistic();
+				s.psolver = new LeapFrogRelativistic(s.c);
 			case 4:
-				s.psolver = new BorisRelativistic();
+				s.psolver = new BorisRelativistic(s.c);
 				break;
 			case 6:
-				s.psolver = new SemiImplicitEulerRelativistic();
+				s.psolver = new SemiImplicitEulerRelativistic(s.c);
 				break;
 			}
 		}
