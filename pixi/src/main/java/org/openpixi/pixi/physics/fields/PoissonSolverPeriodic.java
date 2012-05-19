@@ -5,14 +5,16 @@ import org.openpixi.pixi.physics.grid.Grid;
 
 public class PoissonSolverPeriodic {
 	
-	/**Solves the electrostatic Poisson equation with FFT
+	/**Solves the electrostatic Poisson equation with FFT assuming periodic boundaries.
 	 * 
-	 * This method should be called every time when new particles
+	 * <p>This method should be called every time when new particles
 	 * are loaded into the simulation area (i.e. a new charge
 	 * distribution is introduced) It calculates the electrostatic
 	 * potential caused by this distribution, calculates the electric
 	 * fields by applying the negative nabla operator and saves them
-	 * in the field variables of the Grid class
+	 * in the field variables of the Grid class. Note that periodic
+	 * boundaries are assumed by the transformation itself AND by the
+	 * derivative of the potential!</p>
 	 * @param g Grid on which the calculation shoudl be performed
 	 */
 	public void solve(Grid g) {
@@ -47,8 +49,12 @@ public class PoissonSolverPeriodic {
 				phi[i][2*j] = (cellArea * trho[i][2*j]) / d;
 				phi[i][2*j+1] = (cellArea * trho[i][2*j+1]) / d;
 				} else {
-					phi[i][2*j] = trho[i][2*j];
-					phi[i][2*j+1] = trho[i][2*j+1];
+//					phi[i][2*j] = trho[i][2*j];
+//					phi[i][2*j+1] = trho[i][2*j+1];
+					phi[i][2*j] = cellArea * trho[i][2*j];
+					phi[i][2*j+1] = cellArea * trho[i][2*j+1];
+//					phi[i][2*j] = 0;
+//					phi[i][2*j+1] = 0;
 				}
 			}
 		}
@@ -73,34 +79,34 @@ public class PoissonSolverPeriodic {
 		for(int i = 1; i < columns-1; i++) {
 			g.Ex[i][0] = -(phi[i+1][0] - phi[i-1][0]) / (2 * g.cellWidth);
 			//forward difference
-			g.Ey[i][0] = -(phi[i][2] - phi[i][0]) / g.cellHeight;
+			g.Ey[i][0] = -(phi[i][2] - phi[i][2*(columns-2)]) / (2 * g.cellHeight);
 			g.Ex[i][rows-1] = -(phi[i+1][2*(rows-1)] - phi[i-1][2*(rows-1)]) / (2 * g.cellWidth);
 			//backward difference
-			g.Ey[i][rows-1] = -(phi[i][2*(rows-1)] - phi[i][2*(rows-2)]) / g.cellHeight;
+			g.Ey[i][rows-1] = -(phi[i][0] - phi[i][2*(rows-2)]) / (2 * g.cellHeight);
 		}
 		
 		//left and right boundaries
 		for(int j = 1; j < rows-1; j++) {
 			//forward difference
-			g.Ex[0][j] = -(phi[1][2*j] - phi[0][2*j]) / g.cellWidth;
+			g.Ex[0][j] = -(phi[1][2*j] - phi[rows-1][2*j]) / (2 * g.cellWidth);
 			g.Ey[0][j] = -(phi[0][2*(j+1)] - phi[0][2*(j-1)]) / (2 * g.cellHeight);
 			//backward difference
-			g.Ex[columns-1][j] = -(phi[columns-1][2*j] - phi[columns-2][2*j]) / g.cellWidth;
+			g.Ex[columns-1][j] = -(phi[0][2*j] - phi[columns-2][2*j]) / (2 * g.cellWidth);
 			g.Ey[columns-1][j] = -(phi[columns-1][2*(j+1)] - phi[columns-1][2*(j-1)]) / (2 * g.cellHeight);
 		}
 		
 		//4 boundary points
-		g.Ex[0][0] = -(phi[1][0] - phi[0][0]) / g.cellWidth;
-		g.Ey[0][0] = -(phi[0][2] - phi[0][0]) / g.cellHeight;
+		g.Ex[0][0] = -(phi[1][0] - phi[0][0]) / (2 * g.cellWidth);
+		g.Ey[0][0] = -(phi[0][2] - phi[0][0]) / (2 * g.cellHeight);
 		
-		g.Ex[0][rows-1] = -(phi[1][2*(rows-1)] - phi[0][2*(rows-1)]) / g.cellWidth;
-		g.Ey[0][rows-1] = -(phi[0][2*(rows-1)] - phi[0][2*(rows-2)]) / g.cellHeight;
+		g.Ex[0][rows-1] = -(phi[1][2*(rows-1)] - phi[0][2*(rows-1)]) / (2 * g.cellWidth);
+		g.Ey[0][rows-1] = -(phi[0][2*(rows-1)] - phi[0][2*(rows-2)]) / (2 * g.cellHeight);
 		
-		g.Ex[columns-1][rows-1] = -(phi[columns-1][2*(rows-1)] - phi[columns-2][2*(rows-1)]) / g.cellWidth;
-		g.Ey[columns-1][rows-1] = -(phi[columns-1][2*(rows-1)] - phi[columns-1][2*(rows-2)]) / g.cellHeight;		
+		g.Ex[columns-1][rows-1] = -(phi[columns-1][2*(rows-1)] - phi[columns-2][2*(rows-1)]) / (2 * g.cellWidth);
+		g.Ey[columns-1][rows-1] = -(phi[columns-1][2*(rows-1)] - phi[columns-1][2*(rows-2)]) / (2 * g.cellHeight);		
 		
-		g.Ex[columns-1][0] = -(phi[columns-1][0] - phi[columns-2][0]) / g.cellWidth;
-		g.Ey[columns-1][0] = -(phi[columns-1][2] - phi[columns-1][0]) / g.cellHeight;
+		g.Ex[columns-1][0] = -(phi[columns-1][0] - phi[columns-2][0]) / (2 * g.cellWidth);
+		g.Ey[columns-1][0] = -(phi[columns-1][2] - phi[columns-1][0]) / (2 * g.cellHeight);
 		
 		//prepare output
 		for(int i = 0; i < columns; i++) {
