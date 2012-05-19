@@ -18,8 +18,8 @@ public class PoissonSolverTest extends TestCase {
 	public void testPointcharge() {
 		
 		Simulation s = InitialConditions.initEmptySimulation();
-		s.width = 100;
-		s.height = 100;
+		s.width = 10;
+		s.height = 6;
 		
 		Grid g = new Grid(s);
 		g.numCellsX = 100;
@@ -41,8 +41,8 @@ public class PoissonSolverTest extends TestCase {
 		}
 		
 //		g.rho = pointChargeShifted(g.numCellsX, g.numCellsY);
-//		g.rho = pointCharge(g.numCellsX, g.numCellsY);		
-		g.rho = dipole(g.numCellsX, g.numCellsY);
+		g.rho = pointCharge(g.numCellsX, g.numCellsY);		
+//		g.rho = dipole(g.numCellsX, g.numCellsY);
 //		g.rho = randomChargeDistribution(g.numCellsX, g.numCellsY);
 //		g.rho = lineChargeOnEdge(g.numCellsX, g.numCellsY);
 //		g.rho = lineChargeOnSide(g.numCellsX, g.numCellsY);
@@ -114,7 +114,7 @@ public class PoissonSolverTest extends TestCase {
 		double[][] rho = new double[numCellsX][numCellsY];
 		int indexX = (int)(numCellsX/2);
 		int indexY = (int) (numCellsY/2);
-		rho[0][indexY] = 10;
+		rho[0][indexY] = 50;
 		return rho;
 	}
 	
@@ -140,7 +140,10 @@ public class PoissonSolverTest extends TestCase {
 	
 	private double[][] lineChargeOnEdge(int numCellsX, int numCellsY) {
 		double[][] rho = new double[numCellsX][numCellsY];
-		double charge = 1;		
+		double charge = 1;
+		if (Math.random() < 0.5) {
+			charge = -charge;
+		}
 		for(int i = 0; i < numCellsX; i++) {
 				rho[i][0] = charge;
 				rho[i][numCellsY-1] = charge;				
