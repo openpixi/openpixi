@@ -273,9 +273,6 @@ public class Particle2DPanel extends JPanel {
 					if (forces.get(j) instanceof SimpleGridForceRelativistic){
 						forces.set(j, new SimpleGridForce());
 					}
-					if (forces.get(j) instanceof SpringForceRelativistic){
-						forces.set(j, new SpringForce());
-					}
 				}
 			}
 			switch(i) {
@@ -300,9 +297,6 @@ public class Particle2DPanel extends JPanel {
 					}
 					if (forces.get(j) instanceof SimpleGridForce){
 						forces.set(j, new SimpleGridForceRelativistic(s));
-					}
-					if (forces.get(j) instanceof SpringForce){
-						forces.set(j, new SpringForceRelativistic(s.c));
 					}
 				}
 			}
