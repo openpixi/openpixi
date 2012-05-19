@@ -26,11 +26,13 @@ import org.openpixi.pixi.physics.solver.Solver;
  * For more information: 
  * http://en.wikipedia.org/wiki/Semi-implicit_Euler_method
  */
-public class SemiImplicitEulerRelativistic extends SolverRelativistic implements Solver {
+public class SemiImplicitEulerRelativistic implements Solver {
+	
+	RelativisticVelocity relvelocity;
 	
 	public SemiImplicitEulerRelativistic(double c)
 	{
-		super(c);
+		relvelocity = new RelativisticVelocity(c);
 	}
 	
 	/**
@@ -49,7 +51,7 @@ public class SemiImplicitEulerRelativistic extends SolverRelativistic implements
 		p.setVx(p.getVx() + p.getAx() * step);
 		p.setVy(p.getVy() + p.getAy() * step);
 		
-		double gamma = calculateGamma(p.getVx(), p.getVy());
+		double gamma = relvelocity.calculateGamma(p);
 		
 		// x(t+dt) = x(t) + u(t+dt) * dt / gamma
 		p.setX(p.getX() + p.getVx() * step / gamma);

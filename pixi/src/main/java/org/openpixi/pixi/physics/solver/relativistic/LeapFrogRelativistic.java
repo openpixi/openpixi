@@ -27,11 +27,13 @@ import org.openpixi.pixi.physics.solver.Solver;
  * and also here:
  * http://www.artcompsci.org/vol_1/v1_web/node34.html#leapfrog-step2
  */
-public class LeapFrogRelativistic extends SolverRelativistic implements Solver{
+public class LeapFrogRelativistic implements Solver{
+	
+	RelativisticVelocity relvelocity;
 	
 	public LeapFrogRelativistic(double c)
 	{
-		super(c);
+		relvelocity = new RelativisticVelocity(c);
 	}
 
 	/**
@@ -43,7 +45,7 @@ public class LeapFrogRelativistic extends SolverRelativistic implements Solver{
 	 */
 	public void step(Particle p, Force f, double dt) {
 		
-		double gamma = calculateGamma(p.getVx(), p.getVy());
+		double gamma = relvelocity.calculateGamma(p);
 		
 		// x(t+dt) = x(t) + c(t+dt/2) * dt / gamma
 		p.setX(p.getX() + p.getVx() * dt / gamma);
