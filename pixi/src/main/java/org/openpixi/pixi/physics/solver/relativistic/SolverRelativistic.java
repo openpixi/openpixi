@@ -1,7 +1,5 @@
 package org.openpixi.pixi.physics.solver.relativistic;
 
-import org.openpixi.pixi.physics.ConstantsSI;
-
 public class SolverRelativistic {
 	
 	protected double c;
