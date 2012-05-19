@@ -3,7 +3,7 @@ package org.openpixi.pixi.physics.fields;
 import edu.emory.mathcs.jtransforms.fft.*;
 import org.openpixi.pixi.physics.grid.Grid;
 
-public class PoissonSolver {
+public class PoissonSolverPeriodic {
 	
 	/**Solves the electrostatic Poisson equation with FFT
 	 * 
@@ -15,7 +15,7 @@ public class PoissonSolver {
 	 * in the field variables of the Grid class
 	 * @param g Grid on which the calculation shoudl be performed
 	 */
-	public static void solve2D(Grid g) {
+	public void solve(Grid g) {
 		
 		//size of the array to be transformed
 		int columns = g.rho.length;

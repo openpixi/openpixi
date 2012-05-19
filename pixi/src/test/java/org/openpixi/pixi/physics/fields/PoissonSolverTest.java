@@ -4,7 +4,7 @@ import java.io.*;
 import junit.framework.TestCase;
 import org.openpixi.pixi.physics.*;
 import org.openpixi.pixi.physics.grid.*;
-import org.openpixi.pixi.physics.fields.PoissonSolver;
+import org.openpixi.pixi.physics.fields.PoissonSolverPeriodic;
 import org.openpixi.pixi.ui.util.WriteFile;
 
 import edu.emory.mathcs.jtransforms.fft.*;
@@ -42,14 +42,14 @@ public class PoissonSolverTest extends TestCase {
 		
 //		g.rho = pointChargeShifted(g.numCellsX, g.numCellsY);
 //		g.rho = pointCharge(g.numCellsX, g.numCellsY);		
-//		g.rho = dipole(g.numCellsX, g.numCellsY);
+		g.rho = dipole(g.numCellsX, g.numCellsY);
 //		g.rho = randomChargeDistribution(g.numCellsX, g.numCellsY);
 //		g.rho = lineChargeOnEdge(g.numCellsX, g.numCellsY);
-		g.rho = lineChargeOnSide(g.numCellsX, g.numCellsY);
+//		g.rho = lineChargeOnSide(g.numCellsX, g.numCellsY);
 		
 		long start = System.currentTimeMillis();
-		
-		PoissonSolver.solve2D(g);
+		PoissonSolverPeriodic poisolver = new PoissonSolverPeriodic();
+		poisolver.solve(g);
 		
 		long elapsed = System.currentTimeMillis()-start;
 		System.out.println("\nCalculation time: "+elapsed);
@@ -114,7 +114,7 @@ public class PoissonSolverTest extends TestCase {
 		double[][] rho = new double[numCellsX][numCellsY];
 		int indexX = (int)(numCellsX/2);
 		int indexY = (int) (numCellsY/2);
-		rho[indexX][indexY] = 2;
+		rho[0][indexY] = 10;
 		return rho;
 	}
 	
