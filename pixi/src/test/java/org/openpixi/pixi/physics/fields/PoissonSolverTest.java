@@ -65,6 +65,10 @@ public class PoissonSolverTest extends TestCase {
 			}
 		}
 		fieldFile.closeFstream();
+		
+		//YOU NEED GNUPLOT FOR THIS http://www.gnuplot.info/
+		//NEEDS TO BE IN YOUR EXECUTION PATH (i.e. PATH variable on windows)
+		//plots the above output as vector field
 		try {
 		Runtime gnuplotrt = Runtime.getRuntime();
 		Process gnuplotpr = gnuplotrt.exec("gnuplot -e \"set term png; set output 'D:\\efield.png'; plot 'D:\\efeld.dat' using 1:2:3:4 with vectors head filled lt 2\"");
@@ -109,8 +113,8 @@ public class PoissonSolverTest extends TestCase {
 		double[][] rho = new double[numCellsX][numCellsY];
 		int indexX = (int)(numCellsX/2);
 		int indexY = (int) (numCellsY/2);
-		rho[indexX-20][indexY] = 10;
-		rho[indexX+20][indexY] = -10;
+		rho[indexX-2][indexY] = 10;
+		rho[indexX+2][indexY] = -10;
 		return rho;
 	}
 	
