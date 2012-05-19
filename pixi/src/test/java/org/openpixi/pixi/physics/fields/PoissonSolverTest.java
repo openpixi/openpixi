@@ -24,8 +24,8 @@ public class PoissonSolverTest extends TestCase {
 		Grid g = new Grid(s);
 		g.numCellsX = 10;
 		g.numCellsY = 10;
-		g.cellWidth = 1;
-		g.cellHeight = 1;
+		g.cellWidth = s.width / g.numCellsX;
+		g.cellHeight = s.height / g.numCellsY;
 		g.rho = new double[g.numCellsX][g.numCellsY];
 		g.Ex = new double[g.numCellsX][g.numCellsY];
 		g.Ey = new double[g.numCellsX][g.numCellsY];
