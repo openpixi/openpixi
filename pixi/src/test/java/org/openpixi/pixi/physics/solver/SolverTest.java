@@ -12,7 +12,7 @@ import org.openpixi.pixi.physics.force.ConstantForce;
  */
 public class SolverTest extends TestCase {
 
-	Solver solver;
+	protected Solver solver;
 
 	//double ACCURACY_LIMIT = 1.e-16;
 	double ACCURACY_LIMIT = 1.e-15;
