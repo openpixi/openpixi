@@ -47,19 +47,11 @@ public class SpringForceRelativistic implements Force {
 	}
 
 	public double getNormalVelocityComponentofForceX(Particle p) {
-		double gamma = relvelocity.calculateGamma(p);
-		
-		//v = u / gamma
-		double vy = p.getVy() / gamma;
-		return p.getCharge() * vy * getBz(p);
+		return 0;
 	}
 
 	public double getNormalVelocityComponentofForceY(Particle p) {
-		double gamma = relvelocity.calculateGamma(p);
-		
-		//v = u / gamma
-		double vx = p.getVx() / gamma;
-		return - p.getCharge() * vx * getBz(p);
+		return 0;
 	}
 
 	public double getBz(Particle p) {
