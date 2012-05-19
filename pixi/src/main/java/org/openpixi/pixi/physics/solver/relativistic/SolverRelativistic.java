@@ -13,7 +13,7 @@ public class SolverRelativistic {
 	/**gamma = sqrt[1 + (u / c)^2]*/
 	public double calculateGamma(double ux, double uy) {		
 		double v = Math.sqrt(ux * ux + uy * uy);
-		return Math.sqrt(1 + (v / ConstantsSI.c) * (v / ConstantsSI.c));
+		return Math.sqrt(1 + (v / c) * (v / c));
 	}
 
 }
