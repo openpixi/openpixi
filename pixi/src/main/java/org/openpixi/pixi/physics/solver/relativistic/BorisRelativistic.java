@@ -53,22 +53,38 @@ public class BorisRelativistic extends SolverRelativistic implements Solver{
 		p.setPrevTangentVelocityComponentOfForceY(f.getTangentVelocityComponentOfForceY(p));
 		
 		//finding u(t) in order to calculate gamma(t)
-		double vx = p.getVx() + (p.getAx() * step / 2);
-		double vy = p.getVy() + (p.getAy() * step / 2);
-
-		double gamma = calculateGamma(vx, vy);
-		
-		double vxminus = p.getVx() + f.getPositionComponentofForceX(p) * step / (2.0 * p.getMass());
+		double dt = step * 0.5;
+		double vxminus = p.getVx() + f.getPositionComponentofForceX(p) * dt / (2.0 * p.getMass()) + f.getTangentVelocityComponentOfForceX(p) * dt / p.getMass();
 		double vxplus;
 		double vxprime;
 		
-		double vyminus = p.getVy() + f.getPositionComponentofForceY(p) * step / (2.0 * p.getMass());
+		double vyminus = p.getVy() + f.getPositionComponentofForceY(p) * dt / (2.0 * p.getMass()) + f.getTangentVelocityComponentOfForceY(p) * dt / p.getMass();
 		double vyplus;
 		double vyprime;
 		
-		double t_z = p.getCharge() * f.getBz(p) * step / (2.0 * p.getMass() * gamma);   //t vector
-		
+		double t_z = p.getCharge() * f.getBz(p) * dt / (2.0 * p.getMass());   //t vector
 		double s_z = 2 * t_z / (1 + t_z * t_z);               //s vector
+		
+		vxprime = vxminus + vyminus * t_z;
+		vyprime = vyminus - vxminus * t_z;
+		
+		vxplus = vxminus + vyprime * s_z;
+		vyplus = vyminus - vxprime * s_z;
+		
+		double vx = vxplus + f.getPositionComponentofForceX(p) * dt / (2.0 * p.getMass());
+		double vy = vyplus + f.getPositionComponentofForceY(p) * dt / (2.0 * p.getMass());
+		
+		//gamma(t)
+		double gamma = calculateGamma(vx, vy);
+		
+		//calculating v(t + dt / 2)
+		vxminus = p.getVx() + f.getPositionComponentofForceX(p) * step / (2.0 * p.getMass());
+		
+		vyminus = p.getVy() + f.getPositionComponentofForceY(p) * step / (2.0 * p.getMass());
+		
+		t_z = p.getCharge() * f.getBz(p) * step / (2.0 * p.getMass() * gamma);   //t vector
+		
+		s_z = 2 * t_z / (1 + t_z * t_z);               //s vector
 		
 		vxprime = vxminus + vyminus * t_z;
 		vyprime = vyminus - vxminus * t_z;
