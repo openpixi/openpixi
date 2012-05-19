@@ -52,13 +52,13 @@ public class BorisRelativistic implements Solver{
 		p.setPrevTangentVelocityComponentOfForceX(f.getTangentVelocityComponentOfForceX(p));
 		p.setPrevTangentVelocityComponentOfForceY(f.getTangentVelocityComponentOfForceY(p));
 		
-		//gamma(t)
-		double gamma = relvelocity.calculateGamma(p);
-		
 		//calculating u(t + dt / 2). Although getV() and setV() are used, the represent the relativistic momentum, i.e. v->u
 		double uxminus = p.getVx() + f.getPositionComponentofForceX(p) * step / (2.0 * p.getMass());
 		
 		double uyminus = p.getVy() + f.getPositionComponentofForceY(p) * step / (2.0 * p.getMass());
+		
+		//gamma(t)
+		double gamma = relvelocity.calculateGamma(uxminus, uyminus);
 		
 		double t_z = p.getCharge() * f.getBz(p) * step / (2.0 * p.getMass() * gamma);   //t vector
 		
@@ -94,24 +94,24 @@ public class BorisRelativistic implements Solver{
 		p.setPrevTangentVelocityComponentOfForceY(f.getTangentVelocityComponentOfForceY(p));
 
 		dt = - dt * 0.5;
-		double vxminus = p.getVx() + f.getPositionComponentofForceX(p) * dt / (2.0 * p.getMass()) + f.getTangentVelocityComponentOfForceX(p) * dt / p.getMass();
+		double uxminus = p.getVx() + f.getPositionComponentofForceX(p) * dt / (2.0 * p.getMass()) + f.getTangentVelocityComponentOfForceX(p) * dt / p.getMass();
 	
-		double vyminus = p.getVy() + f.getPositionComponentofForceY(p) * dt / (2.0 * p.getMass()) + f.getTangentVelocityComponentOfForceY(p) * dt / p.getMass();
+		double uyminus = p.getVy() + f.getPositionComponentofForceY(p) * dt / (2.0 * p.getMass()) + f.getTangentVelocityComponentOfForceY(p) * dt / p.getMass();
 	
 		//gamma(t)
-		double gamma = relvelocity.calculateGamma(p);
+		double gamma = relvelocity.calculateGamma(uxminus, uyminus);
 		double t_z = p.getCharge() * f.getBz(p) * dt / (2.0 * p.getMass() * gamma);   //t vector
 
 		double s_z = 2 * t_z / (1 + t_z * t_z);               //s vector
 		
-		double vxprime = vxminus + vyminus * t_z;
-		double vyprime = vyminus - vxminus * t_z;
+		double uxprime = uxminus + uyminus * t_z;
+		double uyprime = uyminus - uxminus * t_z;
 		
-		double vxplus = vxminus + vyprime * s_z;
-		double vyplus = vyminus - vxprime * s_z;
+		double uxplus = uxminus + uyprime * s_z;
+		double uyplus = uyminus - uxprime * s_z;
 		
-		p.setVx(vxplus + f.getPositionComponentofForceX(p) * dt / (2.0 * p.getMass()));
-		p.setVy(vyplus + f.getPositionComponentofForceY(p) * dt / (2.0 * p.getMass()));
+		p.setVx(uxplus + f.getPositionComponentofForceX(p) * dt / (2.0 * p.getMass()));
+		p.setVy(uyplus + f.getPositionComponentofForceY(p) * dt / (2.0 * p.getMass()));
 	}
 
 	/**
@@ -122,23 +122,23 @@ public class BorisRelativistic implements Solver{
 	public void complete(Particle p, Force f, double dt)
 	{
 		dt = dt * 0.5;
-		double vxminus = p.getVx() + p.getPrevPositionComponentForceX() * dt / (2.0 * p.getMass());
+		double uxminus = p.getVx() + p.getPrevPositionComponentForceX() * dt / (2.0 * p.getMass());
 		
-		double vyminus = p.getVy() + p.getPrevPositionComponentForceY() * dt / (2.0 * p.getMass());
+		double uyminus = p.getVy() + p.getPrevPositionComponentForceY() * dt / (2.0 * p.getMass());
 		
 		//gamma(t)
-		double gamma = relvelocity.calculateGamma(p);
+		double gamma = relvelocity.calculateGamma(uxminus, uyminus);
 		double t_z = p.getCharge() * f.getBz(p) * dt / (2.0 * p.getMass() * gamma);   //t vector
 		
 		double s_z = 2 * t_z / (1 + t_z * t_z);               //s vector
 		
-		double vxprime = vxminus + vyminus * t_z;
-		double vyprime = vyminus - vxminus * t_z;
+		double uxprime = uxminus + uyminus * t_z;
+		double uyprime = uyminus - uxminus * t_z;
 		
-		double vxplus = vxminus + vyprime * s_z;
-		double vyplus = vyminus - vxprime * s_z;
+		double uxplus = uxminus + uyprime * s_z;
+		double uyplus = uyminus - uxprime * s_z;
 		
-		p.setVx(vxplus + p.getPrevPositionComponentForceX() * dt / (2.0 * p.getMass()) + p.getPrevTangentVelocityComponentOfForceX() * dt / p.getMass());
-		p.setVy(vyplus + p.getPrevPositionComponentForceY() * dt / (2.0 * p.getMass()) + p.getPrevTangentVelocityComponentOfForceY() * dt / p.getMass());
+		p.setVx(uxplus + p.getPrevPositionComponentForceX() * dt / (2.0 * p.getMass()) + p.getPrevTangentVelocityComponentOfForceX() * dt / p.getMass());
+		p.setVy(uyplus + p.getPrevPositionComponentForceY() * dt / (2.0 * p.getMass()) + p.getPrevTangentVelocityComponentOfForceY() * dt / p.getMass());
 	}
 }
