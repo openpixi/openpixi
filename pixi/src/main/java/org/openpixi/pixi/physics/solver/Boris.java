@@ -49,22 +49,18 @@ public class Boris implements Solver{
 		p.setPrevTangentVelocityComponentOfForceY(f.getTangentVelocityComponentOfForceY(p));
 
 		double vxminus = p.getVx() + f.getPositionComponentofForceX(p) * step / (2.0 * p.getMass());
-		double vxplus;
-		double vxprime;
 		
 		double vyminus = p.getVy() + f.getPositionComponentofForceY(p) * step / (2.0 * p.getMass());
-		double vyplus;
-		double vyprime;
 		
 		double t_z = p.getCharge() * f.getBz(p) * step / (2.0 * p.getMass());   //t vector
 		
 		double s_z = 2 * t_z / (1 + t_z * t_z);               //s vector
 		
-		vxprime = vxminus + vyminus * t_z;
-		vyprime = vyminus - vxminus * t_z;
+		double vxprime = vxminus + vyminus * t_z;
+		double vyprime = vyminus - vxminus * t_z;
 		
-		vxplus = vxminus + vyprime * s_z;
-		vyplus = vyminus - vxprime * s_z;
+		double vxplus = vxminus + vyprime * s_z;
+		double vyplus = vyminus - vxprime * s_z;
 		
 		p.setVx(vxplus + f.getPositionComponentofForceX(p) * step / (2.0 * p.getMass()) + f.getTangentVelocityComponentOfForceX(p) * step / p.getMass());
 		p.setVy(vyplus + f.getPositionComponentofForceY(p) * step / (2.0 * p.getMass()) + f.getTangentVelocityComponentOfForceY(p) * step / p.getMass());
@@ -86,23 +82,19 @@ public class Boris implements Solver{
 		p.setPrevTangentVelocityComponentOfForceY(f.getTangentVelocityComponentOfForceY(p));
 
 		dt = - dt * 0.5;
-		double vxminus = p.getVx() + f.getPositionComponentofForceX(p) * dt / (2.0 * p.getMass()) + f.getTangentVelocityComponentOfForceX(p) * dt / p.getMass();
-		double vxplus;
-		double vxprime;
+		double vxminus = p.getVx() + f.getPositionComponentofForceX(p) * dt / (2.0 * p.getMass());
 		
-		double vyminus = p.getVy() + f.getPositionComponentofForceY(p) * dt / (2.0 * p.getMass()) + f.getTangentVelocityComponentOfForceY(p) * dt / p.getMass();
-		double vyplus;
-		double vyprime;
+		double vyminus = p.getVy() + f.getPositionComponentofForceY(p) * dt / (2.0 * p.getMass());
 		
 		double t_z = p.getCharge() * f.getBz(p) * dt / (2.0 * p.getMass());   //t vector
-
+		
 		double s_z = 2 * t_z / (1 + t_z * t_z);               //s vector
 		
-		vxprime = vxminus + vyminus * t_z;
-		vyprime = vyminus - vxminus * t_z;
+		double vxprime = vxminus + vyminus * t_z;
+		double vyprime = vyminus - vxminus * t_z;
 		
-		vxplus = vxminus + vyprime * s_z;
-		vyplus = vyminus - vxprime * s_z;
+		double vxplus = vxminus + vyprime * s_z;
+		double vyplus = vyminus - vxprime * s_z;
 		
 		p.setVx(vxplus + f.getPositionComponentofForceX(p) * dt / (2.0 * p.getMass()));
 		p.setVy(vyplus + f.getPositionComponentofForceY(p) * dt / (2.0 * p.getMass()));
@@ -117,23 +109,19 @@ public class Boris implements Solver{
 	public void complete(Particle p, Force f, double dt)
 	{
 		dt = dt * 0.5;
-		double vxminus = p.getVx() + p.getPrevPositionComponentForceX() * dt / (2.0 * p.getMass());
-		double vxplus;
-		double vxprime;
+		double vxminus = p.getVx() + f.getPositionComponentofForceX(p) * dt / (2.0 * p.getMass());
 		
-		double vyminus = p.getVy() + p.getPrevPositionComponentForceY() * dt / (2.0 * p.getMass());
-		double vyplus;
-		double vyprime;
+		double vyminus = p.getVy() + f.getPositionComponentofForceY(p) * dt / (2.0 * p.getMass());
 		
-		double t_z = p.getCharge() * p.getPrevBz() * dt / (2.0 * p.getMass());   //t vector
+		double t_z = p.getCharge() * f.getBz(p) * dt / (2.0 * p.getMass());   //t vector
 		
 		double s_z = 2 * t_z / (1 + t_z * t_z);               //s vector
 		
-		vxprime = vxminus + vyminus * t_z;
-		vyprime = vyminus - vxminus * t_z;
+		double vxprime = vxminus + vyminus * t_z;
+		double vyprime = vyminus - vxminus * t_z;
 		
-		vxplus = vxminus + vyprime * s_z;
-		vyplus = vyminus - vxprime * s_z;
+		double vxplus = vxminus + vyprime * s_z;
+		double vyplus = vyminus - vxprime * s_z;
 		
 		p.setVx(vxplus + p.getPrevPositionComponentForceX() * dt / (2.0 * p.getMass()) + p.getPrevTangentVelocityComponentOfForceX() * dt / p.getMass());
 		p.setVy(vyplus + p.getPrevPositionComponentForceY() * dt / (2.0 * p.getMass()) + p.getPrevTangentVelocityComponentOfForceY() * dt / p.getMass());
