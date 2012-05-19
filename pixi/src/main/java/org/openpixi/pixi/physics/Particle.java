@@ -59,7 +59,21 @@ public class Particle{
 	private double Ex;
 	private double Ey;
 	private double Bz;
+	
+	/**previous position component of the force in x - direction used in Boris*/
+	private double prevpositionComponentForceX;
+	
+	/**previous position component of the force in y - direction used in Boris*/
+	private double prevpositionComponentForceY;
 
+	/**previous tangent velocity component of the force in x - direction used in Boris*/
+	private double prevtangentVelocityComponentOfForceX;
+
+	/**previous tangent velocity component of the force in y - direction used in Boris*/
+	private double prevtangentVelocityComponentOfForceY;
+
+	/**previous magnetic field used in Boris*/
+	private double prevBz;
 
 	public double getX() {
 		return x;
@@ -181,6 +195,46 @@ public class Particle{
 		this.Bz = Bz;
 	}
 
+	public double getPrevPositionComponentForceX() {
+		return prevpositionComponentForceX;
+	}
+
+	public void setPrevPositionComponentForceX(double prevpositionComponentForceX) {
+		this.prevpositionComponentForceX = prevpositionComponentForceX;
+	}
+	
+	public double getPrevPositionComponentForceY() {
+		return prevpositionComponentForceY;
+	}
+
+	public void setPrevPositionComponentForceY(double prevpositionComponentForceY) {
+		this.prevpositionComponentForceY = prevpositionComponentForceY;
+	}
+
+	
+	public double getPrevTangentVelocityComponentOfForceX() {
+		return prevtangentVelocityComponentOfForceX;
+	}
+
+	public void setPrevTangentVelocityComponentOfForceX(double prevtangentVelocityComponentOfForceX) {
+		this.prevtangentVelocityComponentOfForceX = prevtangentVelocityComponentOfForceX;
+	}
+
+	public double getPrevTangentVelocityComponentOfForceY() {
+		return prevtangentVelocityComponentOfForceY;
+	}
+
+	public void setPrevTangentVelocityComponentOfForceY(double prevtangentVelocityComponentOfForceY) {
+		this.prevtangentVelocityComponentOfForceY = prevtangentVelocityComponentOfForceY;
+	}
+	
+	public double getPrevBz() {
+		return prevBz;
+	}
+
+	public void setPrevBz(double prevBz) {
+		this.prevBz = prevBz;
+	}
 
 	/** Empty constructor */
 	public Particle() {
