@@ -39,10 +39,11 @@ public class PoissonSolverTest extends TestCase {
 		}
 		
 //		g.rho = pointChargeShifted(g.numCellsX, g.numCellsY);
-//		g.rho = pointCharge(g.numCellsX, g.numCellsY);
-		g.rho = dipole(g.numCellsX, g.numCellsY);
+//		g.rho = pointCharge(g.numCellsX, g.numCellsY);		
+//		g.rho = dipole(g.numCellsX, g.numCellsY);
 //		g.rho = randomChargeDistribution(g.numCellsX, g.numCellsY);
 //		g.rho = lineChargeOnEdge(g.numCellsX, g.numCellsY);
+		g.rho = lineChargeOnSide(g.numCellsX, g.numCellsY);
 		
 		long start = System.currentTimeMillis();
 		
@@ -94,7 +95,7 @@ public class PoissonSolverTest extends TestCase {
 		double[][] rho = new double[numCellsX][numCellsY];
 		int indexX = (int)(numCellsX/2);
 		int indexY = (int) (numCellsY/2);
-		rho[indexX][indexY] = 5;
+		rho[indexX][indexY] = 2;
 		return rho;
 	}
 	
@@ -129,6 +130,15 @@ public class PoissonSolverTest extends TestCase {
 		for(int i = 0; i < numCellsY; i++) {
 			rho[0][i] = charge;
 			rho[numCellsX-1][i] = charge;				
+		}
+		return rho;
+	}
+	
+	private double[][] lineChargeOnSide(int numCellsX, int numCellsY) {
+		double[][] rho = new double[numCellsX][numCellsY];
+		double charge = 1;		
+		for(int i = 0; i < numCellsY; i++) {
+				rho[0][i] = charge;			
 		}
 		return rho;
 	}
