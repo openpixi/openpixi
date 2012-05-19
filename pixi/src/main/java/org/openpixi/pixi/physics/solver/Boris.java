@@ -82,9 +82,9 @@ public class Boris implements Solver{
 		p.setPrevTangentVelocityComponentOfForceY(f.getTangentVelocityComponentOfForceY(p));
 
 		dt = - dt * 0.5;
-		double vxminus = p.getVx() + f.getPositionComponentofForceX(p) * dt / (2.0 * p.getMass());
+		double vxminus = p.getVx() + f.getPositionComponentofForceX(p) * dt / (2.0 * p.getMass()) + f.getTangentVelocityComponentOfForceX(p) * dt / p.getMass();
 		
-		double vyminus = p.getVy() + f.getPositionComponentofForceY(p) * dt / (2.0 * p.getMass());
+		double vyminus = p.getVy() + f.getPositionComponentofForceY(p) * dt / (2.0 * p.getMass()) + f.getTangentVelocityComponentOfForceY(p) * dt / p.getMass();
 		
 		double t_z = p.getCharge() * f.getBz(p) * dt / (2.0 * p.getMass());   //t vector
 		
@@ -109,11 +109,11 @@ public class Boris implements Solver{
 	public void complete(Particle p, Force f, double dt)
 	{
 		dt = dt * 0.5;
-		double vxminus = p.getVx() + f.getPositionComponentofForceX(p) * dt / (2.0 * p.getMass());
+		double vxminus = p.getVx() + p.getPrevPositionComponentForceX() * dt / (2.0 * p.getMass());
 		
-		double vyminus = p.getVy() + f.getPositionComponentofForceY(p) * dt / (2.0 * p.getMass());
+		double vyminus = p.getVy() + p.getPrevPositionComponentForceY() * dt / (2.0 * p.getMass());
 		
-		double t_z = p.getCharge() * f.getBz(p) * dt / (2.0 * p.getMass());   //t vector
+		double t_z = p.getCharge() * p.getPrevBz() * dt / (2.0 * p.getMass());   //t vector
 		
 		double s_z = 2 * t_z / (1 + t_z * t_z);               //s vector
 		
