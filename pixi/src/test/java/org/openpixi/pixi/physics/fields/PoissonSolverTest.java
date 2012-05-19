@@ -39,21 +39,49 @@ public class PoissonSolverTest extends TestCase {
 			}
 		}
 		
-		g.rho[5][5] = 50;
+		g.rho = randomChargeDistribution(g.numCellsX, g.numCellsY);
+		
+		long start = System.currentTimeMillis();
 		
 		PoissonSolver.solve2D(g);
-				
+		
+		long elapsed = System.currentTimeMillis()-start;
+		System.out.println("\nCalculation time: "+elapsed);
+		
+		//deletes the old file
 		File file = new File("\\efeld.dat");
 		file.delete();
 		
-		WriteFile fieldFile = new WriteFile();
+		//creates new file "efield.dat" in working directory and writes
+		//field data to it
+		WriteFile fieldFile = new WriteFile("efeld", "");
 		for (int i = 0; i < g.numCellsX; i++) {
 			for(int j = 0; j < g.numCellsY; j++) {
-				fieldFile.writeFile("efeld", "", i*g.cellWidth + "\t" + j*g.cellHeight +
+				fieldFile.writeLine(i*g.cellWidth + "\t" + j*g.cellHeight +
 						"\t" + g.Ex[i][j] + "\t" + g.Ey[i][j]);
 			}
 		}
+		fieldFile.closeFstream();
 		
+	}
+	
+	private double[][] randomChargeDistribution(int numCellsX, int numCellsY) {
+		double[][] rho = new double[numCellsX][numCellsY];
+		for(int i = 0; i < numCellsX; i++) {
+			for(int j = 0; j < numCellsY; j++) {
+				rho[i][j] = 10 * Math.random();
+			}
+		}
+		
+		return rho;
+	}
+	
+	private double[][] pointCharge(int numCellsX, int numCellsY) {
+		double[][] rho = new double[numCellsX][numCellsY];
+		int indexX = (int)(numCellsX/2);
+		int indexY = (int) (numCellsY/2);
+		rho[indexX][indexY] = 5;
+		return rho;
 	}
 	
 	public void testFFT() {
