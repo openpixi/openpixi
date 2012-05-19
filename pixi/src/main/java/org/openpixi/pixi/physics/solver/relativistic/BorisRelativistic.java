@@ -54,46 +54,46 @@ public class BorisRelativistic extends SolverRelativistic implements Solver{
 		
 		//finding u(t) in order to calculate gamma(t)
 		double dt = step * 0.5;
-		double vxminus = p.getVx() + f.getPositionComponentofForceX(p) * dt / (2.0 * p.getMass()) + f.getTangentVelocityComponentOfForceX(p) * dt / p.getMass();
-		double vxplus;
-		double vxprime;
+		double uxminus = p.getVx() + f.getPositionComponentofForceX(p) * dt / (2.0 * p.getMass()) + f.getTangentVelocityComponentOfForceX(p) * dt / p.getMass();
+		double uxplus;
+		double uxprime;
 		
-		double vyminus = p.getVy() + f.getPositionComponentofForceY(p) * dt / (2.0 * p.getMass()) + f.getTangentVelocityComponentOfForceY(p) * dt / p.getMass();
-		double vyplus;
-		double vyprime;
+		double uyminus = p.getVy() + f.getPositionComponentofForceY(p) * dt / (2.0 * p.getMass()) + f.getTangentVelocityComponentOfForceY(p) * dt / p.getMass();
+		double uyplus;
+		double uyprime;
 		
 		double t_z = p.getCharge() * f.getBz(p) * dt / (2.0 * p.getMass());   //t vector
 		double s_z = 2 * t_z / (1 + t_z * t_z);               //s vector
 		
-		vxprime = vxminus + vyminus * t_z;
-		vyprime = vyminus - vxminus * t_z;
+		uxprime = uxminus + uyminus * t_z;
+		uyprime = uyminus - uxminus * t_z;
 		
-		vxplus = vxminus + vyprime * s_z;
-		vyplus = vyminus - vxprime * s_z;
+		uxplus = uxminus + uyprime * s_z;
+		uyplus = uyminus - uxprime * s_z;
 		
-		double vx = vxplus + f.getPositionComponentofForceX(p) * dt / (2.0 * p.getMass());
-		double vy = vyplus + f.getPositionComponentofForceY(p) * dt / (2.0 * p.getMass());
+		double ux = uxplus + f.getPositionComponentofForceX(p) * dt / (2.0 * p.getMass());
+		double uy = uyplus + f.getPositionComponentofForceY(p) * dt / (2.0 * p.getMass());
 		
 		//gamma(t)
-		double gamma = calculateGamma(vx, vy);
+		double gamma = calculateGamma(ux, uy);
 		
-		//calculating v(t + dt / 2)
-		vxminus = p.getVx() + f.getPositionComponentofForceX(p) * step / (2.0 * p.getMass());
+		//calculating u(t + dt / 2). Although getV() and setV() are used, the represent the relativistic momentum, i.e. v->u
+		uxminus = p.getVx() + f.getPositionComponentofForceX(p) * step / (2.0 * p.getMass());
 		
-		vyminus = p.getVy() + f.getPositionComponentofForceY(p) * step / (2.0 * p.getMass());
+		uyminus = p.getVy() + f.getPositionComponentofForceY(p) * step / (2.0 * p.getMass());
 		
 		t_z = p.getCharge() * f.getBz(p) * step / (2.0 * p.getMass() * gamma);   //t vector
 		
 		s_z = 2 * t_z / (1 + t_z * t_z);               //s vector
 		
-		vxprime = vxminus + vyminus * t_z;
-		vyprime = vyminus - vxminus * t_z;
+		uxprime = uxminus + uyminus * t_z;
+		uyprime = uyminus - uxminus * t_z;
 		
-		vxplus = vxminus + vyprime * s_z;
-		vyplus = vyminus - vxprime * s_z;
+		uxplus = uxminus + uyprime * s_z;
+		uyplus = uyminus - uxprime * s_z;
 		
-		p.setVx(vxplus + f.getPositionComponentofForceX(p) * step / (2.0 * p.getMass()) + f.getTangentVelocityComponentOfForceX(p) * step / p.getMass());
-		p.setVy(vyplus + f.getPositionComponentofForceY(p) * step / (2.0 * p.getMass()) + f.getTangentVelocityComponentOfForceY(p) * step / p.getMass());
+		p.setVx(uxplus + f.getPositionComponentofForceX(p) * step / (2.0 * p.getMass()) + f.getTangentVelocityComponentOfForceX(p) * step / p.getMass());
+		p.setVy(uyplus + f.getPositionComponentofForceY(p) * step / (2.0 * p.getMass()) + f.getTangentVelocityComponentOfForceY(p) * step / p.getMass());
 		
 		//calculating gamma(t + dt / 2)
 		gamma = calculateGamma(p.getVx(), p.getVy());
