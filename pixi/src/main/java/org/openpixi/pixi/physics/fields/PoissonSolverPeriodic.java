@@ -41,29 +41,27 @@ public class PoissonSolverPeriodic {
 		//perform Fourier transformation
 		fft.complexForward(trho);
 		
-		//solve Poisson equation in Fourier space
-		for(int i = 0; i < columns; i++) {
+		//Solve Poisson equation in Fourier space
+		//We omit the term with i,j=0 where d would become 0. This term only contributes a constant term
+		//to the potential and can therefore be chosen arbitrarily.
+		for(int i = 1; i < columns; i++) {
 			for(int j = 0; j < rows; j++) {
 				double d = (4 - 2 * Math.cos((2 * Math.PI * i) / g.numCellsX) - 2 * Math.cos((2 * Math.PI * j) / g.numCellsY));
-				if (d != 0) {
 				phi[i][2*j] = (cellArea * trho[i][2*j]) / d;
 				phi[i][2*j+1] = (cellArea * trho[i][2*j+1]) / d;
-				} else {
-//					phi[i][2*j] = trho[i][2*j];
-//					phi[i][2*j+1] = trho[i][2*j+1];
-					phi[i][2*j] = cellArea * trho[i][2*j];
-					phi[i][2*j+1] = cellArea * trho[i][2*j+1];
-//					phi[i][2*j] = 0;
-//					phi[i][2*j+1] = 0;
-				}
 			}
+		}
+		//i=0 but j!=0
+		for(int j = 1; j < rows; j++) {
+			double d = (2 - 2 * Math.cos((2 * Math.PI * j) / g.numCellsY));
+			phi[0][2*j] = (cellArea * trho[0][2*j]) / d;
+			phi[0][2*j+1] = (cellArea * trho[0][2*j+1]) / d;		
 		}
 		
 		//perform inverse Fourier transform
 		fft.complexInverse(phi, true);
 		
 		//calculate and save electric fields
-
 		//simulation area without boundaries
 		for(int i = 1; i < columns-1; i++) {
 			for(int j = 1; j < rows-1; j++) {
