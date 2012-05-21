@@ -2,7 +2,7 @@ package org.openpixi.pixi.physics.collision.algorithms;
 
 import java.util.ArrayList;
 
-import org.openpixi.pixi.physics.Particle2D;
+import org.openpixi.pixi.physics.Particle;
 import org.openpixi.pixi.physics.collision.util.Pair;
 import org.openpixi.pixi.physics.force.Force;
 import org.openpixi.pixi.physics.solver.Solver;
@@ -14,37 +14,37 @@ public class MatrixTransformation extends CollisionAlgorithm{
 		super();
 	}
 	
-	private void doCollision(Particle2D p1, Particle2D p2) {
+	private void doCollision(Particle p1, Particle p2) {
 		
 		//distance between the particles
-		double distance = Math.sqrt((p1.x - p2.x) * (p1.x - p2.x) + (p1.y - p2.y) * (p1.y - p2.y));
+		double distance = Math.sqrt((p1.getX() - p2.getX()) * (p1.getX() - p2.getX()) + (p1.getY() - p2.getY()) * (p1.getY() - p2.getY()));
 		
 		//finding the unit distance vector
-		double dnX = (p1.x - p2.x) / distance;
-		double dnY = (p1.y - p2.y) / distance;
+		double dnX = (p1.getX() - p2.getX()) / distance;
+		double dnY = (p1.getY() - p2.getY()) / distance;
 		
 		//finding the minimal distance if the ball are overlapping
-		double minDistanceX = dnX * (p1.radius + p2.radius - distance);
-		double minDistanceY = dnY * (p1.radius + p2.radius - distance);
+		double minDistanceX = dnX * (p1.getRadius() + p2.getRadius() - distance);
+		double minDistanceY = dnY * (p1.getRadius() + p2.getRadius() - distance);
 		
 		//moving the balls if they are overlapping (if not, the minimal distance is equal to zero)
-		p1.x += minDistanceX * p2.mass / (p1.mass + p2.mass);
-		p1.y += minDistanceY * p2.mass / (p1.mass + p2.mass);
-		p2.x -= minDistanceX * p1.mass / (p1.mass + p2.mass);
-		p2.y -= minDistanceY * p1.mass / (p1.mass + p2.mass);
+		p1.setX(p1.getX() + minDistanceX * p2.getMass() / (p1.getMass() + p2.getMass()));
+		p1.setY(p1.getY() + minDistanceY * p2.getMass() / (p1.getMass() + p2.getMass()));
+		p2.setX(p2.getX() - minDistanceX * p1.getMass() / (p1.getMass() + p2.getMass()));
+		p2.setY(p2.getY() - minDistanceY * p1.getMass() / (p1.getMass() + p2.getMass()));
 		
 		double phi = 0.0;
 		
-		double dx = p2.x - p1.x;
-		double dy = p2.y - p1.y;
+		double dx = p2.getX() - p1.getX();
+		double dy = p2.getY() - p1.getY();
 		
 		phi = Math.atan2(dy, dx);
 		
-		double v1 = Math.sqrt(p1.vx * p1.vx + p1.vy * p1.vy);
-		double v2 = Math.sqrt(p2.vx * p2.vx + p2.vy * p2.vy);
+		double v1 = Math.sqrt(p1.getVx() * p1.getVx() + p1.getVy() * p1.getVy());
+		double v2 = Math.sqrt(p2.getVx() * p2.getVx() + p2.getVy() * p2.getVy());
 		
-		double theta1 = Math.atan2(p1.vy, p1.vx);
-		double theta2 = Math.atan2(p2.vy, p2.vx);
+		double theta1 = Math.atan2(p1.getVy(), p1.getVx());
+		double theta2 = Math.atan2(p2.getVy(), p2.getVx());
 		
 		//calculating the velocities in the new coordinate system
 		double v1xNewCoor = v1 * Math.cos(theta1 - phi);
@@ -60,24 +60,24 @@ public class MatrixTransformation extends CollisionAlgorithm{
 		
 		//calculating the new velocities in the new coordinate system
 		//http://en.wikipedia.org/wiki/Elastic_collision
-		double newv1xNewCoor = ((p1.mass - p2.mass) * v1xNewCoor + 2 * p2.mass * v2xNewCoor) / (p1.mass + p2.mass);
-		double newv2xNewCoor = (2 * p1.mass * v1xNewCoor + (p2.mass - p1.mass) * v2xNewCoor) / (p1.mass + p2.mass);
+		double newv1xNewCoor = ((p1.getMass() - p2.getMass()) * v1xNewCoor + 2 * p2.getMass() * v2xNewCoor) / (p1.getMass() + p2.getMass());
+		double newv2xNewCoor = (2 * p1.getMass() * v1xNewCoor + (p2.getMass() - p1.getMass()) * v2xNewCoor) / (p1.getMass() + p2.getMass());
 		
 		//going in the old coordinate system, do not forget that the y coordinates in the new coordinate system have not changed
-		p1.vx = newv1xNewCoor * Math.cos(phi) - v1yNewCoor * Math.sin(phi);
-		p1.vy = newv1xNewCoor * Math.sin(phi) + v1yNewCoor * Math.cos(phi);
-		p2.vx = newv2xNewCoor * Math.cos(phi) - v2yNewCoor * Math.sin(phi);
-		p2.vy = newv2xNewCoor * Math.sin(phi) + v2yNewCoor * Math.cos(phi);
+		p1.setVx(newv1xNewCoor * Math.cos(phi) - v1yNewCoor * Math.sin(phi));
+		p1.setVy(newv1xNewCoor * Math.sin(phi) + v1yNewCoor * Math.cos(phi));
+		p2.setVx(newv2xNewCoor * Math.cos(phi) - v2yNewCoor * Math.sin(phi));
+		p2.setVy(newv2xNewCoor * Math.sin(phi) + v2yNewCoor * Math.cos(phi));
 	}
 	
-	public void collide(ArrayList<Pair<Particle2D, Particle2D>> pairs, Force f, Solver s, double step) {
+	public void collide(ArrayList<Pair<Particle, Particle>> pairs, Force f, Solver s, double step) {
 		
 		for(int i = 0; i < pairs.size(); i++) {
-			Particle2D p1 = (Particle2D) pairs.get(i).getFirst();
-			Particle2D p2 = (Particle2D) pairs.get(i).getSecond();
+			Particle p1 = (Particle) pairs.get(i).getFirst();
+			Particle p2 = (Particle) pairs.get(i).getSecond();
 		
-			double distanceSquare = ((p1.x - p2.x) * (p1.x - p2.x) + (p1.y - p2.y) * (p1.y - p2.y));
-			if(distanceSquare <= ((p1.radius + p2.radius) * (p1.radius + p2.radius))) {
+			double distanceSquare = ((p1.getX() - p2.getX()) * (p1.getX() - p2.getX()) + (p1.getY() - p2.getY()) * (p1.getY() - p2.getY()));
+			if(distanceSquare <= ((p1.getRadius() + p2.getRadius()) * (p1.getRadius() + p2.getRadius()))) {
 				s.complete(p1, f, step);
 				s.complete(p2, f, step);
 				doCollision(p1, p2);

@@ -38,28 +38,28 @@ public class SemiImplicitEulerRelativistic implements Solver {
 	 * @param p before the update: x(t), v(t), a(t);
 	 *                 after the update: x(t+dt), v(t+dt), a(t);
 	 */
-	public void step(Particle2D p, Force f, double step)
+	public void step(Particle p, Force f, double step)
 	{
-		double v = Math.sqrt(p.vx * p.vx + p.vy * p.vy);
+		double v = Math.sqrt(p.getVx() * p.getVx() + p.getVy() * p.getVy());
 		double gamma = Math.sqrt(1 / (1 - (v / ConstantsSI.c) * (v / ConstantsSI.c)));
 		
 		//a(t) = F(v(t), x(t)) / m
-		p.ax = f.getForceX(p) / p.mass;
-		p.ay = f.getForceY(p) / p.mass;
+		p.setAx(f.getForceX(p) / p.getMass());
+		p.setAy(f.getForceY(p) / p.getMass());
 		
 		// v(t+dt) = v(t) + a(t)*dt
-		p.vx += p.ax * step;
-		p.vy += p.ay * step;
+		p.setVx(p.getVx() + p.getAx() * step);
+		p.setVy(p.getVy() + p.getAy() * step);
 		
 		// x(t+dt) = x(t) + v(t+dt)*dt
-		p.x += p.vx * step / gamma;
-		p.y += p.vy * step / gamma;
+		p.setX(p.getX() + p.getVx() * step / gamma);
+		p.setY(p.getY() + p.getVy() * step / gamma);
 		
 	}
 
-	public void prepare(Particle2D p, Force f, double step) {
+	public void prepare(Particle p, Force f, double step) {
 	}
 
-	public void complete(Particle2D p, Force f, double step){
+	public void complete(Particle p, Force f, double step){
 	}
 }

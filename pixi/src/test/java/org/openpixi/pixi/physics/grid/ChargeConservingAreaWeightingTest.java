@@ -3,7 +3,7 @@ package org.openpixi.pixi.physics.grid;
 import junit.framework.TestCase;
 
 import org.openpixi.pixi.physics.InitialConditions;
-import org.openpixi.pixi.physics.Particle2D;
+import org.openpixi.pixi.physics.Particle;
 import org.openpixi.pixi.physics.Simulation;
 import org.openpixi.pixi.physics.boundary.PeriodicBoundary;
 import org.openpixi.pixi.physics.force.*;
@@ -135,13 +135,13 @@ public class ChargeConservingAreaWeightingTest extends TestCase {
 		s.boundary = new PeriodicBoundary(s);
 
 		// Add single particle
-		Particle2D p = new Particle2D();
-		p.x = x1;
-		p.y = y1;
-		p.vx = (x2 - x1) / s.tstep;
-		p.vy = (y2 - y1) / s.tstep;
-		p.mass = 1;
-		p.charge = charge;
+		Particle p = new Particle();
+		p.setX(x1);
+		p.setY(y1);
+		p.setVx((x2 - x1) / s.tstep);
+		p.setVy((y2 - y1) / s.tstep);
+		p.setMass(1);
+		p.setCharge(charge);
 		s.particles.add(p);
 
 		s.prepareAllParticles();
@@ -151,16 +151,12 @@ public class ChargeConservingAreaWeightingTest extends TestCase {
 		//change default grid parameters here
 		grid.changeDimension(10, 10, 10, 10);
 
-		// Remember old values
-		p.data.x = p.x;
-		p.data.y = p.y;
-
 		// Advance particle
 		s.particlePush();
 		
 		//Remember old values after boundary check
-		double sx = p.data.x;
-		double sy = p.data.y;
+		double sx = p.getPrevX();
+		double sy = p.getPrevY();
 
 		// Calculate current
 		grid.interp.interpolateToGrid(s.particles);
@@ -169,13 +165,13 @@ public class ChargeConservingAreaWeightingTest extends TestCase {
 		double jy = getSum(grid.jy);
 
 		System.out.println("Total current " + text + ": jx = " + jx + ", jy = " + jy
-				+ " (from " + sx + ", " + sy + " to " + p.x + ", " + p.y + ")");
+				+ " (from " + sx + ", " + sy + " to " + p.getX() + ", " + p.getY() + ")");
 		
 		checkSign(grid.jx);
 		checkSign(grid.jy);
 		
-		assertAlmostEquals(text + ", jx", charge * (p.x - sx) / grid.simulation.tstep, jx, ACCURACY_LIMIT);
-		assertAlmostEquals(text + ", jy", charge * (p.y - sy) / grid.simulation.tstep, jy, ACCURACY_LIMIT);
+		assertAlmostEquals(text + ", jx", charge * (p.getX() - sx) / grid.simulation.tstep, jx, ACCURACY_LIMIT);
+		assertAlmostEquals(text + ", jy", charge * (p.getY() - sy) / grid.simulation.tstep, jy, ACCURACY_LIMIT);
 	}
 	
 	public void testFourBoundaryMovesForce() {
@@ -223,13 +219,13 @@ public class ChargeConservingAreaWeightingTest extends TestCase {
 		s.boundary = new PeriodicBoundary(s);
 
 		// Add single particle
-		Particle2D p = new Particle2D();
-		p.x = x1;
-		p.y = y1;
-		p.vx = vx;
-		p.vy = vy;
-		p.mass = 1;
-		p.charge = charge;
+		Particle p = new Particle();
+		p.setX(x1);
+		p.setY(y1);
+		p.setVx(vx);
+		p.setVy(vy);
+		p.setMass(1);
+		p.setCharge(charge);
 		s.particles.add(p);
 		
 		ConstantForce force = new ConstantForce();
@@ -244,16 +240,12 @@ public class ChargeConservingAreaWeightingTest extends TestCase {
 		//change default grid parameters here
 		grid.changeDimension(10, 10, 10, 10);
 
-		// Remember old values
-		p.data.x = p.x;
-		p.data.y = p.y;
-
 		// Advance particle
 		s.particlePush();
 		
 		//Remember old values after boundary check
-		double sx = p.data.x;
-		double sy = p.data.y;
+		double sx = p.getPrevX();
+		double sy = p.getPrevY();
 		
 		// Calculate current
 		grid.interp.interpolateToGrid(s.particles);
@@ -262,13 +254,13 @@ public class ChargeConservingAreaWeightingTest extends TestCase {
 		double jy = getSum(grid.jy);
 		
 		System.out.println("Total current " + text + ": jx = " + jx + ", jy = " + jy
-				+ " (from " + sx + ", " + sy + " to " + p.x + ", " + p.y + ")");
+				+ " (from " + sx + ", " + sy + " to " + p.getX() + ", " + p.getY() + ")");
 		
 		checkSign(grid.jx);
 		checkSign(grid.jy);
 
-		assertAlmostEquals(text + ", jx", charge * (p.x - sx) / grid.simulation.tstep, jx, ACCURACY_LIMIT);
-		assertAlmostEquals(text + ", jy", charge * (p.y - sy) / grid.simulation.tstep, jy, ACCURACY_LIMIT);
+		assertAlmostEquals(text + ", jx", charge * (p.getX() - sx) / grid.simulation.tstep, jx, ACCURACY_LIMIT);
+		assertAlmostEquals(text + ", jy", charge * (p.getY() - sy) / grid.simulation.tstep, jy, ACCURACY_LIMIT);
 	}	
 	
 	private double getSum(double[][] field) {

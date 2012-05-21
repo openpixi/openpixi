@@ -43,7 +43,7 @@ public class MainBatch {
 		System.out.println("-------- INITIAL CONDITIONS--------");		
 		
 		for (int i=0; i < 10; i++) {
-			System.out.println(s.particles.get(i).x);	
+			System.out.println(s.particles.get(i).getX());	
 		}
 		
 		System.out.println("\n-------- SIMULATION RESULTS --------");		
@@ -57,7 +57,7 @@ public class MainBatch {
 		long elapsed = System.currentTimeMillis()-start;
 		
 		for (int i=0; i < 10; i++) {
-			System.out.println(s.particles.get(i).x);	
+			System.out.println(s.particles.get(i).getX());	
 		}
 		
 		System.out.println("\nCurrent: ");

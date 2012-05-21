@@ -1,7 +1,15 @@
+# Eclipse IDE files
 *.settings
 *.project
 *.classpath
+
+# Java binaries
 *.class
+*.jar
+
+# Text editor backup files
 *~
-target
-lib
+*.swp
+
+target/
+lib/
