@@ -60,10 +60,10 @@ public class Particle{
 	private double Ey;
 	private double Bz;
 	
-	/**previous position component of the force in x - direction used in Boris*/
+	/**previous position component of the force in x - direction used in Boris & BorisDamped*/
 	private double prevpositionComponentForceX;
 	
-	/**previous position component of the force in y - direction used in Boris*/
+	/**previous position component of the force in y - direction used in Boris & BorisDamped*/
 	private double prevpositionComponentForceY;
 
 	/**previous tangent velocity component of the force in x - direction used in Boris*/
@@ -72,7 +72,7 @@ public class Particle{
 	/**previous tangent velocity component of the force in y - direction used in Boris*/
 	private double prevtangentVelocityComponentOfForceY;
 
-	/**previous magnetic field used in Boris*/
+	/**previous magnetic field used in Boris & BorisDamped*/
 	private double prevBz;
 	
 	/**previous linear drag coefficient used in BorisDamped*/
