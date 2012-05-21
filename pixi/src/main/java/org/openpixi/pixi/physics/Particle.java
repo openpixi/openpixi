@@ -74,6 +74,9 @@ public class Particle{
 
 	/**previous magnetic field used in Boris*/
 	private double prevBz;
+	
+	/**previous linear drag coefficient used in BorisDamped*/
+	private double prevLinearDragCoefficient;
 
 	public double getX() {
 		return x;
@@ -234,6 +237,14 @@ public class Particle{
 
 	public void setPrevBz(double prevBz) {
 		this.prevBz = prevBz;
+	}
+	
+	public double getPrevLinearDragCoefficient() {
+		return prevLinearDragCoefficient;
+	}
+
+	public void setPrevLinearDragCoefficient(double prevLinearDragCoefficient) {
+		this.prevLinearDragCoefficient = prevLinearDragCoefficient;
 	}
 
 	/** Empty constructor */
