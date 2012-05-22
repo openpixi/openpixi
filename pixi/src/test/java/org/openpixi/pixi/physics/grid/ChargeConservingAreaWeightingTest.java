@@ -161,8 +161,8 @@ public class ChargeConservingAreaWeightingTest extends TestCase {
 		// Calculate current
 		grid.getInterp().interpolateToGrid(s.particles);
 
-		double jx = getSum(grid.jx);
-		double jy = getSum(grid.jy);
+		double jx = grid.getJxSum();
+		double jy = grid.getJySum();
 
 		System.out.println("Total current " + text + ": jx = " + jx + ", jy = " + jy
 				+ " (from " + sx + ", " + sy + " to " + p.getX() + ", " + p.getY() + ")");
@@ -250,8 +250,8 @@ public class ChargeConservingAreaWeightingTest extends TestCase {
 		// Calculate current
 		grid.getInterp().interpolateToGrid(s.particles);
 
-		double jx = getSum(grid.jx);
-		double jy = getSum(grid.jy);
+		double jx = grid.getJxSum();
+		double jy = grid.getJySum();
 
 		System.out.println("Total current " + text + ": jx = " + jx + ", jy = " + jy
 				+ " (from " + sx + ", " + sy + " to " + p.getX() + ", " + p.getY() + ")");
@@ -263,15 +263,6 @@ public class ChargeConservingAreaWeightingTest extends TestCase {
 		assertAlmostEquals(text + ", jy", charge * (p.getY() - sy) / grid.simulation.tstep, jy, ACCURACY_LIMIT);
 	}
 
-	private double getSum(double[][] field) {
-		double sum = 0;
-		for (double[] row : field) {
-			for (double value : row) {
-				sum += value;
-			}
-		}
-		return sum;
-	}
 
 	private void checkSign(double[][] field) {
 		double s = 0;

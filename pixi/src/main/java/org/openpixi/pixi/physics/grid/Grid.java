@@ -245,4 +245,34 @@ public class Grid {
 		Eyo = new double[numCellsX][numCellsY];
 		Bzo = new double[numCellsX][numCellsY];
 	}
+
+	public double getJxSum() {
+		return getFieldSum(jx);
+	}
+
+	public double getJySum() {
+		return getFieldSum(jy);
+	}
+
+	private double getFieldSum(double[][] field) {
+		double sum = 0;
+		for (double[] row: field) {
+			for (double value: row) {
+				sum += value;
+			}
+		}
+		return sum;
+	}
+
+	private double getFieldSign(double[][] field) {
+		double s = 0;
+		for (int i = 0; i < field.length; i++) {
+			for(int j = 0; j < field[0].length; j++) {
+				if(field[i][j] != 0){
+					s = Math.signum(field[i][j]);
+				}
+			}
+		}
+		return s;
+	}
 }
