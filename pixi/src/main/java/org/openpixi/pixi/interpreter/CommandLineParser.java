@@ -18,51 +18,49 @@ public class CommandLineParser {
 	
 	private CommandSwitch[] m_arrSwitches = null;
 	private ArrayList<CommandSwitch> m_arrParsedSwitches = null;
+	private CommandSwitch m_UnnamedSwitch = null;
 	
 	private boolean m_bSyntaxLoaded		= false;
 	private boolean m_bSwitchesLoaded	= false;
-	private boolean m_bHasEmptySwitch	= false;
+
 	private boolean m_bFailOnError		= false;
 	private boolean m_bExitParser		= false;
 
-	private CommandSwitch m_EmptySwitch = null;
-
+	
 	public CommandLineParser(CommandSwitch[] switches) {
 		m_arrSwitches = switches;
-		m_arrParsedSwitches = new ArrayList<CommandSwitch>(switches.length);	// We cannot parse more switches than we know :-)
+		// We cannot parse more switches than we know of:
+		m_arrParsedSwitches = new ArrayList<CommandSwitch>(switches.length);
 		m_bSwitchesLoaded = true;
-		findEmptySwitch();
+		findUnnamedSwitch();
 	}
 	
-	private void findEmptySwitch(){
+	private void findUnnamedSwitch(){
 		for(CommandSwitch sw : m_arrSwitches){
-			if(sw.isCalled(CommandSwitch.EMPTY_NAME_STR)){
-				m_EmptySwitch = sw;
-				m_bHasEmptySwitch = true;
+			if(sw.isUnnamedSwitch()){
+				m_UnnamedSwitch = sw;
 				return;
 			}
 		}
 	}
 	
-	public boolean loadSyntax(
+	public void loadSyntax(
 			String[] switch_start
 			// Other required syntax
 			// ...
 			){
-		if(m_bSyntaxLoaded){
-			System.out.println("Syntax already loaded: nothing changed");
-		}else{
+		if(!m_bSyntaxLoaded){
 			m_arrStrSwitchStart = switch_start;
 			// ...
 			m_bSyntaxLoaded = true;
 		}
-		return true;
 	}
 	
 	public boolean isReady(){
 		return(
 				m_bSyntaxLoaded &&
 				m_bSwitchesLoaded
+				// ...
 				);
 	}
 	
@@ -72,60 +70,99 @@ public class CommandLineParser {
 		// ...
 	}
 	
-	public CommandSwitch[] parseArguments(String[] args){
-		
-		if(!assertReady()){
-			return returnArgs();
-		}
-
-		m_arrPassedStrings = args;		
+	public void clean(){
 		clearError();
-
-		CommandSwitch sw = null;
+		m_arrParsedSwitches.clear();
+	}
+	
+	public CommandSwitch[] parseArguments(String[] args){
+		if(!isReady()){
+			System.out.println("CMDLineParser not ready");
+			displayStatus();
+			return new CommandSwitch[0];
+		}
+				
+		clean();
+		
+		m_arrPassedStrings = args;
 		int nLen = args.length;
+		CommandSwitch sw = null;
 		int nSwitchPos = 0;
 		
-		///*
 		// Parse leading arguments
 		nSwitchPos = nextSwitchPosition(0, m_arrPassedStrings, false);
-		if( (nSwitchPos>0) && (m_bHasEmptySwitch) ){
-			parseAdditionalArgs(0, m_arrPassedStrings, m_EmptySwitch);
+		if( (nSwitchPos>0) && (m_UnnamedSwitch!=null) ){
+			parseAdditionalArgs(0, m_arrPassedStrings, m_UnnamedSwitch);
 			if(m_ErrorFlag==m_enumErrFlag.NO_ERROR){
-				m_arrParsedSwitches.add(m_EmptySwitch);
-				notifyParsed(m_EmptySwitch);
+				m_arrParsedSwitches.add(m_UnnamedSwitch);
 			}else{
 				handleError();
-				//clearError();
 			}
 		}
-
+		// Parse the rest of the passed arguments
 		while( (nSwitchPos < nLen) && (!m_bExitParser) ){
-			// Obtain switch
+			
 			sw = getSwitch(m_arrPassedStrings[nSwitchPos]);
+			
 			if(sw==null){
-				// Unknown switch: raise error flag
 				m_ErrorFlag = m_enumErrFlag.UNKNOWN_SWITCH;
 				m_ErrorPosition = nSwitchPos;
 				handleError();
-				//nSwitchPos = nextSwitchPosition(nSwitchPos+1, m_arrPassedStrings, false);
-				//continue;
 			}else{
-				// Known switch
 				parseAdditionalArgs(nSwitchPos+1, m_arrPassedStrings, sw);
 				if(m_ErrorFlag==m_enumErrFlag.NO_ERROR){
 					m_arrParsedSwitches.add(sw);
-					notifyParsed(sw);
 				}else{
 					handleError();
 				}
-				//nSwitchPos = nextSwitchPosition(nSwitchPos+1, m_arrPassedStrings, false);
-			}
-			// Jump to next switch
+			}	
 			nSwitchPos = nextSwitchPosition(nSwitchPos+1, m_arrPassedStrings, false);
 		}
+		return m_arrParsedSwitches.toArray(new CommandSwitch[m_arrParsedSwitches.size()]);
+	}
+		
+	private void parseAdditionalArgs(int start, String[] args, CommandSwitch sw) {
+		String testStr	= null; 
+		int nLen		= args.length;
+		int nIndex		= 0;
+		int nMaxIndex	= nLen-1;
+		int nMin		= sw.getMinArgs();
+		int nMax		= sw.getMaxArgs();
+		
+		// Check if array is too short
+		if(nMin > nLen - start){
+			m_ErrorSwitch	= sw;
+			m_ErrorFlag 	= m_enumErrFlag.MISSING_ARG;
+			m_ErrorPosition = nLen;
+			return;
+		}
+		
+		for(int found = 0; found < nMax; found++){
+			nIndex = start + found;
 
-		// Convert to an array of the correct type
-		return returnArgs();
+			if(nIndex > nMaxIndex){
+				if(found < nMin){
+					m_ErrorSwitch	= sw;
+					m_ErrorFlag 	= m_enumErrFlag.MISSING_ARG;
+					m_ErrorPosition = nIndex;
+				}
+				return;
+			}
+			
+			testStr = args[nIndex];
+
+			if(!isSwitch(testStr, false)){
+				sw.addAdditionalArg(testStr);
+				continue;
+			}else{
+				if(found < nMin){
+					m_ErrorSwitch	= sw;
+					m_ErrorFlag 	= m_enumErrFlag.BAD_ARG;
+					m_ErrorPosition = nIndex;
+				}
+				return;
+			}
+		}
 	}
 	
 	private void handleError() {
@@ -148,109 +185,21 @@ public class CommandLineParser {
 			break;
 		}
 		System.out.println(errStr);
+		
 		if(m_bFailOnError){
 			m_bExitParser = true;
+		}else{
+			clearError();
 		}
-		clearError();
 	}
 
 	private void clearError() {
 		m_ErrorFlag		= m_enumErrFlag.NO_ERROR;
-		m_ErrorSwitch		= null;
-		m_ErrorPosition		= -1;
+		m_ErrorSwitch	= null;
+		m_ErrorPosition	= -1;
 		m_bExitParser	= false;
 	}
 
-	private boolean assertReady(){
-		if(isReady()){
-			return true;
-		}else{
-			System.out.println("CMDLineParser not ready");
-			displayStatus();
-			return false;
-		}
-	}
-	
-	private CommandSwitch[] returnArgs(){
-		return m_arrParsedSwitches.toArray(new CommandSwitch[m_arrParsedSwitches.size()]);
-		/*
-		if(m_ErrFlag == m_enumErrFlag.NO_ERROR){
-			return m_arrParsedSwitches.toArray(new CommandSwitch[m_arrParsedSwitches.size()]);
-		}else{
-			return new CommandSwitch[0];
-		}
-		*/
-	}
-	
-	private void notifyParsed(CommandSwitch sw) {
-		if(sw.isEmptySwitch()){
-			System.out.print("EMPTY_SWITCH");
-		}else{
-			System.out.print(sw.getLongName());
-		}
-		System.out.print(" parsed with " + sw.getNumArgs() + " argument(s): ");
-		System.out.print('|');
-		for(String str : sw.getArgs()){
-			System.out.print(str + "|");
-		}
-		System.out.println();
-	}
-	/*
-	private void notifyIgnoreRange(int start_incl, int end_excl, String[] args) {
-		int len = args.length;
-		for(int i=start_incl; (i < len) && (i < end_excl) && (i >= 0); i++){
-			System.out.println(args[i] + " ignored.");
-		}
-	}
-	*/
-	private void parseAdditionalArgs(int start, String[] args, CommandSwitch sw) {
-		String testStr	= ""; 
-		int nLen		= args.length;
-		int nIndex		= 0;
-		int nMaxIndex	= nLen-1;
-		int nMin		= sw.getMinArgs();
-		int nMax		= sw.getMaxArgs();
-		
-		// Check if array is too short
-		if(nMin > nLen - start){
-			m_ErrorSwitch = sw;
-			m_ErrorFlag 	= m_enumErrFlag.MISSING_ARG;
-			m_ErrorPosition 	= nLen;
-			return;
-		}
-		
-		for(int found = 0; found < nMax; found++){
-			nIndex = start + found;
-			// index > array size ?
-			if(nIndex > nMaxIndex){
-				// Yes: already found enough?
-				if(found < nMin){
-					// No: raise error flag
-					m_ErrorSwitch = sw;
-					m_ErrorFlag 	= m_enumErrFlag.MISSING_ARG;
-					m_ErrorPosition 	= nIndex;
-				}
-				return;
-			}
-			testStr = args[nIndex];
-			// Does the current element have a switch-syntax?
-			if(!isSwitch(testStr, false)){
-				// No: add it as an additional argument and continue
-				sw.addAdditionalArg(testStr);
-				continue;
-			}else{
-				// Yes: check if we already have enough arguments for the current switch
-				if(found < nMin){
-					// No: raise error flag
-					m_ErrorSwitch = sw;
-					m_ErrorFlag 	= m_enumErrFlag.BAD_ARG;
-					m_ErrorPosition 	= nIndex;
-				}
-				return;
-			}
-		}
-	}
-	
 	private CommandSwitch getSwitch(String str) {
 		for(CommandSwitch sw : m_arrSwitches){
 			if(sw.isCalled(str)){
@@ -262,14 +211,12 @@ public class CommandLineParser {
 		
 	private boolean isSwitch(String arg, boolean mustBeKnown){
 		if(mustBeKnown){
-			// Check among known/loaded switches
 			for(CommandSwitch sw : m_arrSwitches){
 				if(sw.isCalled(arg)){
 					return true;
 				}
 			}
 		}else{
-			// Just check for switch syntax
 			for(String str : m_arrStrSwitchStart){
 				if(arg.startsWith(str)){
 					return true;
@@ -286,11 +233,14 @@ public class CommandLineParser {
 				return i;
 			}
 		}
-		//return -1;
 		return length;
 	}
 	
+	/*
+	 * Getters
+	 */
+	
 	public CommandSwitch[] getParsedSwitches(){
-		return returnArgs();
+		return m_arrParsedSwitches.toArray(new CommandSwitch[m_arrParsedSwitches.size()]);
 	}
 }

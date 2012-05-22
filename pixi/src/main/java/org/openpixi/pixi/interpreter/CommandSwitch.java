@@ -1,20 +1,14 @@
 package org.openpixi.pixi.interpreter;
 
 import java.util.ArrayList;
-//import org.openpixi.pixi.interpreter.CommandSwitchIndex;
 
-abstract class CommandSwitch {
-	
-	protected static String EMPTY_NAME_STR = "";
-
-	//private final CommandSwitchIndex enumIndex;
+public abstract class CommandSwitch {
 	private final String m_strLongName;
 	private final String m_strShortName;
 	private final int m_nMinArgs;
 	private final int m_nMaxArgs;
 	
 	private ArrayList<String> m_arrAdditionalArgs;
-	private int m_nAdditionalArgs;
 	
 	/*
 	 * Constructors
@@ -23,113 +17,89 @@ abstract class CommandSwitch {
 	// Disallow creation of unspecified switches
 	@SuppressWarnings("unused")
 	private CommandSwitch(){
-		//this.enumIndex = null;
+		// Initialize final fields
 		this.m_strLongName = null;
 		this.m_strShortName = null;
 		this.m_nMinArgs = 0;
 		this.m_nMaxArgs = 0;
-		this.m_nAdditionalArgs = 0;
-		this.m_arrAdditionalArgs = null;
 	};
 	
-	// To be called by subclasses
-	protected CommandSwitch(
-			//CommandSwitchIndex index,
+	// To be called by subclasses in the package
+	CommandSwitch(
 			String LName,
 			String SName,
-			int min,
-			int max
+			int minArg,
+			int maxArg
 			) {
 		// TODO: Value check!
-		//this.enumIndex		= index;
 		this.m_strLongName	= LName;
 		this.m_strShortName	= SName;
-		this.m_nMinArgs 		= min;
-		this.m_nMaxArgs 		= max;
-		this.m_nAdditionalArgs = 0;
-		this.m_arrAdditionalArgs = new ArrayList<String>(max);
-		
-		//System.out.println(toString());
+		this.m_nMinArgs = minArg;
+		this.m_nMaxArgs = maxArg;
+		this.m_arrAdditionalArgs = new ArrayList<String>(maxArg);
 	}
 
-	// To be implemented by subclass
+	// To be implemented by subclasses in the package
 	protected abstract void activate();
 	
 	/*
 	 * Change state
 	 */
 
-	final void addAdditionalArg(String arg){
+	public final void addAdditionalArg(String arg){
 		m_arrAdditionalArgs.add(arg);
-		m_nAdditionalArgs++;
 	}
 	
 	/*
 	 * Getters
 	 */
+	// To be implemented by subclasses in the package
+	abstract boolean isUnnamedSwitch();
 	
 	@Override
 	public String toString(){
 		String str = new String();
 
-		if( this.isEmptySwitch() ){
-			str =	"Long name: " 	+ "EMPTY_NAME_STR" 	+ "\n" +
-					"Short name: " 	+ "EMPTY_NAME_STR" 	+ "\n";
+		str = "\nSwitch: ";
+		if( this.isUnnamedSwitch() ){
+			str +=	"Unnamed";
 		}else{
-			str =	"Long name: " 	+ m_strLongName 	+ "\n" +
-					"Short name: " 	+ m_strShortName 	+ "\n";
+			str +=	m_strLongName 	+ "/" + m_strShortName;
 		}
-		str = str.concat(
-				//"Index: " 	+ enumIndex 	+ "\n" +
-				"Min args: " 	+ m_nMinArgs 		+ "\n" +
-				"Max args: " 	+ m_nMaxArgs		+ "\n" +
-				"Args: "
-				);
+		str +=	" (" + m_nMinArgs + "/" + m_nMaxArgs	+ ")\n" +
+				"Args: ";
 		
 		for(String arg : m_arrAdditionalArgs){
-			str = str.concat(arg + " ");
+			str += arg + " ";
 		}
 		return str;
 	}
 	
-	/*
-	final CommandSwitchIndex getIndex(){
-		return enumIndex;
-	}
-	*/
-	
-	final String getLongName() {
+	public final String getLongName() {
 		return m_strLongName;
 	}
 
-	final String getShortName() {
+	public final String getShortName() {
 		return m_strShortName;
 	}
 	
-	final int getMinArgs(){
+	public final int getMinArgs(){
 		return m_nMinArgs;
 	}
 	
-	final int getMaxArgs(){
+	public final int getMaxArgs(){
 		return m_nMaxArgs;
 	}
 	
-	final String[] getArgs(){
+	public final String[] getArgs(){
 		return m_arrAdditionalArgs.toArray(new String[m_arrAdditionalArgs.size()]);
 	}
 	
-	final int getNumArgs(){
-		return m_nAdditionalArgs;
+	public final int getNumArgs(){
+		return m_arrAdditionalArgs.size();
 	}
 
-	final boolean isCalled(String str) {
+	public final boolean isCalled(String str) {
 		return m_strLongName.equals(str) || m_strShortName.equals(str);
-	}
-	
-	final boolean isEmptySwitch(){
-		if( (m_strLongName.equals(EMPTY_NAME_STR)) || (m_strShortName.equals(EMPTY_NAME_STR)) ){
-			return true;
-		}
-		return false;
 	}
 }
