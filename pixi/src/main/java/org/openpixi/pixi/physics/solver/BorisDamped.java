@@ -41,37 +41,43 @@ public class BorisDamped implements Solver{
 	 */
 	public void step(Particle p, Force f, double step) {
 
+		double getPositionComponentofForceX = f.getPositionComponentofForceX(p);
+		double getPositionComponentofForceY = f.getPositionComponentofForceY(p);
+		double getBz = f.getBz(p);
+		double getLinearDragCoefficient = f.getLinearDragCoefficient(p);
+		double getMass = p.getMass();
+		
 		// remember for complete()
-		p.setPrevPositionComponentForceX(f.getPositionComponentofForceX(p));
-		p.setPrevPositionComponentForceY(f.getPositionComponentofForceY(p));
-		p.setPrevBz(f.getBz(p));
-		p.setPrevLinearDragCoefficient(f.getLinearDragCoefficient(p));
+		p.setPrevPositionComponentForceX(getPositionComponentofForceX);
+		p.setPrevPositionComponentForceY(getPositionComponentofForceY);
+		p.setPrevBz(getBz);
+		p.setPrevLinearDragCoefficient(getLinearDragCoefficient);
 		
 		//help coefficients for the dragging
-		double help1_coef = 1 - f.getLinearDragCoefficient(p) * step / (2 * p.getMass());
-		double help2_coef = 1 + f.getLinearDragCoefficient(p) * step / (2 * p.getMass());
+		double help1_coef = 1 - getLinearDragCoefficient * step / (2 * getMass);
+		double help2_coef = 1 + getLinearDragCoefficient * step / (2 * getMass);
 		
-		double vxminus = help1_coef * p.getVx() / help2_coef + f.getPositionComponentofForceX(p) * step / (2.0 * p.getMass() * help2_coef);
-		double vyminus = help1_coef * p.getVy() / help2_coef + f.getPositionComponentofForceY(p) * step / (2.0 * p.getMass() * help2_coef);
+		double vxminus = help1_coef * p.getVx() / help2_coef + getPositionComponentofForceX * step / (2.0 * getMass * help2_coef);
+		double vyminus = help1_coef * p.getVy() / help2_coef + getPositionComponentofForceY * step / (2.0 * getMass * help2_coef);
 		
-		double t_z = p.getCharge() * f.getBz(p) * step / (2.0 * p.getMass() * help2_coef);   //t vector
+		double t_z = p.getCharge() * getBz * step / (2.0 * getMass * help2_coef);   //t vector
 		
 		double s_z = 2 * t_z / (1 + t_z * t_z);               //s vector
 		
-		double kappa = - 4 * p.getMass() * f.getLinearDragCoefficient(p) * step / (4 * p.getMass() * p.getMass() - 
-				f.getLinearDragCoefficient(p) * f.getLinearDragCoefficient(p) * step * step);
+		double kappa = - 4 * getMass * getLinearDragCoefficient * step / (4 * getMass * getMass - 
+				getLinearDragCoefficient * getLinearDragCoefficient * step * step);
 		
-		double vxprime = vxminus + help2_coef * vyminus * t_z / help1_coef + kappa * step * p.getPrevPositionComponentForceY() * t_z / (2.0 * p.getMass());;
-		double vyprime = vyminus - help2_coef * vxminus * t_z / help1_coef - kappa * step * p.getPrevPositionComponentForceX() * t_z / (2.0 * p.getMass());;
+		double vxprime = vxminus + help2_coef * vyminus * t_z / help1_coef + kappa * step * getPositionComponentofForceY * t_z / (2.0 * getMass);;
+		double vyprime = vyminus - help2_coef * vxminus * t_z / help1_coef - kappa * step * getPositionComponentofForceX * t_z / (2.0 * getMass);;
 		
 		double vxplus = vxminus + vyprime * s_z + (help2_coef / help1_coef - 1) * (vyminus * t_z + vxminus * t_z * t_z) / (1 + t_z * t_z) +
-				kappa * step * (f.getPositionComponentofForceY(p) + f.getPositionComponentofForceX(p) * t_z) * s_z / (4.0 * p.getMass());
+				kappa * step * (getPositionComponentofForceY + getPositionComponentofForceX * t_z) * s_z / (4.0 * getMass);
 		
 		double vyplus = vyminus - vxprime * s_z + (help2_coef / help1_coef - 1) * (- vxminus * t_z + vyminus * t_z * t_z) / (1 + t_z * t_z) -
-				kappa * step * (f.getPositionComponentofForceX(p) - f.getPositionComponentofForceY(p) * t_z) * s_z / (4.0 * p.getMass());
+				kappa * step * (getPositionComponentofForceX - getPositionComponentofForceY * t_z) * s_z / (4.0 * getMass);
 	
-		p.setVx(vxplus + f.getPositionComponentofForceX(p) * step / (2.0 * p.getMass() * help2_coef));
-		p.setVy(vyplus + f.getPositionComponentofForceY(p) * step / (2.0 * p.getMass() * help2_coef));
+		p.setVx(vxplus + getPositionComponentofForceX * step / (2.0 * getMass * help2_coef));
+		p.setVy(vyplus + getPositionComponentofForceY * step / (2.0 * getMass * help2_coef));
 		
 		p.setX(p.getX() + p.getVx() * step);
 		p.setY(p.getY() + p.getVy() * step);
@@ -84,39 +90,45 @@ public class BorisDamped implements Solver{
 	 */
 	public void prepare(Particle p, Force f, double dt)
 	{	
+		double getPositionComponentofForceX = f.getPositionComponentofForceX(p);
+		double getPositionComponentofForceY = f.getPositionComponentofForceY(p);
+		double getBz = f.getBz(p);
+		double getLinearDragCoefficient = f.getLinearDragCoefficient(p);
+		double getMass = p.getMass();
+		
 		// remember for complete()
-		p.setPrevPositionComponentForceX(f.getPositionComponentofForceX(p));
-		p.setPrevPositionComponentForceY(f.getPositionComponentofForceY(p));
-		p.setPrevBz(f.getBz(p));
-		p.setPrevLinearDragCoefficient(f.getLinearDragCoefficient(p));
+		p.setPrevPositionComponentForceX(getPositionComponentofForceX);
+		p.setPrevPositionComponentForceY(getPositionComponentofForceY);
+		p.setPrevBz(getBz);
+		p.setPrevLinearDragCoefficient(getLinearDragCoefficient);
 		
 		double step = - dt * 0.5;
 		
 		//help coefficients for the dragging
-		double help1_coef = 1 - f.getLinearDragCoefficient(p) * step / (2 * p.getMass());
-		double help2_coef = 1 + f.getLinearDragCoefficient(p) * step / (2 * p.getMass());
+		double help1_coef = 1 - getLinearDragCoefficient * step / (2 * getMass);
+		double help2_coef = 1 + getLinearDragCoefficient * step / (2 * getMass);
 		
-		double vxminus = help1_coef * p.getVx() / help2_coef + f.getPositionComponentofForceX(p) * step / (2.0 * p.getMass() * help2_coef);
-		double vyminus = help1_coef * p.getVy() / help2_coef + f.getPositionComponentofForceY(p) * step / (2.0 * p.getMass() * help2_coef);
+		double vxminus = help1_coef * p.getVx() / help2_coef + getPositionComponentofForceX * step / (2.0 * getMass * help2_coef);
+		double vyminus = help1_coef * p.getVy() / help2_coef + getPositionComponentofForceY * step / (2.0 * getMass * help2_coef);
 		
-		double t_z = p.getCharge() * f.getBz(p) * step / (2.0 * p.getMass() * help2_coef);   //t vector
+		double t_z = p.getCharge() * getBz * step / (2.0 * getMass * help2_coef);   //t vector
 		
 		double s_z = 2 * t_z / (1 + t_z * t_z);               //s vector
 		
-		double kappa = - 4 * p.getMass() * f.getLinearDragCoefficient(p) * step / (4 * p.getMass() * p.getMass() - 
-				f.getLinearDragCoefficient(p) * f.getLinearDragCoefficient(p) * step * step);
+		double kappa = - 4 * getMass * getLinearDragCoefficient * step / (4 * getMass * getMass - 
+				getLinearDragCoefficient * getLinearDragCoefficient * step * step);
 		
-		double vxprime = vxminus + help2_coef * vyminus * t_z / help1_coef + kappa * step * p.getPrevPositionComponentForceY() * t_z / (2.0 * p.getMass());;
-		double vyprime = vyminus - help2_coef * vxminus * t_z / help1_coef - kappa * step * p.getPrevPositionComponentForceX() * t_z / (2.0 * p.getMass());;
+		double vxprime = vxminus + help2_coef * vyminus * t_z / help1_coef + kappa * step * getPositionComponentofForceY * t_z / (2.0 * getMass);;
+		double vyprime = vyminus - help2_coef * vxminus * t_z / help1_coef - kappa * step * getPositionComponentofForceX * t_z / (2.0 * getMass);;
 		
 		double vxplus = vxminus + vyprime * s_z + (help2_coef / help1_coef - 1) * (vyminus * t_z + vxminus * t_z * t_z) / (1 + t_z * t_z) +
-				kappa * step * (f.getPositionComponentofForceY(p) + f.getPositionComponentofForceX(p) * t_z) * s_z / (4.0 * p.getMass());
+				kappa * step * (getPositionComponentofForceY + getPositionComponentofForceX * t_z) * s_z / (4.0 * getMass);
 		
 		double vyplus = vyminus - vxprime * s_z + (help2_coef / help1_coef - 1) * (- vxminus * t_z + vyminus * t_z * t_z) / (1 + t_z * t_z) -
-				kappa * step * (f.getPositionComponentofForceX(p) - f.getPositionComponentofForceY(p) * t_z) * s_z / (4.0 * p.getMass());
+				kappa * step * (getPositionComponentofForceX - getPositionComponentofForceY * t_z) * s_z / (4.0 * getMass);
 	
-		p.setVx(vxplus + f.getPositionComponentofForceX(p) * step / (2.0 * p.getMass() * help2_coef));
-		p.setVy(vyplus + f.getPositionComponentofForceY(p) * step / (2.0 * p.getMass() * help2_coef));
+		p.setVx(vxplus + getPositionComponentofForceX * step / (2.0 * getMass * help2_coef));
+		p.setVy(vyplus + getPositionComponentofForceY * step / (2.0 * getMass * help2_coef));		
 	}
 	/**
 	 * complete method for bringing the velocity in the desired half step
@@ -125,32 +137,37 @@ public class BorisDamped implements Solver{
 	 */
 	public void complete(Particle p, Force f, double dt)
 	{
+		double getPrevPositionComponentForceX = p.getPrevPositionComponentForceX();
+		double getPrevPositionComponentForceY = p.getPrevPositionComponentForceY();
+		double getPrevLinearDragCoefficient = p.getPrevLinearDragCoefficient();
+		double getMass = p.getMass();
+		
 		double step = dt * 0.5;
 		
 		//help coefficients for the dragging
-		double help1_coef = 1 - p.getPrevLinearDragCoefficient() * step / (2 * p.getMass());
-		double help2_coef = 1 + p.getPrevLinearDragCoefficient() * step / (2 * p.getMass());
+		double help1_coef = 1 - getPrevLinearDragCoefficient * step / (2 * getMass);
+		double help2_coef = 1 + getPrevLinearDragCoefficient * step / (2 * getMass);
 		
-		double vxminus = help1_coef * p.getVx() / help2_coef + p.getPrevPositionComponentForceX() * step / (2.0 * p.getMass() * help2_coef);
-		double vyminus = help1_coef * p.getVy() / help2_coef + p.getPrevPositionComponentForceY() * step / (2.0 * p.getMass() * help2_coef);
+		double vxminus = help1_coef * p.getVx() / help2_coef + getPrevPositionComponentForceX * step / (2.0 * getMass * help2_coef);
+		double vyminus = help1_coef * p.getVy() / help2_coef + getPrevPositionComponentForceY * step / (2.0 * getMass * help2_coef);
 		
-		double t_z = p.getCharge() * p.getPrevBz() * step / (2.0 * p.getMass() * help2_coef);   //t vector
+		double t_z = p.getCharge() * p.getPrevBz() * step / (2.0 * getMass * help2_coef);   //t vector
 		
 		double s_z = 2 * t_z / (1 + t_z * t_z);               //s vector
 		
-		double kappa = - 4 * p.getMass() * p.getPrevLinearDragCoefficient() * step / (4 * p.getMass() * p.getMass() - 
-				p.getPrevLinearDragCoefficient() * p.getPrevLinearDragCoefficient() * step * step);
+		double kappa = - 4 * getMass * getPrevLinearDragCoefficient * step / (4 * getMass * getMass - 
+				getPrevLinearDragCoefficient * getPrevLinearDragCoefficient * step * step);
 		
-		double vxprime = vxminus + help2_coef * vyminus * t_z / help1_coef + kappa * step * p.getPrevPositionComponentForceY() * t_z / (2.0 * p.getMass());;
-		double vyprime = vyminus - help2_coef * vxminus * t_z / help1_coef - kappa * step * p.getPrevPositionComponentForceX() * t_z / (2.0 * p.getMass());;
+		double vxprime = vxminus + help2_coef * vyminus * t_z / help1_coef + kappa * step * getPrevPositionComponentForceY * t_z / (2.0 * getMass);;
+		double vyprime = vyminus - help2_coef * vxminus * t_z / help1_coef - kappa * step * getPrevPositionComponentForceX * t_z / (2.0 * getMass);;
 		
 		double vxplus = vxminus + vyprime * s_z + (help2_coef / help1_coef - 1) * (vyminus * t_z + vxminus * t_z * t_z) / (1 + t_z * t_z) +
-				kappa * step * (p.getPrevPositionComponentForceY() + p.getPrevPositionComponentForceX() * t_z) * s_z / (4.0 * p.getMass());
+				kappa * step * (getPrevPositionComponentForceY + getPrevPositionComponentForceX * t_z) * s_z / (4.0 * getMass);
 		
 		double vyplus = vyminus - vxprime * s_z + (help2_coef / help1_coef - 1) * (- vxminus * t_z + vyminus * t_z * t_z) / (1 + t_z * t_z) -
-				kappa * step * (p.getPrevPositionComponentForceX() - p.getPrevPositionComponentForceY() * t_z) * s_z / (4.0 * p.getMass());
+				kappa * step * (getPrevPositionComponentForceX - getPrevPositionComponentForceY * t_z) * s_z / (4.0 * getMass);
 	
-		p.setVx(vxplus + p.getPrevPositionComponentForceX() * step / (2.0 * p.getMass() * help2_coef));
-		p.setVy(vyplus + p.getPrevPositionComponentForceY() * step / (2.0 * p.getMass() * help2_coef));
+		p.setVx(vxplus + getPrevPositionComponentForceX * step / (2.0 * getMass * help2_coef));
+		p.setVy(vyplus + getPrevPositionComponentForceY * step / (2.0 * getMass * help2_coef));
 	}
 }

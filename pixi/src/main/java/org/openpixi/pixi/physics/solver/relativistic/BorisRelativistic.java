@@ -45,6 +45,13 @@ public class BorisRelativistic implements Solver{
 	 */
 	public void step(Particle p, Force f, double step) {
 
+		double getPositionComponentofForceX = f.getPositionComponentofForceX(p);
+		double getPositionComponentofForceY = f.getPositionComponentofForceY(p);
+		double getBz = f.getBz(p);
+		double getTangentVelocityComponentOfForceX = f.getTangentVelocityComponentOfForceX(p);
+		double getTangentVelocityComponentOfForceY = f.getTangentVelocityComponentOfForceY(p);
+		double getMass = p.getMass();
+		
 		// remember for complete()
 		p.setPrevPositionComponentForceX(f.getPositionComponentofForceX(p));
 		p.setPrevPositionComponentForceY(f.getPositionComponentofForceY(p));
@@ -53,14 +60,14 @@ public class BorisRelativistic implements Solver{
 		p.setPrevTangentVelocityComponentOfForceY(f.getTangentVelocityComponentOfForceY(p));
 		
 		//calculating u(t + dt / 2). Although getV() and setV() are used, the represent the relativistic momentum, i.e. v->u
-		double uxminus = p.getVx() + f.getPositionComponentofForceX(p) * step / (2.0 * p.getMass());
+		double uxminus = p.getVx() + getPositionComponentofForceX * step / (2.0 * getMass);
 		
-		double uyminus = p.getVy() + f.getPositionComponentofForceY(p) * step / (2.0 * p.getMass());
+		double uyminus = p.getVy() + getPositionComponentofForceY * step / (2.0 * getMass);
 		
 		//gamma(t)
 		double gamma = relvelocity.calculateGamma(uxminus, uyminus);
 		
-		double t_z = p.getCharge() * f.getBz(p) * step / (2.0 * p.getMass() * gamma);   //t vector
+		double t_z = p.getCharge() * getBz * step / (2.0 * getMass * gamma);   //t vector
 		
 		double s_z = 2 * t_z / (1 + t_z * t_z);               //s vector
 		
@@ -70,8 +77,8 @@ public class BorisRelativistic implements Solver{
 		double uxplus = uxminus + uyprime * s_z;
 		double uyplus = uyminus - uxprime * s_z;
 		
-		p.setVx(uxplus + f.getPositionComponentofForceX(p) * step / (2.0 * p.getMass()) + f.getTangentVelocityComponentOfForceX(p) * step / p.getMass());
-		p.setVy(uyplus + f.getPositionComponentofForceY(p) * step / (2.0 * p.getMass()) + f.getTangentVelocityComponentOfForceY(p) * step / p.getMass());
+		p.setVx(uxplus + getPositionComponentofForceX * step / (2.0 * getMass) + getTangentVelocityComponentOfForceX * step / getMass);
+		p.setVy(uyplus + getPositionComponentofForceY * step / (2.0 * getMass) + getTangentVelocityComponentOfForceY * step / getMass);
 		
 		//calculating gamma(t + dt / 2)
 		gamma = relvelocity.calculateGamma(p);
@@ -87,21 +94,32 @@ public class BorisRelativistic implements Solver{
 	 */
 	public void prepare(Particle p, Force f, double dt)
 	{	
+		double getPositionComponentofForceX = f.getPositionComponentofForceX(p);
+		double getPositionComponentofForceY = f.getPositionComponentofForceY(p);
+		double getBz = f.getBz(p);
+		double getTangentVelocityComponentOfForceX = f.getTangentVelocityComponentOfForceX(p);
+		double getTangentVelocityComponentOfForceY = f.getTangentVelocityComponentOfForceY(p);
+		double getMass = p.getMass();
+		
+		// remember for complete()
 		p.setPrevPositionComponentForceX(f.getPositionComponentofForceX(p));
 		p.setPrevPositionComponentForceY(f.getPositionComponentofForceY(p));
 		p.setPrevBz(f.getBz(p));
 		p.setPrevTangentVelocityComponentOfForceX(f.getTangentVelocityComponentOfForceX(p));
 		p.setPrevTangentVelocityComponentOfForceY(f.getTangentVelocityComponentOfForceY(p));
-
-		dt = - dt * 0.5;
-		double uxminus = p.getVx() + f.getPositionComponentofForceX(p) * dt / (2.0 * p.getMass()) + f.getTangentVelocityComponentOfForceX(p) * dt / p.getMass();
-	
-		double uyminus = p.getVy() + f.getPositionComponentofForceY(p) * dt / (2.0 * p.getMass()) + f.getTangentVelocityComponentOfForceY(p) * dt / p.getMass();
-	
+		
+		double step = - dt * 0.5;
+		
+		//calculating u(t + dt / 2). Although getV() and setV() are used, the represent the relativistic momentum, i.e. v->u
+		double uxminus = p.getVx() + getPositionComponentofForceX * step / (2.0 * getMass) + getTangentVelocityComponentOfForceX * step / getMass;
+		
+		double uyminus = p.getVy() + getPositionComponentofForceY * step / (2.0 * getMass) + getTangentVelocityComponentOfForceY * step / getMass;
+		
 		//gamma(t)
 		double gamma = relvelocity.calculateGamma(uxminus, uyminus);
-		double t_z = p.getCharge() * f.getBz(p) * dt / (2.0 * p.getMass() * gamma);   //t vector
-
+		
+		double t_z = p.getCharge() * getBz * step / (2.0 * getMass * gamma);   //t vector
+		
 		double s_z = 2 * t_z / (1 + t_z * t_z);               //s vector
 		
 		double uxprime = uxminus + uyminus * t_z;
@@ -110,8 +128,8 @@ public class BorisRelativistic implements Solver{
 		double uxplus = uxminus + uyprime * s_z;
 		double uyplus = uyminus - uxprime * s_z;
 		
-		p.setVx(uxplus + f.getPositionComponentofForceX(p) * dt / (2.0 * p.getMass()));
-		p.setVy(uyplus + f.getPositionComponentofForceY(p) * dt / (2.0 * p.getMass()));
+		p.setVx(uxplus + getPositionComponentofForceX * step / (2.0 * getMass));
+		p.setVy(uyplus + getPositionComponentofForceY * step / (2.0 * getMass));
 	}
 
 	/**
@@ -121,14 +139,18 @@ public class BorisRelativistic implements Solver{
 	 */
 	public void complete(Particle p, Force f, double dt)
 	{
-		dt = dt * 0.5;
-		double uxminus = p.getVx() + p.getPrevPositionComponentForceX() * dt / (2.0 * p.getMass());
+		double getPrevPositionComponentForceX = p.getPrevPositionComponentForceX();
+		double getPrevPositionComponentForceY = p.getPrevPositionComponentForceY();
+		double getMass = p.getMass();
 		
-		double uyminus = p.getVy() + p.getPrevPositionComponentForceY() * dt / (2.0 * p.getMass());
+		dt = dt * 0.5;
+		double uxminus = p.getVx() + getPrevPositionComponentForceX * dt / (2.0 * getMass);
+		
+		double uyminus = p.getVy() + getPrevPositionComponentForceY * dt / (2.0 * getMass);
 		
 		//gamma(t)
 		double gamma = relvelocity.calculateGamma(uxminus, uyminus);
-		double t_z = p.getCharge() * f.getBz(p) * dt / (2.0 * p.getMass() * gamma);   //t vector
+		double t_z = p.getCharge() * f.getBz(p) * dt / (2.0 * getMass * gamma);   //t vector
 		
 		double s_z = 2 * t_z / (1 + t_z * t_z);               //s vector
 		
@@ -138,7 +160,7 @@ public class BorisRelativistic implements Solver{
 		double uxplus = uxminus + uyprime * s_z;
 		double uyplus = uyminus - uxprime * s_z;
 		
-		p.setVx(uxplus + p.getPrevPositionComponentForceX() * dt / (2.0 * p.getMass()) + p.getPrevTangentVelocityComponentOfForceX() * dt / p.getMass());
-		p.setVy(uyplus + p.getPrevPositionComponentForceY() * dt / (2.0 * p.getMass()) + p.getPrevTangentVelocityComponentOfForceY() * dt / p.getMass());
+		p.setVx(uxplus + getPrevPositionComponentForceX * dt / (2.0 * getMass) + p.getPrevTangentVelocityComponentOfForceX() * dt / getMass);
+		p.setVy(uyplus + getPrevPositionComponentForceY * dt / (2.0 * getMass) + p.getPrevTangentVelocityComponentOfForceY() * dt / getMass);
 	}
 }
