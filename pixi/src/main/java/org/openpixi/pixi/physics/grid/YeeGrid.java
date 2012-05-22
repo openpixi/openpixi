@@ -35,8 +35,6 @@ public class YeeGrid extends Grid {
 		Exo = new double[numCellsX][numCellsY];
 		Eyo = new double[numCellsX][numCellsY];
 		Bzo = new double[numCellsX][numCellsY];
-		initFields();
-
 	}
 
 	//a method to change the dimensions of the cells, i.e. the width and the height
@@ -55,7 +53,6 @@ public class YeeGrid extends Grid {
 		Exo = new double[numCellsX][numCellsY];
 		Eyo = new double[numCellsX][numCellsY];
 		Bzo = new double[numCellsX][numCellsY];
-		initFields();
 
 		setGrid(width, height);
 	}

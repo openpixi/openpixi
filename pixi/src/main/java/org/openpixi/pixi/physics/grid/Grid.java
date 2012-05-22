@@ -77,16 +77,6 @@ public class Grid {
 		}
 	}
 
-	public void initFields() {
-		for (int i = 0; i < numCellsX; i++) {
-			for (int j = 0; j < numCellsY; j++) {
-				Ex[i][j] = 0.0;
-				Ey[i][j] = 0.0;
-				Bz[i][j] = 0.0;
-			}
-		}
-	}
-
 	public void save() {
 		for (int i = 0; i < numCellsX; i++) {
 			for (int j = 0; j < numCellsY; j++) {
