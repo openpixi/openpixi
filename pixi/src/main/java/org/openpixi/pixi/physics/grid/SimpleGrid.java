@@ -41,57 +41,28 @@ public class SimpleGrid extends Grid {
 		SimpleGridForce force = new SimpleGridForce();
 		s.f.add(force);
 
-		jx = new double[numCellsX][numCellsY];
-		jy = new double[numCellsX][numCellsY];
-		rho = new double[numCellsX][numCellsY];
-		Ex = new double[numCellsX][numCellsY];
-		Ey = new double[numCellsX][numCellsY];
-		Bz = new double[numCellsX][numCellsY];
-		Exo = new double[numCellsX][numCellsY];
-		Eyo = new double[numCellsX][numCellsY];
-		Bzo = new double[numCellsX][numCellsY];
+		createGrid();
 	}
 
 	//a method to change the dimensions of the cells, i.e. the width and the height
 	@Override
 	public void changeDimension(double width, double height, int xbox, int ybox)
 	{
-		numCellsX = xbox + 3;
-		numCellsY = ybox + 3;
+		setNumCellsX(xbox + 3);
+		setNumCellsY(ybox + 3);
 
-		jx = new double[numCellsX][numCellsY];
-		jy = new double[numCellsX][numCellsY];
-		rho = new double[numCellsX][numCellsY];
-		Ex = new double[numCellsX][numCellsY];
-		Ey = new double[numCellsX][numCellsY];
-		Bz = new double[numCellsX][numCellsY];
-		Exo = new double[numCellsX][numCellsY];
-		Eyo = new double[numCellsX][numCellsY];
-		Bzo = new double[numCellsX][numCellsY];
+		createGrid();
 
 		setGrid(width, height);
 	}
 
-	@Override
-	public void setGrid(double width, double height)
-	{
-		cellWidth = width / (numCellsX - 3);
-		cellHeight = height / (numCellsY - 3);
-
-		for (Particle p: simulation.particles){
-			//assuming rectangular particle shape i.e. area weighting
-			p.setChargedensity(p.getCharge() / (cellWidth * cellHeight));
-		}
-
-		//include updateGrid() and the first calculation of Fields here
-	}
 
 	@Override
 	public void updateGrid(ArrayList<Particle> particles)
 	{
-		interp.interpolateToGrid(particles);
+		getInterp().interpolateToGrid(particles);
 		storeFields();
-		fsolver.step(this);
-		interp.interpolateToParticle(particles);
+		getFsolver().step(this);
+		getInterp().interpolateToParticle(particles);
 	}
 }

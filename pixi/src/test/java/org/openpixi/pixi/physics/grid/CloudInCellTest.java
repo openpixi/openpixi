@@ -48,7 +48,7 @@ public class CloudInCellTest extends TestCase {
 		testMove(4.9, 5.4, 5.4, 4.6, charge, "four boundary: top left - down right ");
 		//from down left to top right
 		testMove(4.7, 4.6, 5.4, 5.3, charge, "four boundary: down left - top right ");
-		
+
 		//special moves
 		testMove(4.6, 4.5, 5.4, 4.5, charge, "four boundary: middle of cell");
 		testMove(4.6, 5.0, 5.4, 5.0, charge, "four boundary: on teh edge" );
@@ -77,10 +77,10 @@ public class CloudInCellTest extends TestCase {
 			testMove(x1, y1, x2, y2, +1, "random boundary " + i);
 		}
 	}
-	
+
 	private void testMove(double x1, double y1, double x2, double y2, double charge, String text) {
 		Simulation s = InitialConditions.initEmptySimulation();
-		
+
 		//basic simulation parameters
 		s.tstep = 1;
 		s.c = 0.7;
@@ -100,7 +100,7 @@ public class CloudInCellTest extends TestCase {
 		s.particles.add(p);
 
 		s.prepareAllParticles();
-		
+
 		// Use Yeegrid
 		SimpleGrid grid = new SimpleGrid(s); // 10x10 grid
 		//change default grid parameters here
@@ -108,13 +108,13 @@ public class CloudInCellTest extends TestCase {
 
 		// Advance particle
 		s.particlePush();
-		
+
 		//Remember old values after boundary check
 		double sx = p.getPrevX();
 		double sy = p.getPrevY();
 
 		// Calculate current
-		grid.interp.interpolateToGrid(s.particles);
+		grid.getInterp().interpolateToGrid(s.particles);
 
 		double jx = getSum(grid.jx);
 		double jy = getSum(grid.jy);
@@ -132,14 +132,14 @@ public class CloudInCellTest extends TestCase {
 		assertAlmostEquals(text + ", jx", charge * p.getVx(), jx, ACCURACY_LIMIT);
 		assertAlmostEquals(text + ", jy", charge * p.getVy(), jy, ACCURACY_LIMIT);
 	}
-	
+
 	public void testFourBoundtatryMovesForce() {
 		// Positive charge
 		//bottom up
 		int charge = 1;
 		testMoveForce(4.8, 4.8, 0.2, 0, -1, 1, charge, "four boundary: x=const");
 	}
-	
+
 	public void testRandomMovesForce() {
 		for (int i = 0; i < 10000; i++) {
 			double x1 = 2 + 6 * Math.random();
@@ -151,10 +151,10 @@ public class CloudInCellTest extends TestCase {
 			testMoveForce(x1, y1, vx, vy, 0.5*Math.random(), 0.5*Math.random(), +1, "random boundary " + i);
 		}
 	}
-	
+
 	private void testMoveForce(double x1, double y1, double vx, double vy, double ex, double bz, double charge, String text) {
 Simulation s = InitialConditions.initEmptySimulation();
-		
+
 		//basic simulation parameters
 		s.tstep = 1;
 		s.c = 0.7;
@@ -172,12 +172,12 @@ Simulation s = InitialConditions.initEmptySimulation();
 		p.setMass(1);
 		p.setCharge(charge);
 		s.particles.add(p);
-		
+
 		ConstantForce force = new ConstantForce();
 		force.ex = ex;
 		force.bz = bz;
 		s.f.add(force);
-		
+
 		s.prepareAllParticles();
 
 		// Use Yeegrid
@@ -187,23 +187,23 @@ Simulation s = InitialConditions.initEmptySimulation();
 
 		// Advance particle
 		s.particlePush();
-		
+
 		//Remember old values after boundary check
 		double sx = p.getPrevX();
 		double sy = p.getPrevY();
-		
+
 		// Calculate current
-		grid.interp.interpolateToGrid(s.particles);
+		grid.getInterp().interpolateToGrid(s.particles);
 
 		double jx = getSum(grid.jx);
 		double jy = getSum(grid.jy);
-		
+
 		System.out.println("Total current " + text + ": jx = " + jx + ", jy = " + jy
 				+ " (from " + sx + ", " + sy + " to " + p.getX() + ", " + p.getY() + ")");
-		
+
 		checkSign(grid.jx);
 		checkSign(grid.jy);
-		
+
 //		This is what ChargeConservingAreaWeightningTest test for (current during timestep)
 //		assertAlmostEquals(text + ", jx", charge * (p.x - sx), jx, ACCURACY_LIMIT);
 //		assertAlmostEquals(text + ", jy", charge * (p.y - sy), jy, ACCURACY_LIMIT);
@@ -222,7 +222,7 @@ Simulation s = InitialConditions.initEmptySimulation();
 		}
 		return sum;
 	}
-	
+
 	private void checkSign(double[][] field) {
 		double s = 0;
 		for (int i = 0; i < field.length; i++) {

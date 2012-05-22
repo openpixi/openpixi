@@ -42,40 +42,40 @@ import org.openpixi.pixi.physics.grid.*;
  * Displays 2D particles.
  */
 public class Particle2DPanel extends JPanel {
-	
+
 	public Simulation s;
 
 	public String fileName;
-	
+
 	public String fileDirectory;
-	
+
 	private WriteFile file = new WriteFile();
-	
+
 	private boolean relativistic = false;
 
 	private boolean reset_trace;
-	
+
 	private boolean test = false;
-	
+
 	private boolean drawCurrentGrid = false;
-	
+
 	private boolean drawFields = false;
-	
+
 	private boolean calculateFields = false;
-	
+
 	private boolean writePosition = false;
-	
+
 	/** Scaling factor for the displayed panel in x-direction*/
 	double sx;
 	/** Scaling factor for the displayed panel in y-direction*/
-	double sy;	
-	
+	double sy;
+
 	/** Milliseconds between updates */
 	private int interval = 30;
 
 	/** Timer for animation */
 	public Timer timer;
-	
+
 	public boolean showinfo = false;
 	private FrameRateDetector frameratedetector;
 
@@ -105,11 +105,11 @@ public class Particle2DPanel extends JPanel {
 
 	/** Constructor */
 	public Particle2DPanel() {
-		
+
 		timer = new Timer(interval, new TimerListener());
 		this.setVisible(true);
 		frameratedetector = new FrameRateDetector(500);
-		
+
 		s = InitialConditions.initRandomParticles(10, 1);
 
 	}
@@ -156,28 +156,28 @@ public class Particle2DPanel extends JPanel {
 		updateFieldForce();
 		s.prepareAllParticles();
 		timer.start();
-	}	
+	}
 
 	public void checkTrace() {
 		paint_trace =! paint_trace;
 		startAnimation();
 	}
-	
+
 	public void drawCurrentGrid() {
 		drawCurrentGrid =! drawCurrentGrid;
 	}
-	
+
 	public void drawFields() {
 		drawFields =! drawFields;
 	}
-	
+
 	public void calculateFields() {
 		calculateFields =! calculateFields;
 		updateFieldForce();
 	}
 
 	private void updateFieldForce() {
-		
+
 		if(calculateFields) {
 			s.grid = null;
 			s.grid = new YeeGrid(s);
@@ -194,10 +194,10 @@ public class Particle2DPanel extends JPanel {
 						forces.remove(i);
 					}
 				}
-			}			
+			}
 		}
 	}
-	
+
 	public void writePosition() {
 		writePosition =! writePosition;
 		if(writePosition)
@@ -227,11 +227,11 @@ public class Particle2DPanel extends JPanel {
 		force.bz = - 0.23;
 		s.f.add(force);
 */	}
-	
+
 	public void algorithmChange(int id)
 	{
 		s.completeAllParticles();
-		
+
 		switch(id) {
 		case 0:
 			s.psolver = new EulerRichardson();
@@ -261,10 +261,10 @@ public class Particle2DPanel extends JPanel {
 
 		s.prepareAllParticles();
 	}
-	
+
 	public void relativisticEffects(int i) {
 		relativistic =! relativistic;
-		
+
 		if(relativistic == false) {
 			if (s.f instanceof CombinedForce) {
 				ArrayList<Force> forces = ((CombinedForce) s.f).forces;
@@ -291,7 +291,7 @@ public class Particle2DPanel extends JPanel {
 				break;
 			}
 		}
-		
+
 		if(relativistic == true) {
 			//System.out.println("relativistic version on");
 			if (s.f instanceof CombinedForce) {
@@ -319,9 +319,9 @@ public class Particle2DPanel extends JPanel {
 				break;
 			}
 		}
-		
+
 	}
-	
+
 	public void collisionChange(int i) {
 		switch(i) {
 		case 0:
@@ -336,7 +336,7 @@ public class Particle2DPanel extends JPanel {
 			break;
 		}
 	}
-	
+
 	public void detectorChange(int i) {
 		switch(i) {
 		case 0:
@@ -347,7 +347,7 @@ public class Particle2DPanel extends JPanel {
 			break;
 		}
 	}
-	
+
 	public void algorithmCollisionChange(int i) {
 		switch(i) {
 		case 0:
@@ -361,7 +361,7 @@ public class Particle2DPanel extends JPanel {
 			break;
 		}
 	}
-	
+
 	public void boundariesChange(int i) {
 		switch(i) {
 		case 0:
@@ -370,7 +370,7 @@ public class Particle2DPanel extends JPanel {
 		case 1:
 			s.boundary = new PeriodicBoundary(s);
 		}
-		
+
 	}
 
 	/** Display the particles */
@@ -389,7 +389,7 @@ public class Particle2DPanel extends JPanel {
 			super.paintComponent(graph1);
 			reset_trace = false;
 		}
-		
+
 		for (int i = 0; i < s.particles.size(); i++) {
 			Particle par = (Particle) s.particles.get(i);
 			if (par.getCharge() > 0) {
@@ -407,29 +407,29 @@ public class Particle2DPanel extends JPanel {
 				graph.drawRect((int) (par.getX()*sx), (int) (par.getY()*sy), 0, 0);
 			}
 		}
-		
+
 		if(drawCurrentGrid)
 		{
 			graph.setColor(Color.black);
-			for(int i = 0; i < s.grid.numCellsX; i++)
-				for(int k = 0; k < s.grid.numCellsY; k++)
+			for(int i = 0; i < s.grid.getNumCellsX(); i++)
+				for(int k = 0; k < s.grid.getNumCellsY(); k++)
 				{
-					int xstart = (int) (s.grid.cellWidth * (i + 0.5) * sx);
-					int ystart = (int) (s.grid.cellHeight * (k + 0.5) * sy);
-					drawArrow(graph, xstart, ystart, (int) Math.round(s.grid.jx[i][k]*sx + xstart), (int) Math.round(s.grid.jy[i][k]*sy + ystart));
+					int xstart = (int) (s.grid.getCellWidth() * (i + 0.5) * sx);
+					int ystart = (int) (s.grid.getCellHeight() * (k + 0.5) * sy);
+					drawArrow(graph, xstart, ystart, (int) Math.round(s.grid.getJx(i,k)*sx + xstart), (int) Math.round(s.grid.getJy(i,k)*sy + ystart));
 				}
 			//return;
 		}
-		
+
 		if(drawFields)
 		{
 			graph.setColor(Color.black);
-			for(int i = 0; i < s.grid.numCellsX; i++)
-				for(int k = 0; k < s.grid.numCellsY; k++)
+			for(int i = 0; i < s.grid.getNumCellsX(); i++)
+				for(int k = 0; k < s.grid.getNumCellsY(); k++)
 				{
-					int xstart = (int) (s.grid.cellWidth * (i + 0.5) * sx);
-					int ystart = (int) (s.grid.cellHeight * (k + 0.5) * sy);
-					drawArrow(graph, xstart, ystart, (int) Math.round(s.grid.Ex[i][k]*sx + xstart), (int) Math.round(s.grid.Ey[i][k]*sy + ystart));
+					int xstart = (int) (s.grid.getCellWidth() * (i + 0.5) * sx);
+					int ystart = (int) (s.grid.getCellHeight() * (k + 0.5) * sy);
+					drawArrow(graph, xstart, ystart, (int) Math.round(s.grid.getEx(i,k)*sx + xstart), (int) Math.round(s.grid.getEy(i,k)*sy + ystart));
 				}
 			//return;
 		}
@@ -452,12 +452,12 @@ public class Particle2DPanel extends JPanel {
 			graph.drawString("max memory: " + maxMemory /1024, 30, bottom - 50);
 			graph.drawString("total free memory: " +
 				(freeMemory + (maxMemory - allocatedMemory)) / 1024, 30, bottom - 30);
-		}		
+		}
 	}
-	
-	
+
+
 	private void drawArrow(Graphics2D g, int x1, int y1, int x2, int y2) {
-		
+
 		int ARR_SIZE = 5;
 
         double dx = x2 - x1, dy = y2 - y1;
@@ -475,7 +475,7 @@ public class Particle2DPanel extends JPanel {
         if(Math.abs(x2 - x1) > 0 || Math.abs(y2 - y1) > 0)
         	g.fillPolygon(new int[] {len, len-ARR_SIZE, len-ARR_SIZE, len},
         				  new int[] {0, -ARR_SIZE, ARR_SIZE, 0}, 4);
-        
+
         // reset transformationmatrix
         g.setTransform(old);
      }
