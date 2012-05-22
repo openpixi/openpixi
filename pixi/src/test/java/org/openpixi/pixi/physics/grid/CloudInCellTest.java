@@ -101,10 +101,7 @@ public class CloudInCellTest extends TestCase {
 
 		s.prepareAllParticles();
 
-		// Use Yeegrid
-		SimpleGrid grid = new SimpleGrid(s); // 10x10 grid
-		//change default grid parameters here
-		grid.changeDimension(10, 10, 10, 10);
+		Grid grid = GridFactory.createSimpleGrid(s, 10, 10, 10, 10); // 10x10 grid
 
 		// Advance particle
 		s.particlePush();
@@ -114,7 +111,7 @@ public class CloudInCellTest extends TestCase {
 		double sy = p.getPrevY();
 
 		// Calculate current
-		grid.getInterp().interpolateToGrid(s.particles);
+		grid.getInterp().interpolateToGrid(s.particles, grid);
 
 		double jx = grid.getJxSum();
 		double jy = grid.getJySum();
@@ -180,10 +177,7 @@ Simulation s = InitialConditions.initEmptySimulation();
 
 		s.prepareAllParticles();
 
-		// Use Yeegrid
-		SimpleGrid grid = new SimpleGrid(s); // 10x10 grid
-		//change default grid parameters here
-		grid.changeDimension(10, 10, 10, 10);
+		Grid grid = GridFactory.createSimpleGrid(s, 10, 10, 10, 10); // 10x10 grid
 
 		// Advance particle
 		s.particlePush();
@@ -193,7 +187,7 @@ Simulation s = InitialConditions.initEmptySimulation();
 		double sy = p.getPrevY();
 
 		// Calculate current
-		grid.getInterp().interpolateToGrid(s.particles);
+		grid.getInterp().interpolateToGrid(s.particles, grid);
 
 		double jx = grid.getJxSum();
 		double jy = grid.getJySum();

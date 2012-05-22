@@ -6,14 +6,8 @@ import org.openpixi.pixi.physics.Particle;
 
 public class CloudInCell extends Interpolator {
 
-	public CloudInCell(Grid g) {
-
-		super(g);
-
-	}
-
 	@Override
-	public void interpolateToGrid(ArrayList<Particle> particles) {
+	public void interpolateToGrid(ArrayList<Particle> particles, Grid g) {
 		g.resetCurrentAndCharge();
 
 		for(Particle p : particles)
@@ -64,7 +58,7 @@ public class CloudInCell extends Interpolator {
 
 	}
 
-	public void interpolateToParticle(ArrayList<Particle> particles) {
+	public void interpolateToParticle(ArrayList<Particle> particles, Grid g) {
 
 		for (int i = 0; i < particles.size(); i++) {
 

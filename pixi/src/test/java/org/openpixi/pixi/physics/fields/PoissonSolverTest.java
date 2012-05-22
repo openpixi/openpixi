@@ -5,6 +5,7 @@ import junit.framework.TestCase;
 import org.openpixi.pixi.physics.InitialConditions;
 import org.openpixi.pixi.physics.Simulation;
 import org.openpixi.pixi.physics.grid.Grid;
+import org.openpixi.pixi.physics.grid.GridFactory;
 import org.openpixi.pixi.ui.util.WriteFile;
 
 public class PoissonSolverTest extends TestCase {
@@ -19,13 +20,7 @@ public class PoissonSolverTest extends TestCase {
 		s.width = 100;
 		s.height = 100;
 
-		Grid g = new Grid(s);
-		g.setNumCellsX(10);
-		g.setNumCellsY(10);
-		g.setCellWidth(1);
-		g.setCellHeight(1);
-		g.createGrid();
-
+		Grid g = GridFactory.createSimpleGrid(s, 10, 10, 1, 1);
 		g.setRho(5,5, 1);
 
 		PoissonSolver.solve2D(g);

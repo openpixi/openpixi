@@ -6,24 +6,11 @@ import org.openpixi.pixi.physics.Particle;
 
 public class Interpolator {
 
-	Grid g;
-
-	public Interpolator(Grid g) {
-
-		this.g = g;
-
-		for (Particle p: g.simulation.particles){
-			//assuming rectangular particle shape i.e. area weighting
-			p.setChargedensity(p.getCharge() / (g.getCellWidth() * g.getCellHeight()));
-		}
+	public void interpolateToGrid(ArrayList<Particle> particles, Grid g) {
 
 	}
 
-	public void interpolateToGrid(ArrayList<Particle> particles) {
-
-	}
-
-	public void interpolateToParticle(ArrayList<Particle> particles) {
+	public void interpolateToParticle(ArrayList<Particle> particles, Grid g) {
 
 		for (int i = 0; i < particles.size(); i++) {
 

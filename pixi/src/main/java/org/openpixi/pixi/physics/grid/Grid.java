@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import org.openpixi.pixi.physics.Particle;
 import org.openpixi.pixi.physics.Simulation;
 import org.openpixi.pixi.physics.fields.FieldSolver;
+import org.openpixi.pixi.physics.fields.YeeSolver;
+import org.openpixi.pixi.physics.force.SimpleGridForce;
 import org.openpixi.pixi.physics.grid.*;
 
 public class Grid {
@@ -66,103 +68,103 @@ public class Grid {
 	}
 
 	public double getJx(int x, int y) {
-		return jx[x][y];
+		return jx[x+1][y+1];
 	}
 
 	public void setJx(int x, int y, double value) {
-		this.jx[x][y] = value;
+		this.jx[x+1][y+1] = value;
 	}
 
 	public void addJx(int x, int y, double value) {
-		this.jx[x][y] += value;
+		this.jx[x+1][y+1] += value;
 	}
 
 	public double getJy(int x, int y) {
-		return jy[x][y];
+		return jy[x+1][y+1];
 	}
 
 	public void setJy(int x, int y, double value) {
-		this.jy[x][y] = value;
+		this.jy[x+1][y+1] = value;
 	}
 
 	public void addJy(int x, int y, double value) {
-		this.jy[x][y] += value;
+		this.jy[x+1][y+1] += value;
 	}
 
 	public double getRho(int x, int y) {
-		return this.rho[x][y];
+		return this.rho[x+1][y+1];
 	}
 
 	public void setRho(int x, int y, double value) {
-		this.rho[x][y] = value;
+		this.rho[x+1][y+1] = value;
 	}
 
 	public double getPhi(int x, int y) {
-		return phi[x][y];
+		return phi[x+1][y+1];
 	}
 
 	public void setPhi(int x, int y, double value) {
-		this.phi[x][y] = value;
+		this.phi[x+1][y+1] = value;
 	}
 
 	public double getEx(int x, int y) {
-		return Ex[x][y];
+		return Ex[x+1][y+1];
 	}
 
 	public void setEx(int x, int y, double value) {
-		this.Ex[x][y] = value;
+		this.Ex[x+1][y+1] = value;
 	}
 
 	public void addEx(int x, int y, double value) {
-		this.Ex[x][y] += value;
+		this.Ex[x+1][y+1] += value;
 	}
 
 	public double getEy(int x, int y) {
-		return Ey[x][y];
+		return Ey[x+1][y+1];
 	}
 
 	public void setEy(int x, int y, double value) {
-		this.Ey[x][y] = value;
+		this.Ey[x+1][y+1] = value;
 	}
 
 	public void addEy(int x, int y, double value) {
-		this.Ey[x][y] += value;
+		this.Ey[x+1][y+1] += value;
 	}
 
 	public double getBz(int x, int y) {
-		return Bz[x][y];
+		return Bz[x+1][y+1];
 	}
 
 	public void setBz(int x, int y, double value) {
-		this.Bz[x][y] = value;
+		this.Bz[x+1][y+1] = value;
 	}
 
 	public void addBz(int x, int y, double value) {
-		this.Bz[x][y] += value;
+		this.Bz[x+1][y+1] += value;
 	}
 
 	public double getExo(int x, int y) {
-		return this.Exo[x][y];
+		return this.Exo[x+1][y+1];
 	}
 
 	public void setExo(int x, int y, double value) {
-		this.Exo[x][y] = value;
+		this.Exo[x+1][y+1] = value;
 	}
 
 	public double getEyo(int x, int y) {
-		return this.Eyo[x][y];
+		return this.Eyo[x+1][y+1];
 	}
 
 	public void setEyo(int x, int y, double value) {
-		this.Eyo[x][y] = value;
+		this.Eyo[x+1][y+1] = value;
 	}
 
 	public double getBzo(int x, int y) {
-		return this.Bzo[x][y];
+		return this.Bzo[x+1][y+1];
 	}
 
 	public void setBzo(int x, int y, double value) {
-		this.Bzo[x][y] = value;
+		this.Bzo[x+1][y+1] = value;
 	}
 
 	public int getNumCellsX() {
@@ -197,20 +199,54 @@ public class Grid {
 		this.cellHeight = cellHeight;
 	}
 
-	public Grid(Simulation s) {
+	Grid(Simulation s,
+			int numCellsX, int numCellsY,
+			double simWidth, double simHeight,
+			FieldSolver fsolver,
+			Interpolator interp) {
+
 		this.simulation = s;
+		this.fsolver = fsolver;
+		this.interp = interp;
+
+		SimpleGridForce force = new SimpleGridForce();
+		s.f.add(force);
+
+		set(numCellsX, numCellsY, simWidth, simHeight);
 	}
 
-	public void changeDimension(double width, double height, int xbox, int ybox) {
+	public void set(int numCellsX, int numCellsY,
+			double simWidth, double simHeight) {
 
-	}
+		this.numCellsX = numCellsX;
+		this.numCellsY = numCellsY;
+		this.cellWidth = simWidth/numCellsX;
+		this.cellHeight = simHeight/numCellsY;
 
-	public void setGrid(double width, double height) {
+		int xcells = numCellsX + 2;
+		int ycells = numCellsY + 2;
+		jx = new double[xcells][ycells];
+		jy = new double[xcells][ycells];
+		rho = new double[xcells][ycells];
+		phi = new double[xcells][ycells];
+		Ex = new double[xcells][ycells];
+		Ey = new double[xcells][ycells];
+		Bz = new double[xcells][ycells];
+		Exo = new double[xcells][ycells];
+		Eyo = new double[xcells][ycells];
+		Bzo = new double[xcells][ycells];
 
+		for (Particle p: simulation.particles){
+			//assuming rectangular particle shape i.e. area weighting
+			p.setChargedensity(p.getCharge() / (cellWidth * cellHeight));
+		}
 	}
 
 	public void updateGrid(ArrayList<Particle> particles, double tstep) {
-
+		getInterp().interpolateToGrid(particles, this);
+		storeFields();
+		getFsolver().step(this, tstep);
+		getInterp().interpolateToParticle(particles, this);
 	}
 
 	public void resetCurrentAndCharge() {
@@ -233,19 +269,6 @@ public class Grid {
 		}
 	}
 
-	public void createGrid() {
-		jx = new double[numCellsX][numCellsY];
-		jy = new double[numCellsX][numCellsY];
-		rho = new double[numCellsX][numCellsY];
-		phi = new double[numCellsX][numCellsY];
-		Ex = new double[numCellsX][numCellsY];
-		Ey = new double[numCellsX][numCellsY];
-		Bz = new double[numCellsX][numCellsY];
-		Exo = new double[numCellsX][numCellsY];
-		Eyo = new double[numCellsX][numCellsY];
-		Bzo = new double[numCellsX][numCellsY];
-	}
-
 	public double getJxSum() {
 		return getFieldSum(jx);
 	}
@@ -262,17 +285,5 @@ public class Grid {
 			}
 		}
 		return sum;
-	}
-
-	private double getFieldSign(double[][] field) {
-		double s = 0;
-		for (int i = 0; i < field.length; i++) {
-			for(int j = 0; j < field[0].length; j++) {
-				if(field[i][j] != 0){
-					s = Math.signum(field[i][j]);
-				}
-			}
-		}
-		return s;
 	}
 }

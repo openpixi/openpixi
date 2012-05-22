@@ -38,43 +38,43 @@ public class MainControlApplet extends JApplet {
 	private JButton startButton;
 	private JButton stopButton;
 	private JButton resetButton;
-	
+
 	private JSlider speedSlider;
 	private JSlider stepSlider;
-	
+
 	private JSlider  dragSlider;
-	
+
 	private JSlider efieldXSlider;
 	private JSlider efieldYSlider;
 	private JSlider bfieldZSlider;
 	private JSlider gfieldXSlider;
 	private JSlider gfieldYSlider;
-	
+
 	private JCheckBox framerateCheck;
 	private JCheckBox currentgridCheck;
 	private JCheckBox drawFieldsCheck;
 	private JCheckBox calculateFieldsCheck;
 	private JCheckBox writePositionCheck;
 	private JCheckBox relativisticCheck;
-	
+
 	private JTextField xboxentry;
 	private JTextField yboxentry;
-	
+
 	private JTextField filename;
 	private JTextField filedirectory;
-	
+
 	private JComboBox initComboBox;
 	private JComboBox algorithmComboBox;
 	private JCheckBox traceCheck;
 	private JComboBox collisionComboBox;
 	private JComboBox collisionDetector;
 	private JComboBox collisionAlgorithm;
-	
+
 	private JRadioButton hardBoundaries;
 	private JRadioButton periodicBoundaries;
-	
+
 	private JTabbedPane tabs;
-	
+
 	private Particle2DPanel particlePanel;
 
 	private static final double speedSliderScaling = 0.07;
@@ -85,7 +85,7 @@ public class MainControlApplet extends JApplet {
 	private static final double bzSliderScaling = 0.05;
 	private static final double gxSliderScaling = 0.01;
 	private static final double gySliderScaling = 0.01;
-	
+
 	private ConstantForce force = null;
 
 	String[] initStrings = {
@@ -97,7 +97,7 @@ public class MainControlApplet extends JApplet {
 			"Single particle in el. Field",
 			"3 part. in magnetic field",
 			"Spring force test"};
-	
+
 	String[] solverString = {
 			"Euler Richardson",
 			"LeapFrog",
@@ -107,17 +107,17 @@ public class MainControlApplet extends JApplet {
 			"Boris Damped",
 			"Semi Implicit Euler",
 			"Euler"};
-	
+
 	String[] collisionsString = {
 			"No collisions",
 			"Elastic collisions"
 	};
-	
+
 	String[] collisiondetectorString = {
 			"All particles",
 			"Sweep & Prune"
 	};
-	
+
 	String[] collisionalgorithmString = {
 			"Simple collision",
 			"With vectors",
@@ -165,7 +165,7 @@ public class MainControlApplet extends JApplet {
 			}
 		}
 	}
-	
+
 	class ComboBoxListener implements ActionListener {
 		public void actionPerformed(ActionEvent e) {
 			JComboBox cb = (JComboBox) e.getSource();
@@ -176,7 +176,7 @@ public class MainControlApplet extends JApplet {
 			setSlidersValue();
 		}
 	}
-	
+
 	class AlgorithmListener implements ActionListener {
 		public void actionPerformed(ActionEvent eve) {
 			JComboBox cbox = (JComboBox) eve.getSource();
@@ -206,7 +206,7 @@ public class MainControlApplet extends JApplet {
 			}
 		}
 	}
-	
+
 	class CollisionDetector implements ActionListener {
 		public void actionPerformed(ActionEvent eve) {
 			JComboBox cbox = (JComboBox) eve.getSource();
@@ -214,7 +214,7 @@ public class MainControlApplet extends JApplet {
 			particlePanel.detectorChange(i);
 		}
 	}
-	
+
 	class CollisionAlgorithm implements ActionListener {
 		public void actionPerformed(ActionEvent eve) {
 			JComboBox cbox = (JComboBox) eve.getSource();
@@ -252,13 +252,13 @@ public class MainControlApplet extends JApplet {
 			setSlidersValue();
 		}
 	}
-	
+
 	class CheckListener implements ItemListener {
 		public void itemStateChanged(ItemEvent eve){
 				particlePanel.checkTrace();
 		}
 	}
-	
+
 	class WritePosition implements ItemListener {
 		public void itemStateChanged(ItemEvent eve){
 			if(eve.getStateChange() == ItemEvent.SELECTED)
@@ -273,7 +273,7 @@ public class MainControlApplet extends JApplet {
 			}
 		}
 	}
-	
+
 	class WriteFilename implements ActionListener {
 		public void actionPerformed(ActionEvent eve) {
 			if(writePositionCheck.isSelected())
@@ -289,7 +289,7 @@ public class MainControlApplet extends JApplet {
 			}
 		}
 	}
-	
+
 	class SelectBoundaries implements ActionListener {
 		public void actionPerformed(ActionEvent eve) {
 			AbstractButton abut = (AbstractButton) eve.getSource();
@@ -301,7 +301,7 @@ public class MainControlApplet extends JApplet {
 			}
 		}
 	}
-	
+
 	class RelativisticEffects implements ItemListener {
 		public void itemStateChanged(ItemEvent eve){
 			int i = (int)algorithmComboBox.getSelectedIndex();
@@ -309,19 +309,19 @@ public class MainControlApplet extends JApplet {
 			linkConstantForce();
 		}
 	}
-	
+
 	class DrawCurrentGridListener implements ItemListener {
 		public void itemStateChanged(ItemEvent eve){
 				particlePanel.drawCurrentGrid();
 		}
 	}
-	
+
 	class DrawFieldsListener implements ItemListener {
 		public void itemStateChanged(ItemEvent eve){
 				particlePanel.drawFields();
 		}
 	}
-	
+
 	class CalculateFieldsListener implements ItemListener {
 		public void itemStateChanged(ItemEvent eve){
 				particlePanel.calculateFields();
@@ -335,7 +335,7 @@ public class MainControlApplet extends JApplet {
 				}
 		}
 	}
-	
+
 	class FrameListener implements ItemListener {
 		public void itemStateChanged(ItemEvent eve) {
 			if(eve.getStateChange() == ItemEvent.SELECTED) {
@@ -345,9 +345,9 @@ public class MainControlApplet extends JApplet {
 			}
 		}
 	}
-	
-	
-	
+
+
+
 	class DragListener implements ChangeListener{
 		public void stateChanged(ChangeEvent eve) {
 			JSlider source = (JSlider) eve.getSource();
@@ -358,7 +358,7 @@ public class MainControlApplet extends JApplet {
 			}
 		}
 	}
-	
+
 	class EFieldXListener implements ChangeListener{
 		public void stateChanged(ChangeEvent eve) {
 			JSlider source = (JSlider) eve.getSource();
@@ -380,7 +380,7 @@ public class MainControlApplet extends JApplet {
 			}
 		}
 	}
-	
+
 	class BFieldZListener implements ChangeListener{
 		public void stateChanged(ChangeEvent eve) {
 			JSlider source = (JSlider) eve.getSource();
@@ -391,7 +391,7 @@ public class MainControlApplet extends JApplet {
 			}
 		}
 	}
-	
+
 	class GFieldXListener implements ChangeListener{
 		public void stateChanged(ChangeEvent eve) {
 			JSlider source = (JSlider) eve.getSource();
@@ -402,7 +402,7 @@ public class MainControlApplet extends JApplet {
 			}
 		}
 	}
-	
+
 	class GFieldYListener implements ChangeListener{
 		public void stateChanged(ChangeEvent eve) {
 			JSlider source = (JSlider) eve.getSource();
@@ -413,7 +413,7 @@ public class MainControlApplet extends JApplet {
 			}
 		}
 	}
-	
+
 	class StepListener implements ChangeListener{
 		public void stateChanged(ChangeEvent eve) {
 			JSlider source = (JSlider) eve.getSource();
@@ -424,16 +424,16 @@ public class MainControlApplet extends JApplet {
 			}
 		}
 	}
-	
+
 	class BoxDimension implements ActionListener{
 		public void actionPerformed(ActionEvent eve) {
 			int xbox = Integer.parseInt(xboxentry.getText());
 			int ybox = Integer.parseInt(yboxentry.getText());
-			particlePanel.s.grid.changeDimension(particlePanel.getWidth(), particlePanel.getHeight(), xbox, ybox);
+			particlePanel.s.grid.set(xbox, ybox, particlePanel.getWidth(), particlePanel.getHeight());
 		}
 	}
 
-	
+
 	/**
 	 * Constructor.
 	 */
@@ -449,13 +449,13 @@ public class MainControlApplet extends JApplet {
 
 		/**one can also write a constructor for a JSlider as:
 		 * JSlider slider = new JSlider(int min, int max, int value);
-		 * where min is the minimal value (the same as setMinimum(int min), 
+		 * where min is the minimal value (the same as setMinimum(int min),
 		 * max is the maximal value (the same as setMinimum(int max),
 		 * and value is the current value (the same as setValue(int value),
 		 * and the code would be shorter,
 		 * but they are written like this, so it is clearer and not so confusing
 		 */
-		
+
 		speedSlider = new JSlider();
 		speedSlider.addChangeListener(new SliderListener());
 		speedSlider.setMinimum(0);
@@ -468,7 +468,7 @@ public class MainControlApplet extends JApplet {
 		Box speed = Box.createVerticalBox();
 		speed.add(speedLabel);
 		speed.add(speedSlider);
-		
+
 		stepSlider = new JSlider();
 		stepSlider.addChangeListener(new StepListener());
 		stepSlider.setMinimum(1);
@@ -481,7 +481,7 @@ public class MainControlApplet extends JApplet {
 		Box step = Box.createVerticalBox();
 		step.add(stepLabel);
 		step.add(stepSlider);
-		
+
 		dragSlider = new JSlider();
 		dragSlider.addChangeListener(new DragListener());
 		dragSlider.setMinimum(0);
@@ -491,7 +491,7 @@ public class MainControlApplet extends JApplet {
 		dragSlider.setMinorTickSpacing(2);
 		dragSlider.setPaintTicks(true);
 		JLabel dragLabel = new JLabel("Drag coefficient");
-		
+
 		efieldXSlider = new JSlider();
 		efieldXSlider.addChangeListener(new EFieldXListener());
 		efieldXSlider.setMinimum(-100);
@@ -500,7 +500,7 @@ public class MainControlApplet extends JApplet {
 		efieldXSlider.setMajorTickSpacing(20);
 		efieldXSlider.setMinorTickSpacing(5);
 		efieldXSlider.setPaintTicks(true);
-		
+
 		efieldYSlider = new JSlider();
 		efieldYSlider.addChangeListener(new EFieldYListener());
 		efieldYSlider.setMinimum(-100);
@@ -509,7 +509,7 @@ public class MainControlApplet extends JApplet {
 		efieldYSlider.setMajorTickSpacing(20);
 		efieldYSlider.setMinorTickSpacing(5);
 		efieldYSlider.setPaintTicks(true);
-		
+
 		bfieldZSlider = new JSlider();
 		bfieldZSlider.addChangeListener(new BFieldZListener());
 		bfieldZSlider.setMinimum(-100);
@@ -518,7 +518,7 @@ public class MainControlApplet extends JApplet {
 		bfieldZSlider.setMajorTickSpacing(20);
 		bfieldZSlider.setMinorTickSpacing(5);
 		bfieldZSlider.setPaintTicks(true);
-		
+
 		gfieldXSlider = new JSlider();
 		gfieldXSlider.addChangeListener(new GFieldXListener());
 		gfieldXSlider.setMinimum(-100);
@@ -527,7 +527,7 @@ public class MainControlApplet extends JApplet {
 		gfieldXSlider.setMajorTickSpacing(20);
 		gfieldXSlider.setMinorTickSpacing(5);
 		gfieldXSlider.setPaintTicks(true);
-		
+
 		gfieldYSlider = new JSlider();
 		gfieldYSlider.addChangeListener(new GFieldYListener());
 		gfieldYSlider.setMinimum(-100);
@@ -536,7 +536,7 @@ public class MainControlApplet extends JApplet {
 		gfieldYSlider.setMajorTickSpacing(20);
 		gfieldYSlider.setMinorTickSpacing(5);
 		gfieldYSlider.setPaintTicks(true);
-		
+
 		initComboBox = new JComboBox(initStrings);
 		initComboBox.setSelectedIndex(0);
 		initComboBox.addActionListener(new ComboBoxListener());
@@ -545,7 +545,7 @@ public class MainControlApplet extends JApplet {
 		initBox.add(initComboBoxLabel);
 		initBox.add(Box.createHorizontalGlue());
 		initBox.add(initComboBox);
-		
+
 		algorithmComboBox = new JComboBox(solverString);
 		algorithmComboBox.setSelectedIndex(0);
 		algorithmComboBox.addActionListener(new AlgorithmListener());
@@ -554,23 +554,23 @@ public class MainControlApplet extends JApplet {
 		Box algorithmBox = Box.createVerticalBox();
 		algorithmBox.add(algorithmLabel);
 		algorithmBox.add(algorithmComboBox);
-		
+
 		collisionComboBox = new JComboBox(collisionsString);
 		collisionComboBox.setSelectedIndex(0);
 		collisionComboBox.addActionListener(new Collisions());
 		//collisionComboBox.setPreferredSize(new Dimension(collisionComboBox.getPreferredSize().width, 5));
 		JLabel collisionsLabel = new JLabel("Collisions");
-		
+
 		collisionDetector = new JComboBox(collisiondetectorString);
 		collisionDetector.setSelectedIndex(0);
 		collisionDetector.addActionListener(new CollisionDetector());
 		JLabel colDetectorLabel = new JLabel("Detection method");
-		
+
 		collisionAlgorithm = new JComboBox(collisionalgorithmString);
 		collisionAlgorithm.setSelectedIndex(0);
 		collisionAlgorithm.addActionListener(new CollisionAlgorithm());
 		JLabel colAlgorithmLabel = new JLabel("Algorithm for the collisions");
-		
+
 		Box collisionBox = Box.createVerticalBox();
 		collisionBox.add(collisionsLabel);
 		collisionBox.add(collisionComboBox);
@@ -581,71 +581,71 @@ public class MainControlApplet extends JApplet {
 		collisionBox.add(colAlgorithmLabel);
 		collisionBox.add(collisionAlgorithm);
 		collisionBox.add(Box.createVerticalStrut(170));
-		
+
 		startButton.addActionListener(new StartListener());
 		stopButton.addActionListener(new StopListener());
 		resetButton.addActionListener(new ResetListener());
-		
+
 		relativisticCheck = new JCheckBox("Relativistic Version");
 		relativisticCheck.addItemListener(new RelativisticEffects());
 		relativisticCheck.setEnabled(false);
-		
+
 		traceCheck = new JCheckBox("Trace");
 		traceCheck.addItemListener(new CheckListener());
-		
+
 		currentgridCheck = new JCheckBox("Current");
 		currentgridCheck.addItemListener(new DrawCurrentGridListener());
 		currentgridCheck.setEnabled(false);
-		
+
 		drawFieldsCheck = new JCheckBox("Draw fields");
 		drawFieldsCheck.addItemListener(new DrawFieldsListener());
 		drawFieldsCheck.setEnabled(false);
-		
+
 		calculateFieldsCheck = new JCheckBox("Calculate Fields");
 		calculateFieldsCheck.addItemListener(new CalculateFieldsListener());
-		
+
 		framerateCheck = new JCheckBox("Info");
 		framerateCheck.addItemListener(new FrameListener());
-		
+
 		writePositionCheck = new JCheckBox("Write Position");
 		writePositionCheck.addItemListener(new WritePosition());
-		
+
 		xboxentry = new JTextField(2);
 		xboxentry.setText("10");
 		xboxentry.addActionListener(new BoxDimension());
-		
+
 		yboxentry = new JTextField(2);
 		yboxentry.setText("10");
 		yboxentry.addActionListener(new BoxDimension());
-		
+
 		filename = new JTextField(10);
 		filename.setText("Filename");
 		filename.setEnabled(false);
 		filename.setEditable(false);
-		
+
 		filedirectory = new JTextField(10);
 		filedirectory.setText("Dir., ex. C:\\Pixi");
 		filedirectory.setEnabled(false);
 		filedirectory.setEditable(false);
 		filedirectory.addActionListener(new WriteFilename());
 		filedirectory.setToolTipText("Please enter an existing directory");
-		
+
 		hardBoundaries = new JRadioButton("Hardwall");
 		periodicBoundaries = new JRadioButton("Periodic");
-		
+
 		ButtonGroup bgroup = new ButtonGroup();
-		
+
 		bgroup.add(hardBoundaries);
 		bgroup.add(periodicBoundaries);
-		
+
 		hardBoundaries.addActionListener(new SelectBoundaries());
 		periodicBoundaries.addActionListener(new SelectBoundaries());
-		
+
 		JPanel boundaries = new JPanel();
 		boundaries.add(hardBoundaries);
 		boundaries.add(periodicBoundaries);
 		JLabel boundariesLabel = new JLabel("Boundaries");
-		
+
 		JLabel xboxentryLabel = new JLabel("Cell width");
 		JLabel yboxentryLabel = new JLabel("Cell height");
 
@@ -660,7 +660,7 @@ public class MainControlApplet extends JApplet {
 		controlPanelUp.add(writePositionCheck);
 		controlPanelUp.add(filename);
 		controlPanelUp.add(filedirectory);
-		
+
 		Box settingControls = Box.createVerticalBox();
 		JPanel controlPanelDown = new JPanel();
 		controlPanelDown.setLayout(new FlowLayout());
@@ -676,19 +676,19 @@ public class MainControlApplet extends JApplet {
 		settingControls.add(boundaries);
 		settingControls.add(traceCheck);
 		settingControls.add(framerateCheck);
-		
+
 		Box panelBox = Box.createVerticalBox();
 		panelBox.add(controlPanelUp);
 		panelBox.add(controlPanelDown);
-		
+
 		JLabel eFieldXLabel = new JLabel("Electric Field in x - direction");
 		JLabel eFieldYLabel = new JLabel("Electric Field in y - direction");
 		JLabel bFieldZLabel = new JLabel("Magnetic Field in z - direction");
 		JLabel gFieldXLabel = new JLabel("Gravitation in x - direction Field");
 		JLabel gFieldYLabel = new JLabel("Gravitation in y - direction Field");
-		
+
 		tabs = new JTabbedPane();
-		
+
 		Box fieldsBox = Box.createVerticalBox();
 		fieldsBox.add(eFieldXLabel);
 		fieldsBox.add(efieldXSlider);
@@ -706,7 +706,7 @@ public class MainControlApplet extends JApplet {
 		fieldsBox.add(dragLabel);
 		fieldsBox.add(dragSlider);
 		fieldsBox.add(Box.createVerticalGlue());
-		
+
 		Box xbox = Box.createHorizontalBox();
 		Box ybox = Box.createHorizontalBox();
 		xbox.add(Box.createHorizontalStrut(50));
@@ -717,7 +717,7 @@ public class MainControlApplet extends JApplet {
 		ybox.add(yboxentryLabel);
 		ybox.add(Box.createHorizontalStrut(96));
 		ybox.add(yboxentry);
-		
+
 		Box cellSettings = Box.createVerticalBox();
 		cellSettings.add(currentgridCheck);
 		cellSettings.add(Box.createVerticalGlue());
@@ -730,16 +730,16 @@ public class MainControlApplet extends JApplet {
 		cellSettings.add(Box.createVerticalStrut(10));
 		cellSettings.add(ybox);
 		cellSettings.add(Box.createVerticalStrut(200));
-		
+
 		fieldsBox.setPreferredSize(new Dimension(250, 100));
 		settingControls.setPreferredSize(new Dimension (250, 100));
 		collisionBox.setPreferredSize(new Dimension (250, 100));
-		
+
 		tabs.addTab("Fields", fieldsBox);
 		tabs.addTab("Settings", settingControls);
 		tabs.addTab("Collisions", collisionBox);
 		tabs.addTab("Cell", cellSettings);
-		
+
 		this.setLayout(new BorderLayout());
 		this.add(panelBox, BorderLayout.SOUTH);
 		this.add(particlePanel, BorderLayout.CENTER);
@@ -747,7 +747,7 @@ public class MainControlApplet extends JApplet {
 		this.add(tabs, BorderLayout.EAST);
 
 	}
-	
+
 	public void setText(JTextArea text, String str, boolean onoff)
 	{
 		if(onoff)
@@ -755,7 +755,7 @@ public class MainControlApplet extends JApplet {
 		else
 			text.replaceRange(" ", 0, text.getDocument().getLength());
 	}
-	
+
 	public void setSlidersValue()
 	{
 		particlePanel.s.tstep = 0.5;
@@ -772,7 +772,7 @@ public class MainControlApplet extends JApplet {
 		particlePanel.timer.setDelay((int) (1000 * Math.exp(-50 * speedSliderScaling)));
 		xboxentry.setText("10");
 		yboxentry.setText("10");
-		particlePanel.s.grid.changeDimension(particlePanel.getWidth(), particlePanel.getHeight(), 10, 10);
+		particlePanel.s.grid.set(10, 10, particlePanel.getWidth(), particlePanel.getHeight());
 		writePositionCheck.setSelected(false);
 		filename.setEditable(false);
 		filename.setEnabled(false);
@@ -795,7 +795,7 @@ public class MainControlApplet extends JApplet {
 		collisionAlgorithm.setSelectedIndex(0);
 		linkConstantForce();
 	}
-	
+
 	@Override
 	public void init() {
 		super.init();

@@ -147,9 +147,7 @@ public class ChargeConservingAreaWeightingTest extends TestCase {
 		s.prepareAllParticles();
 
 		// Use Yeegrid
-		YeeGrid grid = new YeeGrid(s); // 10x10 grid
-		//change default grid parameters here
-		grid.changeDimension(10, 10, 10, 10);
+		Grid grid = GridFactory.createYeeGrid(s, 10, 10, 10, 10); // 10x10 grid
 
 		// Advance particle
 		s.particlePush();
@@ -159,7 +157,7 @@ public class ChargeConservingAreaWeightingTest extends TestCase {
 		double sy = p.getPrevY();
 
 		// Calculate current
-		grid.getInterp().interpolateToGrid(s.particles);
+		grid.getInterp().interpolateToGrid(s.particles, grid);
 
 		double jx = grid.getJxSum();
 		double jy = grid.getJySum();
@@ -236,9 +234,8 @@ public class ChargeConservingAreaWeightingTest extends TestCase {
 		s.prepareAllParticles();
 
 		// Use Yeegrid
-		YeeGrid grid = new YeeGrid(s); // 10x10 grid
+		Grid grid = GridFactory.createYeeGrid(s, 10, 10, 10, 10); // 10x10 grid
 		//change default grid parameters here
-		grid.changeDimension(10, 10, 10, 10);
 
 		// Advance particle
 		s.particlePush();
@@ -248,7 +245,7 @@ public class ChargeConservingAreaWeightingTest extends TestCase {
 		double sy = p.getPrevY();
 
 		// Calculate current
-		grid.getInterp().interpolateToGrid(s.particles);
+		grid.getInterp().interpolateToGrid(s.particles, grid);
 
 		double jx = grid.getJxSum();
 		double jy = grid.getJySum();

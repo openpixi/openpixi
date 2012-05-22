@@ -17,8 +17,8 @@ public class SimpleSolver extends FieldSolver {
 	@Override
 	public void step(Grid g, double tstep) {
 
-		for (int i = 1; i < g.getNumCellsX() - 1; i++) {
-			for (int j = 1; j < g.getNumCellsY() - 1; j++) {
+		for (int i = 0; i < g.getNumCellsX(); i++) {
+			for (int j = 0; j < g.getNumCellsY(); j++) {
 
 				/**curl of the E field using center difference*/
 				cz = (g.getEyo(i+1, j) - g.getEyo(i-1,j)) / ( 2 * g.getCellWidth()) -

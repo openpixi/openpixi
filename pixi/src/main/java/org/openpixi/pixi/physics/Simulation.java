@@ -25,6 +25,7 @@ import org.openpixi.pixi.physics.collision.algorithms.CollisionAlgorithm;
 import org.openpixi.pixi.physics.collision.detectors.Detector;
 import org.openpixi.pixi.physics.force.CombinedForce;
 import org.openpixi.pixi.physics.grid.Grid;
+import org.openpixi.pixi.physics.grid.GridFactory;
 import org.openpixi.pixi.physics.solver.EmptySolver;
 import org.openpixi.pixi.physics.solver.Solver;
 
@@ -66,7 +67,7 @@ public class Simulation {
 		f = new CombinedForce();
 
 		psolver = new EmptySolver();
-		grid = new Grid(this);
+		grid = GridFactory.createSimpleGrid(this, 10, 10, width, height);
 		boundary = new Boundary(this);
 		detector = new Detector();
 		collisionalgorithm = new CollisionAlgorithm();

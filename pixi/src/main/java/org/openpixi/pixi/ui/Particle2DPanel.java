@@ -179,13 +179,10 @@ public class Particle2DPanel extends JPanel {
 	private void updateFieldForce() {
 
 		if(calculateFields) {
-			s.grid = null;
-			s.grid = new YeeGrid(s);
+			s.grid = GridFactory.createYeeGrid(s, 10, 10, s.width, s.height);
 			s.boundary = new PeriodicBoundary(s);
 		}
 		else {
-			s.grid = null;
-			s.grid = new Grid(s);
 			//clears forces ArrayList of all GridForces
 			if (s.f instanceof CombinedForce) {
 				ArrayList<Force> forces = ((CombinedForce) s.f).forces;
