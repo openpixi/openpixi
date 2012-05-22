@@ -77,7 +77,7 @@ public class Grid {
 		}
 	}
 
-	public void save() {
+	public void storeFields() {
 		for (int i = 0; i < numCellsX; i++) {
 			for (int j = 0; j < numCellsY; j++) {
 				Exo[i][j] = Ex[i][j];

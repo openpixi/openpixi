@@ -90,7 +90,7 @@ public class SimpleGrid extends Grid {
 	public void updateGrid(ArrayList<Particle> particles)
 	{
 		interp.interpolateToGrid(particles);
-		save();
+		storeFields();
 		fsolver.step(this);
 		interp.interpolateToParticle(particles);
 	}
