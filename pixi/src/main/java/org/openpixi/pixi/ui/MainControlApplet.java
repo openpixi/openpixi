@@ -24,6 +24,7 @@ import java.awt.event.*;
 
 import javax.swing.event.*;
 
+import org.openpixi.pixi.interpreter.PixiCommandLineInterpreter;
 import org.openpixi.pixi.physics.Debug;
 import org.openpixi.pixi.physics.boundary.*;
 import org.openpixi.pixi.physics.collision.detectors.*;
@@ -33,7 +34,11 @@ import org.openpixi.pixi.physics.force.relativistic.*;
 /**
  * Displays the animation of particles.
  */
+
 public class MainControlApplet extends JApplet {
+	
+	// TODO: Create a storage class for various settings?
+	public static boolean bStartBatch = false;
 
 	private JButton startButton;
 	private JButton stopButton;
@@ -124,8 +129,8 @@ public class MainControlApplet extends JApplet {
 			"With matrices"
 	};
 
-
-
+	
+	
 	private void linkConstantForce() {
 		force = getFirstConstantForce(particlePanel.s.f);
 		assert force != null : "no force found";
@@ -809,6 +814,14 @@ public class MainControlApplet extends JApplet {
 	 */
 	public static void main(String[] args) {
 
+		PixiCommandLineInterpreter interpreter = new PixiCommandLineInterpreter();
+		interpreter.interpret(args);
+		
+		if(bStartBatch){
+			MainBatch.main(args);
+			return;
+		}
+		
 		JFrame web = new JFrame();
 
 		web.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
