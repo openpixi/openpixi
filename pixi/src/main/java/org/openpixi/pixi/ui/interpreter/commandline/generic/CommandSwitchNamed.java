@@ -1,9 +1,9 @@
-package org.openpixi.pixi.interpreter;
+package org.openpixi.pixi.ui.interpreter.commandline.generic;
 
 public abstract class CommandSwitchNamed extends CommandSwitch {
 
-	protected CommandSwitchNamed(String LName,String SName,int minArg,int maxArg){
-		super(LName,SName,minArg,maxArg);
+	protected CommandSwitchNamed(String longName,String shortName,int minArg,int maxArg){
+		super(longName,shortName,minArg,maxArg);
 	}
 	
 	@Override

@@ -24,12 +24,12 @@ import java.awt.event.*;
 
 import javax.swing.event.*;
 
-import org.openpixi.pixi.interpreter.PixiCommandLineInterpreter;
 import org.openpixi.pixi.physics.Debug;
 import org.openpixi.pixi.physics.boundary.*;
 import org.openpixi.pixi.physics.collision.detectors.*;
 import org.openpixi.pixi.physics.force.*;
 import org.openpixi.pixi.physics.force.relativistic.*;
+import org.openpixi.pixi.ui.interpreter.commandline.CommandLineInterpreter;
 
 /**
  * Displays the animation of particles.
@@ -814,7 +814,7 @@ public class MainControlApplet extends JApplet {
 	 */
 	public static void main(String[] args) {
 
-		PixiCommandLineInterpreter interpreter = new PixiCommandLineInterpreter();
+		CommandLineInterpreter interpreter = new CommandLineInterpreter();
 		interpreter.interpret(args);
 		
 		if(bStartBatch){

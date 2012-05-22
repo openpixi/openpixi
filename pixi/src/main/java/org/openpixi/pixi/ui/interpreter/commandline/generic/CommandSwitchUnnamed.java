@@ -1,8 +1,8 @@
-package org.openpixi.pixi.interpreter;
+package org.openpixi.pixi.ui.interpreter.commandline.generic;
 
 public abstract class CommandSwitchUnnamed extends CommandSwitch {
 
-	CommandSwitchUnnamed(int minArg,int maxArg) {
+	protected CommandSwitchUnnamed(int minArg,int maxArg) {
 		super("","",minArg,maxArg);
 	}
 	
