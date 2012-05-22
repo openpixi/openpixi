@@ -56,10 +56,10 @@ public class YeeGrid extends Grid {
 	}
 
 	@Override
-	public void updateGrid(ArrayList<Particle> particles) {
+	public void updateGrid(ArrayList<Particle> particles, double tstep) {
 		getInterp().interpolateToGrid(particles);
 		storeFields();
-		getFsolver().step(this);
+		getFsolver().step(this, tstep);
 		getInterp().interpolateToParticle(particles);
 	}
 

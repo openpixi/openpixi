@@ -79,9 +79,9 @@ public class Simulation {
 			detector.run();
 			collisionalgorithm.collide(detector.getOverlappedPairs(), f, psolver, tstep);
 		}
-		grid.updateGrid(particles);
+		grid.updateGrid(particles, tstep);
 	}
-	
+
 
 	public void particlePush() {
 		for (Particle p : particles) {

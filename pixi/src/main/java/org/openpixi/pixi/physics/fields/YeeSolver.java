@@ -15,7 +15,7 @@ public class YeeSolver extends FieldSolver {
 	 * 						after the update: E(t+dt), B(t+3dt/2)
 	*/
 	@Override
-	public void step(Grid g) {
+	public void step(Grid g, double tstep) {
 
 		//update boundary for y=const
 		for (int i = 0; i < g.getNumCellsX(); i++) {
@@ -36,15 +36,15 @@ public class YeeSolver extends FieldSolver {
 					(g.getExo(i,1) - g.getExo(i,g.getNumCellsY()-1)) / ( 2 * g.getCellHeight());
 
 			/**Maxwell EQ*/
-			g.addBz(i,0, -g.simulation.tstep * cz);
+			g.addBz(i,0, -tstep * cz);
 
 			/**curl of the B field using center difference*/
 			cx = (g.getBzo(i,1) - g.getBzo(i,g.getNumCellsY()-1)) / ( 2 * g.getCellHeight());
 			cy = -(g.getBzo(ip,0) - g.getBzo(im,0)) / ( 2 * g.getCellWidth());
 
 			/**Maxwell EQ*/
-			g.addEx(i,0, g.simulation.tstep * (cx - g.getJx(i,0)));
-			g.addEy(i,0, g.simulation.tstep * (cy - g.getJy(i,0)));
+			g.addEx(i,0, tstep * (cx - g.getJx(i,0)));
+			g.addEy(i,0, tstep * (cy - g.getJy(i,0)));
 
 			//upper border
 			/**curl of the E field using center difference*/
@@ -52,15 +52,15 @@ public class YeeSolver extends FieldSolver {
 					(g.getExo(i,0) - g.getExo(i,g.getNumCellsY()-2)) / ( 2 * g.getCellHeight());
 
 			/**Maxwell EQ*/
-			g.addBz(i,g.getNumCellsY()-1, -g.simulation.tstep * cz);
+			g.addBz(i,g.getNumCellsY()-1, -tstep * cz);
 
 			/**curl of the B field using center difference*/
 			cx = (g.getBzo(i,0) - g.getBzo(i,g.getNumCellsY()-2)) / ( 2 * g.getCellHeight());
 			cy = -(g.getBzo(ip,g.getNumCellsY()-1) - g.getBzo(im,g.getNumCellsY()-1)) / ( 2 * g.getCellWidth());
 
 			/**Maxwell EQ*/
-			g.addEx(i,g.getNumCellsY()-1, g.simulation.tstep * (cx - g.getJx(i,g.getNumCellsY()-1)));
-			g.addEy(i,g.getNumCellsY()-1, g.simulation.tstep * (cy - g.getJy(i,g.getNumCellsY()-1)));
+			g.addEx(i,g.getNumCellsY()-1, tstep * (cx - g.getJx(i,g.getNumCellsY()-1)));
+			g.addEy(i,g.getNumCellsY()-1, tstep * (cy - g.getJy(i,g.getNumCellsY()-1)));
 
 		}
 
@@ -73,15 +73,15 @@ public class YeeSolver extends FieldSolver {
 					(g.getExo(0,j+1) - g.getExo(0,j-1)) / ( 2 * g.getCellHeight());
 
 			/**Maxwell EQ*/
-			g.addBz(0,j, -g.simulation.tstep * cz);
+			g.addBz(0,j, -tstep * cz);
 
 			/**curl of the B field using center difference*/
 			cx = (g.getBzo(0,j+1) - g.getBzo(0,j-1)) / ( 2 * g.getCellHeight());
 			cy = -(g.getBzo(1,j) - g.getBzo(g.getNumCellsX()-1,j)) / ( 2 * g.getCellWidth());
 
 			/**Maxwell EQ*/
-			g.addEx(0,j, g.simulation.tstep * (cx - g.getJx(0,j)));
-			g.addEy(0,j, g.simulation.tstep * (cy - g.getJy(0,j)));
+			g.addEx(0,j, tstep * (cx - g.getJx(0,j)));
+			g.addEy(0,j, tstep * (cy - g.getJy(0,j)));
 
 			//right border
 			/**curl of the E field using center difference*/
@@ -89,15 +89,15 @@ public class YeeSolver extends FieldSolver {
 					(g.getExo(g.getNumCellsX()-1,j+1) - g.getExo(g.getNumCellsX()-1,j-1)) / ( 2 * g.getCellHeight());
 
 			/**Maxwell EQ*/
-			g.addBz(g.getNumCellsX()-1,j, -g.simulation.tstep * cz);
+			g.addBz(g.getNumCellsX()-1,j, -tstep * cz);
 
 			/**curl of the B field using center difference*/
 			cx = (g.getBzo(g.getNumCellsX()-1,j+1) - g.getBzo(g.getNumCellsX()-1,j-1)) / ( 2 * g.getCellHeight());
 			cy = -(g.getBzo(0,j) - g.getBzo(g.getNumCellsX()-2,j)) / ( 2 * g.getCellWidth());
 
 			/**Maxwell EQ*/
-			g.addEx(g.getNumCellsX()-1,j, g.simulation.tstep * (cx - g.getJx(g.getNumCellsX()-1,j)));
-			g.addEy(g.getNumCellsX()-1,j, g.simulation.tstep * (cy - g.getJy(g.getNumCellsX()-1,j)));
+			g.addEx(g.getNumCellsX()-1,j, tstep * (cx - g.getJx(g.getNumCellsX()-1,j)));
+			g.addEy(g.getNumCellsX()-1,j, tstep * (cy - g.getJy(g.getNumCellsX()-1,j)));
 
 		}
 
@@ -110,15 +110,15 @@ public class YeeSolver extends FieldSolver {
 						(g.getExo(i,j+1) - g.getExo(i,j-1)) / ( 2 * g.getCellHeight());
 
 				/**Maxwell EQ*/
-				g.setBz(i,j, -g.simulation.tstep * cz);
+				g.setBz(i,j, -tstep * cz);
 
 				/**curl of the B field using center difference*/
 				cx = (g.getBzo(i,j+1) - g.getBzo(i,j-1)) / ( 2 * g.getCellHeight());
 				cy = -(g.getBzo(i+1,j) - g.getBzo(i-1,j)) / ( 2 * g.getCellWidth());
 
 				/**Maxwell EQ*/
-				g.addEx(i,j, g.simulation.tstep * (cx - g.getJx(i,j)));
-				g.addEy(i,j, g.simulation.tstep * (cy - g.getJy(i,j)));
+				g.addEx(i,j, tstep * (cx - g.getJx(i,j)));
+				g.addEy(i,j, tstep * (cy - g.getJy(i,j)));
 			}
 		}
 	}

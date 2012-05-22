@@ -209,7 +209,7 @@ public class Grid {
 
 	}
 
-	public void updateGrid(ArrayList<Particle> particles) {
+	public void updateGrid(ArrayList<Particle> particles, double tstep) {
 
 	}
 
