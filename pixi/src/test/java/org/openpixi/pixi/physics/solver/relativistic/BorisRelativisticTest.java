@@ -1,7 +1,6 @@
 package org.openpixi.pixi.physics.solver.relativistic;
 
 import org.openpixi.pixi.physics.ConstantsSI;
-import org.openpixi.pixi.physics.solver.Boris;
 import org.openpixi.pixi.physics.solver.SolverTest;
 
 import junit.framework.Test;
