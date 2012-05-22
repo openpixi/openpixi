@@ -41,6 +41,19 @@ public class YeeGrid extends Grid {
 		setGrid(width, height);
 	}
 
+	@Override
+	public void setGrid(double width, double height)
+	{
+		cellWidth = width / numCellsX;
+		cellHeight = height / numCellsY;
+
+		for (Particle p: simulation.particles){
+			//assuming rectangular particle shape i.e. area weighting
+			p.setChargedensity(p.getCharge() / (cellWidth * cellHeight));
+		}
+
+		//include updateGrid() and the first calculation of Fields here
+	}
 
 	@Override
 	public void updateGrid(ArrayList<Particle> particles) {
