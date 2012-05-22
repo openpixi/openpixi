@@ -1,18 +1,15 @@
 package org.openpixi.pixi.interpreter;
 
-import java.util.ArrayList;
-
-public class CommandLineInterpreter {
+public class PixiCommandLineInterpreter {
 
 //	public static byte MAX_ARGS = 127;
 	private static String[] SUPPORTED_SWITCH_START = {"-","/","--"};
 	
 	private CommandSwitch[] m_arrActivationList;
 	private CommandSwitch[] m_arrCommandSwitches = {
-			// TODO: Add supported switches here!
-			new PixiSwitch_LoadInitialConditions(),
-			new PixiSwitch_Example(),
-			new PixiSwitch_EmptySwitch()
+			// Add supported switches here:
+			new PixiSwitch_Batch(),
+			new PixiSwitch_Unnamed()
 			// ...
 			};
 	
@@ -20,17 +17,12 @@ public class CommandLineInterpreter {
 		CommandLineParser parser = new CommandLineParser(m_arrCommandSwitches);
 		parser.loadSyntax(SUPPORTED_SWITCH_START);
 		m_arrActivationList = parser.parseArguments(args);
+		
+		// TODO: Check compatibility between parsed switches
 
+		// Activate switches
 		for(CommandSwitch sw : m_arrActivationList){
-			//System.out.println(sw.toString());
 			sw.activate();
 		}
-	}
-	
-	public static void main(String[] args){
-		CommandLineInterpreter interpreter = new CommandLineInterpreter();
-		interpreter.interpret(args);
-		
-		return;
 	}
 }
