@@ -159,14 +159,14 @@ public class ChargeConservingAreaWeightingTest extends TestCase {
 		// Calculate current
 		grid.getInterp().interpolateToGrid(s.particles, grid);
 
-		double jx = grid.getJxSum();
-		double jy = grid.getJySum();
+		double jx = GridTestCommon.getJxSum(grid);
+		double jy = GridTestCommon.getJySum(grid);
 
 		System.out.println("Total current " + text + ": jx = " + jx + ", jy = " + jy
 				+ " (from " + sx + ", " + sy + " to " + p.getX() + ", " + p.getY() + ")");
 
-		checkSign(grid.jx);
-		checkSign(grid.jy);
+		GridTestCommon.checkSignJx(grid);
+		GridTestCommon.checkSignJy(grid);
 
 		assertAlmostEquals(text + ", jx", charge * (p.getX() - sx) / grid.simulation.tstep, jx, ACCURACY_LIMIT);
 		assertAlmostEquals(text + ", jy", charge * (p.getY() - sy) / grid.simulation.tstep, jy, ACCURACY_LIMIT);
@@ -247,39 +247,17 @@ public class ChargeConservingAreaWeightingTest extends TestCase {
 		// Calculate current
 		grid.getInterp().interpolateToGrid(s.particles, grid);
 
-		double jx = grid.getJxSum();
-		double jy = grid.getJySum();
+		double jx = GridTestCommon.getJxSum(grid);
+		double jy = GridTestCommon.getJySum(grid);
 
 		System.out.println("Total current " + text + ": jx = " + jx + ", jy = " + jy
 				+ " (from " + sx + ", " + sy + " to " + p.getX() + ", " + p.getY() + ")");
 
-		checkSign(grid.jx);
-		checkSign(grid.jy);
+		GridTestCommon.checkSignJx(grid);
+		GridTestCommon.checkSignJy(grid);
 
 		assertAlmostEquals(text + ", jx", charge * (p.getX() - sx) / grid.simulation.tstep, jx, ACCURACY_LIMIT);
 		assertAlmostEquals(text + ", jy", charge * (p.getY() - sy) / grid.simulation.tstep, jy, ACCURACY_LIMIT);
-	}
-
-
-	private void checkSign(double[][] field) {
-		double s = 0;
-		for (int i = 0; i < field.length; i++) {
-			for(int j = 0; j < field[0].length; j++) {
-				if(field[i][j] != 0){
-					s = Math.signum(field[i][j]);
-//					System.out.println(s + " " + field[i][j] + " " + i + " " + j);
-				}
-			}
-		}
-		for (int i = 0; i < field.length; i++) {
-			for(int j = 0; j < field[0].length; j++) {
-				if(field[i][j] != 0){
-					if( s != Math.signum(field[i][j])) {
-						assertTrue("wrong sign", false);
-					}
-				}
-			}
-		}
 	}
 
 }

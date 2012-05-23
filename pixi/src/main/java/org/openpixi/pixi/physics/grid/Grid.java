@@ -268,22 +268,4 @@ public class Grid {
 			}
 		}
 	}
-
-	public double getJxSum() {
-		return getFieldSum(jx);
-	}
-
-	public double getJySum() {
-		return getFieldSum(jy);
-	}
-
-	private double getFieldSum(double[][] field) {
-		double sum = 0;
-		for (double[] row: field) {
-			for (double value: row) {
-				sum += value;
-			}
-		}
-		return sum;
-	}
 }
