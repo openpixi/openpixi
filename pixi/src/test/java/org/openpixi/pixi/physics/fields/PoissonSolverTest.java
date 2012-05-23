@@ -12,35 +12,30 @@ import org.openpixi.pixi.ui.util.WriteFile;
 
 public class PoissonSolverTest extends TestCase {
 
-	double ACCURACY_LIMIT = 1.e-5;
+	private double ACCURACY_LIMIT = 1.e-5;
+	private Simulation s;
+	private Grid g;
+	private PoissonSolverPeriodic poisolver;
 
 	public PoissonSolverTest(String testName){
 		super(testName);
-	}
-	
-	void assertAlmostEquals(String text, double x, double y, double limit) {
-		if ((Math.abs(x - y) / Math.abs(x + y) > limit)
-				|| (Double.isNaN(x) != Double.isNaN(y))
-				|| (Double.isInfinite(x) != Double.isInfinite(y))) {
-			assertTrue(text + " expected:<" + x + "> but was:<" + y + ">", false);
-		}
-	}
-
-	public void testPointcharge() {
-
-		Simulation s = InitialConditions.initEmptySimulation();
+		
+		this.s = InitialConditions.initEmptySimulation();
 		s.width = 10;
 		s.height = 10;
 		
-		Grid g = GridFactory.createYeeGrid(s, 10, 10, s.width, s.height);
+		this.g = GridFactory.createYeeGrid(s, 10, 10, s.width, s.height);
 		g.resetCurrentAndCharge();
 		
+		this.poisolver = new PoissonSolverPeriodic();
+	}
+
+	private void PointchargeTest() {	
 		
 		//writes to g.rho
 		ChargeDistribution charged = new PointChargeDistribution(g);
 		
 		long start = System.currentTimeMillis();
-		PoissonSolverPeriodic poisolver = new PoissonSolverPeriodic();
 		poisolver.solve(g);
 		
 		long elapsed = System.currentTimeMillis()-start;
@@ -158,6 +153,14 @@ public class PoissonSolverTest extends TestCase {
 
 		fft.complexForward(field);
 
+	}
+	
+	void assertAlmostEquals(String text, double x, double y, double limit) {
+		if ((Math.abs(x - y) / Math.abs(x + y) > limit)
+				|| (Double.isNaN(x) != Double.isNaN(y))
+				|| (Double.isInfinite(x) != Double.isInfinite(y))) {
+			assertTrue(text + " expected:<" + x + "> but was:<" + y + ">", false);
+		}
 	}
 	
 	public void output(Grid g) {
