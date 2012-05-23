@@ -12,7 +12,7 @@ import org.openpixi.pixi.ui.util.WriteFile;
 
 public class PoissonSolverTest extends TestCase {
 
-	double ACCURACY_LIMIT = 1.e-16;
+	double ACCURACY_LIMIT = 1.e-5;
 
 	public PoissonSolverTest(String testName){
 		super(testName);
@@ -29,10 +29,10 @@ public class PoissonSolverTest extends TestCase {
 	public void testPointcharge() {
 
 		Simulation s = InitialConditions.initEmptySimulation();
-		s.width = 75;
+		s.width = 10;
 		s.height = 10;
 		
-		Grid g = GridFactory.createYeeGrid(s, 95, 10, s.width, s.height);
+		Grid g = GridFactory.createYeeGrid(s, 10, 10, s.width, s.height);
 		g.resetCurrentAndCharge();
 		
 		
@@ -45,12 +45,12 @@ public class PoissonSolverTest extends TestCase {
 		
 		long elapsed = System.currentTimeMillis()-start;
 		System.out.println("\nCalculation time: "+elapsed);
+//		output(g);
 		
 		int indexX = (int)(g.getNumCellsX()/2);
 		int indexY = (int) (g.getNumCellsY()/2);
 //		assertAlmostEquals("", (g.Ey[indexX][indexY+1]/16), g.Ey[indexX][indexY+4] , ACCURACY_LIMIT);
-////		charged.test();		
-		output(g);
+		charged.test();		
 	}
 	
 	private double[][] pointCharge(int numCellsX, int numCellsY) {
@@ -76,13 +76,12 @@ public class PoissonSolverTest extends TestCase {
 			this.g = g;
 			int indexX = (int)(g.getNumCellsX()/2);
 			int indexY = (int) (g.getNumCellsY()/2);
-			g.setRho(indexX, indexY, 50);
+			g.setRho(indexX, indexY, 1);
 		}
 		
 		public void test() {
 			
-			assertAlmostEquals("", g.getEx(indexX, indexY)/(g.getCellWidth()*g.getCellWidth()), g.getEx(indexX+1, indexY) , ACCURACY_LIMIT);
-
+			assertAlmostEquals("", g.getPhi(indexX, indexY)/(g.getCellWidth()), g.getPhi(indexX+1, indexY) , ACCURACY_LIMIT);
 		}
 		
 	}
