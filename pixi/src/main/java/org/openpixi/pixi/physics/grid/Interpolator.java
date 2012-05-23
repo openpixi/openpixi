@@ -42,36 +42,36 @@ public class Interpolator {
 			assert p.getY() > (yCellPosition2 - 1) * g.getCellHeight() : p.getY();
 		}
 
-		p.setEx((g.getEx(xCellPosition,yCellPosition) *
+		p.setEx((g.getEx(xCellPosition, yCellPosition) *
 				(xCellPosition2 * g.getCellWidth() - p.getX()) *
 				(yCellPosition2 * g.getCellHeight() - p.getY()) +
-				g.getEx(xp,yCellPosition) * (p.getX() - (xCellPosition2 - 1) *
+				g.getEx(xp, yCellPosition) * (p.getX() - (xCellPosition2 - 1) *
 				g.getCellWidth()) * (yCellPosition2 * g.getCellHeight() - p.getY()) +
-				g.getEx(xCellPosition,yp) * (xCellPosition2 * g.getCellWidth() - p.getX()) *
+				g.getEx(xCellPosition, yp) * (xCellPosition2 * g.getCellWidth() - p.getX()) *
 				(p.getY() - (yCellPosition2 - 1) * g.getCellHeight()) +
-				g.getEx(xp,yp) * (p.getX() - (xCellPosition2 - 1) *
+				g.getEx(xp, yp) * (p.getX() - (xCellPosition2 - 1) *
 				g.getCellWidth()) * (p.getY() - (yCellPosition2 - 1) * g.getCellHeight())) /
 				(g.getCellWidth() * g.getCellHeight()));
 
-		p.setEy((g.getEy(xCellPosition,yCellPosition) *
+		p.setEy((g.getEy(xCellPosition, yCellPosition) *
 				(xCellPosition2 * g.getCellWidth() - p.getX()) *
 				(yCellPosition2 * g.getCellHeight() - p.getY()) +
-				g.getEy(xp,yCellPosition) * (p.getX() - (xCellPosition2 - 1) *
+				g.getEy(xp, yCellPosition) * (p.getX() - (xCellPosition2 - 1) *
 				g.getCellWidth()) * (yCellPosition2 * g.getCellHeight() - p.getY()) +
-				g.getEy(xCellPosition,yp) * (xCellPosition2 * g.getCellWidth() - p.getX()) *
+				g.getEy(xCellPosition, yp) * (xCellPosition2 * g.getCellWidth() - p.getX()) *
 				(p.getY() - (yCellPosition2 - 1) * g.getCellHeight()) +
-				g.getEy(xp,yp) * (p.getX() - (xCellPosition2 - 1) *
+				g.getEy(xp, yp) * (p.getX() - (xCellPosition2 - 1) *
 				g.getCellWidth()) * (p.getY() - (yCellPosition2 - 1) * g.getCellHeight())) /
 				(g.getCellWidth() * g.getCellHeight()));
 
-		p.setBz((g.getBz(xCellPosition,yCellPosition) *
+		p.setBz((g.getBz(xCellPosition, yCellPosition) *
 				(xCellPosition2 * g.getCellWidth() - p.getX()) *
 				(yCellPosition2 * g.getCellHeight() - p.getY()) +
-				g.getBz(xp,yCellPosition) * (p.getX() - (xCellPosition2 - 1) *
+				g.getBz(xp, yCellPosition) * (p.getX() - (xCellPosition2 - 1) *
 				g.getCellWidth()) * (yCellPosition2 * g.getCellHeight() - p.getY()) +
-				g.getBz(xCellPosition,yp) * (xCellPosition2 * g.getCellWidth() - p.getX()) *
+				g.getBz(xCellPosition, yp) * (xCellPosition2 * g.getCellWidth() - p.getX()) *
 				(p.getY() - (yCellPosition2 - 1) * g.getCellHeight()) +
-				g.getBz(xp,yp) * (p.getX() - (xCellPosition2 -1) * g.getCellWidth()) *
+				g.getBz(xp, yp) * (p.getX() - (xCellPosition2 -1) * g.getCellWidth()) *
 				(p.getY() - (yCellPosition2 -1) * g.getCellHeight())) /
 				(g.getCellWidth() * g.getCellHeight()));
 

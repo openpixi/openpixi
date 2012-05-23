@@ -88,44 +88,44 @@ public class CloudInCell extends Interpolator {
 			assert p.getY() > (yCellPosition2 - 1) * g.getCellHeight() : p.getY();
 		}
 
-			particles.get(i).setEx((g.getEx(xCellPosition,yCellPosition) *
+			particles.get(i).setEx((g.getEx(xCellPosition, yCellPosition) *
 					(xCellPosition2 * g.getCellWidth() - p.getX()) *
 					(yCellPosition2 * g.getCellHeight() - p.getY()) +
-					g.getEx(xCellPosition + 1,yCellPosition) *
+					g.getEx(xCellPosition + 1, yCellPosition) *
 					(p.getX() - (xCellPosition2 - 1) * g.getCellWidth()) *
 					(yCellPosition2 * g.getCellHeight() - p.getY()) +
-					g.getEx(xCellPosition,yCellPosition + 1) *
+					g.getEx(xCellPosition, yCellPosition + 1) *
 					(xCellPosition2 * g.getCellWidth() - p.getX()) *
 					(p.getY() - (yCellPosition2 - 1) * g.getCellHeight()) +
-					g.getEx(xCellPosition + 1,yCellPosition + 1) *
+					g.getEx(xCellPosition + 1, yCellPosition + 1) *
 					(p.getX() - (xCellPosition2 - 1) * g.getCellWidth()) *
 					(p.getY() - (yCellPosition2 - 1) * g.getCellHeight())) /
 					(g.getCellWidth() * g.getCellHeight()));
 
-			particles.get(i).setEy((g.getEy(xCellPosition,yCellPosition) *
+			particles.get(i).setEy((g.getEy(xCellPosition, yCellPosition) *
 					(xCellPosition2 * g.getCellWidth() - p.getX()) *
 					(yCellPosition2 * g.getCellHeight() - p.getY()) +
-					g.getEy(xCellPosition + 1,yCellPosition) *
+					g.getEy(xCellPosition + 1, yCellPosition) *
 					(p.getX() - (xCellPosition2 - 1) * g.getCellWidth()) *
 					(yCellPosition2 * g.getCellHeight() - p.getY()) +
-					g.getEy(xCellPosition,yCellPosition + 1) *
+					g.getEy(xCellPosition, yCellPosition + 1) *
 					(xCellPosition2 * g.getCellWidth() - p.getX()) *
 					(p.getY() - (yCellPosition2 - 1) * g.getCellHeight()) +
-					g.getEy(xCellPosition + 1,yCellPosition + 1) *
+					g.getEy(xCellPosition + 1, yCellPosition + 1) *
 					(p.getX() - (xCellPosition2 - 1) * g.getCellWidth()) *
 					(p.getY() - (yCellPosition2 - 1) * g.getCellHeight())) /
 					(g.getCellWidth() * g.getCellHeight()));
 
-			particles.get(i).setBz((g.getBz(xCellPosition,yCellPosition) *
+			particles.get(i).setBz((g.getBz(xCellPosition, yCellPosition) *
 					(xCellPosition2 * g.getCellWidth() - p.getX()) *
 					(yCellPosition2 * g.getCellHeight() - p.getY()) +
-					g.getBz(xCellPosition + 1,yCellPosition) *
+					g.getBz(xCellPosition + 1, yCellPosition) *
 					(p.getX() - (xCellPosition2 - 1) * g.getCellWidth()) *
 					(yCellPosition2 * g.getCellHeight() - p.getY()) +
-					g.getBz(xCellPosition,yCellPosition + 1) *
+					g.getBz(xCellPosition, yCellPosition + 1) *
 					(xCellPosition2 * g.getCellWidth() - p.getX()) *
 					(p.getY() - (yCellPosition2 - 1) * g.getCellHeight()) +
-					g.getBz(xCellPosition + 1,yCellPosition + 1) *
+					g.getBz(xCellPosition + 1, yCellPosition + 1) *
 					(p.getX() - (xCellPosition2 -1) * g.getCellWidth()) *
 					(p.getY() - (yCellPosition2 -1) * g.getCellHeight())) /
 					(g.getCellWidth() * g.getCellHeight()));

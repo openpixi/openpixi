@@ -87,10 +87,10 @@ public class ChargeConservingAreaWeighting extends Interpolator {
 //		g.jy[lxm][ly] += p.pd.cd * deltaY * ((g.cellWidth - deltaX) / 2 - x) / g.simulation.tstep;
 //		g.jy[lx][ly] += p.pd.cd * deltaY * ((g.cellWidth + deltaX) / 2 + x) / g.simulation.tstep;
 
-		g.addJx(lx,lym, p.getChargedensity() * g.getCellWidth() * deltaX * ((g.getCellHeight() - deltaY) / 2 - y) / g.simulation.tstep);
-		g.addJx(lx,ly, p.getChargedensity()  * g.getCellWidth() * deltaX * ((g.getCellHeight() + deltaY) / 2 + y) / g.simulation.tstep);
-		g.addJy(lxm,ly, p.getChargedensity() * g.getCellHeight() * deltaY * ((g.getCellWidth() - deltaX) / 2 - x) / g.simulation.tstep);
-		g.addJy(lx,ly, p.getChargedensity()  * g.getCellHeight() * deltaY * ((g.getCellWidth() + deltaX) / 2 + x) / g.simulation.tstep);
+		g.addJx(lx, lym, p.getChargedensity() * g.getCellWidth() * deltaX * ((g.getCellHeight() - deltaY) / 2 - y) / g.simulation.tstep);
+		g.addJx(lx, ly, p.getChargedensity()  * g.getCellWidth() * deltaX * ((g.getCellHeight() + deltaY) / 2 + y) / g.simulation.tstep);
+		g.addJy(lxm, ly, p.getChargedensity() * g.getCellHeight() * deltaY * ((g.getCellWidth() - deltaX) / 2 - x) / g.simulation.tstep);
+		g.addJy(lx, ly, p.getChargedensity()  * g.getCellHeight() * deltaY * ((g.getCellWidth() + deltaX) / 2 + x) / g.simulation.tstep);
 
 //		g.jx[lx][lym] += p.pd.cd * g.cellWidth * deltaX * (g.cellHeight * (1 - deltaY) / 2 - y) / g.simulation.tstep;
 //		g.jx[lx][ly] += p.pd.cd  * g.cellWidth * deltaX * (g.cellHeight * (1 + deltaY) / 2 + y) / g.simulation.tstep;
