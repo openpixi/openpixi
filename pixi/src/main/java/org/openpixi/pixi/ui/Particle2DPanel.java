@@ -55,8 +55,6 @@ public class Particle2DPanel extends JPanel {
 
 	private boolean reset_trace;
 
-	private boolean test = false;
-
 	private boolean drawCurrentGrid = false;
 
 	private boolean drawFields = false;
