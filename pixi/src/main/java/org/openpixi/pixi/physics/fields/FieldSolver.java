@@ -22,13 +22,13 @@ package org.openpixi.pixi.physics.fields;
 import org.openpixi.pixi.physics.grid.*;
 
 public class FieldSolver {
-	
+
 	public FieldSolver() {
-		
+
 	}
-	
-	public void step(Grid g) {
-		
+
+	public void step(Grid g, double tstep) {
+
 	}
-	
+
 }
