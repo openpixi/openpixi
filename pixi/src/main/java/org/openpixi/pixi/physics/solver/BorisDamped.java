@@ -81,8 +81,8 @@ public class BorisDamped implements Solver{
 		
 		p.setX(p.getX() + p.getVx() * step);
 		p.setY(p.getY() + p.getVy() * step);
-		
 	}
+	
 	/**
 	 * prepare method for bringing the velocity in the desired half step
 	 * @param p before the update: v(t);
@@ -130,6 +130,7 @@ public class BorisDamped implements Solver{
 		p.setVx(vxplus + getPositionComponentofForceX * step / (2.0 * getMass * help2_coef));
 		p.setVy(vyplus + getPositionComponentofForceY * step / (2.0 * getMass * help2_coef));		
 	}
+	
 	/**
 	 * complete method for bringing the velocity in the desired half step
 	 * @param p before the update: v(t-dt/2);

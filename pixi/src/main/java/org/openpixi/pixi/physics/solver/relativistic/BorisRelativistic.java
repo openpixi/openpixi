@@ -53,11 +53,11 @@ public class BorisRelativistic implements Solver{
 		double getMass = p.getMass();
 		
 		// remember for complete()
-		p.setPrevPositionComponentForceX(f.getPositionComponentofForceX(p));
-		p.setPrevPositionComponentForceY(f.getPositionComponentofForceY(p));
-		p.setPrevBz(f.getBz(p));
-		p.setPrevTangentVelocityComponentOfForceX(f.getTangentVelocityComponentOfForceX(p));
-		p.setPrevTangentVelocityComponentOfForceY(f.getTangentVelocityComponentOfForceY(p));
+		p.setPrevPositionComponentForceX(getPositionComponentofForceX);
+		p.setPrevPositionComponentForceY(getPositionComponentofForceY);
+		p.setPrevBz(getBz);
+		p.setPrevTangentVelocityComponentOfForceX(getTangentVelocityComponentOfForceX);
+		p.setPrevTangentVelocityComponentOfForceY(getTangentVelocityComponentOfForceY);
 		
 		//calculating u(t + dt / 2). Although getV() and setV() are used, the represent the relativistic momentum, i.e. v->u
 		double uxminus = p.getVx() + getPositionComponentofForceX * step / (2.0 * getMass);
@@ -87,6 +87,7 @@ public class BorisRelativistic implements Solver{
 		p.setX(p.getX() + p.getVx() * step / gamma);
 		p.setY(p.getY() + p.getVy() * step / gamma);
 	}	
+	
 	/**
 	 * prepare method for bringing the velocity in the desired half step
 	 * @param p before the update: v(t);
@@ -102,11 +103,11 @@ public class BorisRelativistic implements Solver{
 		double getMass = p.getMass();
 		
 		// remember for complete()
-		p.setPrevPositionComponentForceX(f.getPositionComponentofForceX(p));
-		p.setPrevPositionComponentForceY(f.getPositionComponentofForceY(p));
-		p.setPrevBz(f.getBz(p));
-		p.setPrevTangentVelocityComponentOfForceX(f.getTangentVelocityComponentOfForceX(p));
-		p.setPrevTangentVelocityComponentOfForceY(f.getTangentVelocityComponentOfForceY(p));
+		p.setPrevPositionComponentForceX(getPositionComponentofForceX);
+		p.setPrevPositionComponentForceY(getPositionComponentofForceY);
+		p.setPrevBz(getBz);
+		p.setPrevTangentVelocityComponentOfForceX(getTangentVelocityComponentOfForceX);
+		p.setPrevTangentVelocityComponentOfForceY(getTangentVelocityComponentOfForceY);
 		
 		double step = - dt * 0.5;
 		

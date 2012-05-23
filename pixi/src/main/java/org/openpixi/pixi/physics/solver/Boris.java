@@ -52,8 +52,8 @@ public class Boris implements Solver{
 		p.setPrevPositionComponentForceX(getPositionComponentofForceX);
 		p.setPrevPositionComponentForceY(getPositionComponentofForceY);
 		p.setPrevBz(getBz);
-		p.setPrevTangentVelocityComponentOfForceX(f.getTangentVelocityComponentOfForceX(p));
-		p.setPrevTangentVelocityComponentOfForceY(f.getTangentVelocityComponentOfForceY(p));
+		p.setPrevTangentVelocityComponentOfForceX(getTangentVelocityComponentOfForceX);
+		p.setPrevTangentVelocityComponentOfForceY(getTangentVelocityComponentOfForceY);
 
 		double vxminus = p.getVx() + getPositionComponentofForceX * step / (2.0 * getMass);
 		
@@ -75,6 +75,7 @@ public class Boris implements Solver{
 		p.setX(p.getX() + p.getVx() * step);
 		p.setY(p.getY() + p.getVy() * step);
 	}	
+	
 	/**
 	 * prepare method for bringing the velocity in the desired half step
 	 * @param p before the update: v(t);
@@ -93,8 +94,8 @@ public class Boris implements Solver{
 		p.setPrevPositionComponentForceX(getPositionComponentofForceX);
 		p.setPrevPositionComponentForceY(getPositionComponentofForceY);
 		p.setPrevBz(getBz);
-		p.setPrevTangentVelocityComponentOfForceX(f.getTangentVelocityComponentOfForceX(p));
-		p.setPrevTangentVelocityComponentOfForceY(f.getTangentVelocityComponentOfForceY(p));
+		p.setPrevTangentVelocityComponentOfForceX(getTangentVelocityComponentOfForceX);
+		p.setPrevTangentVelocityComponentOfForceY(getTangentVelocityComponentOfForceY);
 
 		double step = -0.5 * dt;
 		
@@ -126,7 +127,6 @@ public class Boris implements Solver{
 	{
 		double getPrevPositionComponentForceX = p.getPrevPositionComponentForceX();
 		double getPrevPositionComponentForceY = p.getPrevPositionComponentForceY();
-		
 		double getMass = p.getMass();
 		
 		dt = dt * 0.5;
@@ -146,6 +146,5 @@ public class Boris implements Solver{
 		
 		p.setVx(vxplus + getPrevPositionComponentForceX * dt / (2.0 * getMass) + p.getPrevTangentVelocityComponentOfForceX() * dt / getMass);
 		p.setVy(vyplus + getPrevPositionComponentForceY * dt / (2.0 * getMass) + p.getPrevTangentVelocityComponentOfForceY() * dt / getMass);
-
 	}
 }
