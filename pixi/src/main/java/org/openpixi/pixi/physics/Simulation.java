@@ -25,11 +25,12 @@ import org.openpixi.pixi.physics.collision.algorithms.CollisionAlgorithm;
 import org.openpixi.pixi.physics.collision.detectors.Detector;
 import org.openpixi.pixi.physics.force.CombinedForce;
 import org.openpixi.pixi.physics.grid.Grid;
+import org.openpixi.pixi.physics.grid.GridFactory;
 import org.openpixi.pixi.physics.solver.EmptySolver;
 import org.openpixi.pixi.physics.solver.Solver;
 
 public class Simulation {
-	
+
 	/**Timestep*/
 	public double tstep;
 	/**Width of simulated area*/
@@ -51,53 +52,47 @@ public class Simulation {
 	public CollisionAlgorithm collisionalgorithm;
 	public boolean collisionBoolean = false;
 
-	/**Creates a basic simulation and initializes all 
+	/**Creates a basic simulation and initializes all
 	 * necessary variables. All solvers are set to their
 	 * empty versions.
 	 * This constructor should be called from a factory class
 	 */
 	Simulation () {
-	
+
 		tstep = 0;
 		width = 0;
 		height = 0;
-		
+
 		particles = new ArrayList<Particle>(0);
-		f = new CombinedForce();		
-		
+		f = new CombinedForce();
+
 		psolver = new EmptySolver();
-		grid = new Grid(this);
+		grid = GridFactory.createSimpleGrid(this, 10, 10, width, height);
 		boundary = new Boundary(this);
 		detector = new Detector();
 		collisionalgorithm = new CollisionAlgorithm();
 
 	}
-	
+
 	public void step() {
 		particlePush();
 		if(collisionBoolean) {
 			detector.run();
 			collisionalgorithm.collide(detector.getOverlappedPairs(), f, psolver, tstep);
 		}
-		grid.updateGrid(particles);
+		grid.updateGrid(particles, tstep);
 	}
-	
-	public void setSize(double width, double height) {
-		this.width = width;
-		this.height = height;
-		this.boundary.setBoundaries(0, 0, width, height);
-		this.grid.setGrid(width, height);
-	}
-	
+
+
 	public void particlePush() {
 		for (Particle p : particles) {
 			// Before we move the particle we store its position
 			p.storePosition();
 			psolver.step(p, f, tstep);
 			boundary.check(p, f, psolver, tstep);
-		}		
+		}
 	}
-	
+
 	public void prepareAllParticles() {
 		for (Particle p : particles) {
 			psolver.prepare(p, f, tstep);

@@ -1,49 +1,36 @@
 package org.openpixi.pixi.physics.fields;
 
-import java.io.*;
 import junit.framework.TestCase;
+import java.io.File;
 import org.openpixi.pixi.physics.*;
-import org.openpixi.pixi.physics.grid.*;
 import org.openpixi.pixi.physics.fields.PoissonSolverPeriodic;
+import edu.emory.mathcs.jtransforms.fft.DoubleFFT_2D;
+import org.openpixi.pixi.physics.InitialConditions;
+import org.openpixi.pixi.physics.Simulation;
+import org.openpixi.pixi.physics.grid.Grid;
+import org.openpixi.pixi.physics.grid.GridFactory;
 import org.openpixi.pixi.ui.util.WriteFile;
 
-import edu.emory.mathcs.jtransforms.fft.*;
-
 public class PoissonSolverTest extends TestCase {
-	
+
 	public PoissonSolverTest(String testName){
 		super(testName);
 	}
-	
+
 	public void testPointcharge() {
-		
+
 		Simulation s = InitialConditions.initEmptySimulation();
 		s.width = 10;
 		s.height = 10;
 		
-		Grid g = new Grid(s);
-		g.numCellsX = 100;
-		g.numCellsY = 100;
-		g.cellWidth = s.width / g.numCellsX;
-		g.cellHeight = s.height / g.numCellsY;
-		g.rho = new double[g.numCellsX][g.numCellsY];
-		g.phi = new double[g.numCellsX][g.numCellsY];
-		g.Ex = new double[g.numCellsX][g.numCellsY];
-		g.Ey = new double[g.numCellsX][g.numCellsY];
+		Grid g = GridFactory.createYeeGrid(s, 100, 100, 10, 10);
+		g.resetCurrentAndCharge();
 		
-		for (int i = 0; i < g.numCellsX; i++) {
-			for (int j = 0; j < g.numCellsY; j++) {
-				g.rho[i][j] = 0;
-				g.phi[i][j] = 0;
-				g.Ex[i][j] = 0;
-				g.Ey[i][j] = 0;
-			}
-		}
 		
 //		g.rho = pointChargeShifted(g.numCellsX, g.numCellsY);
 //		g.rho = pointCharge(g.numCellsX, g.numCellsY);		
 //		g.rho = dipole(g.numCellsX, g.numCellsY);
-		g.rho = randomChargeDistribution(g.numCellsX, g.numCellsY);
+//		g.rho = randomChargeDistribution(g.numCellsX, g.numCellsY);
 //		g.rho = lineChargeOnEdge(g.numCellsX, g.numCellsY);
 //		g.rho = lineChargeOnSide(g.numCellsX, g.numCellsY);
 		
@@ -63,18 +50,18 @@ public class PoissonSolverTest extends TestCase {
 		//creates new file "efield.dat" in working directory and writes
 		//field data to it
 		WriteFile fieldFile = new WriteFile("efeld", "");
-		for (int i = 0; i < g.numCellsX; i++) {
-			for(int j = 0; j < g.numCellsY; j++) {
-				fieldFile.writeLine(i*g.cellWidth + "\t" + j*g.cellHeight +
-						"\t" + g.Ex[i][j] + "\t" + g.Ey[i][j]);
+		for (int i = 0; i < g.getNumCellsX(); i++) {
+			for(int j = 0; j < g.getNumCellsY(); j++) {
+				fieldFile.writeLine(i*g.getCellWidth() + "\t" + j*g.getCellHeight() +
+						"\t" + g.getEx(i, j) + "\t" + g.getEy(i, j));
 			}
 		}
 		fieldFile.closeFstream();
 		
 		WriteFile potentialFile = new WriteFile("potential", "");
-		for (int i = 0; i < g.numCellsX; i++) {
-			for(int j = 0; j < g.numCellsY; j++) {
-				potentialFile.writeLine(i*g.cellWidth + "\t" + j*g.cellHeight + "\t" + g.phi[i][j]);
+		for (int i = 0; i < g.getNumCellsX(); i++) {
+			for(int j = 0; j < g.getNumCellsY(); j++) {
+				potentialFile.writeLine(i*g.getCellWidth() + "\t" + j*g.getCellHeight() + "\t" + g.getPhi(i, j));
 			}
 		}
 		potentialFile.closeFstream();
@@ -165,19 +152,19 @@ public class PoissonSolverTest extends TestCase {
 		}
 		return rho;
 	}
-	
+
 	public void testFFT() {
-		
+
 		DoubleFFT_2D fft = new DoubleFFT_2D(10,10);
 		double[][] field = new double[10][20];
-		
+
 		for (int i = 0; i < 10; i++) {
 			for (int j = 0; j < 20; j++) {
 				field[i][j] = 0;
 			}
 		}
-		
+
 		fft.complexForward(field);
-		
+
 	}
 }

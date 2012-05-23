@@ -32,43 +32,43 @@ public class MainBatch {
 	public static final double particle_radius = 0.1;
 	/**Total number of timesteps*/
 	public static final int steps = 10;
-	
+
 	public static Simulation s;
 
 	public static void main(String[] args) {
 		Debug.checkAssertsEnabled();
 
 		s = InitialConditions.initEverything();
-		
-		System.out.println("-------- INITIAL CONDITIONS--------");		
-		
+
+		System.out.println("-------- INITIAL CONDITIONS--------");
+
 		for (int i=0; i < 10; i++) {
-			System.out.println(s.particles.get(i).getX());	
+			System.out.println(s.particles.get(i).getX());
 		}
-		
-		System.out.println("\n-------- SIMULATION RESULTS --------");		
-		
+
+		System.out.println("\n-------- SIMULATION RESULTS --------");
+
 		long start = System.currentTimeMillis();
-		
+
 		for (int i = 0; i < steps; i++) {
 			s.step();
 		}
-		
+
 		long elapsed = System.currentTimeMillis()-start;
-		
+
 		for (int i=0; i < 10; i++) {
-			System.out.println(s.particles.get(i).getX());	
+			System.out.println(s.particles.get(i).getX());
 		}
-		
+
 		System.out.println("\nCurrent: ");
-		
-		for (int i = 0; i < s.grid.numCellsX; i++) {
-				System.out.println(s.grid.jx[i][2]);
+
+		for (int i = 0; i < s.grid.getNumCellsX(); i++) {
+				System.out.println(s.grid.getJx(i,2));
 		}
-		
+
 		System.out.println("\nCalculation time: "+elapsed);
-		System.out.println(s.grid.cellWidth);
-		System.out.println(s.grid.cellHeight);
+		System.out.println(s.grid.getCellWidth());
+		System.out.println(s.grid.getCellHeight());
 	}
 
 }
