@@ -55,8 +55,6 @@ public class Particle2DPanel extends JPanel {
 
 	private boolean reset_trace;
 	
-	private boolean test = false;
-	
 	private boolean drawCurrentGrid = false;
 	
 	private boolean drawFields = false;
@@ -275,9 +273,6 @@ public class Particle2DPanel extends JPanel {
 					if (forces.get(j) instanceof SimpleGridForceRelativistic){
 						forces.set(j, new SimpleGridForce());
 					}
-					if (forces.get(j) instanceof SpringForceRelativistic){
-						forces.set(j, new SpringForce());
-					}
 				}
 			}
 			switch(i) {
@@ -298,24 +293,21 @@ public class Particle2DPanel extends JPanel {
 				ArrayList<Force> forces = ((CombinedForce) s.f).forces;
 				for (int j = 0; j < forces.size(); j++) {
 					if (forces.get(j) instanceof ConstantForce){
-						forces.set(j, new ConstantForceRelativistic());
+						forces.set(j, new ConstantForceRelativistic(s.c));
 					}
 					if (forces.get(j) instanceof SimpleGridForce){
 						forces.set(j, new SimpleGridForceRelativistic(s));
-					}
-					if (forces.get(j) instanceof SpringForce){
-						forces.set(j, new SpringForceRelativistic());
 					}
 				}
 			}
 			switch(i) {
 			case 1:
-				s.psolver = new LeapFrogRelativistic();
+				s.psolver = new LeapFrogRelativistic(s.c);
 			case 4:
-				s.psolver = new BorisRelativistic();
+				s.psolver = new BorisRelativistic(s.c);
 				break;
 			case 6:
-				s.psolver = new SemiImplicitEulerRelativistic();
+				s.psolver = new SemiImplicitEulerRelativistic(s.c);
 				break;
 			}
 		}

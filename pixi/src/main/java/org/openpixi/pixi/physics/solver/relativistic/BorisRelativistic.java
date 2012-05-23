@@ -28,61 +28,66 @@ import org.openpixi.pixi.physics.solver.Solver;
  */
 public class BorisRelativistic implements Solver{
 	
-	public BorisRelativistic()
+	RelativisticVelocity relvelocity;
+	
+	public BorisRelativistic(double c)
 	{
-		super();
+		relvelocity = new RelativisticVelocity(c);
 	}
 	
 	/**
 	 * Boris algorithm for implementing the electric and magnetic field.
 	 * The damping is implemented with an linear error O(dt).
 	 * Warning: the velocity is stored half a time step before of the position.
-	 * @param p before the update: x(t), v(t-dt/2);
-	 *                 after the update: x(t+dt), v(t+dt/2)
+	 * @param p before the update: x(t), u(t-dt/2);
+	 *                 after the update: x(t+dt), u(t+dt/2)
+	 *                 u(t) is the relativistic momentum
 	 */
 	public void step(Particle p, Force f, double step) {
 
+		double getPositionComponentofForceX = f.getPositionComponentofForceX(p);
+		double getPositionComponentofForceY = f.getPositionComponentofForceY(p);
+		double getBz = f.getBz(p);
+		double getTangentVelocityComponentOfForceX = f.getTangentVelocityComponentOfForceX(p);
+		double getTangentVelocityComponentOfForceY = f.getTangentVelocityComponentOfForceY(p);
+		double getMass = p.getMass();
+		
 		// remember for complete()
-		//a(t) = F(v(t), x(t)) / m
-		p.setAx(f.getForceX(p) / p.getMass());
-		p.setAy(f.getForceY(p) / p.getMass());
+		p.setPrevPositionComponentForceX(getPositionComponentofForceX);
+		p.setPrevPositionComponentForceY(getPositionComponentofForceY);
+		p.setPrevBz(getBz);
+		p.setPrevTangentVelocityComponentOfForceX(getTangentVelocityComponentOfForceX);
+		p.setPrevTangentVelocityComponentOfForceY(getTangentVelocityComponentOfForceY);
 		
-		//double ux = p.vx * Math.sqrt(1 / (1 - (p.vx / ConstantsSI.c) * (p.vx / ConstantsSI.c)));
-		//double uy = p.vy * Math.sqrt(1 / (1 - (p.vy / ConstantsSI.c) * (p.vy / ConstantsSI.c)));
-		//finding v(t) in order to calculate gamma(t)
-		double vx = p.getVx() + (p.getAx() * step / 2);
-		double vy = p.getVy() + (p.getAy() * step / 2);
+		//calculating u(t + dt / 2). Although getV() and setV() are used, the represent the relativistic momentum, i.e. v->u
+		double uxminus = p.getVx() + getPositionComponentofForceX * step / (2.0 * getMass);
 		
-		double v = Math.sqrt(vx * vx + vy * vy);
-		double gamma = Math.sqrt(1 / (1 - (v / ConstantsSI.c) * (v / ConstantsSI.c)));
+		double uyminus = p.getVy() + getPositionComponentofForceY * step / (2.0 * getMass);
 		
-		double ux = p.getVx() * gamma;
-		double uy = p.getVy() * gamma;
+		//gamma(t)
+		double gamma = relvelocity.calculateGamma(uxminus, uyminus);
 		
-		double vxminus = ux + f.getPositionComponentofForceX(p) * step / (2.0 * p.getMass());
-		double vxplus;
-		double vxprime;
-		
-		double vyminus = uy + f.getPositionComponentofForceY(p) * step / (2.0 * p.getMass());
-		double vyplus;
-		double vyprime;
-		
-		double t_z = p.getCharge() * f.getBz(p) * step / (2.0 * p.getMass() * gamma);   //t vector
+		double t_z = p.getCharge() * getBz * step / (2.0 * getMass * gamma);   //t vector
 		
 		double s_z = 2 * t_z / (1 + t_z * t_z);               //s vector
 		
-		vxprime = vxminus + vyminus * t_z;
-		vyprime = vyminus - vxminus * t_z;
+		double uxprime = uxminus + uyminus * t_z;
+		double uyprime = uyminus - uxminus * t_z;
 		
-		vxplus = vxminus + vyprime * s_z;
-		vyplus = vyminus - vxprime * s_z;
+		double uxplus = uxminus + uyprime * s_z;
+		double uyplus = uyminus - uxprime * s_z;
 		
-		p.setVx(vxplus + f.getPositionComponentofForceX(p) * step / (2.0 * p.getMass()) + f.getTangentVelocityComponentOfForceX(p) * step / p.getMass());
-		p.setVy(vyplus + f.getPositionComponentofForceY(p) * step / (2.0 * p.getMass()) + f.getTangentVelocityComponentOfForceY(p) * step / p.getMass());
+		p.setVx(uxplus + getPositionComponentofForceX * step / (2.0 * getMass) + getTangentVelocityComponentOfForceX * step / getMass);
+		p.setVy(uyplus + getPositionComponentofForceY * step / (2.0 * getMass) + getTangentVelocityComponentOfForceY * step / getMass);
 		
-		p.setX(p.getX() + p.getVx() * step / Math.sqrt(1 / (1 - (p.getVx() / ConstantsSI.c) * (p.getVx() / ConstantsSI.c))));
-		p.setY(p.getY() + p.getVy() * step / Math.sqrt(1 / (1 - (p.getVy() / ConstantsSI.c) * (p.getVy() / ConstantsSI.c))));
+		//calculating gamma(t + dt / 2)
+		gamma = relvelocity.calculateGamma(p);
+		
+		// x(t+dt) = u(t) + u(t+dt/2) * dt / gamma(t + dt / 2)
+		p.setX(p.getX() + p.getVx() * step / gamma);
+		p.setY(p.getY() + p.getVy() * step / gamma);
 	}	
+	
 	/**
 	 * prepare method for bringing the velocity in the desired half step
 	 * @param p before the update: v(t);
@@ -90,13 +95,42 @@ public class BorisRelativistic implements Solver{
 	 */
 	public void prepare(Particle p, Force f, double dt)
 	{	
-		//a(t) = F(v(t), x(t)) / m
-		p.setAx(f.getForceX(p) / p.getMass());
-		p.setAy(f.getForceY(p) / p.getMass());
-
-		//v(t - dt / 2) = v(t) - a(t)*dt / 2
-		p.setVx(p.getVx() - (p.getAx() * dt / 2));
-		p.setVy(p.getVy() - (p.getAy() * dt / 2));
+		double getPositionComponentofForceX = f.getPositionComponentofForceX(p);
+		double getPositionComponentofForceY = f.getPositionComponentofForceY(p);
+		double getBz = f.getBz(p);
+		double getTangentVelocityComponentOfForceX = f.getTangentVelocityComponentOfForceX(p);
+		double getTangentVelocityComponentOfForceY = f.getTangentVelocityComponentOfForceY(p);
+		double getMass = p.getMass();
+		
+		// remember for complete()
+		p.setPrevPositionComponentForceX(getPositionComponentofForceX);
+		p.setPrevPositionComponentForceY(getPositionComponentofForceY);
+		p.setPrevBz(getBz);
+		p.setPrevTangentVelocityComponentOfForceX(getTangentVelocityComponentOfForceX);
+		p.setPrevTangentVelocityComponentOfForceY(getTangentVelocityComponentOfForceY);
+		
+		double step = - dt * 0.5;
+		
+		//calculating u(t + dt / 2). Although getV() and setV() are used, the represent the relativistic momentum, i.e. v->u
+		double uxminus = p.getVx() + getPositionComponentofForceX * step / (2.0 * getMass) + getTangentVelocityComponentOfForceX * step / getMass;
+		
+		double uyminus = p.getVy() + getPositionComponentofForceY * step / (2.0 * getMass) + getTangentVelocityComponentOfForceY * step / getMass;
+		
+		//gamma(t)
+		double gamma = relvelocity.calculateGamma(uxminus, uyminus);
+		
+		double t_z = p.getCharge() * getBz * step / (2.0 * getMass * gamma);   //t vector
+		
+		double s_z = 2 * t_z / (1 + t_z * t_z);               //s vector
+		
+		double uxprime = uxminus + uyminus * t_z;
+		double uyprime = uyminus - uxminus * t_z;
+		
+		double uxplus = uxminus + uyprime * s_z;
+		double uyplus = uyminus - uxprime * s_z;
+		
+		p.setVx(uxplus + getPositionComponentofForceX * step / (2.0 * getMass));
+		p.setVy(uyplus + getPositionComponentofForceY * step / (2.0 * getMass));
 	}
 
 	/**
@@ -106,8 +140,28 @@ public class BorisRelativistic implements Solver{
 	 */
 	public void complete(Particle p, Force f, double dt)
 	{
-		//v(t) = v(t - dt / 2) + a(t)*dt / 2
-		p.setVx(p.getVx() + (p.getAx() * dt / 2));
-		p.setVy(p.getVy() + (p.getAy() * dt / 2));
+		double getPrevPositionComponentForceX = p.getPrevPositionComponentForceX();
+		double getPrevPositionComponentForceY = p.getPrevPositionComponentForceY();
+		double getMass = p.getMass();
+		
+		dt = dt * 0.5;
+		double uxminus = p.getVx() + getPrevPositionComponentForceX * dt / (2.0 * getMass);
+		
+		double uyminus = p.getVy() + getPrevPositionComponentForceY * dt / (2.0 * getMass);
+		
+		//gamma(t)
+		double gamma = relvelocity.calculateGamma(uxminus, uyminus);
+		double t_z = p.getCharge() * f.getBz(p) * dt / (2.0 * getMass * gamma);   //t vector
+		
+		double s_z = 2 * t_z / (1 + t_z * t_z);               //s vector
+		
+		double uxprime = uxminus + uyminus * t_z;
+		double uyprime = uyminus - uxminus * t_z;
+		
+		double uxplus = uxminus + uyprime * s_z;
+		double uyplus = uyminus - uxprime * s_z;
+		
+		p.setVx(uxplus + getPrevPositionComponentForceX * dt / (2.0 * getMass) + p.getPrevTangentVelocityComponentOfForceX() * dt / getMass);
+		p.setVy(uyplus + getPrevPositionComponentForceY * dt / (2.0 * getMass) + p.getPrevTangentVelocityComponentOfForceY() * dt / getMass);
 	}
 }

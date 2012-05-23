@@ -29,31 +29,34 @@ import org.openpixi.pixi.physics.solver.Solver;
  */
 public class LeapFrogRelativistic implements Solver{
 	
-	public LeapFrogRelativistic()
+	RelativisticVelocity relvelocity;
+	
+	public LeapFrogRelativistic(double c)
 	{
-		super();
+		relvelocity = new RelativisticVelocity(c);
 	}
 
 	/**
 	 * LeapFrog algorithm. The damping is implemented with an linear error O(dt).
 	 * Warning: the velocity is stored half a time step ahead of the position.
-	 * @param p before the update: x(t), v(t+dt/2), a(t);
-	 *                 after the update: x(t+dt), v(t+3*dt/2), a(t+dt)
+	 * @param p before the update: x(t), u(t+dt/2), a(t);
+	 *                 after the update: x(t+dt), u(t+3*dt/2), a(t+dt)
+	 *                  u(t) is the relativistic momentum
 	 */
 	public void step(Particle p, Force f, double dt) {
-		double v = Math.sqrt(p.getVx() * p.getVx() + p.getVy() * p.getVy());
-		double gamma = Math.sqrt(1 / (1 - (v / ConstantsSI.c) * (v / ConstantsSI.c)));
 		
-		// x(t+dt) = x(t) + v(t+dt/2)*dt
+		double gamma = relvelocity.calculateGamma(p);
+		
+		// x(t+dt) = x(t) + c(t+dt/2) * dt / gamma
 		p.setX(p.getX() + p.getVx() * dt / gamma);
 		p.setY(p.getY() + p.getVy() * dt / gamma);
 
-		// a(t+dt) = F(v(t+dt/2), x(t+dt)) / m
+		// a(t+dt) = F(u(t+dt/2), x(t+dt)) / m
 		// WARNING: Force is evaluated at two different times t+dt/2 and t+dt!
 		p.setAx(f.getForceX(p) / p.getMass());
 		p.setAy(f.getForceY(p) / p.getMass());
 
-		// v(t+3*dt/2) = v(t+dt/2) + a(t+dt)*dt
+		// u(t+3*dt/2) = u(t+dt/2) + a(t+dt)*dt
 		p.setVx(p.getVx() + p.getAx() * dt);
 		p.setVy(p.getVy() + p.getAy() * dt);
 		

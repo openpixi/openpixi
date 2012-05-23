@@ -12,10 +12,10 @@ import org.openpixi.pixi.physics.force.ConstantForce;
  */
 public class SolverTest extends TestCase {
 
-	Solver solver;
+	protected Solver solver;
 
 	//double ACCURACY_LIMIT = 1.e-16;
-	double ACCURACY_LIMIT = 1.e-15;
+	double ACCURACY_LIMIT = 1.e-13;
 
 	void assertAlmostEquals(String text, double x, double y, double limit) {
 		if (Math.abs(x - y) / Math.abs(x + y) > limit) {
