@@ -5,121 +5,122 @@ import org.openpixi.pixi.physics.grid.Grid;
 public class YeeSolver extends FieldSolver {
 
 	double cx, cy, cz;
-	
+
 	public YeeSolver() {
-		
+
 	}
-	
+
 	/**A simple LeapFrog algorithm
 	 * @param p before the update: E(t), B(t+dt/2);
 	 * 						after the update: E(t+dt), B(t+3dt/2)
 	*/
-	public void step(Grid g) {
-		
+	@Override
+	public void step(Grid g, double tstep) {
+
 		//update boundary for y=const
-		for (int i = 0; i < g.numCellsX; i++) {
-			
+		for (int i = 0; i < g.getNumCellsX(); i++) {
+
 			int ip = i + 1;
 			int im = i - 1;
-			
-			if (ip >= g.numCellsX){
+
+			if (ip >= g.getNumCellsX()){
 				ip = 0;
 			}
 			if (im < 0) {
-				im = g.numCellsX-1;
+				im = g.getNumCellsX()-1;
 			}
-			
+
 			//lower border
 			/**curl of the E field using center difference*/
-			cz = (g.Eyo[ip][0] - g.Eyo[im][0]) / ( 2 * g.cellWidth) - 
-					(g.Exo[i][1] - g.Exo[i][g.numCellsY-1]) / ( 2 * g.cellHeight);
-			
+			cz = (g.getEyo(ip, 0) - g.getEyo(im, 0)) / ( 2 * g.getCellWidth()) -
+					(g.getExo(i, 1) - g.getExo(i, g.getNumCellsY()-1)) / ( 2 * g.getCellHeight());
+
 			/**Maxwell EQ*/
-			g.Bz[i][0] += -g.simulation.tstep * cz;
+			g.addBz(i, 0, -tstep * cz);
 
 			/**curl of the B field using center difference*/
-			cx = (g.Bzo[i][1] - g.Bzo[i][g.numCellsY-1]) / ( 2 * g.cellHeight);
-			cy = -(g.Bzo[ip][0] - g.Bzo[im][0]) / ( 2 * g.cellWidth);
-			
+			cx = (g.getBzo(i, 1) - g.getBzo(i, g.getNumCellsY()-1)) / ( 2 * g.getCellHeight());
+			cy = -(g.getBzo(ip, 0) - g.getBzo(im, 0)) / ( 2 * g.getCellWidth());
+
 			/**Maxwell EQ*/
-			g.Ex[i][0] += g.simulation.tstep * (cx - g.jx[i][0]);
-			g.Ey[i][0] += g.simulation.tstep * (cy - g.jy[i][0]);
-			
+			g.addEx(i, 0, tstep * (cx - g.getJx(i,0)));
+			g.addEy(i, 0, tstep * (cy - g.getJy(i,0)));
+
 			//upper border
 			/**curl of the E field using center difference*/
-			cz = (g.Eyo[ip][g.numCellsY-1] - g.Eyo[im][g.numCellsY-1]) / ( 2 * g.cellWidth) - 
-					(g.Exo[i][0] - g.Exo[i][g.numCellsY-2]) / ( 2 * g.cellHeight);
-			
+			cz = (g.getEyo(ip, g.getNumCellsY()-1) - g.getEyo(im, g.getNumCellsY()-1)) / ( 2 * g.getCellWidth()) -
+					(g.getExo(i, 0) - g.getExo(i, g.getNumCellsY()-2)) / ( 2 * g.getCellHeight());
+
 			/**Maxwell EQ*/
-			g.Bz[i][g.numCellsY-1] += -g.simulation.tstep * cz;
+			g.addBz(i, g.getNumCellsY()-1, -tstep * cz);
 
 			/**curl of the B field using center difference*/
-			cx = (g.Bzo[i][0] - g.Bzo[i][g.numCellsY-2]) / ( 2 * g.cellHeight);
-			cy = -(g.Bzo[ip][g.numCellsY-1] - g.Bzo[im][g.numCellsY-1]) / ( 2 * g.cellWidth);
-			
+			cx = (g.getBzo(i, 0) - g.getBzo(i, g.getNumCellsY()-2)) / ( 2 * g.getCellHeight());
+			cy = -(g.getBzo(ip, g.getNumCellsY()-1) - g.getBzo(im, g.getNumCellsY()-1)) / ( 2 * g.getCellWidth());
+
 			/**Maxwell EQ*/
-			g.Ex[i][g.numCellsY-1] += g.simulation.tstep * (cx - g.jx[i][g.numCellsY-1]);
-			g.Ey[i][g.numCellsY-1] += g.simulation.tstep * (cy - g.jy[i][g.numCellsY-1]);
-			
+			g.addEx(i, g.getNumCellsY()-1, tstep * (cx - g.getJx(i, g.getNumCellsY()-1)));
+			g.addEy(i, g.getNumCellsY()-1, tstep * (cy - g.getJy(i, g.getNumCellsY()-1)));
+
 		}
-		
+
 		//update boundary for x=const
-		for (int j = 1; j < g.numCellsY - 1; j++) {
-			
+		for (int j = 1; j < g.getNumCellsY() - 1; j++) {
+
 			//left border
 			/**curl of the E field using center difference*/
-			cz = (g.Eyo[1][j] - g.Eyo[g.numCellsX-1][j]) / ( 2 * g.cellWidth) - 
-					(g.Exo[0][j+1] - g.Exo[0][j-1]) / ( 2 * g.cellHeight);
-			
+			cz = (g.getEyo(1, j) - g.getEyo(g.getNumCellsX()-1, j)) / ( 2 * g.getCellWidth()) -
+					(g.getExo(0, j+1) - g.getExo(0, j-1)) / ( 2 * g.getCellHeight());
+
 			/**Maxwell EQ*/
-			g.Bz[0][j] += -g.simulation.tstep * cz;
+			g.addBz(0, j, -tstep * cz);
 
 			/**curl of the B field using center difference*/
-			cx = (g.Bzo[0][j+1] - g.Bzo[0][j-1]) / ( 2 * g.cellHeight);
-			cy = -(g.Bzo[1][j] - g.Bzo[g.numCellsX-1][j]) / ( 2 * g.cellWidth);
-			
+			cx = (g.getBzo(0, j+1) - g.getBzo(0, j-1)) / ( 2 * g.getCellHeight());
+			cy = -(g.getBzo(1, j) - g.getBzo(g.getNumCellsX()-1, j)) / ( 2 * g.getCellWidth());
+
 			/**Maxwell EQ*/
-			g.Ex[0][j] += g.simulation.tstep * (cx - g.jx[0][j]);
-			g.Ey[0][j] += g.simulation.tstep * (cy - g.jy[0][j]);
-			
+			g.addEx(0,j, tstep * (cx - g.getJx(0, j)));
+			g.addEy(0,j, tstep * (cy - g.getJy(0, j)));
+
 			//right border
 			/**curl of the E field using center difference*/
-			cz = (g.Eyo[0][j] - g.Eyo[g.numCellsX-2][j]) / ( 2 * g.cellWidth) - 
-					(g.Exo[g.numCellsX-1][j+1] - g.Exo[g.numCellsX-1][j-1]) / ( 2 * g.cellHeight);
-			
+			cz = (g.getEyo(0, j) - g.getEyo(g.getNumCellsX()-2, j)) / ( 2 * g.getCellWidth()) -
+					(g.getExo(g.getNumCellsX()-1, j+1) - g.getExo(g.getNumCellsX()-1, j-1)) / ( 2 * g.getCellHeight());
+
 			/**Maxwell EQ*/
-			g.Bz[g.numCellsX-1][j] += -g.simulation.tstep * cz;
+			g.addBz(g.getNumCellsX()-1, j, -tstep * cz);
 
 			/**curl of the B field using center difference*/
-			cx = (g.Bzo[g.numCellsX-1][j+1] - g.Bzo[g.numCellsX-1][j-1]) / ( 2 * g.cellHeight);
-			cy = -(g.Bzo[0][j] - g.Bzo[g.numCellsX-2][j]) / ( 2 * g.cellWidth);
-			
+			cx = (g.getBzo(g.getNumCellsX()-1, j+1) - g.getBzo(g.getNumCellsX()-1, j-1)) / ( 2 * g.getCellHeight());
+			cy = -(g.getBzo(0, j) - g.getBzo(g.getNumCellsX()-2, j)) / ( 2 * g.getCellWidth());
+
 			/**Maxwell EQ*/
-			g.Ex[g.numCellsX-1][j] += g.simulation.tstep * (cx - g.jx[g.numCellsX-1][j]);
-			g.Ey[g.numCellsX-1][j] += g.simulation.tstep * (cy - g.jy[g.numCellsX-1][j]);
-			
+			g.addEx(g.getNumCellsX()-1, j, tstep * (cx - g.getJx(g.getNumCellsX()-1, j)));
+			g.addEy(g.getNumCellsX()-1, j, tstep * (cy - g.getJy(g.getNumCellsX()-1, j)));
+
 		}
-		
-		
-		for (int i = 1; i < g.numCellsX - 1; i++) {
-			for (int j = 1; j < g.numCellsY - 1; j++) {
-						
+
+
+		for (int i = 1; i < g.getNumCellsX() - 1; i++) {
+			for (int j = 1; j < g.getNumCellsY() - 1; j++) {
+
 				/**curl of the E field using center difference*/
-				cz = (g.Eyo[i+1][j] - g.Eyo[i-1][j]) / ( 2 * g.cellWidth) - 
-						(g.Exo[i][j+1] - g.Exo[i][j-1]) / ( 2 * g.cellHeight);
-				
+				cz = (g.getEyo(i+1, j) - g.getEyo(i-1, j)) / ( 2 * g.getCellWidth()) -
+						(g.getExo(i, j+1) - g.getExo(i, j-1)) / ( 2 * g.getCellHeight());
+
 				/**Maxwell EQ*/
-				g.Bz[i][j] += -g.simulation.tstep * cz;
+				g.setBz(i, j, -tstep * cz);
 
 				/**curl of the B field using center difference*/
-				cx = (g.Bzo[i][j+1] - g.Bzo[i][j-1]) / ( 2 * g.cellHeight);
-				cy = -(g.Bzo[i+1][j] - g.Bzo[i-1][j]) / ( 2 * g.cellWidth);
-				
+				cx = (g.getBzo(i, j+1) - g.getBzo(i, j-1)) / ( 2 * g.getCellHeight());
+				cy = -(g.getBzo(i+1, j) - g.getBzo(i-1, j)) / ( 2 * g.getCellWidth());
+
 				/**Maxwell EQ*/
-				g.Ex[i][j] += g.simulation.tstep * (cx - g.jx[i][j]);
-				g.Ey[i][j] += g.simulation.tstep * (cy - g.jy[i][j]);
+				g.addEx(i, j, tstep * (cx - g.getJx(i, j)));
+				g.addEy(i, j, tstep * (cy - g.getJy(i, j)));
 			}
 		}
 	}
-	
+
 }

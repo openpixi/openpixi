@@ -1,38 +1,39 @@
 package org.openpixi.pixi.physics.fields;
 
-import org.openpixi.pixi.physics.grid.*;
+import org.openpixi.pixi.physics.grid.Grid;
 
 public class SimpleSolver extends FieldSolver {
-	
+
 	double cx, cy, cz;
-	
+
 	public SimpleSolver() {
-		
+
 	}
-	
+
 	/**A simple LeapFrog algorithm
 	 * @param p before the update: E(t), B(t+dt/2);
 	 * 						after the update: E(t+dt), B(t+3dt/2)
 	*/
-	public void step(Grid g) {
-		
-		for (int i = 1; i < g.numCellsX - 1; i++) {
-			for (int j = 1; j < g.numCellsY - 1; j++) {
-				
+	@Override
+	public void step(Grid g, double tstep) {
+
+		for (int i = 0; i < g.getNumCellsX(); i++) {
+			for (int j = 0; j < g.getNumCellsY(); j++) {
+
 				/**curl of the E field using center difference*/
-				cz = (g.Eyo[i+1][j] - g.Eyo[i-1][j]) / ( 2 * g.cellWidth) - 
-						(g.Exo[i][j+1] - g.Exo[i][j-1]) / ( 2 * g.cellHeight);
-				
+				cz = (g.getEyo(i+1, j) - g.getEyo(i-1, j)) / ( 2 * g.getCellWidth()) -
+						(g.getExo(i, j+1) - g.getExo(i, j-1)) / ( 2 * g.getCellHeight());
+
 				/**Maxwell equations*/
-				g.Bz[i][j] += -g.simulation.tstep * cz;
+				g.addBz(i, j, -tstep * cz);
 
 				/**curl of the B field using center difference*/
-				cx = (g.Bzo[i][j+1] - g.Bzo[i][j-1]) / ( 2 * g.cellHeight);
-				cy = -(g.Bzo[i+1][j] - g.Bzo[i-1][j]) / ( 2 * g.cellWidth);
-				
+				cx = (g.getBzo(i, j+1) - g.getBzo(i, j-1)) / ( 2 * g.getCellHeight());
+				cy = -(g.getBzo(i+1, j) - g.getBzo(i-1, j)) / ( 2 * g.getCellWidth());
+
 				/**Maxwell EQ*/
-				g.Ex[i][j] += g.simulation.tstep * (cx - g.jx[i][j]);
-				g.Ey[i][j] += g.simulation.tstep * (cy - g.jy[i][j]);
+				g.addEx(i, j, tstep * (cx - g.getJx(i, j)));
+				g.addEy(i, j, tstep * (cy - g.getJy(i, j)));
 			}
 		}
 	}
