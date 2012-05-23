@@ -14,42 +14,42 @@ public class Grid {
 	/**contains the simulation instance that this grid belongs to*/
 	public Simulation simulation;
 	/**interpolation algorithm for current, charge density and force calculation*/
-	protected Interpolator interp;
+	private Interpolator interp;
 	/**solver algorithm for the maxwell equations*/
-	protected FieldSolver fsolver;
+	private FieldSolver fsolver;
 
 	/**electric current in x-Direction*/
-	protected double [][] jx;
+	private double [][] jx;
 	/**electric current in y-Direction*/
-	protected double [][] jy;
+	private double [][] jy;
 
 	/**sum of electric charges in a cell*/
-	protected double [][] rho;
+	private double [][] rho;
 	/**electrostatic potential*/
-	protected double [][] phi;
+	private double [][] phi;
 
 	/**electric field in x direction at time t+dt*/
-	protected double [][] Ex;
+	private double [][] Ex;
 	/**electric field in y direction at time t+dt*/
-	protected double [][] Ey;
+	private double [][] Ey;
 	/**magnetic field in z direction at time t+dt*/
-	protected double [][] Bz;
+	private double [][] Bz;
 
 	/**electric field in x direction at time t*/
-	protected double [][] Exo;
+	private double [][] Exo;
 	/**electric field in y direction at time t*/
-	protected double [][] Eyo;
+	private double [][] Eyo;
 	/**magnetic field in z direction at time t*/
-	protected double [][] Bzo;
+	private double [][] Bzo;
 
 	/**number of cells in x direction*/
-	protected int numCellsX;
+	private int numCellsX;
 	/**number of cells in x direction*/
-	protected int numCellsY;
+	private int numCellsY;
 	/**width of each cell*/
-	protected double cellWidth;
+	private double cellWidth;
 	/**height of each cell*/
-	protected double cellHeight;
+	private double cellHeight;
 
 	public Interpolator getInterp() {
 		return interp;
