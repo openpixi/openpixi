@@ -3,6 +3,13 @@
 *.project
 *.classpath
 
+# Idea IDE files
+*.idea/
+*.iml
+
+# Netbeans IDE files
+*nb-configuration.xml
+
 # Java binaries
 *.class
 *.jar
