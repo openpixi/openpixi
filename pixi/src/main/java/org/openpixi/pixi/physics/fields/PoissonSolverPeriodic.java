@@ -20,8 +20,8 @@ public class PoissonSolverPeriodic {
 	public void solve(Grid g) {
 		
 		//size of the array to be transformed
-		int rows = g.getNumCellsX();
-		int columns = g.getNumCellsY();
+		int columns = g.getNumCellsX();
+		int rows = g.getNumCellsY();
 		double cellArea = g.getCellWidth() * g.getCellHeight();
 		//JTransform saves the imaginary part as a second row entry
 		//therefore there must be twice as many rows
@@ -77,7 +77,7 @@ public class PoissonSolverPeriodic {
 		for(int i = 1; i < columns-1; i++) {
 			g.setEx(i, 0, -(phi[i+1][0] - phi[i-1][0]) / (2 * g.getCellWidth()));
 			//forward difference
-			g.setEy(i, 0, -(phi[i][2] - phi[i][2*(columns-2)]) / (2 * g.getCellHeight()));
+			g.setEy(i, 0, -(phi[i][2] - phi[i][2*(rows-2)]) / (2 * g.getCellHeight()));
 			g.setEx(i, rows-1, -(phi[i+1][2*(rows-1)] - phi[i-1][2*(rows-1)]) / (2 * g.getCellWidth()));
 			//backward difference
 			g.setEy(i, rows-1, -(phi[i][0] - phi[i][2*(rows-2)]) / (2 * g.getCellHeight()));
@@ -86,7 +86,7 @@ public class PoissonSolverPeriodic {
 		//left and right boundaries
 		for(int j = 1; j < rows-1; j++) {
 			//forward difference
-			g.setEx(0, j, -(phi[1][2*j] - phi[rows-1][2*j]) / (2 * g.getCellWidth()));
+			g.setEx(0, j, -(phi[1][2*j] - phi[columns-1][2*j]) / (2 * g.getCellWidth()));
 			g.setEy(0, j, -(phi[0][2*(j+1)] - phi[0][2*(j-1)]) / (2 * g.getCellHeight()));
 			//backward difference
 			g.setEx(columns-1, j, -(phi[0][2*j] - phi[columns-2][2*j]) / (2 * g.getCellWidth()));
