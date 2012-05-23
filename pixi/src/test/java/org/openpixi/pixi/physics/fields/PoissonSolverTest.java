@@ -2,7 +2,6 @@ package org.openpixi.pixi.physics.fields;
 
 import junit.framework.TestCase;
 import java.io.File;
-import org.openpixi.pixi.physics.*;
 import org.openpixi.pixi.physics.fields.PoissonSolverPeriodic;
 import edu.emory.mathcs.jtransforms.fft.DoubleFFT_2D;
 import org.openpixi.pixi.physics.InitialConditions;
