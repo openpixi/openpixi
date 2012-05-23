@@ -39,13 +39,6 @@ public class PoissonSolverTest extends TestCase {
 		
 		//writes to g.rho
 		ChargeDistribution charged = new PointChargeDistribution(g);
-
-//		g.rho = pointChargeShifted(g.numCellsX, g.numCellsY);
-//		g.rho = pointCharge(g.numCellsX, g.numCellsY);		
-//		g.rho = dipole(g.numCellsX, g.numCellsY);
-//		g.rho = randomChargeDistribution(g.numCellsX, g.numCellsY);
-//		g.rho = lineChargeOnEdge(g.numCellsX, g.numCellsY);
-//		g.rho = lineChargeOnSide(g.numCellsX, g.numCellsY);
 		
 		long start = System.currentTimeMillis();
 		PoissonSolverPeriodic poisolver = new PoissonSolverPeriodic();
