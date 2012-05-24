@@ -3,7 +3,7 @@ package org.openpixi.pixi.physics.fields;
 import edu.emory.mathcs.jtransforms.fft.*;
 import org.openpixi.pixi.physics.grid.Grid;
 
-public class PoissonSolverPeriodic {
+public class PoissonSolverFFTPeriodic implements PoissonSolver {
 	
 	/**Solves the electrostatic Poisson equation with FFT assuming periodic boundaries.
 	 * 
