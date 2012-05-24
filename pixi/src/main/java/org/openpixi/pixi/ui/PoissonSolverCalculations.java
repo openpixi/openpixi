@@ -12,7 +12,6 @@ import org.openpixi.pixi.ui.util.WriteFile;
 
 public class PoissonSolverCalculations {
 	
-	private double ACCURACY_LIMIT = 1.e-5;
 	private Simulation s;
 	private Grid g;
 	private PoissonSolver poisolver;
@@ -88,7 +87,7 @@ public class PoissonSolverCalculations {
 		return rho;
 	}
 	
-	public void output(Grid g) {
+	public static void output(Grid g) {
 		
 		double aspectratio = g.simulation.height/g.simulation.width;
 		//deletes the old files
@@ -141,11 +140,27 @@ public class PoissonSolverCalculations {
 		pc.randomChargeDistribution(pc.g.getNumCellsX(), pc.g.getNumCellsY());
 				
 		long start = System.currentTimeMillis();
-		pc.poisolver.solve(pc.g);
-				
+		pc.poisolver.solve(pc.g);				
 		long elapsed = System.currentTimeMillis()-start;
 		System.out.println("\nCalculation time: "+elapsed);
-		pc.output(pc.g);
+		
+		PoissonSolverCalculations.output(pc.g);
+		
+		interpolatorAndPoissonsolver();
+	}
+	
+	public static void interpolatorAndPoissonsolver() {
+		
+		Simulation s = InitialConditions.initEmptySimulation();
+		s.width = 100;
+		s.height = 100;
+		s.c = Math.sqrt(s.width*s.width+s.height*s.height)/5;
+		s.particles = InitialConditions.createRandomParticles(s.width, s.height, s.c, 1, 1);
+		s.particles.get(0).setCharge(10);
+		
+		Grid g = GridFactory.createYeeGrid(s, 100, 100, s.width, s.height);
+		
+		PoissonSolverCalculations.output(g);
 	}
 
 }
