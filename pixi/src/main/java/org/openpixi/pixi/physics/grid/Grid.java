@@ -5,9 +5,8 @@ import java.util.ArrayList;
 import org.openpixi.pixi.physics.Particle;
 import org.openpixi.pixi.physics.Simulation;
 import org.openpixi.pixi.physics.fields.FieldSolver;
-import org.openpixi.pixi.physics.fields.YeeSolver;
 import org.openpixi.pixi.physics.force.SimpleGridForce;
-import org.openpixi.pixi.physics.grid.*;
+import org.openpixi.pixi.physics.fields.PoissonSolver;
 
 public class Grid {
 
@@ -17,6 +16,8 @@ public class Grid {
 	private Interpolator interp;
 	/**solver algorithm for the maxwell equations*/
 	private FieldSolver fsolver;
+	/**solver for the electrostatic poisson equation*/
+	private PoissonSolver poisolver;
 
 	/**electric current in x-Direction*/
 	private double [][] jx;
@@ -203,11 +204,13 @@ public class Grid {
 			int numCellsX, int numCellsY,
 			double simWidth, double simHeight,
 			FieldSolver fsolver,
-			Interpolator interp) {
+			Interpolator interp,
+			PoissonSolver poisolver) {
 
 		this.simulation = s;
 		this.fsolver = fsolver;
 		this.interp = interp;
+		this.poisolver = poisolver;
 
 		SimpleGridForce force = new SimpleGridForce();
 		s.f.add(force);
@@ -235,6 +238,9 @@ public class Grid {
 		Exo = new double[xcells][ycells];
 		Eyo = new double[xcells][ycells];
 		Bzo = new double[xcells][ycells];
+		
+		interp.interpolateChargedensity(simulation.particles, this);
+		poisolver.solve(this);
 
 		for (Particle p: simulation.particles){
 			//assuming rectangular particle shape i.e. area weighting

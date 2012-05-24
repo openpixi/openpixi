@@ -3,6 +3,7 @@ package org.openpixi.pixi.physics.grid;
 import org.openpixi.pixi.physics.Simulation;
 import org.openpixi.pixi.physics.fields.SimpleSolver;
 import org.openpixi.pixi.physics.fields.YeeSolver;
+import org.openpixi.pixi.physics.fields.PoissonSolverFFTPeriodic;
 
 /**
  * Creates specific types of grid.
@@ -16,7 +17,8 @@ public class GridFactory {
 		return new Grid(s,
 				numCellsX, numCellsY, simWidth, simHeight,
 				new SimpleSolver(),
-				new CloudInCell());
+				new CloudInCell(),
+				new PoissonSolverFFTPeriodic());
 	}
 
 	public static Grid createYeeGrid(
@@ -26,6 +28,7 @@ public class GridFactory {
 		return new Grid(s,
 				numCellsX, numCellsY, simWidth, simHeight,
 				new YeeSolver(),
-				new ChargeConservingAreaWeighting());
+				new ChargeConservingAreaWeighting(),
+				new PoissonSolverFFTPeriodic());
 	}
 }
