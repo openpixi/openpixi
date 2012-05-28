@@ -99,6 +99,10 @@ public class Grid {
 	public void setRho(int x, int y, double value) {
 		this.rho[x+1][y+1] = value;
 	}
+	
+	public void addRho(int x, int y, double value) {
+		this.rho[x+1][y+1] += value;
+	}
 
 	public double getPhi(int x, int y) {
 		return phi[x+1][y+1];
