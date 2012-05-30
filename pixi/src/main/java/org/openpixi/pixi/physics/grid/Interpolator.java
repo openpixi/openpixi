@@ -15,6 +15,9 @@ public class Interpolator {
 		for (int i = 0; i < particles.size(); i++) {
 
 		Particle p = g.simulation.particles.get(i);
+
+		assertParticleInSimulationArea(p, g);
+
 		int xCellPosition = (int) Math.floor(p.getX() / g.getCellWidth());
 		int yCellPosition = (int) Math.floor(p.getY() / g.getCellHeight());
 
@@ -84,6 +87,8 @@ public class Interpolator {
 		double cellArea = g.getCellWidth() * g.getCellHeight();
 		
 		for(Particle p : particles) {
+			assertParticleInSimulationArea(p, g);
+
 			//nearest grid point that has a lower x and y coordinate than the particle
 			int xCellPosition = (int) (Math.floor(p.getX() / g.getCellWidth()));
 			int yCellPosition = (int) (Math.floor(p.getY() / g.getCellHeight()));
@@ -117,5 +122,15 @@ public class Interpolator {
 		return a;
 	}
 
-
+	/**
+	 * Test via asserts whether particle is within simulation area.
+	 * @param p
+	 * @param g
+	 */
+	private void assertParticleInSimulationArea(Particle p, Grid g) {
+		assert(p.getX() >= 0);
+		assert(p.getY() >= 0);
+		assert(p.getX() < g.simulation.width);
+		assert(p.getY() < g.simulation.height);
+	}
 }
