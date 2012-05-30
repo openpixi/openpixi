@@ -260,8 +260,8 @@ public class Grid {
 	}
 
 	public void resetCurrentAndCharge() {
-		for(int i = 0; i < getNumCellsX(); i++) {
-			for(int k = 0; k < getNumCellsY(); k++) {
+		for(int i = 0; i < getNumCellsX() + 2; i++) {
+			for(int k = 0; k < getNumCellsY() + 2; k++) {
 				jx[i][k] = 0.0;
 				jy[i][k] = 0.0;
 				rho[i][k] = 0.0;
@@ -270,8 +270,8 @@ public class Grid {
 	}
 
 	public void storeFields() {
-		for (int i = 0; i < getNumCellsX(); i++) {
-			for (int j = 0; j < getNumCellsY(); j++) {
+		for (int i = 0; i < getNumCellsX() + 2; i++) {
+			for (int j = 0; j < getNumCellsY() + 2; j++) {
 				Exo[i][j] = Ex[i][j];
 				Eyo[i][j] = Ey[i][j];
 				Bzo[i][j] = Bz[i][j];

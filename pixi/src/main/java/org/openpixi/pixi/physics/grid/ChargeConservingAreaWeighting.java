@@ -16,6 +16,11 @@ public class ChargeConservingAreaWeighting extends Interpolator {
 
 			Particle p = particles.get(i);
 
+			assertParticleInSimulationArea(p, g);
+
+			// TODO: The following assert fails!
+			//assertPreviousParticleInSimulationArea(p, g);
+
 			//local origin i.e. nearest grid point BEFORE particle push
 			int xStart = (int) Math.floor(p.getPrevX() / g.getCellWidth() + 0.5);
 			int yStart = (int) Math.floor(p.getPrevY() / g.getCellHeight() + 0.5);
@@ -437,4 +442,28 @@ public class ChargeConservingAreaWeighting extends Interpolator {
 		}
 	}
 
+	/**
+	 * Test via asserts whether particle is within simulation area.
+	 * @param p
+	 * @param g
+	 */
+	private void assertParticleInSimulationArea(Particle p, Grid g) {
+		assert(p.getX() >= 0);
+		assert(p.getY() >= 0);
+		assert(p.getX() < g.simulation.width);
+		assert(p.getY() < g.simulation.height);
+	}
+
+	/**
+	 * Test via asserts whether particle from previous time step
+	 * is within simulation area.
+	 * @param p
+	 * @param g
+	 */
+	private void assertPreviousParticleInSimulationArea(Particle p, Grid g) {
+		assert(p.getPrevX() >= 0);
+		assert(p.getPrevY() >= 0);
+		assert(p.getPrevX() < g.simulation.width);
+		assert(p.getPrevY() < g.simulation.height);
+	}
 }
