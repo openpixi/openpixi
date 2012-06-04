@@ -110,7 +110,7 @@ public class YeeSolver extends FieldSolver {
 						(g.getExo(i, j+1) - g.getExo(i, j-1)) / ( 2 * g.getCellHeight());
 
 				/**Maxwell EQ*/
-				g.setBz(i, j, -tstep * cz);
+				g.addBz(i, j, -tstep * cz);
 
 				/**curl of the B field using center difference*/
 				cx = (g.getBzo(i, j+1) - g.getBzo(i, j-1)) / ( 2 * g.getCellHeight());
