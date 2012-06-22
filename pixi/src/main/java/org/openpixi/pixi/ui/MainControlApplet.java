@@ -731,9 +731,9 @@ public class MainControlApplet extends JApplet {
 		cellSettings.add(ybox);
 		cellSettings.add(Box.createVerticalStrut(200));
 
-		fieldsBox.setPreferredSize(new Dimension(250, 100));
-		settingControls.setPreferredSize(new Dimension (250, 100));
-		collisionBox.setPreferredSize(new Dimension (250, 100));
+		fieldsBox.setPreferredSize(new Dimension(300, 100));
+		settingControls.setPreferredSize(new Dimension (300, 100));
+		collisionBox.setPreferredSize(new Dimension (300, 100));
 
 		tabs.addTab("Fields", fieldsBox);
 		tabs.addTab("Settings", settingControls);
@@ -818,7 +818,7 @@ public class MainControlApplet extends JApplet {
 
 		web.pack();
 		web.setVisible(true);
-		web.setSize(1000, 500);
+		web.setSize(800, 550);
 		web.setResizable(true);
 
 		applet.init();
