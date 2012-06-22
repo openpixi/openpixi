@@ -728,12 +728,12 @@ public class MainControlApplet extends JApplet {
 		ybox.add(yboxentry);
 
 		Box cellSettings = Box.createVerticalBox();
+		cellSettings.add(Box.createVerticalStrut(20));
+		cellSettings.add(calculateFieldsCheck);
+		cellSettings.add(Box.createVerticalGlue());
 		cellSettings.add(currentgridCheck);
 		cellSettings.add(Box.createVerticalGlue());
-		cellSettings.add(Box.createVerticalGlue());
-		cellSettings.add(Box.createVerticalGlue());
 		cellSettings.add(drawFieldsCheck);
-		cellSettings.add(calculateFieldsCheck);
 		cellSettings.add(Box.createVerticalStrut(20));
 		cellSettings.add(xbox);
 		cellSettings.add(Box.createVerticalStrut(10));
