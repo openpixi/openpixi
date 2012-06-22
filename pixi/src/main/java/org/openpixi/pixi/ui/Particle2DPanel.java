@@ -108,7 +108,7 @@ public class Particle2DPanel extends JPanel {
 		this.setVisible(true);
 		frameratedetector = new FrameRateDetector(500);
 
-		s = InitialConditions.initRandomParticles(10, 1);
+		s = InitialConditions.initRandomParticles(10, 2);
 
 	}
 
@@ -127,7 +127,7 @@ public class Particle2DPanel extends JPanel {
 		reset_trace = true;
 		switch(id) {
 		case 0:
-			s = InitialConditions.initRandomParticles(10, 1);
+			s = InitialConditions.initRandomParticles(10, 2);
 			break;
 		case 1:
 			s = InitialConditions.initRandomParticles(100, 1);
