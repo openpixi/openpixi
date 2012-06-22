@@ -14,6 +14,8 @@ import org.openpixi.pixi.physics.solver.*;
  */
 public class CloudInCellTest extends TestCase {
 
+	boolean VERBOSE = false;
+
 	//double ACCURACY_LIMIT = 1.e-16;
 	double ACCURACY_LIMIT = 1.e-14;
 
@@ -67,7 +69,7 @@ public class CloudInCellTest extends TestCase {
 	}
 
 	public void testRandomMoves() {
-		for (int i = 0; i < 100000; i++) {
+		for (int i = 0; i < 1000; i++) {
 			double x1 = 2 + 6 * Math.random();
 			double y1 = 2 + 6 * Math.random();
 			double phi = 2 * Math.PI * Math.random();
@@ -116,7 +118,7 @@ public class CloudInCellTest extends TestCase {
 		double jx = GridTestCommon.getJxSum(grid);
 		double jy = GridTestCommon.getJySum(grid);
 
-		System.out.println("Total current " + text + ": jx = " + jx + ", jy = " + jy
+		if (VERBOSE) System.out.println("Total current " + text + ": jx = " + jx + ", jy = " + jy
 				+ " (from " + sx + ", " + sy + " to " + p.getX() + ", " + p.getY() + ")");
 
 		GridTestCommon.checkSignJx(grid);
@@ -138,7 +140,7 @@ public class CloudInCellTest extends TestCase {
 	}
 
 	public void testRandomMovesForce() {
-		for (int i = 0; i < 10000; i++) {
+		for (int i = 0; i < 1000; i++) {
 			double x1 = 2 + 6 * Math.random();
 			double y1 = 2 + 6 * Math.random();
 			double phi = 2 * Math.PI * Math.random();
@@ -192,7 +194,7 @@ Simulation s = InitialConditions.initEmptySimulation();
 		double jx = GridTestCommon.getJxSum(grid);
 		double jy = GridTestCommon.getJySum(grid);
 
-		System.out.println("Total current " + text + ": jx = " + jx + ", jy = " + jy
+		if (VERBOSE) System.out.println("Total current " + text + ": jx = " + jx + ", jy = " + jy
 				+ " (from " + sx + ", " + sy + " to " + p.getX() + ", " + p.getY() + ")");
 
 		GridTestCommon.checkSignJx(grid);
