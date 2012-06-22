@@ -26,9 +26,7 @@ import javax.swing.event.*;
 
 import org.openpixi.pixi.physics.Debug;
 import org.openpixi.pixi.physics.boundary.*;
-import org.openpixi.pixi.physics.collision.detectors.*;
 import org.openpixi.pixi.physics.force.*;
-import org.openpixi.pixi.physics.force.relativistic.*;
 
 /**
  * Displays the animation of particles.
@@ -692,6 +690,9 @@ public class MainControlApplet extends JApplet {
 		JLabel bFieldZLabel = new JLabel("Magnetic Field in z - direction");
 		JLabel gFieldXLabel = new JLabel("Gravitation in x - direction Field");
 		JLabel gFieldYLabel = new JLabel("Gravitation in y - direction Field");
+
+		// Change background color of tab from blue to system gray
+		UIManager.put("TabbedPane.contentAreaColor", new Color(238, 238, 238));
 
 		tabs = new JTabbedPane();
 
