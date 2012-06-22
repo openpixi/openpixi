@@ -94,8 +94,8 @@ public class InitialConditions {
 		//basic simulation parameters
 		s.tstep = 1;
 		s.c = 3;
-		s.width = 700;
-		s.height = 500;
+		s.width = 100;
+		s.height = 100;
 
 		//external forces
 		s.f.clear();
@@ -122,8 +122,8 @@ public class InitialConditions {
 		//basic simulation parameters
 		s.tstep = 1;
 		s.c = 3;
-		s.width = 700;
-		s.height = 500;
+		s.width = 100;
+		s.height = 100;
 
 		//external forces
 		s.f.clear();
@@ -150,8 +150,8 @@ public class InitialConditions {
 		//basic simulation parameters
 		s.tstep = 1;
 		s.c = 3;
-		s.width = 700;
-		s.height = 500;
+		s.width = 100;
+		s.height = 100;
 
 		//external forces
 		s.f.clear();
@@ -178,8 +178,8 @@ public class InitialConditions {
 		//basic simulation parameters
 		s.tstep = 1;
 		s.c = 3;
-		s.width = 700;
-		s.height = 500;
+		s.width = 100;
+		s.height = 100;
 
 		//external forces
 		s.f.clear();
