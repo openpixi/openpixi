@@ -487,9 +487,10 @@ public class MainControlApplet extends JApplet {
 		dragSlider.setMinimum(0);
 		dragSlider.setMaximum(100);
 		dragSlider.setValue((int) force.drag);
-		dragSlider.setMajorTickSpacing(10);
-		dragSlider.setMinorTickSpacing(2);
+		dragSlider.setMajorTickSpacing(50);
+		dragSlider.setMinorTickSpacing(10);
 		dragSlider.setPaintTicks(true);
+		dragSlider.setPaintLabels(true);
 		JLabel dragLabel = new JLabel("Drag coefficient");
 
 		efieldXSlider = new JSlider();
@@ -497,45 +498,50 @@ public class MainControlApplet extends JApplet {
 		efieldXSlider.setMinimum(-100);
 		efieldXSlider.setMaximum(100);
 		efieldXSlider.setValue((int) force.ex);
-		efieldXSlider.setMajorTickSpacing(20);
-		efieldXSlider.setMinorTickSpacing(5);
+		efieldXSlider.setMajorTickSpacing(50);
+		efieldXSlider.setMinorTickSpacing(10);
 		efieldXSlider.setPaintTicks(true);
+		efieldXSlider.setPaintLabels(true);
 
 		efieldYSlider = new JSlider();
 		efieldYSlider.addChangeListener(new EFieldYListener());
 		efieldYSlider.setMinimum(-100);
 		efieldYSlider.setMaximum(100);
 		efieldYSlider.setValue((int) force.ey);
-		efieldYSlider.setMajorTickSpacing(20);
-		efieldYSlider.setMinorTickSpacing(5);
+		efieldYSlider.setMajorTickSpacing(50);
+		efieldYSlider.setMinorTickSpacing(10);
 		efieldYSlider.setPaintTicks(true);
+		efieldYSlider.setPaintLabels(true);
 
 		bfieldZSlider = new JSlider();
 		bfieldZSlider.addChangeListener(new BFieldZListener());
 		bfieldZSlider.setMinimum(-100);
 		bfieldZSlider.setMaximum(100);
 		bfieldZSlider.setValue((int) force.bz);
-		bfieldZSlider.setMajorTickSpacing(20);
-		bfieldZSlider.setMinorTickSpacing(5);
+		bfieldZSlider.setMajorTickSpacing(50);
+		bfieldZSlider.setMinorTickSpacing(10);
 		bfieldZSlider.setPaintTicks(true);
+		bfieldZSlider.setPaintLabels(true);
 
 		gfieldXSlider = new JSlider();
 		gfieldXSlider.addChangeListener(new GFieldXListener());
 		gfieldXSlider.setMinimum(-100);
 		gfieldXSlider.setMaximum(100);
 		gfieldXSlider.setValue((int) force.gx);
-		gfieldXSlider.setMajorTickSpacing(20);
-		gfieldXSlider.setMinorTickSpacing(5);
+		gfieldXSlider.setMajorTickSpacing(50);
+		gfieldXSlider.setMinorTickSpacing(10);
 		gfieldXSlider.setPaintTicks(true);
+		gfieldXSlider.setPaintLabels(true);
 
 		gfieldYSlider = new JSlider();
 		gfieldYSlider.addChangeListener(new GFieldYListener());
 		gfieldYSlider.setMinimum(-100);
 		gfieldYSlider.setMaximum(100);
 		gfieldYSlider.setValue((int) force.gy);
-		gfieldYSlider.setMajorTickSpacing(20);
-		gfieldYSlider.setMinorTickSpacing(5);
+		gfieldYSlider.setMajorTickSpacing(50);
+		gfieldYSlider.setMinorTickSpacing(10);
 		gfieldYSlider.setPaintTicks(true);
+		gfieldYSlider.setPaintLabels(true);
 
 		initComboBox = new JComboBox(initStrings);
 		initComboBox.setSelectedIndex(0);
@@ -692,6 +698,7 @@ public class MainControlApplet extends JApplet {
 		Box fieldsBox = Box.createVerticalBox();
 		fieldsBox.add(eFieldXLabel);
 		fieldsBox.add(efieldXSlider);
+		fieldsBox.add(Box.createVerticalStrut(5));
 		fieldsBox.add(eFieldYLabel);
 		fieldsBox.add(efieldYSlider);
 		fieldsBox.add(Box.createVerticalGlue());
@@ -700,6 +707,7 @@ public class MainControlApplet extends JApplet {
 		fieldsBox.add(Box.createVerticalGlue());
 		fieldsBox.add(gFieldXLabel);
 		fieldsBox.add(gfieldXSlider);
+		fieldsBox.add(Box.createVerticalStrut(5));
 		fieldsBox.add(gFieldYLabel);
 		fieldsBox.add(gfieldYSlider);
 		fieldsBox.add(Box.createVerticalGlue());
