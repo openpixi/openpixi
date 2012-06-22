@@ -657,9 +657,9 @@ public class MainControlApplet extends JApplet {
 		controlPanelUp.add(Box.createHorizontalStrut(25));
 		controlPanelUp.add(initBox);
 		controlPanelUp.add(Box.createHorizontalStrut(25));
-		controlPanelUp.add(writePositionCheck);
-		controlPanelUp.add(filename);
-		controlPanelUp.add(filedirectory);
+//		controlPanelUp.add(writePositionCheck);
+//		controlPanelUp.add(filename);
+//		controlPanelUp.add(filedirectory);
 
 		Box settingControls = Box.createVerticalBox();
 		JPanel controlPanelDown = new JPanel();
