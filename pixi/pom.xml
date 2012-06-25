@@ -58,9 +58,6 @@
             </goals>
           </execution>
         </executions>
-        <configuration>
-          <finalName>open${artifactId}-${version}</finalName>
-        </configuration>
       </plugin>
       <!-- Source code -->
       <plugin>
