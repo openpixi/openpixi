@@ -427,7 +427,9 @@ public class MainControlApplet extends JApplet {
 		public void actionPerformed(ActionEvent eve) {
 			int xbox = Integer.parseInt(xboxentry.getText());
 			int ybox = Integer.parseInt(yboxentry.getText());
-			particlePanel.s.grid.set(xbox, ybox, particlePanel.getWidth(), particlePanel.getHeight());
+			double width = particlePanel.s.width;
+			double height = particlePanel.s.height;
+			particlePanel.s.grid.set(xbox, ybox, width, height);
 		}
 	}
 
@@ -781,7 +783,9 @@ public class MainControlApplet extends JApplet {
 		particlePanel.timer.setDelay((int) (1000 * Math.exp(-50 * speedSliderScaling)));
 		xboxentry.setText("10");
 		yboxentry.setText("10");
-		particlePanel.s.grid.set(10, 10, particlePanel.getWidth(), particlePanel.getHeight());
+		double width = particlePanel.s.width;
+		double height = particlePanel.s.height;
+		particlePanel.s.grid.set(10, 10, width, height);
 		writePositionCheck.setSelected(false);
 		filename.setEditable(false);
 		filename.setEnabled(false);
