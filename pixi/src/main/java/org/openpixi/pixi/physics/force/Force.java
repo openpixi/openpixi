@@ -64,9 +64,6 @@ public interface Force {
 	 * the particle (y-component).
 	 *
 	 * This should always equal -getLinearDragCoefficient(p) * p.vy.
-	 *
-	 * @param p
-	 * @return
 	 */
 	public double getTangentVelocityComponentOfForceY(Particle p);
 
@@ -75,9 +72,6 @@ public interface Force {
 	 * direction of the particle (x-component).
 	 *
 	 * This should always equal p.charge * p.vy * getBz(p).
-	 *
-	 * @param p
-	 * @return
 	 */
 	public double getNormalVelocityComponentofForceX(Particle p);
 
@@ -87,9 +81,6 @@ public interface Force {
 	 * direction of the particle (y-component).
 	 *
 	 * This should always equal -p.charge * p.vx * getBz(p)
-	 *
-	 * @param p
-	 * @return
 	 */
 	public double getNormalVelocityComponentofForceY(Particle p);
 
