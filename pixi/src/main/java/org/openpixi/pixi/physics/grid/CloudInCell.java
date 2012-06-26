@@ -12,31 +12,11 @@ public class CloudInCell extends Interpolator {
 
 		for(Particle p : particles)
 		{
-			int xCellPosition = (int) (Math.floor((p.getX() / g.getCellWidth() + 1)));
-			int yCellPosition = (int) (Math.floor((p.getY() / g.getCellHeight() + 1)));
+			int xCellPosition = (int) (Math.floor((p.getX() / g.getCellWidth())));
+			int yCellPosition = (int) (Math.floor((p.getY() / g.getCellHeight())));
 
 			int xCellPosition2 = xCellPosition;
 			int yCellPosition2 = yCellPosition;
-
-			if(xCellPosition >= g.getNumCellsX() + 1) {
-				xCellPosition = g.getNumCellsX() + 1;
-			} else if(xCellPosition < 1) {
-					xCellPosition = 1;
-			}
-			if(yCellPosition >= g.getNumCellsY() + 1) {
-				yCellPosition = g.getNumCellsY() + 1;
-			} else if(yCellPosition < 1) {
-				yCellPosition = 1;
-			}
-
-			// !! ADHOC PRESCRIPTION TO AVOID CRASHING
-			// TODO: Check what needs to be done here !!!
-			if(xCellPosition > g.getNumCellsX() - 1) {
-				xCellPosition = g.getNumCellsX() - 1;
-			}
-			if(yCellPosition > g.getNumCellsY() - 1) {
-				yCellPosition = g.getNumCellsY() - 1;
-			}
 
 			if (Debug.asserts) {
 				// Assert conditions for interpolation
@@ -72,31 +52,11 @@ public class CloudInCell extends Interpolator {
 		for (int i = 0; i < particles.size(); i++) {
 
 		Particle p = g.simulation.particles.get(i);
-		int xCellPosition = (int) Math.floor(p.getX() / g.getCellWidth() + 1);
-		int yCellPosition = (int) Math.floor(p.getY() / g.getCellHeight() + 1);
+		int xCellPosition = (int) Math.floor(p.getX() / g.getCellWidth());
+		int yCellPosition = (int) Math.floor(p.getY() / g.getCellHeight());
 
 		int xCellPosition2 = xCellPosition;
 		int yCellPosition2 = yCellPosition;
-
-		if(xCellPosition >= g.getNumCellsX() + 1) {
-			xCellPosition = g.getNumCellsX() + 1;
-		} else if(xCellPosition < 1) {
-				xCellPosition = 1;
-		}
-		if(yCellPosition >= g.getNumCellsY() + 1) {
-			yCellPosition = g.getNumCellsY() + 1;
-		} else if(yCellPosition < 1) {
-			yCellPosition = 1;
-		}
-
-		// !! ADHOC PRESCRIPTION TO AVOID CRASHING
-		// TODO: Check what needs to be done here !!!
-		if(xCellPosition > g.getNumCellsX() - 1) {
-			xCellPosition = g.getNumCellsX() - 1;
-		}
-		if(yCellPosition > g.getNumCellsY() - 1) {
-			yCellPosition = g.getNumCellsY() - 1;
-		}
 
 		if (Debug.asserts) {
 			// Assert conditions for interpolation
