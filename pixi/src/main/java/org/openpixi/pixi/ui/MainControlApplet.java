@@ -26,14 +26,27 @@ import javax.swing.event.*;
 
 import org.openpixi.pixi.physics.Debug;
 import org.openpixi.pixi.physics.boundary.*;
-import org.openpixi.pixi.physics.collision.detectors.*;
 import org.openpixi.pixi.physics.force.*;
-import org.openpixi.pixi.physics.force.relativistic.*;
 
 /**
  * Displays the animation of particles.
  */
 public class MainControlApplet extends JApplet {
+
+	/**
+	 * Whether to show a button and edit boxes
+	 * for writing particle data in real-time to
+	 * a file.
+	 *
+	 * Currently, this feature is not very user friendly,
+	 * so it is turned off by default.
+	 *
+	 * Problems:
+	 * 1) default file path is "null/null.dat"
+	 * 2) widgets don't fit on screen unless one resizes
+	 *    the window to larger size.
+	 */
+	private static boolean enableWriteFile = false;
 
 	private JButton startButton;
 	private JButton stopButton;
@@ -429,7 +442,9 @@ public class MainControlApplet extends JApplet {
 		public void actionPerformed(ActionEvent eve) {
 			int xbox = Integer.parseInt(xboxentry.getText());
 			int ybox = Integer.parseInt(yboxentry.getText());
-			particlePanel.s.grid.set(xbox, ybox, particlePanel.getWidth(), particlePanel.getHeight());
+			double width = particlePanel.s.width;
+			double height = particlePanel.s.height;
+			particlePanel.s.grid.set(xbox, ybox, width, height);
 		}
 	}
 
@@ -487,9 +502,10 @@ public class MainControlApplet extends JApplet {
 		dragSlider.setMinimum(0);
 		dragSlider.setMaximum(100);
 		dragSlider.setValue((int) force.drag);
-		dragSlider.setMajorTickSpacing(10);
-		dragSlider.setMinorTickSpacing(2);
+		dragSlider.setMajorTickSpacing(50);
+		dragSlider.setMinorTickSpacing(10);
 		dragSlider.setPaintTicks(true);
+		dragSlider.setPaintLabels(true);
 		JLabel dragLabel = new JLabel("Drag coefficient");
 
 		efieldXSlider = new JSlider();
@@ -497,45 +513,50 @@ public class MainControlApplet extends JApplet {
 		efieldXSlider.setMinimum(-100);
 		efieldXSlider.setMaximum(100);
 		efieldXSlider.setValue((int) force.ex);
-		efieldXSlider.setMajorTickSpacing(20);
-		efieldXSlider.setMinorTickSpacing(5);
+		efieldXSlider.setMajorTickSpacing(50);
+		efieldXSlider.setMinorTickSpacing(10);
 		efieldXSlider.setPaintTicks(true);
+		efieldXSlider.setPaintLabels(true);
 
 		efieldYSlider = new JSlider();
 		efieldYSlider.addChangeListener(new EFieldYListener());
 		efieldYSlider.setMinimum(-100);
 		efieldYSlider.setMaximum(100);
 		efieldYSlider.setValue((int) force.ey);
-		efieldYSlider.setMajorTickSpacing(20);
-		efieldYSlider.setMinorTickSpacing(5);
+		efieldYSlider.setMajorTickSpacing(50);
+		efieldYSlider.setMinorTickSpacing(10);
 		efieldYSlider.setPaintTicks(true);
+		efieldYSlider.setPaintLabels(true);
 
 		bfieldZSlider = new JSlider();
 		bfieldZSlider.addChangeListener(new BFieldZListener());
 		bfieldZSlider.setMinimum(-100);
 		bfieldZSlider.setMaximum(100);
 		bfieldZSlider.setValue((int) force.bz);
-		bfieldZSlider.setMajorTickSpacing(20);
-		bfieldZSlider.setMinorTickSpacing(5);
+		bfieldZSlider.setMajorTickSpacing(50);
+		bfieldZSlider.setMinorTickSpacing(10);
 		bfieldZSlider.setPaintTicks(true);
+		bfieldZSlider.setPaintLabels(true);
 
 		gfieldXSlider = new JSlider();
 		gfieldXSlider.addChangeListener(new GFieldXListener());
 		gfieldXSlider.setMinimum(-100);
 		gfieldXSlider.setMaximum(100);
 		gfieldXSlider.setValue((int) force.gx);
-		gfieldXSlider.setMajorTickSpacing(20);
-		gfieldXSlider.setMinorTickSpacing(5);
+		gfieldXSlider.setMajorTickSpacing(50);
+		gfieldXSlider.setMinorTickSpacing(10);
 		gfieldXSlider.setPaintTicks(true);
+		gfieldXSlider.setPaintLabels(true);
 
 		gfieldYSlider = new JSlider();
 		gfieldYSlider.addChangeListener(new GFieldYListener());
 		gfieldYSlider.setMinimum(-100);
 		gfieldYSlider.setMaximum(100);
 		gfieldYSlider.setValue((int) force.gy);
-		gfieldYSlider.setMajorTickSpacing(20);
-		gfieldYSlider.setMinorTickSpacing(5);
+		gfieldYSlider.setMajorTickSpacing(50);
+		gfieldYSlider.setMinorTickSpacing(10);
 		gfieldYSlider.setPaintTicks(true);
+		gfieldYSlider.setPaintLabels(true);
 
 		initComboBox = new JComboBox(initStrings);
 		initComboBox.setSelectedIndex(0);
@@ -657,10 +678,11 @@ public class MainControlApplet extends JApplet {
 		controlPanelUp.add(Box.createHorizontalStrut(25));
 		controlPanelUp.add(initBox);
 		controlPanelUp.add(Box.createHorizontalStrut(25));
-		controlPanelUp.add(writePositionCheck);
-		controlPanelUp.add(filename);
-		controlPanelUp.add(filedirectory);
-
+		if (enableWriteFile) {
+			controlPanelUp.add(writePositionCheck);
+			controlPanelUp.add(filename);
+			controlPanelUp.add(filedirectory);
+		}
 		Box settingControls = Box.createVerticalBox();
 		JPanel controlPanelDown = new JPanel();
 		controlPanelDown.setLayout(new FlowLayout());
@@ -687,11 +709,15 @@ public class MainControlApplet extends JApplet {
 		JLabel gFieldXLabel = new JLabel("Gravitation in x - direction Field");
 		JLabel gFieldYLabel = new JLabel("Gravitation in y - direction Field");
 
+		// Change background color of tab from blue to system gray
+		UIManager.put("TabbedPane.contentAreaColor", new Color(238, 238, 238));
+
 		tabs = new JTabbedPane();
 
 		Box fieldsBox = Box.createVerticalBox();
 		fieldsBox.add(eFieldXLabel);
 		fieldsBox.add(efieldXSlider);
+		fieldsBox.add(Box.createVerticalStrut(5));
 		fieldsBox.add(eFieldYLabel);
 		fieldsBox.add(efieldYSlider);
 		fieldsBox.add(Box.createVerticalGlue());
@@ -700,6 +726,7 @@ public class MainControlApplet extends JApplet {
 		fieldsBox.add(Box.createVerticalGlue());
 		fieldsBox.add(gFieldXLabel);
 		fieldsBox.add(gfieldXSlider);
+		fieldsBox.add(Box.createVerticalStrut(5));
 		fieldsBox.add(gFieldYLabel);
 		fieldsBox.add(gfieldYSlider);
 		fieldsBox.add(Box.createVerticalGlue());
@@ -719,21 +746,21 @@ public class MainControlApplet extends JApplet {
 		ybox.add(yboxentry);
 
 		Box cellSettings = Box.createVerticalBox();
+		cellSettings.add(Box.createVerticalStrut(20));
+		cellSettings.add(calculateFieldsCheck);
+		cellSettings.add(Box.createVerticalGlue());
 		cellSettings.add(currentgridCheck);
 		cellSettings.add(Box.createVerticalGlue());
-		cellSettings.add(Box.createVerticalGlue());
-		cellSettings.add(Box.createVerticalGlue());
 		cellSettings.add(drawFieldsCheck);
-		cellSettings.add(calculateFieldsCheck);
 		cellSettings.add(Box.createVerticalStrut(20));
 		cellSettings.add(xbox);
 		cellSettings.add(Box.createVerticalStrut(10));
 		cellSettings.add(ybox);
 		cellSettings.add(Box.createVerticalStrut(200));
 
-		fieldsBox.setPreferredSize(new Dimension(250, 100));
-		settingControls.setPreferredSize(new Dimension (250, 100));
-		collisionBox.setPreferredSize(new Dimension (250, 100));
+		fieldsBox.setPreferredSize(new Dimension(300, 100));
+		settingControls.setPreferredSize(new Dimension (300, 100));
+		collisionBox.setPreferredSize(new Dimension (300, 100));
 
 		tabs.addTab("Fields", fieldsBox);
 		tabs.addTab("Settings", settingControls);
@@ -772,7 +799,9 @@ public class MainControlApplet extends JApplet {
 		particlePanel.timer.setDelay((int) (1000 * Math.exp(-50 * speedSliderScaling)));
 		xboxentry.setText("10");
 		yboxentry.setText("10");
-		particlePanel.s.grid.set(10, 10, particlePanel.getWidth(), particlePanel.getHeight());
+		double width = particlePanel.s.width;
+		double height = particlePanel.s.height;
+		particlePanel.s.grid.set(10, 10, width, height);
 		writePositionCheck.setSelected(false);
 		filename.setEditable(false);
 		filename.setEnabled(false);
@@ -818,7 +847,7 @@ public class MainControlApplet extends JApplet {
 
 		web.pack();
 		web.setVisible(true);
-		web.setSize(1000, 500);
+		web.setSize(800, 550);
 		web.setResizable(true);
 
 		applet.init();

@@ -108,7 +108,7 @@ public class Particle2DPanel extends JPanel {
 		this.setVisible(true);
 		frameratedetector = new FrameRateDetector(500);
 
-		s = InitialConditions.initRandomParticles(10, 1);
+		s = InitialConditions.initRandomParticles(10, 2);
 
 	}
 
@@ -127,7 +127,7 @@ public class Particle2DPanel extends JPanel {
 		reset_trace = true;
 		switch(id) {
 		case 0:
-			s = InitialConditions.initRandomParticles(10, 1);
+			s = InitialConditions.initRandomParticles(10, 2);
 			break;
 		case 1:
 			s = InitialConditions.initRandomParticles(100, 1);
@@ -139,16 +139,16 @@ public class Particle2DPanel extends JPanel {
 			s = InitialConditions.initRandomParticles(10000, 0.01);
 			break;
 		case 4:
-			s = InitialConditions.initGravity(1, 1);
+			s = InitialConditions.initGravity(1, 2);
 			break;
 		case 5:
-			s = InitialConditions.initElectric(1, 1);
+			s = InitialConditions.initElectric(1, 2);
 			break;
 		case 6:
-			s = InitialConditions.initMagnetic(3, 1);
+			s = InitialConditions.initMagnetic(3, 2);
 			break;
 		case 7:
-			s = InitialConditions.initSpring(1, 1);
+			s = InitialConditions.initSpring(1, 2);
 			break;
 		}
 		updateFieldForce();

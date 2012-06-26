@@ -29,6 +29,15 @@ public class CloudInCell extends Interpolator {
 				yCellPosition = 1;
 			}
 
+			// !! ADHOC PRESCRIPTION TO AVOID CRASHING
+			// TODO: Check what needs to be done here !!!
+			if(xCellPosition > g.getNumCellsX() - 1) {
+				xCellPosition = g.getNumCellsX() - 1;
+			}
+			if(yCellPosition > g.getNumCellsY() - 1) {
+				yCellPosition = g.getNumCellsY() - 1;
+			}
+
 			if (Debug.asserts) {
 				// Assert conditions for interpolation
 				assert xCellPosition2 * g.getCellWidth() > p.getX() : p.getX();
@@ -78,6 +87,15 @@ public class CloudInCell extends Interpolator {
 			yCellPosition = g.getNumCellsY() + 1;
 		} else if(yCellPosition < 1) {
 			yCellPosition = 1;
+		}
+
+		// !! ADHOC PRESCRIPTION TO AVOID CRASHING
+		// TODO: Check what needs to be done here !!!
+		if(xCellPosition > g.getNumCellsX() - 1) {
+			xCellPosition = g.getNumCellsX() - 1;
+		}
+		if(yCellPosition > g.getNumCellsY() - 1) {
+			yCellPosition = g.getNumCellsY() - 1;
 		}
 
 		if (Debug.asserts) {

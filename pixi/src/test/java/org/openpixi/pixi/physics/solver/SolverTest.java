@@ -12,6 +12,8 @@ import org.openpixi.pixi.physics.force.ConstantForce;
  */
 public class SolverTest extends TestCase {
 
+	boolean VERBOSE = false;
+
 	protected Solver solver;
 
 	//double ACCURACY_LIMIT = 1.e-16;
@@ -126,9 +128,11 @@ public class SolverTest extends TestCase {
 		solver.complete(p, f, step);
 		solver2.complete(p2, f, step);
 
-		System.out.println("" + this.getClass().getSimpleName());
-		System.out.println("x: " + pcopy.getX() + " -> " + p2.getX() + " vs. " + p.getX());
-		System.out.println("y: " + pcopy.getY() + " -> " + p2.getY() + " vs. " + p.getY());
+		if (VERBOSE) {
+			System.out.println("" + this.getClass().getSimpleName());
+			System.out.println("x: " + pcopy.getX() + " -> " + p2.getX() + " vs. " + p.getX());
+			System.out.println("y: " + pcopy.getY() + " -> " + p2.getY() + " vs. " + p.getY());
+		}
 
 		double accuracy = 0.001d;
 		assertAlmostEquals("x", p2.getX(), p.getX(), accuracy);
