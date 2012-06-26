@@ -33,6 +33,21 @@ import org.openpixi.pixi.physics.force.*;
  */
 public class MainControlApplet extends JApplet {
 
+	/**
+	 * Whether to show a button and edit boxes
+	 * for writing particle data in real-time to
+	 * a file.
+	 *
+	 * Currently, this feature is not very user friendly,
+	 * so it is turned off by default.
+	 *
+	 * Problems:
+	 * 1) default file path is "null/null.dat"
+	 * 2) widgets don't fit on screen unless one resizes
+	 *    the window to larger size.
+	 */
+	private static boolean enableWriteFile = false;
+
 	private JButton startButton;
 	private JButton stopButton;
 	private JButton resetButton;
@@ -663,10 +678,11 @@ public class MainControlApplet extends JApplet {
 		controlPanelUp.add(Box.createHorizontalStrut(25));
 		controlPanelUp.add(initBox);
 		controlPanelUp.add(Box.createHorizontalStrut(25));
-//		controlPanelUp.add(writePositionCheck);
-//		controlPanelUp.add(filename);
-//		controlPanelUp.add(filedirectory);
-
+		if (enableWriteFile) {
+			controlPanelUp.add(writePositionCheck);
+			controlPanelUp.add(filename);
+			controlPanelUp.add(filedirectory);
+		}
 		Box settingControls = Box.createVerticalBox();
 		JPanel controlPanelDown = new JPanel();
 		controlPanelDown.setLayout(new FlowLayout());
