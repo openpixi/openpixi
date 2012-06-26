@@ -11,7 +11,7 @@ public class YeeSolver extends FieldSolver {
 	}
 
 	/**A simple LeapFrog algorithm
-	 * @param p before the update: E(t), B(t+dt/2);
+	 * @param g before the update: E(t), B(t+dt/2);
 	 * 						after the update: E(t+dt), B(t+3dt/2)
 	*/
 	@Override

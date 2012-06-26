@@ -60,8 +60,8 @@ public class Simulation {
 	Simulation () {
 
 		tstep = 0;
-		width = 0;
-		height = 0;
+		width = 100;
+		height = 100;
 
 		particles = new ArrayList<Particle>(0);
 		f = new CombinedForce();

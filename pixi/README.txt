@@ -61,7 +61,13 @@ VERSION HISTORY
 ===============
 
 ---
-Version 0.4 - ?
+Version 0.4 - June 22, 2012
+
+* Relativistic versions of particle solvers
+* Field interpolator with charge conserving area weighting
+* Poissonsolver
+* Decoupling of display size and simulation size
+* Labels for slider values (issue 25)
 
 ---
 Version 0.3 - April 4, 2012

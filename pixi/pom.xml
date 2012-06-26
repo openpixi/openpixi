@@ -46,6 +46,19 @@
           </archive>
         </configuration>
       </plugin>
+      <!-- JAR file including all dependencies -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-shade-plugin</artifactId>
+        <executions>
+          <execution>
+            <phase>package</phase>
+            <goals>
+              <goal>shade</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
       <!-- Source code -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>

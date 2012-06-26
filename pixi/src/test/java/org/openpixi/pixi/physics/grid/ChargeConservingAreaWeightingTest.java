@@ -15,6 +15,8 @@ import org.openpixi.pixi.physics.Debug;
  */
 public class ChargeConservingAreaWeightingTest extends TestCase {
 
+	boolean VERBOSE = false;
+
 //	double ACCURACY_LIMIT = 1.e-15;
 	double ACCURACY_LIMIT = 1.e-14;
 
@@ -88,7 +90,7 @@ public class ChargeConservingAreaWeightingTest extends TestCase {
 //	This test may fail with a "wrong sign" assertion if "distance" is chosen gerater than
 //	either cell width or cell height.
 	public void testRandomMoves() {
-		for (int i = 0; i < 100000; i++) {
+		for (int i = 0; i < 1000; i++) {
 			double x1 = 2 + 6 * Math.random();
 			double y1 = 2 + 6 * Math.random();
 			double phi = 2 * Math.PI * Math.random();
@@ -100,7 +102,7 @@ public class ChargeConservingAreaWeightingTest extends TestCase {
 	}
 
 	public void testRandomMoves2() {
-		for (int i = 0; i < 100000; i++) {
+		for (int i = 0; i < 1000; i++) {
 			double x1 = 2 + 6 * Math.random();
 			double y1 = 2 + 6 * Math.random();
 			double x2 = x1 + 1 * Math.random();
@@ -162,7 +164,7 @@ public class ChargeConservingAreaWeightingTest extends TestCase {
 		double jx = GridTestCommon.getJxSum(grid);
 		double jy = GridTestCommon.getJySum(grid);
 
-		System.out.println("Total current " + text + ": jx = " + jx + ", jy = " + jy
+		if (VERBOSE) System.out.println("Total current " + text + ": jx = " + jx + ", jy = " + jy
 				+ " (from " + sx + ", " + sy + " to " + p.getX() + ", " + p.getY() + ")");
 
 		GridTestCommon.checkSignJx(grid);
@@ -183,7 +185,7 @@ public class ChargeConservingAreaWeightingTest extends TestCase {
 //	This test may fail with a "wrong sign" assertion if "distance" is chosen gerater than
 //	either cell width or cell height. This also happens if the forces are too strong.
 	public void testRandomMovesForce() {
-		for (int i = 0; i < 10000; i++) {
+		for (int i = 0; i < 1000; i++) {
 			double x1 = 2 + 6 * Math.random();
 			double y1 = 2 + 6 * Math.random();
 			double phi = 2 * Math.PI * Math.random();
@@ -250,7 +252,7 @@ public class ChargeConservingAreaWeightingTest extends TestCase {
 		double jx = GridTestCommon.getJxSum(grid);
 		double jy = GridTestCommon.getJySum(grid);
 
-		System.out.println("Total current " + text + ": jx = " + jx + ", jy = " + jy
+		if (VERBOSE) System.out.println("Total current " + text + ": jx = " + jx + ", jy = " + jy
 				+ " (from " + sx + ", " + sy + " to " + p.getX() + ", " + p.getY() + ")");
 
 		GridTestCommon.checkSignJx(grid);

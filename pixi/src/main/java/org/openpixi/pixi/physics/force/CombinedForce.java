@@ -14,7 +14,6 @@ public class CombinedForce implements Force {
 
 	/**
 	 * Adds another force.
-	 * @param f
 	 */
 	public void add(Force force) {
 		forces.add(force);
