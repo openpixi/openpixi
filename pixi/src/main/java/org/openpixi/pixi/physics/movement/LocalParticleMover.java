@@ -15,8 +15,13 @@ import java.util.List;
 public class LocalParticleMover implements ParticleMover {
 
 	/** Solver for the particle equations of motion */
-	private Solver psolver;
-	RegionBoundaryMap2D boundaries;
+	public Solver psolver;
+	private RegionBoundaryMap2D boundaries;
+
+	/** Remembers the boundary type. */
+	private ParticleBoundaryType boundaryType;
+	/** Remembers the simulation area. */
+	private BoundingBox simulationArea;
 
 	public LocalParticleMover(
 			Solver psolver,
@@ -24,6 +29,19 @@ public class LocalParticleMover implements ParticleMover {
 			ParticleBoundaryType boundaryType) {
 
 		this.psolver = psolver;
+		this.boundaryType = boundaryType;
+		boundaries = new RegionBoundaryMap2D(simulationArea, boundaryType);
+	}
+
+
+	public void resizeBoundaries(BoundingBox simulationArea) {
+		this.simulationArea = simulationArea;
+		boundaries = new RegionBoundaryMap2D(simulationArea, boundaryType);
+	}
+
+
+	public void changeBoundaries(ParticleBoundaryType boundaryType) {
+		this.boundaryType = boundaryType;
 		boundaries = new RegionBoundaryMap2D(simulationArea, boundaryType);
 	}
 
