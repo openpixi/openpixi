@@ -1,9 +1,6 @@
 package org.openpixi.pixi.physics.movement;
 
 import org.openpixi.pixi.physics.Particle;
-import org.openpixi.pixi.physics.collision.algorithms.CollisionAlgorithm;
-import org.openpixi.pixi.physics.collision.detectors.Detector;
-import org.openpixi.pixi.physics.force.CombinedForce;
 import org.openpixi.pixi.physics.force.Force;
 import org.openpixi.pixi.physics.solver.Solver;
 
@@ -17,9 +14,15 @@ public class LocalParticleMover implements ParticleMover {
 
 	/** Solver for the particle equations of motion */
 	private Solver psolver;
+	RegionBoundaryMap2D boundaries;
 
-	public LocalParticleMover(Solver psolver) {
+	public LocalParticleMover(
+			Solver psolver,
+			BoundingBox simulationArea,
+			ParticleBoundaryType boundaryType) {
+
 		this.psolver = psolver;
+		boundaries = new RegionBoundaryMap2D(simulationArea, boundaryType);
 	}
 
 
@@ -29,7 +32,7 @@ public class LocalParticleMover implements ParticleMover {
 			p.storePosition();
 			psolver.step(p, force, tstep);
 			psolver.complete(p, force, tstep);
-			// TODO boundary check
+			boundaries.apply(p);
 			psolver.prepare(p, force, tstep);
 		}
 	}
