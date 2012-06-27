@@ -21,7 +21,6 @@ package org.openpixi.pixi.physics;
 
 import java.util.ArrayList;
 
-import org.openpixi.pixi.physics.boundary.*;
 import org.openpixi.pixi.physics.force.*;
 import org.openpixi.pixi.physics.grid.*;
 import org.openpixi.pixi.physics.movement.boundary.ParticleBoundaryType;

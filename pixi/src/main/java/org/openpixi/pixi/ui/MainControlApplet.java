@@ -25,7 +25,6 @@ import java.awt.event.*;
 import javax.swing.event.*;
 
 import org.openpixi.pixi.physics.Debug;
-import org.openpixi.pixi.physics.boundary.*;
 import org.openpixi.pixi.physics.force.*;
 import org.openpixi.pixi.physics.movement.boundary.ParticleBoundaryType;
 

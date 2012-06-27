@@ -19,8 +19,6 @@
 package org.openpixi.pixi.ui;
 
 import org.openpixi.pixi.physics.*;
-import org.openpixi.pixi.physics.boundary.HardWallBoundary;
-import org.openpixi.pixi.physics.boundary.PeriodicBoundary;
 import org.openpixi.pixi.physics.collision.algorithms.*;
 import org.openpixi.pixi.physics.collision.detectors.*;
 import org.openpixi.pixi.physics.force.*;

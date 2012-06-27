@@ -5,7 +5,6 @@ import junit.framework.TestCase;
 import org.openpixi.pixi.physics.InitialConditions;
 import org.openpixi.pixi.physics.Particle;
 import org.openpixi.pixi.physics.Simulation;
-import org.openpixi.pixi.physics.boundary.*;
 import org.openpixi.pixi.physics.force.*;
 import org.openpixi.pixi.physics.movement.boundary.ParticleBoundaryType;
 import org.openpixi.pixi.physics.solver.*;
