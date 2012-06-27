@@ -1,4 +1,4 @@
-package org.openpixi.pixi.physics.movement;
+package org.openpixi.pixi.physics.movement.boundary;
 
 import org.openpixi.pixi.physics.Particle;
 

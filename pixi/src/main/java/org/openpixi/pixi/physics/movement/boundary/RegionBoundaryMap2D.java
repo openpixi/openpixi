@@ -1,6 +1,7 @@
-package org.openpixi.pixi.physics.movement;
+package org.openpixi.pixi.physics.movement.boundary;
 
 import org.openpixi.pixi.physics.Particle;
+import org.openpixi.pixi.physics.movement.BoundingBox;
 
 import java.util.HashMap;
 import java.util.Map;
