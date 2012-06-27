@@ -3,7 +3,7 @@ package org.openpixi.pixi.physics.movement;
 /**
  * Identifies different boundary regions of the simulation area.
  */
-public class BoundaryRegionDecomposition implements RegionDecomposition {
+public class BoundaryRegionDecomposition {
 
 	/** Identifies top-left boundary. */
 	public static final int XMIN_YMIN = 0;
