@@ -26,23 +26,47 @@ public class CloudInCell extends Interpolator {
 				assert p.getY() > (yCellPosition2 - 1) * g.getCellHeight() : p.getY();
 			}
 
-			g.addJx(xCellPosition, yCellPosition, p.getCharge() * p.getVx() * (xCellPosition2 * g.getCellWidth() - p.getX()) *
-					(yCellPosition2 * g.getCellHeight() - p.getY()) / (g.getCellWidth() * g.getCellHeight()));
-			g.addJx(xCellPosition + 1, yCellPosition, p.getCharge() * p.getVx() * (p.getX() - (xCellPosition2-1) * g.getCellWidth()) *
-					(yCellPosition2 * g.getCellHeight() - p.getY()) / (g.getCellWidth() * g.getCellHeight()));
-			g.addJx(xCellPosition,yCellPosition + 1, p.getCharge() * p.getVx() * (xCellPosition2 * g.getCellWidth() - p.getX()) *
-					(p.getY() - (yCellPosition2-1) * g.getCellHeight()) / (g.getCellWidth() * g.getCellHeight()));
-			g.addJx(xCellPosition + 1,yCellPosition + 1, p.getCharge() * p.getVx() * (p.getX() - (xCellPosition2-1) * g.getCellWidth()) *
-					(p.getY() - (yCellPosition2-1) * g.getCellHeight()) / (g.getCellWidth() * g.getCellHeight()));
+			g.addJx(xCellPosition, yCellPosition,
+					p.getCharge() * p.getVx() *
+					(xCellPosition2 * g.getCellWidth() - p.getX()) *
+					(yCellPosition2 * g.getCellHeight() - p.getY()) /
+					(g.getCellWidth() * g.getCellHeight()));
+			g.addJx(xCellPosition + 1, yCellPosition,
+					p.getCharge() * p.getVx() *
+					(p.getX() - (xCellPosition2-1) * g.getCellWidth()) *
+					(yCellPosition2 * g.getCellHeight() - p.getY()) /
+					(g.getCellWidth() * g.getCellHeight()));
+			g.addJx(xCellPosition,yCellPosition + 1,
+					p.getCharge() * p.getVx() *
+					(xCellPosition2 * g.getCellWidth() - p.getX()) *
+					(p.getY() - (yCellPosition2-1) * g.getCellHeight()) /
+					(g.getCellWidth() * g.getCellHeight()));
+			g.addJx(xCellPosition + 1,yCellPosition + 1,
+					p.getCharge() * p.getVx() *
+					(p.getX() - (xCellPosition2-1) * g.getCellWidth()) *
+					(p.getY() - (yCellPosition2-1) * g.getCellHeight()) /
+					(g.getCellWidth() * g.getCellHeight()));
 
-			g.addJy(xCellPosition,yCellPosition, p.getCharge() * p.getVy() * (xCellPosition2 * g.getCellWidth() - p.getX()) *
-					(yCellPosition2 * g.getCellHeight() - p.getY()) / (g.getCellWidth() * g.getCellHeight()));
-			g.addJy(xCellPosition + 1,yCellPosition, p.getCharge() * p.getVy() * (p.getX() - (xCellPosition2-1) * g.getCellWidth()) *
-					(yCellPosition2 * g.getCellHeight() - p.getY()) / (g.getCellWidth() * g.getCellHeight()));
-			g.addJy(xCellPosition, yCellPosition + 1, p.getCharge() * p.getVy() * (xCellPosition2 * g.getCellWidth() - p.getX()) *
-					(p.getY() - (yCellPosition2-1) * g.getCellHeight()) / (g.getCellWidth() * g.getCellHeight()));
-			g.addJy(xCellPosition + 1,yCellPosition + 1, p.getCharge() * p.getVy() * (p.getX() - (xCellPosition2-1) * g.getCellWidth()) *
-					(p.getY() - (yCellPosition2-1) * g.getCellHeight()) / (g.getCellWidth() * g.getCellHeight()));
+			g.addJy(xCellPosition, yCellPosition,
+					p.getCharge() * p.getVy() *
+					(xCellPosition2 * g.getCellWidth() - p.getX()) *
+					(yCellPosition2 * g.getCellHeight() - p.getY()) /
+					(g.getCellWidth() * g.getCellHeight()));
+			g.addJy(xCellPosition + 1, yCellPosition,
+					p.getCharge() * p.getVy() *
+					(p.getX() - (xCellPosition2-1) * g.getCellWidth()) *
+					(yCellPosition2 * g.getCellHeight() - p.getY()) /
+					(g.getCellWidth() * g.getCellHeight()));
+			g.addJy(xCellPosition, yCellPosition + 1,
+					p.getCharge() * p.getVy() *
+					(xCellPosition2 * g.getCellWidth() - p.getX()) *
+					(p.getY() - (yCellPosition2-1) * g.getCellHeight()) /
+					(g.getCellWidth() * g.getCellHeight()));
+			g.addJy(xCellPosition + 1, yCellPosition + 1,
+					p.getCharge() * p.getVy() *
+					(p.getX() - (xCellPosition2-1) * g.getCellWidth()) *
+					(p.getY() - (yCellPosition2-1) * g.getCellHeight()) /
+					(g.getCellWidth() * g.getCellHeight()));
 		}
 
 	}
