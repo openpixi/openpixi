@@ -28,7 +28,9 @@ public class LocalParticleMover implements ParticleMover {
 			// Before we move the particle we store its position
 			p.storePosition();
 			psolver.step(p, force, tstep);
+			psolver.complete(p, force, tstep);
 			// TODO boundary check
+			psolver.prepare(p, force, tstep);
 		}
 	}
 
