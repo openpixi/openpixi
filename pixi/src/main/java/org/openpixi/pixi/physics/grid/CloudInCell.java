@@ -15,8 +15,8 @@ public class CloudInCell extends Interpolator {
 			int xCellPosition = (int) (Math.floor((p.getX() / g.getCellWidth())));
 			int yCellPosition = (int) (Math.floor((p.getY() / g.getCellHeight())));
 
-			int xCellPosition2 = xCellPosition;
-			int yCellPosition2 = yCellPosition;
+			int xCellPosition2 = xCellPosition + 1;
+			int yCellPosition2 = yCellPosition + 1;
 
 			if (Debug.asserts) {
 				// Assert conditions for interpolation
@@ -79,8 +79,8 @@ public class CloudInCell extends Interpolator {
 		int xCellPosition = (int) Math.floor(p.getX() / g.getCellWidth());
 		int yCellPosition = (int) Math.floor(p.getY() / g.getCellHeight());
 
-		int xCellPosition2 = xCellPosition;
-		int yCellPosition2 = yCellPosition;
+		int xCellPosition2 = xCellPosition + 1;
+		int yCellPosition2 = yCellPosition + 1;
 
 		if (Debug.asserts) {
 			// Assert conditions for interpolation
