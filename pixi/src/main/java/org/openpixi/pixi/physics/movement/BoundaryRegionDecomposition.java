@@ -20,39 +20,34 @@ public class BoundaryRegionDecomposition implements RegionDecomposition {
 	public static final int XCEN_YMAX = 7;
 	public static final int XMAX_YMAX = 8;
 
-	double xmin;
-	double xmax;
-	double ymin;
-	double ymax;
+	/** Box around the simulation area. */
+	BoundingBox sa;
 
-	public BoundaryRegionDecomposition(double xmin, double xmax, double ymin, double ymax) {
-		this.xmin = xmin;
-		this.xmax = xmax;
-		this.ymin = ymin;
-		this.ymax = ymax;
+	public BoundaryRegionDecomposition(BoundingBox sa) {
+		this.sa = sa;
 	}
 
 	public int getRegion(double x, double y) {
-		if (x < xmin) {
-			if (y < ymin) {
+		if (x < sa.xmin) {
+			if (y < sa.ymin) {
 				return XMIN_YMIN;
-			} else if (y > ymax) {
+			} else if (y > sa.ymax) {
 				return XMIN_YMAX;
 			} else {
 				return XMIN_YCEN;
 			}
-		} else if (x > xmax) {
-			if (y < ymin) {
+		} else if (x > sa.xmax) {
+			if (y < sa.ymin) {
 				return XMAX_YMIN;
-			} else if (y > ymax) {
+			} else if (y > sa.ymax) {
 				return XMAX_YMAX;
 			} else {
 				return XMAX_YCEN;
 			}
 		} else {
-			if (y < ymin) {
+			if (y < sa.ymin) {
 				return XCEN_YMIN;
-			} else if (y > ymax) {
+			} else if (y > sa.ymax) {
 				return XCEN_YMAX;
 			} else {
 				return XCEN_YCEN;
