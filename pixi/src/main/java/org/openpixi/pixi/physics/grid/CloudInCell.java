@@ -12,31 +12,11 @@ public class CloudInCell extends Interpolator {
 
 		for(Particle p : particles)
 		{
-			int xCellPosition = (int) (Math.floor((p.getX() / g.getCellWidth() + 1)));
-			int yCellPosition = (int) (Math.floor((p.getY() / g.getCellHeight() + 1)));
+			int xCellPosition = (int) (Math.floor((p.getX() / g.getCellWidth())));
+			int yCellPosition = (int) (Math.floor((p.getY() / g.getCellHeight())));
 
-			int xCellPosition2 = xCellPosition;
-			int yCellPosition2 = yCellPosition;
-
-			if(xCellPosition >= g.getNumCellsX() + 1) {
-				xCellPosition = g.getNumCellsX() + 1;
-			} else if(xCellPosition < 1) {
-					xCellPosition = 1;
-			}
-			if(yCellPosition >= g.getNumCellsY() + 1) {
-				yCellPosition = g.getNumCellsY() + 1;
-			} else if(yCellPosition < 1) {
-				yCellPosition = 1;
-			}
-
-			// !! ADHOC PRESCRIPTION TO AVOID CRASHING
-			// TODO: Check what needs to be done here !!!
-			if(xCellPosition > g.getNumCellsX() - 1) {
-				xCellPosition = g.getNumCellsX() - 1;
-			}
-			if(yCellPosition > g.getNumCellsY() - 1) {
-				yCellPosition = g.getNumCellsY() - 1;
-			}
+			int xCellPosition2 = xCellPosition + 1;
+			int yCellPosition2 = yCellPosition + 1;
 
 			if (Debug.asserts) {
 				// Assert conditions for interpolation
@@ -46,23 +26,47 @@ public class CloudInCell extends Interpolator {
 				assert p.getY() > (yCellPosition2 - 1) * g.getCellHeight() : p.getY();
 			}
 
-			g.addJx(xCellPosition, yCellPosition, p.getCharge() * p.getVx() * (xCellPosition2 * g.getCellWidth() - p.getX()) *
-					(yCellPosition2 * g.getCellHeight() - p.getY()) / (g.getCellWidth() * g.getCellHeight()));
-			g.addJx(xCellPosition + 1, yCellPosition, p.getCharge() * p.getVx() * (p.getX() - (xCellPosition2-1) * g.getCellWidth()) *
-					(yCellPosition2 * g.getCellHeight() - p.getY()) / (g.getCellWidth() * g.getCellHeight()));
-			g.addJx(xCellPosition,yCellPosition + 1, p.getCharge() * p.getVx() * (xCellPosition2 * g.getCellWidth() - p.getX()) *
-					(p.getY() - (yCellPosition2-1) * g.getCellHeight()) / (g.getCellWidth() * g.getCellHeight()));
-			g.addJx(xCellPosition + 1,yCellPosition + 1, p.getCharge() * p.getVx() * (p.getX() - (xCellPosition2-1) * g.getCellWidth()) *
-					(p.getY() - (yCellPosition2-1) * g.getCellHeight()) / (g.getCellWidth() * g.getCellHeight()));
+			g.addJx(xCellPosition, yCellPosition,
+					p.getCharge() * p.getVx() *
+					(xCellPosition2 * g.getCellWidth() - p.getX()) *
+					(yCellPosition2 * g.getCellHeight() - p.getY()) /
+					(g.getCellWidth() * g.getCellHeight()));
+			g.addJx(xCellPosition + 1, yCellPosition,
+					p.getCharge() * p.getVx() *
+					(p.getX() - (xCellPosition2-1) * g.getCellWidth()) *
+					(yCellPosition2 * g.getCellHeight() - p.getY()) /
+					(g.getCellWidth() * g.getCellHeight()));
+			g.addJx(xCellPosition,yCellPosition + 1,
+					p.getCharge() * p.getVx() *
+					(xCellPosition2 * g.getCellWidth() - p.getX()) *
+					(p.getY() - (yCellPosition2-1) * g.getCellHeight()) /
+					(g.getCellWidth() * g.getCellHeight()));
+			g.addJx(xCellPosition + 1,yCellPosition + 1,
+					p.getCharge() * p.getVx() *
+					(p.getX() - (xCellPosition2-1) * g.getCellWidth()) *
+					(p.getY() - (yCellPosition2-1) * g.getCellHeight()) /
+					(g.getCellWidth() * g.getCellHeight()));
 
-			g.addJy(xCellPosition,yCellPosition, p.getCharge() * p.getVy() * (xCellPosition2 * g.getCellWidth() - p.getX()) *
-					(yCellPosition2 * g.getCellHeight() - p.getY()) / (g.getCellWidth() * g.getCellHeight()));
-			g.addJy(xCellPosition + 1,yCellPosition, p.getCharge() * p.getVy() * (p.getX() - (xCellPosition2-1) * g.getCellWidth()) *
-					(yCellPosition2 * g.getCellHeight() - p.getY()) / (g.getCellWidth() * g.getCellHeight()));
-			g.addJy(xCellPosition, yCellPosition + 1, p.getCharge() * p.getVy() * (xCellPosition2 * g.getCellWidth() - p.getX()) *
-					(p.getY() - (yCellPosition2-1) * g.getCellHeight()) / (g.getCellWidth() * g.getCellHeight()));
-			g.addJy(xCellPosition + 1,yCellPosition + 1, p.getCharge() * p.getVy() * (p.getX() - (xCellPosition2-1) * g.getCellWidth()) *
-					(p.getY() - (yCellPosition2-1) * g.getCellHeight()) / (g.getCellWidth() * g.getCellHeight()));
+			g.addJy(xCellPosition, yCellPosition,
+					p.getCharge() * p.getVy() *
+					(xCellPosition2 * g.getCellWidth() - p.getX()) *
+					(yCellPosition2 * g.getCellHeight() - p.getY()) /
+					(g.getCellWidth() * g.getCellHeight()));
+			g.addJy(xCellPosition + 1, yCellPosition,
+					p.getCharge() * p.getVy() *
+					(p.getX() - (xCellPosition2-1) * g.getCellWidth()) *
+					(yCellPosition2 * g.getCellHeight() - p.getY()) /
+					(g.getCellWidth() * g.getCellHeight()));
+			g.addJy(xCellPosition, yCellPosition + 1,
+					p.getCharge() * p.getVy() *
+					(xCellPosition2 * g.getCellWidth() - p.getX()) *
+					(p.getY() - (yCellPosition2-1) * g.getCellHeight()) /
+					(g.getCellWidth() * g.getCellHeight()));
+			g.addJy(xCellPosition + 1, yCellPosition + 1,
+					p.getCharge() * p.getVy() *
+					(p.getX() - (xCellPosition2-1) * g.getCellWidth()) *
+					(p.getY() - (yCellPosition2-1) * g.getCellHeight()) /
+					(g.getCellWidth() * g.getCellHeight()));
 		}
 
 	}
@@ -72,31 +76,11 @@ public class CloudInCell extends Interpolator {
 		for (int i = 0; i < particles.size(); i++) {
 
 		Particle p = g.simulation.particles.get(i);
-		int xCellPosition = (int) Math.floor(p.getX() / g.getCellWidth() + 1);
-		int yCellPosition = (int) Math.floor(p.getY() / g.getCellHeight() + 1);
+		int xCellPosition = (int) Math.floor(p.getX() / g.getCellWidth());
+		int yCellPosition = (int) Math.floor(p.getY() / g.getCellHeight());
 
-		int xCellPosition2 = xCellPosition;
-		int yCellPosition2 = yCellPosition;
-
-		if(xCellPosition >= g.getNumCellsX() + 1) {
-			xCellPosition = g.getNumCellsX() + 1;
-		} else if(xCellPosition < 1) {
-				xCellPosition = 1;
-		}
-		if(yCellPosition >= g.getNumCellsY() + 1) {
-			yCellPosition = g.getNumCellsY() + 1;
-		} else if(yCellPosition < 1) {
-			yCellPosition = 1;
-		}
-
-		// !! ADHOC PRESCRIPTION TO AVOID CRASHING
-		// TODO: Check what needs to be done here !!!
-		if(xCellPosition > g.getNumCellsX() - 1) {
-			xCellPosition = g.getNumCellsX() - 1;
-		}
-		if(yCellPosition > g.getNumCellsY() - 1) {
-			yCellPosition = g.getNumCellsY() - 1;
-		}
+		int xCellPosition2 = xCellPosition + 1;
+		int yCellPosition2 = yCellPosition + 1;
 
 		if (Debug.asserts) {
 			// Assert conditions for interpolation
