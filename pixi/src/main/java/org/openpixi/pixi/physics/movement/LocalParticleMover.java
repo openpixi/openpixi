@@ -12,7 +12,7 @@ import java.util.List;
  * Non-distributed version of particle movement.
  * Moves and checks the boundary of the particle.
  */
-public class LocalParticleMover implements ParticleMover {
+public class LocalParticleMover {
 
 	/** Solver for the particle equations of motion */
 	public Solver psolver;
@@ -30,6 +30,7 @@ public class LocalParticleMover implements ParticleMover {
 
 		this.psolver = psolver;
 		this.boundaryType = boundaryType;
+		this.simulationArea = simulationArea;
 		boundaries = new RegionBoundaryMap2D(simulationArea, boundaryType);
 	}
 
@@ -40,9 +41,14 @@ public class LocalParticleMover implements ParticleMover {
 	}
 
 
-	public void changeBoundaries(ParticleBoundaryType boundaryType) {
-		this.boundaryType = boundaryType;
-		boundaries = new RegionBoundaryMap2D(simulationArea, boundaryType);
+	public ParticleBoundaryType getBoundaryType() {
+		return getBoundaryType();
+	}
+
+
+	public void setBoundaryType(ParticleBoundaryType type) {
+		this.boundaryType = type;
+		boundaries = new RegionBoundaryMap2D(simulationArea, type);
 	}
 
 

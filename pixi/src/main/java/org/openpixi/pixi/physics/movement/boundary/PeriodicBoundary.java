@@ -14,9 +14,9 @@ public class PeriodicBoundary extends ParticleBoundary {
 
 	@Override
 	public void apply(Particle p) {
-		p.addX(xoffset);
-		p.addPrevX(xoffset);
-		p.addY(yoffset);
-		p.addPrevY(yoffset);
+		p.addX(-xoffset);
+		p.addPrevX(-xoffset);
+		p.addY(-yoffset);
+		p.addPrevY(-yoffset);
 	}
 }

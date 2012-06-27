@@ -27,6 +27,7 @@ import javax.swing.event.*;
 import org.openpixi.pixi.physics.Debug;
 import org.openpixi.pixi.physics.boundary.*;
 import org.openpixi.pixi.physics.force.*;
+import org.openpixi.pixi.physics.movement.boundary.ParticleBoundaryType;
 
 /**
  * Displays the animation of particles.
@@ -809,11 +810,11 @@ public class MainControlApplet extends JApplet {
 		filedirectory.setEditable(false);
 		filedirectory.setEnabled(false);
 		filedirectory.setText("direc., ex. C:\\Pixi");
-		if(particlePanel.s.boundary instanceof HardWallBoundary) {
+		if(particlePanel.s.mover.getBoundaryType() == ParticleBoundaryType.Hardwall) {
 			hardBoundaries.setSelected(true);
 			periodicBoundaries.setSelected(false);
 		}
-		else if(particlePanel.s.boundary instanceof PeriodicBoundary) {
+		else if(particlePanel.s.mover.getBoundaryType() == ParticleBoundaryType.Periodic) {
 			hardBoundaries.setSelected(false);
 			periodicBoundaries.setSelected(true);
 		}

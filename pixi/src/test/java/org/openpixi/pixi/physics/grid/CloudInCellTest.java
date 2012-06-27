@@ -7,6 +7,7 @@ import org.openpixi.pixi.physics.Particle;
 import org.openpixi.pixi.physics.Simulation;
 import org.openpixi.pixi.physics.boundary.*;
 import org.openpixi.pixi.physics.force.*;
+import org.openpixi.pixi.physics.movement.boundary.ParticleBoundaryType;
 import org.openpixi.pixi.physics.solver.*;
 
 /**
@@ -88,8 +89,8 @@ public class CloudInCellTest extends TestCase {
 		s.c = 0.7;
 		s.width = 10;
 		s.height = 10;
-		s.psolver = new Boris();
-		s.boundary = new PeriodicBoundary(s);
+		s.mover.psolver = new Boris();
+		s.mover.setBoundaryType(ParticleBoundaryType.Periodic);
 
 		// Add single particle
 		Particle p = new Particle();
@@ -159,8 +160,8 @@ Simulation s = InitialConditions.initEmptySimulation();
 		s.c = 0.7;
 		s.width = 10;
 		s.height = 10;
-		s.psolver = new Boris();
-		s.boundary = new PeriodicBoundary(s);
+		s.mover.psolver = new Boris();
+		s.mover.setBoundaryType(ParticleBoundaryType.Periodic);
 
 		// Add single particle
 		Particle p = new Particle();

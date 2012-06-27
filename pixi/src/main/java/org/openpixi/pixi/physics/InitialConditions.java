@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import org.openpixi.pixi.physics.boundary.*;
 import org.openpixi.pixi.physics.force.*;
 import org.openpixi.pixi.physics.grid.*;
+import org.openpixi.pixi.physics.movement.boundary.ParticleBoundaryType;
 import org.openpixi.pixi.physics.solver.*;
 
 public class InitialConditions {
@@ -49,13 +50,13 @@ public class InitialConditions {
 		//creates 10 particles in simulation area
 		s.particles = createRandomParticles(s.width, s.height, s.c, 10, 1);
 
-		s.psolver = new Boris();
+		s.mover.psolver = new Boris();
 		//always do prepareAllParticles when psolver algorithm is changed!
 		s.prepareAllParticles();
 
 		//also adds a SimpleGridForce to the forces list
 		s.grid = GridFactory.createYeeGrid(s, 10, 10, s.width, s.height);
-		s.boundary = new PeriodicBoundary(s);
+		s.mover.setBoundaryType(ParticleBoundaryType.Periodic);
 
 		return s;
 	}
@@ -78,11 +79,11 @@ public class InitialConditions {
 		//creates 10 particles in simulation area
 		s.particles = createRandomParticles(s.width, s.height, s.c, count, radius);
 
-		s.psolver = new EulerRichardson();
+		s.mover.psolver = new EulerRichardson();
 		//always do prepareAllParticles when psolver algorithm is changed!
 		s.prepareAllParticles();
 
-		s.boundary = new HardWallBoundary(s);
+		s.mover.setBoundaryType(ParticleBoundaryType.Hardwall);
 
 		return s;
 	}
@@ -106,11 +107,11 @@ public class InitialConditions {
 		//creates 10 particles in simulation area
 		s.particles = createRandomParticles(s.width, s.height, s.c, count, radius);
 
-		s.psolver = new EulerRichardson();
+		s.mover.psolver = new EulerRichardson();
 		//always do prepareAllParticles when psolver algorithm is changed!
 		s.prepareAllParticles();
 
-		s.boundary = new HardWallBoundary(s);
+		s.mover.setBoundaryType(ParticleBoundaryType.Hardwall);
 
 		return s;
 	}
@@ -134,11 +135,11 @@ public class InitialConditions {
 		//creates 10 particles in simulation area
 		s.particles = createRandomParticles(s.width, s.height, s.c, count, radius);
 
-		s.psolver = new EulerRichardson();
+		s.mover.psolver = new EulerRichardson();
 		//always do prepareAllParticles when psolver algorithm is changed!
 		s.prepareAllParticles();
 
-		s.boundary = new HardWallBoundary(s);
+		s.mover.setBoundaryType(ParticleBoundaryType.Hardwall);
 
 		return s;
 	}
@@ -162,11 +163,11 @@ public class InitialConditions {
 		//creates 10 particles in simulation area
 		s.particles = createRandomParticles(s.width, s.height, s.c, count, radius);
 
-		s.psolver = new EulerRichardson();
+		s.mover.psolver = new EulerRichardson();
 		//always do prepareAllParticles when psolver algorithm is changed!
 		s.prepareAllParticles();
 
-		s.boundary = new HardWallBoundary(s);
+		s.mover.setBoundaryType(ParticleBoundaryType.Hardwall);
 
 		return s;
 	}
@@ -203,11 +204,11 @@ public class InitialConditions {
 			s.particles.add(par);
 		}
 
-		s.psolver = new EulerRichardson();
+		s.mover.psolver = new EulerRichardson();
 		//always do prepareAllParticles when psolver algorithm is changed!
 		s.prepareAllParticles();
 
-		s.boundary = new PeriodicBoundary(s);
+		s.mover.setBoundaryType(ParticleBoundaryType.Periodic);
 
 		return s;
 	}

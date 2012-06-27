@@ -33,15 +33,15 @@ public class BoundaryRegionDecomposition {
 		if (x < sa.xmin()) {
 			if (y < sa.ymin()) {
 				return XMIN_YMIN;
-			} else if (y > sa.ymax()) {
+			} else if (y >= sa.ymax()) {
 				return XMIN_YMAX;
 			} else {
 				return XMIN_YCEN;
 			}
-		} else if (x > sa.xmax()) {
+		} else if (x >= sa.xmax()) {
 			if (y < sa.ymin()) {
 				return XMAX_YMIN;
-			} else if (y > sa.ymax()) {
+			} else if (y >= sa.ymax()) {
 				return XMAX_YMAX;
 			} else {
 				return XMAX_YCEN;
@@ -49,7 +49,7 @@ public class BoundaryRegionDecomposition {
 		} else {
 			if (y < sa.ymin()) {
 				return XCEN_YMIN;
-			} else if (y > sa.ymax()) {
+			} else if (y >= sa.ymax()) {
 				return XCEN_YMAX;
 			} else {
 				return XCEN_YCEN;

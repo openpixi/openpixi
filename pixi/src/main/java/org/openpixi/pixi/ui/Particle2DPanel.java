@@ -25,6 +25,7 @@ import org.openpixi.pixi.physics.collision.algorithms.*;
 import org.openpixi.pixi.physics.collision.detectors.*;
 import org.openpixi.pixi.physics.force.*;
 import org.openpixi.pixi.physics.force.relativistic.*;
+import org.openpixi.pixi.physics.movement.boundary.ParticleBoundaryType;
 import org.openpixi.pixi.physics.solver.*;
 import org.openpixi.pixi.physics.solver.relativistic.*;
 import org.openpixi.pixi.ui.util.*;
@@ -178,7 +179,7 @@ public class Particle2DPanel extends JPanel {
 
 		if(calculateFields) {
 			s.grid = GridFactory.createYeeGrid(s, 10, 10, s.width, s.height);
-			s.boundary = new PeriodicBoundary(s);
+			s.mover.setBoundaryType(ParticleBoundaryType.Periodic);
 		}
 		else {
 			//clears forces ArrayList of all GridForces
@@ -229,28 +230,28 @@ public class Particle2DPanel extends JPanel {
 
 		switch(id) {
 		case 0:
-			s.psolver = new EulerRichardson();
+			s.mover.psolver = new EulerRichardson();
 			break;
 		case 1:
-			s.psolver = new LeapFrog();
+			s.mover.psolver = new LeapFrog();
 			break;
 		case 2:
-			s.psolver = new LeapFrogDamped();
+			s.mover.psolver = new LeapFrogDamped();
 			break;
 		case 3:
-			s.psolver = new LeapFrogHalfStep();
+			s.mover.psolver = new LeapFrogHalfStep();
 			break;
 		case 4:
-			s.psolver = new Boris();
+			s.mover.psolver = new Boris();
 			break;
 		case 5:
-			s.psolver = new BorisDamped();
+			s.mover.psolver = new BorisDamped();
 			break;
 		case 6:
-			s.psolver = new SemiImplicitEuler();
+			s.mover.psolver = new SemiImplicitEuler();
 			break;
 		case 7:
-			s.psolver = new Euler();
+			s.mover.psolver = new Euler();
 			break;
 			}
 
@@ -274,12 +275,12 @@ public class Particle2DPanel extends JPanel {
 			}
 			switch(i) {
 			case 1:
-				s.psolver = new LeapFrog();
+				s.mover.psolver = new LeapFrog();
 			case 4:
-				s.psolver = new Boris();
+				s.mover.psolver = new Boris();
 				break;
 			case 6:
-				s.psolver = new SemiImplicitEuler();
+				s.mover.psolver = new SemiImplicitEuler();
 				break;
 			}
 		}
@@ -299,12 +300,12 @@ public class Particle2DPanel extends JPanel {
 			}
 			switch(i) {
 			case 1:
-				s.psolver = new LeapFrogRelativistic(s.c);
+				s.mover.psolver = new LeapFrogRelativistic(s.c);
 			case 4:
-				s.psolver = new BorisRelativistic(s.c);
+				s.mover.psolver = new BorisRelativistic(s.c);
 				break;
 			case 6:
-				s.psolver = new SemiImplicitEulerRelativistic(s.c);
+				s.mover.psolver = new SemiImplicitEulerRelativistic(s.c);
 				break;
 			}
 		}
@@ -354,10 +355,10 @@ public class Particle2DPanel extends JPanel {
 	public void boundariesChange(int i) {
 		switch(i) {
 		case 0:
-			s.boundary = new HardWallBoundary(s);
+			s.mover.setBoundaryType(ParticleBoundaryType.Hardwall);
 			break;
 		case 1:
-			s.boundary = new PeriodicBoundary(s);
+			s.mover.setBoundaryType(ParticleBoundaryType.Periodic);
 		}
 
 	}

@@ -20,14 +20,16 @@
 package org.openpixi.pixi.physics;
 
 import java.util.ArrayList;
-import org.openpixi.pixi.physics.boundary.Boundary;
+
 import org.openpixi.pixi.physics.collision.algorithms.CollisionAlgorithm;
 import org.openpixi.pixi.physics.collision.detectors.Detector;
 import org.openpixi.pixi.physics.force.CombinedForce;
 import org.openpixi.pixi.physics.grid.Grid;
 import org.openpixi.pixi.physics.grid.GridFactory;
+import org.openpixi.pixi.physics.movement.BoundingBox;
+import org.openpixi.pixi.physics.movement.LocalParticleMover;
+import org.openpixi.pixi.physics.movement.boundary.ParticleBoundaryType;
 import org.openpixi.pixi.physics.solver.EmptySolver;
-import org.openpixi.pixi.physics.solver.Solver;
 
 public class Simulation {
 
@@ -43,9 +45,7 @@ public class Simulation {
 	/**Contains all Particle2D objects*/
 	public ArrayList<Particle> particles;
 	public CombinedForce f;
-	public Boundary boundary;
-	/**Solver for the particle equations of motion*/
-	public Solver psolver;
+	public LocalParticleMover mover;
 	/**Grid for dynamic field calculation*/
 	public Grid grid;
 	public Detector detector;
@@ -66,9 +66,11 @@ public class Simulation {
 		particles = new ArrayList<Particle>(0);
 		f = new CombinedForce();
 
-		psolver = new EmptySolver();
+		mover = new LocalParticleMover(
+				new EmptySolver(),
+				new BoundingBox(0, width, 0, height),
+				ParticleBoundaryType.Periodic);
 		grid = GridFactory.createSimpleGrid(this, 10, 10, width, height);
-		boundary = new Boundary(this);
 		detector = new Detector();
 		collisionalgorithm = new CollisionAlgorithm();
 
@@ -78,31 +80,21 @@ public class Simulation {
 		particlePush();
 		if(collisionBoolean) {
 			detector.run();
-			collisionalgorithm.collide(detector.getOverlappedPairs(), f, psolver, tstep);
+			collisionalgorithm.collide(detector.getOverlappedPairs(), f, mover.psolver, tstep);
 		}
 		grid.updateGrid(particles, tstep);
 	}
 
 
 	public void particlePush() {
-		for (Particle p : particles) {
-			// Before we move the particle we store its position
-			p.storePosition();
-			psolver.step(p, f, tstep);
-			boundary.check(p, f, psolver, tstep);
-		}
+		mover.push(particles, f, tstep);
 	}
 
 	public void prepareAllParticles() {
-		for (Particle p : particles) {
-			psolver.prepare(p, f, tstep);
-		}
+		mover.prepare(particles, f, tstep);
 	}
 
 	public void completeAllParticles() {
-		for (Particle p : particles) {
-			psolver.complete(p, f, tstep);
-		}
+		mover.complete(particles, f, tstep);
 	}
-
 }

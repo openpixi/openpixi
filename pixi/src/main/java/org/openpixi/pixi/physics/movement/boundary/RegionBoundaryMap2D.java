@@ -21,31 +21,31 @@ public class RegionBoundaryMap2D {
 
 		rbMap.put(
 				BoundaryRegionDecomposition.XMIN_YMIN,
-				boundaryType.createBoundary(sa.xmin() - sa.xsize(), sa.ymin() - sa.ysize()));
+				boundaryType.createBoundary(-sa.xsize(), -sa.ysize()));
 		rbMap.put(
 				BoundaryRegionDecomposition.XCEN_YMIN,
-				boundaryType.createBoundary(0, sa.ymin() - sa.ysize()));
+				boundaryType.createBoundary(0, -sa.ysize()));
 		rbMap.put(
 				BoundaryRegionDecomposition.XMAX_YMIN,
-				boundaryType.createBoundary(sa.xmax(), sa.ymin() - sa.ysize()));
+				boundaryType.createBoundary(sa.xsize(), -sa.ysize()));
 		rbMap.put(
 				BoundaryRegionDecomposition.XMIN_YCEN,
-				boundaryType.createBoundary(sa.xmin() - sa.xsize(), 0));
+				boundaryType.createBoundary(-sa.xsize(), 0));
 		rbMap.put(
 				BoundaryRegionDecomposition.XCEN_YCEN,
 				new EmptyBoundary(0, 0));
 		rbMap.put(
 				BoundaryRegionDecomposition.XMAX_YCEN,
-				boundaryType.createBoundary(sa.xmax(), 0));
+				boundaryType.createBoundary(sa.xsize(), 0));
 		rbMap.put(
 				BoundaryRegionDecomposition.XMIN_YMAX,
-				boundaryType.createBoundary(sa.xmin() - sa.xsize(), sa.ymax()));
+				boundaryType.createBoundary(-sa.xsize(), sa.ysize()));
 		rbMap.put(
 				BoundaryRegionDecomposition.XCEN_YMAX,
-				boundaryType.createBoundary(0, sa.ymax()));
+				boundaryType.createBoundary(0, sa.ysize()));
 		rbMap.put(
 				BoundaryRegionDecomposition.XMAX_YMAX,
-				boundaryType.createBoundary(sa.xmax(), sa.ymax()));
+				boundaryType.createBoundary(sa.xsize(), sa.ysize()));
 	}
 
 
