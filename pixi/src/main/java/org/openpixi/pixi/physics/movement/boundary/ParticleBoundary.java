@@ -7,9 +7,18 @@ import org.openpixi.pixi.physics.Particle;
  */
 public abstract class ParticleBoundary {
 
-	/** Distance of the boundary region xmin from simulation's xmin. */
+	/**
+	 * Distance of the boundary region xmin from simulation's xmin.
+	 * Can have three values:
+	 * -simulation_width: signalizes that the particle is left of the simulation area
+	 * 0: signalizes that the particle's x coordinate is within the simulation area
+	 * +simulation_width: signalizes that the particle is right of the simulation area
+	 * */
 	protected double xoffset;
-	/** Distance of the boundary region ymin from simulation's ymin. */
+	/**
+	 * Distance of the boundary region ymin from simulation's ymin.
+	 * Can have three values (-simulation_height,0,+simulation_height) similarly as xoffset.
+	 * */
 	protected double yoffset;
 
 	public ParticleBoundary(double xoffset, double yoffset) {
