@@ -16,6 +16,7 @@ public class GridFactory {
 
 		return new Grid(s,
 				numCellsX, numCellsY, simWidth, simHeight,
+				GridBoundaryType.Hardwall,
 				new SimpleSolver(),
 				new CloudInCell(),
 				new PoissonSolverFFTPeriodic());
@@ -27,6 +28,7 @@ public class GridFactory {
 
 		return new Grid(s,
 				numCellsX, numCellsY, simWidth, simHeight,
+				GridBoundaryType.Hardwall,
 				new YeeSolver(),
 				new ChargeConservingAreaWeighting(),
 				new PoissonSolverFFTPeriodic());

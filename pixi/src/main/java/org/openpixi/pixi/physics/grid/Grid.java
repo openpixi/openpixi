@@ -7,6 +7,7 @@ import org.openpixi.pixi.physics.Simulation;
 import org.openpixi.pixi.physics.fields.FieldSolver;
 import org.openpixi.pixi.physics.force.SimpleGridForce;
 import org.openpixi.pixi.physics.fields.PoissonSolver;
+import org.openpixi.pixi.physics.movement.BoundingBox;
 
 public class Grid {
 
@@ -40,6 +41,7 @@ public class Grid {
 	private FieldSolver fsolver;
 	/**solver for the electrostatic poisson equation*/
 	private PoissonSolver poisolver;
+	private GridBoundaryType boundaryType;
 
 	private Cell[][] cells;
 
@@ -199,10 +201,12 @@ public class Grid {
 	Grid(Simulation s,
 			int numCellsX, int numCellsY,
 			double simWidth, double simHeight,
+			GridBoundaryType boundaryType,
 			FieldSolver fsolver,
 			Interpolator interp,
 			PoissonSolver poisolver) {
 
+		this.boundaryType = boundaryType;
 		this.simulation = s;
 		this.fsolver = fsolver;
 		this.interp = interp;
@@ -222,14 +226,7 @@ public class Grid {
 		this.cellWidth = simWidth/numCellsX;
 		this.cellHeight = simHeight/numCellsY;
 
-		int xcells = EXTRA_CELLS_BEFORE_GRID + numCellsX + EXTRA_CELLS_AFTER_GRID;
-		int ycells = EXTRA_CELLS_BEFORE_GRID + numCellsY + EXTRA_CELLS_AFTER_GRID;
-		cells = new Cell[xcells][ycells];
-		for (int x = 0; x < xcells; x++) {
-			for (int y = 0; y < ycells; y++) {
-				cells[x][y] = new Cell();
-			}
-		}
+		createGridWithBoundaries();
 		
 		interp.interpolateChargedensity(simulation.particles, this);
 		poisolver.solve(this);
@@ -237,6 +234,73 @@ public class Grid {
 		for (Particle p: simulation.particles){
 			//assuming rectangular particle shape i.e. area weighting
 			p.setChargedensity(p.getCharge() / (cellWidth * cellHeight));
+		}
+	}
+
+	private void createGridWithBoundaries() {
+		cells = new Cell[getNumCellsXTotal()][getNumCellsYTotal()];
+
+		// Create inner cells
+		for (int x = 0; x < getNumCellsX(); x++) {
+			for (int y = 0; y < getNumCellsY(); y++) {
+				cells[idx(x)][idx(y)] = new Cell();
+			}
+		}
+
+		// Create boundary cells
+
+		// left boundary (with corner cells)
+		for (int x = 0; x < EXTRA_CELLS_BEFORE_GRID; x++) {
+			for (int y = 0; y < getNumCellsYTotal(); y++) {
+				createBoundaryCell(x,y);
+			}
+		}
+		// right boundary (with corner cells)
+		for (int x = EXTRA_CELLS_BEFORE_GRID + numCellsX; x < getNumCellsXTotal(); x++) {
+			for (int y = 0; y < getNumCellsYTotal(); y++) {
+				createBoundaryCell(x,y);
+			}
+		}
+		// top boundary (without corner cells)
+		for (int x = EXTRA_CELLS_BEFORE_GRID; x < EXTRA_CELLS_BEFORE_GRID + numCellsX; x++) {
+			for (int y = 0; y < EXTRA_CELLS_BEFORE_GRID; y++) {
+				createBoundaryCell(x,y);
+			}
+		}
+		// bottom boundary (without corner cells)
+		for (int x = EXTRA_CELLS_BEFORE_GRID; x < EXTRA_CELLS_BEFORE_GRID + numCellsX; x++) {
+			for (int y = EXTRA_CELLS_BEFORE_GRID + numCellsY; y < getNumCellsYTotal(); y++) {
+				createBoundaryCell(x,y);
+			}
+		}
+	}
+
+	/**
+	 * Based on the boundary type creates the boundary cell.
+	 */
+	private void createBoundaryCell(int x, int y) {
+		if (boundaryType == GridBoundaryType.Hardwall) {
+			cells[x][y] = new Cell();
+		}
+		else if (boundaryType == GridBoundaryType.Periodic) {
+			BoundingBox innerGrid = new BoundingBox(
+					EXTRA_CELLS_BEFORE_GRID, numCellsX + EXTRA_CELLS_BEFORE_GRID - 1,
+					EXTRA_CELLS_BEFORE_GRID, numCellsY + EXTRA_CELLS_BEFORE_GRID - 1);
+			int refX = x;
+			int refY = y;
+
+			if (x < innerGrid.xmin()) {
+				refX += numCellsX;
+			} else if (x > innerGrid.xmax()) {
+				refX -= numCellsX;
+			}
+			if (y < innerGrid.ymin()) {
+				refY += numCellsY;
+			} else if (y > innerGrid.ymax()) {
+				refY -= numCellsY;
+			}
+
+			cells[x][y] = cells[refX][refY];
 		}
 	}
 
