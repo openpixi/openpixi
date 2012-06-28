@@ -36,9 +36,9 @@ public class Simulation {
 	/**Timestep*/
 	public double tstep;
 	/**Width of simulated area*/
-	public double width;
+	private double width;
 	/**Height of simulated area*/
-	public double  height;
+	private double  height;
 	/**Speed of light*/
 	public double c;
 
@@ -51,6 +51,24 @@ public class Simulation {
 	public Detector detector;
 	public CollisionAlgorithm collisionalgorithm;
 	public boolean collisionBoolean = false;
+
+	public double getWidth() {
+		return width;
+	}
+
+	public void setWidth(double width) {
+		this.width = width;
+		resize(width, height);
+	}
+
+	public double getHeight() {
+		return height;
+	}
+
+	public void setHeight(double height) {
+		this.height = height;
+		resize(width, height);
+	}
 
 	/**Creates a basic simulation and initializes all
 	 * necessary variables. All solvers are set to their
@@ -74,6 +92,17 @@ public class Simulation {
 		detector = new Detector();
 		collisionalgorithm = new CollisionAlgorithm();
 
+	}
+
+	/**
+	 * When the simulation is resized we also need to resize:
+	 * - particle boundaries
+	 * - grid -> TODO
+	 */
+	public void resize(double width, double height) {
+		this.width = width;
+		this.height = height;
+		mover.resizeBoundaries(new BoundingBox(0,width,0,height));
 	}
 
 	public void step() {

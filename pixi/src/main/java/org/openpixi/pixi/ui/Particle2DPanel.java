@@ -88,8 +88,8 @@ public class Particle2DPanel extends JPanel {
 
 			s.step();
 			frameratedetector.update();
-			sx = getWidth() / s.width;
-			sy = getHeight() / s.height;
+			sx = getWidth() / s.getWidth();
+			sy = getHeight() / s.getHeight();
 			repaint();
 			if(writePosition)
 			{
@@ -176,7 +176,7 @@ public class Particle2DPanel extends JPanel {
 	private void updateFieldForce() {
 
 		if(calculateFields) {
-			s.grid = GridFactory.createYeeGrid(s, 10, 10, s.width, s.height);
+			s.grid = GridFactory.createYeeGrid(s, 10, 10, s.getWidth(), s.getHeight());
 			s.mover.setBoundaryType(ParticleBoundaryType.Periodic);
 		}
 		else {
@@ -202,7 +202,7 @@ public class Particle2DPanel extends JPanel {
 			//force.gy = -1;
 			//force.drag = 0.08;
 			s.f.add(force);
-			InitialConditions.createRandomParticles(s.width, s.height, s.c, 1, 10);
+			InitialConditions.createRandomParticles(s.getWidth(), s.getHeight(), s.c, 1, 10);
 			Particle par = (Particle) s.particles.get(0);
 			par.setX(this.getWidth() * 0.5);
 			par.setY(this.getHeight() * 0.5);

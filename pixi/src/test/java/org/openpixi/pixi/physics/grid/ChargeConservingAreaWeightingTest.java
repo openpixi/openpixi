@@ -8,7 +8,6 @@ import org.openpixi.pixi.physics.Simulation;
 import org.openpixi.pixi.physics.force.*;
 import org.openpixi.pixi.physics.movement.boundary.ParticleBoundaryType;
 import org.openpixi.pixi.physics.solver.*;
-import org.openpixi.pixi.physics.Debug;
 
 /**
  * Unit test for Solver.
@@ -131,8 +130,8 @@ public class ChargeConservingAreaWeightingTest extends TestCase {
 		//basic simulation parameters
 		s.tstep = 1;
 		s.c = 0.7;
-		s.width = 10;
-		s.height = 10;
+		s.setWidth(10);
+		s.setHeight(10);
 		s.mover.psolver = new Boris();
 		s.mover.setBoundaryType(ParticleBoundaryType.Periodic);
 
@@ -213,8 +212,8 @@ public class ChargeConservingAreaWeightingTest extends TestCase {
 		//basic simulation parameters
 		s.tstep = 1;
 		s.c = 0.7;
-		s.width = 10;
-		s.height = 10;
+		s.setWidth(10);
+		s.setHeight(10);
 		s.mover.psolver = new Boris();
 		s.mover.setBoundaryType(ParticleBoundaryType.Periodic);
 
