@@ -2,7 +2,6 @@ package org.openpixi.pixi.physics.fields;
 
 import junit.framework.TestCase;
 import edu.emory.mathcs.jtransforms.fft.DoubleFFT_2D;
-import org.openpixi.pixi.physics.fields.PoissonSolverFFTPeriodic;
 import org.openpixi.pixi.physics.InitialConditions;
 import org.openpixi.pixi.physics.Simulation;
 import org.openpixi.pixi.physics.grid.Grid;
@@ -23,10 +22,10 @@ public class PoissonSolverTest extends TestCase {
 		super(testName);
 		
 		this.s = InitialConditions.initEmptySimulation();
-		this.s.width = 10;
-		this.s.height = 10;
+		this.s.setWidth(10);
+		this.s.setHeight(10);
 		
-		this.g = GridFactory.createYeeGrid(s, 10, 10, s.width, s.height);
+		this.g = GridFactory.createYeeGrid(s, 10, 10, s.getWidth(), s.getHeight());
 		this.g.resetCurrentAndCharge();
 		
 		this.poisolver = new PoissonSolverFFTPeriodic();

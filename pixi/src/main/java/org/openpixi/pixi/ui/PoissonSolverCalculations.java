@@ -19,10 +19,10 @@ public class PoissonSolverCalculations {
 	public PoissonSolverCalculations() {
 		
 		this.s = InitialConditions.initEmptySimulation();
-		s.width = 100;
-		s.height = 100;
+		s.setWidth(100);
+		s.setHeight(100);
 		
-		this.g = GridFactory.createYeeGrid(s, 100, 100, s.width, s.height);
+		this.g = GridFactory.createYeeGrid(s, 100, 100, s.getWidth(), s.getHeight());
 		g.resetCurrentAndCharge();
 		
 		this.poisolver = new PoissonSolverFFTPeriodic();
@@ -89,7 +89,7 @@ public class PoissonSolverCalculations {
 	
 	public static void output(Grid g) {
 		
-		double aspectratio = g.simulation.height/g.simulation.width;
+		double aspectratio = g.simulation.getHeight() / g.simulation.getWidth();
 		//deletes the old files
 		File file1 = new File("\\efeld.dat");
 		file1.delete();
@@ -152,13 +152,13 @@ public class PoissonSolverCalculations {
 	public static void interpolatorAndPoissonsolver() {
 		
 		Simulation s = InitialConditions.initEmptySimulation();
-		s.width = 100;
-		s.height = 100;
-		s.c = Math.sqrt(s.width*s.width+s.height*s.height)/5;
-		s.particles = InitialConditions.createRandomParticles(s.width, s.height, s.c, 1, 1);
+		s.setWidth(100);
+		s.setHeight(100);
+		s.c = Math.sqrt(s.getWidth() * s.getWidth() + s.getHeight() * s.getHeight())/5;
+		s.particles = InitialConditions.createRandomParticles(s.getWidth(), s.getHeight(), s.c, 1, 1);
 		s.particles.get(0).setCharge(10);
 		
-		Grid g = GridFactory.createYeeGrid(s, 100, 100, s.width, s.height);
+		Grid g = GridFactory.createYeeGrid(s, 100, 100, s.getWidth(), s.getHeight());
 		
 		PoissonSolverCalculations.output(g);
 	}
