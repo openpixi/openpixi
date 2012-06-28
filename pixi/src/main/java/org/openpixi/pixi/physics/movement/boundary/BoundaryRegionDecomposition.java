@@ -7,6 +7,11 @@ import org.openpixi.pixi.physics.movement.BoundingBox;
  */
 public class BoundaryRegionDecomposition {
 
+	/*
+	 * Specific boundary is specified by the combination of X and Y values.
+	 * E.g. top-left is XMIN + YMIN.
+	 */
+
 	public static final int XMIN = 0;
 	public static final int XCENTER = 1;
 	public static final int XMAX = 2;
