@@ -20,31 +20,40 @@ public class RegionBoundaryMap2D {
 		boundaryRegions = new BoundaryRegionDecomposition(sa);
 
 		rbMap.put(
-				BoundaryRegionDecomposition.XMIN_YMIN,
+				BoundaryRegionDecomposition.XMIN +
+					BoundaryRegionDecomposition.YMIN,
 				boundaryType.createBoundary(-sa.xsize(), -sa.ysize()));
 		rbMap.put(
-				BoundaryRegionDecomposition.XCEN_YMIN,
+				BoundaryRegionDecomposition.XCENTER +
+						BoundaryRegionDecomposition.YMIN,
 				boundaryType.createBoundary(0, -sa.ysize()));
 		rbMap.put(
-				BoundaryRegionDecomposition.XMAX_YMIN,
+				BoundaryRegionDecomposition.XMAX +
+						BoundaryRegionDecomposition.YMIN,
 				boundaryType.createBoundary(sa.xsize(), -sa.ysize()));
 		rbMap.put(
-				BoundaryRegionDecomposition.XMIN_YCEN,
+				BoundaryRegionDecomposition.XMIN +
+						BoundaryRegionDecomposition.YCENTER,
 				boundaryType.createBoundary(-sa.xsize(), 0));
 		rbMap.put(
-				BoundaryRegionDecomposition.XCEN_YCEN,
+				BoundaryRegionDecomposition.XCENTER +
+						BoundaryRegionDecomposition.YCENTER,
 				new EmptyBoundary(0, 0));
 		rbMap.put(
-				BoundaryRegionDecomposition.XMAX_YCEN,
+				BoundaryRegionDecomposition.XMAX +
+						BoundaryRegionDecomposition.YCENTER,
 				boundaryType.createBoundary(sa.xsize(), 0));
 		rbMap.put(
-				BoundaryRegionDecomposition.XMIN_YMAX,
+				BoundaryRegionDecomposition.XMIN +
+						BoundaryRegionDecomposition.YMAX,
 				boundaryType.createBoundary(-sa.xsize(), sa.ysize()));
 		rbMap.put(
-				BoundaryRegionDecomposition.XCEN_YMAX,
+				BoundaryRegionDecomposition.XCENTER +
+					BoundaryRegionDecomposition.YMAX,
 				boundaryType.createBoundary(0, sa.ysize()));
 		rbMap.put(
-				BoundaryRegionDecomposition.XMAX_YMAX,
+				BoundaryRegionDecomposition.XMAX +
+						BoundaryRegionDecomposition.YMAX,
 				boundaryType.createBoundary(sa.xsize(), sa.ysize()));
 	}
 

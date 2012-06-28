@@ -7,52 +7,44 @@ import org.openpixi.pixi.physics.movement.BoundingBox;
  */
 public class BoundaryRegionDecomposition {
 
-	/** Identifies top-left boundary. */
-	public static final int XMIN_YMIN = 0;
-	/** Identifies top boundary. */
-	public static final int XCEN_YMIN = 1;
-	/** Identifies top-right boundary. */
-	public static final int XMAX_YMIN = 2;
-	/** Identifies left boundary. */
-	public static final int XMIN_YCEN = 3;
-	/** Identifies simulation area. */
-	public static final int XCEN_YCEN = 4;
-	public static final int XMAX_YCEN = 5;
-	public static final int XMIN_YMAX = 6;
-	public static final int XCEN_YMAX = 7;
-	public static final int XMAX_YMAX = 8;
+	public static final int XMIN = 0;
+	public static final int XCENTER = 1;
+	public static final int XMAX = 2;
+	public static final int YMIN = 0;
+	public static final int YCENTER = 3;
+	public static final int YMAX = 6;
 
 	/** Box around the simulation area. */
-	BoundingBox sa;
+	BoundingBox simulationArea;
 
-	public BoundaryRegionDecomposition(BoundingBox sa) {
-		this.sa = sa;
+	public BoundaryRegionDecomposition(BoundingBox simulationArea) {
+		this.simulationArea = simulationArea;
 	}
 
 	public int getRegion(double x, double y) {
-		if (x < sa.xmin()) {
-			if (y < sa.ymin()) {
-				return XMIN_YMIN;
-			} else if (y >= sa.ymax()) {
-				return XMIN_YMAX;
+		if (x < simulationArea.xmin()) {
+			if (y < simulationArea.ymin()) {
+				return XMIN + YMIN;
+			} else if (y >= simulationArea.ymax()) {
+				return XMIN + YMAX;
 			} else {
-				return XMIN_YCEN;
+				return XMIN + YCENTER;
 			}
-		} else if (x >= sa.xmax()) {
-			if (y < sa.ymin()) {
-				return XMAX_YMIN;
-			} else if (y >= sa.ymax()) {
-				return XMAX_YMAX;
+		} else if (x >= simulationArea.xmax()) {
+			if (y < simulationArea.ymin()) {
+				return XMAX + YMIN;
+			} else if (y >= simulationArea.ymax()) {
+				return XMAX + YMAX;
 			} else {
-				return XMAX_YCEN;
+				return XMAX + YCENTER;
 			}
 		} else {
-			if (y < sa.ymin()) {
-				return XCEN_YMIN;
-			} else if (y >= sa.ymax()) {
-				return XCEN_YMAX;
+			if (y < simulationArea.ymin()) {
+				return XCENTER + YMIN;
+			} else if (y >= simulationArea.ymax()) {
+				return XCENTER + YMAX;
 			} else {
-				return XCEN_YCEN;
+				return XCENTER + YCENTER;
 			}
 		}
 	}
