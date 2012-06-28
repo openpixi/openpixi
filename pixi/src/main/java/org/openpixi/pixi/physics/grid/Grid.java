@@ -41,29 +41,7 @@ public class Grid {
 	/**solver for the electrostatic poisson equation*/
 	private PoissonSolver poisolver;
 
-	/**electric current in x-Direction*/
-	private double [][] jx;
-	/**electric current in y-Direction*/
-	private double [][] jy;
-
-	/**sum of electric charges in a cell*/
-	private double [][] rho;
-	/**electrostatic potential*/
-	private double [][] phi;
-
-	/**electric field in x direction at time t+dt*/
-	private double [][] Ex;
-	/**electric field in y direction at time t+dt*/
-	private double [][] Ey;
-	/**magnetic field in z direction at time t+dt*/
-	private double [][] Bz;
-
-	/**electric field in x direction at time t*/
-	private double [][] Exo;
-	/**electric field in y direction at time t*/
-	private double [][] Eyo;
-	/**magnetic field in z direction at time t*/
-	private double [][] Bzo;
+	private Cell[][] cells;
 
 	/**number of cells in x direction*/
 	private int numCellsX;
@@ -91,107 +69,107 @@ public class Grid {
 	}
 
 	public double getJx(int x, int y) {
-		return jx[x+EXTRA_CELLS_BEFORE_GRID][y+EXTRA_CELLS_BEFORE_GRID];
+		return cells[idx(x)][idx(y)].jx;
 	}
 
 	public void setJx(int x, int y, double value) {
-		this.jx[x+EXTRA_CELLS_BEFORE_GRID][y+EXTRA_CELLS_BEFORE_GRID] = value;
+		cells[idx(x)][idx(y)].jx = value;
 	}
 
 	public void addJx(int x, int y, double value) {
-		this.jx[x+EXTRA_CELLS_BEFORE_GRID][y+EXTRA_CELLS_BEFORE_GRID] += value;
+		cells[idx(x)][idx(y)].jx += value;
 	}
 
 	public double getJy(int x, int y) {
-		return jy[x+EXTRA_CELLS_BEFORE_GRID][y+EXTRA_CELLS_BEFORE_GRID];
+		return cells[idx(x)][idx(y)].jy;
 	}
 
 	public void setJy(int x, int y, double value) {
-		this.jy[x+EXTRA_CELLS_BEFORE_GRID][y+EXTRA_CELLS_BEFORE_GRID] = value;
+		cells[idx(x)][idx(y)].jy = value;
 	}
 
 	public void addJy(int x, int y, double value) {
-		this.jy[x+EXTRA_CELLS_BEFORE_GRID][y+EXTRA_CELLS_BEFORE_GRID] += value;
+		cells[idx(x)][idx(y)].jy += value;
 	}
 
 	public double getRho(int x, int y) {
-		return this.rho[x+EXTRA_CELLS_BEFORE_GRID][y+EXTRA_CELLS_BEFORE_GRID];
+		return cells[idx(x)][idx(y)].rho;
 	}
 
 	public void setRho(int x, int y, double value) {
-		this.rho[x+EXTRA_CELLS_BEFORE_GRID][y+EXTRA_CELLS_BEFORE_GRID] = value;
+		cells[idx(x)][idx(y)].rho = value;
 	}
 	
 	public void addRho(int x, int y, double value) {
-		this.rho[x+EXTRA_CELLS_BEFORE_GRID][y+EXTRA_CELLS_BEFORE_GRID] += value;
+		cells[idx(x)][idx(y)].rho += value;
 	}
 
 	public double getPhi(int x, int y) {
-		return phi[x+EXTRA_CELLS_BEFORE_GRID][y+EXTRA_CELLS_BEFORE_GRID];
+		return cells[idx(x)][idx(y)].phi;
 	}
 
 	public void setPhi(int x, int y, double value) {
-		this.phi[x+EXTRA_CELLS_BEFORE_GRID][y+EXTRA_CELLS_BEFORE_GRID] = value;
+		cells[idx(x)][idx(y)].phi = value;
 	}
 
 	public double getEx(int x, int y) {
-		return Ex[x+EXTRA_CELLS_BEFORE_GRID][y+EXTRA_CELLS_BEFORE_GRID];
+		return cells[idx(x)][idx(y)].Ex;
 	}
 
 	public void setEx(int x, int y, double value) {
-		this.Ex[x+EXTRA_CELLS_BEFORE_GRID][y+EXTRA_CELLS_BEFORE_GRID] = value;
+		cells[idx(x)][idx(y)].Ex = value;
 	}
 
 	public void addEx(int x, int y, double value) {
-		this.Ex[x+EXTRA_CELLS_BEFORE_GRID][y+EXTRA_CELLS_BEFORE_GRID] += value;
+		cells[idx(x)][idx(y)].Ex += value;
 	}
 
 	public double getEy(int x, int y) {
-		return Ey[x+EXTRA_CELLS_BEFORE_GRID][y+EXTRA_CELLS_BEFORE_GRID];
+		return cells[idx(x)][idx(y)].Ey;
 	}
 
 	public void setEy(int x, int y, double value) {
-		this.Ey[x+EXTRA_CELLS_BEFORE_GRID][y+EXTRA_CELLS_BEFORE_GRID] = value;
+		cells[idx(x)][idx(y)].Ey = value;
 	}
 
 	public void addEy(int x, int y, double value) {
-		this.Ey[x+EXTRA_CELLS_BEFORE_GRID][y+EXTRA_CELLS_BEFORE_GRID] += value;
+		cells[idx(x)][idx(y)].Ey += value;
 	}
 
 	public double getBz(int x, int y) {
-		return Bz[x+EXTRA_CELLS_BEFORE_GRID][y+EXTRA_CELLS_BEFORE_GRID];
+		return cells[idx(x)][idx(y)].Bz;
 	}
 
 	public void setBz(int x, int y, double value) {
-		this.Bz[x+EXTRA_CELLS_BEFORE_GRID][y+EXTRA_CELLS_BEFORE_GRID] = value;
+		cells[idx(x)][idx(y)].Bz = value;
 	}
 
 	public void addBz(int x, int y, double value) {
-		this.Bz[x+EXTRA_CELLS_BEFORE_GRID][y+EXTRA_CELLS_BEFORE_GRID] += value;
+		cells[idx(x)][idx(y)].Bz += value;
 	}
 
 	public double getExo(int x, int y) {
-		return this.Exo[x+EXTRA_CELLS_BEFORE_GRID][y+EXTRA_CELLS_BEFORE_GRID];
+		return cells[idx(x)][idx(y)].Exo;
 	}
 
 	public void setExo(int x, int y, double value) {
-		this.Exo[x+EXTRA_CELLS_BEFORE_GRID][y+EXTRA_CELLS_BEFORE_GRID] = value;
+		cells[idx(x)][idx(y)].Exo = value;
 	}
 
 	public double getEyo(int x, int y) {
-		return this.Eyo[x+EXTRA_CELLS_BEFORE_GRID][y+EXTRA_CELLS_BEFORE_GRID];
+		return cells[idx(x)][idx(y)].Eyo;
 	}
 
 	public void setEyo(int x, int y, double value) {
-		this.Eyo[x+EXTRA_CELLS_BEFORE_GRID][y+EXTRA_CELLS_BEFORE_GRID] = value;
+		cells[idx(x)][idx(y)].Eyo = value;
 	}
 
 	public double getBzo(int x, int y) {
-		return this.Bzo[x+EXTRA_CELLS_BEFORE_GRID][y+EXTRA_CELLS_BEFORE_GRID];
+		return cells[idx(x)][idx(y)].Bzo;
 	}
 
 	public void setBzo(int x, int y, double value) {
-		this.Bzo[x+EXTRA_CELLS_BEFORE_GRID][y+EXTRA_CELLS_BEFORE_GRID] = value;
+		cells[idx(x)][idx(y)].Bzo = value;
 	}
 
 	public int getNumCellsX() {
@@ -216,15 +194,7 @@ public class Grid {
 
 	public double getCellHeight() {
 		return cellHeight;
-	}
-
-	public void setCellWidth(int cellWidth) {
-		this.cellWidth = cellWidth;
-	}
-
-	public void setCellHeight(int cellHeight) {
-		this.cellHeight = cellHeight;
-	}
+	}	
 
 	Grid(Simulation s,
 			int numCellsX, int numCellsY,
@@ -254,16 +224,12 @@ public class Grid {
 
 		int xcells = EXTRA_CELLS_BEFORE_GRID + numCellsX + EXTRA_CELLS_AFTER_GRID;
 		int ycells = EXTRA_CELLS_BEFORE_GRID + numCellsY + EXTRA_CELLS_AFTER_GRID;
-		jx = new double[xcells][ycells];
-		jy = new double[xcells][ycells];
-		rho = new double[xcells][ycells];
-		phi = new double[xcells][ycells];
-		Ex = new double[xcells][ycells];
-		Ey = new double[xcells][ycells];
-		Bz = new double[xcells][ycells];
-		Exo = new double[xcells][ycells];
-		Eyo = new double[xcells][ycells];
-		Bzo = new double[xcells][ycells];
+		cells = new Cell[xcells][ycells];
+		for (int x = 0; x < xcells; x++) {
+			for (int y = 0; y < ycells; y++) {
+				cells[x][y] = new Cell();
+			}
+		}
 		
 		interp.interpolateChargedensity(simulation.particles, this);
 		poisolver.solve(this);
@@ -282,22 +248,33 @@ public class Grid {
 	}
 
 	public void resetCurrentAndCharge() {
-		for(int i = 0; i < getNumCellsX() + EXTRA_CELLS_BEFORE_GRID + EXTRA_CELLS_AFTER_GRID; i++) {
-			for(int k = 0; k < getNumCellsY() + EXTRA_CELLS_BEFORE_GRID + EXTRA_CELLS_AFTER_GRID; k++) {
-				jx[i][k] = 0.0;
-				jy[i][k] = 0.0;
-				rho[i][k] = 0.0;
+		for(int x = 0; x < getNumCellsXTotal(); x++) {
+			for(int y = 0; y < getNumCellsYTotal(); y++) {
+				cells[x][y].resetCharge();
+				cells[x][y].resetCurrent();
 			}
 		}
 	}
 
 	public void storeFields() {
-		for (int i = 0; i < getNumCellsX() + EXTRA_CELLS_BEFORE_GRID + EXTRA_CELLS_AFTER_GRID; i++) {
-			for (int j = 0; j < getNumCellsY() + EXTRA_CELLS_BEFORE_GRID + EXTRA_CELLS_AFTER_GRID; j++) {
-				Exo[i][j] = Ex[i][j];
-				Eyo[i][j] = Ey[i][j];
-				Bzo[i][j] = Bz[i][j];
+		for (int x = 0; x < getNumCellsXTotal(); x++) {
+			for (int y = 0; y < getNumCellsYTotal(); y++) {
+				cells[x][y].storeFields();
 			}
 		}
+	}
+
+	private int idx(int userIdx) {
+		return EXTRA_CELLS_BEFORE_GRID + userIdx;
+	}
+
+	/** Includes the extra cells. */
+	private int getNumCellsXTotal() {
+		return numCellsX + EXTRA_CELLS_BEFORE_GRID + EXTRA_CELLS_AFTER_GRID;
+	}
+
+	/** Includes the extra cells. */
+	private int getNumCellsYTotal() {
+		return numCellsY + EXTRA_CELLS_BEFORE_GRID + EXTRA_CELLS_AFTER_GRID;
 	}
 }
