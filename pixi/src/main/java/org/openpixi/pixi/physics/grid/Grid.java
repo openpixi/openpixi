@@ -13,7 +13,7 @@ public class Grid {
 	/**
 	 * The purpose of the extra cells is twofold.
 	 * 1) They assure that we always have a cell to interpolate to.
-	 *    For example, the hardwall boundaries allow the particle to be outside
+	 *    For example, the hardwall particle boundaries allow the particle to be outside
 	 *    of the simulation area.
 	 *    That means that the particle can be in a cell [numCellsX, numCellsY].
 	 *    If the particle is in this cell, it will be interpolated
@@ -29,8 +29,8 @@ public class Grid {
 	 *    With the extra cells we can comfortably iterate through the entire grid in a uniform way
 	 *    using the 0 values of extra cells when calculating the fields at the sides.
 	 */
-	static final int EXTRA_CELLS_BEFORE_GRID = 1;
-	static final int EXTRA_CELLS_AFTER_GRID = 2;
+	private static final int EXTRA_CELLS_BEFORE_GRID = 1;
+	private static final int EXTRA_CELLS_AFTER_GRID = 2;
 
 	/**contains the simulation instance that this grid belongs to*/
 	public Simulation simulation;
