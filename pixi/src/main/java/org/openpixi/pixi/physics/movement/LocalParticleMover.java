@@ -42,7 +42,7 @@ public class LocalParticleMover {
 
 
 	public ParticleBoundaryType getBoundaryType() {
-		return getBoundaryType();
+		return boundaryType;
 	}
 
 
