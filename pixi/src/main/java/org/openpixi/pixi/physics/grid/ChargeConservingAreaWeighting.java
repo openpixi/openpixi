@@ -8,7 +8,7 @@ import org.openpixi.pixi.physics.Particle;
 public class ChargeConservingAreaWeighting extends Interpolator {
 
 	@Override
-	public void interpolateToGrid(ArrayList<Particle> particles, Grid g) {
+	public void interpolateToGrid(ArrayList<Particle> particles, Grid g, double tstep) {
 		g.resetCurrentAndCharge();
 
 		//assuming rectangular particle shape i.e. area weighting
@@ -44,19 +44,19 @@ public class ChargeConservingAreaWeighting extends Interpolator {
 				/**local y coordinate BEFORE particle push*/
 				double y = p.getPrevY() - yStart * g.getCellHeight();
 
-				fourBoundaryMove(xStart, yStart, x, y, deltaX, deltaY, p, g);
+				fourBoundaryMove(xStart, yStart, x, y, deltaX, deltaY, p, g, tstep);
 
 				}
 			//7-boundary move?
 			else if (xStart == xEnd || yStart == yEnd) {
 
-					sevenBoundaryMove(xStart, yStart, xEnd, yEnd, deltaX, deltaY, p, g);
+					sevenBoundaryMove(xStart, yStart, xEnd, yEnd, deltaX, deltaY, p, g, tstep);
 
 				}
 				// 10-boundary move
 					else {
 
-						tenBoundaryMove(xStart, yStart, xEnd, yEnd, deltaX, deltaY, p, g);
+						tenBoundaryMove(xStart, yStart, xEnd, yEnd, deltaX, deltaY, p, g, tstep);
 
 					}
 		}
@@ -70,10 +70,10 @@ public class ChargeConservingAreaWeighting extends Interpolator {
 	 * @param y local y coordinate relative to ly BEFORE particle push
 	 * @param deltaX x distance covered by particle (not absolute but only for this 4-boundary move)
 	 * @param deltaY y distance covered by particle (not absolute but only for this 4-boundary move)
-	 * @param data Particle2DData
+	 * @param tstep
 	 */
 	private void fourBoundaryMove(int lx, int ly, double x, double y,
-			double deltaX, double deltaY, Particle p, Grid g) {
+								  double deltaX, double deltaY, Particle p, Grid g, double tstep) {
 
 		int lxm = lx - 1;
 		int lym = ly - 1;
@@ -92,10 +92,10 @@ public class ChargeConservingAreaWeighting extends Interpolator {
 //		g.jy[lxm][ly] += p.pd.cd * deltaY * ((g.cellWidth - deltaX) / 2 - x) / g.simulation.tstep;
 //		g.jy[lx][ly] += p.pd.cd * deltaY * ((g.cellWidth + deltaX) / 2 + x) / g.simulation.tstep;
 
-		g.addJx(lx, lym, p.getChargedensity() * g.getCellWidth() * deltaX * ((g.getCellHeight() - deltaY) / 2 - y) / g.simulation.tstep);
-		g.addJx(lx, ly, p.getChargedensity()  * g.getCellWidth() * deltaX * ((g.getCellHeight() + deltaY) / 2 + y) / g.simulation.tstep);
-		g.addJy(lxm, ly, p.getChargedensity() * g.getCellHeight() * deltaY * ((g.getCellWidth() - deltaX) / 2 - x) / g.simulation.tstep);
-		g.addJy(lx, ly, p.getChargedensity()  * g.getCellHeight() * deltaY * ((g.getCellWidth() + deltaX) / 2 + x) / g.simulation.tstep);
+		g.addJx(lx, lym, p.getChargedensity() * g.getCellWidth() * deltaX * ((g.getCellHeight() - deltaY) / 2 - y) / tstep);
+		g.addJx(lx, ly, p.getChargedensity()  * g.getCellWidth() * deltaX * ((g.getCellHeight() + deltaY) / 2 + y) / tstep);
+		g.addJy(lxm, ly, p.getChargedensity() * g.getCellHeight() * deltaY * ((g.getCellWidth() - deltaX) / 2 - x) / tstep);
+		g.addJy(lx, ly, p.getChargedensity()  * g.getCellHeight() * deltaY * ((g.getCellWidth() + deltaX) / 2 + x) / tstep);
 
 //		g.jx[lx][lym] += p.pd.cd * g.cellWidth * deltaX * (g.cellHeight * (1 - deltaY) / 2 - y) / g.simulation.tstep;
 //		g.jx[lx][ly] += p.pd.cd  * g.cellWidth * deltaX * (g.cellHeight * (1 + deltaY) / 2 + y) / g.simulation.tstep;
@@ -110,7 +110,7 @@ public class ChargeConservingAreaWeighting extends Interpolator {
 	}
 
 	private void sevenBoundaryMove(int xStart, int yStart, int xEnd, int yEnd,
-			double deltaX, double deltaY, Particle p, Grid g) {
+								   double deltaX, double deltaY, Particle p, Grid g, double tstep) {
 
 		/**local x coordinate BEFORE particle push*/
 		double x = p.getPrevX() - xStart * g.getCellWidth();
@@ -124,12 +124,12 @@ public class ChargeConservingAreaWeighting extends Interpolator {
 
 				double deltaX1 = (g.getCellWidth() / 2) - x;
 				double deltaY1 = (deltaY / deltaX) * deltaX1;
-				fourBoundaryMove(xStart, yStart, x, y, deltaX1, deltaY1, p, g);
+				fourBoundaryMove(xStart, yStart, x, y, deltaX1, deltaY1, p, g, tstep);
 
 				deltaX -= deltaX1;
 				deltaY -= deltaY1;
 				y += deltaY1;
-				fourBoundaryMove(xEnd, yEnd, -(g.getCellWidth() / 2), y, deltaX, deltaY, p, g);
+				fourBoundaryMove(xEnd, yEnd, -(g.getCellWidth() / 2), y, deltaX, deltaY, p, g, tstep);
 
 			}
 			//particle moves left
@@ -137,12 +137,12 @@ public class ChargeConservingAreaWeighting extends Interpolator {
 
 				double deltaX1 = -((g.getCellWidth() / 2) + x);
 				double deltaY1 = (deltaY / deltaX) * deltaX1;
-				fourBoundaryMove(xStart, yStart, x, y, deltaX1, deltaY1, p, g);
+				fourBoundaryMove(xStart, yStart, x, y, deltaX1, deltaY1, p, g, tstep);
 
 				deltaX -= deltaX1;
 				deltaY -= deltaY1;
 				y += deltaY1;
-				fourBoundaryMove(xEnd, yEnd, (g.getCellWidth() / 2), y, deltaX, deltaY, p, g);
+				fourBoundaryMove(xEnd, yEnd, (g.getCellWidth() / 2), y, deltaX, deltaY, p, g, tstep);
 
 			}
 		}
@@ -153,12 +153,12 @@ public class ChargeConservingAreaWeighting extends Interpolator {
 
 				double deltaY1 = (g.getCellHeight() / 2) - y;
 				double deltaX1 = deltaX  * (deltaY1 / deltaY);
-				fourBoundaryMove(xStart, yStart, x, y, deltaX1, deltaY1, p, g);
+				fourBoundaryMove(xStart, yStart, x, y, deltaX1, deltaY1, p, g, tstep);
 
 				deltaX -= deltaX1;
 				deltaY -= deltaY1;
 				y += deltaY1;
-				fourBoundaryMove(xEnd, yEnd, x, -(g.getCellHeight() / 2), deltaX, deltaY, p, g);
+				fourBoundaryMove(xEnd, yEnd, x, -(g.getCellHeight() / 2), deltaX, deltaY, p, g, tstep);
 
 			}
 			//particle moves down
@@ -166,20 +166,20 @@ public class ChargeConservingAreaWeighting extends Interpolator {
 
 				double deltaY1 = -((g.getCellHeight() / 2) + y);
 				double deltaX1 = (deltaX / deltaY) * deltaY1;
-				fourBoundaryMove(xStart, yStart, x, y, deltaX1, deltaY1, p, g);
+				fourBoundaryMove(xStart, yStart, x, y, deltaX1, deltaY1, p, g, tstep);
 
 				deltaX -= deltaX1;
 				deltaY -= deltaY1;
 				y += deltaY1;
-				fourBoundaryMove(xEnd, yEnd, x, (g.getCellHeight() / 2), deltaX, deltaY, p, g);
+				fourBoundaryMove(xEnd, yEnd, x, (g.getCellHeight() / 2), deltaX, deltaY, p, g, tstep);
 
 			}
 		}
 
 	}
 
-	private void tenBoundaryMove (int xStart, int yStart, int xEnd, int yEnd,
-			double deltaX, double deltaY, Particle p, Grid g) {
+	private void tenBoundaryMove(int xStart, int yStart, int xEnd, int yEnd,
+								 double deltaX, double deltaY, Particle p, Grid g, double tstep) {
 
 		/**local x coordinate BEFORE particle push*/
 		double x = p.getPrevX() - xStart * g.getCellWidth();
@@ -197,17 +197,17 @@ public class ChargeConservingAreaWeighting extends Interpolator {
 				if(((deltaY / deltaX) * deltaX1 + y) < (g.getCellHeight() / 2)) {
 
 					double deltaY1 = (deltaY / deltaX) * deltaX1;
-					fourBoundaryMove(xStart, yStart, x, y, deltaX1, deltaY1, p, g);
+					fourBoundaryMove(xStart, yStart, x, y, deltaX1, deltaY1, p, g, tstep);
 
 					double deltaY2 = (g.getCellHeight() / 2) - y - deltaY1;
 					double deltaX2 = (deltaX1 / deltaY1) * deltaY2;
 					y += deltaY1;
-					fourBoundaryMove(xStart+1, yStart, -(g.getCellWidth() / 2), y, deltaX2, deltaY2, p, g);
+					fourBoundaryMove(xStart+1, yStart, -(g.getCellWidth() / 2), y, deltaX2, deltaY2, p, g, tstep);
 
 					deltaX -= (deltaX1 + deltaX2);
 					deltaY -= (deltaY1 + deltaY2);
 					x = deltaX2 - (g.getCellWidth() / 2);
-					fourBoundaryMove(xEnd, yEnd, x, -(g.getCellHeight() / 2), deltaX, deltaY, p, g);
+					fourBoundaryMove(xEnd, yEnd, x, -(g.getCellHeight() / 2), deltaX, deltaY, p, g, tstep);
 
 					if (Debug.asserts) {
 						assert deltaX1 >= 0: deltaX1;
@@ -226,17 +226,17 @@ public class ChargeConservingAreaWeighting extends Interpolator {
 
 					double deltaY1 = (g.getCellHeight() / 2) - y;
 					deltaX1 = (deltaX / deltaY) * deltaY1;
-					fourBoundaryMove(xStart, yStart, x, y, deltaX1, deltaY1, p, g);
+					fourBoundaryMove(xStart, yStart, x, y, deltaX1, deltaY1, p, g, tstep);
 
 					double deltaX2 = (g.getCellWidth() / 2) - x - deltaX1;
 					double deltaY2 = (deltaY1 / deltaX1) * deltaX2;
 					x += deltaX1;
-					fourBoundaryMove(xStart, yStart+1, x, -(g.getCellHeight() / 2), deltaX2, deltaY2, p, g);
+					fourBoundaryMove(xStart, yStart+1, x, -(g.getCellHeight() / 2), deltaX2, deltaY2, p, g, tstep);
 
 					deltaX -= (deltaX1 + deltaX2);
 					deltaY -= (deltaY1 + deltaY2);
 					y = deltaY2 - (g.getCellHeight() / 2);
-					fourBoundaryMove(xEnd, yEnd, -(g.getCellWidth() / 2), y, deltaX, deltaY, p, g);
+					fourBoundaryMove(xEnd, yEnd, -(g.getCellWidth() / 2), y, deltaX, deltaY, p, g, tstep);
 
 					if (Debug.asserts) {
 						assert deltaX1 >= 0: deltaX1;
@@ -260,17 +260,17 @@ public class ChargeConservingAreaWeighting extends Interpolator {
 				if(((deltaX / deltaY) * deltaY1 + x) < (g.getCellWidth() / 2)) {
 
 					double deltaX1 = (deltaX / deltaY) * deltaY1;
-					fourBoundaryMove(xStart, yStart, x, y, deltaX1, deltaY1, p, g);
+					fourBoundaryMove(xStart, yStart, x, y, deltaX1, deltaY1, p, g, tstep);
 
 					double deltaX2 = (g.getCellWidth() / 2) - x - deltaX1;
 					double deltaY2 = (deltaY / deltaX) * deltaX2;
 					x += deltaX1;
-					fourBoundaryMove(xStart, yStart-1, x, (g.getCellHeight() / 2), deltaX2, deltaY2, p, g);
+					fourBoundaryMove(xStart, yStart-1, x, (g.getCellHeight() / 2), deltaX2, deltaY2, p, g, tstep);
 
 					deltaX -= (deltaX1 + deltaX2);
 					deltaY -= (deltaY1 + deltaY2);
 					y = (g.getCellHeight() / 2) + deltaY2;
-					fourBoundaryMove(xEnd, yEnd, -(g.getCellWidth() / 2), y, deltaX, deltaY, p, g);
+					fourBoundaryMove(xEnd, yEnd, -(g.getCellWidth() / 2), y, deltaX, deltaY, p, g, tstep);
 
 					if (Debug.asserts) {
 						assert deltaY1 <= 0: deltaY1;
@@ -289,17 +289,17 @@ public class ChargeConservingAreaWeighting extends Interpolator {
 
 					double deltaX1 = (g.getCellWidth() /2) - x;
 					deltaY1 = (deltaY / deltaX) * deltaX1;
-					fourBoundaryMove(xStart, yStart, x, y, deltaX1, deltaY1, p, g);
+					fourBoundaryMove(xStart, yStart, x, y, deltaX1, deltaY1, p, g, tstep);
 
 					double deltaY2 = -((g.getCellHeight() / 2) + y + deltaY1);
 					double deltaX2 = (deltaX1 / deltaY1) * deltaY2;
 					y += deltaY1;
-					fourBoundaryMove(xStart+1, yStart, -(g.getCellWidth() / 2), y, deltaX2, deltaY2, p, g);
+					fourBoundaryMove(xStart+1, yStart, -(g.getCellWidth() / 2), y, deltaX2, deltaY2, p, g, tstep);
 
 					deltaX -= (deltaX1 + deltaX2);
 					deltaY -= (deltaY1 + deltaY2);
 					x = deltaX2 - (g.getCellWidth() / 2);
-					fourBoundaryMove(xEnd, yEnd, x, (g.getCellHeight() / 2), deltaX, deltaY, p, g);
+					fourBoundaryMove(xEnd, yEnd, x, (g.getCellHeight() / 2), deltaX, deltaY, p, g, tstep);
 
 					if (Debug.asserts) {
 						assert deltaX1 >= 0: deltaX1;
@@ -325,17 +325,17 @@ public class ChargeConservingAreaWeighting extends Interpolator {
 				if(((deltaY / deltaX) * deltaX1 + y) < (g.getCellHeight()/ 2)) {
 
 					double deltaY1 = (deltaY / deltaX) * deltaX1;
-					fourBoundaryMove(xStart, yStart, x, y, deltaX1, deltaY1, p, g);
+					fourBoundaryMove(xStart, yStart, x, y, deltaX1, deltaY1, p, g, tstep);
 
 					double deltaY2 = (g.getCellHeight() / 2) - y - deltaY1;
 					double deltaX2 = (deltaX1 / deltaY1) * deltaY2;
 					y += deltaY1;
-					fourBoundaryMove(xStart-1, yStart, (g.getCellWidth() / 2), y, deltaX2, deltaY2, p, g);
+					fourBoundaryMove(xStart-1, yStart, (g.getCellWidth() / 2), y, deltaX2, deltaY2, p, g, tstep);
 
 					deltaX -= (deltaX1 + deltaX2);
 					deltaY -= (deltaY1 + deltaY2);
 					x = (g.getCellWidth() / 2) + deltaX2;
-					fourBoundaryMove(xEnd, yEnd, x, -(g.getCellHeight() / 2), deltaX, deltaY, p, g);
+					fourBoundaryMove(xEnd, yEnd, x, -(g.getCellHeight() / 2), deltaX, deltaY, p, g, tstep);
 
 					if (Debug.asserts) {
 						assert deltaX1 <= 0: deltaX1;
@@ -353,17 +353,17 @@ public class ChargeConservingAreaWeighting extends Interpolator {
 
 					double deltaY1 = (g.getCellHeight() / 2) - y;
 					deltaX1 = (deltaX / deltaY) * deltaY1;
-					fourBoundaryMove(xStart, yStart, x, y, deltaX1, deltaY1, p, g);
+					fourBoundaryMove(xStart, yStart, x, y, deltaX1, deltaY1, p, g, tstep);
 
 					double deltaX2 = -((g.getCellWidth() / 2) + x + deltaX1);
 					double deltaY2 = (deltaY1 / deltaX1) * deltaX2;
 					x += deltaX1;
-					fourBoundaryMove(xStart, yStart+1, x, -(g.getCellHeight() / 2), deltaX2, deltaY2, p, g);
+					fourBoundaryMove(xStart, yStart+1, x, -(g.getCellHeight() / 2), deltaX2, deltaY2, p, g, tstep);
 
 					deltaX -= (deltaX1 + deltaX2);
 					deltaY -= (deltaY1 + deltaY2);
 					y = deltaY2 - (g.getCellHeight() / 2);
-					fourBoundaryMove(xEnd, yEnd, (g.getCellWidth() / 2), y, deltaX, deltaY,p, g);
+					fourBoundaryMove(xEnd, yEnd, (g.getCellWidth() / 2), y, deltaX, deltaY,p, g, tstep);
 
 					if (Debug.asserts) {
 						assert deltaX1 <= 0: deltaX1;
@@ -385,17 +385,17 @@ public class ChargeConservingAreaWeighting extends Interpolator {
 				if((-(deltaX / deltaY) * deltaY1 - x) < (g.getCellWidth()/ 2)) {
 
 					double deltaX1 = (deltaX / deltaY) * deltaY1;
-					fourBoundaryMove(xStart, yStart, x, y, deltaX1, deltaY1,p, g);
+					fourBoundaryMove(xStart, yStart, x, y, deltaX1, deltaY1,p, g, tstep);
 
 					double deltaX2 = -((g.getCellWidth() / 2) + x + deltaX1);
 					double deltaY2 = (deltaY / deltaX) * deltaX2;
 					x += deltaX1;
-					fourBoundaryMove(xStart, yStart-1, x, (g.getCellHeight() / 2), deltaX2, deltaY2, p, g);
+					fourBoundaryMove(xStart, yStart-1, x, (g.getCellHeight() / 2), deltaX2, deltaY2, p, g, tstep);
 
 					deltaX -= (deltaX1 + deltaX2);
 					deltaY -= (deltaY1 + deltaY2);
 					y = (g.getCellHeight() / 2) + deltaY2;
-					fourBoundaryMove(xEnd, yEnd, (g.getCellWidth() / 2), y, deltaX, deltaY, p, g);
+					fourBoundaryMove(xEnd, yEnd, (g.getCellWidth() / 2), y, deltaX, deltaY, p, g, tstep);
 
 					if (Debug.asserts) {
 						assert deltaY1 <= 0: deltaY1;
@@ -414,17 +414,17 @@ public class ChargeConservingAreaWeighting extends Interpolator {
 
 					double deltaX1 = -((g.getCellWidth() /2) + x);
 					deltaY1 = (deltaY / deltaX) * deltaX1;
-					fourBoundaryMove(xStart, yStart, x, y, deltaX1, deltaY1, p, g);
+					fourBoundaryMove(xStart, yStart, x, y, deltaX1, deltaY1, p, g, tstep);
 
 					double deltaY2 = -((g.getCellHeight() / 2) + y + deltaY1);
 					double deltaX2 = (deltaX1 / deltaY1) * deltaY2;
 					y += deltaY1;
-					fourBoundaryMove(xStart+1, yStart, (g.getCellWidth() / 2), y, deltaX2, deltaY2, p, g);
+					fourBoundaryMove(xStart+1, yStart, (g.getCellWidth() / 2), y, deltaX2, deltaY2, p, g, tstep);
 
 					deltaX -= (deltaX1 + deltaX2);
 					deltaY -= (deltaY1 + deltaY2);
 					x = (g.getCellWidth() / 2) + deltaX2;
-					fourBoundaryMove(xEnd, yEnd, x, (g.getCellHeight() / 2), deltaX, deltaY, p, g);
+					fourBoundaryMove(xEnd, yEnd, x, (g.getCellHeight() / 2), deltaX, deltaY, p, g, tstep);
 
 					if (Debug.asserts) {
 						assert deltaX1 <= 0: deltaX1;
@@ -450,8 +450,8 @@ public class ChargeConservingAreaWeighting extends Interpolator {
 	private void assertParticleInSimulationArea(Particle p, Grid g) {
 		assert(p.getX() >= 0);
 		assert(p.getY() >= 0);
-		assert(p.getX() < g.simulation.getWidth());
-		assert(p.getY() < g.simulation.getHeight());
+		assert(p.getX() < g.getCellWidth() * g.getNumCellsX());
+		assert(p.getY() < g.getCellHeight() * g.getNumCellsY());
 	}
 
 	/**
@@ -463,7 +463,7 @@ public class ChargeConservingAreaWeighting extends Interpolator {
 	private void assertPreviousParticleInSimulationArea(Particle p, Grid g) {
 		assert(p.getPrevX() >= 0);
 		assert(p.getPrevY() >= 0);
-		assert(p.getPrevX() < g.simulation.getWidth());
-		assert(p.getPrevY() < g.simulation.getHeight());
+		assert(p.getPrevX() < g.getCellWidth() * g.getNumCellsX());
+		assert(p.getPrevY() < g.getCellHeight() * g.getNumCellsY());
 	}
 }

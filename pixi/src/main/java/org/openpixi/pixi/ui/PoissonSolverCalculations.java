@@ -89,7 +89,7 @@ public class PoissonSolverCalculations {
 	
 	public static void output(Grid g) {
 		
-		double aspectratio = g.simulation.getHeight() / g.simulation.getWidth();
+		double aspectratio = g.getCellHeight() * g.getNumCellsY() / g.getCellWidth() * g.getNumCellsX();
 		//deletes the old files
 		File file1 = new File("\\efeld.dat");
 		file1.delete();

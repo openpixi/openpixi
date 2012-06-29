@@ -113,7 +113,7 @@ public class CloudInCellTest extends TestCase {
 		double sy = p.getPrevY();
 
 		// Calculate current
-		grid.getInterp().interpolateToGrid(s.particles, grid);
+		s.getInterpolator().interpolateToGrid(s.particles, grid, s.tstep);
 
 		double jx = GridTestCommon.getJxSum(grid);
 		double jy = GridTestCommon.getJySum(grid);
@@ -189,7 +189,7 @@ Simulation s = InitialConditions.initEmptySimulation();
 		double sy = p.getPrevY();
 
 		// Calculate current
-		grid.getInterp().interpolateToGrid(s.particles, grid);
+		s.getInterpolator().interpolateToGrid(s.particles, grid, s.tstep);
 
 		double jx = GridTestCommon.getJxSum(grid);
 		double jy = GridTestCommon.getJySum(grid);

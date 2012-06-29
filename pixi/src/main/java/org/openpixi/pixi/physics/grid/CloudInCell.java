@@ -7,7 +7,7 @@ import org.openpixi.pixi.physics.Particle;
 public class CloudInCell extends Interpolator {
 
 	@Override
-	public void interpolateToGrid(ArrayList<Particle> particles, Grid g) {
+	public void interpolateToGrid(ArrayList<Particle> particles, Grid g, double tstep) {
 		g.resetCurrentAndCharge();
 
 		for(Particle p : particles)
@@ -75,7 +75,7 @@ public class CloudInCell extends Interpolator {
 
 		for (int i = 0; i < particles.size(); i++) {
 
-		Particle p = g.simulation.particles.get(i);
+		Particle p = particles.get(i);
 		int xCellPosition = (int) Math.floor(p.getX() / g.getCellWidth());
 		int yCellPosition = (int) Math.floor(p.getY() / g.getCellHeight());
 

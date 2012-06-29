@@ -6,7 +6,7 @@ import org.openpixi.pixi.physics.Particle;
 
 public class Interpolator {
 
-	public void interpolateToGrid(ArrayList<Particle> particles, Grid g) {
+	public void interpolateToGrid(ArrayList<Particle> particles, Grid g, double tstep) {
 
 	}
 
@@ -14,7 +14,7 @@ public class Interpolator {
 
 		for (int i = 0; i < particles.size(); i++) {
 
-		Particle p = g.simulation.particles.get(i);
+		Particle p = particles.get(i);
 
 		assertParticleInSimulationArea(p, g);
 
@@ -130,7 +130,7 @@ public class Interpolator {
 	private void assertParticleInSimulationArea(Particle p, Grid g) {
 		assert(p.getX() >= 0);
 		assert(p.getY() >= 0);
-		assert(p.getX() < g.simulation.getWidth());
-		assert(p.getY() < g.simulation.getHeight());
+		assert(p.getX() < g.getCellWidth() * g.getNumCellsX());
+		assert(p.getY() < g.getCellHeight() * g.getNumCellsY());
 	}
 }

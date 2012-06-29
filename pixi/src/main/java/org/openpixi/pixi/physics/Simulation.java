@@ -24,8 +24,10 @@ import java.util.ArrayList;
 import org.openpixi.pixi.physics.collision.algorithms.CollisionAlgorithm;
 import org.openpixi.pixi.physics.collision.detectors.Detector;
 import org.openpixi.pixi.physics.force.CombinedForce;
+import org.openpixi.pixi.physics.force.SimpleGridForce;
 import org.openpixi.pixi.physics.grid.Grid;
 import org.openpixi.pixi.physics.grid.GridFactory;
+import org.openpixi.pixi.physics.grid.Interpolator;
 import org.openpixi.pixi.physics.movement.BoundingBox;
 import org.openpixi.pixi.physics.movement.LocalParticleMover;
 import org.openpixi.pixi.physics.movement.boundary.ParticleBoundaryType;
@@ -52,6 +54,17 @@ public class Simulation {
 	public CollisionAlgorithm collisionalgorithm;
 	public boolean collisionBoolean = false;
 
+	/**interpolation algorithm for current, charge density and force calculation*/
+	private Interpolator interpolator;
+
+	public void setInterpolator(Interpolator interpolator) {
+		this.interpolator = interpolator;
+	}
+
+	public Interpolator getInterpolator() {
+		return interpolator;
+	}
+
 	public double getWidth() {
 		return width;
 	}
@@ -68,6 +81,11 @@ public class Simulation {
 	public void setHeight(double height) {
 		this.height = height;
 		resize(width, height);
+	}
+
+	public void setGrid(Grid grid) {
+		this.grid = grid;
+		onGridResize();
 	}
 
 	/**Creates a basic simulation and initializes all
@@ -88,7 +106,12 @@ public class Simulation {
 				new EmptySolver(),
 				new BoundingBox(0, width, 0, height),
 				ParticleBoundaryType.Periodic);
+
+		SimpleGridForce force = new SimpleGridForce();
+		f.add(force);
 		grid = GridFactory.createSimpleGrid(this, 10, 10, width, height);
+		onGridResize();
+
 		detector = new Detector();
 		collisionalgorithm = new CollisionAlgorithm();
 
@@ -97,12 +120,14 @@ public class Simulation {
 	/**
 	 * When the simulation is resized we also need to resize:
 	 * - particle boundaries
-	 * - grid -> TODO
+	 * - grid
 	 */
 	public void resize(double width, double height) {
 		this.width = width;
 		this.height = height;
 		mover.resizeBoundaries(new BoundingBox(0,width,0,height));
+		grid.set(grid.getNumCellsX(), grid.getNumCellsY(), width, height);
+		onGridResize();
 	}
 
 	public void step() {
@@ -111,7 +136,9 @@ public class Simulation {
 			detector.run();
 			collisionalgorithm.collide(detector.getOverlappedPairs(), f, mover.psolver, tstep);
 		}
-		grid.updateGrid(particles, tstep);
+		interpolator.interpolateToGrid(particles, grid, tstep);
+		grid.updateGrid(tstep);
+		interpolator.interpolateToParticle(particles, grid);
 	}
 
 
@@ -125,5 +152,13 @@ public class Simulation {
 
 	public void completeAllParticles() {
 		mover.complete(particles, f, tstep);
+	}
+
+	private void onGridResize() {
+		interpolator.interpolateChargedensity(particles, grid);
+		for (Particle p: particles){
+			//assuming rectangular particle shape i.e. area weighting
+			p.setChargedensity(p.getCharge() / (grid.getCellWidth() * grid.getCellHeight()));
+		}
 	}
 }

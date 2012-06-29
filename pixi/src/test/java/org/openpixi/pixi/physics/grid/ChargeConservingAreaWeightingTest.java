@@ -158,7 +158,7 @@ public class ChargeConservingAreaWeightingTest extends TestCase {
 		double sy = p.getPrevY();
 
 		// Calculate current
-		grid.getInterp().interpolateToGrid(s.particles, grid);
+		s.getInterpolator().interpolateToGrid(s.particles, grid, s.tstep);
 
 		double jx = GridTestCommon.getJxSum(grid);
 		double jy = GridTestCommon.getJySum(grid);
@@ -169,8 +169,8 @@ public class ChargeConservingAreaWeightingTest extends TestCase {
 		GridTestCommon.checkSignJx(grid);
 		GridTestCommon.checkSignJy(grid);
 
-		assertAlmostEquals(text + ", jx", charge * (p.getX() - sx) / grid.simulation.tstep, jx, ACCURACY_LIMIT);
-		assertAlmostEquals(text + ", jy", charge * (p.getY() - sy) / grid.simulation.tstep, jy, ACCURACY_LIMIT);
+		assertAlmostEquals(text + ", jx", charge * (p.getX() - sx) / s.tstep, jx, ACCURACY_LIMIT);
+		assertAlmostEquals(text + ", jy", charge * (p.getY() - sy) / s.tstep, jy, ACCURACY_LIMIT);
 	}
 
 	public void testFourBoundaryMovesForce() {
@@ -246,7 +246,7 @@ public class ChargeConservingAreaWeightingTest extends TestCase {
 		double sy = p.getPrevY();
 
 		// Calculate current
-		grid.getInterp().interpolateToGrid(s.particles, grid);
+		s.getInterpolator().interpolateToGrid(s.particles, grid, s.tstep);
 
 		double jx = GridTestCommon.getJxSum(grid);
 		double jy = GridTestCommon.getJySum(grid);
@@ -257,8 +257,8 @@ public class ChargeConservingAreaWeightingTest extends TestCase {
 		GridTestCommon.checkSignJx(grid);
 		GridTestCommon.checkSignJy(grid);
 
-		assertAlmostEquals(text + ", jx", charge * (p.getX() - sx) / grid.simulation.tstep, jx, ACCURACY_LIMIT);
-		assertAlmostEquals(text + ", jy", charge * (p.getY() - sy) / grid.simulation.tstep, jy, ACCURACY_LIMIT);
+		assertAlmostEquals(text + ", jx", charge * (p.getX() - sx) / s.tstep, jx, ACCURACY_LIMIT);
+		assertAlmostEquals(text + ", jy", charge * (p.getY() - sy) / s.tstep, jy, ACCURACY_LIMIT);
 	}
 
 }

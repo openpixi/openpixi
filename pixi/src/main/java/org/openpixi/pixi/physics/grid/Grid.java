@@ -9,6 +9,11 @@ import org.openpixi.pixi.physics.force.SimpleGridForce;
 import org.openpixi.pixi.physics.fields.PoissonSolver;
 import org.openpixi.pixi.physics.movement.BoundingBox;
 
+/**
+ * TODO add possibility to instantiate any grid boundary +
+ * TODO   for the time being unify with particle boundary
+ * TODO create simple tests for grid boundaries
+ */
 public class Grid {
 
 	/**
@@ -33,14 +38,11 @@ public class Grid {
 	private static final int EXTRA_CELLS_BEFORE_GRID = 1;
 	private static final int EXTRA_CELLS_AFTER_GRID = 2;
 
-	/**contains the simulation instance that this grid belongs to*/
-	public Simulation simulation;
-	/**interpolation algorithm for current, charge density and force calculation*/
-	private Interpolator interp;
 	/**solver algorithm for the maxwell equations*/
 	private FieldSolver fsolver;
 	/**solver for the electrostatic poisson equation*/
 	private PoissonSolver poisolver;
+
 	private GridBoundaryType boundaryType;
 
 	private Cell[][] cells;
@@ -53,14 +55,6 @@ public class Grid {
 	private double cellWidth;
 	/**height of each cell*/
 	private double cellHeight;
-
-	public Interpolator getInterp() {
-		return interp;
-	}
-
-	public void setInterp(Interpolator interp) {
-		this.interp = interp;
-	}
 
 	public FieldSolver getFsolver() {
 		return fsolver;
@@ -178,16 +172,8 @@ public class Grid {
 		return numCellsX;
 	}
 
-	public void setNumCellsX(int numCellsX) {
-		this.numCellsX = numCellsX;
-	}
-
 	public int getNumCellsY() {
 		return numCellsY;
-	}
-
-	public void setNumCellsY(int numCellsY) {
-		this.numCellsY = numCellsY;
 	}
 
 	public double getCellWidth() {
@@ -198,22 +184,16 @@ public class Grid {
 		return cellHeight;
 	}	
 
-	Grid(Simulation s,
+	Grid(
 			int numCellsX, int numCellsY,
 			double simWidth, double simHeight,
 			GridBoundaryType boundaryType,
 			FieldSolver fsolver,
-			Interpolator interp,
 			PoissonSolver poisolver) {
 
 		this.boundaryType = boundaryType;
-		this.simulation = s;
 		this.fsolver = fsolver;
-		this.interp = interp;
 		this.poisolver = poisolver;
-
-		SimpleGridForce force = new SimpleGridForce();
-		s.f.add(force);
 
 		set(numCellsX, numCellsY, simWidth, simHeight);
 	}
@@ -227,14 +207,7 @@ public class Grid {
 		this.cellHeight = simHeight/numCellsY;
 
 		createGridWithBoundaries();
-		
-		interp.interpolateChargedensity(simulation.particles, this);
 		poisolver.solve(this);
-
-		for (Particle p: simulation.particles){
-			//assuming rectangular particle shape i.e. area weighting
-			p.setChargedensity(p.getCharge() / (cellWidth * cellHeight));
-		}
 	}
 
 	private void createGridWithBoundaries() {
@@ -247,8 +220,10 @@ public class Grid {
 			}
 		}
 
-		// Create boundary cells
+		createBoundaryCells();
+	}
 
+	private void createBoundaryCells() {
 		// left boundary (with corner cells)
 		for (int x = 0; x < EXTRA_CELLS_BEFORE_GRID; x++) {
 			for (int y = 0; y < getNumCellsYTotal(); y++) {
@@ -304,11 +279,9 @@ public class Grid {
 		}
 	}
 
-	public void updateGrid(ArrayList<Particle> particles, double tstep) {
-		getInterp().interpolateToGrid(particles, this);
+	public void updateGrid(double tstep) {
 		storeFields();
 		getFsolver().step(this, tstep);
-		getInterp().interpolateToParticle(particles, this);
 	}
 
 	public void resetCurrentAndCharge() {

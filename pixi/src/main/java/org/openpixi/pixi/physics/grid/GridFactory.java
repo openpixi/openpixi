@@ -7,30 +7,34 @@ import org.openpixi.pixi.physics.fields.PoissonSolverFFTPeriodic;
 
 /**
  * Creates specific types of grid.
+ * TODO replace this class and initial conditions with Settings class which can be created
+ * from file or command line
  */
 public class GridFactory {
 
-	public static Grid createSimpleGrid(
-			Simulation s,
+	public static Grid createSimpleGrid(Simulation s,
 			int numCellsX, int numCellsY, double simWidth, double simHeight) {
 
-		return new Grid(s,
+		s.setInterpolator(new CloudInCell());
+		Grid grid =  new Grid(
 				numCellsX, numCellsY, simWidth, simHeight,
 				GridBoundaryType.Hardwall,
 				new SimpleSolver(),
-				new CloudInCell(),
 				new PoissonSolverFFTPeriodic());
+		s.setGrid(grid);
+		return grid;
 	}
 
-	public static Grid createYeeGrid(
-			Simulation s,
+	public static Grid createYeeGrid(Simulation s,
 			int numCellsX, int numCellsY, double simWidth, double simHeight) {
 
-		return new Grid(s,
+		s.setInterpolator(new ChargeConservingAreaWeighting());
+		Grid grid = new Grid(
 				numCellsX, numCellsY, simWidth, simHeight,
 				GridBoundaryType.Hardwall,
 				new YeeSolver(),
-				new ChargeConservingAreaWeighting(),
 				new PoissonSolverFFTPeriodic());
+		s.setGrid(grid);
+		return grid;
 	}
 }
