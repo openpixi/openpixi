@@ -1,11 +1,6 @@
 package org.openpixi.pixi.physics.grid;
 
-import java.util.ArrayList;
-
-import org.openpixi.pixi.physics.Particle;
-import org.openpixi.pixi.physics.Simulation;
 import org.openpixi.pixi.physics.fields.FieldSolver;
-import org.openpixi.pixi.physics.force.SimpleGridForce;
 import org.openpixi.pixi.physics.fields.PoissonSolver;
 import org.openpixi.pixi.physics.movement.BoundingBox;
 
@@ -66,107 +61,107 @@ public class Grid {
 	}
 
 	public double getJx(int x, int y) {
-		return cells[idx(x)][idx(y)].jx;
+		return cells[index(x)][index(y)].jx;
 	}
 
 	public void setJx(int x, int y, double value) {
-		cells[idx(x)][idx(y)].jx = value;
+		cells[index(x)][index(y)].jx = value;
 	}
 
 	public void addJx(int x, int y, double value) {
-		cells[idx(x)][idx(y)].jx += value;
+		cells[index(x)][index(y)].jx += value;
 	}
 
 	public double getJy(int x, int y) {
-		return cells[idx(x)][idx(y)].jy;
+		return cells[index(x)][index(y)].jy;
 	}
 
 	public void setJy(int x, int y, double value) {
-		cells[idx(x)][idx(y)].jy = value;
+		cells[index(x)][index(y)].jy = value;
 	}
 
 	public void addJy(int x, int y, double value) {
-		cells[idx(x)][idx(y)].jy += value;
+		cells[index(x)][index(y)].jy += value;
 	}
 
 	public double getRho(int x, int y) {
-		return cells[idx(x)][idx(y)].rho;
+		return cells[index(x)][index(y)].rho;
 	}
 
 	public void setRho(int x, int y, double value) {
-		cells[idx(x)][idx(y)].rho = value;
+		cells[index(x)][index(y)].rho = value;
 	}
 	
 	public void addRho(int x, int y, double value) {
-		cells[idx(x)][idx(y)].rho += value;
+		cells[index(x)][index(y)].rho += value;
 	}
 
 	public double getPhi(int x, int y) {
-		return cells[idx(x)][idx(y)].phi;
+		return cells[index(x)][index(y)].phi;
 	}
 
 	public void setPhi(int x, int y, double value) {
-		cells[idx(x)][idx(y)].phi = value;
+		cells[index(x)][index(y)].phi = value;
 	}
 
 	public double getEx(int x, int y) {
-		return cells[idx(x)][idx(y)].Ex;
+		return cells[index(x)][index(y)].Ex;
 	}
 
 	public void setEx(int x, int y, double value) {
-		cells[idx(x)][idx(y)].Ex = value;
+		cells[index(x)][index(y)].Ex = value;
 	}
 
 	public void addEx(int x, int y, double value) {
-		cells[idx(x)][idx(y)].Ex += value;
+		cells[index(x)][index(y)].Ex += value;
 	}
 
 	public double getEy(int x, int y) {
-		return cells[idx(x)][idx(y)].Ey;
+		return cells[index(x)][index(y)].Ey;
 	}
 
 	public void setEy(int x, int y, double value) {
-		cells[idx(x)][idx(y)].Ey = value;
+		cells[index(x)][index(y)].Ey = value;
 	}
 
 	public void addEy(int x, int y, double value) {
-		cells[idx(x)][idx(y)].Ey += value;
+		cells[index(x)][index(y)].Ey += value;
 	}
 
 	public double getBz(int x, int y) {
-		return cells[idx(x)][idx(y)].Bz;
+		return cells[index(x)][index(y)].Bz;
 	}
 
 	public void setBz(int x, int y, double value) {
-		cells[idx(x)][idx(y)].Bz = value;
+		cells[index(x)][index(y)].Bz = value;
 	}
 
 	public void addBz(int x, int y, double value) {
-		cells[idx(x)][idx(y)].Bz += value;
+		cells[index(x)][index(y)].Bz += value;
 	}
 
 	public double getExo(int x, int y) {
-		return cells[idx(x)][idx(y)].Exo;
+		return cells[index(x)][index(y)].Exo;
 	}
 
 	public void setExo(int x, int y, double value) {
-		cells[idx(x)][idx(y)].Exo = value;
+		cells[index(x)][index(y)].Exo = value;
 	}
 
 	public double getEyo(int x, int y) {
-		return cells[idx(x)][idx(y)].Eyo;
+		return cells[index(x)][index(y)].Eyo;
 	}
 
 	public void setEyo(int x, int y, double value) {
-		cells[idx(x)][idx(y)].Eyo = value;
+		cells[index(x)][index(y)].Eyo = value;
 	}
 
 	public double getBzo(int x, int y) {
-		return cells[idx(x)][idx(y)].Bzo;
+		return cells[index(x)][index(y)].Bzo;
 	}
 
 	public void setBzo(int x, int y, double value) {
-		cells[idx(x)][idx(y)].Bzo = value;
+		cells[index(x)][index(y)].Bzo = value;
 	}
 
 	public int getNumCellsX() {
@@ -217,7 +212,7 @@ public class Grid {
 		// Create inner cells
 		for (int x = 0; x < getNumCellsX(); x++) {
 			for (int y = 0; y < getNumCellsY(); y++) {
-				cells[idx(x)][idx(y)] = new Cell();
+				cells[index(x)][index(y)] = new Cell();
 			}
 		}
 
@@ -302,8 +297,15 @@ public class Grid {
 		}
 	}
 
-	private int idx(int userIdx) {
-		return EXTRA_CELLS_BEFORE_GRID + userIdx;
+	/**
+	 * Maps the client index which can be negative to the real array index
+	 * which has to be non-negative.
+	 * The client index can be negative if the client is asking for a cell which is within the
+	 * top or left boundary.
+	 * (By client we mean any code which is using this class)
+	 * */
+	private int index(int clientIdx) {
+		return EXTRA_CELLS_BEFORE_GRID + clientIdx;
 	}
 
 	/** Includes the extra cells. */
