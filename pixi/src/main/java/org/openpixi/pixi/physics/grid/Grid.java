@@ -13,6 +13,7 @@ import org.openpixi.pixi.physics.movement.BoundingBox;
  * TODO add possibility to instantiate any grid boundary +
  * TODO   for the time being unify with particle boundary
  * TODO create simple tests for grid boundaries
+ * TODO on simulation resize simply recreate the whole grid
  */
 public class Grid {
 
