@@ -14,11 +14,17 @@ public class HardwallBoundary extends ParticleBoundary {
 
 	@Override
 	public void apply(Particle p) {
-		if (xoffset != 0) {
-			p.setVx(-p.getVx());
+		if (xoffset < 0) {
+			p.setVx(Math.abs(p.getVx()));
 		}
-		if (yoffset != 0) {
-			p.setVy(-p.getVy());
+		else if (xoffset > 0) {
+			p.setVx(-Math.abs(p.getVx()));
+		}
+		if (yoffset < 0) {
+			p.setVy(Math.abs(p.getVy()));
+		}
+		else if (yoffset > 0) {
+			p.setVy(-Math.abs(p.getVy()));
 		}
 	}
 }
