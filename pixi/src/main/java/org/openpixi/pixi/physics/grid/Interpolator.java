@@ -130,7 +130,7 @@ public class Interpolator {
 	private void assertParticleInSimulationArea(Particle p, Grid g) {
 		assert(p.getX() >= 0);
 		assert(p.getY() >= 0);
-		assert(p.getX() < g.simulation.width);
-		assert(p.getY() < g.simulation.height);
+		assert(p.getX() < g.simulation.getWidth());
+		assert(p.getY() < g.simulation.getHeight());
 	}
 }

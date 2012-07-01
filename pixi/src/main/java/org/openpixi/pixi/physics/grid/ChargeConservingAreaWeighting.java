@@ -450,8 +450,8 @@ public class ChargeConservingAreaWeighting extends Interpolator {
 	private void assertParticleInSimulationArea(Particle p, Grid g) {
 		assert(p.getX() >= 0);
 		assert(p.getY() >= 0);
-		assert(p.getX() < g.simulation.width);
-		assert(p.getY() < g.simulation.height);
+		assert(p.getX() < g.simulation.getWidth());
+		assert(p.getY() < g.simulation.getHeight());
 	}
 
 	/**
@@ -463,7 +463,7 @@ public class ChargeConservingAreaWeighting extends Interpolator {
 	private void assertPreviousParticleInSimulationArea(Particle p, Grid g) {
 		assert(p.getPrevX() >= 0);
 		assert(p.getPrevY() >= 0);
-		assert(p.getPrevX() < g.simulation.width);
-		assert(p.getPrevY() < g.simulation.height);
+		assert(p.getPrevX() < g.simulation.getWidth());
+		assert(p.getPrevY() < g.simulation.getHeight());
 	}
 }
