@@ -27,30 +27,25 @@ public class BoundaryRegionDecomposition {
 	}
 
 	public int getRegion(double x, double y) {
+		int xidx;
+		int yidx;
+
 		if (x < simulationArea.xmin()) {
-			if (y < simulationArea.ymin()) {
-				return XMIN + YMIN;
-			} else if (y >= simulationArea.ymax()) {
-				return XMIN + YMAX;
-			} else {
-				return XMIN + YCENTER;
-			}
+			xidx  = XMIN;
 		} else if (x >= simulationArea.xmax()) {
-			if (y < simulationArea.ymin()) {
-				return XMAX + YMIN;
-			} else if (y >= simulationArea.ymax()) {
-				return XMAX + YMAX;
-			} else {
-				return XMAX + YCENTER;
-			}
+			xidx = XMAX;
 		} else {
-			if (y < simulationArea.ymin()) {
-				return XCENTER + YMIN;
-			} else if (y >= simulationArea.ymax()) {
-				return XCENTER + YMAX;
-			} else {
-				return XCENTER + YCENTER;
-			}
+			xidx = XCENTER;
 		}
+
+		if (y < simulationArea.ymin()) {
+			yidx = YMIN;
+		} else if (y >= simulationArea.ymax()) {
+			yidx = YMAX;
+		} else {
+			yidx = YCENTER;
+		}
+
+		return xidx + yidx;
 	}
 }
