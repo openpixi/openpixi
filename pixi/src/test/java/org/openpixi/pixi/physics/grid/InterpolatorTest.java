@@ -3,12 +3,9 @@ package org.openpixi.pixi.physics.grid;
 import java.util.ArrayList;
 
 import junit.framework.TestCase;
-import org.openpixi.pixi.physics.grid.Interpolator;
 import org.openpixi.pixi.physics.InitialConditions;
 import org.openpixi.pixi.physics.Particle;
 import org.openpixi.pixi.physics.Simulation;
-import org.openpixi.pixi.physics.grid.Grid;
-import org.openpixi.pixi.physics.grid.GridFactory;
 
 public class InterpolatorTest extends TestCase {
 	
@@ -21,12 +18,12 @@ public class InterpolatorTest extends TestCase {
 	public void testChargeInterpolation() {
 		
 		Simulation s = InitialConditions.initEmptySimulation();
-		s.width = 100;
-		s.height = 100;
-		s.c = Math.sqrt(s.width*s.width+s.height*s.height)/5;
-		s.particles = InitialConditions.createRandomParticles(s.width, s.height, s.c, 100, 1);
+		s.setWidth(100);
+		s.setHeight(100);
+		s.c = Math.sqrt(s.getWidth() * s.getWidth() + s.getHeight() * s.getHeight())/5;
+		s.particles = InitialConditions.createRandomParticles(s.getWidth(), s.getHeight(), s.c, 100, 1);
 		
-		Grid g = GridFactory.createYeeGrid(s, 10, 10, s.width, s.height);
+		Grid g = GridFactory.createYeeGrid(s, 10, 10, s.getWidth(), s.getHeight());
 		
 		// TODO: Test does not work:
 //		assertEquals(getTotalParticleCharge(s.particles), getChargedensitySum(g), ACCURACY_LIMIT);

@@ -25,8 +25,8 @@ import java.awt.event.*;
 import javax.swing.event.*;
 
 import org.openpixi.pixi.physics.Debug;
-import org.openpixi.pixi.physics.boundary.*;
 import org.openpixi.pixi.physics.force.*;
+import org.openpixi.pixi.physics.movement.boundary.ParticleBoundaryType;
 
 /**
  * Displays the animation of particles.
@@ -442,8 +442,8 @@ public class MainControlApplet extends JApplet {
 		public void actionPerformed(ActionEvent eve) {
 			int xbox = Integer.parseInt(xboxentry.getText());
 			int ybox = Integer.parseInt(yboxentry.getText());
-			double width = particlePanel.s.width;
-			double height = particlePanel.s.height;
+			double width = particlePanel.s.getWidth();
+			double height = particlePanel.s.getHeight();
 			particlePanel.s.grid.set(xbox, ybox, width, height);
 		}
 	}
@@ -799,8 +799,8 @@ public class MainControlApplet extends JApplet {
 		particlePanel.timer.setDelay((int) (1000 * Math.exp(-50 * speedSliderScaling)));
 		xboxentry.setText("10");
 		yboxentry.setText("10");
-		double width = particlePanel.s.width;
-		double height = particlePanel.s.height;
+		double width = particlePanel.s.getWidth();
+		double height = particlePanel.s.getHeight();
 		particlePanel.s.grid.set(10, 10, width, height);
 		writePositionCheck.setSelected(false);
 		filename.setEditable(false);
@@ -809,11 +809,11 @@ public class MainControlApplet extends JApplet {
 		filedirectory.setEditable(false);
 		filedirectory.setEnabled(false);
 		filedirectory.setText("direc., ex. C:\\Pixi");
-		if(particlePanel.s.boundary instanceof HardWallBoundary) {
+		if(particlePanel.s.mover.getBoundaryType() == ParticleBoundaryType.Hardwall) {
 			hardBoundaries.setSelected(true);
 			periodicBoundaries.setSelected(false);
 		}
-		else if(particlePanel.s.boundary instanceof PeriodicBoundary) {
+		else if(particlePanel.s.mover.getBoundaryType() == ParticleBoundaryType.Periodic) {
 			hardBoundaries.setSelected(false);
 			periodicBoundaries.setSelected(true);
 		}

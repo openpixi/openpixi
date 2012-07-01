@@ -86,12 +86,20 @@ public class Particle{
 		this.x = x;
 	}
 
+	public void addX(double x) {
+		this.x += x;
+	}
+
 	public double getY() {
 		return y;
 	}
 
 	public void setY(double y) {
 		this.y = y;
+	}
+
+	public void addY(double y) {
+		this.y += y;
 	}
 
 	public double getRadius() {
@@ -158,12 +166,20 @@ public class Particle{
 		this.prevX = prevX;
 	}
 
+	public void addPrevX(double x) {
+		this.prevX += x;
+	}
+
 	public double getPrevY() {
 		return prevY;
 	}
 
 	public void setPrevY(double prevY) {
 		this.prevY = prevY;
+	}
+
+	public void addPrevY(double y) {
+		this.prevY += y;
 	}
 
 	public double getChargedensity() {
