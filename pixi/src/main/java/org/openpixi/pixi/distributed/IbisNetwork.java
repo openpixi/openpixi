@@ -38,7 +38,8 @@ public class IbisNetwork implements RegistryEventHandler {
             PortType.RECEIVE_AUTO_UPCALLS,
             PortType.CONNECTION_ONE_TO_ONE);
 
-
+	private final List<IbisIdentifier> all =
+			Collections.synchronizedList(new ArrayList<IbisIdentifier>());
 	private final List<IbisIdentifier> slaves =
 			Collections.synchronizedList(new ArrayList<IbisIdentifier>());
 
@@ -85,7 +86,24 @@ public class IbisNetwork implements RegistryEventHandler {
 		ibis.end();
 	}
 
+
+	/**
+	 * Waits for the specified number of nodes to join the pool.
+	 */
+	public void waitForJoin(int numOfNodes) {
+		synchronized (this) {
+			while (all.size() < numOfNodes) {
+				try {
+					wait();
+				} catch (InterruptedException e) {
+					// Ignore
+				}
+			}
+		}
+	}
+
 	public void died(IbisIdentifier ii) {
+		all.remove(ii);
 		if (ii.equals(master)) {
 			masterLeftHandler.handle(null);
 		} else {
@@ -100,10 +118,12 @@ public class IbisNetwork implements RegistryEventHandler {
 	}
 
 	public void joined(IbisIdentifier ii) {
-		synchronized (slaves) {
+		synchronized (this) {
+			all.add(ii);
 			if (!ii.equals(master)) {
 				slaves.add(ii);
 			}
+			notify();
 		}
 	}
 
