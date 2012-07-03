@@ -1,10 +1,11 @@
-package org.openpixi.pixi.distributed;
+package org.openpixi.pixi.distributed.ibis;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import ibis.ipl.*;
+import org.openpixi.pixi.distributed.SimpleHandler;
 
 /**
  * Wraps up an instance of ibis.

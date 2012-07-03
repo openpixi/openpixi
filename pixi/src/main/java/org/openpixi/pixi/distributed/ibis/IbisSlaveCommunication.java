@@ -1,4 +1,4 @@
-package org.openpixi.pixi.distributed;
+package org.openpixi.pixi.distributed.ibis;
 
 /**
  * Handles the communication connected with problem distribution and results collection
