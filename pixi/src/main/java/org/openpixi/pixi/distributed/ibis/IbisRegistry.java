@@ -8,11 +8,11 @@ import ibis.ipl.*;
 import org.openpixi.pixi.distributed.SimpleHandler;
 
 /**
- * Wraps up an instance of ibis.
+ * Wraps up work with ibis registry.
  * Handles the master election.
  * Collects information about other ibises connected to the pool.
  */
-public class IbisNetwork implements RegistryEventHandler {
+public class IbisRegistry implements RegistryEventHandler {
 	
 	private static final IbisCapabilities ibisCapabilities = new IbisCapabilities(
             IbisCapabilities.ELECTIONS_STRICT, 
@@ -72,7 +72,7 @@ public class IbisNetwork implements RegistryEventHandler {
 	/**
 	 * Creates the instance of ibis and immediately calls the election. 
 	 */
-	public IbisNetwork() throws Exception {
+	public IbisRegistry() throws Exception {
 		ibis = IbisFactory.createIbis(ibisCapabilities, this,
 				EXCHANGE_PORT, COLLECT_PORT, DISTRIBUTE_PORT);
 		master = ibis.registry().elect("Master");
