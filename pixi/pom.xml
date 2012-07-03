@@ -7,21 +7,28 @@
   <version>0.4-SNAPSHOT</version>
   <name>pixi</name>
   <url>http://maven.apache.org</url>
-  <dependencies>
-    
+
+    <dependencies>
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
       <version>4.10</version>
       <scope>test</scope>
     </dependency>
+
     <dependency>
       <groupId>com.github.rwl</groupId>
       <artifactId>jtransforms</artifactId>
       <version>2.4.0</version>
     </dependency>
-  
+
+     <dependency>
+         <groupId>org.openpixi.pixi</groupId>
+         <artifactId>ipl-2.3</artifactId>
+         <version>2.3</version>
+     </dependency>
   </dependencies>
+
   <build>
     <plugins>
       <!-- JAR file -->
