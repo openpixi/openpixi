@@ -13,6 +13,9 @@ public class RegionBoundaryMap2D {
 	private ParticleBoundary[] regionBoundaryMap = new ParticleBoundary[NUM_OF_2D_REGIONS];
 
 
+	/*
+	 * In 3D case it might be easier to use for cycles for the initialization.
+	 */
 	public RegionBoundaryMap2D(BoundingBox sa, ParticleBoundaryType boundaryType) {
 		boundaryRegions = new BoundaryRegionDecomposition(sa);
 
