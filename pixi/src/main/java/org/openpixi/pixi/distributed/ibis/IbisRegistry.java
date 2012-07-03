@@ -6,6 +6,8 @@ import java.util.Collections;
 import java.util.List;
 import ibis.ipl.*;
 import org.openpixi.pixi.distributed.SimpleHandler;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Wraps up work with ibis registry.
@@ -13,6 +15,8 @@ import org.openpixi.pixi.distributed.SimpleHandler;
  * Collects information about other ibises connected to the pool.
  */
 public class IbisRegistry {
+
+	private static Logger logger = LoggerFactory.getLogger(IbisRegistry.class);
 
 	/**
 	 * Handles registry events.
@@ -25,6 +29,10 @@ public class IbisRegistry {
 				masterLeftHandler.handle(null);
 			} else {
 				slaves.remove(ii);
+			}
+
+			if (isMaster()) {
+				logger.info("Node {} left the pool", ii.name());
 			}
 		}
 
@@ -41,6 +49,10 @@ public class IbisRegistry {
 					slaves.add(ii);
 				}
 				notify();
+			}
+
+			if (isMaster()) {
+				logger.info("Node {} joined the pool", ii.name());
 			}
 		}
 
@@ -119,6 +131,10 @@ public class IbisRegistry {
 				EXCHANGE_PORT, COLLECT_PORT, DISTRIBUTE_PORT);
 		master = ibis.registry().elect("Master");
 		ibis.registry().enableEvents();
+
+		if (isMaster()) {
+			logger.info(" Master is {} ", master.name());
+		}
 	}
 	
 	public boolean isMaster() {
