@@ -12,8 +12,49 @@ import org.openpixi.pixi.distributed.SimpleHandler;
  * Handles the master election.
  * Collects information about other ibises connected to the pool.
  */
-public class IbisRegistry implements RegistryEventHandler {
-	
+public class IbisRegistry {
+
+	/**
+	 * Handles registry events.
+	 */
+	private class RegistryEvent implements RegistryEventHandler {
+
+		public void died(IbisIdentifier ii) {
+			all.remove(ii);
+			if (ii.equals(master)) {
+				masterLeftHandler.handle(null);
+			} else {
+				slaves.remove(ii);
+			}
+		}
+
+		public void electionResult(String arg0, IbisIdentifier arg1) {
+		}
+
+		public void gotSignal(String arg0, IbisIdentifier arg1) {
+		}
+
+		public void joined(IbisIdentifier ii) {
+			synchronized (this) {
+				all.add(ii);
+				if (!ii.equals(master)) {
+					slaves.add(ii);
+				}
+				notify();
+			}
+		}
+
+		public void left(IbisIdentifier ii) {
+			died(ii);
+		}
+
+		public void poolClosed() {
+		}
+
+		public void poolTerminated(IbisIdentifier arg0) {
+		}
+	}
+
 	private static final IbisCapabilities ibisCapabilities = new IbisCapabilities(
             IbisCapabilities.ELECTIONS_STRICT, 
             IbisCapabilities.MEMBERSHIP_TOTALLY_ORDERED);
@@ -73,7 +114,8 @@ public class IbisRegistry implements RegistryEventHandler {
 	 * Creates the instance of ibis and immediately calls the election. 
 	 */
 	public IbisRegistry() throws Exception {
-		ibis = IbisFactory.createIbis(ibisCapabilities, this,
+		ibis = IbisFactory.createIbis(
+				ibisCapabilities, new RegistryEvent(),
 				EXCHANGE_PORT, COLLECT_PORT, DISTRIBUTE_PORT);
 		master = ibis.registry().elect("Master");
 		ibis.registry().enableEvents();
@@ -101,40 +143,5 @@ public class IbisRegistry implements RegistryEventHandler {
 				}
 			}
 		}
-	}
-
-	public void died(IbisIdentifier ii) {
-		all.remove(ii);
-		if (ii.equals(master)) {
-			masterLeftHandler.handle(null);
-		} else {
-			slaves.remove(ii);
-		}
-	}
-
-	public void electionResult(String arg0, IbisIdentifier arg1) {
-	}
-
-	public void gotSignal(String arg0, IbisIdentifier arg1) {
-	}
-
-	public void joined(IbisIdentifier ii) {
-		synchronized (this) {
-			all.add(ii);
-			if (!ii.equals(master)) {
-				slaves.add(ii);
-			}
-			notify();
-		}
-	}
-
-	public void left(IbisIdentifier ii) {
-		died(ii);
-	}
-
-	public void poolClosed() {
-	}
-
-	public void poolTerminated(IbisIdentifier arg0) {
 	}
 }

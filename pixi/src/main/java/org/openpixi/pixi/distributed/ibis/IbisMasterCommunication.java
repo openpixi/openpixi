@@ -5,4 +5,10 @@ package org.openpixi.pixi.distributed.ibis;
  * on the side of the Master.
  */
 public class IbisMasterCommunication {
+
+	private IbisRegistry registry;
+
+	public IbisMasterCommunication(IbisRegistry registry) throws Exception {
+		this.registry = registry;
+	}
 }
