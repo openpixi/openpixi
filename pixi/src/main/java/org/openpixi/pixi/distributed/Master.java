@@ -2,7 +2,7 @@ package org.openpixi.pixi.distributed;
 
 import org.openpixi.pixi.distributed.assigning.PartitionAssigner;
 import org.openpixi.pixi.distributed.assigning.SimplePartitionAssigner;
-import org.openpixi.pixi.distributed.ibis.IbisMasterCommunication;
+import org.openpixi.pixi.distributed.ibis.MasterCommunicator;
 import org.openpixi.pixi.distributed.ibis.IbisRegistry;
 import org.openpixi.pixi.distributed.partitioning.Box;
 import org.openpixi.pixi.distributed.partitioning.Partitioner;
@@ -14,7 +14,7 @@ import org.openpixi.pixi.distributed.partitioning.SimplePartitioner;
  */
 public class Master implements Node {
 
-	private IbisMasterCommunication communicator;
+	private MasterCommunicator communicator;
 	private int numCellsX;
 	private int numCellsY;
 	private int numNodes;
@@ -24,7 +24,7 @@ public class Master implements Node {
 		this.numCellsX = numCellsX;
 		this.numCellsY = numCellsY;
 
-		communicator = new IbisMasterCommunication(registry);
+		communicator = new MasterCommunicator(registry);
 	}
 
 	public void problemDistribution() {

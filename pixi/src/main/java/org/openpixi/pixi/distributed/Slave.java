@@ -1,17 +1,17 @@
 package org.openpixi.pixi.distributed;
 
 import org.openpixi.pixi.distributed.ibis.IbisRegistry;
-import org.openpixi.pixi.distributed.ibis.IbisSlaveCommunication;
+import org.openpixi.pixi.distributed.ibis.SlaveCommunicator;
 
 /**
  * Represents the logic of the simulation on the side of the slave.
  */
 public class Slave implements Node {
 
-	IbisSlaveCommunication communicator;
+	SlaveCommunicator communicator;
 
 	public Slave(IbisRegistry registry) throws Exception {
-		communicator = new IbisSlaveCommunication(registry);
+		communicator = new SlaveCommunicator(registry);
 	}
 
 	public void problemDistribution() {

@@ -67,34 +67,6 @@ public class IbisRegistry {
             IbisCapabilities.ELECTIONS_STRICT, 
             IbisCapabilities.MEMBERSHIP_TOTALLY_ORDERED);
 
-	/** For distributing the problem. */
-	public static final PortType DISTRIBUTE_PORT = new PortType(
-			PortType.COMMUNICATION_RELIABLE,
-			PortType.SERIALIZATION_OBJECT,
-			PortType.RECEIVE_AUTO_UPCALLS,
-			PortType.RECEIVE_EXPLICIT,
-			PortType.CONNECTION_ONE_TO_MANY);
-
-	public static final String DISTRIBUTE_PORT_ID = "distribute";
-
-	/** For collecting the results. */
-    public static final PortType COLLECT_PORT = new PortType(
-    		PortType.COMMUNICATION_RELIABLE,
-    		PortType.SERIALIZATION_OBJECT, 
-    		PortType.RECEIVE_AUTO_UPCALLS,
-    		PortType.CONNECTION_MANY_TO_ONE);
-
-	public static final String COLLECT_PORT_ID = "collect";
-
-    /** For the exchange of ghost cells and particles during the simulation. */
-    public static final PortType EXCHANGE_PORT = new PortType(
-    		PortType.COMMUNICATION_RELIABLE,
-            PortType.SERIALIZATION_OBJECT, 
-            PortType.RECEIVE_AUTO_UPCALLS,
-            PortType.CONNECTION_ONE_TO_ONE);
-
-	public static final String EXCHANGE_PORT_ID = "exchange";
-
 	private static Logger logger = LoggerFactory.getLogger(IbisRegistry.class);
 
 	private Object numOfNodesLock = new Object();
@@ -134,9 +106,7 @@ public class IbisRegistry {
 	 * Waits for all the nodes to connect.
 	 */
 	public IbisRegistry(int numOfNodes) throws Exception {
-		ibis = IbisFactory.createIbis(
-				ibisCapabilities, new RegistryEvent(),
-				EXCHANGE_PORT, COLLECT_PORT, DISTRIBUTE_PORT);
+		ibis = IbisFactory.createIbis(ibisCapabilities, new RegistryEvent(), PixiPorts.ALL_PORTS);
 		master = ibis.registry().elect("Master");
 		ibis.registry().enableEvents();
 

@@ -11,7 +11,7 @@ import java.util.Map;
  * Handles the communication connected with problem distribution and results collection
  * on the side of the Master.
  */
-public class IbisMasterCommunication {
+public class MasterCommunicator {
 
 	/**
 	 * Receives incoming results.
@@ -30,20 +30,20 @@ public class IbisMasterCommunication {
 	 * Creates ports for communication.
 	 * To avoid deadlock the receive ports have to be created first.
 	 */
-	public IbisMasterCommunication(IbisRegistry registry) throws Exception {
+	public MasterCommunicator(IbisRegistry registry) throws Exception {
 		this.registry = registry;
 
 		collectPort = registry.getIbis().createReceivePort(
-				IbisRegistry.COLLECT_PORT,
-				IbisRegistry.COLLECT_PORT_ID,
+				PixiPorts.GATHER_PORT,
+				PixiPorts.GATHER_PORT_ID,
 				new CollectPortUpcall());
 
 		Map<IbisIdentifier, String> portMap = new HashMap<IbisIdentifier, String>();
 		for (IbisIdentifier slaveIbisID: registry.getSlaves()) {
-			portMap.put(slaveIbisID, IbisRegistry.DISTRIBUTE_PORT_ID);
+			portMap.put(slaveIbisID, PixiPorts.SCATTER_PORT_ID);
 		}
 
-		distributePort = registry.getIbis().createSendPort(IbisRegistry.DISTRIBUTE_PORT);
+		distributePort = registry.getIbis().createSendPort(PixiPorts.SCATTER_PORT);
 		distributePort.connect(portMap);
 	}
 

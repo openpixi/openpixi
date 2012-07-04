@@ -11,7 +11,7 @@ import java.io.IOException;
  * Handles the communication connected with problem distribution and results collection
  * on the side of the Slave.
  */
-public class IbisSlaveCommunication {
+public class SlaveCommunicator {
 
 	/**
 	 * Receives the problem distribution.
@@ -33,15 +33,15 @@ public class IbisSlaveCommunication {
 	 * Creates the ports.
 	 * Receive ports have to be created first to avoid deadlock.
 	 */
-	public IbisSlaveCommunication(IbisRegistry registry) throws Exception {
+	public SlaveCommunicator(IbisRegistry registry) throws Exception {
 		this.registry = registry;
 
 		distributePort = registry.getIbis().createReceivePort(
-				IbisRegistry.DISTRIBUTE_PORT,
-				IbisRegistry.DISTRIBUTE_PORT_ID,
+				PixiPorts.SCATTER_PORT,
+				PixiPorts.SCATTER_PORT_ID,
 				new DistributePortUpcall());
 
-		collectPort = registry.getIbis().createSendPort(IbisRegistry.COLLECT_PORT);
-		collectPort.connect(registry.getMaster(), IbisRegistry.COLLECT_PORT_ID);
+		collectPort = registry.getIbis().createSendPort(PixiPorts.GATHER_PORT);
+		collectPort.connect(registry.getMaster(), PixiPorts.GATHER_PORT_ID);
 	}
 }
