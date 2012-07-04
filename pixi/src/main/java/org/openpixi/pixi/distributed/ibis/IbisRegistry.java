@@ -16,6 +16,7 @@ import org.slf4j.LoggerFactory;
  */
 public class IbisRegistry {
 
+	private Object numOfNodesLock = new Object();
 	private static Logger logger = LoggerFactory.getLogger(IbisRegistry.class);
 
 	/**
@@ -43,12 +44,12 @@ public class IbisRegistry {
 		}
 
 		public void joined(IbisIdentifier ii) {
-			synchronized (this) {
+			synchronized (numOfNodesLock) {
 				all.add(ii);
 				if (!ii.equals(master)) {
 					slaves.add(ii);
 				}
-				notify();
+				numOfNodesLock.notify();
 			}
 
 			if (isMaster()) {
@@ -150,10 +151,10 @@ public class IbisRegistry {
 	 * Waits for the specified number of nodes to join the pool.
 	 */
 	public void waitForJoin(int numOfNodes) {
-		synchronized (this) {
+		synchronized (numOfNodesLock) {
 			while (all.size() < numOfNodes) {
 				try {
-					wait();
+					numOfNodesLock.wait();
 				} catch (InterruptedException e) {
 					// Ignore
 				}
