@@ -124,9 +124,9 @@ public class IbisRegistry {
 
 	
 	/**
-	 * Creates the instance of ibis and immediately calls the election. 
+	 * Creates the instance of ibis and immediately calls the election.
 	 */
-	public IbisRegistry() throws Exception {
+	public IbisRegistry(int numOfNodes) throws Exception {
 		ibis = IbisFactory.createIbis(
 				ibisCapabilities, new RegistryEvent(),
 				EXCHANGE_PORT, COLLECT_PORT, DISTRIBUTE_PORT);
@@ -136,6 +136,8 @@ public class IbisRegistry {
 		if (isMaster()) {
 			logger.info(" Master is {} ", master.name());
 		}
+
+		waitForJoin(numOfNodes);
 	}
 	
 	public boolean isMaster() {
@@ -150,7 +152,7 @@ public class IbisRegistry {
 	/**
 	 * Waits for the specified number of nodes to join the pool.
 	 */
-	public void waitForJoin(int numOfNodes) {
+	private void waitForJoin(int numOfNodes) {
 		synchronized (numOfNodesLock) {
 			while (all.size() < numOfNodes) {
 				try {

@@ -25,8 +25,7 @@ public class MainDistributedBatch {
 			System.exit(1);
 		}
 
-		IbisRegistry registry = new IbisRegistry();
-		registry.waitForJoin(numOfNodes);
+		IbisRegistry registry = new IbisRegistry(numOfNodes);
 		Node node;
 		if (registry.isMaster()) {
 			node = new Master(registry);
