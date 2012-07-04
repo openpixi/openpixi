@@ -10,14 +10,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Wraps up work with ibis registry.
- * Handles the master election.
- * Collects information about other ibises connected to the pool.
+ * Wraps up work of identifying master and slaves.
  */
 public class IbisRegistry {
-
-	private Object numOfNodesLock = new Object();
-	private static Logger logger = LoggerFactory.getLogger(IbisRegistry.class);
 
 	/**
 	 * Handles registry events.
@@ -77,7 +72,10 @@ public class IbisRegistry {
 			PortType.COMMUNICATION_RELIABLE,
 			PortType.SERIALIZATION_OBJECT,
 			PortType.RECEIVE_AUTO_UPCALLS,
+			PortType.RECEIVE_EXPLICIT,
 			PortType.CONNECTION_ONE_TO_MANY);
+
+	public static final String DISTRIBUTE_PORT_ID = "distribute";
 
 	/** For collecting the results. */
     public static final PortType COLLECT_PORT = new PortType(
@@ -86,12 +84,20 @@ public class IbisRegistry {
     		PortType.RECEIVE_AUTO_UPCALLS,
     		PortType.CONNECTION_MANY_TO_ONE);
 
+	public static final String COLLECT_PORT_ID = "collect";
+
     /** For the exchange of ghost cells and particles during the simulation. */
     public static final PortType EXCHANGE_PORT = new PortType(
     		PortType.COMMUNICATION_RELIABLE,
             PortType.SERIALIZATION_OBJECT, 
             PortType.RECEIVE_AUTO_UPCALLS,
             PortType.CONNECTION_ONE_TO_ONE);
+
+	public static final String EXCHANGE_PORT_ID = "exchange";
+
+	private static Logger logger = LoggerFactory.getLogger(IbisRegistry.class);
+
+	private Object numOfNodesLock = new Object();
 
 	private final List<IbisIdentifier> all =
 			Collections.synchronizedList(new ArrayList<IbisIdentifier>());
@@ -125,6 +131,7 @@ public class IbisRegistry {
 	
 	/**
 	 * Creates the instance of ibis and immediately calls the election.
+	 * Waits for all the nodes to connect.
 	 */
 	public IbisRegistry(int numOfNodes) throws Exception {
 		ibis = IbisFactory.createIbis(

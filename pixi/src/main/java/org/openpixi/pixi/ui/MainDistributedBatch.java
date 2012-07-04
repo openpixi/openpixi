@@ -10,6 +10,9 @@ import org.openpixi.pixi.distributed.ibis.IbisRegistry;
  */
 public class MainDistributedBatch {
 
+	private static final int NUM_CELLS_X = 32;
+	private static final int NUM_CELLS_Y = 16;
+
 	public static void main(String[] args) throws Exception {
 
 		// Read number of nodes
@@ -28,7 +31,7 @@ public class MainDistributedBatch {
 		IbisRegistry registry = new IbisRegistry(numOfNodes);
 		Node node;
 		if (registry.isMaster()) {
-			node = new Master(registry);
+			node = new Master(registry, NUM_CELLS_X, NUM_CELLS_Y, numOfNodes);
 		}
 		else {
 			node = new Slave(registry);
