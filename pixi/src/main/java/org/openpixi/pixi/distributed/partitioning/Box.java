@@ -37,6 +37,15 @@ public class Box {
 		return ymax - ymin;
 	}
 
+	public boolean contains(double x, double y) {
+		if (xmin <= x && x < xmax && ymin <= y && y < ymax()) {
+			return true;
+		}
+		else {
+			return false;
+		}
+	}
+
 	@Override
 	public String toString() {
 		return String.format("[%d,%d,%d,%d]", xmin, xmax, ymin, ymax);

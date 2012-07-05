@@ -2,9 +2,12 @@ package org.openpixi.pixi.distributed.ibis;
 
 import ibis.ipl.*;
 import org.openpixi.pixi.distributed.partitioning.Box;
+import org.openpixi.pixi.physics.Particle;
+import org.openpixi.pixi.physics.grid.Cell;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -52,7 +55,8 @@ public class MasterCommunicator {
 	}
 
 
-	public void distribute(Box[] partitions, int[] assignment) throws IOException {
+	public void distribute(Box[] partitions, int[] assignment,
+			List<List<Particle>> particles, Cell[][][] subgrids) throws IOException {
 		IbisIdentifier[] ibisAssignment = convertAssignment(assignment);
 
 		for (IbisIdentifier slaveID: registry.getWorkers()) {
