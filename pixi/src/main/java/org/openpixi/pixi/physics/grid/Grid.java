@@ -31,13 +31,11 @@ public class Grid {
 	 *    With the extra cells we can comfortably iterate through the entire grid in a uniform way
 	 *    using the 0 values of extra cells when calculating the fields at the sides.
 	 */
-	private static final int EXTRA_CELLS_BEFORE_GRID = 1;
-	private static final int EXTRA_CELLS_AFTER_GRID = 2;
+	public static final int EXTRA_CELLS_BEFORE_GRID = 1;
+	public static final int EXTRA_CELLS_AFTER_GRID = 2;
 
 	/**solver algorithm for the maxwell equations*/
 	private FieldSolver fsolver;
-	/**solver for the electrostatic poisson equation*/
-	private PoissonSolver poisolver;
 
 	private GridBoundaryType boundaryType;
 
@@ -178,18 +176,20 @@ public class Grid {
 
 	public double getCellHeight() {
 		return cellHeight;
-	}	
+	}
+
+	public Cell getCell(int x, int y) {
+		return cells[index(x)][index(y)];
+	}
 
 	Grid(
 			int numCellsX, int numCellsY,
 			double simWidth, double simHeight,
 			GridBoundaryType boundaryType,
-			FieldSolver fsolver,
-			PoissonSolver poisolver) {
+			FieldSolver fsolver) {
 
 		this.boundaryType = boundaryType;
 		this.fsolver = fsolver;
-		this.poisolver = poisolver;
 
 		set(numCellsX, numCellsY, simWidth, simHeight);
 	}
@@ -203,7 +203,6 @@ public class Grid {
 		this.cellHeight = simHeight/numCellsY;
 
 		createGridWithBoundaries();
-		poisolver.solve(this);
 	}
 
 	private void createGridWithBoundaries() {
@@ -254,20 +253,21 @@ public class Grid {
 			cells[x][y] = new Cell();
 		}
 		else if (boundaryType == GridBoundaryType.Periodic) {
-			BoundingBox innerGrid = new BoundingBox(
-					EXTRA_CELLS_BEFORE_GRID, numCellsX + EXTRA_CELLS_BEFORE_GRID - 1,
-					EXTRA_CELLS_BEFORE_GRID, numCellsY + EXTRA_CELLS_BEFORE_GRID - 1);
+			int xmin = EXTRA_CELLS_BEFORE_GRID;
+			int xmax = numCellsX + EXTRA_CELLS_BEFORE_GRID - 1;
+			int ymin = EXTRA_CELLS_BEFORE_GRID;
+			int ymax = numCellsY + EXTRA_CELLS_BEFORE_GRID - 1;
+
 			int refX = x;
 			int refY = y;
-
-			if (x < innerGrid.xmin()) {
+			if (x < xmin) {
 				refX += numCellsX;
-			} else if (x > innerGrid.xmax()) {
+			} else if (x > xmax) {
 				refX -= numCellsX;
 			}
-			if (y < innerGrid.ymin()) {
+			if (y < ymin) {
 				refY += numCellsY;
-			} else if (y > innerGrid.ymax()) {
+			} else if (y > ymax) {
 				refY -= numCellsY;
 			}
 

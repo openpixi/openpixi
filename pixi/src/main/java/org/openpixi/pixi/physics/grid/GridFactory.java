@@ -19,8 +19,7 @@ public class GridFactory {
 		Grid grid =  new Grid(
 				numCellsX, numCellsY, simWidth, simHeight,
 				GridBoundaryType.Hardwall,
-				new SimpleSolver(),
-				new PoissonSolverFFTPeriodic());
+				new SimpleSolver());
 		s.setGrid(grid);
 		return grid;
 	}
@@ -32,8 +31,7 @@ public class GridFactory {
 		Grid grid = new Grid(
 				numCellsX, numCellsY, simWidth, simHeight,
 				GridBoundaryType.Hardwall,
-				new YeeSolver(),
-				new PoissonSolverFFTPeriodic());
+				new YeeSolver());
 		s.setGrid(grid);
 		return grid;
 	}
