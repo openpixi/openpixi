@@ -1,6 +1,6 @@
 package org.openpixi.pixi.physics.movement.boundary;
 
-import org.openpixi.pixi.physics.movement.BoundingBox;
+import org.openpixi.pixi.physics.util.DoubleBox;
 
 /**
  * Identifies different boundary regions of the simulation area.
@@ -20,9 +20,9 @@ public class BoundaryRegionDecomposition {
 	public static final int YMAX = 6;
 
 	/** Box around the simulation area. */
-	BoundingBox simulationArea;
+	DoubleBox simulationArea;
 
-	public BoundaryRegionDecomposition(BoundingBox simulationArea) {
+	public BoundaryRegionDecomposition(DoubleBox simulationArea) {
 		this.simulationArea = simulationArea;
 	}
 

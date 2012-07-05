@@ -5,6 +5,7 @@ import org.openpixi.pixi.physics.force.Force;
 import org.openpixi.pixi.physics.movement.boundary.ParticleBoundaryType;
 import org.openpixi.pixi.physics.movement.boundary.RegionBoundaryMap2D;
 import org.openpixi.pixi.physics.solver.Solver;
+import org.openpixi.pixi.physics.util.DoubleBox;
 
 import java.util.List;
 
@@ -21,11 +22,11 @@ public class LocalParticleMover {
 	/** Remembers the boundary type. */
 	private ParticleBoundaryType boundaryType;
 	/** Remembers the simulation area. */
-	private BoundingBox simulationArea;
+	private DoubleBox simulationArea;
 
 	public LocalParticleMover(
 			Solver psolver,
-			BoundingBox simulationArea,
+			DoubleBox simulationArea,
 			ParticleBoundaryType boundaryType) {
 
 		this.psolver = psolver;
@@ -35,7 +36,7 @@ public class LocalParticleMover {
 	}
 
 
-	public void resizeBoundaries(BoundingBox simulationArea) {
+	public void resizeBoundaries(DoubleBox simulationArea) {
 		this.simulationArea = simulationArea;
 		boundaries = new RegionBoundaryMap2D(simulationArea, boundaryType);
 	}
