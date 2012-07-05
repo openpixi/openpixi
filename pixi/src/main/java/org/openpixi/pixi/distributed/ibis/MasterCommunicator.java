@@ -23,10 +23,11 @@ public class MasterCommunicator {
 	}
 
 	private IbisRegistry registry;
-	/** For sending messages to slaves. */
+	/** For multicast to all slaves. */
 	private SendPort scatterPort;
-	/** For receiving messages from slaves. */
+	/** For receiving messages from all slaves. */
 	private ReceivePort gatherPort;
+
 
 	/**
 	 * Creates ports for communication.
@@ -39,12 +40,13 @@ public class MasterCommunicator {
 				PixiPorts.GATHER_PORT,
 				PixiPorts.GATHER_PORT_ID,
 				new CollectPortUpcall());
+		gatherPort.enableConnections();
+		gatherPort.enableMessageUpcalls();
 
 		Map<IbisIdentifier, String> portMap = new HashMap<IbisIdentifier, String>();
 		for (IbisIdentifier slaveIbisID: registry.getSlaves()) {
 			portMap.put(slaveIbisID, PixiPorts.SCATTER_PORT_ID);
 		}
-
 		scatterPort = registry.getIbis().createSendPort(PixiPorts.SCATTER_PORT);
 		scatterPort.connect(portMap);
 	}
@@ -52,10 +54,10 @@ public class MasterCommunicator {
 
 	public void distribute(Box[] partitions, int[] assignment) throws IOException {
 		IbisIdentifier[] ibisAssignment = convertAssignment(assignment);
-		WriteMessage wm = scatterPort.newMessage();
-		wm.writeObject(partitions);
-		wm.writeObject(assignment);
-		wm.finish();
+
+		for (IbisIdentifier slaveID: registry.getSlaves()) {
+			// Create send port; connect it; send problem, disconnect port
+		}
 	}
 
 

@@ -7,7 +7,7 @@ import ibis.ipl.PortType;
  */
 public class PixiPorts {
 
-	/** For communication from master to all slaves. */
+	/** For communication from master to all slaves (multicast). */
 	public static final PortType SCATTER_PORT = new PortType(
 			PortType.COMMUNICATION_RELIABLE,
 			PortType.SERIALIZATION_OBJECT,
@@ -26,14 +26,12 @@ public class PixiPorts {
 
 	public static final String GATHER_PORT_ID = "gather";
 
-	/** For the exchange of ghost cells and particles during the simulation. */
-	public static final PortType EXCHANGE_PORT = new PortType(
+	public static final PortType ONE_TO_ONE_PORT = new PortType(
 			PortType.COMMUNICATION_RELIABLE,
 			PortType.SERIALIZATION_OBJECT,
 			PortType.RECEIVE_AUTO_UPCALLS,
+			PortType.RECEIVE_EXPLICIT,
 			PortType.CONNECTION_ONE_TO_ONE);
 
-	public static final String EXCHANGE_PORT_ID = "exchange";
-
-	public static final PortType[] ALL_PORTS = {SCATTER_PORT, GATHER_PORT, EXCHANGE_PORT};
+	public static final PortType[] ALL_PORTS = {SCATTER_PORT, GATHER_PORT, ONE_TO_ONE_PORT};
 }
