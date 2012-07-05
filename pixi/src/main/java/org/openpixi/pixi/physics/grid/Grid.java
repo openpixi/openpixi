@@ -1,8 +1,6 @@
 package org.openpixi.pixi.physics.grid;
 
 import org.openpixi.pixi.physics.fields.FieldSolver;
-import org.openpixi.pixi.physics.fields.PoissonSolver;
-import org.openpixi.pixi.physics.movement.BoundingBox;
 
 /**
  * TODO add possibility to instantiate any grid boundary +

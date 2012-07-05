@@ -1,12 +1,12 @@
-package org.openpixi.pixi.physics.movement;
+package org.openpixi.pixi.physics.util;
 
-public class BoundingBox {
+public class DoubleBox {
 	private double xmin;
 	private double xmax;
 	private double ymin;
 	private double ymax;
 
-	public BoundingBox(double xmin, double xmax, double ymin, double ymax) {
+	public DoubleBox(double xmin, double xmax, double ymin, double ymax) {
 		this.xmin = xmin;
 		this.xmax = xmax;
 		this.ymin = ymin;

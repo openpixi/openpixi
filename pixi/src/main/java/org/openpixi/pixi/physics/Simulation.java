@@ -30,7 +30,7 @@ import org.openpixi.pixi.physics.force.SimpleGridForce;
 import org.openpixi.pixi.physics.grid.Grid;
 import org.openpixi.pixi.physics.grid.GridFactory;
 import org.openpixi.pixi.physics.grid.Interpolator;
-import org.openpixi.pixi.physics.movement.BoundingBox;
+import org.openpixi.pixi.physics.util.DoubleBox;
 import org.openpixi.pixi.physics.movement.LocalParticleMover;
 import org.openpixi.pixi.physics.movement.boundary.ParticleBoundaryType;
 import org.openpixi.pixi.physics.solver.EmptySolver;
@@ -109,7 +109,7 @@ public class Simulation {
 
 		mover = new LocalParticleMover(
 				new EmptySolver(),
-				new BoundingBox(0, width, 0, height),
+				new DoubleBox(0, width, 0, height),
 				ParticleBoundaryType.Periodic);
 
 		SimpleGridForce force = new SimpleGridForce();
@@ -132,7 +132,7 @@ public class Simulation {
 	public void resize(double width, double height) {
 		this.width = width;
 		this.height = height;
-		mover.resizeBoundaries(new BoundingBox(0,width,0,height));
+		mover.resizeBoundaries(new DoubleBox(0,width,0,height));
 		grid.set(grid.getNumCellsX(), grid.getNumCellsY(), width, height);
 		onGridResize();
 	}

@@ -1,7 +1,7 @@
 package org.openpixi.pixi.physics.movement.boundary;
 
 import org.openpixi.pixi.physics.Particle;
-import org.openpixi.pixi.physics.movement.BoundingBox;
+import org.openpixi.pixi.physics.util.DoubleBox;
 
 /**
  * Maps the 8 possible boundary regions in 2D to actual boundaries.
@@ -16,7 +16,7 @@ public class RegionBoundaryMap2D {
 	/*
 	 * In 3D case it might be easier to use for cycles for the initialization.
 	 */
-	public RegionBoundaryMap2D(BoundingBox sa, ParticleBoundaryType boundaryType) {
+	public RegionBoundaryMap2D(DoubleBox sa, ParticleBoundaryType boundaryType) {
 		boundaryRegions = new BoundaryRegionDecomposition(sa);
 
 		regionBoundaryMap[BoundaryRegionDecomposition.XMIN + BoundaryRegionDecomposition.YMIN] =
