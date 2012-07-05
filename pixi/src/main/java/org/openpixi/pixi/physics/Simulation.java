@@ -23,6 +23,8 @@ import java.util.ArrayList;
 
 import org.openpixi.pixi.physics.collision.algorithms.CollisionAlgorithm;
 import org.openpixi.pixi.physics.collision.detectors.Detector;
+import org.openpixi.pixi.physics.fields.PoissonSolver;
+import org.openpixi.pixi.physics.fields.PoissonSolverFFTPeriodic;
 import org.openpixi.pixi.physics.force.CombinedForce;
 import org.openpixi.pixi.physics.force.SimpleGridForce;
 import org.openpixi.pixi.physics.grid.Grid;
@@ -56,6 +58,9 @@ public class Simulation {
 
 	/**interpolation algorithm for current, charge density and force calculation*/
 	private Interpolator interpolator;
+
+	/**solver for the electrostatic poisson equation*/
+	private PoissonSolver poisolver;
 
 	public void setInterpolator(Interpolator interpolator) {
 		this.interpolator = interpolator;
@@ -109,6 +114,8 @@ public class Simulation {
 
 		SimpleGridForce force = new SimpleGridForce();
 		f.add(force);
+
+		poisolver = new PoissonSolverFFTPeriodic();
 		grid = GridFactory.createSimpleGrid(this, 10, 10, width, height);
 		onGridResize();
 
@@ -156,6 +163,7 @@ public class Simulation {
 
 	private void onGridResize() {
 		interpolator.interpolateChargedensity(particles, grid);
+		poisolver.solve(grid);
 		for (Particle p: particles){
 			//assuming rectangular particle shape i.e. area weighting
 			p.setChargedensity(p.getCharge() / (grid.getCellWidth() * grid.getCellHeight()));

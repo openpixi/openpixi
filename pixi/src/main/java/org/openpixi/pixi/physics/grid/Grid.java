@@ -36,8 +36,6 @@ public class Grid {
 
 	/**solver algorithm for the maxwell equations*/
 	private FieldSolver fsolver;
-	/**solver for the electrostatic poisson equation*/
-	private PoissonSolver poisolver;
 
 	private GridBoundaryType boundaryType;
 
@@ -184,12 +182,10 @@ public class Grid {
 			int numCellsX, int numCellsY,
 			double simWidth, double simHeight,
 			GridBoundaryType boundaryType,
-			FieldSolver fsolver,
-			PoissonSolver poisolver) {
+			FieldSolver fsolver) {
 
 		this.boundaryType = boundaryType;
 		this.fsolver = fsolver;
-		this.poisolver = poisolver;
 
 		set(numCellsX, numCellsY, simWidth, simHeight);
 	}
@@ -203,7 +199,6 @@ public class Grid {
 		this.cellHeight = simHeight/numCellsY;
 
 		createGridWithBoundaries();
-		poisolver.solve(this);
 	}
 
 	private void createGridWithBoundaries() {
