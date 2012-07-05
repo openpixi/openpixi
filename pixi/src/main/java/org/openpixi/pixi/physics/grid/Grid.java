@@ -254,20 +254,21 @@ public class Grid {
 			cells[x][y] = new Cell();
 		}
 		else if (boundaryType == GridBoundaryType.Periodic) {
-			BoundingBox innerGrid = new BoundingBox(
-					EXTRA_CELLS_BEFORE_GRID, numCellsX + EXTRA_CELLS_BEFORE_GRID - 1,
-					EXTRA_CELLS_BEFORE_GRID, numCellsY + EXTRA_CELLS_BEFORE_GRID - 1);
+			int xmin = EXTRA_CELLS_BEFORE_GRID;
+			int xmax = numCellsX + EXTRA_CELLS_BEFORE_GRID - 1;
+			int ymin = EXTRA_CELLS_BEFORE_GRID;
+			int ymax = numCellsY + EXTRA_CELLS_BEFORE_GRID - 1;
+
 			int refX = x;
 			int refY = y;
-
-			if (x < innerGrid.xmin()) {
+			if (x < xmin) {
 				refX += numCellsX;
-			} else if (x > innerGrid.xmax()) {
+			} else if (x > xmax) {
 				refX -= numCellsX;
 			}
-			if (y < innerGrid.ymin()) {
+			if (y < ymin) {
 				refY += numCellsY;
-			} else if (y > innerGrid.ymax()) {
+			} else if (y > ymax) {
 				refY -= numCellsY;
 			}
 
