@@ -69,6 +69,7 @@ public class IbisRegistry {
 
 	private static Logger logger = LoggerFactory.getLogger(IbisRegistry.class);
 
+	/** Lock to wait for all the nodes to join.*/
 	private Object numOfNodesLock = new Object();
 
 	private final List<IbisIdentifier> all =

@@ -23,8 +23,10 @@ public class MasterCommunicator {
 	}
 
 	private IbisRegistry registry;
-	private SendPort distributePort;
-	private ReceivePort collectPort;
+	/** For sending messages to slaves. */
+	private SendPort scatterPort;
+	/** For receiving messages from slaves. */
+	private ReceivePort gatherPort;
 
 	/**
 	 * Creates ports for communication.
@@ -33,7 +35,7 @@ public class MasterCommunicator {
 	public MasterCommunicator(IbisRegistry registry) throws Exception {
 		this.registry = registry;
 
-		collectPort = registry.getIbis().createReceivePort(
+		gatherPort = registry.getIbis().createReceivePort(
 				PixiPorts.GATHER_PORT,
 				PixiPorts.GATHER_PORT_ID,
 				new CollectPortUpcall());
@@ -43,14 +45,14 @@ public class MasterCommunicator {
 			portMap.put(slaveIbisID, PixiPorts.SCATTER_PORT_ID);
 		}
 
-		distributePort = registry.getIbis().createSendPort(PixiPorts.SCATTER_PORT);
-		distributePort.connect(portMap);
+		scatterPort = registry.getIbis().createSendPort(PixiPorts.SCATTER_PORT);
+		scatterPort.connect(portMap);
 	}
 
 
 	public void distribute(Box[] partitions, int[] assignment) throws IOException {
 		IbisIdentifier[] ibisAssignment = convertAssignment(assignment);
-		WriteMessage wm = distributePort.newMessage();
+		WriteMessage wm = scatterPort.newMessage();
 		wm.writeObject(partitions);
 		wm.writeObject(assignment);
 		wm.finish();

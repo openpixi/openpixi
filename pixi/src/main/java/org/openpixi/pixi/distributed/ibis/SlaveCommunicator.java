@@ -24,10 +24,10 @@ public class SlaveCommunicator {
 	}
 
 	private IbisRegistry registry;
-	/** For receiving the problem. */
-	private ReceivePort distributePort;
-	/** For sending the result. */
-	private SendPort collectPort;
+	/** For receiving collective messages from master. */
+	private ReceivePort scatterPort;
+	/** For sending messages back to master. */
+	private SendPort gatherPort;
 
 	/**
 	 * Creates the ports.
@@ -36,12 +36,12 @@ public class SlaveCommunicator {
 	public SlaveCommunicator(IbisRegistry registry) throws Exception {
 		this.registry = registry;
 
-		distributePort = registry.getIbis().createReceivePort(
+		scatterPort = registry.getIbis().createReceivePort(
 				PixiPorts.SCATTER_PORT,
 				PixiPorts.SCATTER_PORT_ID,
 				new DistributePortUpcall());
 
-		collectPort = registry.getIbis().createSendPort(PixiPorts.GATHER_PORT);
-		collectPort.connect(registry.getMaster(), PixiPorts.GATHER_PORT_ID);
+		gatherPort = registry.getIbis().createSendPort(PixiPorts.GATHER_PORT);
+		gatherPort.connect(registry.getMaster(), PixiPorts.GATHER_PORT_ID);
 	}
 }
