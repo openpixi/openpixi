@@ -176,7 +176,11 @@ public class Grid {
 
 	public double getCellHeight() {
 		return cellHeight;
-	}	
+	}
+
+	public Cell getCell(int x, int y) {
+		return cells[index(x)][index(y)];
+	}
 
 	Grid(
 			int numCellsX, int numCellsY,
