@@ -10,7 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Wraps up work of identifying master and slaves.
+ * Handles connection to the ibis registry.
  */
 public class IbisRegistry {
 
@@ -20,12 +20,10 @@ public class IbisRegistry {
 	private class RegistryEvent implements RegistryEventHandler {
 
 		public void died(IbisIdentifier ii) {
-			all.remove(ii);
 			if (ii.equals(master)) {
 				masterLeftHandler.handle(null);
-			} else {
-				slaves.remove(ii);
 			}
+			workers.remove(ii);
 
 			if (isMaster()) {
 				logger.info("Node {} left the pool", ii.name());
@@ -40,10 +38,7 @@ public class IbisRegistry {
 
 		public void joined(IbisIdentifier ii) {
 			synchronized (numOfNodesLock) {
-				all.add(ii);
-				if (!ii.equals(master)) {
-					slaves.add(ii);
-				}
+				workers.add(ii);
 				numOfNodesLock.notify();
 			}
 
@@ -72,9 +67,7 @@ public class IbisRegistry {
 	/** Lock to wait for all the nodes to join.*/
 	private Object numOfNodesLock = new Object();
 
-	private final List<IbisIdentifier> all =
-			Collections.synchronizedList(new ArrayList<IbisIdentifier>());
-	private final List<IbisIdentifier> slaves =
+	private final List<IbisIdentifier> workers =
 			Collections.synchronizedList(new ArrayList<IbisIdentifier>());
 
 	private IbisIdentifier master;
@@ -97,8 +90,8 @@ public class IbisRegistry {
 		return master;
 	}
 
-	public List<IbisIdentifier> getSlaves() {
-		return slaves;
+	public List<IbisIdentifier> getWorkers() {
+		return workers;
 	}
 
 	
@@ -132,7 +125,7 @@ public class IbisRegistry {
 	 */
 	private void waitForJoin(int numOfNodes) {
 		synchronized (numOfNodesLock) {
-			while (all.size() < numOfNodes) {
+			while (workers.size() < numOfNodes) {
 				try {
 					numOfNodesLock.wait();
 				} catch (InterruptedException e) {

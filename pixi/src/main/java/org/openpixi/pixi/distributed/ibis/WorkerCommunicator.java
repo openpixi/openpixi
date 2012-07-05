@@ -9,9 +9,9 @@ import java.io.IOException;
 
 /**
  * Handles the communication connected with problem distribution and results collection
- * on the side of the Slave.
+ * on the side of the worker.
  */
-public class SlaveCommunicator {
+public class WorkerCommunicator {
 
 	/**
 	 * Receives the problem distribution.
@@ -33,7 +33,7 @@ public class SlaveCommunicator {
 	 * Creates the ports.
 	 * Receive ports have to be created first to avoid deadlock.
 	 */
-	public SlaveCommunicator(IbisRegistry registry) throws Exception {
+	public WorkerCommunicator(IbisRegistry registry) throws Exception {
 		this.registry = registry;
 
 		scatterPort = registry.getIbis().createReceivePort(

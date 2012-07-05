@@ -1,8 +1,7 @@
 package org.openpixi.pixi.ui;
 
 import org.openpixi.pixi.distributed.Master;
-import org.openpixi.pixi.distributed.Node;
-import org.openpixi.pixi.distributed.Slave;
+import org.openpixi.pixi.distributed.Worker;
 import org.openpixi.pixi.distributed.ibis.IbisRegistry;
 
 /**
@@ -29,12 +28,11 @@ public class MainDistributedBatch {
 		}
 
 		IbisRegistry registry = new IbisRegistry(numOfNodes);
-		Node node;
+		new Thread(new Worker(registry)).start();
 		if (registry.isMaster()) {
-			node = new Master(registry, NUM_CELLS_X, NUM_CELLS_Y, numOfNodes);
-		}
-		else {
-			node = new Slave(registry);
+			Master master = new Master(registry, NUM_CELLS_X, NUM_CELLS_Y, numOfNodes);
+			master.distributeProblem();
+			master.collectResults();
 		}
 	}
 }

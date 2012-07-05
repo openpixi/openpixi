@@ -44,7 +44,7 @@ public class MasterCommunicator {
 		gatherPort.enableMessageUpcalls();
 
 		Map<IbisIdentifier, String> portMap = new HashMap<IbisIdentifier, String>();
-		for (IbisIdentifier slaveIbisID: registry.getSlaves()) {
+		for (IbisIdentifier slaveIbisID: registry.getWorkers()) {
 			portMap.put(slaveIbisID, PixiPorts.SCATTER_PORT_ID);
 		}
 		scatterPort = registry.getIbis().createSendPort(PixiPorts.SCATTER_PORT);
@@ -55,7 +55,7 @@ public class MasterCommunicator {
 	public void distribute(Box[] partitions, int[] assignment) throws IOException {
 		IbisIdentifier[] ibisAssignment = convertAssignment(assignment);
 
-		for (IbisIdentifier slaveID: registry.getSlaves()) {
+		for (IbisIdentifier slaveID: registry.getWorkers()) {
 			// Create send port; connect it; send problem, disconnect port
 		}
 	}
@@ -66,11 +66,11 @@ public class MasterCommunicator {
 	 * The ibis identifiers are needed to set up ports to neighbors.
 	 */
 	private IbisIdentifier[] convertAssignment(int[] assignment) {
-		assert assignment.length == registry.getSlaves().size();
+		assert assignment.length == registry.getWorkers().size() + 1;
 
 		IbisIdentifier[] ibisAssignment = new IbisIdentifier[assignment.length];
 		for (int i = 0; i < assignment.length; i++) {
-			ibisAssignment[i] = registry.getSlaves().get(i);
+			ibisAssignment[i] = registry.getWorkers().get(assignment[i]);
 		}
 		return ibisAssignment;
 	}
