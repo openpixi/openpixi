@@ -117,6 +117,10 @@ public class Settings {
 		return interpolator;
 	}
 
+	public int getNumOfNodes() {
+		return numOfNodes;
+	}
+
 	//----------------------------------------------------------------------------------------------
 	// MORE COMPLEX GETTERS / BUILDERS
 	//----------------------------------------------------------------------------------------------
