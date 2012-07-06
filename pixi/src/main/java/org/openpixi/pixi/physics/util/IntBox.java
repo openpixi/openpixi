@@ -1,6 +1,8 @@
 package org.openpixi.pixi.physics.util;
 
-public class IntBox {
+import java.io.Serializable;
+
+public class IntBox implements Serializable {
 	private int xmin;
 	private int xmax;
 	private int ymin;

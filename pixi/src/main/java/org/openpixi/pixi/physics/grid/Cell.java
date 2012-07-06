@@ -1,9 +1,11 @@
 package org.openpixi.pixi.physics.grid;
 
+import java.io.Serializable;
+
 /**
  * Represents one cell of the grid.
  */
-public class Cell {
+public class Cell implements Serializable {
 	/**electric current in x-Direction*/
 	public double jx;
 	/**electric current in y-Direction*/

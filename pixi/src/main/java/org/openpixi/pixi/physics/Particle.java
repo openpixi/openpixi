@@ -19,7 +19,9 @@
 package org.openpixi.pixi.physics;
 
 
-public class Particle{
+import java.io.Serializable;
+
+public class Particle implements Serializable {
 
 	/** x-coordinate */
 	private double x;
