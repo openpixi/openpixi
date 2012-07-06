@@ -33,5 +33,7 @@ public class PixiPorts {
 			PortType.RECEIVE_EXPLICIT,
 			PortType.CONNECTION_ONE_TO_ONE);
 
+	public  static final String DISTRIBUTE_PORT_ID = "distribute";
+
 	public static final PortType[] ALL_PORTS = {SCATTER_PORT, GATHER_PORT, ONE_TO_ONE_PORT};
 }

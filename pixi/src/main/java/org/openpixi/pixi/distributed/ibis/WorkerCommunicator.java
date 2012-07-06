@@ -4,8 +4,12 @@ import ibis.ipl.MessageUpcall;
 import ibis.ipl.ReadMessage;
 import ibis.ipl.ReceivePort;
 import ibis.ipl.SendPort;
+import org.openpixi.pixi.physics.Particle;
+import org.openpixi.pixi.physics.grid.Cell;
+import org.openpixi.pixi.physics.util.IntBox;
 
 import java.io.IOException;
+import java.util.List;
 
 /**
  * Handles the communication connected with problem distribution and results collection
@@ -13,21 +17,31 @@ import java.io.IOException;
  */
 public class WorkerCommunicator {
 
-	/**
-	 * Receives the problem distribution.
-	 */
-	private class DistributePortUpcall implements MessageUpcall {
+	private IbisRegistry registry;
 
-		public void upcall(ReadMessage readMessage) throws IOException, ClassNotFoundException {
-			//To change body of implemented methods use File | Settings | File Templates.
-		}
+	// Necessary data for building the simulation.
+	private IntBox[] partitions;
+	private int[] assignment;
+	private List<Particle> particles;
+	private Cell[][] cells;
+
+
+	public IntBox[] getPartitions() {
+		return partitions;
 	}
 
-	private IbisRegistry registry;
-	/** For receiving collective messages from master. */
-	private ReceivePort scatterPort;
-	/** For sending messages back to master. */
-	private SendPort gatherPort;
+	public int[] getAssignment() {
+		return assignment;
+	}
+
+	public List<Particle> getParticles() {
+		return particles;
+	}
+
+	public Cell[][] getCells() {
+		return cells;
+	}
+
 
 	/**
 	 * Creates the ports.
@@ -35,13 +49,21 @@ public class WorkerCommunicator {
 	 */
 	public WorkerCommunicator(IbisRegistry registry) throws Exception {
 		this.registry = registry;
+	}
 
-		scatterPort = registry.getIbis().createReceivePort(
-				PixiPorts.SCATTER_PORT,
-				PixiPorts.SCATTER_PORT_ID,
-				new DistributePortUpcall());
 
-		gatherPort = registry.getIbis().createSendPort(PixiPorts.GATHER_PORT);
-		gatherPort.connect(registry.getMaster(), PixiPorts.GATHER_PORT_ID);
+	public void receiveProblem() throws IOException, ClassNotFoundException {
+		ReceivePort distributePort = registry.getIbis().createReceivePort(
+				PixiPorts.ONE_TO_ONE_PORT, PixiPorts.DISTRIBUTE_PORT_ID);
+		distributePort.enableConnections();
+
+		ReadMessage rm = distributePort.receive();
+		partitions = (IntBox[])rm.readObject();
+		assignment = (int[])rm.readObject();
+		particles = (List<Particle>)rm.readObject();
+		cells = (Cell[][])rm.readObject();
+		rm.finish();
+
+		distributePort.close();
 	}
 }

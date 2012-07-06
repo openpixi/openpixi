@@ -48,7 +48,7 @@ public class Master {
 		List<List<Particle>> particlePartitions = partitionParticles(partitions, particles);
 		Cell[][][] gridPartitions = partitionGrid(partitions, grid);
 
-		communicator.distribute(partitions, assignment, particlePartitions, gridPartitions);
+		communicator.distributeProblem(partitions, assignment, particlePartitions, gridPartitions);
 	}
 
 

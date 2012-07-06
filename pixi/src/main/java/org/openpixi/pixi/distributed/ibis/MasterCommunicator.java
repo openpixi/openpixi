@@ -26,10 +26,6 @@ public class MasterCommunicator {
 	}
 
 	private IbisRegistry registry;
-	/** For multicast to all slaves. */
-	private SendPort scatterPort;
-	/** For receiving messages from all slaves. */
-	private ReceivePort gatherPort;
 
 
 	/**
@@ -38,45 +34,39 @@ public class MasterCommunicator {
 	 */
 	public MasterCommunicator(IbisRegistry registry) throws Exception {
 		this.registry = registry;
-
-		gatherPort = registry.getIbis().createReceivePort(
-				PixiPorts.GATHER_PORT,
-				PixiPorts.GATHER_PORT_ID,
-				new CollectPortUpcall());
-		gatherPort.enableConnections();
-		gatherPort.enableMessageUpcalls();
-
-		Map<IbisIdentifier, String> portMap = new HashMap<IbisIdentifier, String>();
-		for (IbisIdentifier slaveIbisID: registry.getWorkers()) {
-			portMap.put(slaveIbisID, PixiPorts.SCATTER_PORT_ID);
-		}
-		scatterPort = registry.getIbis().createSendPort(PixiPorts.SCATTER_PORT);
-		scatterPort.connect(portMap);
 	}
 
 
-	public void distribute(IntBox[] partitions, int[] assignment,
-			List<List<Particle>> particles, Cell[][][] subgrids) throws IOException {
-		IbisIdentifier[] ibisAssignment = convertAssignment(assignment);
+	/**
+	 * The ports for problem distribution are closed right after they are used to minimize
+	 * number of open connections.
+	 */
+	public void distributeProblem(IntBox[] partitions, int[] assignment,
+	                              List<List<Particle>> particlePartitions,
+	                              Cell[][][] gridPartitions) throws IOException {
+		assert assignment.length >= registry.getWorkers().size();
 
-		for (IbisIdentifier slaveID: registry.getWorkers()) {
-			// Create send port; connect it; send problem, disconnect port
+		for (int i = 0; i < assignment.length; ++i) {
+			SendPort distributePort = registry.getIbis().createSendPort(PixiPorts.ONE_TO_ONE_PORT);
+			distributePort.connect(convertNodeIDToIbisID(assignment[i]), PixiPorts.DISTRIBUTE_PORT_ID);
+
+			WriteMessage wm = distributePort.newMessage();
+			wm.writeObject(partitions);
+			wm.writeObject(assignment);
+			wm.writeObject(particlePartitions.get(assignment[i]));
+			wm.writeObject(gridPartitions[assignment[i]]);
+			wm.finish();
+
+			distributePort.close();
 		}
 	}
 
 
 	/**
-	 * Converts the partition assignment table from integers to ibis identifiers.
-	 * The ibis identifiers are needed to set up ports to neighbors.
+	 * Relies heavily on the fact that the list of workers is the same on each pc!
 	 */
-	private IbisIdentifier[] convertAssignment(int[] assignment) {
-		assert assignment.length == registry.getWorkers().size() + 1;
-
-		IbisIdentifier[] ibisAssignment = new IbisIdentifier[assignment.length];
-		for (int i = 0; i < assignment.length; i++) {
-			ibisAssignment[i] = registry.getWorkers().get(assignment[i]);
-		}
-		return ibisAssignment;
+	private IbisIdentifier convertNodeIDToIbisID(int nodeID) {
+		return registry.getWorkers().get(nodeID);
 	}
 
 
