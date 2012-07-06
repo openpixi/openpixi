@@ -7,7 +7,10 @@ import org.openpixi.pixi.physics.fields.PoissonSolver;
 import org.openpixi.pixi.physics.fields.PoissonSolverFFTPeriodic;
 import org.openpixi.pixi.physics.force.CombinedForce;
 import org.openpixi.pixi.physics.force.Force;
+import org.openpixi.pixi.physics.grid.GridBoundaryType;
 import org.openpixi.pixi.physics.grid.Interpolator;
+import org.openpixi.pixi.physics.movement.boundary.ParticleBoundary;
+import org.openpixi.pixi.physics.movement.boundary.ParticleBoundaryType;
 import org.openpixi.pixi.physics.solver.EmptySolver;
 import org.openpixi.pixi.physics.solver.Solver;
 
@@ -51,11 +54,17 @@ public class Settings {
 
 	private List<Force> forces = new ArrayList<Force>();
 
-	// Particle settings
+	// Grid related settings
+
+	private GridBoundaryType gridBoundary = GridBoundaryType.Hardwall;
+
+	// Particle related settings
 
 	private int particleCount = 100;
 	private double particleRadius = 1;
 	private double particleMaxSpeed = speedOfLight;
+
+	private ParticleBoundaryType particleBoundary = ParticleBoundaryType.Hardwall;
 
 	// Batch version settings
 
@@ -119,6 +128,14 @@ public class Settings {
 
 	public int getNumOfNodes() {
 		return numOfNodes;
+	}
+
+	public GridBoundaryType getGridBoundary() {
+		return gridBoundary;
+	}
+
+	public ParticleBoundaryType getParticleBoundary() {
+		return particleBoundary;
 	}
 
 	//----------------------------------------------------------------------------------------------
@@ -218,6 +235,14 @@ public class Settings {
 
 	public void setNumOfNodes(int numOfNodes) {
 		this.numOfNodes = numOfNodes;
+	}
+
+	public void setGridBoundary(GridBoundaryType gridBoundary) {
+		this.gridBoundary = gridBoundary;
+	}
+
+	public void setParticleBoundary(ParticleBoundaryType particleBoundary) {
+		this.particleBoundary = particleBoundary;
 	}
 
 	//----------------------------------------------------------------------------------------------
