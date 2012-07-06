@@ -20,11 +20,6 @@ public class IbisRegistry {
 	private class RegistryEvent implements RegistryEventHandler {
 
 		public void died(IbisIdentifier ii) {
-			workers.remove(ii);
-
-			if (isMaster()) {
-				logger.info("Node {} left the pool", ii.name());
-			}
 		}
 
 		public void electionResult(String arg0, IbisIdentifier arg1) {
@@ -45,7 +40,6 @@ public class IbisRegistry {
 		}
 
 		public void left(IbisIdentifier ii) {
-			died(ii);
 		}
 
 		public void poolClosed() {
@@ -122,5 +116,12 @@ public class IbisRegistry {
 				}
 			}
 		}
+
+		StringBuilder sb = new StringBuilder();
+		for (IbisIdentifier worker: workers) {
+			sb.append(worker.name() + "\t");
+		}
+
+		logger.debug("Workers: {}", sb.toString().trim());
 	}
 }
