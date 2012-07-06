@@ -1,6 +1,8 @@
 package org.openpixi.pixi.physics.grid;
 
 import java.util.ArrayList;
+import java.util.List;
+
 import org.openpixi.pixi.physics.Debug;
 import org.openpixi.pixi.physics.Particle;
 
@@ -82,7 +84,7 @@ public class Interpolator {
 
 	}
 
-	public void interpolateChargedensity(ArrayList<Particle> particles, Grid g) {
+	public void interpolateChargedensity(List<Particle> particles, Grid g) {
 		g.resetCurrentAndCharge();		
 		double cellArea = g.getCellWidth() * g.getCellHeight();
 		

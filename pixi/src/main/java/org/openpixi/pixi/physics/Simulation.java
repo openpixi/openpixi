@@ -56,6 +56,8 @@ public class Simulation {
 	public CollisionAlgorithm collisionalgorithm;
 	public boolean collisionBoolean = false;
 
+	private ParticleGridInitializer particleGridInitializer = new ParticleGridInitializer();
+
 	/**interpolation algorithm for current, charge density and force calculation*/
 	private Interpolator interpolator;
 
@@ -90,7 +92,7 @@ public class Simulation {
 
 	public void setGrid(Grid grid) {
 		this.grid = grid;
-		onGridResize();
+		particleGridInitializer.initialize(interpolator, poisolver, particles, grid);
 	}
 
 	/**Creates a basic simulation and initializes all
@@ -117,7 +119,7 @@ public class Simulation {
 
 		poisolver = new PoissonSolverFFTPeriodic();
 		grid = GridFactory.createSimpleGrid(this, 10, 10, width, height);
-		onGridResize();
+		particleGridInitializer.initialize(interpolator, poisolver, particles, grid);
 
 		detector = new Detector();
 		collisionalgorithm = new CollisionAlgorithm();
@@ -134,7 +136,7 @@ public class Simulation {
 		this.height = height;
 		mover.resizeBoundaries(new DoubleBox(0,width,0,height));
 		grid.set(grid.getNumCellsX(), grid.getNumCellsY(), width, height);
-		onGridResize();
+		particleGridInitializer.initialize(interpolator, poisolver, particles, grid);
 	}
 
 	public void step() {
@@ -159,14 +161,5 @@ public class Simulation {
 
 	public void completeAllParticles() {
 		mover.complete(particles, f, tstep);
-	}
-
-	private void onGridResize() {
-		interpolator.interpolateChargedensity(particles, grid);
-		poisolver.solve(grid);
-		for (Particle p: particles){
-			//assuming rectangular particle shape i.e. area weighting
-			p.setChargedensity(p.getCharge() / (grid.getCellWidth() * grid.getCellHeight()));
-		}
 	}
 }
