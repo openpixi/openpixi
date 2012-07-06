@@ -180,7 +180,7 @@ public class Grid {
 		return cells[index(x)][index(y)];
 	}
 
-	Grid(
+	public Grid(
 			int numCellsX, int numCellsY,
 			double simWidth, double simHeight,
 			GridBoundaryType boundaryType,
