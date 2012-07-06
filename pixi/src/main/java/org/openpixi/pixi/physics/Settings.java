@@ -34,29 +34,20 @@ public class Settings {
 
 	private double simulationWidth = 100;
 	private double simulationHeight = 100;
+	private double speedOfLight = 1;
+	private double timeStep = 1;
+
+	private Interpolator interpolator = new Interpolator();
+
+	// Grid related settings
 
 	private int gridCellsX = 10;
 	private int gridCellsY = 10;
 
-	private double speedOfLight = 1;
-
-	private double timeStep = 1;
-
-	private Detector collisionDetector = new Detector();
-	private CollisionAlgorithm collisionResolver = new CollisionAlgorithm();
-
-	private FieldSolver gridSolver = new FieldSolver();
-	private PoissonSolver poissonSolver = new PoissonSolverFFTPeriodic();
-
-	private Solver particleSolver = new EmptySolver();
-
-	private Interpolator interpolator = new Interpolator();
-
-	private List<Force> forces = new ArrayList<Force>();
-
-	// Grid related settings
 
 	private GridBoundaryType gridBoundary = GridBoundaryType.Hardwall;
+	private FieldSolver gridSolver = new FieldSolver();
+	private PoissonSolver poissonSolver = new PoissonSolverFFTPeriodic();
 
 	// Particle related settings
 
@@ -65,6 +56,10 @@ public class Settings {
 	private double particleMaxSpeed = speedOfLight;
 
 	private ParticleBoundaryType particleBoundary = ParticleBoundaryType.Hardwall;
+	private Detector collisionDetector = new Detector();
+	private CollisionAlgorithm collisionResolver = new CollisionAlgorithm();
+	private Solver particleSolver = new EmptySolver();
+	private List<Force> forces = new ArrayList<Force>();
 
 	// Batch version settings
 
