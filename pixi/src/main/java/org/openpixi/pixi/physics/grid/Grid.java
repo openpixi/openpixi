@@ -1,5 +1,6 @@
 package org.openpixi.pixi.physics.grid;
 
+import org.openpixi.pixi.physics.Settings;
 import org.openpixi.pixi.physics.fields.FieldSolver;
 
 /**
@@ -180,6 +181,7 @@ public class Grid {
 		return cells[index(x)][index(y)];
 	}
 
+	// TODO remove and have the settings constructor only
 	public Grid(
 			int numCellsX, int numCellsY,
 			double simWidth, double simHeight,
@@ -190,6 +192,14 @@ public class Grid {
 		this.fsolver = fsolver;
 
 		set(numCellsX, numCellsY, simWidth, simHeight);
+	}
+
+	public Grid(Settings settings) {
+		this.boundaryType = settings.getGridBoundary();
+		this.fsolver = settings.getGridSolver();
+
+		set(settings.getGridCellsX(), settings.getGridCellsY(),
+				settings.getSimulationWidth(), settings.getSimulationHeight());
 	}
 
 	public void set(int numCellsX, int numCellsY,
