@@ -19,11 +19,17 @@ public class MainDistributedBatch {
 		settings.setGridCellsY(32);
 
 		IbisRegistry registry = new IbisRegistry(settings.getNumOfNodes());
-		new Thread(new Worker(registry, settings)).start();
+		Thread workerThread = new Thread(new Worker(registry, settings));
+		workerThread.start();
 		if (registry.isMaster()) {
 			Master master = new Master(registry, settings);
 			master.distributeProblem();
 			master.collectResults();
 		}
+
+		workerThread.join();
+		// Wait for everybody to receive the last message before closing ibis.
+		Thread.sleep(1000);
+		registry.close();
 	}
 }
