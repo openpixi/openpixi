@@ -7,7 +7,10 @@ import org.openpixi.pixi.physics.fields.PoissonSolver;
 import org.openpixi.pixi.physics.fields.PoissonSolverFFTPeriodic;
 import org.openpixi.pixi.physics.force.CombinedForce;
 import org.openpixi.pixi.physics.force.Force;
+import org.openpixi.pixi.physics.grid.GridBoundaryType;
 import org.openpixi.pixi.physics.grid.Interpolator;
+import org.openpixi.pixi.physics.movement.boundary.ParticleBoundary;
+import org.openpixi.pixi.physics.movement.boundary.ParticleBoundaryType;
 import org.openpixi.pixi.physics.solver.EmptySolver;
 import org.openpixi.pixi.physics.solver.Solver;
 
@@ -31,31 +34,32 @@ public class Settings {
 
 	private double simulationWidth = 100;
 	private double simulationHeight = 100;
+	private double speedOfLight = 1;
+	private double timeStep = 1;
+
+	private Interpolator interpolator = new Interpolator();
+
+	// Grid related settings
 
 	private int gridCellsX = 10;
 	private int gridCellsY = 10;
 
-	private double speedOfLight = 1;
 
-	private double timeStep = 1;
-
-	private Detector collisionDetector = new Detector();
-	private CollisionAlgorithm collisionResolver = new CollisionAlgorithm();
-
+	private GridBoundaryType gridBoundary = GridBoundaryType.Hardwall;
 	private FieldSolver gridSolver = new FieldSolver();
 	private PoissonSolver poissonSolver = new PoissonSolverFFTPeriodic();
 
-	private Solver particleSolver = new EmptySolver();
-
-	private Interpolator interpolator = new Interpolator();
-
-	private List<Force> forces = new ArrayList<Force>();
-
-	// Particle settings
+	// Particle related settings
 
 	private int particleCount = 100;
 	private double particleRadius = 1;
 	private double particleMaxSpeed = speedOfLight;
+
+	private ParticleBoundaryType particleBoundary = ParticleBoundaryType.Hardwall;
+	private Detector collisionDetector = new Detector();
+	private CollisionAlgorithm collisionResolver = new CollisionAlgorithm();
+	private Solver particleSolver = new EmptySolver();
+	private List<Force> forces = new ArrayList<Force>();
 
 	// Batch version settings
 
@@ -119,6 +123,14 @@ public class Settings {
 
 	public int getNumOfNodes() {
 		return numOfNodes;
+	}
+
+	public GridBoundaryType getGridBoundary() {
+		return gridBoundary;
+	}
+
+	public ParticleBoundaryType getParticleBoundary() {
+		return particleBoundary;
 	}
 
 	//----------------------------------------------------------------------------------------------
@@ -218,6 +230,14 @@ public class Settings {
 
 	public void setNumOfNodes(int numOfNodes) {
 		this.numOfNodes = numOfNodes;
+	}
+
+	public void setGridBoundary(GridBoundaryType gridBoundary) {
+		this.gridBoundary = gridBoundary;
+	}
+
+	public void setParticleBoundary(ParticleBoundaryType particleBoundary) {
+		this.particleBoundary = particleBoundary;
 	}
 
 	//----------------------------------------------------------------------------------------------
