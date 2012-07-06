@@ -1,5 +1,6 @@
 package org.openpixi.pixi.distributed;
 
+import com.sun.xml.internal.ws.api.config.management.policy.ManagementAssertion;
 import org.openpixi.pixi.distributed.assigning.PartitionAssigner;
 import org.openpixi.pixi.distributed.assigning.SimplePartitionAssigner;
 import org.openpixi.pixi.distributed.ibis.MasterCommunicator;
@@ -7,6 +8,7 @@ import org.openpixi.pixi.distributed.ibis.IbisRegistry;
 import org.openpixi.pixi.distributed.partitioning.Partitioner;
 import org.openpixi.pixi.distributed.partitioning.SimplePartitioner;
 import org.openpixi.pixi.physics.Particle;
+import org.openpixi.pixi.physics.Settings;
 import org.openpixi.pixi.physics.grid.Cell;
 import org.openpixi.pixi.physics.grid.Grid;
 import org.openpixi.pixi.physics.util.IntBox;
@@ -21,31 +23,27 @@ import java.util.List;
 public class Master {
 
 	private MasterCommunicator communicator;
-	private int numCellsX;
-	private int numCellsY;
-	private int numNodes;
-	private List<Particle> particles;
+	private Settings settings;
 	private Grid grid;
 
 
-	// TODO replace parameters with settings class
-	public Master(IbisRegistry registry, int numCellsX, int numCellsY, int numNodes) throws Exception {
-		this.numCellsX = numCellsX;
-		this.numCellsY = numCellsY;
-		this.numNodes = numNodes;
-
+	public Master(IbisRegistry registry, Settings settings) throws Exception {
+		this.settings = settings;
 		communicator = new MasterCommunicator(registry);
+		grid = new Grid(settings);
 	}
 
 
 	public void distributeProblem() throws IOException {
 		Partitioner partitioner = new SimplePartitioner();
-		IntBox[] partitions = partitioner.partition(numCellsX, numCellsY, numNodes);
+		IntBox[] partitions = partitioner.partition(
+				settings.getGridCellsX(), settings.getGridCellsY(), settings.getNumOfNodes());
 
 		PartitionAssigner assigner = new SimplePartitionAssigner();
-		int[] assignment = assigner.assign(partitions, numNodes);
+		int[] assignment = assigner.assign(partitions, settings.getNumOfNodes());
 
-		List<List<Particle>> particlePartitions = partitionParticles(partitions, particles);
+		List<List<Particle>> particlePartitions = partitionParticles(
+				partitions, settings.getParticles());
 		Cell[][][] gridPartitions = partitionGrid(partitions, grid);
 
 		communicator.distributeProblem(partitions, assignment, particlePartitions, gridPartitions);
@@ -76,19 +74,19 @@ public class Master {
 	 */
 	private Cell[][] getSubgrid(IntBox partition, Grid grid) {
 		int startX = partition.xmin();
-		int startY = partition.xmax();
-		int endX = partition.ymin();
+		int endX = partition.xmax();
+		int startY = partition.ymin();
 		int endY = partition.ymax();
 		if (startX == 0) {
 			startX -= grid.EXTRA_CELLS_BEFORE_GRID;
 		}
-		if (endX == numCellsX - 1) {
+		if (endX == settings.getGridCellsX() - 1) {
 			endX += grid.EXTRA_CELLS_AFTER_GRID;
 		}
 		if (startY == 0) {
 			startY -= grid.EXTRA_CELLS_BEFORE_GRID;
 		}
-		if (endY == numCellsY - 1) {
+		if (endY == settings.getGridCellsY() - 1) {
 			endY += grid.EXTRA_CELLS_AFTER_GRID;
 		}
 
@@ -110,10 +108,14 @@ public class Master {
 		for (int i = 0; i < partitions.length; ++i) {
 			particlePartitions.add(new ArrayList<Particle>());
 		}
+
 		for (Particle p: particles) {
 			int partitionIndex = -1;
 			for  (int i = 0; i < partitions.length; ++i) {
-				if (partitions[i].contains(p.getX(), p.getY())) {
+				int cellX = (int)p.getX() / grid.getNumCellsX();
+				int cellY = (int)p.getY() / grid.getNumCellsY();
+
+				if (partitions[i].contains(cellX, cellY)) {
 					partitionIndex = i;
 				}
 			}

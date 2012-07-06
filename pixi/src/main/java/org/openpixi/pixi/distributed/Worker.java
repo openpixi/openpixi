@@ -2,19 +2,28 @@ package org.openpixi.pixi.distributed;
 
 import org.openpixi.pixi.distributed.ibis.IbisRegistry;
 import org.openpixi.pixi.distributed.ibis.WorkerCommunicator;
+import org.openpixi.pixi.physics.Settings;
+
+import java.io.IOException;
 
 /**
  * Receives the problem, calculates the problem, sends back results.
  */
 public class Worker implements Runnable {
 
-	WorkerCommunicator communicator;
+	private WorkerCommunicator communicator;
+	private Settings settings;
 
-	public Worker(IbisRegistry registry) throws Exception {
+	public Worker(IbisRegistry registry, Settings settings) throws Exception {
 		communicator = new WorkerCommunicator(registry);
 	}
 
 	public void run() {
-		//To change body of implemented methods use File | Settings | File Templates.
+		try {
+			communicator.receiveProblem();
+		} catch (Exception e) {
+			e.printStackTrace();
+			System.exit(1);
+		}
 	}
 }

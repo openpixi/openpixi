@@ -20,9 +20,6 @@ public class IbisRegistry {
 	private class RegistryEvent implements RegistryEventHandler {
 
 		public void died(IbisIdentifier ii) {
-			if (ii.equals(master)) {
-				masterLeftHandler.handle(null);
-			}
 			workers.remove(ii);
 
 			if (isMaster()) {
@@ -74,16 +71,8 @@ public class IbisRegistry {
 
 	private Ibis ibis;
 
-	/** This handler is called when master leaves or dies. */
-	private SimpleHandler masterLeftHandler;
-
-
 	public Ibis getIbis() {
 		return ibis;
-	}
-
-	public void setMasterLeftHandler(SimpleHandler masterLeftHandler) {
-		this.masterLeftHandler = masterLeftHandler;
 	}
 
 	public IbisIdentifier getMaster() {

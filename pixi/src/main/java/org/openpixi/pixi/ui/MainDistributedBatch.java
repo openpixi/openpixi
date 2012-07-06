@@ -1,36 +1,27 @@
 package org.openpixi.pixi.ui;
 
+import com.sun.xml.internal.ws.api.config.management.policy.ManagementAssertion;
 import org.openpixi.pixi.distributed.Master;
 import org.openpixi.pixi.distributed.Worker;
 import org.openpixi.pixi.distributed.ibis.IbisRegistry;
+import org.openpixi.pixi.physics.Settings;
 
 /**
  * Runs distributed simulation.
  */
 public class MainDistributedBatch {
 
-	private static final int NUM_CELLS_X = 32;
-	private static final int NUM_CELLS_Y = 16;
-
 	public static void main(String[] args) throws Exception {
 
-		// Read number of nodes
-		if (args.length < 1) {
-			System.out.println("Number of nodes was not specified!");
-			System.exit(1);
-		}
-		int numOfNodes = 0;
-		try {
-			numOfNodes = Integer.parseInt(args[0]);
-		} catch (NumberFormatException e) {
-			System.out.println("Invalid parameter: " + args[0] + "!");
-			System.exit(1);
-		}
+		Settings settings = new Settings();
+		settings.setNumOfNodes(2);
+		settings.setGridCellsX(32);
+		settings.setGridCellsY(32);
 
-		IbisRegistry registry = new IbisRegistry(numOfNodes);
-		new Thread(new Worker(registry)).start();
+		IbisRegistry registry = new IbisRegistry(settings.getNumOfNodes());
+		new Thread(new Worker(registry, settings)).start();
 		if (registry.isMaster()) {
-			Master master = new Master(registry, NUM_CELLS_X, NUM_CELLS_Y, numOfNodes);
+			Master master = new Master(registry, settings);
 			master.distributeProblem();
 			master.collectResults();
 		}
