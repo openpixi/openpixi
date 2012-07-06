@@ -1,5 +1,7 @@
 package org.openpixi.pixi.distributed.partitioning;
 
+import org.openpixi.pixi.physics.util.IntBox;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,7 +18,7 @@ import java.util.List;
  */
 public class SimplePartitioner implements Partitioner {
 
-	public Box[] partition(int numCellsX, int numCellsY, int numPartitions) {
+	public IntBox[] partition(int numCellsX, int numCellsY, int numPartitions) {
 		assert numCellsX > 0;
 		assert numCellsY > 0;
 
@@ -29,31 +31,31 @@ public class SimplePartitioner implements Partitioner {
 					"Number of nodes must be less or equal to the number of cells!");
 		}
 
-		List<Box> partitions = new ArrayList<Box>();
-		partitions.add(new Box(0, numCellsX, 0, numCellsY));
+		List<IntBox> partitions = new ArrayList<IntBox>();
+		partitions.add(new IntBox(0, numCellsX, 0, numCellsY));
 
 		while (partitions.size() < numPartitions) {
 			partitions = splitBoxes(partitions);
 		}
 
-		return partitions.toArray(new Box[0]);
+		return partitions.toArray(new IntBox[0]);
 	}
 
 
-	private List<Box> splitBoxes(List<Box> partitions) {
-		List<Box> newPartitions = new ArrayList<Box>();
-		for (Box b: partitions) {
+	private List<IntBox> splitBoxes(List<IntBox> partitions) {
+		List<IntBox> newPartitions = new ArrayList<IntBox>();
+		for (IntBox b: partitions) {
 			if (b.xsize() > b.ysize()) {
 				// Split along x axis
 				int xmid = b.xmin() + b.xsize() / 2;
-				newPartitions.add(new Box(b.xmin(), xmid, b.ymin(), b.ymax()));
-				newPartitions.add(new Box(xmid, b.xmax(), b.ymin(), b.ymax()));
+				newPartitions.add(new IntBox(b.xmin(), xmid, b.ymin(), b.ymax()));
+				newPartitions.add(new IntBox(xmid, b.xmax(), b.ymin(), b.ymax()));
 			}
 			else {
 				// Split along y axis
 				int ymid = b.ymin() + b.ysize() / 2;
-				newPartitions.add(new Box(b.xmin(), b.xmax(), b.ymin(), ymid));
-				newPartitions.add(new Box(b.xmin(), b.xmax(), ymid, b.ymax()));
+				newPartitions.add(new IntBox(b.xmin(), b.xmax(), b.ymin(), ymid));
+				newPartitions.add(new IntBox(b.xmin(), b.xmax(), ymid, b.ymax()));
 			}
 		}
 		return newPartitions;

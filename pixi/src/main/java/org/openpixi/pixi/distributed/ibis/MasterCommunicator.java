@@ -1,9 +1,9 @@
 package org.openpixi.pixi.distributed.ibis;
 
 import ibis.ipl.*;
-import org.openpixi.pixi.distributed.partitioning.Box;
 import org.openpixi.pixi.physics.Particle;
 import org.openpixi.pixi.physics.grid.Cell;
+import org.openpixi.pixi.physics.util.IntBox;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -55,7 +55,7 @@ public class MasterCommunicator {
 	}
 
 
-	public void distribute(Box[] partitions, int[] assignment,
+	public void distribute(IntBox[] partitions, int[] assignment,
 			List<List<Particle>> particles, Cell[][][] subgrids) throws IOException {
 		IbisIdentifier[] ibisAssignment = convertAssignment(assignment);
 

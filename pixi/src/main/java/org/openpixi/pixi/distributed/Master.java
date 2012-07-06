@@ -4,12 +4,12 @@ import org.openpixi.pixi.distributed.assigning.PartitionAssigner;
 import org.openpixi.pixi.distributed.assigning.SimplePartitionAssigner;
 import org.openpixi.pixi.distributed.ibis.MasterCommunicator;
 import org.openpixi.pixi.distributed.ibis.IbisRegistry;
-import org.openpixi.pixi.distributed.partitioning.Box;
 import org.openpixi.pixi.distributed.partitioning.Partitioner;
 import org.openpixi.pixi.distributed.partitioning.SimplePartitioner;
 import org.openpixi.pixi.physics.Particle;
 import org.openpixi.pixi.physics.grid.Cell;
 import org.openpixi.pixi.physics.grid.Grid;
+import org.openpixi.pixi.physics.util.IntBox;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -40,7 +40,7 @@ public class Master {
 
 	public void distributeProblem() throws IOException {
 		Partitioner partitioner = new SimplePartitioner();
-		Box[] partitions = partitioner.partition(numCellsX, numCellsY, numNodes);
+		IntBox[] partitions = partitioner.partition(numCellsX, numCellsY, numNodes);
 
 		PartitionAssigner assigner = new SimplePartitionAssigner();
 		int[] assignment = assigner.assign(partitions, numNodes);
@@ -59,7 +59,7 @@ public class Master {
 	/**
 	 * Divides cells according to partitions.
 	 */
-	private Cell[][][] partitionGrid(Box[] partitions, Grid grid) {
+	private Cell[][][] partitionGrid(IntBox[] partitions, Grid grid) {
 		Cell[][][] gridPartitions = new Cell[partitions.length][][];
 		for (int i = 0; i < partitions.length; ++i) {
 			gridPartitions[i] = getSubgrid(partitions[i], grid);
@@ -74,7 +74,7 @@ public class Master {
 	 * (density charge interpolation + poisson solver)
 	 * we need to distribute also the extra cells.
 	 */
-	private Cell[][] getSubgrid(Box partition, Grid grid) {
+	private Cell[][] getSubgrid(IntBox partition, Grid grid) {
 		int startX = partition.xmin();
 		int startY = partition.xmax();
 		int endX = partition.ymin();
@@ -105,7 +105,7 @@ public class Master {
 	/**
 	 * Divides particles according to partitions they belong to.
 	 */
-	private List<List<Particle>> partitionParticles(Box[] partitions, List<Particle> particles) {
+	private List<List<Particle>> partitionParticles(IntBox[] partitions, List<Particle> particles) {
 		List<List<Particle>> particlePartitions = new ArrayList<List<Particle>>();
 		for (int i = 0; i < partitions.length; ++i) {
 			particlePartitions.add(new ArrayList<Particle>());

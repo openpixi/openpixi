@@ -1,6 +1,6 @@
 package org.openpixi.pixi.distributed.assigning;
 
-import org.openpixi.pixi.distributed.partitioning.Box;
+import org.openpixi.pixi.physics.util.IntBox;
 
 /**
  * Basic assignment of partitions to nodes.
@@ -9,7 +9,7 @@ import org.openpixi.pixi.distributed.partitioning.Box;
  */
 public class SimplePartitionAssigner implements PartitionAssigner {
 
-	public int[] assign(Box[] partitions, int numOfNodes) {
+	public int[] assign(IntBox[] partitions, int numOfNodes) {
 		if (partitions.length != numOfNodes) {
 			throw new RuntimeException("Number of nodes and partitions must be equal!");
 		}

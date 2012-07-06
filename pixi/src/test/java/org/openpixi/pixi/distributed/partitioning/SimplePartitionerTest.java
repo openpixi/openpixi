@@ -1,8 +1,7 @@
 package org.openpixi.pixi.distributed.partitioning;
 
 import junit.framework.TestCase;
-
-import java.util.List;
+import org.openpixi.pixi.physics.util.IntBox;
 
 /**
  * General test for partitioning the simulation area in distributed simulation.
@@ -24,7 +23,7 @@ public class SimplePartitionerTest extends TestCase {
 
 	public void testPartition() throws Exception {
 		SimplePartitioner partitioner = new SimplePartitioner();
-		Box[] partitions = partitioner.partition(NUM_CELLS_X, NUM_CELLS_Y, NUM_PARTITIONS);
+		IntBox[] partitions = partitioner.partition(NUM_CELLS_X, NUM_CELLS_Y, NUM_PARTITIONS);
 
 		assertEquals(NUM_PARTITIONS, partitions.length);
 
@@ -34,7 +33,7 @@ public class SimplePartitionerTest extends TestCase {
 		int smallestYmin = Integer.MAX_VALUE;
 
 		for (int i = 0; i < partitions.length; ++i) {
-			Box b = partitions[i];
+			IntBox b = partitions[i];
 
 			if (isMalformed(b)) {
 				fail("Malformed partition! " + b);
@@ -54,7 +53,7 @@ public class SimplePartitionerTest extends TestCase {
 			}
 
 			for (int j = i + 1; j < partitions.length; ++j) {
-				Box b2 = partitions[j];
+				IntBox b2 = partitions[j];
 				if (areEqual(b, b2)) {
 					fail("Equal partitions: " + b + " " + b2);
 				}
@@ -74,7 +73,7 @@ public class SimplePartitionerTest extends TestCase {
 	}
 
 
-	private boolean areEqual(Box b1, Box b2) {
+	private boolean areEqual(IntBox b1, IntBox b2) {
 		if (
 				b1.xmin() == b2.xmin() &&
 				b1.xmax() == b2.xmax() &&
@@ -88,7 +87,7 @@ public class SimplePartitionerTest extends TestCase {
 	}
 
 
-	private boolean interleave(Box b1, Box b2) {
+	private boolean interleave(IntBox b1, IntBox b2) {
 		if (
 				b1.xmin() < b2.xmax() &&
 				b2.xmin() < b1.xmax() &&
@@ -102,7 +101,7 @@ public class SimplePartitionerTest extends TestCase {
 	}
 
 
-	private boolean isMalformed(Box b) {
+	private boolean isMalformed(IntBox b) {
 		if (b.xmin() < b.xmax() && b.ymin() < b.ymax()) {
 			return false;
 		}
