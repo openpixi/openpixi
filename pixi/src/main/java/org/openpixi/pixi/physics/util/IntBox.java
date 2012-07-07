@@ -39,8 +39,8 @@ public class IntBox implements Serializable {
 		return ymax - ymin + 1;
 	}
 
-	public boolean contains(double x, double y) {
-		if (xmin <= x && x < xmax && ymin <= y && y < ymax()) {
+	public boolean contains(int x, int y) {
+		if (xmin <= x && x <= xmax && ymin <= y && y <= ymax()) {
 			return true;
 		}
 		else {
