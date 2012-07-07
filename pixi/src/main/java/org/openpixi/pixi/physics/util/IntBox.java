@@ -20,7 +20,7 @@ public class IntBox implements Serializable {
 	}
 
 	public int xsize() {
-		return xmax - xmin;
+		return xmax - xmin + 1;
 	}
 
 	public int xmax() {
@@ -36,7 +36,7 @@ public class IntBox implements Serializable {
 	}
 
 	public int ysize() {
-		return ymax - ymin;
+		return ymax - ymin + 1;
 	}
 
 	public boolean contains(double x, double y) {
