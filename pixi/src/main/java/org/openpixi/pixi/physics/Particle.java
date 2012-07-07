@@ -265,6 +265,7 @@ public class Particle implements Serializable {
 		this.prevLinearDragCoefficient = prevLinearDragCoefficient;
 	}
 
+
 	/** Empty constructor */
 	public Particle() {
 	}
@@ -286,5 +287,11 @@ public class Particle implements Serializable {
 	public void storePosition() {
 		prevX = x;
 		prevY = y;
+	}
+
+
+	@Override
+	public String toString() {
+		return String.format("[%.3f,%.3f]", x, y);
 	}
 }

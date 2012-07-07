@@ -44,4 +44,9 @@ public class Cell implements Serializable {
 		Eyo = Ey;
 		Bzo = Bz;
 	}
+
+	@Override
+	public String toString() {
+		return String.format("E[%.3f,%.3f] Bz[%.3f] J[%.3f,%.3f]", Ex, Ey, Bz, jx, jy);
+	}
 }
