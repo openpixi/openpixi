@@ -13,7 +13,8 @@ public class Grid {
 
 	/**
 	 * The purpose of the extra cells is twofold.
-	 * 1) They assure that we always have a cell to interpolate to.
+	 * 1) They represent the boundaries around the simulation area cells.
+	 *    The boundaries assure that we always have a cell to interpolate to.
 	 *    For example, the hardwall particle boundaries allow the particle to be outside
 	 *    of the simulation area.
 	 *    That means that the particle can be in a cell [numCellsX, numCellsY].
