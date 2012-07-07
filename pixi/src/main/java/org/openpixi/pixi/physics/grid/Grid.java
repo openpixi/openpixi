@@ -212,6 +212,7 @@ public class Grid {
 		this.numCellsY = cells[0].length - EXTRA_CELLS_BEFORE_GRID - EXTRA_CELLS_AFTER_GRID;
 		this.cellWidth = simWidth/numCellsX;
 		this.cellHeight = simHeight/numCellsY;
+		this.cells = cells;
 	}
 
 	public void set(int numCellsX, int numCellsY,
