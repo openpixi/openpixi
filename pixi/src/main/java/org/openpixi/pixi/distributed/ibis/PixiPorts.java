@@ -7,16 +7,6 @@ import ibis.ipl.PortType;
  */
 public class PixiPorts {
 
-	/** For communication from master to all slaves (multicast). */
-	public static final PortType SCATTER_PORT = new PortType(
-			PortType.COMMUNICATION_RELIABLE,
-			PortType.SERIALIZATION_OBJECT,
-			PortType.RECEIVE_AUTO_UPCALLS,
-			PortType.RECEIVE_EXPLICIT,
-			PortType.CONNECTION_ONE_TO_MANY);
-
-	public static final String SCATTER_PORT_ID = "scatter";
-
 	/** For communication from slaves to master. */
 	public static final PortType GATHER_PORT = new PortType(
 			PortType.COMMUNICATION_RELIABLE,
@@ -35,5 +25,5 @@ public class PixiPorts {
 
 	public  static final String DISTRIBUTE_PORT_ID = "distribute";
 
-	public static final PortType[] ALL_PORTS = {SCATTER_PORT, GATHER_PORT, ONE_TO_ONE_PORT};
+	public static final PortType[] ALL_PORTS = {GATHER_PORT, ONE_TO_ONE_PORT};
 }

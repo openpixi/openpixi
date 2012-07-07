@@ -6,7 +6,6 @@ import java.util.Collections;
 import java.util.List;
 import ibis.ipl.*;
 import org.openpixi.pixi.distributed.IntLock;
-import org.openpixi.pixi.distributed.SimpleHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
