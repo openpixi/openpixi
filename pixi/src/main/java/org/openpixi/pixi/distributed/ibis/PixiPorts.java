@@ -11,7 +11,7 @@ public class PixiPorts {
 	public static final PortType GATHER_PORT = new PortType(
 			PortType.COMMUNICATION_RELIABLE,
 			PortType.SERIALIZATION_OBJECT,
-			PortType.RECEIVE_AUTO_UPCALLS,
+			PortType.RECEIVE_EXPLICIT,
 			PortType.CONNECTION_MANY_TO_ONE);
 
 	public static final String GATHER_PORT_ID = "gather";
