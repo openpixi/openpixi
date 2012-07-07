@@ -44,7 +44,6 @@ public class Settings {
 	private int gridCellsX = 10;
 	private int gridCellsY = 10;
 
-
 	private GridBoundaryType gridBoundary = GridBoundaryType.Hardwall;
 	private FieldSolver gridSolver = new FieldSolver();
 	private PoissonSolver poissonSolver = new PoissonSolverFFTPeriodic();
