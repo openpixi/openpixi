@@ -93,11 +93,38 @@ public class IbisRegistry {
 
 		waitForJoin(numOfNodes);
 	}
-	
+
+
+	/*
+	 * We have the IbisIdentifier to identify a node.
+	 * However, in the application we do not want to be dependent on Ibis and thus
+	 * we identify the nodes by integers from 0 to NUMBER_OF_NODES - 1.
+	 * The integer id of a node is simply its order in workers list
+	 * (the id is given by the order in which the nodes connected).
+	 * Relies heavily on the fact that the list of workers is the same on each pc!
+	 */
+
+
+	public IbisIdentifier convertNodeIDToIbisID(int nodeID) {
+		return workers.get(nodeID);
+	}
+
+
+	public int convertIbisIDToNodeID(IbisIdentifier ibisID) {
+		for (int i = 0; i < workers.size(); i++) {
+			if (workers.get(i) == ibisID) {
+				return i;
+			}
+		}
+		throw new RuntimeException("Converting ibis ID to node ID failed!");
+	}
+
+
 	public boolean isMaster() {
 		return ibis.identifier().equals(master);
 	}
-	
+
+
 	public void close() throws IOException {
 		ibis.end();
 	}

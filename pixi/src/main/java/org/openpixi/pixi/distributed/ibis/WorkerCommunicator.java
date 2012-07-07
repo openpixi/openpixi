@@ -1,9 +1,6 @@
 package org.openpixi.pixi.distributed.ibis;
 
-import ibis.ipl.MessageUpcall;
-import ibis.ipl.ReadMessage;
-import ibis.ipl.ReceivePort;
-import ibis.ipl.SendPort;
+import ibis.ipl.*;
 import org.openpixi.pixi.physics.Particle;
 import org.openpixi.pixi.physics.grid.Cell;
 import org.openpixi.pixi.physics.util.IntBox;
@@ -19,7 +16,7 @@ public class WorkerCommunicator {
 
 	private IbisRegistry registry;
 
-	// Necessary data for building the simulation.
+	// Necessary data for building the simulation (all received in one message).
 	private IntBox[] partitions;
 	private int[] assignment;
 	private List<Particle> particles;
@@ -65,5 +62,24 @@ public class WorkerCommunicator {
 		rm.finish();
 
 		distributePort.close();
+	}
+
+
+	public void sendResults(List<Particle> particles,
+	                        Cell[][] cells) throws IOException {
+		SendPort sendResultPort = registry.getIbis().createSendPort(PixiPorts.GATHER_PORT);
+		sendResultPort.connect(registry.getMaster(), PixiPorts.GATHER_PORT_ID);
+
+		WriteMessage wm = sendResultPort.newMessage();
+		wm.writeObject(particles);
+		wm.writeObject(cells);
+		wm.finish();
+
+		sendResultPort.close();
+	}
+
+
+	public int getWorkerID() {
+		return registry.convertIbisIDToNodeID(registry.getIbis().identifier());
 	}
 }

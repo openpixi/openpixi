@@ -1,29 +1,22 @@
 package org.openpixi.pixi.distributed.ibis;
 
-import ibis.ipl.*;
+import ibis.ipl.ReadMessage;
+import ibis.ipl.ReceivePort;
+import ibis.ipl.SendPort;
+import ibis.ipl.WriteMessage;
+import org.openpixi.pixi.distributed.ResultsHolder;
 import org.openpixi.pixi.physics.Particle;
 import org.openpixi.pixi.physics.grid.Cell;
 import org.openpixi.pixi.physics.util.IntBox;
 
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Handles the communication connected with problem distribution and results collection
  * on the side of the Master.
  */
 public class MasterCommunicator {
-
-	/**
-	 * Receives incoming results.
-	 */
-	private class CollectPortUpcall implements MessageUpcall {
-		public void upcall(ReadMessage readMessage) throws IOException, ClassNotFoundException {
-			//To change body of implemented methods use File | Settings | File Templates.
-		}
-	}
 
 	private IbisRegistry registry;
 
@@ -47,8 +40,11 @@ public class MasterCommunicator {
 		assert assignment.length >= registry.getWorkers().size();
 
 		for (int i = 0; i < assignment.length; ++i) {
+
 			SendPort distributePort = registry.getIbis().createSendPort(PixiPorts.ONE_TO_ONE_PORT);
-			distributePort.connect(convertNodeIDToIbisID(assignment[i]), PixiPorts.DISTRIBUTE_PORT_ID);
+			distributePort.connect(
+					registry.convertNodeIDToIbisID(assignment[i]),
+					PixiPorts.DISTRIBUTE_PORT_ID);
 
 			WriteMessage wm = distributePort.newMessage();
 			wm.writeObject(partitions);
@@ -62,15 +58,26 @@ public class MasterCommunicator {
 	}
 
 
-	/**
-	 * Relies heavily on the fact that the list of workers is the same on each pc!
-	 */
-	private IbisIdentifier convertNodeIDToIbisID(int nodeID) {
-		return registry.getWorkers().get(nodeID);
-	}
+	public ResultsHolder collectResults() throws Exception {
+		ReceivePort recvPort = registry.getIbis().createReceivePort(
+				PixiPorts.GATHER_PORT, PixiPorts.GATHER_PORT_ID);
+		recvPort.enableConnections();
 
+		ResultsHolder resultsHolder = new ResultsHolder(registry.getWorkers().size());
+		for (int i = 0; i < registry.getWorkers().size(); ++i) {
 
-	public void collectResults() {
-		// TODO body
+			ReadMessage rm = recvPort.receive();
+			List<Particle> particles = (List<Particle>)rm.readObject();
+			Cell[][] cells = (Cell[][])rm.readObject();
+			rm.finish();
+
+			int nodeID = registry.convertIbisIDToNodeID(registry.getWorkers().get(i));
+			resultsHolder.nodeIDs[i] = nodeID;
+			resultsHolder.gridPartitions[i] = cells;
+			resultsHolder.particlePartitions.set(i, particles);
+		}
+
+		recvPort.close();
+		return  resultsHolder;
 	}
 }

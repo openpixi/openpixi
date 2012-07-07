@@ -14,16 +14,25 @@ public class Worker implements Runnable {
 	private WorkerCommunicator communicator;
 	private Settings settings;
 
+
 	public Worker(IbisRegistry registry, Settings settings) throws Exception {
 		communicator = new WorkerCommunicator(registry);
 	}
 
+
 	public void run() {
 		try {
 			communicator.receiveProblem();
+
+			// TODO build the simulation together with boundaries
+			// TODO run the simulation
+
+			communicator.sendResults(
+					communicator.getParticles(),
+					communicator.getCells());
+
 		} catch (Exception e) {
-			e.printStackTrace();
-			System.exit(1);
+			throw new RuntimeException(e);
 		}
 	}
 }
