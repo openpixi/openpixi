@@ -202,6 +202,17 @@ public class Grid {
 				settings.getSimulationWidth(), settings.getSimulationHeight());
 	}
 
+	/**
+	 * Creates grid from the given cells.
+	 * The input cells have to contain also the boundary cells.
+	 */
+	public Grid(Cell[][] cells, double simWidth, double simHeight) {
+		this.numCellsX = cells.length - EXTRA_CELLS_BEFORE_GRID - EXTRA_CELLS_AFTER_GRID;
+		this.numCellsY = cells[0].length - EXTRA_CELLS_BEFORE_GRID - EXTRA_CELLS_AFTER_GRID;
+		this.cellWidth = simWidth/numCellsX;
+		this.cellHeight = simHeight/numCellsY;
+	}
+
 	public void set(int numCellsX, int numCellsY,
 			double simWidth, double simHeight) {
 
