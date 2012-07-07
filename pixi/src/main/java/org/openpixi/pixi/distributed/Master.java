@@ -37,6 +37,30 @@ public class Master {
 	int[] assignment;
 
 
+	Grid getInitialGrid() {
+		return initialGrid;
+	}
+
+	List<Particle> getInitialParticles() {
+		return initialParticles;
+	}
+
+	public Grid getFinalGrid() {
+		return finalGrid;
+	}
+
+	public List<Particle> getFinalParticles() {
+		return finalParticles;
+	}
+
+	public IntBox[] getPartitions() {
+		return partitions;
+	}
+
+	public int[] getAssignment() {
+		return assignment;
+	}
+
 	public Master(IbisRegistry registry, Settings settings) throws Exception {
 		this.settings = settings;
 		communicator = new MasterCommunicator(registry);
@@ -64,15 +88,15 @@ public class Master {
 
 	public void collectResults() throws Exception {
 		ResultsHolder results = communicator.collectResults();
-		assembleParticles(results.particlePartitions);
-		assembleGrid(results.nodeIDs, results.gridPartitions);
+		finalParticles = assembleParticles(results.particlePartitions);
+		finalGrid = assembleGrid(results.nodeIDs, results.gridPartitions);
 	}
 
 
 	/**
 	 * Divides cells according to partitions.
 	 */
-	private Cell[][][] partitionGrid(IntBox[] partitions, Grid grid) {
+	public Cell[][][] partitionGrid(IntBox[] partitions, Grid grid) {
 		Cell[][][] gridPartitions = new Cell[partitions.length][][];
 		for (int i = 0; i < partitions.length; ++i) {
 			gridPartitions[i] = getSubgrid(partitions[i], grid);
@@ -107,7 +131,7 @@ public class Master {
 
 		Cell[][] subGrid = new Cell[endX - startX + 1][endY - startY + 1];
 		for (int x = startX; x <= endX ; x++) {
-			for (int y = startY; y < endY; y++) {
+			for (int y = startY; y <= endY; y++) {
 				subGrid[x - startX][y - startY] = grid.getCell(x,y);
 			}
 		}
@@ -126,14 +150,15 @@ public class Master {
 
 		for (Particle p: particles) {
 			int partitionIndex = -1;
-			for  (int i = 0; i < partitions.length; ++i) {
-				int cellX = (int)p.getX() / initialGrid.getNumCellsX();
-				int cellY = (int)p.getY() / initialGrid.getNumCellsY();
+			int cellX = (int)Math.floor(p.getX() / initialGrid.getCellWidth());
+			int cellY = (int)Math.floor(p.getY() / initialGrid.getCellHeight());
 
+			for  (int i = 0; i < partitions.length; ++i) {
 				if (partitions[i].contains(cellX, cellY)) {
 					partitionIndex = i;
 				}
 			}
+
 			assert partitionIndex != -1;
 			particlePartitions.get(partitionIndex).add(p);
 		}
@@ -142,23 +167,27 @@ public class Master {
 
 
 	/**
-	 * Puts together the particles coming from workers.
+	 * Puts together the particle lists coming from workers.
 	 */
-	private void assembleParticles(List<List<Particle>> particlePartitions) {
+	private List<Particle> assembleParticles(List<List<Particle>> particlePartitions) {
+		List<Particle> assembledParticles = new ArrayList<Particle>();
 		for (List<Particle> particles: particlePartitions) {
-			finalParticles.addAll(particles);
+			assembledParticles.addAll(particles);
 		}
+		return assembledParticles;
 	}
 
 
 	/**
 	 * Puts together the subgrids coming from workers.
 	 */
-	private void assembleGrid(int[] nodeIDs, Cell[][][] gridPartitions) {
-		int totalXCells = Grid.EXTRA_CELLS_BEFORE_GRID +
+	public Grid assembleGrid(int[] nodeIDs, Cell[][][] gridPartitions) {
+		int totalXCells =
+				Grid.EXTRA_CELLS_BEFORE_GRID +
 				settings.getGridCellsX() +
 				Grid.EXTRA_CELLS_AFTER_GRID;
-		int totalYCells = Grid.EXTRA_CELLS_BEFORE_GRID +
+		int totalYCells =
+				Grid.EXTRA_CELLS_BEFORE_GRID +
 				settings.getGridCellsY() +
 				Grid.EXTRA_CELLS_AFTER_GRID;
 
@@ -168,7 +197,7 @@ public class Master {
 			fillSubgrid(partitions[i], gridPartitions[subgridIndex], cells);
 		}
 
-		finalGrid = new Grid(cells, settings.getSimulationWidth(), settings.getSimulationHeight());
+		return new Grid(cells, settings.getSimulationWidth(), settings.getSimulationHeight());
 	}
 
 
@@ -205,8 +234,9 @@ public class Master {
 		}
 
 		for (int x = startX; x <= endX ; x++) {
-			for (int y = startY; y < endY; y++) {
-				cells[x][y] = subgrid[x - startX][y - startY];
+			for (int y = startY; y <= endY; y++) {
+				cells[x + Grid.EXTRA_CELLS_BEFORE_GRID][y + Grid.EXTRA_CELLS_BEFORE_GRID] =
+						subgrid[x - startX][y - startY];
 			}
 		}
 	}
