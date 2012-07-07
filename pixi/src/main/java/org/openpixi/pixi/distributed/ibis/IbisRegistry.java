@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import ibis.ipl.*;
+import org.openpixi.pixi.distributed.IntLock;
 import org.openpixi.pixi.distributed.SimpleHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,41 +15,6 @@ import org.slf4j.LoggerFactory;
  */
 public class IbisRegistry {
 
-	/**
-	 * Handles registry events.
-	 */
-	private class RegistryEvent implements RegistryEventHandler {
-
-		public void died(IbisIdentifier ii) {
-		}
-
-		public void electionResult(String arg0, IbisIdentifier arg1) {
-		}
-
-		public void gotSignal(String arg0, IbisIdentifier arg1) {
-		}
-
-		public void joined(IbisIdentifier ii) {
-			synchronized (numOfNodesLock) {
-				workers.add(ii);
-				numOfNodesLock.notify();
-			}
-
-			if (isMaster()) {
-				logger.info("Node {} joined the pool", ii.name());
-			}
-		}
-
-		public void left(IbisIdentifier ii) {
-		}
-
-		public void poolClosed() {
-		}
-
-		public void poolTerminated(IbisIdentifier arg0) {
-		}
-	}
-
 	private static final IbisCapabilities ibisCapabilities = new IbisCapabilities(
             IbisCapabilities.ELECTIONS_STRICT, 
             IbisCapabilities.MEMBERSHIP_TOTALLY_ORDERED);
@@ -56,7 +22,7 @@ public class IbisRegistry {
 	private static Logger logger = LoggerFactory.getLogger(IbisRegistry.class);
 
 	/** Lock to wait for all the nodes to join.*/
-	private Object numOfNodesLock = new Object();
+	private IntLock numOfJoinedNodesLock;
 
 	private final List<IbisIdentifier> workers =
 			Collections.synchronizedList(new ArrayList<IbisIdentifier>());
@@ -83,6 +49,7 @@ public class IbisRegistry {
 	 * Waits for all the nodes to connect.
 	 */
 	public IbisRegistry(int numOfNodes) throws Exception {
+		numOfJoinedNodesLock = new IntLock(0);
 		ibis = IbisFactory.createIbis(ibisCapabilities, new RegistryEvent(), PixiPorts.ALL_PORTS);
 		master = ibis.registry().elect("Master");
 		ibis.registry().enableEvents();
@@ -91,7 +58,14 @@ public class IbisRegistry {
 			logger.info(" Master is {} ", master.name());
 		}
 
-		waitForJoin(numOfNodes);
+		numOfJoinedNodesLock.waitForValue(numOfNodes);
+
+		// Log the workers to verify whether they are in the same order on each node.
+		StringBuilder sb = new StringBuilder();
+		for (IbisIdentifier worker: workers) {
+			sb.append(worker.name() + "\t");
+		}
+		logger.debug("Workers: {}", sb.toString().trim());
 	}
 
 
@@ -131,24 +105,35 @@ public class IbisRegistry {
 
 
 	/**
-	 * Waits for the specified number of nodes to join the pool.
+	 * Handles registry events.
 	 */
-	private void waitForJoin(int numOfNodes) {
-		synchronized (numOfNodesLock) {
-			while (workers.size() < numOfNodes) {
-				try {
-					numOfNodesLock.wait();
-				} catch (InterruptedException e) {
-					// Ignore
-				}
+	private class RegistryEvent implements RegistryEventHandler {
+
+		public void died(IbisIdentifier ii) {
+		}
+
+		public void electionResult(String arg0, IbisIdentifier arg1) {
+		}
+
+		public void gotSignal(String arg0, IbisIdentifier arg1) {
+		}
+
+		public synchronized void joined(IbisIdentifier ii) {
+			workers.add(ii);
+			numOfJoinedNodesLock.setValue(workers.size());
+
+			if (isMaster()) {
+				logger.info("Node {} joined the pool", ii.name());
 			}
 		}
 
-		StringBuilder sb = new StringBuilder();
-		for (IbisIdentifier worker: workers) {
-			sb.append(worker.name() + "\t");
+		public void left(IbisIdentifier ii) {
 		}
 
-		logger.debug("Workers: {}", sb.toString().trim());
+		public void poolClosed() {
+		}
+
+		public void poolTerminated(IbisIdentifier arg0) {
+		}
 	}
 }
