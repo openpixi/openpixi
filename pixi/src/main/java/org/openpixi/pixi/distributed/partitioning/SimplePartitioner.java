@@ -32,7 +32,7 @@ public class SimplePartitioner implements Partitioner {
 		}
 
 		List<IntBox> partitions = new ArrayList<IntBox>();
-		partitions.add(new IntBox(0, numCellsX, 0, numCellsY));
+		partitions.add(new IntBox(0, numCellsX - 1, 0, numCellsY - 1));
 
 		while (partitions.size() < numPartitions) {
 			partitions = splitBoxes(partitions);
@@ -47,14 +47,14 @@ public class SimplePartitioner implements Partitioner {
 		for (IntBox b: partitions) {
 			if (b.xsize() > b.ysize()) {
 				// Split along x axis
-				int xmid = b.xmin() + b.xsize() / 2;
-				newPartitions.add(new IntBox(b.xmin(), xmid, b.ymin(), b.ymax()));
+				int xmid = (b.xmin() + b.xsize() / 2);
+				newPartitions.add(new IntBox(b.xmin(), xmid - 1, b.ymin(), b.ymax()));
 				newPartitions.add(new IntBox(xmid, b.xmax(), b.ymin(), b.ymax()));
 			}
 			else {
 				// Split along y axis
-				int ymid = b.ymin() + b.ysize() / 2;
-				newPartitions.add(new IntBox(b.xmin(), b.xmax(), b.ymin(), ymid));
+				int ymid = (b.ymin() + b.ysize() / 2);
+				newPartitions.add(new IntBox(b.xmin(), b.xmax(), b.ymin(), ymid - 1));
 				newPartitions.add(new IntBox(b.xmin(), b.xmax(), ymid, b.ymax()));
 			}
 		}

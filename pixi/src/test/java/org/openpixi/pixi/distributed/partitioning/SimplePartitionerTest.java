@@ -63,11 +63,12 @@ public class SimplePartitionerTest extends TestCase {
 			}
 		}
 
-
-		if (largestXmax - smallestXmin < NUM_CELLS_X || largestYmax - smallestYmin < NUM_CELLS_Y) {
+		int xsize = largestXmax - smallestXmin + 1;
+		int ysize = largestYmax - smallestYmin + 1;
+		if (xsize < NUM_CELLS_X || ysize < NUM_CELLS_Y) {
 			fail("The created partitions do not fill the original area!");
 		}
-		else if (largestXmax - smallestXmin > NUM_CELLS_X || largestYmax - smallestYmin > NUM_CELLS_Y) {
+		else if (xsize > NUM_CELLS_X || ysize > NUM_CELLS_Y) {
 			fail("The created partitions cross the original area!");
 		}
 	}
@@ -89,10 +90,10 @@ public class SimplePartitionerTest extends TestCase {
 
 	private boolean interleave(IntBox b1, IntBox b2) {
 		if (
-				b1.xmin() < b2.xmax() &&
-				b2.xmin() < b1.xmax() &&
-				b1.ymin() < b2.ymax() &&
-				b2.ymin() < b1.ymax()) {
+				b1.xmin() <= b2.xmax() &&
+				b2.xmin() <= b1.xmax() &&
+				b1.ymin() <= b2.ymax() &&
+				b2.ymin() <= b1.ymax()) {
 			return true;
 		}
 		else {
