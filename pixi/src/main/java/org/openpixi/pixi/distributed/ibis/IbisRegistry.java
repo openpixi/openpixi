@@ -20,8 +20,8 @@ public class IbisRegistry {
 
 	private static Logger logger = LoggerFactory.getLogger(IbisRegistry.class);
 
-	/** Lock to wait for all the nodes to join.*/
-	private IntLock numOfJoinedNodesLock;
+	/** Lock to wait for all the worker to join.*/
+	private IntLock numOfJoinedWorkersLock;
 
 	private final List<IbisIdentifier> workers =
 			Collections.synchronizedList(new ArrayList<IbisIdentifier>());
@@ -47,8 +47,8 @@ public class IbisRegistry {
 	 * Creates the instance of ibis and immediately calls the election.
 	 * Waits for all the nodes to connect.
 	 */
-	public IbisRegistry(int numOfNodes) throws Exception {
-		numOfJoinedNodesLock = new IntLock(0);
+	public IbisRegistry(int numOfWorkers) throws Exception {
+		numOfJoinedWorkersLock = new IntLock(0);
 		ibis = IbisFactory.createIbis(ibisCapabilities, new RegistryEvent(), PixiPorts.ALL_PORTS);
 		master = ibis.registry().elect("Master");
 		ibis.registry().enableEvents();
@@ -57,7 +57,7 @@ public class IbisRegistry {
 			logger.info(" Master is {} ", master.name());
 		}
 
-		numOfJoinedNodesLock.waitForValue(numOfNodes);
+		numOfJoinedWorkersLock.waitForValue(numOfWorkers);
 
 		// Log the workers to verify whether they are in the same order on each node.
 		StringBuilder sb = new StringBuilder();
@@ -69,27 +69,27 @@ public class IbisRegistry {
 
 
 	/*
-	 * We have the IbisIdentifier to identify a node.
+	 * We have the IbisIdentifier to identify a worker.
 	 * However, in the application we do not want to be dependent on Ibis and thus
-	 * we identify the nodes by integers from 0 to NUMBER_OF_NODES - 1.
-	 * The integer id of a node is simply its order in workers list
-	 * (the id is given by the order in which the nodes connected).
+	 * we identify the workers by integers from 0 to NUMBER_OF_NODES - 1.
+	 * The integer id of a worker is simply its order in workers list
+	 * (the id is given by the order in which the workers connected).
 	 * Relies heavily on the fact that the list of workers is the same on each pc!
 	 */
 
 
-	public IbisIdentifier convertNodeIDToIbisID(int nodeID) {
-		return workers.get(nodeID);
+	public IbisIdentifier convertWorkerIDToIbisID(int workerID) {
+		return workers.get(workerID);
 	}
 
 
-	public int convertIbisIDToNodeID(IbisIdentifier ibisID) {
+	public int convertIbisIDToWorkerID(IbisIdentifier ibisID) {
 		for (int i = 0; i < workers.size(); i++) {
 			if (workers.get(i).name().equals(ibisID.name())) {
 				return i;
 			}
 		}
-		throw new RuntimeException("Converting ibis ID to node ID failed!");
+		throw new RuntimeException("Converting ibis ID to worker ID failed!");
 	}
 
 
@@ -119,7 +119,7 @@ public class IbisRegistry {
 
 		public synchronized void joined(IbisIdentifier ii) {
 			workers.add(ii);
-			numOfJoinedNodesLock.setValue(workers.size());
+			numOfJoinedWorkersLock.setValue(workers.size());
 
 			if (isMaster()) {
 				logger.info("Node {} joined the pool", ii.name());

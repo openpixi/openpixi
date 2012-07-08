@@ -7,7 +7,7 @@ import org.openpixi.pixi.distributed.ibis.IbisRegistry;
 import org.openpixi.pixi.physics.Settings;
 
 /**
- * Wraps up the difference between master and ordinary node and just runs a node.
+ * Wraps up the difference between master and ordinary worker and just runs a node.
  */
 public class Node implements Runnable {
 

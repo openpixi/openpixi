@@ -24,11 +24,11 @@ public class SimplePartitioner implements Partitioner {
 
 		if (!isPower2(numCellsX) || !isPower2(numCellsY) || !isPower2(numPartitions)) {
 			throw new RuntimeException("Number of cells in x and y direction " +
-					"as well as the number of nodes must be power of 2!");
+					"as well as the number of partitions must be power of 2!");
 		}
 		if (numPartitions > numCellsX * numCellsY) {
 			throw new RuntimeException(
-					"Number of nodes must be less or equal to the number of cells!");
+					"Number of partitions must be less or equal to the number of cells!");
 		}
 
 		List<IntBox> partitions = new ArrayList<IntBox>();

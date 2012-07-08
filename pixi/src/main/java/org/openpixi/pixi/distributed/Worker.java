@@ -17,7 +17,7 @@ public class Worker implements Runnable {
 
 	public Worker(IbisRegistry registry, Settings settings) throws Exception {
 		communicator = new WorkerCommunicator(registry);
-		workerID = registry.convertIbisIDToNodeID(registry.getIbis().identifier());
+		workerID = registry.convertIbisIDToWorkerID(registry.getIbis().identifier());
 	}
 
 

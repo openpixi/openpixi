@@ -59,14 +59,14 @@ public class WorkerCommunicator {
 	}
 
 
-	public void sendResults(int nodeID,
+	public void sendResults(int workerID,
 	                        List<Particle> particles,
 	                        Cell[][] cells) throws IOException {
 		SendPort sendResultPort = registry.getIbis().createSendPort(PixiPorts.GATHER_PORT);
 		sendResultPort.connect(registry.getMaster(), PixiPorts.GATHER_PORT_ID);
 
 		WriteMessage wm = sendResultPort.newMessage();
-		wm.writeInt(nodeID);
+		wm.writeInt(workerID);
 		wm.writeObject(particles);
 		wm.writeObject(cells);
 		wm.finish();

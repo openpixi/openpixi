@@ -34,13 +34,13 @@ public class MasterCommunicator {
 	 * The ports for problem distribution are closed right after they are used to minimize
 	 * number of open connections.
 	 */
-	public void sendProblem(int nodeID, IntBox[] partitions,
+	public void sendProblem(int workerID, IntBox[] partitions,
 	                        List<Particle> particles,
 	                        Cell[][] cells) throws IOException {
 
 		SendPort sendPort = registry.getIbis().createSendPort(PixiPorts.ONE_TO_ONE_PORT);
 		sendPort.connect(
-				registry.convertNodeIDToIbisID(nodeID),
+				registry.convertWorkerIDToIbisID(workerID),
 				PixiPorts.DISTRIBUTE_PORT_ID);
 
 		WriteMessage wm = sendPort.newMessage();
@@ -62,13 +62,13 @@ public class MasterCommunicator {
 		for (int i = 0; i < registry.getWorkers().size(); ++i) {
 
 			ReadMessage rm = recvPort.receive();
-			int nodeID = rm.readInt();
+			int workerID = rm.readInt();
 			List<Particle> particles = (List<Particle>)rm.readObject();
 			Cell[][] cells = (Cell[][])rm.readObject();
 			rm.finish();
 
-			resultsHolder.gridPartitions[nodeID] = cells;
-			resultsHolder.particlePartitions.set(nodeID, particles);
+			resultsHolder.gridPartitions[workerID] = cells;
+			resultsHolder.particlePartitions.set(workerID, particles);
 		}
 
 		recvPort.close();
