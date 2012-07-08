@@ -4,20 +4,17 @@ import org.openpixi.pixi.physics.Particle;
 import org.openpixi.pixi.physics.Settings;
 import org.openpixi.pixi.physics.grid.Cell;
 import org.openpixi.pixi.physics.grid.Grid;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Tests the distribution and collection of results without running the simulation.
- * Since it setups network connection it is not a JUnit test.
+ * Since it setups network connection it is not implemented as a JUnit test.
  */
 public class DistributeAndCollectTest {
 
 	private static final Double TOLERANCE = 1e-10;
-	private static Logger logger = LoggerFactory.getLogger(DistributeAndCollectTest.class);
 
 	public static void main(String[] args) throws Exception {
 		Settings settings = new Settings();
@@ -85,18 +82,15 @@ public class DistributeAndCollectTest {
 			List<Particle> initialParticles, List<Particle> finalParticles, double tolerance) {
 
 		if (initialParticles.size() < finalParticles.size()) {
-		    logger.error("New particles arrived back to master!");
-			return;
+		    fail("New particles arrived back to master!");
 	    }
 		if (initialParticles.size() > finalParticles.size()) {
-			logger.error("Too few particles arrived back to master!");
-			return;
+			fail("Too few particles arrived back to master!");
 		}
 
 		for (Particle p: initialParticles) {
 			if (!findParticle(p, finalParticles, tolerance)) {
-				logger.error("Could not find particle " + p + " in the list of final particles!");
-				return;
+				fail("Could not find particle " + p + " in the list of final particles!");
 			}
 		}
 	}
@@ -130,20 +124,16 @@ public class DistributeAndCollectTest {
 
 	private static void compareGrids(Grid initialGrid, Grid finalGrid, double tolerance) {
 		if (initialGrid.getNumCellsX() < finalGrid.getNumCellsX()) {
-			logger.error("Initial grid is smaller in X direction!");
-			return;
+			fail("Initial grid is smaller in X direction!");
 		}
 		if (initialGrid.getNumCellsX() > finalGrid.getNumCellsX()) {
-			logger.error("Initial grid is larger in X direction!");
-			return;
+			fail("Initial grid is larger in X direction!");
 		}
 		if (initialGrid.getNumCellsY() < finalGrid.getNumCellsY()) {
-			logger.error("Initial grid is smaller in Y direction!");
-			return;
+			fail("Initial grid is smaller in Y direction!");
 		}
 		if (initialGrid.getNumCellsY() > finalGrid.getNumCellsY()) {
-			logger.error("Initial grid is larger in Y direction!");
-			return;
+			fail("Initial grid is larger in Y direction!");
 		}
 
 		for (int x = -Grid.EXTRA_CELLS_BEFORE_GRID;
@@ -154,9 +144,8 @@ public class DistributeAndCollectTest {
 				Cell initialCell = initialGrid.getCell(x,y);
 				Cell finalCell = finalGrid.getCell(x,y);
 				if (!compareCells(initialCell, finalCell, tolerance)) {
-					logger.error("Cells are not equal! " +
+					fail("Cells are not equal! " +
 							"Initial: " + initialCell + " Final: " + finalCell);
-					return;
 				}
 			}
 		}
@@ -178,5 +167,11 @@ public class DistributeAndCollectTest {
 			return false;
 		}
 		return true;
+	}
+
+
+	private static void fail(String msg) {
+		System.out.println(msg);
+		System.exit(1);
 	}
 }
