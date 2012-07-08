@@ -16,7 +16,7 @@ public class WorkerCommunicator {
 
 	private IbisRegistry registry;
 
-	// Necessary data for building the simulation (all received in one message).
+	// Received data
 	private IntBox[] partitions;
 	private List<Particle> particles;
 	private Cell[][] cells;

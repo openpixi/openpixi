@@ -4,12 +4,12 @@ import ibis.ipl.ReadMessage;
 import ibis.ipl.ReceivePort;
 import ibis.ipl.SendPort;
 import ibis.ipl.WriteMessage;
-import org.openpixi.pixi.distributed.ResultsHolder;
 import org.openpixi.pixi.physics.Particle;
 import org.openpixi.pixi.physics.grid.Cell;
 import org.openpixi.pixi.physics.util.IntBox;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -20,13 +20,29 @@ public class MasterCommunicator {
 
 	private IbisRegistry registry;
 
+	// Received data
+	private List<List<Particle>> particlePartitions = new ArrayList<List<Particle>>();
+	private Cell[][][] gridPartitions;
 
-	/**
-	 * Creates ports for communication.
-	 * To avoid deadlock the receive ports have to be created first.
-	 */
+
+	public List<List<Particle>> getParticlePartitions() {
+		return particlePartitions;
+	}
+
+	public Cell[][][] getGridPartitions() {
+		return gridPartitions;
+	}
+
+
 	public MasterCommunicator(IbisRegistry registry) throws Exception {
 		this.registry = registry;
+
+		// Initialize the holders for received data
+		int numOfWorkers = registry.getWorkers().size();
+		gridPartitions = new Cell[numOfWorkers][][];
+		for (int i = 0; i < numOfWorkers; i++) {
+			particlePartitions.add(new ArrayList<Particle>());
+		}
 	}
 
 
@@ -53,12 +69,11 @@ public class MasterCommunicator {
 	}
 
 
-	public ResultsHolder collectResults() throws Exception {
+	public void collectResults() throws Exception {
 		ReceivePort recvPort = registry.getIbis().createReceivePort(
 				PixiPorts.GATHER_PORT, PixiPorts.GATHER_PORT_ID);
 		recvPort.enableConnections();
 
-		ResultsHolder resultsHolder = new ResultsHolder(registry.getWorkers().size());
 		for (int i = 0; i < registry.getWorkers().size(); ++i) {
 
 			ReadMessage rm = recvPort.receive();
@@ -67,11 +82,10 @@ public class MasterCommunicator {
 			Cell[][] cells = (Cell[][])rm.readObject();
 			rm.finish();
 
-			resultsHolder.gridPartitions[workerID] = cells;
-			resultsHolder.particlePartitions.set(workerID, particles);
+			gridPartitions[workerID] = cells;
+			particlePartitions.set(workerID, particles);
 		}
 
 		recvPort.close();
-		return  resultsHolder;
 	}
 }

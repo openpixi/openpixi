@@ -161,9 +161,9 @@ public class Master {
 
 
 	public void collectResults() throws Exception {
-		ResultsHolder results = communicator.collectResults();
-		finalParticles = assembleParticles(results.particlePartitions);
-		finalGrid = assembleGrid(results.gridPartitions);
+		communicator.collectResults();
+		finalParticles = assembleParticles(communicator.getParticlePartitions());
+		finalGrid = assembleGrid(communicator.getGridPartitions());
 	}
 
 
