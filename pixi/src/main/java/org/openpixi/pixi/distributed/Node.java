@@ -1,8 +1,5 @@
 package org.openpixi.pixi.distributed;
 
-import com.sun.xml.internal.ws.api.config.management.policy.ManagementAssertion;
-import org.openpixi.pixi.distributed.Master;
-import org.openpixi.pixi.distributed.Worker;
 import org.openpixi.pixi.distributed.ibis.IbisRegistry;
 import org.openpixi.pixi.physics.Settings;
 

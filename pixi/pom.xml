@@ -25,7 +25,7 @@
 
 		<dependency>
 			<groupId>org.openpixi.pixi</groupId>
-			<artifactId>ipl-2.3</artifactId>
+			<artifactId>ipl</artifactId>
 			<version>2.3</version>
 		</dependency>
 
