@@ -85,7 +85,7 @@ public class IbisRegistry {
 
 	public int convertIbisIDToNodeID(IbisIdentifier ibisID) {
 		for (int i = 0; i < workers.size(); i++) {
-			if (workers.get(i) == ibisID) {
+			if (workers.get(i).name().equals(ibisID.name())) {
 				return i;
 			}
 		}

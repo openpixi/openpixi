@@ -18,17 +18,12 @@ public class WorkerCommunicator {
 
 	// Necessary data for building the simulation (all received in one message).
 	private IntBox[] partitions;
-	private int[] assignment;
 	private List<Particle> particles;
 	private Cell[][] cells;
 
 
 	public IntBox[] getPartitions() {
 		return partitions;
-	}
-
-	public int[] getAssignment() {
-		return assignment;
 	}
 
 	public List<Particle> getParticles() {
@@ -56,7 +51,6 @@ public class WorkerCommunicator {
 
 		ReadMessage rm = distributePort.receive();
 		partitions = (IntBox[])rm.readObject();
-		assignment = (int[])rm.readObject();
 		particles = (List<Particle>)rm.readObject();
 		cells = (Cell[][])rm.readObject();
 		rm.finish();
@@ -65,21 +59,18 @@ public class WorkerCommunicator {
 	}
 
 
-	public void sendResults(List<Particle> particles,
+	public void sendResults(int nodeID,
+	                        List<Particle> particles,
 	                        Cell[][] cells) throws IOException {
 		SendPort sendResultPort = registry.getIbis().createSendPort(PixiPorts.GATHER_PORT);
 		sendResultPort.connect(registry.getMaster(), PixiPorts.GATHER_PORT_ID);
 
 		WriteMessage wm = sendResultPort.newMessage();
+		wm.writeInt(nodeID);
 		wm.writeObject(particles);
 		wm.writeObject(cells);
 		wm.finish();
 
 		sendResultPort.close();
-	}
-
-
-	public int getWorkerID() {
-		return registry.convertIbisIDToNodeID(registry.getIbis().identifier());
 	}
 }

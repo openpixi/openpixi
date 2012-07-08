@@ -12,12 +12,10 @@ import java.util.List;
  */
 public class ResultsHolder {
 
-	public int[] nodeIDs;
 	public List<List<Particle>> particlePartitions = new ArrayList<List<Particle>>();
 	public Cell[][][] gridPartitions;
 
 	public ResultsHolder(int numOfNodes) {
-		nodeIDs = new int[numOfNodes];
 		gridPartitions = new Cell[numOfNodes][][];
 		for (int i = 0; i < numOfNodes; i++) {
 			particlePartitions.add(new ArrayList<Particle>());

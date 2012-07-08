@@ -1,12 +1,11 @@
 package org.openpixi.pixi.distributed;
 
-import org.openpixi.pixi.distributed.assigning.PartitionAssigner;
-import org.openpixi.pixi.distributed.assigning.SimplePartitionAssigner;
 import org.openpixi.pixi.distributed.ibis.MasterCommunicator;
 import org.openpixi.pixi.distributed.ibis.IbisRegistry;
 import org.openpixi.pixi.distributed.partitioning.Partitioner;
 import org.openpixi.pixi.distributed.partitioning.SimplePartitioner;
 import org.openpixi.pixi.physics.Particle;
+import org.openpixi.pixi.physics.ParticleGridInitializer;
 import org.openpixi.pixi.physics.Settings;
 import org.openpixi.pixi.physics.grid.Cell;
 import org.openpixi.pixi.physics.grid.Grid;
@@ -18,6 +17,7 @@ import java.util.List;
 
 /**
  * Distributes the problem and collects the results.
+ * To each worker we assign exactly one problem.
  */
 public class Master {
 
@@ -30,12 +30,11 @@ public class Master {
 	private Grid finalGrid;
 	private List<Particle> finalParticles;
 
-	/** Problem decomposition table. */
+	/**
+	 * Problem decomposition table.
+	 * N-th element in the table belongs to the n-th worker.
+	 */
 	IntBox[] partitions;
-	/** Assigns each problem to a node.
-	 * i-th element is node responsible for calculating i-th partition. */
-	int[] assignment;
-
 
 	Grid getInitialGrid() {
 		return initialGrid;
@@ -53,13 +52,6 @@ public class Master {
 		return finalParticles;
 	}
 
-	public IntBox[] getPartitions() {
-		return partitions;
-	}
-
-	public int[] getAssignment() {
-		return assignment;
-	}
 
 	public Master(IbisRegistry registry, Settings settings) throws Exception {
 		this.settings = settings;
@@ -67,36 +59,38 @@ public class Master {
 
 		initialGrid = new Grid(settings);
 		initialParticles = settings.getParticles();
+
+		ParticleGridInitializer pgi = new ParticleGridInitializer();
+		pgi.initialize(
+				settings.getInterpolator(), settings.getPoissonSolver(),
+				initialParticles, initialGrid);
 	}
 
 
 	public void distributeProblem() throws IOException {
+		// Partition the problem
 		Partitioner partitioner = new SimplePartitioner();
 		partitions = partitioner.partition(
 				settings.getGridCellsX(), settings.getGridCellsY(), settings.getNumOfNodes());
 
-		PartitionAssigner assigner = new SimplePartitionAssigner();
-		assignment = assigner.assign(partitions, settings.getNumOfNodes());
-
+		// Partition the data
 		List<List<Particle>> particlePartitions = partitionParticles(
 				partitions, initialParticles);
 		Cell[][][] gridPartitions = partitionGrid(partitions, initialGrid);
 
-		communicator.distributeProblem(partitions, assignment, particlePartitions, gridPartitions);
-	}
-
-
-	public void collectResults() throws Exception {
-		ResultsHolder results = communicator.collectResults();
-		finalParticles = assembleParticles(results.particlePartitions);
-		finalGrid = assembleGrid(results.nodeIDs, results.gridPartitions);
+		// Send to each worker
+		for (int workerID = 0; workerID < partitions.length; workerID++) {
+			communicator.sendProblem(
+					workerID, partitions,
+					particlePartitions.get(workerID), gridPartitions[workerID]);
+		}
 	}
 
 
 	/**
 	 * Divides cells according to partitions.
 	 */
-	public Cell[][][] partitionGrid(IntBox[] partitions, Grid grid) {
+	private Cell[][][] partitionGrid(IntBox[] partitions, Grid grid) {
 		Cell[][][] gridPartitions = new Cell[partitions.length][][];
 		for (int i = 0; i < partitions.length; ++i) {
 			gridPartitions[i] = getSubgrid(partitions[i], grid);
@@ -166,6 +160,13 @@ public class Master {
 	}
 
 
+	public void collectResults() throws Exception {
+		ResultsHolder results = communicator.collectResults();
+		finalParticles = assembleParticles(results.particlePartitions);
+		finalGrid = assembleGrid(results.gridPartitions);
+	}
+
+
 	/**
 	 * Puts together the particle lists coming from workers.
 	 */
@@ -181,7 +182,7 @@ public class Master {
 	/**
 	 * Puts together the subgrids coming from workers.
 	 */
-	public Grid assembleGrid(int[] nodeIDs, Cell[][][] gridPartitions) {
+	private Grid assembleGrid(Cell[][][] gridPartitions) {
 		int totalXCells =
 				Grid.EXTRA_CELLS_BEFORE_GRID +
 				settings.getGridCellsX() +
@@ -192,22 +193,11 @@ public class Master {
 				Grid.EXTRA_CELLS_AFTER_GRID;
 
 		Cell[][] cells = new Cell[totalXCells][totalYCells];
-		for (int i = 0; i < partitions.length; ++i) {
-			int subgridIndex = findSubgridIndex(assignment[i], nodeIDs);
-			fillSubgrid(partitions[i], gridPartitions[subgridIndex], cells);
+		for (int workerID = 0; workerID < partitions.length; ++workerID) {
+			fillSubgrid(partitions[workerID], gridPartitions[workerID], cells);
 		}
 
 		return new Grid(cells, settings.getSimulationWidth(), settings.getSimulationHeight());
-	}
-
-
-	private int findSubgridIndex(int nodeID, int[] nodeIDs) {
-		for (int i = 0; i < nodeIDs.length; i++) {
-			if (nodeIDs[i] == nodeID) {
-				return i;
-			}
-		}
-		throw new RuntimeException("Could not find index of the subgrid!");
 	}
 
 

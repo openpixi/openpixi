@@ -34,27 +34,22 @@ public class MasterCommunicator {
 	 * The ports for problem distribution are closed right after they are used to minimize
 	 * number of open connections.
 	 */
-	public void distributeProblem(IntBox[] partitions, int[] assignment,
-	                              List<List<Particle>> particlePartitions,
-	                              Cell[][][] gridPartitions) throws IOException {
-		assert assignment.length >= registry.getWorkers().size();
+	public void sendProblem(int nodeID, IntBox[] partitions,
+	                        List<Particle> particles,
+	                        Cell[][] cells) throws IOException {
 
-		for (int i = 0; i < assignment.length; ++i) {
+		SendPort sendPort = registry.getIbis().createSendPort(PixiPorts.ONE_TO_ONE_PORT);
+		sendPort.connect(
+				registry.convertNodeIDToIbisID(nodeID),
+				PixiPorts.DISTRIBUTE_PORT_ID);
 
-			SendPort distributePort = registry.getIbis().createSendPort(PixiPorts.ONE_TO_ONE_PORT);
-			distributePort.connect(
-					registry.convertNodeIDToIbisID(assignment[i]),
-					PixiPorts.DISTRIBUTE_PORT_ID);
+		WriteMessage wm = sendPort.newMessage();
+		wm.writeObject(partitions);
+		wm.writeObject(particles);
+		wm.writeObject(cells);
+		wm.finish();
 
-			WriteMessage wm = distributePort.newMessage();
-			wm.writeObject(partitions);
-			wm.writeObject(assignment);
-			wm.writeObject(particlePartitions.get(assignment[i]));
-			wm.writeObject(gridPartitions[assignment[i]]);
-			wm.finish();
-
-			distributePort.close();
-		}
+		sendPort.close();
 	}
 
 
@@ -67,14 +62,13 @@ public class MasterCommunicator {
 		for (int i = 0; i < registry.getWorkers().size(); ++i) {
 
 			ReadMessage rm = recvPort.receive();
+			int nodeID = rm.readInt();
 			List<Particle> particles = (List<Particle>)rm.readObject();
 			Cell[][] cells = (Cell[][])rm.readObject();
 			rm.finish();
 
-			int nodeID = registry.convertIbisIDToNodeID(registry.getWorkers().get(i));
-			resultsHolder.nodeIDs[i] = nodeID;
-			resultsHolder.gridPartitions[i] = cells;
-			resultsHolder.particlePartitions.set(i, particles);
+			resultsHolder.gridPartitions[nodeID] = cells;
+			resultsHolder.particlePartitions.set(nodeID, particles);
 		}
 
 		recvPort.close();
