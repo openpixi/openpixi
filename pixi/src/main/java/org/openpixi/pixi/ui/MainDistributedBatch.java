@@ -9,6 +9,8 @@ import org.openpixi.pixi.physics.Settings;
 public class MainDistributedBatch {
 
 	public static void main(String[] args) throws Exception {
+		System.setProperty("ibis.server.address", "localhost");
+		System.setProperty("ibis.pool.name", "test");
 
 		Settings settings = new Settings();
 		settings.setNumOfNodes(2);

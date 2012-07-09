@@ -18,9 +18,9 @@ public class DistributeAndCollectTest {
 
 	public static void main(String[] args) throws Exception {
 		Settings settings = new Settings();
-		settings.setNumOfNodes(2);
-		settings.setGridCellsX(4);
-		settings.setGridCellsY(4);
+		settings.setNumOfNodes(16);
+		settings.setGridCellsX(32);
+		settings.setGridCellsY(64);
 
 		Thread server = startIplServer();
 		setRequiredSystemProperties();
@@ -50,6 +50,7 @@ public class DistributeAndCollectTest {
 		for (Node n: nodes) {
 			if (n.isMaster()) {
 				compareInitialAndFinalState(n.getMaster());
+				System.out.println("OK (data was successfully distributed and collected)");
 			}
 		}
 	}
