@@ -44,7 +44,6 @@ public class Settings {
 	private int gridCellsX = 10;
 	private int gridCellsY = 10;
 
-
 	private GridBoundaryType gridBoundary = GridBoundaryType.Hardwall;
 	private FieldSolver gridSolver = new FieldSolver();
 	private PoissonSolver poissonSolver = new PoissonSolverFFTPeriodic();
@@ -136,6 +135,14 @@ public class Settings {
 	//----------------------------------------------------------------------------------------------
 	// MORE COMPLEX GETTERS / BUILDERS
 	//----------------------------------------------------------------------------------------------
+
+	public double getCellWidth() {
+		return simulationWidth / gridCellsX;
+	}
+
+	public double getCellHeight() {
+		return simulationHeight / gridCellsY;
+	}
 
 	/**
 	 * Build the combined force for simulation.
