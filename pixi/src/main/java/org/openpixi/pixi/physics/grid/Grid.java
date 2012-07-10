@@ -207,12 +207,14 @@ public class Grid {
 	 * Creates grid from the given cells.
 	 * The input cells have to contain also the boundary cells.
 	 */
-	public Grid(Cell[][] cells, double simWidth, double simHeight) {
+	public Grid(double simWidth, double simHeight, Cell[][] cells, FieldSolver fsolver) {
 		this.numCellsX = cells.length - EXTRA_CELLS_BEFORE_GRID - EXTRA_CELLS_AFTER_GRID;
 		this.numCellsY = cells[0].length - EXTRA_CELLS_BEFORE_GRID - EXTRA_CELLS_AFTER_GRID;
 		this.cellWidth = simWidth/numCellsX;
 		this.cellHeight = simHeight/numCellsY;
+
 		this.cells = cells;
+		this.fsolver = fsolver;
 	}
 
 	public void set(int numCellsX, int numCellsY,

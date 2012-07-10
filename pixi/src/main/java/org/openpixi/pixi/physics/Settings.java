@@ -136,6 +136,14 @@ public class Settings {
 	// MORE COMPLEX GETTERS / BUILDERS
 	//----------------------------------------------------------------------------------------------
 
+	public double getCellWidth() {
+		return simulationWidth / gridCellsX;
+	}
+
+	public double getCellHeight() {
+		return simulationHeight / gridCellsY;
+	}
+
 	/**
 	 * Build the combined force for simulation.
 	 */
