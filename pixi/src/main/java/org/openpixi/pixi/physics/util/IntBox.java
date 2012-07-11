@@ -48,6 +48,17 @@ public class IntBox implements Serializable {
 		}
 	}
 
+	/**
+	 * Returns distance of a given point to the border of this box.
+	 * Point lying on xmin, xmax, ymin or ymax has distance 0.
+	 * Does not distinguish whether the point lies outside the box or inside.
+	 */
+	public int distanceFromBorder(int x, int y) {
+		int xmind = Math.min(Math.abs(x - xmin), Math.abs(x - xmax));
+		int ymind = Math.min(Math.abs(y - ymin), Math.abs(y - ymax));
+		return Math.min(xmind, ymind);
+	}
+
 	@Override
 	public String toString() {
 		return String.format("[%d,%d,%d,%d]", xmin, xmax, ymin, ymax);
