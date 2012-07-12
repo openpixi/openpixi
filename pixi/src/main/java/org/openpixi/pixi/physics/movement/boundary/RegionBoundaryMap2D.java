@@ -8,34 +8,34 @@ import org.openpixi.pixi.physics.util.DoubleBox;
  */
 public class RegionBoundaryMap2D {
 
-	private BoundaryRegionDecomposition boundaryRegions;
+	private BoundaryRegions boundaryRegions;
 	private ParticleBoundary[] regionBoundaryMap =
-			new ParticleBoundary[BoundaryRegionDecomposition.NUM_OF_REGIONS];
+			new ParticleBoundary[BoundaryRegions.NUM_OF_REGIONS];
 
 
 	/*
 	 * In 3D case it might be easier to use for cycles for the initialization.
 	 */
 	public RegionBoundaryMap2D(DoubleBox sa, ParticleBoundaryType boundaryType) {
-		boundaryRegions = new BoundaryRegionDecomposition(sa);
+		boundaryRegions = new BoundaryRegions(sa);
 
-		regionBoundaryMap[BoundaryRegionDecomposition.X_MIN + BoundaryRegionDecomposition.Y_MIN] =
+		regionBoundaryMap[BoundaryRegions.X_MIN + BoundaryRegions.Y_MIN] =
 				boundaryType.createBoundary(-sa.xsize(), -sa.ysize());
-		regionBoundaryMap[BoundaryRegionDecomposition.X_CENTER + BoundaryRegionDecomposition.Y_MIN] =
+		regionBoundaryMap[BoundaryRegions.X_CENTER + BoundaryRegions.Y_MIN] =
 				boundaryType.createBoundary(0, -sa.ysize());
-		regionBoundaryMap[BoundaryRegionDecomposition.X_MAX + BoundaryRegionDecomposition.Y_MIN] =
+		regionBoundaryMap[BoundaryRegions.X_MAX + BoundaryRegions.Y_MIN] =
 				boundaryType.createBoundary(sa.xsize(), -sa.ysize());
-		regionBoundaryMap[BoundaryRegionDecomposition.X_MIN + BoundaryRegionDecomposition.Y_CENTER] =
+		regionBoundaryMap[BoundaryRegions.X_MIN + BoundaryRegions.Y_CENTER] =
 				boundaryType.createBoundary(-sa.xsize(), 0);
-		regionBoundaryMap[BoundaryRegionDecomposition.X_CENTER + BoundaryRegionDecomposition.Y_CENTER] =
+		regionBoundaryMap[BoundaryRegions.X_CENTER + BoundaryRegions.Y_CENTER] =
 				new EmptyBoundary(0, 0);
-		regionBoundaryMap[BoundaryRegionDecomposition.X_MAX + BoundaryRegionDecomposition.Y_CENTER] =
+		regionBoundaryMap[BoundaryRegions.X_MAX + BoundaryRegions.Y_CENTER] =
 				boundaryType.createBoundary(sa.xsize(), 0);
-		regionBoundaryMap[BoundaryRegionDecomposition.X_MIN + BoundaryRegionDecomposition.Y_MAX] =
+		regionBoundaryMap[BoundaryRegions.X_MIN + BoundaryRegions.Y_MAX] =
 				boundaryType.createBoundary(-sa.xsize(), sa.ysize());
-		regionBoundaryMap[BoundaryRegionDecomposition.X_CENTER + BoundaryRegionDecomposition.Y_MAX] =
+		regionBoundaryMap[BoundaryRegions.X_CENTER + BoundaryRegions.Y_MAX] =
 				boundaryType.createBoundary(0, sa.ysize());
-		regionBoundaryMap[BoundaryRegionDecomposition.X_MAX + BoundaryRegionDecomposition.Y_MAX] =
+		regionBoundaryMap[BoundaryRegions.X_MAX + BoundaryRegions.Y_MAX] =
 				boundaryType.createBoundary(sa.xsize(), sa.ysize());
 	}
 

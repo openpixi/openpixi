@@ -5,7 +5,7 @@ import org.openpixi.pixi.physics.util.DoubleBox;
 /**
  * Identifies different boundary regions of the simulation area.
  */
-public class BoundaryRegionDecomposition {
+public class BoundaryRegions {
 
 	/*
 	 * Specific boundary is specified by the combination of X and Y values.
@@ -39,7 +39,7 @@ public class BoundaryRegionDecomposition {
 	/** Box around the simulation area. */
 	DoubleBox simulationArea;
 
-	public BoundaryRegionDecomposition(DoubleBox simulationArea) {
+	public BoundaryRegions(DoubleBox simulationArea) {
 		this.simulationArea = simulationArea;
 	}
 
