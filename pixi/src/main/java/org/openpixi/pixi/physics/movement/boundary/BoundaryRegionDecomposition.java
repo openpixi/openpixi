@@ -19,6 +19,8 @@ public class BoundaryRegionDecomposition {
 	public static final int Y_CENTER = 3;
 	public static final int Y_MAX = 6;
 
+	public static final int NUM_OF_REGIONS = X_MAX + Y_MAX + 1;
+
 	/** Regions which share an edge with the simulation area. */
 	public static int[] EDGE_REGIONS = {
 			X_MIN + Y_CENTER,
