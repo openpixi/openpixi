@@ -19,6 +19,21 @@ public class BoundaryRegionDecomposition {
 	public static final int YCENTER = 3;
 	public static final int YMAX = 6;
 
+	/** Regions which share an edge with the simulation area. */
+	public static int[] EDGE_REGIONS = {
+			XMIN + YCENTER,
+			XMAX + YCENTER,
+			YMIN + XCENTER,
+			YMAX + XCENTER
+	};
+	/** Regions which share a corner with the simulation area. */
+	public static int[] CORNER_REGIONS = {
+			XMIN + YMIN,
+			XMAX + YMIN,
+			XMIN + YMAX,
+			XMAX + YMAX
+	};
+
 	/** Box around the simulation area. */
 	DoubleBox simulationArea;
 
