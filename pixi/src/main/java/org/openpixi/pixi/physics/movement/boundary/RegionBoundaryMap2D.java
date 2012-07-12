@@ -7,10 +7,10 @@ import org.openpixi.pixi.physics.util.DoubleBox;
  * Maps the 8 possible boundary regions in 2D to actual boundaries.
  */
 public class RegionBoundaryMap2D {
-	private static final int NUM_OF_2D_REGIONS = 9;
 
 	private BoundaryRegionDecomposition boundaryRegions;
-	private ParticleBoundary[] regionBoundaryMap = new ParticleBoundary[NUM_OF_2D_REGIONS];
+	private ParticleBoundary[] regionBoundaryMap =
+			new ParticleBoundary[BoundaryRegionDecomposition.NUM_OF_REGIONS];
 
 
 	/*
