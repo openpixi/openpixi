@@ -19,23 +19,23 @@ public class RegionBoundaryMap2D {
 	public RegionBoundaryMap2D(DoubleBox sa, ParticleBoundaryType boundaryType) {
 		boundaryRegions = new BoundaryRegionDecomposition(sa);
 
-		regionBoundaryMap[BoundaryRegionDecomposition.XMIN + BoundaryRegionDecomposition.YMIN] =
+		regionBoundaryMap[BoundaryRegionDecomposition.X_MIN + BoundaryRegionDecomposition.Y_MIN] =
 				boundaryType.createBoundary(-sa.xsize(), -sa.ysize());
-		regionBoundaryMap[BoundaryRegionDecomposition.XCENTER + BoundaryRegionDecomposition.YMIN] =
+		regionBoundaryMap[BoundaryRegionDecomposition.X_CENTER + BoundaryRegionDecomposition.Y_MIN] =
 				boundaryType.createBoundary(0, -sa.ysize());
-		regionBoundaryMap[BoundaryRegionDecomposition.XMAX + BoundaryRegionDecomposition.YMIN] =
+		regionBoundaryMap[BoundaryRegionDecomposition.X_MAX + BoundaryRegionDecomposition.Y_MIN] =
 				boundaryType.createBoundary(sa.xsize(), -sa.ysize());
-		regionBoundaryMap[BoundaryRegionDecomposition.XMIN + BoundaryRegionDecomposition.YCENTER] =
+		regionBoundaryMap[BoundaryRegionDecomposition.X_MIN + BoundaryRegionDecomposition.Y_CENTER] =
 				boundaryType.createBoundary(-sa.xsize(), 0);
-		regionBoundaryMap[BoundaryRegionDecomposition.XCENTER + BoundaryRegionDecomposition.YCENTER] =
+		regionBoundaryMap[BoundaryRegionDecomposition.X_CENTER + BoundaryRegionDecomposition.Y_CENTER] =
 				new EmptyBoundary(0, 0);
-		regionBoundaryMap[BoundaryRegionDecomposition.XMAX + BoundaryRegionDecomposition.YCENTER] =
+		regionBoundaryMap[BoundaryRegionDecomposition.X_MAX + BoundaryRegionDecomposition.Y_CENTER] =
 				boundaryType.createBoundary(sa.xsize(), 0);
-		regionBoundaryMap[BoundaryRegionDecomposition.XMIN + BoundaryRegionDecomposition.YMAX] =
+		regionBoundaryMap[BoundaryRegionDecomposition.X_MIN + BoundaryRegionDecomposition.Y_MAX] =
 				boundaryType.createBoundary(-sa.xsize(), sa.ysize());
-		regionBoundaryMap[BoundaryRegionDecomposition.XCENTER + BoundaryRegionDecomposition.YMAX] =
+		regionBoundaryMap[BoundaryRegionDecomposition.X_CENTER + BoundaryRegionDecomposition.Y_MAX] =
 				boundaryType.createBoundary(0, sa.ysize());
-		regionBoundaryMap[BoundaryRegionDecomposition.XMAX + BoundaryRegionDecomposition.YMAX] =
+		regionBoundaryMap[BoundaryRegionDecomposition.X_MAX + BoundaryRegionDecomposition.Y_MAX] =
 				boundaryType.createBoundary(sa.xsize(), sa.ysize());
 	}
 
