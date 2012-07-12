@@ -9,15 +9,30 @@ public class BoundaryRegionDecomposition {
 
 	/*
 	 * Specific boundary is specified by the combination of X and Y values.
-	 * E.g. top-left is XMIN + YMIN.
+	 * E.g. top-left is X_MIN + Y_MIN.
 	 */
 
-	public static final int XMIN = 0;
-	public static final int XCENTER = 1;
-	public static final int XMAX = 2;
-	public static final int YMIN = 0;
-	public static final int YCENTER = 3;
-	public static final int YMAX = 6;
+	public static final int X_MIN = 0;
+	public static final int X_CENTER = 1;
+	public static final int X_MAX = 2;
+	public static final int Y_MIN = 0;
+	public static final int Y_CENTER = 3;
+	public static final int Y_MAX = 6;
+
+	/** Regions which share an edge with the simulation area. */
+	public static int[] EDGE_REGIONS = {
+			X_MIN + Y_CENTER,
+			X_MAX + Y_CENTER,
+			Y_MIN + X_CENTER,
+			Y_MAX + X_CENTER
+	};
+	/** Regions which share a corner with the simulation area. */
+	public static int[] CORNER_REGIONS = {
+			X_MIN + Y_MIN,
+			X_MAX + Y_MIN,
+			X_MIN + Y_MAX,
+			X_MAX + Y_MAX
+	};
 
 	/** Box around the simulation area. */
 	DoubleBox simulationArea;
@@ -31,19 +46,19 @@ public class BoundaryRegionDecomposition {
 		int yidx;
 
 		if (x < simulationArea.xmin()) {
-			xidx  = XMIN;
+			xidx  = X_MIN;
 		} else if (x >= simulationArea.xmax()) {
-			xidx = XMAX;
+			xidx = X_MAX;
 		} else {
-			xidx = XCENTER;
+			xidx = X_CENTER;
 		}
 
 		if (y < simulationArea.ymin()) {
-			yidx = YMIN;
+			yidx = Y_MIN;
 		} else if (y >= simulationArea.ymax()) {
-			yidx = YMAX;
+			yidx = Y_MAX;
 		} else {
-			yidx = YCENTER;
+			yidx = Y_CENTER;
 		}
 
 		return xidx + yidx;
