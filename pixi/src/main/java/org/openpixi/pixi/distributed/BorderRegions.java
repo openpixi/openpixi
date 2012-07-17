@@ -35,8 +35,12 @@ public class BorderRegions {
 			X_BORDER_MIN + Y_BORDER_MAX,
 			X_BORDER_MAX + Y_BORDER_MAX
 	};
-	/** Special border regions present only under hardwall boundaries. */
-	public static int[] HARDWALL_CORNER_REGIONS = {
+	/**
+	 * Special border regions,
+	 * which are outside of the simulation area,
+	 * present only under hardwall boundaries.
+	 */
+	public static int[] OUTSIDE_CORNER_REGIONS = {
 			X_BORDER_MIN + Y_BOUNDARY_MIN,
 			X_BORDER_MIN + Y_BOUNDARY_MAX,
 			X_BORDER_MAX + Y_BOUNDARY_MIN,
