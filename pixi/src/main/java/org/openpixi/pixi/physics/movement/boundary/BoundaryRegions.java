@@ -43,21 +43,26 @@ public class BoundaryRegions {
 		this.simulationArea = simulationArea;
 	}
 
-	public int getRegion(double x, double y) {
+	/**
+	 * We do not get the region based on position but a whole box.
+	 * This way we are more flexible
+	 * - we can check particle's circumference to be in a boundary region.
+	 */
+	public int getRegion(DoubleBox particleBox) {
 		int xidx;
 		int yidx;
 
-		if (x < simulationArea.xmin()) {
+		if (particleBox.xmin() < simulationArea.xmin()) {
 			xidx  = X_MIN;
-		} else if (x >= simulationArea.xmax()) {
+		} else if (particleBox.xmax() >= simulationArea.xmax()) {
 			xidx = X_MAX;
 		} else {
 			xidx = X_CENTER;
 		}
 
-		if (y < simulationArea.ymin()) {
+		if (particleBox.ymin() < simulationArea.ymin()) {
 			yidx = Y_MIN;
-		} else if (y >= simulationArea.ymax()) {
+		} else if (particleBox.ymax() >= simulationArea.ymax()) {
 			yidx = Y_MAX;
 		} else {
 			yidx = Y_CENTER;
