@@ -18,7 +18,15 @@ import java.util.List;
  */
 public class SimplePartitioner implements Partitioner {
 
+	private IntBox[] partitions;
+	private int numCellsX;
+	private int numCellsY;
+
+
 	public IntBox[] partition(int numCellsX, int numCellsY, int numPartitions) {
+		this.numCellsX = numCellsX;
+		this.numCellsY = numCellsY;
+
 		assert numCellsX > 0;
 		assert numCellsY > 0;
 
@@ -38,7 +46,8 @@ public class SimplePartitioner implements Partitioner {
 			partitions = splitBoxes(partitions);
 		}
 
-		return partitions.toArray(new IntBox[0]);
+		this.partitions = partitions.toArray(new IntBox[0]);
+		return this.partitions;
 	}
 
 
@@ -69,5 +78,64 @@ public class SimplePartitioner implements Partitioner {
 		else {
 			return false;
 		}
+	}
+
+
+	@Override
+	public String toString() {
+		StringBuilder retval = new StringBuilder();
+		IntBox first = findFirst();
+		IntBox nextY = first;
+		while (nextY != null) {
+			IntBox nextX = nextY;
+			while (nextX != null) {
+				int index = getIndex(nextX);
+				retval.append(index + " ");
+				nextX = findNextX(nextX);
+			}
+			retval.append("\n");
+			nextY = findNextY(nextY);
+		}
+		return retval.toString().trim();
+	}
+
+
+	private int getIndex(IntBox partition) {
+		for (int i = 0; i < partitions.length; ++i) {
+			if (partitions[i] == partition) {
+				return i;
+			}
+		}
+		throw new RuntimeException("Partition was not found!");
+	}
+
+
+	private IntBox findNextX(IntBox current) {
+		for (IntBox part: partitions) {
+			if (part.xmin() == current.xmax() + 1 && part.ymin() == current.ymin()) {
+				return part;
+			}
+		}
+		return null;
+	}
+
+
+	private IntBox findNextY(IntBox current) {
+		for (IntBox part: partitions) {
+			if (part.ymin() == current.ymax() + 1 && part.xmin() == current.xmin()) {
+				return part;
+			}
+		}
+		return null;
+	}
+
+
+	private IntBox findFirst() {
+		for (IntBox part: partitions) {
+			if (part.xmin() == 0 && part.ymin() == 0) {
+				return  part;
+			}
+		}
+		throw new RuntimeException("Could not find the first partition!");
 	}
 }
