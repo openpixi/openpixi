@@ -11,9 +11,12 @@ public class RegionBoundaryMap2D {
 
 	private BoundaryRegionDecomposition boundaryRegions;
 	private ParticleBoundary[] regionBoundaryMap = new ParticleBoundary[NUM_OF_2D_REGIONS];
+	private ParticleBoundaryType boundaryType;
 
+	private BoundingBox particleBoundingBox = new BoundingBox(0,0,0,0);
 
 	public RegionBoundaryMap2D(BoundingBox sa, ParticleBoundaryType boundaryType) {
+		this.boundaryType = boundaryType;
 		boundaryRegions = new BoundaryRegionDecomposition(sa);
 
 		regionBoundaryMap[BoundaryRegionDecomposition.XMIN + BoundaryRegionDecomposition.YMIN] =
@@ -38,7 +41,15 @@ public class RegionBoundaryMap2D {
 
 
 	public void apply(Particle p) {
-		int region = boundaryRegions.getRegion(p.getX(), p.getY());
+
+		/*
+		 * Since there can be a large number of particles,
+		 * it is costly to create new bounding box for each particle in each time step;
+		 * thus, we reuse single bounding box.
+		 */
+		boundaryType.getParticleBoundingBox(p, particleBoundingBox);
+
+		int region = boundaryRegions.getRegion(particleBoundingBox);
 		regionBoundaryMap[region].apply(p);
 	}
 }

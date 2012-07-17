@@ -26,21 +26,27 @@ public class BoundaryRegionDecomposition {
 		this.simulationArea = simulationArea;
 	}
 
-	public int getRegion(double x, double y) {
+
+	/**
+	 * We do not get the region based on position but a whole box.
+	 * This way we are more flexible
+	 * - we can check particle's circumference to be in a boundary region.
+	 */
+	public int getRegion(BoundingBox particleBox) {
 		int xidx;
 		int yidx;
 
-		if (x < simulationArea.xmin()) {
+		if (particleBox.xmin() < simulationArea.xmin()) {
 			xidx  = XMIN;
-		} else if (x >= simulationArea.xmax()) {
+		} else if (particleBox.xmax() >= simulationArea.xmax()) {
 			xidx = XMAX;
 		} else {
 			xidx = XCENTER;
 		}
 
-		if (y < simulationArea.ymin()) {
+		if (particleBox.ymin() < simulationArea.ymin()) {
 			yidx = YMIN;
-		} else if (y >= simulationArea.ymax()) {
+		} else if (particleBox.ymax() >= simulationArea.ymax()) {
 			yidx = YMAX;
 		} else {
 			yidx = YCENTER;
