@@ -7,10 +7,7 @@ public class DoubleBox {
 	private double ymax;
 
 	public DoubleBox(double xmin, double xmax, double ymin, double ymax) {
-		this.xmin = xmin;
-		this.xmax = xmax;
-		this.ymin = ymin;
-		this.ymax = ymax;
+		set(xmin, xmax, ymin, ymax);
 	}
 
 	public double xmin() {
@@ -35,5 +32,12 @@ public class DoubleBox {
 
 	public double ysize() {
 		return ymax - ymin;
+	}
+
+	public void set(double xmin, double xmax, double ymin, double ymax) {
+		this.xmin = xmin;
+		this.xmax = xmax;
+		this.ymin = ymin;
+		this.ymax = ymax;
 	}
 }

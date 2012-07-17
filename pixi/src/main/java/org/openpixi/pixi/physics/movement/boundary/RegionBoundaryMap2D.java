@@ -11,12 +11,15 @@ public class RegionBoundaryMap2D {
 	private BoundaryRegions boundaryRegions;
 	private ParticleBoundary[] regionBoundaryMap =
 			new ParticleBoundary[BoundaryRegions.NUM_OF_REGIONS];
+	private ParticleBoundaryType boundaryType;
 
+	private DoubleBox particleDoubleBox = new DoubleBox(0,0,0,0);
 
 	/*
 	 * In 3D case it might be easier to use for cycles for the initialization.
-	 */
+	 */	
 	public RegionBoundaryMap2D(DoubleBox sa, ParticleBoundaryType boundaryType) {
+		this.boundaryType = boundaryType;
 		boundaryRegions = new BoundaryRegions(sa);
 
 		regionBoundaryMap[BoundaryRegions.X_MIN + BoundaryRegions.Y_MIN] =
@@ -41,7 +44,15 @@ public class RegionBoundaryMap2D {
 
 
 	public void apply(Particle p) {
-		int region = boundaryRegions.getRegion(p.getX(), p.getY());
+
+		/*
+		 * Since there can be a large number of particles,
+		 * it is costly to create new bounding box for each particle in each time step;
+		 * thus, we reuse single bounding box.
+		 */
+		boundaryType.getParticleDoubleBox(p, particleDoubleBox);
+
+		int region = boundaryRegions.getRegion(particleDoubleBox);
 		regionBoundaryMap[region].apply(p);
 	}
 }
