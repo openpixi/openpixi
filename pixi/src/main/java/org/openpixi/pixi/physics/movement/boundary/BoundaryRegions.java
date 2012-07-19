@@ -44,7 +44,7 @@ public class BoundaryRegions {
 	 * Helper box, so that we do not have to create a new box each time we call
 	 * getRegion(double, double).
 	 */
-	private DoubleBox helperBox;
+	private DoubleBox helperBox = new DoubleBox(0, 0, 0, 0);
 
 	public BoundaryRegions(DoubleBox simulationArea) {
 		this.simulationArea = simulationArea;
