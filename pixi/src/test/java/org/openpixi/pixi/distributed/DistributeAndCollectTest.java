@@ -18,9 +18,11 @@ public class DistributeAndCollectTest {
 
 	public static void main(String[] args) throws Exception {
 		Settings settings = new Settings();
-		settings.setNumOfNodes(16);
+		settings.setNumOfNodes(8);
 		settings.setGridCellsX(32);
 		settings.setGridCellsY(64);
+		// Do not run the simulation in this test
+		settings.setIterations(0);
 
 		Thread server = startIplServer();
 		setRequiredSystemProperties();

@@ -3,6 +3,8 @@ package org.openpixi.pixi.distributed;
 import org.openpixi.pixi.distributed.ibis.IbisRegistry;
 import org.openpixi.pixi.distributed.ibis.WorkerCommunicator;
 import org.openpixi.pixi.physics.Settings;
+import org.openpixi.pixi.physics.grid.Grid;
+import org.openpixi.pixi.physics.util.IntBox;
 
 /**
  * Receives the problem, calculates the problem, sends back results.
@@ -14,8 +16,11 @@ public class Worker implements Runnable {
 	/** ID of this worker. */
 	private int workerID;
 
+	private SharedDataManager sharedDataManager;
+
 
 	public Worker(IbisRegistry registry, Settings settings) throws Exception {
+		this.settings = settings;
 		communicator = new WorkerCommunicator(registry);
 		workerID = registry.convertIbisIDToWorkerID(registry.getIbis().identifier());
 	}
@@ -25,7 +30,17 @@ public class Worker implements Runnable {
 		try {
 			communicator.receiveProblem();
 
-			// TODO build the simulation together with boundaries
+			IntBox simulationAreaInCellDimensions =
+					new IntBox(0, settings.getGridCellsX() - 1, 0, settings.getGridCellsY() - 1);
+			sharedDataManager = new SharedDataManager(
+					workerID, communicator.getPartitions(),
+					simulationAreaInCellDimensions, settings.getBoundaryType());
+
+			DistributedGridFactory gridFactory = new DistributedGridFactory(
+					settings, communicator.getPartitions()[workerID],
+					communicator.getCells(), sharedDataManager);
+			Grid grid = gridFactory.create();
+
 			// TODO run the simulation
 
 

@@ -66,7 +66,9 @@ public class NeighborMap {
 		this.thisWorkerID = thisWorkerID;
 		this.globalSimArea = globalSimArea;
 
+		initBoundaryNeighbors();
 		initBoundaryPoints(partitions[thisWorkerID]);
+		initBorderNeighbors();
 		initBorderPoints(partitions[thisWorkerID]);
 
 		if (boundaryType == GeneralBoundaryType.Hardwall) {
@@ -77,6 +79,20 @@ public class NeighborMap {
 			setPeriodicBorderNeighbors();
 		} else {
 			throw new RuntimeException("Unsupported boundary type!");
+		}
+	}
+
+
+	private void initBoundaryNeighbors() {
+		for (int region = 0; region < BoundaryRegions.NUM_OF_REGIONS; ++region) {
+			boundaryNeighbors[region] = NO_NEIGHBOR;
+		}
+	}
+
+
+	private void initBorderNeighbors() {
+		for (int region = 0; region < BorderRegions.NUM_OF_REGIONS; ++region) {
+			borderNeighbors[region] = new int[] {};
 		}
 	}
 
