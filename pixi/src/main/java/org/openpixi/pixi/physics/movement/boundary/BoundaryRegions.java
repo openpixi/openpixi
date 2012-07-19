@@ -37,7 +37,13 @@ public class BoundaryRegions {
 	};
 
 	/** Box around the simulation area. */
-	DoubleBox simulationArea;
+	private DoubleBox simulationArea;
+
+	/**
+	 * Helper box, so that we do not have to create a new box each time we call
+	 * getRegion(double, double).
+	 */
+	private DoubleBox helperBox;
 
 	public BoundaryRegions(DoubleBox simulationArea) {
 		this.simulationArea = simulationArea;
@@ -69,5 +75,11 @@ public class BoundaryRegions {
 		}
 
 		return xidx + yidx;
+	}
+
+
+	public int getRegion(double x, double y) {
+	 	helperBox.set(x, x, y, y);
+		return getRegion(helperBox);
 	}
 }
