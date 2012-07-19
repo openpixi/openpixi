@@ -4,6 +4,7 @@ import org.openpixi.pixi.physics.util.DoubleBox;
 
 /**
  * Identifies different border regions of the simulation area.
+ * Border regions are mainly within the simulation area.
  */
 public class BorderRegions {
 
