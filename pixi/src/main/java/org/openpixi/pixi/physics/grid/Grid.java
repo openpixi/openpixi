@@ -31,8 +31,12 @@ public class Grid {
 	 *    With the extra cells we can comfortably iterate through the entire grid in a uniform way
 	 *    using the 0 values of extra cells when calculating the fields at the sides.
 	 */
-	public static final int EXTRA_CELLS_BEFORE_GRID = 1;
-	public static final int EXTRA_CELLS_AFTER_GRID = 2;
+	public static final int INTERPOLATION_RADIUS = 1;
+	public static final int HARDWALL_SAFETY_CELLS = 1;
+	public static final int EXTRA_CELLS_BEFORE_GRID =
+			INTERPOLATION_RADIUS + HARDWALL_SAFETY_CELLS - 1;
+	public static final int EXTRA_CELLS_AFTER_GRID =
+			INTERPOLATION_RADIUS + HARDWALL_SAFETY_CELLS;
 
 	/**solver algorithm for the maxwell equations*/
 	private FieldSolver fsolver;
