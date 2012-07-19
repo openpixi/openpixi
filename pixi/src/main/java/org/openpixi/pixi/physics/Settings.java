@@ -127,6 +127,10 @@ public class Settings {
 		return boundaryType;
 	}
 
+	public int getIterations() {
+		return iterations;
+	}
+
 	//----------------------------------------------------------------------------------------------
 	// MORE COMPLEX GETTERS / BUILDERS
 	//----------------------------------------------------------------------------------------------
