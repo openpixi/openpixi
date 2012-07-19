@@ -9,7 +9,6 @@ import org.openpixi.pixi.physics.force.CombinedForce;
 import org.openpixi.pixi.physics.force.Force;
 import org.openpixi.pixi.physics.grid.GridBoundaryType;
 import org.openpixi.pixi.physics.grid.Interpolator;
-import org.openpixi.pixi.physics.movement.boundary.ParticleBoundary;
 import org.openpixi.pixi.physics.movement.boundary.ParticleBoundaryType;
 import org.openpixi.pixi.physics.solver.EmptySolver;
 import org.openpixi.pixi.physics.solver.Solver;
@@ -37,6 +36,8 @@ public class Settings {
 	private double speedOfLight = 1;
 	private double timeStep = 1;
 
+	private GeneralBoundaryType boundaryType;
+
 	private Interpolator interpolator = new Interpolator();
 
 	// Grid related settings
@@ -44,7 +45,6 @@ public class Settings {
 	private int gridCellsX = 10;
 	private int gridCellsY = 10;
 
-	private GridBoundaryType gridBoundary = GridBoundaryType.Hardwall;
 	private FieldSolver gridSolver = new FieldSolver();
 	private PoissonSolver poissonSolver = new PoissonSolverFFTPeriodic();
 
@@ -54,7 +54,6 @@ public class Settings {
 	private double particleRadius = 1;
 	private double particleMaxSpeed = speedOfLight;
 
-	private ParticleBoundaryType particleBoundary = ParticleBoundaryType.Hardwall;
 	private Detector collisionDetector = new Detector();
 	private CollisionAlgorithm collisionResolver = new CollisionAlgorithm();
 	private Solver particleSolver = new EmptySolver();
@@ -127,16 +126,12 @@ public class Settings {
 		return numOfNodes;
 	}
 
-	public GridBoundaryType getGridBoundary() {
-		return gridBoundary;
-	}
-
-	public ParticleBoundaryType getParticleBoundary() {
-		return particleBoundary;
-	}
-
 	public int getSharedDataWidth() {
 		return SHARED_DATA_WIDTH;
+	}
+
+	public GeneralBoundaryType getBoundaryType() {
+		return boundaryType;
 	}
 
 	//----------------------------------------------------------------------------------------------
@@ -168,6 +163,28 @@ public class Settings {
 	public List<Particle> getParticles() {
 		return InitialConditions.createRandomParticles(simulationWidth,  simulationHeight,
 				particleMaxSpeed, particleCount, particleRadius);
+	}
+
+	public GridBoundaryType getGridBoundary() {
+		switch (boundaryType) {
+			case Periodic:
+				return GridBoundaryType.Periodic;
+			case Hardwall:
+				return GridBoundaryType.Hardwall;
+			default:
+				return GridBoundaryType.Hardwall;
+		}
+	}
+
+	public ParticleBoundaryType getParticleBoundary() {
+		switch (boundaryType) {
+			case Periodic:
+				return ParticleBoundaryType.Periodic;
+			case Hardwall:
+				return ParticleBoundaryType.Hardwall;
+			default:
+				return ParticleBoundaryType.Hardwall;
+		}
 	}
 
 	//----------------------------------------------------------------------------------------------
@@ -246,12 +263,8 @@ public class Settings {
 		this.numOfNodes = numOfNodes;
 	}
 
-	public void setGridBoundary(GridBoundaryType gridBoundary) {
-		this.gridBoundary = gridBoundary;
-	}
-
-	public void setParticleBoundary(ParticleBoundaryType particleBoundary) {
-		this.particleBoundary = particleBoundary;
+	public void setBoundary(GeneralBoundaryType boundaryType) {
+		this.boundaryType = boundaryType;
 	}
 
 	//----------------------------------------------------------------------------------------------
