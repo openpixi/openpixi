@@ -36,7 +36,7 @@ public class Settings {
 	private double speedOfLight = 1;
 	private double timeStep = 1;
 
-	private GeneralBoundaryType boundaryType;
+	private GeneralBoundaryType boundaryType = GeneralBoundaryType.Periodic;
 
 	private Interpolator interpolator = new Interpolator();
 
