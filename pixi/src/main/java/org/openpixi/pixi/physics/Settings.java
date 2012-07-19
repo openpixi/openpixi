@@ -66,9 +66,6 @@ public class Settings {
 	// Distributed version settings
 
 	private int numOfNodes;
-	/** Width (in number of cells) of the circumference around the local simulation area
-	    which needs to be shared in order to achieve correct interpolation. */
-	private static final int SHARED_DATA_WIDTH = 1;
 
 	//----------------------------------------------------------------------------------------------
 	// SIMPLE GETTERS
@@ -124,10 +121,6 @@ public class Settings {
 
 	public int getNumOfNodes() {
 		return numOfNodes;
-	}
-
-	public int getSharedDataWidth() {
-		return SHARED_DATA_WIDTH;
 	}
 
 	public GeneralBoundaryType getBoundaryType() {
