@@ -1,9 +1,9 @@
 package org.openpixi.pixi.physics.force;
 
 
-import java.util.ArrayList;
-
 import org.openpixi.pixi.physics.Particle;
+
+import java.util.ArrayList;
 
 /**
  * Combines various forces into a single force.
@@ -104,5 +104,9 @@ public class CombinedForce implements Force {
 			sum += f.getLinearDragCoefficient(p);
 		}
 		return sum;
+	}
+
+	public void remove(Force force) {
+		forces.remove(force);
 	}
 }

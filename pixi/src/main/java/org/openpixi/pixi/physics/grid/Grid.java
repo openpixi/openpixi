@@ -3,12 +3,7 @@ package org.openpixi.pixi.physics.grid;
 import org.openpixi.pixi.physics.Settings;
 import org.openpixi.pixi.physics.fields.FieldSolver;
 
-/**
- * TODO add possibility to instantiate any grid boundary +
- * TODO   for the time being unify with particle boundary
- * TODO create simple tests for grid boundaries
- * TODO on simulation resize simply recreate the whole grid
- */
+
 public class Grid {
 
 	/**
@@ -186,18 +181,6 @@ public class Grid {
 		return cells[index(x)][index(y)];
 	}
 
-	// TODO remove and have the settings constructor only
-	public Grid(
-			int numCellsX, int numCellsY,
-			double simWidth, double simHeight,
-			GridBoundaryType boundaryType,
-			FieldSolver fsolver) {
-
-		this.boundaryType = boundaryType;
-		this.fsolver = fsolver;
-
-		set(numCellsX, numCellsY, simWidth, simHeight);
-	}
 
 	public Grid(Settings settings) {
 		this.boundaryType = settings.getGridBoundary();
@@ -207,7 +190,10 @@ public class Grid {
 				settings.getSimulationWidth(), settings.getSimulationHeight());
 	}
 
+
 	/**
+	 * In the distributed version we want to create the grid from cell which come from master;
+	 * hence, this constructor.
 	 * Creates grid from the given cells.
 	 * The input cells have to contain also the boundary cells.
 	 */
@@ -221,6 +207,12 @@ public class Grid {
 		this.fsolver = fsolver;
 	}
 
+
+	/**
+	 * This method is dangerous as it would not work in distributed version.
+	 * TODO make sure the method can not be called in distributed version
+	 * E.g. throw an exception if this is distributed version
+	 */
 	public void set(int numCellsX, int numCellsY,
 			double simWidth, double simHeight) {
 

@@ -18,23 +18,39 @@
  */
 package org.openpixi.pixi.ui;
 
-import org.openpixi.pixi.physics.*;
-import org.openpixi.pixi.physics.collision.algorithms.*;
-import org.openpixi.pixi.physics.collision.detectors.*;
-import org.openpixi.pixi.physics.force.*;
-import org.openpixi.pixi.physics.force.relativistic.*;
+import org.openpixi.pixi.physics.InitialConditions;
+import org.openpixi.pixi.physics.Particle;
+import org.openpixi.pixi.physics.Simulation;
+import org.openpixi.pixi.physics.collision.algorithms.CollisionAlgorithm;
+import org.openpixi.pixi.physics.collision.algorithms.MatrixTransformation;
+import org.openpixi.pixi.physics.collision.algorithms.SimpleCollision;
+import org.openpixi.pixi.physics.collision.algorithms.VectorTransformation;
+import org.openpixi.pixi.physics.collision.detectors.AllParticles;
+import org.openpixi.pixi.physics.collision.detectors.Detector;
+import org.openpixi.pixi.physics.collision.detectors.SweepAndPrune;
+import org.openpixi.pixi.physics.force.CombinedForce;
+import org.openpixi.pixi.physics.force.ConstantForce;
+import org.openpixi.pixi.physics.force.Force;
+import org.openpixi.pixi.physics.force.SimpleGridForce;
+import org.openpixi.pixi.physics.force.relativistic.ConstantForceRelativistic;
+import org.openpixi.pixi.physics.force.relativistic.SimpleGridForceRelativistic;
 import org.openpixi.pixi.physics.movement.boundary.ParticleBoundaryType;
 import org.openpixi.pixi.physics.solver.*;
-import org.openpixi.pixi.physics.solver.relativistic.*;
-import org.openpixi.pixi.ui.util.*;
-import java.awt.*;
+import org.openpixi.pixi.physics.solver.relativistic.BorisRelativistic;
+import org.openpixi.pixi.physics.solver.relativistic.LeapFrogRelativistic;
+import org.openpixi.pixi.physics.solver.relativistic.SemiImplicitEulerRelativistic;
+import org.openpixi.pixi.ui.util.FrameRateDetector;
+import org.openpixi.pixi.ui.util.WriteFile;
+
 import javax.swing.*;
-import java.awt.event.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.geom.AffineTransform;
-import static java.awt.geom.AffineTransform.*;
 import java.util.ArrayList;
 
-import org.openpixi.pixi.physics.grid.*;
+import static java.awt.geom.AffineTransform.getRotateInstance;
+import static java.awt.geom.AffineTransform.getTranslateInstance;
 
 
 /**
@@ -176,19 +192,10 @@ public class Particle2DPanel extends JPanel {
 	private void updateFieldForce() {
 
 		if(calculateFields) {
-			s.grid = GridFactory.createYeeGrid(s, 10, 10, s.getWidth(), s.getHeight());
-			s.mover.setBoundaryType(ParticleBoundaryType.Periodic);
+			s.turnGridForceOn();
 		}
 		else {
-			//clears forces ArrayList of all GridForces
-			if (s.f instanceof CombinedForce) {
-				ArrayList<Force> forces = ((CombinedForce) s.f).forces;
-				for (int i = 0; i < forces.size(); i++) {
-					if (forces.get(i) instanceof SimpleGridForce){
-						forces.remove(i);
-					}
-				}
-			}
+			s.turnGridForceOff();
 		}
 	}
 

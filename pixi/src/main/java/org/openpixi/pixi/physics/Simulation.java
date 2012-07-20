@@ -51,6 +51,13 @@ public class Simulation {
 	public CollisionAlgorithm collisionalgorithm;
 	public boolean collisionBoolean = false;
 
+	/**
+	 * We can turn on or off the effect of the grid on particles by
+	 * adding or removing this force from the total force.
+	 */
+	private SimpleGridForce gridForce = new SimpleGridForce();
+	private boolean usingGridForce = false;
+
 	private ParticleGridInitializer particleGridInitializer = new ParticleGridInitializer();
 
 	/**interpolation algorithm for current, charge density and force calculation*/
@@ -100,16 +107,31 @@ public class Simulation {
 				new DoubleBox(0, width, 0, height),
 				settings.getParticleBoundary());
 
-		SimpleGridForce gridForce = new SimpleGridForce();
-		f.add(gridForce);
-		poisolver = settings.getPoissonSolver();
 		grid = new Grid(settings);
-		interpolator = settings.getInterpolator();
+		turnGridForceOn();
 
+		poisolver = settings.getPoissonSolver();
+		interpolator = settings.getInterpolator();
 		particleGridInitializer.initialize(interpolator, poisolver, particles, grid);
 
 		detector = settings.getCollisionDetector();
 		collisionalgorithm = settings.getCollisionAlgorithm();
+	}
+
+
+	public void turnGridForceOn() {
+		if (!usingGridForce) {
+			f.add(gridForce);
+			usingGridForce = true;
+		}
+	}
+
+
+	public void turnGridForceOff() {
+		if (usingGridForce) {
+			f.remove(gridForce);
+			usingGridForce = false;
+		}
 	}
 
 
