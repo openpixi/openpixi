@@ -47,8 +47,6 @@ public class InitialConditions {
 		stt.setParticleSolver(new EulerRichardson());
 
 		Simulation simulation = new Simulation(stt);
-		simulation.prepareAllParticles();
-
 		return simulation;
 	}
 
@@ -71,8 +69,6 @@ public class InitialConditions {
 		stt.setParticleSolver(new EulerRichardson());
 
 		Simulation simulation = new Simulation(stt);
-		simulation.prepareAllParticles();
-
 		return simulation;
 	}
 
@@ -95,8 +91,6 @@ public class InitialConditions {
 		stt.setParticleSolver(new EulerRichardson());
 
 		Simulation simulation = new Simulation(stt);
-		simulation.prepareAllParticles();
-
 		return simulation;
 	}
 
@@ -119,8 +113,6 @@ public class InitialConditions {
 		stt.setParticleSolver(new EulerRichardson());
 
 		Simulation simulation = new Simulation(stt);
-		simulation.prepareAllParticles();
-
 		return simulation;
 	}
 
@@ -155,8 +147,6 @@ public class InitialConditions {
 		}
 
 		Simulation simulation = new Simulation(stt);
-		simulation.prepareAllParticles();
-
 		return simulation;
 	}
 

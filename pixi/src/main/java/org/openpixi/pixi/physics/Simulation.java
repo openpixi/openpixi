@@ -27,9 +27,12 @@ import org.openpixi.pixi.physics.force.SimpleGridForce;
 import org.openpixi.pixi.physics.grid.Grid;
 import org.openpixi.pixi.physics.grid.Interpolator;
 import org.openpixi.pixi.physics.movement.ParticleMover;
+import org.openpixi.pixi.physics.movement.boundary.SimpleParticleBoundaries;
+import org.openpixi.pixi.physics.movement.boundary.ParticleBoundaries;
 import org.openpixi.pixi.physics.util.DoubleBox;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class Simulation {
 
@@ -92,6 +95,9 @@ public class Simulation {
 	}
 
 
+	/**
+	 * Constructor for non distributed simulation.
+	 */
 	public Simulation(Settings settings) {
 		tstep = settings.getTimeStep();
 		width = settings.getSimulationWidth();
@@ -102,10 +108,12 @@ public class Simulation {
 		particles = (ArrayList<Particle>)settings.getParticles();
 		f = settings.getForce();
 
-		mover = new ParticleMover(
-				settings.getParticleSolver(),
+		ParticleBoundaries particleBoundaries = new SimpleParticleBoundaries(
 				new DoubleBox(0, width, 0, height),
 				settings.getParticleBoundary());
+		mover = new ParticleMover(
+				settings.getParticleSolver(),
+				particleBoundaries);
 
 		grid = new Grid(settings);
 		turnGridForceOn();
@@ -113,6 +121,40 @@ public class Simulation {
 		poisolver = settings.getPoissonSolver();
 		interpolator = settings.getInterpolator();
 		particleGridInitializer.initialize(interpolator, poisolver, particles, grid);
+
+		detector = settings.getCollisionDetector();
+		collisionalgorithm = settings.getCollisionAlgorithm();
+
+		prepareAllParticles();
+	}
+
+
+	/**
+	 * Constructor for distributed simulation.
+	 * (No need set poison solver and run ParticleGridInitializer as it was already run on the
+	 * master node).
+	 */
+	public Simulation(Settings settings,
+	                  double width, double height,
+	                  Grid grid,
+	                  List<Particle> particles,
+	                  ParticleBoundaries particleBoundaries,
+	                  Interpolator interpolator) {
+
+		this.width = width;
+		this.height = height;
+		this.grid = grid;
+		this.particles = (ArrayList<Particle>)particles;
+		this.interpolator = interpolator;
+
+		tstep = settings.getTimeStep();
+		speedOfLight = settings.getSpeedOfLight();
+
+		mover = new ParticleMover(
+				settings.getParticleSolver(),
+				particleBoundaries);
+		f = settings.getForce();
+		prepareAllParticles();
 
 		detector = settings.getCollisionDetector();
 		collisionalgorithm = settings.getCollisionAlgorithm();
