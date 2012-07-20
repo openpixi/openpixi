@@ -27,9 +27,6 @@ public class SimpleParticleBoundaries implements ParticleBoundaries {
 	}
 
 
-	/*
-	 * In 3D case it might be easier to use for cycles for the initialization.
-	 */	
 	public SimpleParticleBoundaries(DoubleBox simulationArea, ParticleBoundaryType boundaryType) {
 		this.boundaryType = boundaryType;
 		this.simulationArea = simulationArea;
@@ -47,6 +44,9 @@ public class SimpleParticleBoundaries implements ParticleBoundaries {
 	}
 
 
+	/*
+	 * In 3D case it might be easier to use for cycles for the mapping.
+	 */
 	private void createBoundaryMap() {
 		regionBoundaryMap[BoundaryRegions.X_MIN + BoundaryRegions.Y_MIN] =
 				boundaryType.createBoundary(-simulationArea.xsize(), -simulationArea.ysize());
