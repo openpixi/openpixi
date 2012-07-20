@@ -2,8 +2,8 @@ package org.openpixi.pixi.physics.movement;
 
 import org.openpixi.pixi.physics.Particle;
 import org.openpixi.pixi.physics.force.Force;
+import org.openpixi.pixi.physics.movement.boundary.ParticleBoundaries;
 import org.openpixi.pixi.physics.movement.boundary.ParticleBoundaryType;
-import org.openpixi.pixi.physics.movement.boundary.RegionBoundaryMap2D;
 import org.openpixi.pixi.physics.solver.Solver;
 import org.openpixi.pixi.physics.util.DoubleBox;
 
@@ -13,18 +13,18 @@ import java.util.List;
  * Non-distributed version of particle movement.
  * Moves and checks the boundary of the particle.
  */
-public class LocalParticleMover {
+public class ParticleMover {
 
 	/** Solver for the particle equations of motion */
 	public Solver psolver;
-	private RegionBoundaryMap2D boundaries;
+	private ParticleBoundaries boundaries;
 
 	/** Remembers the boundary type. */
 	private ParticleBoundaryType boundaryType;
 	/** Remembers the simulation area. */
 	private DoubleBox simulationArea;
 
-	public LocalParticleMover(
+	public ParticleMover(
 			Solver psolver,
 			DoubleBox simulationArea,
 			ParticleBoundaryType boundaryType) {
@@ -32,13 +32,7 @@ public class LocalParticleMover {
 		this.psolver = psolver;
 		this.boundaryType = boundaryType;
 		this.simulationArea = simulationArea;
-		boundaries = new RegionBoundaryMap2D(simulationArea, boundaryType);
-	}
-
-
-	public void resizeBoundaries(DoubleBox simulationArea) {
-		this.simulationArea = simulationArea;
-		boundaries = new RegionBoundaryMap2D(simulationArea, boundaryType);
+		boundaries = new ParticleBoundaries(simulationArea, boundaryType);
 	}
 
 
@@ -49,7 +43,7 @@ public class LocalParticleMover {
 
 	public void setBoundaryType(ParticleBoundaryType type) {
 		this.boundaryType = type;
-		boundaries = new RegionBoundaryMap2D(simulationArea, type);
+		boundaries = new ParticleBoundaries(simulationArea, type);
 	}
 
 

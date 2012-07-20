@@ -6,19 +6,23 @@ import org.openpixi.pixi.physics.util.DoubleBox;
 /**
  * Maps the 8 possible boundary regions in 2D to actual boundaries.
  */
-public class RegionBoundaryMap2D {
+public class ParticleBoundaries {
 
 	private BoundaryRegions boundaryRegions;
 	private ParticleBoundary[] regionBoundaryMap =
 			new ParticleBoundary[BoundaryRegions.NUM_OF_REGIONS];
 	private ParticleBoundaryType boundaryType;
 
-	private DoubleBox particleDoubleBox = new DoubleBox(0,0,0,0);
+	/**
+	 * Box around the particle which is used to determine
+	 * whether the particle lies outside of the simulation area or not.
+	 */
+	private DoubleBox particleBox = new DoubleBox(0,0,0,0);
 
 	/*
 	 * In 3D case it might be easier to use for cycles for the initialization.
 	 */	
-	public RegionBoundaryMap2D(DoubleBox sa, ParticleBoundaryType boundaryType) {
+	public ParticleBoundaries(DoubleBox sa, ParticleBoundaryType boundaryType) {
 		this.boundaryType = boundaryType;
 		boundaryRegions = new BoundaryRegions(sa);
 
@@ -50,9 +54,9 @@ public class RegionBoundaryMap2D {
 		 * it is costly to create new bounding box for each particle in each time step;
 		 * thus, we reuse single bounding box.
 		 */
-		boundaryType.getParticleDoubleBox(p, particleDoubleBox);
+		boundaryType.getParticleBox(p, particleBox);
 
-		int region = boundaryRegions.getRegion(particleDoubleBox);
+		int region = boundaryRegions.getRegion(particleBox);
 		regionBoundaryMap[region].apply(p);
 	}
 }

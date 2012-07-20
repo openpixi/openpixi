@@ -15,7 +15,7 @@ public enum ParticleBoundaryType {
 		}
 
 		@Override
-		public DoubleBox getParticleDoubleBox(Particle p, DoubleBox pbb) {
+		public DoubleBox getParticleBox(Particle p, DoubleBox pbb) {
 			pbb.set(
 					p.getX() - p.getRadius(), p.getX() + p.getRadius(),
 					p.getY() - p.getRadius(), p.getY() + p.getRadius());
@@ -30,7 +30,7 @@ public enum ParticleBoundaryType {
 		}
 
 		@Override
-		public DoubleBox getParticleDoubleBox(Particle p, DoubleBox pbb) {
+		public DoubleBox getParticleBox(Particle p, DoubleBox pbb) {
 			pbb.set(p.getX(), p.getX(), p.getY(), p.getY());
 			return pbb;
 		}
@@ -43,5 +43,5 @@ public enum ParticleBoundaryType {
 	 * For the determination of whether the particle is outside of the simulation area
 	 * we use the particle's bounding box.
 	 */
-	public abstract DoubleBox getParticleDoubleBox(Particle p, DoubleBox pbb);
+	public abstract DoubleBox getParticleBox(Particle p, DoubleBox pbb);
 }

@@ -26,7 +26,7 @@ import org.openpixi.pixi.physics.force.CombinedForce;
 import org.openpixi.pixi.physics.force.SimpleGridForce;
 import org.openpixi.pixi.physics.grid.Grid;
 import org.openpixi.pixi.physics.grid.Interpolator;
-import org.openpixi.pixi.physics.movement.LocalParticleMover;
+import org.openpixi.pixi.physics.movement.ParticleMover;
 import org.openpixi.pixi.physics.util.DoubleBox;
 
 import java.util.ArrayList;
@@ -44,7 +44,7 @@ public class Simulation {
 	/**Contains all Particle2D objects*/
 	public ArrayList<Particle> particles;
 	public CombinedForce f;
-	public LocalParticleMover mover;
+	public ParticleMover mover;
 	/**Grid for dynamic field calculation*/
 	public Grid grid;
 	public Detector detector;
@@ -102,7 +102,7 @@ public class Simulation {
 		particles = (ArrayList<Particle>)settings.getParticles();
 		f = settings.getForce();
 
-		mover = new LocalParticleMover(
+		mover = new ParticleMover(
 				settings.getParticleSolver(),
 				new DoubleBox(0, width, 0, height),
 				settings.getParticleBoundary());
