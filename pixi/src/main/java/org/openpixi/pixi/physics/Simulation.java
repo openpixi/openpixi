@@ -19,21 +19,20 @@
 
 package org.openpixi.pixi.physics;
 
-import java.util.ArrayList;
-
 import org.openpixi.pixi.physics.collision.algorithms.CollisionAlgorithm;
 import org.openpixi.pixi.physics.collision.detectors.Detector;
 import org.openpixi.pixi.physics.fields.PoissonSolver;
-import org.openpixi.pixi.physics.fields.PoissonSolverFFTPeriodic;
 import org.openpixi.pixi.physics.force.CombinedForce;
 import org.openpixi.pixi.physics.force.SimpleGridForce;
 import org.openpixi.pixi.physics.grid.Grid;
-import org.openpixi.pixi.physics.grid.GridFactory;
 import org.openpixi.pixi.physics.grid.Interpolator;
+import org.openpixi.pixi.physics.movement.ParticleMover;
+import org.openpixi.pixi.physics.movement.boundary.SimpleParticleBoundaries;
+import org.openpixi.pixi.physics.movement.boundary.ParticleBoundaries;
 import org.openpixi.pixi.physics.util.DoubleBox;
-import org.openpixi.pixi.physics.movement.LocalParticleMover;
-import org.openpixi.pixi.physics.movement.boundary.ParticleBoundaryType;
-import org.openpixi.pixi.physics.solver.EmptySolver;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class Simulation {
 
@@ -43,18 +42,24 @@ public class Simulation {
 	private double width;
 	/**Height of simulated area*/
 	private double  height;
-	/**Speed of light*/
-	public double c;
+	private double speedOfLight;
 
 	/**Contains all Particle2D objects*/
 	public ArrayList<Particle> particles;
 	public CombinedForce f;
-	public LocalParticleMover mover;
+	public ParticleMover mover;
 	/**Grid for dynamic field calculation*/
 	public Grid grid;
 	public Detector detector;
 	public CollisionAlgorithm collisionalgorithm;
 	public boolean collisionBoolean = false;
+
+	/**
+	 * We can turn on or off the effect of the grid on particles by
+	 * adding or removing this force from the total force.
+	 */
+	private SimpleGridForce gridForce = new SimpleGridForce();
+	private boolean usingGridForce = false;
 
 	private ParticleGridInitializer particleGridInitializer = new ParticleGridInitializer();
 
@@ -76,18 +81,12 @@ public class Simulation {
 		return width;
 	}
 
-	public void setWidth(double width) {
-		this.width = width;
-		resize(width, height);
-	}
-
 	public double getHeight() {
 		return height;
 	}
 
-	public void setHeight(double height) {
-		this.height = height;
-		resize(width, height);
+	public double getSpeedOfLight() {
+		return speedOfLight;
 	}
 
 	public void setGrid(Grid grid) {
@@ -95,49 +94,88 @@ public class Simulation {
 		particleGridInitializer.initialize(interpolator, poisolver, particles, grid);
 	}
 
-	/**Creates a basic simulation and initializes all
-	 * necessary variables. All solvers are set to their
-	 * empty versions.
-	 * This constructor should be called from a factory class
-	 */
-	Simulation () {
-
-		tstep = 0;
-		width = 100;
-		height = 100;
-
-		particles = new ArrayList<Particle>(0);
-		f = new CombinedForce();
-
-		mover = new LocalParticleMover(
-				new EmptySolver(),
-				new DoubleBox(0, width, 0, height),
-				ParticleBoundaryType.Periodic);
-
-		SimpleGridForce force = new SimpleGridForce();
-		f.add(force);
-
-		poisolver = new PoissonSolverFFTPeriodic();
-		grid = GridFactory.createSimpleGrid(this, 10, 10, width, height);
-		particleGridInitializer.initialize(interpolator, poisolver, particles, grid);
-
-		detector = new Detector();
-		collisionalgorithm = new CollisionAlgorithm();
-
-	}
 
 	/**
-	 * When the simulation is resized we also need to resize:
-	 * - particle boundaries
-	 * - grid
+	 * Constructor for non distributed simulation.
 	 */
-	public void resize(double width, double height) {
+	public Simulation(Settings settings) {
+		tstep = settings.getTimeStep();
+		width = settings.getSimulationWidth();
+		height = settings.getSimulationHeight();
+		speedOfLight = settings.getSpeedOfLight();
+
+		// TODO make particles a generic list
+		particles = (ArrayList<Particle>)settings.getParticles();
+		f = settings.getForce();
+
+		ParticleBoundaries particleBoundaries = new SimpleParticleBoundaries(
+				new DoubleBox(0, width, 0, height),
+				settings.getParticleBoundary());
+		mover = new ParticleMover(
+				settings.getParticleSolver(),
+				particleBoundaries);
+
+		grid = new Grid(settings);
+		turnGridForceOn();
+
+		poisolver = settings.getPoissonSolver();
+		interpolator = settings.getInterpolator();
+		particleGridInitializer.initialize(interpolator, poisolver, particles, grid);
+
+		detector = settings.getCollisionDetector();
+		collisionalgorithm = settings.getCollisionAlgorithm();
+
+		prepareAllParticles();
+	}
+
+
+	/**
+	 * Constructor for distributed simulation.
+	 * (No need set poison solver and run ParticleGridInitializer as it was already run on the
+	 * master node).
+	 */
+	public Simulation(Settings settings,
+	                  double width, double height,
+	                  Grid grid,
+	                  List<Particle> particles,
+	                  ParticleBoundaries particleBoundaries,
+	                  Interpolator interpolator) {
+
 		this.width = width;
 		this.height = height;
-		mover.resizeBoundaries(new DoubleBox(0,width,0,height));
-		grid.set(grid.getNumCellsX(), grid.getNumCellsY(), width, height);
-		particleGridInitializer.initialize(interpolator, poisolver, particles, grid);
+		this.grid = grid;
+		this.particles = (ArrayList<Particle>)particles;
+		this.interpolator = interpolator;
+
+		tstep = settings.getTimeStep();
+		speedOfLight = settings.getSpeedOfLight();
+
+		mover = new ParticleMover(
+				settings.getParticleSolver(),
+				particleBoundaries);
+		f = settings.getForce();
+		prepareAllParticles();
+
+		detector = settings.getCollisionDetector();
+		collisionalgorithm = settings.getCollisionAlgorithm();
 	}
+
+
+	public void turnGridForceOn() {
+		if (!usingGridForce) {
+			f.add(gridForce);
+			usingGridForce = true;
+		}
+	}
+
+
+	public void turnGridForceOff() {
+		if (usingGridForce) {
+			f.remove(gridForce);
+			usingGridForce = false;
+		}
+	}
+
 
 	public void step() {
 		particlePush();

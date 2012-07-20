@@ -7,6 +7,7 @@ import org.openpixi.pixi.physics.fields.PoissonSolver;
 import org.openpixi.pixi.physics.fields.PoissonSolverFFTPeriodic;
 import org.openpixi.pixi.physics.force.CombinedForce;
 import org.openpixi.pixi.physics.force.Force;
+import org.openpixi.pixi.physics.grid.CloudInCell;
 import org.openpixi.pixi.physics.grid.GridBoundaryType;
 import org.openpixi.pixi.physics.grid.Interpolator;
 import org.openpixi.pixi.physics.movement.boundary.ParticleBoundaryType;
@@ -25,11 +26,15 @@ import java.util.List;
  * NOTICE ON USAGE:
  * To assure that the class is used in the intended way
  * THE SETTERS SHOULD BE CALLED RIGHT AFTER A PARAMETERLESS CONSTRUCTOR
- * AND BEFORE ANY GETTER IS CALLED !!!
+ * AND BEFORE ANY OF THE MORE COMPLEX GETTERS IS CALLED !!!
  *
  * TODO replace InitialConditions
  */
 public class Settings {
+
+	//----------------------------------------------------------------------------------------------
+	// DEFAULT VALUES
+	//----------------------------------------------------------------------------------------------
 
 	private double simulationWidth = 100;
 	private double simulationHeight = 100;
@@ -38,7 +43,7 @@ public class Settings {
 
 	private GeneralBoundaryType boundaryType = GeneralBoundaryType.Periodic;
 
-	private Interpolator interpolator = new Interpolator();
+	private Interpolator interpolator = new CloudInCell();
 
 	// Grid related settings
 
@@ -50,9 +55,11 @@ public class Settings {
 
 	// Particle related settings
 
-	private int particleCount = 100;
+	private int numOfParticles = 100;
 	private double particleRadius = 1;
 	private double particleMaxSpeed = speedOfLight;
+
+	private List<Particle> particles = new ArrayList<Particle>();
 
 	private Detector collisionDetector = new Detector();
 	private CollisionAlgorithm collisionResolver = new CollisionAlgorithm();
@@ -155,11 +162,17 @@ public class Settings {
 	}
 
 	/**
-	 * Create random particles based on the given settings.
+	 * If no particles are specified creates random particles.
 	 */
 	public List<Particle> getParticles() {
-		return InitialConditions.createRandomParticles(simulationWidth,  simulationHeight,
-				particleMaxSpeed, particleCount, particleRadius);
+		if (particles.size() != 0) {
+			return particles;
+		}
+		else {
+			return InitialConditions.createRandomParticles(
+					simulationWidth,  simulationHeight,
+					particleMaxSpeed, numOfParticles, particleRadius);
+		}
 	}
 
 	public GridBoundaryType getGridBoundary() {
@@ -240,8 +253,12 @@ public class Settings {
 		this.forces = forces;
 	}
 
-	public void setParticleCount(int particleCount) {
-		this.particleCount = particleCount;
+	public void addForce(Force force) {
+		this.forces.add(force);
+	}
+
+	public void setNumOfParticles(int numOfParticles) {
+		this.numOfParticles = numOfParticles;
 	}
 
 	public void setParticleRadius(double particleRadius) {
@@ -250,6 +267,10 @@ public class Settings {
 
 	public void setParticleMaxSpeed(double particleMaxSpeed) {
 		this.particleMaxSpeed = particleMaxSpeed;
+	}
+
+	public void addParticle(Particle p) {
+		particles.add(p);
 	}
 
 	public void setIterations(int iterations) {

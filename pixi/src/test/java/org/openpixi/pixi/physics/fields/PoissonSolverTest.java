@@ -1,11 +1,11 @@
 package org.openpixi.pixi.physics.fields;
 
-import junit.framework.TestCase;
 import edu.emory.mathcs.jtransforms.fft.DoubleFFT_2D;
-import org.openpixi.pixi.physics.InitialConditions;
+import junit.framework.TestCase;
+import org.openpixi.pixi.physics.Settings;
 import org.openpixi.pixi.physics.Simulation;
+import org.openpixi.pixi.physics.grid.ChargeConservingAreaWeighting;
 import org.openpixi.pixi.physics.grid.Grid;
-import org.openpixi.pixi.physics.grid.GridFactory;
 
 public class PoissonSolverTest extends TestCase {
 
@@ -20,12 +20,15 @@ public class PoissonSolverTest extends TestCase {
 	 */
 	public PoissonSolverTest(String testName){
 		super(testName);
+
+		Settings stt = new Settings();
+		stt.setSimulationWidth(10);
+		stt.setSimulationHeight(10);
+		stt.setInterpolator(new ChargeConservingAreaWeighting());
+		stt.setGridSolver(new YeeSolver());
 		
-		this.s = InitialConditions.initEmptySimulation();
-		this.s.setWidth(10);
-		this.s.setHeight(10);
-		
-		this.g = GridFactory.createYeeGrid(s, 10, 10, s.getWidth(), s.getHeight());
+		this.s = new Simulation(stt);
+		this.g = s.grid;
 		this.g.resetCurrentAndCharge();
 		
 		this.poisolver = new PoissonSolverFFTPeriodic();

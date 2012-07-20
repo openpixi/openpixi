@@ -14,7 +14,7 @@ public class SimpleGridForceRelativistic implements Force {
 	public SimpleGridForceRelativistic(Simulation s) {
 		this.s = s;
 		
-		relvelocity = new RelativisticVelocity(s.c);
+		relvelocity = new RelativisticVelocity(s.getSpeedOfLight());
 	}
 
 	public double getForceX(Particle p) {

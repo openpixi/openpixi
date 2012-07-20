@@ -20,11 +20,8 @@
 package org.openpixi.pixi.ui;
 
 import org.openpixi.pixi.physics.Debug;
-import org.openpixi.pixi.physics.InitialConditions;
+import org.openpixi.pixi.physics.Settings;
 import org.openpixi.pixi.physics.Simulation;
-import org.openpixi.pixi.physics.force.ConstantForce;
-import org.openpixi.pixi.physics.force.SimpleGridForce;
-import org.openpixi.pixi.physics.grid.*;
 
 public class MainBatch {
 
@@ -38,7 +35,7 @@ public class MainBatch {
 	public static void main(String[] args) {
 		Debug.checkAssertsEnabled();
 
-		s = InitialConditions.initEverything();
+		s = new Simulation(new Settings());
 
 		System.out.println("-------- INITIAL CONDITIONS--------");
 
