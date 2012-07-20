@@ -39,8 +39,7 @@ public class Simulation {
 	private double width;
 	/**Height of simulated area*/
 	private double  height;
-	/**Speed of light*/
-	public double c;
+	private double speedOfLight;
 
 	/**Contains all Particle2D objects*/
 	public ArrayList<Particle> particles;
@@ -76,6 +75,10 @@ public class Simulation {
 		return height;
 	}
 
+	public double getSpeedOfLight() {
+		return speedOfLight;
+	}
+
 	public void setGrid(Grid grid) {
 		this.grid = grid;
 		particleGridInitializer.initialize(interpolator, poisolver, particles, grid);
@@ -86,6 +89,7 @@ public class Simulation {
 		tstep = settings.getTimeStep();
 		width = settings.getSimulationWidth();
 		height = settings.getSimulationHeight();
+		speedOfLight = settings.getSpeedOfLight();
 
 		// TODO make particles a generic list
 		particles = (ArrayList<Particle>)settings.getParticles();

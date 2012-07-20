@@ -202,7 +202,7 @@ public class Particle2DPanel extends JPanel {
 			//force.gy = -1;
 			//force.drag = 0.08;
 			s.f.add(force);
-			InitialConditions.createRandomParticles(s.getWidth(), s.getHeight(), s.c, 1, 10);
+			InitialConditions.createRandomParticles(s.getWidth(), s.getHeight(), s.getSpeedOfLight(), 1, 10);
 			Particle par = (Particle) s.particles.get(0);
 			par.setX(this.getWidth() * 0.5);
 			par.setY(this.getHeight() * 0.5);
@@ -289,7 +289,7 @@ public class Particle2DPanel extends JPanel {
 				ArrayList<Force> forces = ((CombinedForce) s.f).forces;
 				for (int j = 0; j < forces.size(); j++) {
 					if (forces.get(j) instanceof ConstantForce){
-						forces.set(j, new ConstantForceRelativistic(s.c));
+						forces.set(j, new ConstantForceRelativistic(s.getSpeedOfLight()));
 					}
 					if (forces.get(j) instanceof SimpleGridForce){
 						forces.set(j, new SimpleGridForceRelativistic(s));
@@ -298,12 +298,12 @@ public class Particle2DPanel extends JPanel {
 			}
 			switch(i) {
 			case 1:
-				s.mover.psolver = new LeapFrogRelativistic(s.c);
+				s.mover.psolver = new LeapFrogRelativistic(s.getSpeedOfLight());
 			case 4:
-				s.mover.psolver = new BorisRelativistic(s.c);
+				s.mover.psolver = new BorisRelativistic(s.getSpeedOfLight());
 				break;
 			case 6:
-				s.mover.psolver = new SemiImplicitEulerRelativistic(s.c);
+				s.mover.psolver = new SemiImplicitEulerRelativistic(s.getSpeedOfLight());
 				break;
 			}
 		}
