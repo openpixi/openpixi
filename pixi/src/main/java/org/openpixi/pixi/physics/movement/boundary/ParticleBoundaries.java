@@ -11,7 +11,9 @@ public class ParticleBoundaries {
 	private BoundaryRegions boundaryRegions;
 	private ParticleBoundary[] regionBoundaryMap =
 			new ParticleBoundary[BoundaryRegions.NUM_OF_REGIONS];
+
 	private ParticleBoundaryType boundaryType;
+	private DoubleBox simulationArea;
 
 	/**
 	 * Box around the particle which is used to determine
@@ -22,28 +24,42 @@ public class ParticleBoundaries {
 	/*
 	 * In 3D case it might be easier to use for cycles for the initialization.
 	 */	
-	public ParticleBoundaries(DoubleBox sa, ParticleBoundaryType boundaryType) {
+	public ParticleBoundaries(DoubleBox simulationArea, ParticleBoundaryType boundaryType) {
 		this.boundaryType = boundaryType;
-		boundaryRegions = new BoundaryRegions(sa);
+		this.simulationArea = simulationArea;
+		boundaryRegions = new BoundaryRegions(simulationArea);
+		createBoundaryMap();
+	}
 
+
+	/**
+	 * For run-time boundary type switching in interactive version.
+	 */
+	public void changeType(ParticleBoundaryType boundaryType) {
+		this.boundaryType = boundaryType;
+		createBoundaryMap();
+	}
+
+
+	private void createBoundaryMap() {
 		regionBoundaryMap[BoundaryRegions.X_MIN + BoundaryRegions.Y_MIN] =
-				boundaryType.createBoundary(-sa.xsize(), -sa.ysize());
+				boundaryType.createBoundary(-simulationArea.xsize(), -simulationArea.ysize());
 		regionBoundaryMap[BoundaryRegions.X_CENTER + BoundaryRegions.Y_MIN] =
-				boundaryType.createBoundary(0, -sa.ysize());
+				boundaryType.createBoundary(0, -simulationArea.ysize());
 		regionBoundaryMap[BoundaryRegions.X_MAX + BoundaryRegions.Y_MIN] =
-				boundaryType.createBoundary(sa.xsize(), -sa.ysize());
+				boundaryType.createBoundary(simulationArea.xsize(), -simulationArea.ysize());
 		regionBoundaryMap[BoundaryRegions.X_MIN + BoundaryRegions.Y_CENTER] =
-				boundaryType.createBoundary(-sa.xsize(), 0);
+				boundaryType.createBoundary(-simulationArea.xsize(), 0);
 		regionBoundaryMap[BoundaryRegions.X_CENTER + BoundaryRegions.Y_CENTER] =
 				new EmptyBoundary(0, 0);
 		regionBoundaryMap[BoundaryRegions.X_MAX + BoundaryRegions.Y_CENTER] =
-				boundaryType.createBoundary(sa.xsize(), 0);
+				boundaryType.createBoundary(simulationArea.xsize(), 0);
 		regionBoundaryMap[BoundaryRegions.X_MIN + BoundaryRegions.Y_MAX] =
-				boundaryType.createBoundary(-sa.xsize(), sa.ysize());
+				boundaryType.createBoundary(-simulationArea.xsize(), simulationArea.ysize());
 		regionBoundaryMap[BoundaryRegions.X_CENTER + BoundaryRegions.Y_MAX] =
-				boundaryType.createBoundary(0, sa.ysize());
+				boundaryType.createBoundary(0, simulationArea.ysize());
 		regionBoundaryMap[BoundaryRegions.X_MAX + BoundaryRegions.Y_MAX] =
-				boundaryType.createBoundary(sa.xsize(), sa.ysize());
+				boundaryType.createBoundary(simulationArea.xsize(), simulationArea.ysize());
 	}
 
 

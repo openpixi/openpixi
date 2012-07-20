@@ -41,9 +41,9 @@ public class ParticleMover {
 	}
 
 
-	public void setBoundaryType(ParticleBoundaryType type) {
+	public void changeBoundaryType(ParticleBoundaryType type) {
 		this.boundaryType = type;
-		boundaries = new ParticleBoundaries(simulationArea, type);
+		boundaries.changeType(type);
 	}
 
 

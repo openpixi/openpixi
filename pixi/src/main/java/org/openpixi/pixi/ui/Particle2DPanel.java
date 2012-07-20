@@ -360,10 +360,10 @@ public class Particle2DPanel extends JPanel {
 	public void boundariesChange(int i) {
 		switch(i) {
 		case 0:
-			s.mover.setBoundaryType(ParticleBoundaryType.Hardwall);
+			s.mover.changeBoundaryType(ParticleBoundaryType.Hardwall);
 			break;
 		case 1:
-			s.mover.setBoundaryType(ParticleBoundaryType.Periodic);
+			s.mover.changeBoundaryType(ParticleBoundaryType.Periodic);
 		}
 
 	}
