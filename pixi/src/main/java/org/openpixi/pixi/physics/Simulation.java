@@ -19,21 +19,17 @@
 
 package org.openpixi.pixi.physics;
 
-import java.util.ArrayList;
-
 import org.openpixi.pixi.physics.collision.algorithms.CollisionAlgorithm;
 import org.openpixi.pixi.physics.collision.detectors.Detector;
 import org.openpixi.pixi.physics.fields.PoissonSolver;
-import org.openpixi.pixi.physics.fields.PoissonSolverFFTPeriodic;
 import org.openpixi.pixi.physics.force.CombinedForce;
 import org.openpixi.pixi.physics.force.SimpleGridForce;
 import org.openpixi.pixi.physics.grid.Grid;
-import org.openpixi.pixi.physics.grid.GridFactory;
 import org.openpixi.pixi.physics.grid.Interpolator;
-import org.openpixi.pixi.physics.util.DoubleBox;
 import org.openpixi.pixi.physics.movement.LocalParticleMover;
-import org.openpixi.pixi.physics.movement.boundary.ParticleBoundaryType;
-import org.openpixi.pixi.physics.solver.EmptySolver;
+import org.openpixi.pixi.physics.util.DoubleBox;
+
+import java.util.ArrayList;
 
 public class Simulation {
 
@@ -76,18 +72,8 @@ public class Simulation {
 		return width;
 	}
 
-	public void setWidth(double width) {
-		this.width = width;
-		resize(width, height);
-	}
-
 	public double getHeight() {
 		return height;
-	}
-
-	public void setHeight(double height) {
-		this.height = height;
-		resize(width, height);
 	}
 
 	public void setGrid(Grid grid) {
@@ -95,49 +81,33 @@ public class Simulation {
 		particleGridInitializer.initialize(interpolator, poisolver, particles, grid);
 	}
 
-	/**Creates a basic simulation and initializes all
-	 * necessary variables. All solvers are set to their
-	 * empty versions.
-	 * This constructor should be called from a factory class
-	 */
-	Simulation () {
 
-		tstep = 0;
-		width = 100;
-		height = 100;
+	public Simulation(Settings settings) {
+		tstep = settings.getTimeStep();
+		width = settings.getSimulationWidth();
+		height = settings.getSimulationHeight();
 
-		particles = new ArrayList<Particle>(0);
-		f = new CombinedForce();
+		// TODO make particles a generic list
+		particles = (ArrayList<Particle>)settings.getParticles();
+		f = settings.getForce();
 
 		mover = new LocalParticleMover(
-				new EmptySolver(),
+				settings.getParticleSolver(),
 				new DoubleBox(0, width, 0, height),
-				ParticleBoundaryType.Periodic);
+				settings.getParticleBoundary());
 
-		SimpleGridForce force = new SimpleGridForce();
-		f.add(force);
+		SimpleGridForce gridForce = new SimpleGridForce();
+		f.add(gridForce);
+		poisolver = settings.getPoissonSolver();
+		grid = new Grid(settings);
+		interpolator = settings.getInterpolator();
 
-		poisolver = new PoissonSolverFFTPeriodic();
-		grid = GridFactory.createSimpleGrid(this, 10, 10, width, height);
 		particleGridInitializer.initialize(interpolator, poisolver, particles, grid);
 
-		detector = new Detector();
-		collisionalgorithm = new CollisionAlgorithm();
-
+		detector = settings.getCollisionDetector();
+		collisionalgorithm = settings.getCollisionAlgorithm();
 	}
 
-	/**
-	 * When the simulation is resized we also need to resize:
-	 * - particle boundaries
-	 * - grid
-	 */
-	public void resize(double width, double height) {
-		this.width = width;
-		this.height = height;
-		mover.resizeBoundaries(new DoubleBox(0,width,0,height));
-		grid.set(grid.getNumCellsX(), grid.getNumCellsY(), width, height);
-		particleGridInitializer.initialize(interpolator, poisolver, particles, grid);
-	}
 
 	public void step() {
 		particlePush();

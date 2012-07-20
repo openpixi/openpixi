@@ -1,13 +1,11 @@
 package org.openpixi.pixi.physics.grid;
 
 import junit.framework.TestCase;
-
-import org.openpixi.pixi.physics.InitialConditions;
 import org.openpixi.pixi.physics.Particle;
+import org.openpixi.pixi.physics.Settings;
 import org.openpixi.pixi.physics.Simulation;
-import org.openpixi.pixi.physics.force.*;
-import org.openpixi.pixi.physics.movement.boundary.ParticleBoundaryType;
-import org.openpixi.pixi.physics.solver.*;
+import org.openpixi.pixi.physics.fields.SimpleSolver;
+import org.openpixi.pixi.physics.force.ConstantForce;
 
 /**
  * Unit test for Solver.
@@ -81,29 +79,22 @@ public class CloudInCellTest extends TestCase {
 	}
 
 	private void testMove(double x1, double y1, double x2, double y2, double charge, String text) {
-		Simulation s = InitialConditions.initEmptySimulation();
-
-		//basic simulation parameters
-		s.tstep = 1;
-		s.c = 0.7;
-		s.setWidth(10);
-		s.setHeight(10);
-		s.mover.psolver = new Boris();
-		s.mover.setBoundaryType(ParticleBoundaryType.Periodic);
+		Settings stt = GridTestCommon.getCommonSettings();
+		stt.setInterpolator(new CloudInCell());
+		stt.setGridSolver(new SimpleSolver());
 
 		// Add single particle
 		Particle p = new Particle();
 		p.setX(x1);
 		p.setY(y1);
-		p.setVx((x2 - x1) / s.tstep);
-		p.setVy((y2 - y1) / s.tstep);
+		p.setVx((x2 - x1) / stt.getTimeStep());
+		p.setVy((y2 - y1) / stt.getTimeStep());
 		p.setMass(1);
 		p.setCharge(charge);
-		s.particles.add(p);
+		stt.addParticle(p);
 
+		Simulation s = new Simulation(stt);
 		s.prepareAllParticles();
-
-		Grid grid = GridFactory.createSimpleGrid(s, 10, 10, 10, 10); // 10x10 grid
 
 		// Advance particle
 		s.particlePush();
@@ -113,16 +104,16 @@ public class CloudInCellTest extends TestCase {
 		double sy = p.getPrevY();
 
 		// Calculate current
-		s.getInterpolator().interpolateToGrid(s.particles, grid, s.tstep);
+		s.getInterpolator().interpolateToGrid(s.particles, s.grid, s.tstep);
 
-		double jx = GridTestCommon.getJxSum(grid);
-		double jy = GridTestCommon.getJySum(grid);
+		double jx = GridTestCommon.getJxSum(s.grid);
+		double jy = GridTestCommon.getJySum(s.grid);
 
 		if (VERBOSE) System.out.println("Total current " + text + ": jx = " + jx + ", jy = " + jy
 				+ " (from " + sx + ", " + sy + " to " + p.getX() + ", " + p.getY() + ")");
 
-		GridTestCommon.checkSignJx(grid);
-		GridTestCommon.checkSignJy(grid);
+		GridTestCommon.checkSignJx(s.grid);
+		GridTestCommon.checkSignJy(s.grid);
 
 //		This is what ChargeConservingAreaWeightningTest test for (current during timestep)
 //		assertAlmostEquals(text + ", jx", charge * (p.x - sx), jx, ACCURACY_LIMIT);
@@ -152,15 +143,9 @@ public class CloudInCellTest extends TestCase {
 	}
 
 	private void testMoveForce(double x1, double y1, double vx, double vy, double ex, double bz, double charge, String text) {
-Simulation s = InitialConditions.initEmptySimulation();
-
-		//basic simulation parameters
-		s.tstep = 1;
-		s.c = 0.7;
-		s.setWidth(10);
-		s.setHeight(10);
-		s.mover.psolver = new Boris();
-		s.mover.setBoundaryType(ParticleBoundaryType.Periodic);
+		Settings stt = GridTestCommon.getCommonSettings();
+		stt.setInterpolator(new CloudInCell());
+		stt.setGridSolver(new SimpleSolver());
 
 		// Add single particle
 		Particle p = new Particle();
@@ -170,16 +155,15 @@ Simulation s = InitialConditions.initEmptySimulation();
 		p.setVy(vy);
 		p.setMass(1);
 		p.setCharge(charge);
-		s.particles.add(p);
+		stt.addParticle(p);
 
 		ConstantForce force = new ConstantForce();
 		force.ex = ex;
 		force.bz = bz;
-		s.f.add(force);
+		stt.addForce(force);
 
+		Simulation s = new Simulation(stt);
 		s.prepareAllParticles();
-
-		Grid grid = GridFactory.createSimpleGrid(s, 10, 10, 10, 10); // 10x10 grid
 
 		// Advance particle
 		s.particlePush();
@@ -189,16 +173,16 @@ Simulation s = InitialConditions.initEmptySimulation();
 		double sy = p.getPrevY();
 
 		// Calculate current
-		s.getInterpolator().interpolateToGrid(s.particles, grid, s.tstep);
+		s.getInterpolator().interpolateToGrid(s.particles, s.grid, s.tstep);
 
-		double jx = GridTestCommon.getJxSum(grid);
-		double jy = GridTestCommon.getJySum(grid);
+		double jx = GridTestCommon.getJxSum(s.grid);
+		double jy = GridTestCommon.getJySum(s.grid);
 
 		if (VERBOSE) System.out.println("Total current " + text + ": jx = " + jx + ", jy = " + jy
 				+ " (from " + sx + ", " + sy + " to " + p.getX() + ", " + p.getY() + ")");
 
-		GridTestCommon.checkSignJx(grid);
-		GridTestCommon.checkSignJy(grid);
+		GridTestCommon.checkSignJx(s.grid);
+		GridTestCommon.checkSignJy(s.grid);
 
 //		This is what ChargeConservingAreaWeightningTest test for (current during timestep)
 //		assertAlmostEquals(text + ", jx", charge * (p.x - sx), jx, ACCURACY_LIMIT);
