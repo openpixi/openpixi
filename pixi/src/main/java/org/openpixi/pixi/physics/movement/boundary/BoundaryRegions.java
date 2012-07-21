@@ -83,21 +83,21 @@ public class BoundaryRegions {
 	/**
 	 * Decomposes the region id to X and Y components.
 	 */
-	public Point decomposeRegionID(int regionID) {
+	public static Point decomposeRegionID(int regionID) {
 		int y = findHighestPossibleY(regionID);
 		int x = findX(y, regionID);
 		return new Point(x, y);
 	}
 
 
-	private int findX(int y, int regionID) {
+	private static int findX(int y, int regionID) {
 		int potentialX = regionID - y;
 		assert X_MIN <= potentialX && potentialX <= X_MAX;
 		return potentialX;
 	}
 
 
-	private int findHighestPossibleY(int regionID) {
+	private static int findHighestPossibleY(int regionID) {
 		int highetsY = -1;
 		for (int y = Y_MIN; y <= Y_MAX; ++y) {
 			if (y <= regionID) {
