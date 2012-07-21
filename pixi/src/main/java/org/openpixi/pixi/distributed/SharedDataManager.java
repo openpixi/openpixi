@@ -4,7 +4,9 @@ import org.openpixi.pixi.physics.GeneralBoundaryType;
 import org.openpixi.pixi.physics.grid.Cell;
 import org.openpixi.pixi.physics.util.IntBox;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -28,6 +30,11 @@ public class SharedDataManager {
 	}
 
 
+	/**
+	 * Registers the given cell in a given region as a boundary cell.
+	 * The cell is only registered if the neighbor for the given region exists.
+	 * In another words, we have to have a neighbor to whom to send the cell.
+	 */
 	public void registerBoundaryCell(int boundaryRegion, Cell cell) {
 		int neighbor = neighborMap.getBoundaryNeighbor(boundaryRegion);
 		if (neighbor != NeighborMap.NO_NEIGHBOR) {
@@ -36,6 +43,10 @@ public class SharedDataManager {
 	}
 
 
+	/**
+	 * Registers the given cell in a given region as a border cell.
+	 * The cell is only registered if the neighbor for the given region exists.
+	 */
 	public void registerBorderCell(int borderRegion, Cell cell) {
 		int[] neighbors = neighborMap.getBorderNeighbors(borderRegion);
 		for (int neighbor: neighbors) {
@@ -43,6 +54,29 @@ public class SharedDataManager {
 				getSharedData(neighbor).registerBorderCell(cell);
 			}
 		}
+	}
+
+
+	public SharedData getBoundarySharedData(int boundaryRegion) {
+		int neighbor = neighborMap.getBoundaryNeighbor(boundaryRegion);
+		if (neighbor != NeighborMap.NO_NEIGHBOR) {
+			return getSharedData(neighbor);
+		}
+		else {
+			return null;
+		}
+	}
+
+
+	public List<SharedData> getBorderSharedData(int borderRegion) {
+		List<SharedData> retval = new ArrayList<SharedData>();
+		int[] neighbors = neighborMap.getBorderNeighbors(borderRegion);
+		for (int neighbor: neighbors) {
+			if (neighbor != NeighborMap.NO_NEIGHBOR) {
+				retval.add(getSharedData(neighbor));
+			}
+		}
+		return retval;
 	}
 
 

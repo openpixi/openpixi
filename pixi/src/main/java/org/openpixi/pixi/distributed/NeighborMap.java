@@ -1,5 +1,6 @@
 package org.openpixi.pixi.distributed;
 
+import org.openpixi.pixi.distributed.movement.boundary.BorderRegions;
 import org.openpixi.pixi.physics.GeneralBoundaryType;
 import org.openpixi.pixi.physics.movement.boundary.BoundaryRegions;
 import org.openpixi.pixi.physics.util.IntBox;
