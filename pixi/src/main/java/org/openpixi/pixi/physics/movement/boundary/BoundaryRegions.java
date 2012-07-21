@@ -1,6 +1,7 @@
 package org.openpixi.pixi.physics.movement.boundary;
 
 import org.openpixi.pixi.physics.util.DoubleBox;
+import org.openpixi.pixi.physics.util.Point;
 
 /**
  * Identifies different boundary regions of the simulation area.
@@ -76,6 +77,35 @@ public class BoundaryRegions {
 		}
 
 		return xidx + yidx;
+	}
+
+
+	/**
+	 * Decomposes the region id to X and Y components.
+	 */
+	public Point decomposeRegionID(int regionID) {
+		int y = findHighestPossibleY(regionID);
+		int x = findX(y, regionID);
+		return new Point(x, y);
+	}
+
+
+	private int findX(int y, int regionID) {
+		int potentialX = regionID - y;
+		assert X_MIN <= potentialX && potentialX <= X_MAX;
+		return potentialX;
+	}
+
+
+	private int findHighestPossibleY(int regionID) {
+		int highetsY = -1;
+		for (int y = Y_MIN; y <= Y_MAX; ++y) {
+			if (y <= regionID) {
+				highetsY = y;
+			}
+		}
+		assert highetsY != -1;
+		return  highetsY;
 	}
 
 
