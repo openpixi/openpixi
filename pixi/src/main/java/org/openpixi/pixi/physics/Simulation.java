@@ -69,10 +69,6 @@ public class Simulation {
 	/**solver for the electrostatic poisson equation*/
 	private PoissonSolver poisolver;
 
-	public void setInterpolator(Interpolator interpolator) {
-		this.interpolator = interpolator;
-	}
-
 	public Interpolator getInterpolator() {
 		return interpolator;
 	}
@@ -88,12 +84,6 @@ public class Simulation {
 	public double getSpeedOfLight() {
 		return speedOfLight;
 	}
-
-	public void setGrid(Grid grid) {
-		this.grid = grid;
-		particleGridInitializer.initialize(interpolator, poisolver, particles, grid);
-	}
-
 
 	/**
 	 * Constructor for non distributed simulation.
@@ -131,7 +121,7 @@ public class Simulation {
 
 	/**
 	 * Constructor for distributed simulation.
-	 * (No need set poison solver and run ParticleGridInitializer as it was already run on the
+	 * (No need to set poison solver and run ParticleGridInitializer as it was already run on the
 	 * master node).
 	 */
 	public Simulation(Settings settings,
@@ -154,10 +144,11 @@ public class Simulation {
 				settings.getParticleSolver(),
 				particleBoundaries);
 		f = settings.getForce();
-		prepareAllParticles();
 
 		detector = settings.getCollisionDetector();
 		collisionalgorithm = settings.getCollisionAlgorithm();
+
+		prepareAllParticles();
 	}
 
 
