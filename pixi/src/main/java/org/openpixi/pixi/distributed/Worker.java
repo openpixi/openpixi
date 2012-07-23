@@ -2,7 +2,7 @@ package org.openpixi.pixi.distributed;
 
 import org.openpixi.pixi.distributed.grid.DistributedGridFactory;
 import org.openpixi.pixi.distributed.ibis.IbisRegistry;
-import org.openpixi.pixi.distributed.ibis.WorkerCommunicator;
+import org.openpixi.pixi.distributed.ibis.WorkerToMaster;
 import org.openpixi.pixi.distributed.movement.boundary.DistributedParticleBoundaries;
 import org.openpixi.pixi.physics.Settings;
 import org.openpixi.pixi.physics.grid.Grid;
@@ -15,7 +15,7 @@ import org.openpixi.pixi.physics.util.IntBox;
  */
 public class Worker implements Runnable {
 
-	private WorkerCommunicator communicator;
+	private WorkerToMaster communicator;
 	private Settings settings;
 	/** ID of this worker. */
 	private int workerID;
@@ -23,7 +23,7 @@ public class Worker implements Runnable {
 
 	public Worker(IbisRegistry registry, Settings settings) throws Exception {
 		this.settings = settings;
-		communicator = new WorkerCommunicator(registry);
+		communicator = new WorkerToMaster(registry);
 		workerID = registry.convertIbisIDToWorkerID(registry.getIbis().identifier());
 	}
 
@@ -35,6 +35,7 @@ public class Worker implements Runnable {
 			SharedDataManager sharedDataManager =  createSharedDataManager();
 			Grid grid = createGrid(sharedDataManager);
 			ParticleBoundaries  particleBoundaries = createParticleBoundaries(sharedDataManager);
+			sharedDataManager.setParticleBoundaries(particleBoundaries);
 
 
 			// TODO create simulation

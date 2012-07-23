@@ -1,7 +1,9 @@
 package org.openpixi.pixi.distributed;
 
 import org.openpixi.pixi.physics.GeneralBoundaryType;
+import org.openpixi.pixi.physics.Particle;
 import org.openpixi.pixi.physics.grid.Cell;
+import org.openpixi.pixi.physics.movement.boundary.ParticleBoundaries;
 import org.openpixi.pixi.physics.util.IntBox;
 
 import java.util.ArrayList;
@@ -28,6 +30,11 @@ public class SharedDataManager {
 	                         IntBox globalSimArea, GeneralBoundaryType boundaryType) {
 		this.neighborMap = new NeighborMap(thisWorkerID, partitions, globalSimArea, boundaryType);
 	}
+
+
+	//----------------------------------------------------------------------------------------------
+	// Methods required for initialization of distributed simulation
+	//----------------------------------------------------------------------------------------------
 
 
 	/**
@@ -88,5 +95,79 @@ public class SharedDataManager {
 			sharedData.put(neighbor, new SharedData(neighbor));
 		}
 		return sharedData.get(neighbor);
+	}
+
+
+	public void setParticleBoundaries(ParticleBoundaries particleBoundaries) {
+		for (SharedData sd: sharedData.values()) {
+			sd.setParticleBoundaries(particleBoundaries);
+		}
+	}
+
+
+	//----------------------------------------------------------------------------------------------
+	// Methods required during distributed simulation
+	//----------------------------------------------------------------------------------------------
+
+
+	public void exchangeParticles() {
+		for (SharedData sd: sharedData.values()) {
+			sd.sendLeavingParticles();
+		}
+
+		// Before we send the border particles we have to wait for all the arriving particles
+		// as they are as well border particles.
+		waitForArrivingParticles();
+		for (SharedData sd: sharedData.values()) {
+			sd.sendBorderParticles();
+		}
+	}
+
+
+	public List<Particle> getArrivingParticles() {
+		List<Particle> arrivingParticles = new ArrayList<Particle>();
+		for (SharedData sd: sharedData.values()) {
+			arrivingParticles.addAll(sd.getArrivingParticles());
+		}
+		return arrivingParticles;
+	}
+
+
+	public List<Particle> getGhostParticles() {
+		List<Particle> ghostParticles = new ArrayList<Particle>();
+		for (SharedData sd: sharedData.values()) {
+			ghostParticles.addAll(sd.getGhostParticles());
+		}
+		return ghostParticles;
+	}
+
+
+	public List<Particle> getLeavingParticles() {
+		List<Particle> leavingParticles = new ArrayList<Particle>();
+		for (SharedData sd: sharedData.values()) {
+			leavingParticles.addAll(sd.getLeavingParticles());
+		}
+		return leavingParticles;
+	}
+
+
+	public void exchangeCells() {
+		for (SharedData sd: sharedData.values()) {
+			sd.sendBorderCells();
+		}
+	}
+
+
+	public void waitForGhostCells() {
+		for (SharedData sd: sharedData.values()) {
+			sd.waitForGhostCells();
+		}
+	}
+
+
+	private void waitForArrivingParticles() {
+		for (SharedData sd: sharedData.values()) {
+			sd.waitForArrivingParticles();
+		}
 	}
 }

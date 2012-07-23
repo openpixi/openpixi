@@ -1,7 +1,7 @@
 package org.openpixi.pixi.distributed;
 
 import org.openpixi.pixi.distributed.ibis.IbisRegistry;
-import org.openpixi.pixi.distributed.ibis.MasterCommunicator;
+import org.openpixi.pixi.distributed.ibis.MasterToWorkers;
 import org.openpixi.pixi.distributed.partitioning.Partitioner;
 import org.openpixi.pixi.distributed.partitioning.SimplePartitioner;
 import org.openpixi.pixi.physics.Particle;
@@ -9,6 +9,7 @@ import org.openpixi.pixi.physics.ParticleGridInitializer;
 import org.openpixi.pixi.physics.Settings;
 import org.openpixi.pixi.physics.grid.Cell;
 import org.openpixi.pixi.physics.grid.Grid;
+import org.openpixi.pixi.physics.grid.SimpleInterpolationIterator;
 import org.openpixi.pixi.physics.util.IntBox;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,7 +26,7 @@ public class Master {
 
 	private static Logger logger = LoggerFactory.getLogger(Master.class);
 
-	private MasterCommunicator communicator;
+	private MasterToWorkers communicator;
 	private Settings settings;
 
 	private Grid initialGrid;
@@ -59,15 +60,17 @@ public class Master {
 
 	public Master(IbisRegistry registry, Settings settings) throws Exception {
 		this.settings = settings;
-		communicator = new MasterCommunicator(registry);
+		communicator = new MasterToWorkers(registry);
 
 		initialGrid = new Grid(settings);
 		initialParticles = settings.getParticles();
 
 		ParticleGridInitializer pgi = new ParticleGridInitializer();
 		pgi.initialize(
-				settings.getInterpolator(), settings.getPoissonSolver(),
-				initialParticles, initialGrid);
+				new SimpleInterpolationIterator(settings.getInterpolator()),
+				settings.getPoissonSolver(),
+				initialParticles,
+				initialGrid);
 	}
 
 
