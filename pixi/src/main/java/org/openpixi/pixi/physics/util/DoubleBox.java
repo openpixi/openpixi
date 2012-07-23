@@ -34,6 +34,15 @@ public class DoubleBox {
 		return ymax - ymin;
 	}
 
+	public boolean contains(double x, double y) {
+		if (xmin <= x && x <= xmax && ymin <= y && y <= ymax()) {
+			return true;
+		}
+		else {
+			return false;
+		}
+	}
+
 	public void set(double xmin, double xmax, double ymin, double ymax) {
 		this.xmin = xmin;
 		this.xmax = xmax;
