@@ -34,11 +34,10 @@ public class WorkerToMaster {
 		return cells;
 	}
 
+	public IbisRegistry getRegistry() {
+		return registry;
+	}
 
-	/**
-	 * Creates the ports.
-	 * Receive ports have to be created first to avoid deadlock.
-	 */
 	public WorkerToMaster(IbisRegistry registry) throws Exception {
 		this.registry = registry;
 	}
