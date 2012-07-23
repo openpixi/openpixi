@@ -45,6 +45,19 @@ public class Cell implements Serializable {
 		Bzo = Bz;
 	}
 
+	public void copy(Cell other) {
+		this.jx = other.jx;
+		this.jy = other.jy;
+		this.rho = other.rho;
+		this.phi = other.phi;
+		this.Ex = other.Ex;
+		this.Ey = other.Ey;
+		this.Bz = other.Bz;
+		this.Exo = other.Exo;
+		this.Eyo = other.Eyo;
+		this.Bzo = other.Bzo;
+	}
+
 	@Override
 	public String toString() {
 		return String.format("E[%.3f,%.3f] Bz[%.3f] J[%.3f,%.3f]", Ex, Ey, Bz, jx, jy);
