@@ -25,10 +25,11 @@ import org.openpixi.pixi.physics.fields.PoissonSolver;
 import org.openpixi.pixi.physics.force.CombinedForce;
 import org.openpixi.pixi.physics.force.SimpleGridForce;
 import org.openpixi.pixi.physics.grid.Grid;
-import org.openpixi.pixi.physics.grid.Interpolator;
+import org.openpixi.pixi.physics.grid.InterpolationIterator;
+import org.openpixi.pixi.physics.grid.SimpleInterpolationIterator;
 import org.openpixi.pixi.physics.movement.ParticleMover;
-import org.openpixi.pixi.physics.movement.boundary.SimpleParticleBoundaries;
 import org.openpixi.pixi.physics.movement.boundary.ParticleBoundaries;
+import org.openpixi.pixi.physics.movement.boundary.SimpleParticleBoundaries;
 import org.openpixi.pixi.physics.util.DoubleBox;
 
 import java.util.ArrayList;
@@ -63,14 +64,13 @@ public class Simulation {
 
 	private ParticleGridInitializer particleGridInitializer = new ParticleGridInitializer();
 
-	/**interpolation algorithm for current, charge density and force calculation*/
-	private Interpolator interpolator;
+	private InterpolationIterator interpolation;
 
 	/**solver for the electrostatic poisson equation*/
 	private PoissonSolver poisolver;
 
-	public Interpolator getInterpolator() {
-		return interpolator;
+	public InterpolationIterator getInterpolation() {
+		return interpolation;
 	}
 
 	public double getWidth() {
@@ -109,8 +109,8 @@ public class Simulation {
 		turnGridForceOn();
 
 		poisolver = settings.getPoissonSolver();
-		interpolator = settings.getInterpolator();
-		particleGridInitializer.initialize(interpolator, poisolver, particles, grid);
+		interpolation = new SimpleInterpolationIterator(settings.getInterpolator());
+		particleGridInitializer.initialize(interpolation, poisolver, particles, grid);
 
 		detector = settings.getCollisionDetector();
 		collisionalgorithm = settings.getCollisionAlgorithm();
@@ -129,13 +129,13 @@ public class Simulation {
 	                  Grid grid,
 	                  List<Particle> particles,
 	                  ParticleBoundaries particleBoundaries,
-	                  Interpolator interpolator) {
+	                  InterpolationIterator interpolation) {
 
 		this.width = width;
 		this.height = height;
 		this.grid = grid;
 		this.particles = (ArrayList<Particle>)particles;
-		this.interpolator = interpolator;
+		this.interpolation = interpolation;
 
 		tstep = settings.getTimeStep();
 		speedOfLight = settings.getSpeedOfLight();
@@ -174,9 +174,9 @@ public class Simulation {
 			detector.run();
 			collisionalgorithm.collide(detector.getOverlappedPairs(), f, mover.psolver, tstep);
 		}
-		interpolator.interpolateToGrid(particles, grid, tstep);
+		interpolation.interpolateToGrid(particles, grid, tstep);
 		grid.updateGrid(tstep);
-		interpolator.interpolateToParticle(particles, grid);
+		interpolation.interpolateToParticle(particles, grid);
 	}
 
 

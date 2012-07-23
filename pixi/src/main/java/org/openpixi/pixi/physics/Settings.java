@@ -27,8 +27,6 @@ import java.util.List;
  * To assure that the class is used in the intended way
  * THE SETTERS SHOULD BE CALLED RIGHT AFTER A PARAMETERLESS CONSTRUCTOR
  * AND BEFORE ANY OF THE MORE COMPLEX GETTERS IS CALLED !!!
- *
- * TODO replace InitialConditions
  */
 public class Settings {
 
@@ -72,7 +70,8 @@ public class Settings {
 
 	// Distributed version settings
 
-	private int numOfNodes;
+	private int numOfNodes = 1;
+	private String iplRegistryServer = "localhost";
 
 	//----------------------------------------------------------------------------------------------
 	// SIMPLE GETTERS
@@ -138,6 +137,10 @@ public class Settings {
 		return iterations;
 	}
 
+	public String getIplRegistryServer() {
+		return iplRegistryServer;
+	}
+
 	//----------------------------------------------------------------------------------------------
 	// MORE COMPLEX GETTERS / BUILDERS
 	//----------------------------------------------------------------------------------------------
@@ -198,7 +201,7 @@ public class Settings {
 	}
 
 	//----------------------------------------------------------------------------------------------
-	// SETTERS
+	// SETTERS (Overwrite default values programatically)
 	//----------------------------------------------------------------------------------------------
 
 	public void setSimulationWidth(double simulationWidth) {
@@ -283,6 +286,10 @@ public class Settings {
 
 	public void setBoundary(GeneralBoundaryType boundaryType) {
 		this.boundaryType = boundaryType;
+	}
+
+	public void setIplRegistryServer(String iplRegistryServer) {
+		this.iplRegistryServer = iplRegistryServer;
 	}
 
 	//----------------------------------------------------------------------------------------------

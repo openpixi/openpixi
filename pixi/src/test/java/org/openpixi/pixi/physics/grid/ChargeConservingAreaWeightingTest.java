@@ -148,7 +148,7 @@ public class ChargeConservingAreaWeightingTest extends TestCase {
 		double sy = p.getPrevY();
 
 		// Calculate current
-		s.getInterpolator().interpolateToGrid(s.particles, s.grid, s.tstep);
+		s.getInterpolation().interpolateToGrid(s.particles, s.grid, s.tstep);
 
 		double jx = GridTestCommon.getJxSum(s.grid);
 		double jy = GridTestCommon.getJySum(s.grid);
@@ -227,7 +227,7 @@ public class ChargeConservingAreaWeightingTest extends TestCase {
 		double sy = p.getPrevY();
 
 		// Calculate current
-		s.getInterpolator().interpolateToGrid(s.particles, s.grid, s.tstep);
+		s.getInterpolation().interpolateToGrid(s.particles, s.grid, s.tstep);
 
 		double jx = GridTestCommon.getJxSum(s.grid);
 		double jy = GridTestCommon.getJySum(s.grid);

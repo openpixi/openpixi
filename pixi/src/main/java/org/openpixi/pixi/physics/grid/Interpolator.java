@@ -1,22 +1,15 @@
 package org.openpixi.pixi.physics.grid;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.openpixi.pixi.physics.Debug;
 import org.openpixi.pixi.physics.Particle;
 
 public class Interpolator {
 
-	public void interpolateToGrid(ArrayList<Particle> particles, Grid g, double tstep) {
+	public void interpolateToGrid(Particle p, Grid g, double tstep) {
 
 	}
 
-	public void interpolateToParticle(ArrayList<Particle> particles, Grid g) {
-
-		for (int i = 0; i < particles.size(); i++) {
-
-		Particle p = particles.get(i);
+	public void interpolateToParticle(Particle p, Grid g) {
 
 		assertParticleInSimulationArea(p, g);
 
@@ -79,35 +72,29 @@ public class Interpolator {
 				g.getBz(xp, yp) * (p.getX() - (xCellPosition2 -1) * g.getCellWidth()) *
 				(p.getY() - (yCellPosition2 -1) * g.getCellHeight())) /
 				(g.getCellWidth() * g.getCellHeight()));
-
-		}
-
 	}
 
-	public void interpolateChargedensity(List<Particle> particles, Grid g) {
+	public void interpolateChargedensity(Particle p, Grid g) {
 		g.resetCurrentAndCharge();		
 		double cellArea = g.getCellWidth() * g.getCellHeight();
 		
-		for(Particle p : particles) {
-			assertParticleInSimulationArea(p, g);
+		assertParticleInSimulationArea(p, g);
 
-			//nearest grid point that has a lower x and y coordinate than the particle
-			int xCellPosition = (int) (Math.floor(p.getX() / g.getCellWidth()));
-			int yCellPosition = (int) (Math.floor(p.getY() / g.getCellHeight()));
-			
-			//assign a portion of the charge to the four surrounding points depending on distance
-			//Math.abs is for the case when a particle is outside of the simulation area,
-			//i.e. when xCellPosition or yCellPosition are > than p.getX() or p.getY() respectively
-			g.addRho(xCellPosition, yCellPosition, p.getCharge() * Math.abs(((xCellPosition+1) * g.getCellWidth() - p.getX()) *
-					((yCellPosition+1) * g.getCellHeight() - p.getY()) / cellArea));
-			g.addRho(xCellPosition+1, yCellPosition, p.getCharge() * Math.abs((p.getX() - xCellPosition * g.getCellWidth()) *
-					((yCellPosition+1) * g.getCellHeight() - p.getY()) / cellArea));
-			g.addRho(xCellPosition,yCellPosition+1, p.getCharge() * Math.abs(((xCellPosition+1) * g.getCellWidth() - p.getX()) *
-					(p.getY() - yCellPosition * g.getCellHeight()) / cellArea));
-			g.addRho(xCellPosition + 1,yCellPosition + 1, p.getCharge() * Math.abs((p.getX() - xCellPosition * g.getCellWidth()) *
-					(p.getY() - yCellPosition * g.getCellHeight()) / cellArea));
-		}
+		//nearest grid point that has a lower x and y coordinate than the particle
+		int xCellPosition = (int) (Math.floor(p.getX() / g.getCellWidth()));
+		int yCellPosition = (int) (Math.floor(p.getY() / g.getCellHeight()));
 
+		//assign a portion of the charge to the four surrounding points depending on distance
+		//Math.abs is for the case when a particle is outside of the simulation area,
+		//i.e. when xCellPosition or yCellPosition are > than p.getX() or p.getY() respectively
+		g.addRho(xCellPosition, yCellPosition, p.getCharge() * Math.abs(((xCellPosition+1) * g.getCellWidth() - p.getX()) *
+				((yCellPosition+1) * g.getCellHeight() - p.getY()) / cellArea));
+		g.addRho(xCellPosition+1, yCellPosition, p.getCharge() * Math.abs((p.getX() - xCellPosition * g.getCellWidth()) *
+				((yCellPosition+1) * g.getCellHeight() - p.getY()) / cellArea));
+		g.addRho(xCellPosition,yCellPosition+1, p.getCharge() * Math.abs(((xCellPosition+1) * g.getCellWidth() - p.getX()) *
+				(p.getY() - yCellPosition * g.getCellHeight()) / cellArea));
+		g.addRho(xCellPosition + 1,yCellPosition + 1, p.getCharge() * Math.abs((p.getX() - xCellPosition * g.getCellWidth()) *
+				(p.getY() - yCellPosition * g.getCellHeight()) / cellArea));
 	}
 	
 	public int checkPeriodicBoundary(int a, int b) {
