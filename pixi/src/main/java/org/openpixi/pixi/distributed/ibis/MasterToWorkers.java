@@ -16,7 +16,7 @@ import java.util.List;
  * Handles the communication connected with problem distribution and results collection
  * on the side of the Master.
  */
-public class MasterCommunicator {
+public class MasterToWorkers {
 
 	private IbisRegistry registry;
 
@@ -34,7 +34,7 @@ public class MasterCommunicator {
 	}
 
 
-	public MasterCommunicator(IbisRegistry registry) throws Exception {
+	public MasterToWorkers(IbisRegistry registry) throws Exception {
 		this.registry = registry;
 
 		// Initialize the holders for received data

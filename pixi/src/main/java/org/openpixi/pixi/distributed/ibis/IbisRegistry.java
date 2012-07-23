@@ -1,13 +1,14 @@
 package org.openpixi.pixi.distributed.ibis;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 import ibis.ipl.*;
 import org.openpixi.pixi.distributed.IntLock;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * Handles connection to the ibis registry.
@@ -20,7 +21,7 @@ public class IbisRegistry {
 
 	private static Logger logger = LoggerFactory.getLogger(IbisRegistry.class);
 
-	/** Lock to wait for all the worker to join.*/
+	/** Lock to wait for all the workers to join. */
 	private IntLock numOfJoinedWorkersLock;
 
 	private final List<IbisIdentifier> workers =

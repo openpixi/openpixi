@@ -12,7 +12,7 @@ import java.util.List;
  * Handles the communication connected with problem distribution and results collection
  * on the side of the worker.
  */
-public class WorkerCommunicator {
+public class WorkerToMaster {
 
 	private IbisRegistry registry;
 
@@ -39,7 +39,7 @@ public class WorkerCommunicator {
 	 * Creates the ports.
 	 * Receive ports have to be created first to avoid deadlock.
 	 */
-	public WorkerCommunicator(IbisRegistry registry) throws Exception {
+	public WorkerToMaster(IbisRegistry registry) throws Exception {
 		this.registry = registry;
 	}
 
