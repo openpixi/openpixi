@@ -8,58 +8,54 @@ import org.openpixi.pixi.physics.Particle;
 public class ChargeConservingAreaWeighting extends Interpolator {
 
 	@Override
-	public void interpolateToGrid(ArrayList<Particle> particles, Grid g, double tstep) {
+	public void interpolateToGrid(Particle p, Grid g, double tstep) {
 		g.resetCurrentAndCharge();
 
 		//assuming rectangular particle shape i.e. area weighting
-		for (int i = 0; i < particles.size(); i++) {
 
-			Particle p = particles.get(i);
+		assertParticleInSimulationArea(p, g);
 
-			assertParticleInSimulationArea(p, g);
+		// TODO: The following assert fails!
+		//assertPreviousParticleInSimulationArea(p, g);
 
-			// TODO: The following assert fails!
-			//assertPreviousParticleInSimulationArea(p, g);
+		//local origin i.e. nearest grid point BEFORE particle push
+		int xStart = (int) Math.floor(p.getPrevX() / g.getCellWidth() + 0.5);
+		int yStart = (int) Math.floor(p.getPrevY() / g.getCellHeight() + 0.5);
 
-			//local origin i.e. nearest grid point BEFORE particle push
-			int xStart = (int) Math.floor(p.getPrevX() / g.getCellWidth() + 0.5);
-			int yStart = (int) Math.floor(p.getPrevY() / g.getCellHeight() + 0.5);
+		//local origin i.e. nearest grid point AFTER particle push
+		int xEnd = (int) Math.floor(p.getX() / g.getCellWidth() + 0.5);
+		int yEnd = (int) Math.floor(p.getY() / g.getCellHeight() + 0.5);
 
-			//local origin i.e. nearest grid point AFTER particle push
-			int xEnd = (int) Math.floor(p.getX() / g.getCellWidth() + 0.5);
-			int yEnd = (int) Math.floor(p.getY() / g.getCellHeight() + 0.5);
+		double deltaX = p.getX() - p.getPrevX();
+		double deltaY = p.getY() - p.getPrevY();
 
-			double deltaX = p.getX() - p.getPrevX();
-			double deltaY = p.getY() - p.getPrevY();
-
-			//check if particle moves further than one cell
-			if (Debug.asserts) {
-				assert (Math.abs(deltaX) <= g.getCellWidth()) & (Math.abs(deltaY) <= g.getCellHeight()): "particle too fast";
-			}
-
-			//4-boundary move?
-			if (xStart == xEnd && yStart == yEnd) {
-				/**local x coordinate BEFORE particle push*/
-				double x = p.getPrevX() - xStart * g.getCellWidth();
-				/**local y coordinate BEFORE particle push*/
-				double y = p.getPrevY() - yStart * g.getCellHeight();
-
-				fourBoundaryMove(xStart, yStart, x, y, deltaX, deltaY, p, g, tstep);
-
-				}
-			//7-boundary move?
-			else if (xStart == xEnd || yStart == yEnd) {
-
-					sevenBoundaryMove(xStart, yStart, xEnd, yEnd, deltaX, deltaY, p, g, tstep);
-
-				}
-				// 10-boundary move
-					else {
-
-						tenBoundaryMove(xStart, yStart, xEnd, yEnd, deltaX, deltaY, p, g, tstep);
-
-					}
+		//check if particle moves further than one cell
+		if (Debug.asserts) {
+			assert (Math.abs(deltaX) <= g.getCellWidth()) & (Math.abs(deltaY) <= g.getCellHeight()): "particle too fast";
 		}
+
+		//4-boundary move?
+		if (xStart == xEnd && yStart == yEnd) {
+			/**local x coordinate BEFORE particle push*/
+			double x = p.getPrevX() - xStart * g.getCellWidth();
+			/**local y coordinate BEFORE particle push*/
+			double y = p.getPrevY() - yStart * g.getCellHeight();
+
+			fourBoundaryMove(xStart, yStart, x, y, deltaX, deltaY, p, g, tstep);
+
+			}
+		//7-boundary move?
+		else if (xStart == xEnd || yStart == yEnd) {
+
+				sevenBoundaryMove(xStart, yStart, xEnd, yEnd, deltaX, deltaY, p, g, tstep);
+
+			}
+			// 10-boundary move
+				else {
+
+					tenBoundaryMove(xStart, yStart, xEnd, yEnd, deltaX, deltaY, p, g, tstep);
+
+				}
 	}
 
 	/**
