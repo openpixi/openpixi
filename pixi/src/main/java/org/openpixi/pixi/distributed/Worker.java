@@ -1,9 +1,13 @@
 package org.openpixi.pixi.distributed;
 
+import org.openpixi.pixi.distributed.grid.DistributedGridFactory;
 import org.openpixi.pixi.distributed.ibis.IbisRegistry;
 import org.openpixi.pixi.distributed.ibis.WorkerCommunicator;
+import org.openpixi.pixi.distributed.movement.boundary.DistributedParticleBoundaries;
 import org.openpixi.pixi.physics.Settings;
 import org.openpixi.pixi.physics.grid.Grid;
+import org.openpixi.pixi.physics.movement.boundary.ParticleBoundaries;
+import org.openpixi.pixi.physics.util.DoubleBox;
 import org.openpixi.pixi.physics.util.IntBox;
 
 /**
@@ -15,8 +19,6 @@ public class Worker implements Runnable {
 	private Settings settings;
 	/** ID of this worker. */
 	private int workerID;
-
-	private SharedDataManager sharedDataManager;
 
 
 	public Worker(IbisRegistry registry, Settings settings) throws Exception {
@@ -30,17 +32,12 @@ public class Worker implements Runnable {
 		try {
 			communicator.receiveProblem();
 
-			IntBox simulationAreaInCellDimensions =
-					new IntBox(0, settings.getGridCellsX() - 1, 0, settings.getGridCellsY() - 1);
-			sharedDataManager = new SharedDataManager(
-					workerID, communicator.getPartitions(),
-					simulationAreaInCellDimensions, settings.getBoundaryType());
+			SharedDataManager sharedDataManager =  createSharedDataManager();
+			Grid grid = createGrid(sharedDataManager);
+			ParticleBoundaries  particleBoundaries = createParticleBoundaries(sharedDataManager);
 
-			DistributedGridFactory gridFactory = new DistributedGridFactory(
-					settings, communicator.getPartitions()[workerID],
-					communicator.getCells(), sharedDataManager);
-			Grid grid = gridFactory.create();
 
+			// TODO create simulation
 			// TODO run the simulation
 
 
@@ -54,5 +51,34 @@ public class Worker implements Runnable {
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
+	}
+
+
+	private SharedDataManager createSharedDataManager() {
+		IntBox simulationAreaInCellDimensions = new IntBox(
+				0, settings.getGridCellsX() - 1, 0, settings.getGridCellsY() - 1);
+		return new SharedDataManager(
+				workerID, communicator.getPartitions(),
+				simulationAreaInCellDimensions, settings.getBoundaryType());
+	}
+
+
+	private Grid createGrid(SharedDataManager sharedDataManager) {
+		DistributedGridFactory gridFactory = new DistributedGridFactory(
+				settings, communicator.getPartitions()[workerID],
+				communicator.getCells(), sharedDataManager);
+		return gridFactory.create();
+	}
+
+
+	private ParticleBoundaries createParticleBoundaries(SharedDataManager sharedDataManager) {
+		DoubleBox simulationAreaInParticleDimensions = new DoubleBox(
+				0, settings.getSimulationWidth(), 0, settings.getSimulationHeight());
+		DoubleBox innerSimulationArea = new DoubleBox(
+				0, settings.getSimulationWidth() - settings.getCellWidth(),
+				0, settings.getSimulationHeight() - settings.getCellHeight());
+		return new DistributedParticleBoundaries(
+				simulationAreaInParticleDimensions, innerSimulationArea,
+				settings.getParticleBoundary(), sharedDataManager);
 	}
 }

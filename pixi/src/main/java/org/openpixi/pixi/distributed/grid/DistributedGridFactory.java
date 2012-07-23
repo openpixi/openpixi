@@ -1,5 +1,6 @@
-package org.openpixi.pixi.distributed;
+package org.openpixi.pixi.distributed.grid;
 
+import org.openpixi.pixi.distributed.SharedDataManager;
 import org.openpixi.pixi.distributed.movement.boundary.BorderRegions;
 import org.openpixi.pixi.physics.Settings;
 import org.openpixi.pixi.physics.grid.Cell;
