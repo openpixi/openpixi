@@ -13,7 +13,7 @@ public class IntLock {
 
 	public synchronized void setValue(int value) {
 		this.value = value;
-		notify();
+		notifyAll();
 	}
 
 	public synchronized void waitForValue(int valueToWaitFor) {

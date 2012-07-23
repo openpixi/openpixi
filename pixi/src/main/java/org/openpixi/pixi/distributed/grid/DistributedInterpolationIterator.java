@@ -48,8 +48,7 @@ public class DistributedInterpolationIterator extends InterpolationIterator {
 	@Override
 	public void interpolateToGrid(List<Particle> localParticles, Grid grid, double tstep) {
 
-		// Initiate the exchange of particles
-		sharedDataManager.exchangeParticles();
+		sharedDataManager.startExchangeOfParticles();
 
 		// Remove leaving particles
 		List<Particle> leavingParticles = sharedDataManager.getLeavingParticles();
@@ -76,6 +75,8 @@ public class DistributedInterpolationIterator extends InterpolationIterator {
 
 		// Add arriving particles to the list of local particles
 		localParticles.addAll(arrivingParticles);
+
+		sharedDataManager.cleanUpParticleCommunication();
 	}
 
 
@@ -105,6 +106,8 @@ public class DistributedInterpolationIterator extends InterpolationIterator {
 		for (Particle particle: particlesWithOutsideInfluence) {
 			interpolator.interpolateToParticle(particle, grid);
 		}
+
+		sharedDataManager.cleanUpCellCommunication();
 	}
 
 

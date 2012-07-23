@@ -59,8 +59,11 @@ public class Worker implements Runnable {
 		IntBox simulationAreaInCellDimensions = new IntBox(
 				0, settings.getGridCellsX() - 1, 0, settings.getGridCellsY() - 1);
 		return new SharedDataManager(
-				workerID, communicator.getPartitions(),
-				simulationAreaInCellDimensions, settings.getBoundaryType());
+				workerID,
+				communicator.getPartitions(),
+				simulationAreaInCellDimensions,
+				settings.getBoundaryType(),
+				communicator.getRegistry());
 	}
 
 

@@ -1,5 +1,7 @@
 package org.openpixi.pixi.distributed;
 
+import org.openpixi.pixi.distributed.ibis.IbisRegistry;
+import org.openpixi.pixi.distributed.ibis.WorkerToWorker;
 import org.openpixi.pixi.physics.GeneralBoundaryType;
 import org.openpixi.pixi.physics.Particle;
 import org.openpixi.pixi.physics.grid.Cell;
@@ -19,15 +21,20 @@ import java.util.Map;
  */
 public class SharedDataManager {
 
-	/** Maps neighbor to SharedData. */
-	private Map<Integer, SharedData> sharedData = new HashMap<Integer, SharedData>();
-
 	/** Maps region to neighbor. */
 	private NeighborMap neighborMap;
 
+	/** Maps neighbor to SharedData. */
+	private Map<Integer, SharedData> sharedData = new HashMap<Integer, SharedData>();
 
-	public SharedDataManager(int thisWorkerID, IntBox[] partitions,
-	                         IntBox globalSimArea, GeneralBoundaryType boundaryType) {
+	private IbisRegistry registry;
+
+	public SharedDataManager(
+			int thisWorkerID,
+			IntBox[] partitions,
+	        IntBox globalSimArea,
+	        GeneralBoundaryType boundaryType,
+	        IbisRegistry registry) {
 		this.neighborMap = new NeighborMap(thisWorkerID, partitions, globalSimArea, boundaryType);
 	}
 
@@ -45,7 +52,7 @@ public class SharedDataManager {
 	public void registerBoundaryCell(int boundaryRegion, Cell cell) {
 		int neighbor = neighborMap.getBoundaryNeighbor(boundaryRegion);
 		if (neighbor != NeighborMap.NO_NEIGHBOR) {
-			getSharedData(neighbor).registerBoundaryCell(cell);
+			getSharedData(neighbor).registerGhostCell(cell);
 		}
 	}
 
@@ -92,7 +99,7 @@ public class SharedDataManager {
 	 */
 	private SharedData getSharedData(int neighbor) {
 		if (!sharedData.containsKey(neighbor)) {
-			sharedData.put(neighbor, new SharedData(neighbor));
+			sharedData.put(neighbor, new SharedData(new WorkerToWorker(registry, neighbor)));
 		}
 		return sharedData.get(neighbor);
 	}
@@ -110,17 +117,27 @@ public class SharedDataManager {
 	//----------------------------------------------------------------------------------------------
 
 
-	public void exchangeParticles() {
-		for (SharedData sd: sharedData.values()) {
-			sd.sendLeavingParticles();
-		}
+	/**
+	 * The exchange of particles can last some time as we have to wait for the arriving particles
+	 * before we send the border particles.
+	 * As we do not want to stall the calling thread,
+	 * we start the exchange of particles in a new thread.
+	 */
+	public void startExchangeOfParticles() {
+		new Thread(new Runnable() {
+			public void run() {
+				for (SharedData sd: sharedData.values()) {
+					sd.sendLeavingParticles();
+				}
 
-		// Before we send the border particles we have to wait for all the arriving particles
-		// as they are as well border particles.
-		waitForArrivingParticles();
-		for (SharedData sd: sharedData.values()) {
-			sd.sendBorderParticles();
-		}
+				// Before we send the border particles we have to wait
+				// for all the arriving particles as they are as well border particles.
+				waitForArrivingParticles();
+				for (SharedData sd: sharedData.values()) {
+					sd.sendBorderParticles();
+				}
+			}
+		}).start();
 	}
 
 
@@ -168,6 +185,20 @@ public class SharedDataManager {
 	private void waitForArrivingParticles() {
 		for (SharedData sd: sharedData.values()) {
 			sd.waitForArrivingParticles();
+		}
+	}
+
+
+	public void cleanUpCellCommunication() {
+		for (SharedData sd: sharedData.values()) {
+			sd.cleanUpCellCommunication();
+		}
+	}
+
+
+	public void cleanUpParticleCommunication() {
+		for (SharedData sd: sharedData.values()) {
+			sd.cleanUpParticleCommunication();
 		}
 	}
 }

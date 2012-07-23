@@ -1,5 +1,6 @@
 package org.openpixi.pixi.distributed;
 
+import org.openpixi.pixi.distributed.ibis.WorkerToWorker;
 import org.openpixi.pixi.physics.Particle;
 import org.openpixi.pixi.physics.grid.Cell;
 import org.openpixi.pixi.physics.movement.boundary.ParticleBoundaries;
@@ -13,10 +14,16 @@ import java.util.List;
  */
 public class SharedData {
 
-	private int neighborID;
+	/** Handles the network communication with neighbor. */
+	private WorkerToWorker neighbor;
+
+	/* Locks to wait for the data to arrive. */
+	private BooleanLock arrivingParticlesLock = new BooleanLock();
+	private BooleanLock ghostParticlesLock = new BooleanLock();
+	private BooleanLock ghostCellsLock = new BooleanLock();
 
 	/** Ghost cells of this node - cells to be received from neighbors. */
-	private List<Cell> boundaryCells = new ArrayList<Cell>();
+	private List<Cell> ghostCells = new ArrayList<Cell>();
 	/** Ghost cells of neighbors - cells to be send to neighbors. */
 	private List<Cell> borderCells = new ArrayList<Cell>();
 
@@ -25,7 +32,7 @@ public class SharedData {
 	/** Particles leaving this node - particles to be send to neighbors. */
 	private List<Particle> leavingParticles = new ArrayList<Particle>();
 	/** Ghost particles of this node - particles to be received from neighbors. */
-	private List<Particle> boundaryParticles = new ArrayList<Particle>();
+	private List<Particle> ghostParticles = new ArrayList<Particle>();
 	/** Particles arriving to this node - particles to be received from neighbors. */
 	private List<Particle> arrivingParticles = new ArrayList<Particle>();
 
@@ -42,8 +49,11 @@ public class SharedData {
 	}
 
 
-	public SharedData(int neighborID) {
-		this.neighborID = neighborID;
+	public SharedData(WorkerToWorker neighbor) {
+		this.neighbor = neighbor;
+		neighbor.setGhostCellsHandler(new GhostCellsHandler());
+		neighbor.setGhostParticlesHandler(new GhostParticlesHandler());
+		neighbor.setArrivingParticlesHandler(new ArrivingParticlesHandler());
 	}
 
 
@@ -52,8 +62,8 @@ public class SharedData {
 	}
 
 
-	public void registerBoundaryCell(Cell cell) {
-		boundaryCells.add(cell);
+	public void registerGhostCell(Cell cell) {
+		ghostCells.add(cell);
 	}
 
 
@@ -68,46 +78,113 @@ public class SharedData {
 
 
 	public void sendLeavingParticles() {
-		// TODO implement
+		neighbor.sendLeavingParticles(leavingParticles);
 	}
 
 
 	public void sendBorderParticles() {
-		// TODO implement
+		neighbor.sendBorderParticles(borderParticles);
 	}
 
 
 	public void sendBorderCells() {
-		// TODO implement
+		neighbor.sendBorderCells(borderCells);
 	}
 
 
 	public void waitForArrivingParticles() {
-		// TODO implement
-	}
-
-
-	private void waitForGhostParticles() {
-		// TODO implement
+		arrivingParticlesLock.waitForTrue();
 	}
 
 
 	public void waitForGhostCells() {
-		// TODO implement
+		ghostCellsLock.waitForTrue();
 	}
 
 
+	/**
+	 * Blocks until the arriving particles are received.
+	 */
 	public List<Particle> getArrivingParticles() {
-		return null;  // TODO implement
+		waitForArrivingParticles();
+		return arrivingParticles;
 	}
 
 
+	/**
+	 * Blocks until the ghost particles are received.
+	 */
 	public List<Particle> getGhostParticles() {
-		return null;  // TODO implement
+		ghostParticlesLock.waitForTrue();
+		return ghostParticles;
 	}
 
 
 	public List<Particle> getLeavingParticles() {
-		return null;  // TODO implement
+		return leavingParticles;
+	}
+
+
+	/**
+	 * Resets the particle lists waiting locks.
+	 * Resets the particle lists which are send to neighbors.
+	 * => Should be called at the end of particle communication.
+	 */
+	public void cleanUpParticleCommunication() {
+		ghostParticlesLock.reset();
+		arrivingParticlesLock.reset();
+		borderParticles.clear();
+		leavingParticles.clear();
+	}
+
+
+	/**
+	 * Resets the cell list waiting lock.
+	 * => Should be called at the end of cell communication.
+	 */
+	public void cleanUpCellCommunication() {
+		ghostCellsLock.reset();
+	}
+
+
+	private class GhostCellsHandler implements IncomingCellsHandler {
+
+		/**
+		 * The values of incoming ghost cells have to be copied to the existing cells.
+		 * We can not simply use new reference to the cell
+		 * since the very reference that we have is also used by the grid.
+		 */
+		public void handle(List<Cell> cells) {
+			assert cells.size() == ghostCells.size();
+			for (int i = 0; i < cells.size(); ++i) {
+				ghostCells.get(i).copy(cells.get(i));
+			}
+			ghostCellsLock.setToTrue();
+		}
+	}
+
+
+	private class GhostParticlesHandler implements IncomingParticlesHandler {
+		public void handle(List<Particle> particles) {
+			ghostParticles = particles;
+			ghostParticlesLock.setToTrue();
+		}
+	}
+
+
+	private class ArrivingParticlesHandler implements  IncomingParticlesHandler {
+
+		/**
+		 * All arriving particles have to be checked with boundary classes.
+		 * There are for sure border particles.
+		 * There might be particles outside of the simulation area.
+		 */
+		public void handle(List<Particle> particles) {
+			arrivingParticles = particles;
+			for (Particle particle: particles) {
+				particleBoundaries.apply(particle);
+			}
+			arrivingParticlesLock.setToTrue();
+		}
 	}
 }
