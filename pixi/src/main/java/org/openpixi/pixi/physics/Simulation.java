@@ -121,18 +121,21 @@ public class Simulation {
 
 	/**
 	 * Constructor for distributed simulation.
+	 * Expects settings specific to the local node =>
+	 * the simulation width and height as well as
+	 * the number of cells in y and x direction must pertain to local simulation
+	 * not to the global simulation.
 	 * (No need to set poison solver and run ParticleGridInitializer as it was already run on the
 	 * master node).
 	 */
 	public Simulation(Settings settings,
-	                  double width, double height,
 	                  Grid grid,
 	                  List<Particle> particles,
 	                  ParticleBoundaries particleBoundaries,
 	                  InterpolationIterator interpolation) {
 
-		this.width = width;
-		this.height = height;
+		this.width = settings.getSimulationWidth();
+		this.height = settings.getSimulationHeight();
 		this.grid = grid;
 		this.particles = (ArrayList<Particle>)particles;
 		this.interpolation = interpolation;
