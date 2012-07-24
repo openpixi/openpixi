@@ -16,6 +16,7 @@ public class PixiPorts {
 
 	public static final String GATHER_PORT_ID = "gather";
 
+	/** For communication from master to slave or between slaves. */
 	public static final PortType ONE_TO_ONE_PORT = new PortType(
 			PortType.COMMUNICATION_RELIABLE,
 			PortType.SERIALIZATION_OBJECT,
@@ -23,7 +24,8 @@ public class PixiPorts {
 			PortType.RECEIVE_EXPLICIT,
 			PortType.CONNECTION_ONE_TO_ONE);
 
-	public  static final String DISTRIBUTE_PORT_ID = "distribute";
+	public static final String DISTRIBUTE_PORT_ID = "distribute";
+	public static final String EXCHANGE_PORT_ID = "exchange";
 
 	public static final PortType[] ALL_PORTS = {GATHER_PORT, ONE_TO_ONE_PORT};
 }
