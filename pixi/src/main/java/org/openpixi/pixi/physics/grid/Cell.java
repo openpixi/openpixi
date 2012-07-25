@@ -4,6 +4,8 @@ import java.io.Serializable;
 
 /**
  * Represents one cell of the grid.
+ *
+ * WHEN ADDING NEW FIELDS THE COPY() METHOD NEEDS TO BE UPDATED !!!
  */
 public class Cell implements Serializable {
 	/**electric current in x-Direction*/
@@ -45,7 +47,14 @@ public class Cell implements Serializable {
 		Bzo = Bz;
 	}
 
-	public void copy(Cell other) {
+	/**
+	 * Copies the values from other cell.
+	 * A safer way would be to copy the fields through reflection
+	 * with use of ClassCopier (see package util).
+	 * However, since this code is used in distributed version in every step, it needs to be fast;
+	 * thus, a manual solution is more preferable than reflection.
+	 */
+	public void copyFrom(Cell other) {
 		this.jx = other.jx;
 		this.jy = other.jy;
 		this.rho = other.rho;
