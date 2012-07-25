@@ -157,7 +157,7 @@ public class SharedData {
 		public void handle(List<Cell> cells) {
 			assert cells.size() == ghostCells.size();
 			for (int i = 0; i < cells.size(); ++i) {
-				ghostCells.get(i).copy(cells.get(i));
+				ghostCells.get(i).copyFrom(cells.get(i));
 			}
 			ghostCellsLock.setToTrue();
 		}
@@ -176,8 +176,8 @@ public class SharedData {
 
 		/**
 		 * All arriving particles have to be checked with boundary classes.
-		 * There are for sure border particles.
-		 * There might be particles outside of the simulation area.
+		 * All arriving particle become right away also border particles.
+		 * Furthermore, they might also lie outside of the simulation area.
 		 */
 		public void handle(List<Particle> particles) {
 			arrivingParticles = particles;
