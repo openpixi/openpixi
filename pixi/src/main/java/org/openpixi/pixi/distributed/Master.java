@@ -39,7 +39,7 @@ public class Master {
 	 * Problem decomposition table.
 	 * N-th element in the table belongs to the n-th worker.
 	 */
-	IntBox[] partitions;
+	private IntBox[] partitions;
 
 	Grid getInitialGrid() {
 		return initialGrid;
@@ -162,6 +162,13 @@ public class Master {
 			}
 
 			assert partitionIndex != -1;
+
+			// Translate particle's position
+			double partitionWidth = settings.getCellWidth() * partitions[partitionIndex].xsize();
+			double partitionHeight = settings.getCellHeight() * partitions[partitionIndex].ysize();
+			p.setX(p.getX() % partitionWidth);
+			p.setY(p.getY() % partitionHeight);
+
 			particlePartitions.get(partitionIndex).add(p);
 		}
 		return particlePartitions;
@@ -180,8 +187,18 @@ public class Master {
 	 */
 	private List<Particle> assembleParticles(List<List<Particle>> particlePartitions) {
 		List<Particle> assembledParticles = new ArrayList<Particle>();
-		for (List<Particle> particles: particlePartitions) {
-			assembledParticles.addAll(particles);
+		for (int i = 0; i < particlePartitions.size(); ++i) {
+			double xmin = partitions[i].xmin() * settings.getCellWidth();
+			double ymin = partitions[i].ymin() * settings.getCellHeight();
+
+			for (Particle p: particlePartitions.get(i)) {
+
+				// Translate particles position
+				p.setX(p.getX() + xmin);
+				p.setY(p.getY() + ymin);
+
+				assembledParticles.add(p);
+			}
 		}
 		return assembledParticles;
 	}
