@@ -51,6 +51,8 @@ public class Worker implements Runnable {
 			Grid grid = createGrid(sharedDataManager);
 			InterpolationIterator interpolation = createInterpolationIterator(sharedDataManager);
 
+			sharedDataManager.initializeConnections();
+
 			Simulation simulation = new Simulation(
 					localSettings, grid, communicator.getParticles(),
 					particleBoundaries, interpolation);
@@ -93,13 +95,13 @@ public class Worker implements Runnable {
 			xend += Grid.EXTRA_CELLS_AFTER_GRID;
 		}
 		if (mypart.ymin() == 0) {
-			ystart += Grid.EXTRA_CELLS_BEFORE_GRID;
+			ystart -= Grid.EXTRA_CELLS_BEFORE_GRID;
 		}
 		if (mypart.ymax() == globalSettings.getGridCellsY() - 1) {
 			yend += Grid.EXTRA_CELLS_AFTER_GRID;
 		}
 
-		Cell[][] finalCells = new Cell[xend - xstart + 1][yend - xstart + 1];
+		Cell[][] finalCells = new Cell[xend - xstart + 1][yend - ystart + 1];
 		for (int x = xstart; x <= xend ; ++x) {
 			for (int y = ystart; y <= yend; ++y) {
 				finalCells[x - xstart][y - ystart] = grid.getCell(x,y);

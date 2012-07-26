@@ -57,6 +57,11 @@ public class SharedData {
 	}
 
 
+	public void initializeConnection() {
+		neighbor.initializeConnection();
+	}
+
+
 	public void registerBorderCell(Cell cell) {
 		borderCells.add(cell);
 	}

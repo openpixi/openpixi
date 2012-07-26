@@ -18,9 +18,9 @@ public class DistributeAndCollectTest {
 
 	public static void main(String[] args) throws Exception {
 		Settings settings = new Settings();
-		settings.setNumOfNodes(2);
-		settings.setGridCellsX(4);
-		settings.setGridCellsY(4);
+		settings.setNumOfNodes(8);
+		settings.setGridCellsX(32);
+		settings.setGridCellsY(64);
 		settings.setNumOfParticles(10);
 		// Do not run the simulation in this test
 		settings.setIterations(0);
@@ -148,7 +148,7 @@ public class DistributeAndCollectTest {
 				Cell initialCell = initialGrid.getCell(x,y);
 				Cell finalCell = finalGrid.getCell(x,y);
 				if (!compareCells(initialCell, finalCell, tolerance)) {
-					fail("Cells are not equal! " +
+					fail("Cells at [" + x + "," + y + "] are not equal! " +
 							"Initial: " + initialCell + " Final: " + finalCell);
 				}
 			}

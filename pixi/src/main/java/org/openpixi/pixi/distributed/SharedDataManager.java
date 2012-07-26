@@ -47,6 +47,13 @@ public class SharedDataManager {
 	//----------------------------------------------------------------------------------------------
 
 
+	public void initializeConnections() {
+		for (SharedData sd: sharedData.values()) {
+			sd.initializeConnection();
+		}
+	}
+
+
 	/**
 	 * Registers the given cell in a given region as a boundary cell.
 	 * The cell is only registered if the neighbor for the given region exists.
