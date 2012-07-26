@@ -13,7 +13,12 @@ import org.openpixi.pixi.physics.util.Point;
  * and boundary neighbors (those from which we receive data).
  * These neighbors are the same at the edges but different at the corners.
  *
+ * Finds also the direction of the neighbors.
+ * The direction of the neighbor is necessary later on when we want to translate the particles
+ * we are sending.
+ *
  * How do we find the neighbors?
+ * =============================
  *
  * First we determine for both types of neighbors (boundary and border) helper points
  * which help us find the neighbors.
@@ -38,17 +43,22 @@ public class NeighborMap {
 	/** Dummy neighbor ID signalizing that there is no neighbor. */
 	public static final int NO_NEIGHBOR = -1;
 
-	IntBox[] partitions;
-	int thisWorkerID;
-	IntBox globalSimArea;
+	private IntBox[] partitions;
+	private int thisWorkerID;
+	private IntBox globalSimArea;
+	private GeneralBoundaryType boundaryType;
 
 	/** Maps boundary regions to neighbors. */
 	private int[] boundaryNeighbors = new int[BoundaryRegions.NUM_OF_REGIONS];
 	private Point[] boundaryPoints = new Point[BoundaryRegions.NUM_OF_REGIONS];
+	/** Only used for periodic boundaries. */
+	private Point[] boundaryNeighborsDirections = new Point[BoundaryRegions.NUM_OF_REGIONS];
 
 	/** Maps border regions to neighbors. */
 	private int[][] borderNeighbors = new int[BorderRegions.NUM_OF_REGIONS][];
 	private Point[][] borderPoints = new Point[BorderRegions.NUM_OF_REGIONS][];
+	/** Only used for periodic boundaries. */
+	private Point[][] borderNeighborsDirections = new Point[BorderRegions.NUM_OF_REGIONS][];
 
 
 	public int getBoundaryNeighbor(int region) {
@@ -61,16 +71,46 @@ public class NeighborMap {
 	}
 
 
+	public Point getBoundaryNeighborsDirections(int region) {
+		if (boundaryType == GeneralBoundaryType.Periodic) {
+			return  boundaryNeighborsDirections[region];
+		}
+		else {
+			return getNeighborDirection(getBoundaryNeighbor(region));
+		}
+	}
+
+
+	public Point[] getBorderNeighborsDirections(int region) {
+		if (boundaryType == GeneralBoundaryType.Periodic) {
+			return borderNeighborsDirections[region];
+		}
+		else
+		{
+			int[] neighbors = getBorderNeighbors(region);
+			Point[] directions = new Point[neighbors.length];
+			for (int i = 0; i < neighbors.length; ++i) {
+				directions[i] = getNeighborDirection(neighbors[i]);
+			}
+			return directions;
+		}
+	}
+
+
 	public NeighborMap(int thisWorkerID, IntBox[] partitions,
 	                   IntBox globalSimArea, GeneralBoundaryType boundaryType) {
 		this.partitions = partitions;
 		this.thisWorkerID = thisWorkerID;
 		this.globalSimArea = globalSimArea;
+		this.boundaryType = boundaryType;
 
 		initBoundaryNeighbors();
 		initBoundaryPoints(partitions[thisWorkerID]);
+		initBoundaryNeighborsDirections(partitions[thisWorkerID]);
+
 		initBorderNeighbors();
 		initBorderPoints(partitions[thisWorkerID]);
+		initBorderNeighborsDirections(partitions[thisWorkerID]);
 
 		if (boundaryType == GeneralBoundaryType.Hardwall) {
 			setHardwallBoundaryNeighbors();
@@ -122,6 +162,29 @@ public class NeighborMap {
 				new Point(partition.xmax() + 1, ymid);
 		boundaryPoints[BoundaryRegions.X_MAX + BoundaryRegions.Y_MAX] =
 				new Point(partition.xmax() + 1, partition.ymax() + 1);
+	}
+
+
+	private void initBoundaryNeighborsDirections(IntBox partition) {
+
+		boundaryNeighborsDirections[BoundaryRegions.X_MIN + BoundaryRegions.Y_MIN] =
+				new Point(-1, -1);
+		boundaryNeighborsDirections[BoundaryRegions.X_MIN + BoundaryRegions.Y_CENTER] =
+				new Point(-1, 0);
+		boundaryNeighborsDirections[BoundaryRegions.X_MIN + BoundaryRegions.Y_MAX] =
+				new Point(-1, +1);
+
+		boundaryNeighborsDirections[BoundaryRegions.X_CENTER + BoundaryRegions.Y_MIN] =
+				new Point(0, -1);
+		boundaryNeighborsDirections[BoundaryRegions.X_CENTER + BoundaryRegions.Y_MAX] =
+				new Point(0, +1);
+
+		boundaryNeighborsDirections[BoundaryRegions.X_MAX + BoundaryRegions.Y_MIN] =
+				new Point(+1, -1);
+		boundaryNeighborsDirections[BoundaryRegions.X_MAX + BoundaryRegions.Y_CENTER] =
+				new Point(+1, 0);
+		boundaryNeighborsDirections[BoundaryRegions.X_MAX + BoundaryRegions.Y_MAX] =
+				new Point(+1, +1);
 	}
 
 
@@ -205,6 +268,51 @@ public class NeighborMap {
 	}
 
 
+	private void initBorderNeighborsDirections(IntBox partition) {
+
+		// Corner neighbors directions
+
+		borderNeighborsDirections[BorderRegions.X_BORDER_MIN + BorderRegions.Y_BORDER_MIN] =
+				new Point[] {
+						new Point(-1,  -1),
+						new Point(0, -1),
+						new Point(-1, 0)
+				};
+
+		borderNeighborsDirections[BorderRegions.X_BORDER_MIN + BorderRegions.Y_BORDER_MAX] =
+				new Point[] {
+						new Point(-1, +1),
+						new Point(0, +1),
+						new Point(-1, 0)
+				};
+
+		borderNeighborsDirections[BorderRegions.X_BORDER_MAX + BorderRegions.Y_BORDER_MIN] =
+				new Point[] {
+						new Point(+1, -1),
+						new Point(0, -1),
+						new Point(+1, 0)
+				};
+
+		borderNeighborsDirections[BorderRegions.X_BORDER_MAX + BorderRegions.Y_BORDER_MAX] =
+				new Point[] {
+						new Point(+1, +1),
+						new Point(0, +1),
+						new Point(+1, 0)
+				};
+
+		// Edge neighbors
+
+		borderNeighborsDirections[BorderRegions.X_BORDER_MIN + BorderRegions.Y_CENTER] =
+				new Point[] { new Point(-1, 0) };
+		borderNeighborsDirections[BorderRegions.X_BORDER_MAX + BorderRegions.Y_CENTER] =
+				new Point[] { new Point(+1, 0) };
+		borderNeighborsDirections[BorderRegions.X_CENTER + BorderRegions.Y_BORDER_MIN] =
+				new Point[] { new Point(0, -1) };
+		borderNeighborsDirections[BorderRegions.X_CENTER + BorderRegions.Y_BORDER_MAX] =
+				new Point[] { new Point(0, +1) };
+	}
+
+
 	private void setHardwallBoundaryNeighbors() {
 
 		// Map edge neighbors
@@ -212,7 +320,7 @@ public class NeighborMap {
 			Point p = boundaryPoints[region];
 			int workerID = findNeighborByPoint(p);
 			boundaryNeighbors[region] = workerID;
-		}
+			}
 
 		/*
 		 * Map corner regions to neighbors.
@@ -238,12 +346,11 @@ public class NeighborMap {
 		for (int region: BorderRegions.EDGE_REGIONS) {
 			Point[] points = borderPoints[region];
 			assert points.length == 1;
-			int[] allNeighbors = new int[points.length];
-			for (int i = 0; i < points.length; ++i) {
-				int workerID = findNeighborByPoint(points[i]);
-				allNeighbors[i] = workerID;
+			int workerID = findNeighborByPoint(points[0]);
+			borderNeighbors[region] = new int[] {workerID};
+			if (workerID == NO_NEIGHBOR) {
+				borderNeighborsDirections[region] = new Point[] {};
 			}
-			borderNeighbors[region] = allNeighbors;
 		}
 
 		// Map corner neighbors
@@ -254,7 +361,7 @@ public class NeighborMap {
 			for (int i = 0; i < points.length; ++i) {
 				int workerID = findNeighborByPoint(points[i]);
 				allNeighbors[i] = workerID;
-			}
+				}
 			borderNeighbors[region] = allNeighbors;
 
 			// If there is no true corner neighbor we also need to map the border regions
@@ -371,6 +478,47 @@ public class NeighborMap {
 			}
 		}
 		return NO_NEIGHBOR;
+	}
+
+
+	/**
+	 * While the periodic regions have the directions of their neighbors predefined in the fields
+	 * boundaryNeighborsDirections and borderNeighborsDirections, for the hardwall regions it is
+	 * easier to determine the direction based on the region neighbor.
+	 *
+	 * For the hardwall regions we can not have the directions predefined as the directions at the
+	 * corner depend on the layout.
+	 *
+	 * On the other hand, we can not find the neighbor direction through the neighbor in periodic
+	 * boundaries. For example, at the top edge of the global simulation area we want the neighbor
+	 * direction to point upward and not downward!
+	 */
+	private Point getNeighborDirection(int neighbor) {
+		if (neighbor == NO_NEIGHBOR) {
+			return null;
+		}
+
+		IntBox myPart = partitions[thisWorkerID];
+		IntBox neighborPart = partitions[neighbor];
+
+		int xdirec = 0;
+		int ydirec = 0;
+
+		if (myPart.xmax() < neighborPart.xmin()) {
+			xdirec = +1;
+		}
+		else if (neighborPart.xmax() < myPart.xmin()) {
+			xdirec = -1;
+		}
+
+		if (myPart.ymax() < neighborPart.ymin()) {
+			ydirec = +1;
+		}
+		else if (neighborPart.ymax() < myPart.ymin()) {
+			ydirec = -1;
+		}
+
+		return new Point(xdirec, ydirec);
 	}
 
 

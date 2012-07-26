@@ -7,6 +7,7 @@ import org.openpixi.pixi.distributed.partitioning.SimplePartitioner;
 import org.openpixi.pixi.physics.GeneralBoundaryType;
 import org.openpixi.pixi.physics.movement.boundary.BoundaryRegions;
 import org.openpixi.pixi.physics.util.IntBox;
+import org.openpixi.pixi.physics.util.Point;
 
 /**
  * Tests the creation of neighbors under hardwall and periodic boundaries.
@@ -23,6 +24,7 @@ import org.openpixi.pixi.physics.util.IntBox;
  *
  * 2) SPECIFIC TESTS - Test the specific neighbor values for a given region
  *    (verify whether region r really has a neighbor n).
+ *    Furthermore, also verifies the direction of the neighbor.
  *    The result of the specific test is dependent on the partitioning!
  *    It expects the following partitioning:
  *    0 2
@@ -88,55 +90,87 @@ public class NeighborMapTest extends TestCase {
 
 		// Test boundary corner regions
 
-		int neighbor = neighborMap.getBoundaryNeighbor(
-				BoundaryRegions.X_MIN + BoundaryRegions.Y_MIN);
+		int region = BoundaryRegions.X_MIN + BoundaryRegions.Y_MIN;
+		int neighbor = neighborMap.getBoundaryNeighbor(region);
 		assertEquals(7, neighbor);
+		Point direction = neighborMap.getBoundaryNeighborsDirections(region);
+		assertEquals(new Point(-1, -1), direction);
 
-		neighbor = neighborMap.getBoundaryNeighbor(
-				BoundaryRegions.X_MAX + BoundaryRegions.Y_MAX);
+		region = BoundaryRegions.X_MAX + BoundaryRegions.Y_MAX;
+		neighbor = neighborMap.getBoundaryNeighbor(region);
 		assertEquals(3, neighbor);
+		direction = neighborMap.getBoundaryNeighborsDirections(region);
+		assertEquals(new Point(1, 1), direction);
 
-		neighbor = neighborMap.getBoundaryNeighbor(
-				BoundaryRegions.X_MIN + BoundaryRegions.Y_MAX);
+		region = BoundaryRegions.X_MIN + BoundaryRegions.Y_MAX;
+		neighbor = neighborMap.getBoundaryNeighbor(region);
 		assertEquals(3, neighbor);
+		direction = neighborMap.getBoundaryNeighborsDirections(region);
+		assertEquals(new Point(-1, 1), direction);
 
 		// Test boundary edge regions
 
-		neighbor = neighborMap.getBoundaryNeighbor(
-				BoundaryRegions.X_MIN + BoundaryRegions.Y_CENTER);
+		region = BoundaryRegions.X_MIN + BoundaryRegions.Y_CENTER;
+		neighbor = neighborMap.getBoundaryNeighbor(region);
 		assertEquals(2, neighbor);
+		direction = neighborMap.getBoundaryNeighborsDirections(region);
+		assertEquals(new Point(-1, 0), direction);
 
-		neighbor = neighborMap.getBoundaryNeighbor(
-				BoundaryRegions.X_MAX + BoundaryRegions.Y_CENTER);
+		region = BoundaryRegions.X_MAX + BoundaryRegions.Y_CENTER;
+		neighbor = neighborMap.getBoundaryNeighbor(region);
 		assertEquals(2, neighbor);
+		direction = neighborMap.getBoundaryNeighborsDirections(region);
+		assertEquals(new Point(1, 0), direction);
 
-		neighbor = neighborMap.getBoundaryNeighbor(
-				BoundaryRegions.X_CENTER + BoundaryRegions.Y_MIN);
+		region = BoundaryRegions.X_CENTER + BoundaryRegions.Y_MIN;
+		neighbor = neighborMap.getBoundaryNeighbor(region);
 		assertEquals(5, neighbor);
+		direction = neighborMap.getBoundaryNeighborsDirections(region);
+		assertEquals(new Point(0, -1), direction);
 
 		// Test border corner regions
 
-		int[] neighbors = neighborMap.getBorderNeighbors(
-				BorderRegions.X_BORDER_MIN + BorderRegions.Y_BORDER_MIN);
-		assertContains(neighbors, 2);
-		assertContains(neighbors, 5);
-		assertContains(neighbors, 7);
+		region = BorderRegions.X_BORDER_MIN + BorderRegions.Y_BORDER_MIN;
+		int[] neighbors = neighborMap.getBorderNeighbors(region);
+		int on1 = assertContains(neighbors, 2);
+		int on2 = assertContains(neighbors, 5);
+		int on3 = assertContains(neighbors, 7);
+		Point[] directions = neighborMap.getBorderNeighborsDirections(region);
+		int od1 = assertContainsPoint(directions, new Point(-1, 0));
+		int od2 = assertContainsPoint(directions, new Point(0, -1));
+		int od3 = assertContainsPoint(directions, new Point(-1, -1));
+		// Test order
+		assertEquals(on1, od1);
+		assertEquals(on2, od2);
+		assertEquals(on3, od3);
 
-		neighbors = neighborMap.getBorderNeighbors(
-				BorderRegions.X_BORDER_MAX + BorderRegions.Y_BORDER_MAX);
-		assertContains(neighbors, 1);
-		assertContains(neighbors, 2);
-		assertContains(neighbors, 3);
+		region = BorderRegions.X_BORDER_MAX + BorderRegions.Y_BORDER_MAX;
+		neighbors = neighborMap.getBorderNeighbors(region);
+		on1 = assertContains(neighbors, 1);
+		on2 = assertContains(neighbors, 2);
+		on3 = assertContains(neighbors, 3);
+		directions = neighborMap.getBorderNeighborsDirections(region);
+		od1 = assertContainsPoint(directions, new Point(0, 1));
+		od2 = assertContainsPoint(directions, new Point(1, 0));
+		od3 = assertContainsPoint(directions, new Point(1, 1));
+		// Test order
+		assertEquals(on1, od1);
+		assertEquals(on2, od2);
+		assertEquals(on3, od3);
 
 		// Test border edge regions
 
-		neighbors = neighborMap.getBorderNeighbors(
-				BorderRegions.X_CENTER + BorderRegions.Y_BORDER_MIN);
+		region = BorderRegions.X_CENTER + BorderRegions.Y_BORDER_MIN;
+		neighbors = neighborMap.getBorderNeighbors(region);
 		assertContains(neighbors, 5);
+		directions = neighborMap.getBorderNeighborsDirections(region);
+		assertContainsPoint(directions, new Point(0, -1));
 
-		neighbors = neighborMap.getBorderNeighbors(
-				BorderRegions.X_BORDER_MAX + BorderRegions.Y_CENTER);
+		region = BorderRegions.X_BORDER_MAX + BorderRegions.Y_CENTER;
+		neighbors = neighborMap.getBorderNeighbors(region);
 		assertContains(neighbors, 2);
+		directions = neighborMap.getBorderNeighborsDirections(region);
+		assertContainsPoint(directions, new Point(1, 0));
 	}
 
 
@@ -153,77 +187,132 @@ public class NeighborMapTest extends TestCase {
 
 		// Test boundary corner regions
 
-		int neighbor = neighborMap.getBoundaryNeighbor(
-				BoundaryRegions.X_MIN + BoundaryRegions.Y_MIN);
+		int region = BoundaryRegions.X_MIN + BoundaryRegions.Y_MIN;
+		int neighbor = neighborMap.getBoundaryNeighbor(region);
 		assertEquals(NeighborMap.NO_NEIGHBOR, neighbor);
+		Point direction = neighborMap.getBoundaryNeighborsDirections(region);
+		assertNull(direction);
 
-		neighbor = neighborMap.getBoundaryNeighbor(
-				BoundaryRegions.X_MAX + BoundaryRegions.Y_MAX);
+		region = BoundaryRegions.X_MAX + BoundaryRegions.Y_MAX;
+		neighbor = neighborMap.getBoundaryNeighbor(region);
 		assertEquals(3, neighbor);
+		direction = neighborMap.getBoundaryNeighborsDirections(region);
+		assertEquals(new Point(1, 1), direction);
 
-		neighbor = neighborMap.getBoundaryNeighbor(
-				BoundaryRegions.X_MIN + BoundaryRegions.Y_MAX);
+		region = BoundaryRegions.X_MIN + BoundaryRegions.Y_MAX;
+		neighbor = neighborMap.getBoundaryNeighbor(region);
 		assertEquals(1, neighbor);
+		direction = neighborMap.getBoundaryNeighborsDirections(region);
+		assertEquals(new Point(0, 1), direction);
 
 		// Test boundary edge regions
 
-		neighbor = neighborMap.getBoundaryNeighbor(
-				BoundaryRegions.X_MIN + BoundaryRegions.Y_CENTER);
+		region = BoundaryRegions.X_MIN + BoundaryRegions.Y_CENTER;
+		neighbor = neighborMap.getBoundaryNeighbor(region);
 		assertEquals(NeighborMap.NO_NEIGHBOR, neighbor);
+		direction = neighborMap.getBoundaryNeighborsDirections(region);
+		assertNull(direction);
 
-		neighbor = neighborMap.getBoundaryNeighbor(
-				BoundaryRegions.X_MAX + BoundaryRegions.Y_CENTER);
+		region = BoundaryRegions.X_MAX + BoundaryRegions.Y_CENTER;
+		neighbor = neighborMap.getBoundaryNeighbor(region);
 		assertEquals(2, neighbor);
+		direction = neighborMap.getBoundaryNeighborsDirections(region);
+		assertEquals(new Point(1, 0), direction);
 
-		neighbor = neighborMap.getBoundaryNeighbor(
-				BoundaryRegions.X_CENTER + BoundaryRegions.Y_MAX);
+		region = BoundaryRegions.X_CENTER + BoundaryRegions.Y_MAX;
+		neighbor = neighborMap.getBoundaryNeighbor(region);
 		assertEquals(1, neighbor);
+		direction = neighborMap.getBoundaryNeighborsDirections(region);
+		assertEquals(new Point(0, 1), direction);
 
 		// Test border corner regions
 
-		int[] neighbors = neighborMap.getBorderNeighbors(
-				BorderRegions.X_BORDER_MIN + BorderRegions.Y_BORDER_MAX);
-		assertContains(neighbors, 1);
+		region = BorderRegions.X_BORDER_MIN + BorderRegions.Y_BORDER_MAX;
+		int[] neighbors = neighborMap.getBorderNeighbors(region);
+		int on1 = assertContains(neighbors, 1);
 		assertContains(neighbors, NeighborMap.NO_NEIGHBOR);
+		Point[] directions = neighborMap.getBorderNeighborsDirections(region);
+		int od1 = assertContainsPoint(directions, new Point(0, 1));
+		// Test order
+		assertEquals(on1, od1);
 
-		neighbors = neighborMap.getBorderNeighbors(
-				BorderRegions.X_BORDER_MAX + BorderRegions.Y_BORDER_MAX);
-		assertContains(neighbors, 1);
-		assertContains(neighbors, 2);
-		assertContains(neighbors, 3);
+		region = BorderRegions.X_BORDER_MAX + BorderRegions.Y_BORDER_MAX;
+		neighbors = neighborMap.getBorderNeighbors(region);
+		on1 = assertContains(neighbors, 1);
+		int on2 = assertContains(neighbors, 2);
+		int on3 = assertContains(neighbors, 3);
+		directions = neighborMap.getBorderNeighborsDirections(region);
+		od1 = assertContainsPoint(directions, new Point(0, 1));
+		int od2 = assertContainsPoint(directions, new Point(1, 0));
+		int od3 = assertContainsPoint(directions, new Point(1, 1));
+		// Test order
+		assertEquals(on1, od1);
+		assertEquals(on2, od2);
+		assertEquals(on3, od3);
 
 		// Test border outside corner regions
 
-		neighbors = neighborMap.getBorderNeighbors(
-				BorderRegions.X_BORDER_MAX + BorderRegions.Y_BOUNDARY_MIN);
+		region = BorderRegions.X_BORDER_MAX + BorderRegions.Y_BOUNDARY_MIN;
+		neighbors = neighborMap.getBorderNeighbors(region);
 		assertContains(neighbors, 2);
+		directions = neighborMap.getBorderNeighborsDirections(region);
+		assertContainsPoint(directions, new Point(1, 0));
 
-		neighbors = neighborMap.getBorderNeighbors(
-				BorderRegions.X_BOUNDARY_MAX + BorderRegions.Y_BORDER_MIN);
+		region = BorderRegions.X_BOUNDARY_MAX + BorderRegions.Y_BORDER_MIN;
+		neighbors = neighborMap.getBorderNeighbors(region);
 		assertContains(neighbors, NeighborMap.NO_NEIGHBOR);
+		directions = neighborMap.getBorderNeighborsDirections(region);
+		assertEquals(1, directions.length);
+		assertNull(directions[0]);
 
 		// Test border edge regions
 
-		neighbors = neighborMap.getBorderNeighbors(
-				BorderRegions.X_CENTER + BorderRegions.Y_BORDER_MAX);
+		region = BorderRegions.X_CENTER + BorderRegions.Y_BORDER_MAX;
+		neighbors = neighborMap.getBorderNeighbors(region);
 		assertContains(neighbors, 1);
+		directions = neighborMap.getBorderNeighborsDirections(region);
+		assertContainsPoint(directions, new Point(0, 1));
 
-		neighbors = neighborMap.getBorderNeighbors(
-				BorderRegions.X_BORDER_MAX + BorderRegions.Y_CENTER);
+		region = BorderRegions.X_BORDER_MAX + BorderRegions.Y_CENTER;
+		neighbors = neighborMap.getBorderNeighbors(region);
 		assertContains(neighbors, 2);
+		directions = neighborMap.getBorderNeighborsDirections(region);
+		assertContainsPoint(directions, new Point(1, 0));
 	}
 
 
-	private void assertContains(int[] neighbors, int n) {
-		boolean ok = false;
-		for (int neighbor: neighbors) {
-			if (neighbor == n) {
-				ok = true;
+	/**
+	 * Tests whether the expected neighbor is in the list.
+	 * Returns the order of the expected neighbor.
+	 */
+	private int assertContains(int[] neighbors, int expected) {
+		for (int i = 0; i < neighbors.length; ++i) {
+			if (neighbors[i] == expected) {
+				return i;
 			}
 		}
-		if (!ok) {
-			fail("Missing neighbor: " + n + "!");
+
+		fail("Missing neighbor: " + expected + "!");
+		return -1;
+	}
+
+
+	/**
+	 * Tests whether the expected point is in the list.
+	 * Returns the order of the expected point.
+	 */
+	private int assertContainsPoint(Point[] directions, Point expected) {
+		for (int i = 0; i < directions.length; ++i) {
+			if (directions[i] == null) {
+				continue;
+			}
+			if (directions[i].equals(expected)) {
+				return i;
+			}
 		}
+
+		fail("Missing direction: " + expected + "!");
+		return -1;
 	}
 
 
@@ -232,6 +321,10 @@ public class NeighborMapTest extends TestCase {
 		// Boundary regions test
 
 		for (int region = 0; region < BoundaryRegions.NUM_OF_REGIONS; ++region) {
+			if (region == BoundaryRegions.X_CENTER + BoundaryRegions.Y_CENTER) {
+				continue;
+			}
+
 			int neighbor = neighborMap.getBoundaryNeighbor(region);
 
 			String identification = identificationString(
