@@ -56,7 +56,7 @@ public class Worker implements Runnable {
 					particleBoundaries, interpolation);
 
 			for (int i = 0; i < localSettings.getIterations(); ++i) {
-				simulation.step();
+//				simulation.step();
 			}
 
 			Cell[][] finalCells = getFinalCells(simulation.grid);

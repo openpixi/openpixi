@@ -7,6 +7,7 @@ import org.openpixi.pixi.physics.Particle;
 import org.openpixi.pixi.physics.grid.Cell;
 import org.openpixi.pixi.physics.movement.boundary.ParticleBoundaries;
 import org.openpixi.pixi.physics.util.IntBox;
+import org.openpixi.pixi.physics.util.Point;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -35,6 +36,8 @@ public class SharedDataManager {
 	        IntBox globalSimArea,
 	        GeneralBoundaryType boundaryType,
 	        IbisRegistry registry) {
+
+		this.registry = registry;
 		this.neighborMap = new NeighborMap(thisWorkerID, partitions, globalSimArea, boundaryType);
 	}
 
@@ -82,12 +85,29 @@ public class SharedDataManager {
 	}
 
 
+	public Point getBoundaryDirections(int boundaryRegion) {
+		return neighborMap.getBoundaryNeighborsDirections(boundaryRegion);
+	}
+
+
 	public List<SharedData> getBorderSharedData(int borderRegion) {
 		List<SharedData> retval = new ArrayList<SharedData>();
 		int[] neighbors = neighborMap.getBorderNeighbors(borderRegion);
 		for (int neighbor: neighbors) {
 			if (neighbor != NeighborMap.NO_NEIGHBOR) {
 				retval.add(getSharedData(neighbor));
+			}
+		}
+		return retval;
+	}
+
+
+	public List<Point> getBorderDirections(int borderRegion) {
+		List<Point> retval = new ArrayList<Point>();
+		Point[] directions = neighborMap.getBorderNeighborsDirections(borderRegion);
+		for (Point direction: directions) {
+			if (direction != null) {
+				retval.add(direction);
 			}
 		}
 		return retval;
