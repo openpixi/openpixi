@@ -10,6 +10,7 @@ import org.openpixi.pixi.physics.Settings;
 import org.openpixi.pixi.physics.grid.Cell;
 import org.openpixi.pixi.physics.grid.Grid;
 import org.openpixi.pixi.physics.grid.SimpleInterpolationIterator;
+import org.openpixi.pixi.physics.util.ClassCopier;
 import org.openpixi.pixi.physics.util.IntBox;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -82,8 +83,9 @@ public class Master {
 		logger.debug("problem partitioning:\n{}", partitioner);
 
 		// Partition the data
+		List<Particle> initialParticlesCopy = copyInitialParticles();
 		List<List<Particle>> particlePartitions = partitionParticles(
-				partitions, initialParticles);
+				partitions, initialParticlesCopy);
 		Cell[][][] gridPartitions = partitionGrid(partitions, initialGrid);
 
 		// Send to each worker
@@ -92,6 +94,15 @@ public class Master {
 					workerID, partitions,
 					particlePartitions.get(workerID), gridPartitions[workerID]);
 		}
+	}
+
+
+	private List<Particle> copyInitialParticles() {
+		List<Particle> copy = new ArrayList<Particle>();
+		for (Particle p: initialParticles) {
+			copy.add(ClassCopier.copy(p));
+		}
+		return copy;
 	}
 
 
@@ -164,10 +175,10 @@ public class Master {
 			assert partitionIndex != -1;
 
 			// Translate particle's position
-			double partitionWidth = settings.getCellWidth() * partitions[partitionIndex].xsize();
-			double partitionHeight = settings.getCellHeight() * partitions[partitionIndex].ysize();
-			p.setX(p.getX() % partitionWidth);
-			p.setY(p.getY() % partitionHeight);
+			double xmin = partitions[partitionIndex].xmin() * settings.getCellWidth();
+			double ymin = partitions[partitionIndex].ymin() * settings.getCellHeight();
+			p.setX(p.getX() - xmin);
+			p.setY(p.getY() - ymin);
 
 			particlePartitions.get(partitionIndex).add(p);
 		}
@@ -188,6 +199,7 @@ public class Master {
 	private List<Particle> assembleParticles(List<List<Particle>> particlePartitions) {
 		List<Particle> assembledParticles = new ArrayList<Particle>();
 		for (int i = 0; i < particlePartitions.size(); ++i) {
+
 			double xmin = partitions[i].xmin() * settings.getCellWidth();
 			double ymin = partitions[i].ymin() * settings.getCellHeight();
 
