@@ -90,6 +90,18 @@ public class BoundaryRegions {
 	}
 
 
+	/**
+	 * Returns sign of the region.
+	 * E.g.:
+	 *   X_MIN + Y_MIN = (-1, -1)
+	 *   X_CENTER + Y_MAX = (0, 1)
+	 */
+	public static Point getSign(int regionID) {
+		Point region = decomposeRegionID(regionID);
+		return new Point(region.x - 1, region.y / 3 - 1);
+	}
+
+
 	private static int findX(int y, int regionID) {
 		int potentialX = regionID - y;
 		assert X_MIN <= potentialX && potentialX <= X_MAX;
