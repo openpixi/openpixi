@@ -50,6 +50,10 @@ public class DistributedParticleBoundaries implements ParticleBoundaries {
 		boundaryRegions = new BoundaryRegions(simulationArea);
 		borderRegions = new BorderRegions(simulationArea, innerArea);
 
+		for (int i = 0; i < BorderRegions.NUM_OF_REGIONS; ++i) {
+			borderMap.add(new ArrayList<BorderGate>());
+		}
+
 		createBoundaryMap(boundaryType, sharedDataManager);
 		createBorderMap(sharedDataManager);
 	}
@@ -60,16 +64,18 @@ public class DistributedParticleBoundaries implements ParticleBoundaries {
 
 		for (int region = 0; region < BoundaryRegions.NUM_OF_REGIONS; ++region) {
 			SharedData sd = sharedDataManager.getBoundarySharedData(region);
-			double xoffset = getXOffset(sharedDataManager.getBoundaryDirections(region));
-			double yoffset = getYOffset(sharedDataManager.getBoundaryDirections(region));
 
 			if (sd != null) {
+				double xoffset = getXOffset(sharedDataManager.getBoundaryDirections(region));
+				double yoffset = getYOffset(sharedDataManager.getBoundaryDirections(region));
 				boundaryMap[region] = new BoundaryGate(xoffset, yoffset, sd);
 			}
 			else if (region == BoundaryRegions.X_CENTER + BoundaryRegions.Y_CENTER) {
-				boundaryMap[region] = new EmptyBoundary(xoffset, yoffset);
+				boundaryMap[region] = new EmptyBoundary(0, 0);
 			}
 			else {
+				double xoffset = getXOffsetFromRegion(region);
+				double yoffset = getYOffsetFromRegion(region);
 				boundaryMap[region] = boundaryType.createBoundary(xoffset, yoffset);
 			}
 
@@ -83,14 +89,13 @@ public class DistributedParticleBoundaries implements ParticleBoundaries {
 			List<Point> directions = sharedDataManager.getBorderDirections(region);
 			assert sharedDatas.size() == directions.size();
 
-			List<BorderGate> borderGates = new ArrayList<BorderGate>();
 			for (int i = 0; i < sharedDatas.size(); ++i) {
 				double xoffset = getXOffset(directions.get(i));
 				double yoffset = getYOffset(directions.get(i));
 
-				borderGates.add(new BorderGate(xoffset, yoffset, sharedDatas.get(i)));
+				borderMap.get(region).add(new BorderGate(xoffset, yoffset, sharedDatas.get(i)));
 			}
-			borderMap.set(region, borderGates);
+
 		}
 	}
 
@@ -102,6 +107,16 @@ public class DistributedParticleBoundaries implements ParticleBoundaries {
 
 	private double getXOffset(Point direction) {
 		return direction.x * simulationArea.xsize();
+	}
+
+
+	private double getYOffsetFromRegion(int region) {
+		return BoundaryRegions.getSign(region).y * simulationArea.ysize();
+	}
+
+
+	private double getXOffsetFromRegion(int region) {
+		return BoundaryRegions.getSign(region).x * simulationArea.xsize();
 	}
 
 

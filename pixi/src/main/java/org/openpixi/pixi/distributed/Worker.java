@@ -56,7 +56,7 @@ public class Worker implements Runnable {
 					particleBoundaries, interpolation);
 
 			for (int i = 0; i < localSettings.getIterations(); ++i) {
-//				simulation.step();
+				simulation.step();
 			}
 
 			Cell[][] finalCells = getFinalCells(simulation.grid);
@@ -99,10 +99,10 @@ public class Worker implements Runnable {
 			yend += Grid.EXTRA_CELLS_AFTER_GRID;
 		}
 
-		Cell[][] finalCells = new Cell[xend][yend];
+		Cell[][] finalCells = new Cell[xend - xstart + 1][yend - xstart + 1];
 		for (int x = xstart; x <= xend ; ++x) {
 			for (int y = ystart; y <= yend; ++y) {
-				finalCells[x][y] = grid.getCell(x,y);
+				finalCells[x - xstart][y - ystart] = grid.getCell(x,y);
 			}
 		}
 		return  finalCells;
@@ -145,7 +145,7 @@ public class Worker implements Runnable {
 
 	private SharedDataManager createSharedDataManager() {
 		IntBox simulationAreaInCellDimensions = new IntBox(
-				0, localSettings.getGridCellsX() - 1, 0, localSettings.getGridCellsY() - 1);
+				0, globalSettings.getGridCellsX() - 1, 0, globalSettings.getGridCellsY() - 1);
 		return new SharedDataManager(
 				workerID,
 				communicator.getPartitions(),

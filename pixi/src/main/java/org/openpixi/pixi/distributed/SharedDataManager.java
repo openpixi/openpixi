@@ -105,9 +105,11 @@ public class SharedDataManager {
 	public List<Point> getBorderDirections(int borderRegion) {
 		List<Point> retval = new ArrayList<Point>();
 		Point[] directions = neighborMap.getBorderNeighborsDirections(borderRegion);
-		for (Point direction: directions) {
-			if (direction != null) {
-				retval.add(direction);
+		if (directions != null) {
+			for (Point direction: directions) {
+				if (direction != null) {
+					retval.add(direction);
+				}
 			}
 		}
 		return retval;

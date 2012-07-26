@@ -49,15 +49,22 @@ public class WorkerToWorker {
 	public WorkerToWorker(IbisRegistry registry, int neighborID) {
 		this.registry = registry;
 		this.neighborID = neighborID;
+		int myID = registry.convertIbisIDToWorkerID(registry.getIbis().identifier());
 
+		// One ibis instance can not have 2 receive ports with the same ID; thus,
+		// we need to number the receive ports according to the neighbors they are connected to.
 		try {
 			recvPort = registry.getIbis().createReceivePort(
-					PixiPorts.ONE_TO_ONE_PORT, PixiPorts.EXCHANGE_PORT_ID, new IncomingMessageHandler());
+					PixiPorts.ONE_TO_ONE_PORT,
+					PixiPorts.EXCHANGE_PORT_ID + neighborID,
+					new IncomingMessageHandler());
 			recvPort.enableConnections();
 			recvPort.enableMessageUpcalls();
 
 			sendPort = registry.getIbis().createSendPort(PixiPorts.ONE_TO_ONE_PORT);
-			sendPort.connect(registry.convertWorkerIDToIbisID(neighborID), PixiPorts.EXCHANGE_PORT_ID);
+			sendPort.connect(
+					registry.convertWorkerIDToIbisID(neighborID),
+					PixiPorts.EXCHANGE_PORT_ID + myID);
 		}
 		catch (Exception e) {
 			e.printStackTrace();
