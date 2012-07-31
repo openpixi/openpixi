@@ -100,6 +100,14 @@ public class DistributedParticleBoundaries implements ParticleBoundaries {
 	}
 
 
+	/*
+	 * The x and y offsets are necessary for
+	 * correct particle position translation (in case of distributed boundary)
+	 * or for correct particle reflection (in case of non-distributed boundary)
+	 * The offsets depend on the direction of the neighbor (in case of distributed boundary)
+	 * or on the region (in case of non-distributed boundary).
+	 */
+
 	private double getYOffset(Point direction) {
 		return direction.y * simulationArea.ysize();
 	}
@@ -108,7 +116,6 @@ public class DistributedParticleBoundaries implements ParticleBoundaries {
 	private double getXOffset(Point direction) {
 		return direction.x * simulationArea.xsize();
 	}
-
 
 	private double getYOffsetFromRegion(int region) {
 		return BoundaryRegions.getSign(region).y * simulationArea.ysize();

@@ -14,8 +14,20 @@ import org.openpixi.pixi.physics.util.Point;
  * These neighbors are the same at the edges but different at the corners.
  *
  * Finds also the direction of the neighbors.
- * The direction of the neighbor is necessary later on when we want to translate the particles
- * we are sending.
+ * The neighbor directions are necessary for
+ * correct particle position translation when sending the particle to neighbor
+ * and for correct mapping of border cells at one node to ghost cells at other node.
+ *
+ * While the periodic regions have the directions of their neighbors predefined in the fields
+ * boundaryNeighborsDirections and borderNeighborsDirections, for the hardwall regions it is
+ * easier to determine the direction based on the region neighbor.
+ *
+ * For the hardwall regions we can not have the directions predefined as the directions at the
+ * corner depend on the layout.
+ *
+ * On the other hand, we can not find the neighbor direction through the neighbor in periodic
+ * boundaries. For example, at the top edge of the global simulation area we want the neighbor
+ * direction to point upward and not downward!
  *
  * How do we find the neighbors?
  * =============================
@@ -481,18 +493,6 @@ public class NeighborMap {
 	}
 
 
-	/**
-	 * While the periodic regions have the directions of their neighbors predefined in the fields
-	 * boundaryNeighborsDirections and borderNeighborsDirections, for the hardwall regions it is
-	 * easier to determine the direction based on the region neighbor.
-	 *
-	 * For the hardwall regions we can not have the directions predefined as the directions at the
-	 * corner depend on the layout.
-	 *
-	 * On the other hand, we can not find the neighbor direction through the neighbor in periodic
-	 * boundaries. For example, at the top edge of the global simulation area we want the neighbor
-	 * direction to point upward and not downward!
-	 */
 	private Point getNeighborDirection(int neighbor) {
 		if (neighbor == NO_NEIGHBOR) {
 			return null;
