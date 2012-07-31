@@ -172,9 +172,10 @@ public class Settings {
 			return particles;
 		}
 		else {
-			return InitialConditions.createRandomParticles(
+			this.particles = InitialConditions.createRandomParticles(
 					simulationWidth,  simulationHeight,
 					particleMaxSpeed, numOfParticles, particleRadius);
+			return this.particles;
 		}
 	}
 
