@@ -20,6 +20,11 @@ public class BoundaryGate extends ParticleBoundary {
 
 	@Override
 	public void apply(Particle p) {
+		// Translate the position of the particle to match the position at the remote node.
+		p.addX(-xoffset);
+		p.addPrevX(-xoffset);
+		p.addY(-yoffset);
+		p.addPrevY(-yoffset);
 		sharedData.registerLeavingParticle(p);
 	}
 }

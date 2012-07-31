@@ -21,6 +21,17 @@ public class BorderGate extends ParticleBoundary {
 
 	@Override
 	public void apply(Particle p) {
-		sharedData.registerBorderParticle(p);
+
+		// We need to translate the position of the particle to the coordinates
+		// valid at the neighbor.
+		// However, we want the particle to keep its position at the local node.
+		// Thus, we need a copy of the particle.
+
+		Particle copy = new Particle(p);
+		copy.addX(-xoffset);
+		copy.addPrevX(-xoffset);
+		copy.addY(-yoffset);
+		copy.addPrevY(-yoffset);
+		sharedData.registerBorderParticle(copy);
 	}
 }
