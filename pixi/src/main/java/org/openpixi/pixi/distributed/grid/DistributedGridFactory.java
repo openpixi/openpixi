@@ -85,8 +85,7 @@ public class DistributedGridFactory {
 				assert sharedDatas.size() == directions.size();
 
 				for (int i = 0; i < sharedDatas.size(); ++i) {
-					Point remoteGhostCellIndex = getRemoteGhostCellIndex(
-							realIndex(x), realIndex(y), directions.get(i));
+					Point remoteGhostCellIndex = getRemoteGhostCellIndex(x, y, directions.get(i));
 
 					sharedDatas.get(i).registerBorderCell(
 							myCells[realIndex(x)][realIndex(y)],
