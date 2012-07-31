@@ -144,14 +144,17 @@ public class WorkerToWorker {
 				case ARRIVING_PARTICLES_MSG:
 					List<Particle> particles = (List<Particle>)readMessage.readObject();
 					arrivingParticlesHandler.handle(particles);
+					return;
 
 				case GHOST_PARTICLES_MSG:
 					particles = (List<Particle>)readMessage.readObject();
 					ghostParticlesHandler.handle(particles);
+					return;
 
 				case GHOST_CELLS_MSG:
 					List<Cell> cells = (List<Cell>)readMessage.readObject();
 					ghostCellsHandler.handle(cells);
+					return;
 
 				default:
 					assert false: "Unreachable code detected!";
