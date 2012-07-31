@@ -87,8 +87,8 @@ public class DistributedGridFactory {
 				double simY = y * settings.getCellHeight() + settings.getCellHeight() / 2;
 
 				int boundaryRegion = boundaries.getRegion(simX, simY);
-				int borderRegion = borders.getRegion(simX, simY)
-						;
+				int borderRegion = borders.getRegion(simX, simY);
+
 				sharedDataMan.registerBoundaryCell(boundaryRegion, myCells[realIndex(x)][realIndex(y)]);
 				sharedDataMan.registerBorderCell(borderRegion, myCells[realIndex(x)][realIndex(y)]);
 			}
