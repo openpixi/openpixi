@@ -81,7 +81,7 @@ public class BorderRegions {
 			yidx = Y_BOUNDARY_MIN;
 		} else if (y < innerArea.ymin()) {
 			yidx = Y_BORDER_MIN;
-		} else if (y < innerArea.xmax()) {
+		} else if (y < innerArea.ymax()) {
 			yidx = Y_CENTER;
 		} else if (y < simulationArea.ymax()) {
 			yidx = Y_BORDER_MAX;
