@@ -281,6 +281,18 @@ public class Particle implements Serializable {
 		ay = p.ay;
 		mass = p.mass;
 		charge = p.charge;
+		prevX = p.prevX;
+		prevY = p.prevY;
+		chargedensity = p.chargedensity;
+		Ex = p.Ex;
+		Ey = p.Ey;
+		Bz = p.Bz;
+		prevpositionComponentForceX = p.prevpositionComponentForceX;
+		prevpositionComponentForceY = p.prevpositionComponentForceY;
+		prevtangentVelocityComponentOfForceX = p.prevtangentVelocityComponentOfForceX;
+		prevtangentVelocityComponentOfForceY = p.prevtangentVelocityComponentOfForceY;
+		prevBz = p.prevBz;
+		prevLinearDragCoefficient = p.prevLinearDragCoefficient;
 	}
 
 
