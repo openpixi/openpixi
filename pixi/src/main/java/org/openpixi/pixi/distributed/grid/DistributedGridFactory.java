@@ -16,15 +16,10 @@ public class DistributedGridFactory {
 
 	private Settings settings;
 	private Cell[][] cellsFromMaster;
-
 	/** Partition of this worker in global coordinates. */
 	private IntBox myPartGlobal;
-	/** Partition of this worker in local coordinates. */
-	private IntBox myPartLocal;
-	/** Box specifying the indices of the cells coming from master. */
-	private IntBox boxFromMaster;
-
 	private SharedDataManager sharedDataMan;
+
 
 	public DistributedGridFactory(
 			Settings settings,
@@ -35,9 +30,6 @@ public class DistributedGridFactory {
 		this.myPartGlobal = myPartGlobal;
 		this.cellsFromMaster = cellsFromMaster;
 		this.sharedDataMan = sharedDataMan;
-
-		this.boxFromMaster = new IntBox(0, cellsFromMaster.length - 1, 0, cellsFromMaster[0].length - 1);
-		this.myPartLocal = new IntBox(0, myPartGlobal.xsize() - 1, 0, myPartGlobal.ysize() - 1);
 	}
 
 
@@ -46,9 +38,11 @@ public class DistributedGridFactory {
 		Cell[][] myCells = setUpCellValues();
 		setUpCellBoundaries(myCells);
 
-		double localSimAreaWidth = myPartGlobal.xsize() * settings.getCellWidth();
-		double localSimAreaHeight = myPartGlobal.ysize() * settings.getCellHeight();
-		return new Grid(localSimAreaWidth, localSimAreaHeight, myCells, settings.getGridSolver());
+		return new Grid(
+				settings.getSimulationWidth(),
+				settings.getSimulationHeight(),
+				myCells,
+				settings.getGridSolver());
 	}
 
 
@@ -96,10 +90,6 @@ public class DistributedGridFactory {
 	}
 
 
-	/**
-	 * Most of the cells are coming from master.
-	 * However, the shared cells have to be created.
-	 */
 	private Cell[][] setUpCellValues() {
 		int xcells = myPartGlobal.xsize() + Grid.EXTRA_CELLS_BEFORE_GRID + Grid.EXTRA_CELLS_AFTER_GRID;
 		int ycells = myPartGlobal.ysize() + Grid.EXTRA_CELLS_BEFORE_GRID + Grid.EXTRA_CELLS_AFTER_GRID;
@@ -112,27 +102,10 @@ public class DistributedGridFactory {
 
 		for (int x = xmin; x <= xmax; x++) {
 			for (int y = ymin; y <= ymax; y++) {
-				if (myPartLocal.contains(x, y)) {
-					myCells[realIndex(x)][realIndex(y)] = cellsFromMaster[masterIndexX(x)][masterIndexY(y)];
-				} else {
-					myCells[realIndex(x)][realIndex(y)] = setOutsideCell(x, y);
-				}
+				myCells[realIndex(x)][realIndex(y)] = cellsFromMaster[realIndex(x)][realIndex(y)];
 			}
 		}
 		return myCells;
-	}
-
-
-	/**
-	 * If the master sent the outside cell, use the one from master.
-	 * If it did not sent the cell, create a new one.
-	 */
-	private Cell setOutsideCell(int x, int y) {
-		if (boxFromMaster.contains(masterIndexX(x),masterIndexY(y))) {
-			return cellsFromMaster[masterIndexX(x)][masterIndexY(y)];
-		} else {
-			return new Cell();
-		}
 	}
 
 
@@ -144,34 +117,4 @@ public class DistributedGridFactory {
 	private int realIndex(int userIndex) {
 		return userIndex + Grid.EXTRA_CELLS_BEFORE_GRID;
 	}
-
-
-	/**
-	 * Converts grid indexing.
-	 * From user index (-1,0,..) to the index for cells coming from master.
-	 * Only left partitions are distributed with the extra cells before grid.
-	 */
-	private int masterIndexX(int x) {
-		if (myPartGlobal.xmin() == 0) {
-			return x + Grid.EXTRA_CELLS_BEFORE_GRID;
-		}
-		else {
-			return x;
-		}
-	}
-
-
-	/**
-	 * Only top partitions are distributed with the extra cells before grid.
-	 */
-	private int masterIndexY(int y) {
-		if (myPartGlobal.ymin() == 0) {
-			return y + Grid.EXTRA_CELLS_BEFORE_GRID;
-		}
-		else {
-			return y;
-		}
-	}
-
-
 }

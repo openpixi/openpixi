@@ -119,28 +119,19 @@ public class Master {
 
 
 	/**
-	 * At the borders returns also the extra cells!
+	 * At the global simulation edges we also the extra cells!
 	 * Since there is some initialization done on the grid
 	 * (density charge interpolation + poisson solver)
 	 * we need to distribute also the extra cells.
+	 *
+	 * At the inner partitions of global simulation we still need the ghost cells
+	 * for correct field solving.
 	 */
 	private Cell[][] getSubgrid(IntBox partition, Grid grid) {
-		int startX = partition.xmin();
-		int endX = partition.xmax();
-		int startY = partition.ymin();
-		int endY = partition.ymax();
-		if (startX == 0) {
-			startX -= Grid.EXTRA_CELLS_BEFORE_GRID;
-		}
-		if (endX == settings.getGridCellsX() - 1) {
-			endX += Grid.EXTRA_CELLS_AFTER_GRID;
-		}
-		if (startY == 0) {
-			startY -= Grid.EXTRA_CELLS_BEFORE_GRID;
-		}
-		if (endY == settings.getGridCellsY() - 1) {
-			endY += Grid.EXTRA_CELLS_AFTER_GRID;
-		}
+		int startX = partition.xmin() - Grid.EXTRA_CELLS_BEFORE_GRID;
+		int endX = partition.xmax() + Grid.EXTRA_CELLS_AFTER_GRID;
+		int startY = partition.ymin() - Grid.EXTRA_CELLS_BEFORE_GRID;
+		int endY = partition.ymax() + Grid.EXTRA_CELLS_AFTER_GRID;
 
 		Cell[][] subGrid = new Cell[endX - startX + 1][endY - startY + 1];
 		for (int x = startX; x <= endX ; x++) {
