@@ -3,8 +3,10 @@ package org.openpixi.pixi.distributed.ibis;
 import ibis.ipl.*;
 import org.openpixi.pixi.distributed.IncomingCellsHandler;
 import org.openpixi.pixi.distributed.IncomingParticlesHandler;
+import org.openpixi.pixi.distributed.IncomingPointsHandler;
 import org.openpixi.pixi.physics.Particle;
 import org.openpixi.pixi.physics.grid.Cell;
+import org.openpixi.pixi.physics.util.Point;
 
 import java.io.IOException;
 import java.util.List;
@@ -18,6 +20,7 @@ public class WorkerToWorker {
 	private static final int ARRIVING_PARTICLES_MSG = 0;
 	private static final int GHOST_PARTICLES_MSG = 1;
 	private static final int GHOST_CELLS_MSG = 2;
+	private static final int GHOST_CELLS_INDEXES_MSG = 3;
 
 	private IbisRegistry registry;
 
@@ -28,6 +31,7 @@ public class WorkerToWorker {
 	private int neighborID;
 
 	/* Handlers of upcalls for higher level classes. */
+	private IncomingPointsHandler ghostCellsIndexesHandler;
 	private IncomingCellsHandler ghostCellsHandler;
 	private IncomingParticlesHandler ghostParticlesHandler;
 	private IncomingParticlesHandler arrivingParticlesHandler;
@@ -45,6 +49,10 @@ public class WorkerToWorker {
 		this.arrivingParticlesHandler = arrivingParticlesHandler;
 	}
 
+	public void setGhostCellsIndexesHandler(IncomingPointsHandler ghostCellsIndexesHandler) {
+		this.ghostCellsIndexesHandler = ghostCellsIndexesHandler;
+	}
+
 
 	public WorkerToWorker(IbisRegistry registry, int neighborID) {
 		this.registry = registry;
@@ -59,8 +67,6 @@ public class WorkerToWorker {
 					new IncomingMessageHandler());
 			recvPort.enableConnections();
 			recvPort.enableMessageUpcalls();
-
-
 		}
 		catch (Exception e) {
 			e.printStackTrace();
@@ -136,10 +142,28 @@ public class WorkerToWorker {
 	}
 
 
+	public void sendBorderCellsMap(List<Point> borderCellsMap) {
+		try {
+			WriteMessage wm = sendPort.newMessage();
+			wm.writeInt(GHOST_CELLS_INDEXES_MSG);
+			wm.writeObject(borderCellsMap);
+			wm.finish();
+		} catch (IOException e) {
+			e.printStackTrace();
+			throw new RuntimeException(e);
+		}
+	}
+
+
 	private class IncomingMessageHandler implements MessageUpcall {
 		public void upcall(ReadMessage readMessage) throws IOException, ClassNotFoundException {
 			int msgType = readMessage.readInt();
 			switch (msgType) {
+
+				case GHOST_CELLS_INDEXES_MSG:
+					List<Point> indexes = (List<Point>)readMessage.readObject();
+					ghostCellsIndexesHandler.handle(indexes);
+					return;
 
 				case ARRIVING_PARTICLES_MSG:
 					List<Particle> particles = (List<Particle>)readMessage.readObject();

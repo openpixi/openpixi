@@ -95,7 +95,6 @@ public class DistributedParticleBoundaries implements ParticleBoundaries {
 
 				borderMap.get(region).add(new BorderGate(xoffset, yoffset, sharedDatas.get(i)));
 			}
-
 		}
 	}
 

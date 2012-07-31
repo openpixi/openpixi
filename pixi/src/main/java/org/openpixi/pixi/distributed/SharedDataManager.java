@@ -4,7 +4,7 @@ import org.openpixi.pixi.distributed.ibis.IbisRegistry;
 import org.openpixi.pixi.distributed.ibis.WorkerToWorker;
 import org.openpixi.pixi.physics.GeneralBoundaryType;
 import org.openpixi.pixi.physics.Particle;
-import org.openpixi.pixi.physics.grid.Cell;
+import org.openpixi.pixi.physics.grid.Grid;
 import org.openpixi.pixi.physics.movement.boundary.ParticleBoundaries;
 import org.openpixi.pixi.physics.util.IntBox;
 import org.openpixi.pixi.physics.util.Point;
@@ -29,6 +29,7 @@ public class SharedDataManager {
 	private Map<Integer, SharedData> sharedData = new HashMap<Integer, SharedData>();
 
 	private IbisRegistry registry;
+	private int thisWorkerID;
 
 	public SharedDataManager(
 			int thisWorkerID,
@@ -37,6 +38,7 @@ public class SharedDataManager {
 	        GeneralBoundaryType boundaryType,
 	        IbisRegistry registry) {
 
+		this.thisWorkerID = thisWorkerID;
 		this.registry = registry;
 		this.neighborMap = new NeighborMap(thisWorkerID, partitions, globalSimArea, boundaryType);
 	}
@@ -45,40 +47,6 @@ public class SharedDataManager {
 	//----------------------------------------------------------------------------------------------
 	// Methods required for initialization of distributed simulation
 	//----------------------------------------------------------------------------------------------
-
-
-	public void initializeConnections() {
-		for (SharedData sd: sharedData.values()) {
-			sd.initializeConnection();
-		}
-	}
-
-
-	/**
-	 * Registers the given cell in a given region as a boundary cell.
-	 * The cell is only registered if the neighbor for the given region exists.
-	 * In another words, we have to have a neighbor to whom to send the cell.
-	 */
-	public void registerBoundaryCell(int boundaryRegion, Cell cell) {
-		int neighbor = neighborMap.getBoundaryNeighbor(boundaryRegion);
-		if (neighbor != NeighborMap.NO_NEIGHBOR) {
-			getSharedData(neighbor).registerGhostCell(cell);
-		}
-	}
-
-
-	/**
-	 * Registers the given cell in a given region as a border cell.
-	 * The cell is only registered if the neighbor for the given region exists.
-	 */
-	public void registerBorderCell(int borderRegion, Cell cell) {
-		int[] neighbors = neighborMap.getBorderNeighbors(borderRegion);
-		for (int neighbor: neighbors) {
-			if (neighbor != NeighborMap.NO_NEIGHBOR) {
-				getSharedData(neighbor).registerBorderCell(cell);
-			}
-		}
-	}
 
 
 	public SharedData getBoundarySharedData(int boundaryRegion) {
@@ -128,7 +96,9 @@ public class SharedDataManager {
 	 */
 	private SharedData getSharedData(int neighbor) {
 		if (!sharedData.containsKey(neighbor)) {
-			sharedData.put(neighbor, new SharedData(new WorkerToWorker(registry, neighbor)));
+			sharedData.put(
+					neighbor,
+					new SharedData(thisWorkerID, neighbor, new WorkerToWorker(registry, neighbor)));
 		}
 		return sharedData.get(neighbor);
 	}
@@ -137,6 +107,20 @@ public class SharedDataManager {
 	public void setParticleBoundaries(ParticleBoundaries particleBoundaries) {
 		for (SharedData sd: sharedData.values()) {
 			sd.setParticleBoundaries(particleBoundaries);
+		}
+	}
+
+
+	public void setGrid(Grid grid) {
+		for (SharedData sd: sharedData.values()) {
+			sd.setGrid(grid);
+		}
+	}
+
+
+	public void initializeCommunication() {
+		for (SharedData sd: sharedData.values()) {
+			sd.initializeCommunication();
 		}
 	}
 

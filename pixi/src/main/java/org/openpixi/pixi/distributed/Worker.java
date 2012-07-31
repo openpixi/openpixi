@@ -50,8 +50,9 @@ public class Worker implements Runnable {
 
 			Grid grid = createGrid(sharedDataManager);
 			InterpolationIterator interpolation = createInterpolationIterator(sharedDataManager);
+			sharedDataManager.setGrid(grid);
 
-			sharedDataManager.initializeConnections();
+			sharedDataManager.initializeCommunication();
 
 			Simulation simulation = new Simulation(
 					localSettings, grid, communicator.getParticles(),

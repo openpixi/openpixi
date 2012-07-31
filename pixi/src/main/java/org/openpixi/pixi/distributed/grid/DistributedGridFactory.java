@@ -1,13 +1,16 @@
 package org.openpixi.pixi.distributed.grid;
 
+import org.openpixi.pixi.distributed.SharedData;
 import org.openpixi.pixi.distributed.SharedDataManager;
 import org.openpixi.pixi.distributed.movement.boundary.BorderRegions;
 import org.openpixi.pixi.physics.Settings;
 import org.openpixi.pixi.physics.grid.Cell;
 import org.openpixi.pixi.physics.grid.Grid;
-import org.openpixi.pixi.physics.movement.boundary.BoundaryRegions;
 import org.openpixi.pixi.physics.util.DoubleBox;
 import org.openpixi.pixi.physics.util.IntBox;
+import org.openpixi.pixi.physics.util.Point;
+
+import java.util.List;
 
 /**
  * Creates grid with boundaries to neighboring nodes.
@@ -18,25 +21,25 @@ public class DistributedGridFactory {
 	private Cell[][] cellsFromMaster;
 	/** Partition of this worker in global coordinates. */
 	private IntBox myPartGlobal;
-	private SharedDataManager sharedDataMan;
+	private SharedDataManager sharedDataManager;
 
 
 	public DistributedGridFactory(
 			Settings settings,
 			IntBox myPartGlobal,
 			Cell[][] cellsFromMaster,
-			SharedDataManager sharedDataMan) {
+			SharedDataManager sharedDataManager) {
 		this.settings = settings;
 		this.myPartGlobal = myPartGlobal;
 		this.cellsFromMaster = cellsFromMaster;
-		this.sharedDataMan = sharedDataMan;
+		this.sharedDataManager = sharedDataManager;
 	}
 
 
 	public Grid create() {
 
 		Cell[][] myCells = setUpCellValues();
-		setUpCellBoundaries(myCells);
+		setUpBorderCells(myCells);
 
 		return new Grid(
 				settings.getSimulationWidth(),
@@ -47,15 +50,11 @@ public class DistributedGridFactory {
 
 
 	/**
-	 * We first determine the region of the cell
-	 * and then register the cell as either a boundary or border cell.
-	 *
-	 * Note that the order in which the boundary and border cells are added matters!
-	 * Each boundary cell has a corresponding border cell on the other node.
-	 * The boundary cells and their corresponding border cells on other node should
-	 * have the same order!
+	 * Determines the border cells and the indices of the corresponding ghost cells at remote nodes.
+	 * Since the corresponding border and ghost cells must have the same order,
+	 * the ghost cells are registered once the ghost cell indices (border cells map) is exchanged.
 	 */
-	private void setUpCellBoundaries(Cell[][] myCells) {
+	private void setUpBorderCells(Cell[][] myCells) {
 		DoubleBox simAreaDouble = new DoubleBox(
 				0,
 				settings.getSimulationWidth(),
@@ -67,7 +66,6 @@ public class DistributedGridFactory {
 				settings.getCellHeight(),
 				settings.getSimulationHeight() - settings.getCellHeight());
 
-		BoundaryRegions boundaries = new BoundaryRegions(simAreaDouble);
 		BorderRegions borders = new BorderRegions(simAreaDouble, innerSimAreaDouble);
 
 		int xmin = -Grid.INTERPOLATION_RADIUS;
@@ -80,13 +78,32 @@ public class DistributedGridFactory {
 				double simX = x * settings.getCellWidth() + settings.getCellWidth() / 2;
 				double simY = y * settings.getCellHeight() + settings.getCellHeight() / 2;
 
-				int boundaryRegion = boundaries.getRegion(simX, simY);
-				int borderRegion = borders.getRegion(simX, simY);
+				int region = borders.getRegion(simX, simY);
 
-				sharedDataMan.registerBoundaryCell(boundaryRegion, myCells[realIndex(x)][realIndex(y)]);
-				sharedDataMan.registerBorderCell(borderRegion, myCells[realIndex(x)][realIndex(y)]);
+				List<SharedData> sharedDatas = sharedDataManager.getBorderSharedData(region);
+				List<Point> directions = sharedDataManager.getBorderDirections(region);
+				assert sharedDatas.size() == directions.size();
+
+				for (int i = 0; i < sharedDatas.size(); ++i) {
+					Point remoteGhostCellIndex = getRemoteGhostCellIndex(
+							realIndex(x), realIndex(y), directions.get(i));
+
+					sharedDatas.get(i).registerBorderCell(
+							myCells[realIndex(x)][realIndex(y)],
+							remoteGhostCellIndex);
+				}
 			}
 		}
+	}
+
+
+	/**
+	 * Translates the local border cell index to remote ghost cell index.
+	 */
+	private Point getRemoteGhostCellIndex(int x, int y, Point direction) {
+		int xoffset = direction.x * settings.getGridCellsX();
+		int yoffset = direction.y * settings.getGridCellsY();
+		return new Point(x - xoffset, y - yoffset);
 	}
 
 
