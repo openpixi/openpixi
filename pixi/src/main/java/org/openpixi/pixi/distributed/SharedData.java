@@ -6,6 +6,8 @@ import org.openpixi.pixi.physics.grid.Cell;
 import org.openpixi.pixi.physics.grid.Grid;
 import org.openpixi.pixi.physics.movement.boundary.ParticleBoundaries;
 import org.openpixi.pixi.physics.util.Point;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,6 +18,8 @@ import java.util.List;
  */
 public class SharedData {
 
+	private Logger logger = LoggerFactory.getLogger(this.getClass());
+
 	/** Handles the network communication with neighbor. */
 	private WorkerToWorker neighbor;
 
@@ -23,12 +27,11 @@ public class SharedData {
 	private int neighborID;
 	private int myID;
 
-	/* Locks to wait for the data to arrive. */
+	/* Locks to wait for the data to be received. */
 	private BooleanLock arrivingParticlesLock = new BooleanLock();
 	private BooleanLock ghostParticlesLock = new BooleanLock();
 	private BooleanLock ghostCellsLock = new BooleanLock();
 	private BooleanLock ghostCellsIndexesLock = new BooleanLock();
-
 
 	/** Maps the list of outgoing border cells to remote cells (needs to be sent out at the beginning). */
 	private List<Point> borderCellsMap = new ArrayList<Point>();
@@ -163,8 +166,8 @@ public class SharedData {
 	public void cleanUpParticleCommunication() {
 		ghostParticlesLock.reset();
 		arrivingParticlesLock.reset();
-		borderParticles.clear();
 		leavingParticles.clear();
+		borderParticles.clear();
 	}
 
 
@@ -226,6 +229,8 @@ public class SharedData {
 		 * Furthermore, they might also lie outside of the simulation area.
 		 */
 		public void handle(List<Particle> particles) {
+			//assert !sending; // todo delete
+
 			arrivingParticles = particles;
 			for (Particle particle: particles) {
 				particleBoundaries.apply(particle);

@@ -31,6 +31,9 @@ public class SharedDataManager {
 	private IbisRegistry registry;
 	private int thisWorkerID;
 
+	private Thread particleExchangeThread;
+
+
 	public SharedDataManager(
 			int thisWorkerID,
 			IntBox[] partitions,
@@ -137,7 +140,7 @@ public class SharedDataManager {
 	 * we start the exchange of particles in a new thread.
 	 */
 	public void startExchangeOfParticles() {
-		new Thread(new Runnable() {
+		particleExchangeThread = new Thread(new Runnable() {
 			public void run() {
 				for (SharedData sd: sharedData.values()) {
 					sd.sendLeavingParticles();
@@ -150,7 +153,8 @@ public class SharedDataManager {
 					sd.sendBorderParticles();
 				}
 			}
-		}).start();
+		});
+		particleExchangeThread.start();
 	}
 
 
@@ -210,6 +214,17 @@ public class SharedDataManager {
 
 
 	public void cleanUpParticleCommunication() {
+		// Wait for the exchange of particles to finish
+		// (particularly wait for finishing the sending of border particles).
+		// Otherwise, we can end up concurrently modifying the border particles
+		// (this thread cleans up the list of border particles).
+		try {
+			particleExchangeThread.join();
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+			throw new RuntimeException(e);
+		}
+
 		for (SharedData sd: sharedData.values()) {
 			sd.cleanUpParticleCommunication();
 		}

@@ -13,8 +13,8 @@ public class DistributedSimulationTest {
 		settings.setNumOfNodes(2);
 		settings.setGridCellsX(16);
 		settings.setGridCellsY(16);
-		settings.setNumOfParticles(1);
-		settings.setIterations(1);
+		settings.setNumOfParticles(10);
+		settings.setIterations(1000);
 
 		SimulatedDistributedEnvironment distributedEnv =
 				new SimulatedDistributedEnvironment(settings);
