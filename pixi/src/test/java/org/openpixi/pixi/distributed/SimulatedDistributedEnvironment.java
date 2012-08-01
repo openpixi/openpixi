@@ -1,61 +1,150 @@
 package org.openpixi.pixi.distributed;
 
 import org.openpixi.pixi.physics.Settings;
-
-import java.util.ArrayList;
-import java.util.List;
+import org.openpixi.pixi.physics.Simulation;
 
 /**
  * Simulates distributed environment on local host.
+ * Verifies whether the result of the distributed simulation
+ * is the same as the result of non-distributed simulation.
  */
 public class SimulatedDistributedEnvironment {
 
 	private Settings settings;
-	private Master master;
-
-
-	/**
-	 * Should be called after run as the master is set in the run method.
-	 */
-	public Master getMaster() {
-		return master;
-	}
-
 
 	public SimulatedDistributedEnvironment(Settings settings) {
 		this.settings = settings;
 	}
 
 
-	public void run() throws InterruptedException {
+	/**
+	 * Runs the distributed simulation at once and compares the results at the end.
+	 */
+	public void runAtOnce() throws InterruptedException {
 		Thread server = startIplServer();
 		setRequiredSystemProperties();
 
-		List<Thread> threads = new ArrayList<Thread>();
-		List<Node> nodes = new ArrayList<Node>();
-
-		// Start all the nodes
+		Node[] nodes = new Node[settings.getNumOfNodes()];
 		for (int i = 0; i < settings.getNumOfNodes(); i++) {
-			Node node = new Node(settings);
-			Thread thread = new Thread(node);
-
-			thread.start();
-
-			threads.add(thread);
-			nodes.add(node);
+			nodes[i] = new Node(settings);
 		}
 
-		// Wait for all the nodes
-		for (Thread node: threads) {
-			node.join();
-		}
+		runRunnables(nodes);
+
 		// Stop the server
 		server.interrupt();
 
 		// Set the master
+		Master master = null;
 		for (Node n: nodes) {
 			if (n.isMaster()) {
-				this.master = n.getMaster();
+				master = n.getMaster();
+			}
+		}
+
+		// Run non-distributed simulation
+		Simulation simulation = new Simulation(settings);
+		for (int i = 0; i < settings.getIterations(); ++i) {
+			simulation.step();
+		}
+
+		// Compare results
+		compareResults(master, simulation, settings.getIterations() - 1);
+	}
+
+
+	/**
+	 * Runs the distributed and non-distributed simulations in steps
+	 * and compares the result after each step.
+	 */
+	public void runInSteps() {
+		Thread server = startIplServer();
+		setRequiredSystemProperties();
+
+		final Node[] nodes = new Node[settings.getNumOfNodes()];
+		for (int i = 0; i < settings.getNumOfNodes(); i++) {
+			nodes[i] = new Node(settings);
+		}
+
+		Runnable[] distributeRuns = new Runnable[nodes.length];
+		for (int i = 0; i < nodes.length; ++i) {
+			final int nodeID = i;
+			distributeRuns[nodeID] = new Runnable() {
+				public void run() {
+					nodes[nodeID].distribute();
+				}
+			};
+		}
+
+		Runnable[] collectRuns = new Runnable[nodes.length];
+		for (int i = 0; i < nodes.length; ++i) {
+			final int nodeID = i;
+			collectRuns[nodeID] = new Runnable() {
+				public void run() {
+					nodes[nodeID].collect();
+				}
+			};
+		}
+
+		Runnable[] stepRuns = new Runnable[nodes.length];
+		for (int i = 0; i < nodes.length; ++i) {
+			final int nodeID = i;
+			stepRuns[nodeID] = new Runnable() {
+				public void run() {
+					nodes[nodeID].step();
+				}
+			};
+		}
+
+		runRunnables(distributeRuns);
+
+		// Set the master
+		Master master = null;
+		for (Node n: nodes) {
+			if (n.isMaster()) {
+				master = n.getMaster();
+			}
+		}
+
+		// Create non-distributed simulation
+		Simulation simulation = new Simulation(settings);
+
+		for (int i = 0; i < settings.getIterations(); ++i) {
+			simulation.step();
+			runRunnables(stepRuns);
+			runRunnables(collectRuns);
+			compareResults(master, simulation, i);
+		}
+
+		// Stop the server
+		server.interrupt();
+	}
+
+
+	private void compareResults(Master master, Simulation simulation, int iteration) {
+		SimulationComparator comparator = new SimulationComparator(iteration);
+		comparator.compare(
+				simulation.particles, master.getFinalParticles(),
+				simulation.grid, master.getFinalGrid());
+	}
+
+
+	/**
+	 * Runs array of runnables simultaneously and waits for them to finish.
+	 */
+	private void runRunnables(Runnable[] runnables) {
+		Thread[] threads = new Thread[runnables.length];
+		for (int i = 0; i < runnables.length; ++i) {
+			threads[i] = new Thread(runnables[i]);
+			threads[i].start();
+		}
+
+		for (Thread t: threads) {
+			try {
+				t.join();
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+				throw new RuntimeException(e);
 			}
 		}
 	}

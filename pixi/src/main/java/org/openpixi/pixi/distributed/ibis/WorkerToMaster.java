@@ -16,6 +16,9 @@ public class WorkerToMaster {
 
 	private IbisRegistry registry;
 
+	private ReceivePort recvProblemPort;
+	private SendPort sendResultPort;
+
 	// Received data
 	private IntBox[] partitions;
 	private List<Particle> particles;
@@ -40,36 +43,34 @@ public class WorkerToMaster {
 
 	public WorkerToMaster(IbisRegistry registry) throws Exception {
 		this.registry = registry;
+		recvProblemPort = registry.getIbis().createReceivePort(
+				PixiPorts.ONE_TO_ONE_PORT, PixiPorts.DISTRIBUTE_PORT_ID);
+		recvProblemPort.enableConnections();
+		sendResultPort = registry.getIbis().createSendPort(PixiPorts.GATHER_PORT);
 	}
 
 
 	public void receiveProblem() throws IOException, ClassNotFoundException {
-		ReceivePort distributePort = registry.getIbis().createReceivePort(
-				PixiPorts.ONE_TO_ONE_PORT, PixiPorts.DISTRIBUTE_PORT_ID);
-		distributePort.enableConnections();
-
-		ReadMessage rm = distributePort.receive();
+		ReadMessage rm = recvProblemPort.receive();
 		partitions = (IntBox[])rm.readObject();
 		particles = (List<Particle>)rm.readObject();
 		cells = (Cell[][])rm.readObject();
 		rm.finish();
-
-		distributePort.close();
+		recvProblemPort.close();
 	}
 
 
 	public void sendResults(int workerID,
 	                        List<Particle> particles,
 	                        Cell[][] cells) throws IOException {
-		SendPort sendResultPort = registry.getIbis().createSendPort(PixiPorts.GATHER_PORT);
-		sendResultPort.connect(registry.getMaster(), PixiPorts.GATHER_PORT_ID);
+		if (sendResultPort.connectedTo().length == 0) {
+			sendResultPort.connect(registry.getMaster(), PixiPorts.GATHER_PORT_ID);
+		}
 
 		WriteMessage wm = sendResultPort.newMessage();
 		wm.writeInt(workerID);
 		wm.writeObject(particles);
 		wm.writeObject(cells);
 		wm.finish();
-
-		sendResultPort.close();
 	}
 }

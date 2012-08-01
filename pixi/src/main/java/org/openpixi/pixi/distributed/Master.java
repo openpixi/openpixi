@@ -59,9 +59,14 @@ public class Master {
 	}
 
 
-	public Master(IbisRegistry registry, Settings settings) throws Exception {
+	public Master(IbisRegistry registry, Settings settings) {
 		this.settings = settings;
-		communicator = new MasterToWorkers(registry);
+		try {
+			communicator = new MasterToWorkers(registry);
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new RuntimeException(e);
+		}
 
 		initialGrid = new Grid(settings);
 		initialParticles = settings.getParticles();
@@ -75,7 +80,7 @@ public class Master {
 	}
 
 
-	public void distributeProblem() throws IOException {
+	public void distributeProblem() {
 		// Partition the problem
 		Partitioner partitioner = new SimplePartitioner();
 		partitions = partitioner.partition(
@@ -90,9 +95,14 @@ public class Master {
 
 		// Send to each worker
 		for (int workerID = 0; workerID < partitions.length; workerID++) {
-			communicator.sendProblem(
-					workerID, partitions,
-					particlePartitions.get(workerID), gridPartitions[workerID]);
+			try {
+				communicator.sendProblem(
+						workerID, partitions,
+						particlePartitions.get(workerID), gridPartitions[workerID]);
+			} catch (IOException e) {
+				e.printStackTrace();
+				throw new RuntimeException(e);
+			}
 		}
 	}
 
@@ -177,10 +187,15 @@ public class Master {
 	}
 
 
-	public void collectResults() throws Exception {
-		communicator.collectResults();
-		finalParticles = assembleParticles(communicator.getParticlePartitions());
-		finalGrid = assembleGrid(communicator.getGridPartitions());
+	public void collectResults() {
+		try {
+			communicator.collectResults();
+			finalParticles = assembleParticles(communicator.getParticlePartitions());
+			finalGrid = assembleGrid(communicator.getGridPartitions());
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new RuntimeException(e);
+		}
 	}
 
 

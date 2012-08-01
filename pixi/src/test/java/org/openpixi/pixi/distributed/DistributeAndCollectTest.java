@@ -17,15 +17,7 @@ public class DistributeAndCollectTest {
 		// Do not run the simulation in this test
 		settings.setIterations(0);
 
-		SimulatedDistributedEnvironment distributedEnv =
-				new SimulatedDistributedEnvironment(settings);
-		distributedEnv.run();
-		Master master = distributedEnv.getMaster();
-
-		SimulationComparator comparator = new SimulationComparator();
-		comparator.compare(
-				master.getInitialParticles(), master.getFinalParticles(),
-				master.getInitialGrid(), master.getFinalGrid());
+		new SimulatedDistributedEnvironment(settings).runAtOnce();
 
 		System.out.println("OK");
 	}

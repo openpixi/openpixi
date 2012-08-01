@@ -20,7 +20,7 @@ import java.io.IOException;
 /**
  * Receives the problem, calculates the problem, sends back results.
  */
-public class Worker implements Runnable {
+public class Worker {
 
 	private WorkerToMaster communicator;
 
@@ -31,47 +31,57 @@ public class Worker implements Runnable {
 	/** ID of this worker. */
 	private int workerID;
 
+	private Simulation simulation;
 
-	public Worker(IbisRegistry registry, Settings settings) throws Exception {
+
+	public Worker(IbisRegistry registry, Settings settings) {
 		this.globalSettings = settings;
-		communicator = new WorkerToMaster(registry);
+		try {
+			communicator = new WorkerToMaster(registry);
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new RuntimeException(e);
+		}
 		workerID = registry.convertIbisIDToWorkerID(registry.getIbis().identifier());
 	}
 
 
 	public void run() {
+		for (int i = 0; i < localSettings.getIterations(); ++i) {
+			simulation.step();
+		}
+	}
+
+
+	public void step() {
+		simulation.step();
+	}
+
+
+	public void receiveProblem() {
 		try {
 			communicator.receiveProblem();
-			createLocalSettings();
+			createSimulation();
 
-			SharedDataManager sharedDataManager =  createSharedDataManager();
-			ParticleBoundaries  particleBoundaries = createParticleBoundaries(sharedDataManager);
-			sharedDataManager.setParticleBoundaries(particleBoundaries);
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new RuntimeException(e);
+		}
+	}
 
-			Grid grid = createGrid(sharedDataManager);
-			InterpolationIterator interpolation = createInterpolationIterator(sharedDataManager);
-			sharedDataManager.setGrid(grid);
 
-			sharedDataManager.initializeCommunication();
+	public void sendResults() {
+		Cell[][] finalCells = getFinalCells(simulation.grid);
 
-			Simulation simulation = new Simulation(
-					localSettings, grid, communicator.getParticles(),
-					particleBoundaries, interpolation);
-
-			for (int i = 0; i < localSettings.getIterations(); ++i) {
-				simulation.step();
-			}
-
-			Cell[][] finalCells = getFinalCells(simulation.grid);
-
-			// The results can come in arbitrary order; thus,
-			// we have to send also the id of the node which is sending the result.
+		// The results can come in arbitrary order; thus,
+		// we have to send also the id of the node which is sending the result.
+		try {
 			communicator.sendResults(
 					workerID,
 					simulation.particles,
 					finalCells);
-
-		} catch (Exception e) {
+		} catch (IOException e) {
+			e.printStackTrace();
 			throw new RuntimeException(e);
 		}
 	}
@@ -109,6 +119,25 @@ public class Worker implements Runnable {
 			}
 		}
 		return  finalCells;
+	}
+
+
+	private void createSimulation() {
+		createLocalSettings();
+
+		SharedDataManager sharedDataManager =  createSharedDataManager();
+		ParticleBoundaries particleBoundaries = createParticleBoundaries(sharedDataManager);
+		sharedDataManager.setParticleBoundaries(particleBoundaries);
+
+		Grid grid = createGrid(sharedDataManager);
+		InterpolationIterator interpolation = createInterpolationIterator(sharedDataManager);
+		sharedDataManager.setGrid(grid);
+
+		sharedDataManager.initializeCommunication();
+
+		this.simulation = new Simulation(
+				localSettings, grid, communicator.getParticles(),
+				particleBoundaries, interpolation);
 	}
 
 
@@ -158,7 +187,7 @@ public class Worker implements Runnable {
 	}
 
 
-	private Grid createGrid(SharedDataManager sharedDataManager) throws IOException {
+	private Grid createGrid(SharedDataManager sharedDataManager) {
 		DistributedGridFactory gridFactory = new DistributedGridFactory(
 				localSettings, communicator.getPartitions()[workerID],
 				communicator.getCells(), sharedDataManager);

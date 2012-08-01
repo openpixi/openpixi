@@ -66,7 +66,6 @@ public class WorkerToWorker {
 					PixiPorts.EXCHANGE_PORT_ID + neighborID,
 					new IncomingMessageHandler());
 			recvPort.enableConnections();
-			recvPort.enableMessageUpcalls();
 		}
 		catch (Exception e) {
 			e.printStackTrace();
@@ -77,11 +76,13 @@ public class WorkerToWorker {
 
 	/**
 	 * To avoid deadlock the send ports should be connected after all the receive ports are created.
+	 * Furthermore, we enable upcalls here to avoid upcalls being called to early.
 	 */
 	public void initializeConnection() {
-		int myID = registry.convertIbisIDToWorkerID(registry.getIbis().identifier());
+		recvPort.enableMessageUpcalls();
 		try {
 			sendPort = registry.getIbis().createSendPort(PixiPorts.ONE_TO_ONE_PORT);
+			int myID = registry.convertIbisIDToWorkerID(registry.getIbis().identifier());
 			sendPort.connect(
 					registry.convertWorkerIDToIbisID(neighborID),
 					PixiPorts.EXCHANGE_PORT_ID + myID);

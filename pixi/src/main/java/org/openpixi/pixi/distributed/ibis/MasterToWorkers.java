@@ -19,6 +19,8 @@ import java.util.List;
 public class MasterToWorkers {
 
 	private IbisRegistry registry;
+	private ReceivePort recvResultsPort;
+	private SendPort[] sendPorts;
 
 	// Received data
 	private List<List<Particle>> particlePartitions = new ArrayList<List<Particle>>();
@@ -37,6 +39,17 @@ public class MasterToWorkers {
 	public MasterToWorkers(IbisRegistry registry) throws Exception {
 		this.registry = registry;
 
+		// Initialize ports
+
+		recvResultsPort = registry.getIbis().createReceivePort(
+				PixiPorts.GATHER_PORT, PixiPorts.GATHER_PORT_ID);
+		recvResultsPort.enableConnections();
+
+		sendPorts = new SendPort[registry.getWorkers().size()];
+		for (int i = 0; i < sendPorts.length; ++i) {
+			sendPorts[i] = registry.getIbis().createSendPort(PixiPorts.ONE_TO_ONE_PORT);
+		}
+
 		// Initialize the holders for received data
 		int numOfWorkers = registry.getWorkers().size();
 		gridPartitions = new Cell[numOfWorkers][][];
@@ -54,10 +67,12 @@ public class MasterToWorkers {
 	                        List<Particle> particles,
 	                        Cell[][] cells) throws IOException {
 
-		SendPort sendPort = registry.getIbis().createSendPort(PixiPorts.ONE_TO_ONE_PORT);
-		sendPort.connect(
-				registry.convertWorkerIDToIbisID(workerID),
-				PixiPorts.DISTRIBUTE_PORT_ID);
+		SendPort sendPort = sendPorts[workerID];
+		if (sendPort.connectedTo().length == 0) {
+			sendPort.connect(
+					registry.convertWorkerIDToIbisID(workerID),
+					PixiPorts.DISTRIBUTE_PORT_ID);
+		}
 
 		WriteMessage wm = sendPort.newMessage();
 		wm.writeObject(partitions);
@@ -70,13 +85,9 @@ public class MasterToWorkers {
 
 
 	public void collectResults() throws Exception {
-		ReceivePort recvPort = registry.getIbis().createReceivePort(
-				PixiPorts.GATHER_PORT, PixiPorts.GATHER_PORT_ID);
-		recvPort.enableConnections();
-
 		for (int i = 0; i < registry.getWorkers().size(); ++i) {
 
-			ReadMessage rm = recvPort.receive();
+			ReadMessage rm = recvResultsPort.receive();
 			int workerID = rm.readInt();
 			List<Particle> particles = (List<Particle>)rm.readObject();
 			Cell[][] cells = (Cell[][])rm.readObject();
@@ -85,7 +96,5 @@ public class MasterToWorkers {
 			gridPartitions[workerID] = cells;
 			particlePartitions.set(workerID, particles);
 		}
-
-		recvPort.close();
 	}
 }

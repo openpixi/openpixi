@@ -48,10 +48,15 @@ public class IbisRegistry {
 	 * Creates the instance of ibis and immediately calls the election.
 	 * Waits for all the nodes to connect.
 	 */
-	public IbisRegistry(int numOfWorkers) throws Exception {
+	public IbisRegistry(int numOfWorkers) {
 		numOfJoinedWorkersLock = new IntLock(0);
-		ibis = IbisFactory.createIbis(ibisCapabilities, new RegistryEvent(), PixiPorts.ALL_PORTS);
-		master = ibis.registry().elect("Master");
+		try {
+			ibis = IbisFactory.createIbis(ibisCapabilities, new RegistryEvent(), PixiPorts.ALL_PORTS);
+			master = ibis.registry().elect("Master");
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new RuntimeException(e);
+		}
 		ibis.registry().enableEvents();
 
 		if (isMaster()) {

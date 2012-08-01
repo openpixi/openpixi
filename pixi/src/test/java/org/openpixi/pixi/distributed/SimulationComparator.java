@@ -12,6 +12,12 @@ import java.util.List;
 public class SimulationComparator {
 
 	private static final Double TOLERANCE = 1e-10;
+   	private int iteration;
+
+
+	public SimulationComparator(int iteration) {
+		this.iteration = iteration;
+	}
 
 
 	public void compare(
@@ -115,8 +121,10 @@ public class SimulationComparator {
 	}
 
 
-	private static void fail(String msg) {
+	private void fail(String msg) {
 		System.out.println(msg);
+		System.out.println("ITERATION: " + iteration);
+		System.out.println("!!! COMPARISON FAILED !!!");
 		System.exit(1);
 	}
 }
