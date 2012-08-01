@@ -26,10 +26,15 @@ public class Node implements Runnable {
 	}
 
 
+	/**
+	 * Distributed the problem, runs the simulation and then collects the results.
+	 */
 	public void run() {
 		try {
 			distribute();
-			worker.run();
+			for (int i = 0; i < settings.getIterations(); ++i) {
+				step();
+			}
 			collect();
 			close();
 		} catch (Exception e) {
@@ -53,6 +58,9 @@ public class Node implements Runnable {
 	}
 
 
+	/**
+	 * Executes one step of the simulation.
+	 */
 	public void step() {
 		worker.step();
 	}

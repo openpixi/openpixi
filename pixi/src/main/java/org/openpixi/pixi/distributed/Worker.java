@@ -46,13 +46,6 @@ public class Worker {
 	}
 
 
-	public void run() {
-		for (int i = 0; i < localSettings.getIterations(); ++i) {
-			simulation.step();
-		}
-	}
-
-
 	public void step() {
 		simulation.step();
 	}
