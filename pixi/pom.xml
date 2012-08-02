@@ -34,7 +34,49 @@
 			<artifactId>slf4j-log4j12</artifactId>
 			<version>1.6.6</version>
 		</dependency>
+
+		<dependency>
+			<groupId>org.aspectj</groupId>
+			<artifactId>aspectjrt</artifactId>
+			<version>1.6.11</version>
+		</dependency>
 	</dependencies>
+
+	<!-- Debug profile for aspectj-->
+	<profiles>
+		<profile>
+			<id>debug</id>
+			<build>
+				<plugins>
+					<!-- AspectJ -->
+					<plugin>
+						<groupId>org.codehaus.mojo</groupId>
+						<artifactId>aspectj-maven-plugin</artifactId>
+						<version>1.4</version>
+						<executions>
+							<execution>
+								<goals>
+									<goal>compile</goal>       <!-- use this goal to weave all your main classes -->
+									<goal>test-compile</goal>  <!-- use this goal to weave all your test classes -->
+								</goals>
+							</execution>
+						</executions>
+						<dependencies>
+							<dependency>
+								<groupId>org.aspectj</groupId>
+								<artifactId>aspectjtools</artifactId>
+								<version>1.6.11</version>
+							</dependency>
+						</dependencies>
+						<configuration>
+							<source>1.5</source>
+							<target>1.5</target>
+						</configuration>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
 
 	<build>
 		<plugins>
