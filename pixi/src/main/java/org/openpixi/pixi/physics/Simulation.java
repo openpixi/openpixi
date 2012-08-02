@@ -106,7 +106,12 @@ public class Simulation {
 				particleBoundaries);
 
 		grid = new Grid(settings);
-		turnGridForceOff();
+		if (settings.useGrid()) {
+			turnGridForceOn();
+		}
+		else {
+			turnGridForceOff();
+		}
 
 		poisolver = settings.getPoissonSolver();
 		interpolation = new SimpleInterpolationIterator(settings.getInterpolator());
@@ -147,7 +152,12 @@ public class Simulation {
 				particleBoundaries);
 
 		this.grid = grid;
-		turnGridForceOff();
+		if (settings.useGrid()) {
+			turnGridForceOn();
+		}
+		else {
+			turnGridForceOff();
+		}
 
 		this.interpolation = interpolation;
 
