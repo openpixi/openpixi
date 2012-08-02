@@ -11,6 +11,7 @@ import org.openpixi.pixi.physics.Simulation;
 public class SimulatedDistributedEnvironment {
 
 	private Settings settings;
+	private static Thread iplServer;
 
 	public SimulatedDistributedEnvironment(Settings settings) {
 		this.settings = settings;
@@ -21,18 +22,15 @@ public class SimulatedDistributedEnvironment {
 	 * Runs the distributed simulation at once and compares the results at the end.
 	 */
 	public void runAtOnce() throws InterruptedException {
-		Thread server = startIplServer();
+		startIplServer();
 		setRequiredSystemProperties();
 
-		Node[] nodes = new Node[settings.getNumOfNodes()];
+		final Node[] nodes = new Node[settings.getNumOfNodes()];
 		for (int i = 0; i < settings.getNumOfNodes(); i++) {
 			nodes[i] = new Node(settings);
 		}
 
 		runRunnables(nodes);
-
-		// Stop the server
-		server.interrupt();
 
 		// Set the master
 		Master master = null;
@@ -58,7 +56,7 @@ public class SimulatedDistributedEnvironment {
 	 * and compares the result after each step.
 	 */
 	public void runInSteps() {
-		Thread server = startIplServer();
+		startIplServer();
 		setRequiredSystemProperties();
 
 		final Node[] nodes = new Node[settings.getNumOfNodes()];
@@ -98,7 +96,7 @@ public class SimulatedDistributedEnvironment {
 
 		runRunnables(distributeRuns);
 
-		// Set the master
+		// Determine the master
 		Master master = null;
 		for (Node n: nodes) {
 			if (n.isMaster()) {
@@ -116,8 +114,17 @@ public class SimulatedDistributedEnvironment {
 			compareResults(master, simulation, i);
 		}
 
-		// Stop the server
-		server.interrupt();
+		Runnable[] closeRuns = new Runnable[nodes.length];
+		for (int i = 0; i < nodes.length; ++i) {
+			final int nodeID = i;
+			closeRuns[nodeID] = new Runnable() {
+				public void run() {
+					nodes[nodeID].close();
+				}
+			};
+		}
+
+		runRunnables(closeRuns);
 	}
 
 
@@ -156,13 +163,14 @@ public class SimulatedDistributedEnvironment {
 	}
 
 
-	private Thread startIplServer() {
-		Thread server = new Thread(new Runnable() {
-			public void run() {
-				ibis.ipl.server.Server.main(new String[] {"--events"});
-			}
-		});
-		server.start();
-		return server;
+	private void startIplServer() {
+		if (iplServer == null) {
+			iplServer = new Thread(new Runnable() {
+				public void run() {
+					ibis.ipl.server.Server.main(new String[] {"--events"});
+				}
+			});
+			iplServer.start();
+		}
 	}
 }
