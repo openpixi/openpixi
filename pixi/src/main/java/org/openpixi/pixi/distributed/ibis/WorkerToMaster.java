@@ -56,6 +56,7 @@ public class WorkerToMaster {
 		particles = (List<Particle>)rm.readObject();
 		cells = (Cell[][])rm.readObject();
 		rm.finish();
+
 		recvProblemPort.close();
 	}
 
@@ -72,5 +73,15 @@ public class WorkerToMaster {
 		wm.writeObject(particles);
 		wm.writeObject(cells);
 		wm.finish();
+	}
+
+
+	public void close() {
+		try {
+			sendResultPort.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+			throw new RuntimeException(e);
+		}
 	}
 }

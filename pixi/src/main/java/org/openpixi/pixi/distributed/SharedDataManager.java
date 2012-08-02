@@ -229,4 +229,14 @@ public class SharedDataManager {
 			sd.cleanUpParticleCommunication();
 		}
 	}
+
+
+	public void close() {
+		for (SharedData sd: sharedData.values()) {
+			sd.closeSendPorts();
+		}
+		for (SharedData sd: sharedData.values()) {
+			sd.closeReceivePorts();
+		}
+	}
 }

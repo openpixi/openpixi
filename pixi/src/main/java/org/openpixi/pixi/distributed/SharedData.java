@@ -21,7 +21,7 @@ public class SharedData {
 	private Logger logger = LoggerFactory.getLogger(this.getClass());
 
 	/** Handles the network communication with neighbor. */
-	private WorkerToWorker neighbor;
+	private WorkerToWorker communicator;
 
 	/* For debugging purposes. */
 	private int neighborID;
@@ -71,15 +71,15 @@ public class SharedData {
 	}
 
 
-	public SharedData(int myID, int neighborID, WorkerToWorker neighbor) {
+	public SharedData(int myID, int neighborID, WorkerToWorker communicator) {
 		this.myID = myID;
 		this.neighborID = neighborID;
-		this.neighbor = neighbor;
+		this.communicator = communicator;
 
-		neighbor.setGhostCellsHandler(new GhostCellsHandler());
-		neighbor.setGhostParticlesHandler(new GhostParticlesHandler());
-		neighbor.setArrivingParticlesHandler(new ArrivingParticlesHandler());
-		neighbor.setGhostCellsIndexesHandler(new GhostCellsIndexesHandler());
+		communicator.setGhostCellsHandler(new GhostCellsHandler());
+		communicator.setGhostParticlesHandler(new GhostParticlesHandler());
+		communicator.setArrivingParticlesHandler(new ArrivingParticlesHandler());
+		communicator.setGhostCellsIndexesHandler(new GhostCellsIndexesHandler());
 	}
 
 
@@ -88,8 +88,8 @@ public class SharedData {
 	 * exchanges the order of ghost cells.
 	 */
 	public void initializeCommunication() {
-		neighbor.initializeConnection();
-		neighbor.sendBorderCellsMap(borderCellsMap);
+		communicator.initializeConnection();
+		communicator.sendBorderCellsMap(borderCellsMap);
 		ghostCellsIndexesLock.waitForTrue();
 	}
 
@@ -111,17 +111,17 @@ public class SharedData {
 
 
 	public void sendLeavingParticles() {
-		neighbor.sendLeavingParticles(leavingParticles);
+		communicator.sendLeavingParticles(leavingParticles);
 	}
 
 
 	public void sendBorderParticles() {
-		neighbor.sendBorderParticles(borderParticles);
+		communicator.sendBorderParticles(borderParticles);
 	}
 
 
 	public void sendBorderCells() {
-		neighbor.sendBorderCells(borderCells);
+		communicator.sendBorderCells(borderCells);
 	}
 
 
@@ -177,6 +177,16 @@ public class SharedData {
 	 */
 	public void cleanUpCellCommunication() {
 		ghostCellsLock.reset();
+	}
+
+
+	public void closeSendPorts() {
+		communicator.closeSendPorts();
+	}
+
+
+	public void closeReceivePorts() {
+		communicator.closeReceivePorts();
 	}
 
 

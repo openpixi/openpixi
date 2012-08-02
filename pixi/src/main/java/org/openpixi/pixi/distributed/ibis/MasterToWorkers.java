@@ -97,4 +97,14 @@ public class MasterToWorkers {
 			particlePartitions.set(workerID, particles);
 		}
 	}
+
+
+	public void close() {
+		try {
+			recvResultsPort.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+			throw new RuntimeException(e);
+		}
+	}
 }

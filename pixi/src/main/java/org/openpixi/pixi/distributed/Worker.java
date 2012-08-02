@@ -33,6 +33,8 @@ public class Worker {
 
 	private Simulation simulation;
 
+	private SharedDataManager sharedDataManager;
+
 
 	public Worker(IbisRegistry registry, Settings settings) {
 		this.globalSettings = settings;
@@ -118,7 +120,7 @@ public class Worker {
 	private void createSimulation() {
 		createLocalSettings();
 
-		SharedDataManager sharedDataManager =  createSharedDataManager();
+		sharedDataManager =  createSharedDataManager();
 		ParticleBoundaries particleBoundaries = createParticleBoundaries(sharedDataManager);
 		sharedDataManager.setParticleBoundaries(particleBoundaries);
 
@@ -197,5 +199,11 @@ public class Worker {
 		return new DistributedParticleBoundaries(
 				simulationAreaInParticleDimensions, innerSimulationArea,
 				localSettings.getParticleBoundary(), sharedDataManager);
+	}
+
+
+	public void close() {
+		communicator.close();
+		sharedDataManager.close();
 	}
 }

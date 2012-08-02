@@ -132,10 +132,19 @@ public class WorkerToWorker {
 	}
 
 
-	public void close() {
+	public void closeSendPorts() {
+		try {
+			sendPort.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+			throw new RuntimeException(e);
+		}
+	}
+
+
+	public void closeReceivePorts() {
 		try {
 			recvPort.close();
-			sendPort.close();
 		} catch (IOException e) {
 			e.printStackTrace();
 			throw new RuntimeException(e);

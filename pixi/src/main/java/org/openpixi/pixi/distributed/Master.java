@@ -274,4 +274,9 @@ public class Master {
 			}
 		}
 	}
+
+
+	public void close() {
+		communicator.close();
+	}
 }

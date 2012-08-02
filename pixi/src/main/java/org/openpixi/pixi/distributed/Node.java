@@ -77,7 +77,11 @@ public class Node implements Runnable {
 	public void close() {
 		try {
 			// Wait for everybody to receive the last message before closing ibis.
-			Thread.sleep(1000);
+			Thread.sleep(100);
+			worker.close();
+			if (master != null) {
+				master.close();
+			}
 			registry.close();
 		} catch (Exception e) {
 			e.printStackTrace();
