@@ -51,6 +51,8 @@ public class Settings {
 	private FieldSolver gridSolver = new FieldSolver();
 	private PoissonSolver poissonSolver = new PoissonSolverFFTPeriodic();
 
+	private boolean useGrid = true;
+
 	// Particle related settings
 
 	private int numOfParticles = 100;
@@ -139,6 +141,10 @@ public class Settings {
 
 	public String getIplRegistryServer() {
 		return iplRegistryServer;
+	}
+
+	public boolean useGrid() {
+		return useGrid;
 	}
 
 	//----------------------------------------------------------------------------------------------
@@ -291,6 +297,10 @@ public class Settings {
 
 	public void setIplRegistryServer(String iplRegistryServer) {
 		this.iplRegistryServer = iplRegistryServer;
+	}
+
+	public void useGrid(boolean useGrid) {
+		this.useGrid = useGrid;
 	}
 
 	//----------------------------------------------------------------------------------------------
