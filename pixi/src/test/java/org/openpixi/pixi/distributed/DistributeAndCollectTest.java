@@ -17,7 +17,9 @@ public class DistributeAndCollectTest {
 		// Do not run the simulation in this test
 		settings.setIterations(0);
 
+		IplServer.start();
 		new SimulatedDistributedEnvironment(settings).runAtOnce();
+		IplServer.end();
 
 		System.out.println("OK");
 	}

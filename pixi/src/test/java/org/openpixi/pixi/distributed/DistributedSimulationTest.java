@@ -60,7 +60,7 @@ public class DistributedSimulationTest {
 		settings.addForce(constantForce);
 		variousTestSettings.put("MagneticForce", settings);
 
-
+		IplServer.start();
 		for (String testName: variousTestSettings.keySet()) {
 			System.out.println("Running test " + testName);
 
@@ -69,6 +69,7 @@ public class DistributedSimulationTest {
 			System.out.println("OK");
 			System.out.println();
 		}
+		IplServer.end();
 	}
 
 

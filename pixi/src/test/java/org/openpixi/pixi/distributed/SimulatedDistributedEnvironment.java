@@ -11,7 +11,6 @@ import org.openpixi.pixi.physics.Simulation;
 public class SimulatedDistributedEnvironment {
 
 	private Settings settings;
-	private static Thread iplServer;
 
 	public SimulatedDistributedEnvironment(Settings settings) {
 		this.settings = settings;
@@ -22,7 +21,6 @@ public class SimulatedDistributedEnvironment {
 	 * Runs the distributed simulation at once and compares the results at the end.
 	 */
 	public void runAtOnce() throws InterruptedException {
-		startIplServer();
 		setRequiredSystemProperties();
 
 		final Node[] nodes = new Node[settings.getNumOfNodes()];
@@ -56,7 +54,6 @@ public class SimulatedDistributedEnvironment {
 	 * and compares the result after each step.
 	 */
 	public void runInSteps() {
-		startIplServer();
 		setRequiredSystemProperties();
 
 		final Node[] nodes = new Node[settings.getNumOfNodes()];
@@ -160,17 +157,5 @@ public class SimulatedDistributedEnvironment {
 	private void setRequiredSystemProperties() {
 		System.setProperty("ibis.server.address", "localhost");
 		System.setProperty("ibis.pool.name", "test");
-	}
-
-
-	private void startIplServer() {
-		if (iplServer == null) {
-			iplServer = new Thread(new Runnable() {
-				public void run() {
-					ibis.ipl.server.Server.main(new String[] {"--events"});
-				}
-			});
-			iplServer.start();
-		}
 	}
 }
