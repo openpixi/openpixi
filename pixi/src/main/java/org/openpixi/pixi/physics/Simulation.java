@@ -106,7 +106,7 @@ public class Simulation {
 				particleBoundaries);
 
 		grid = new Grid(settings);
-		turnGridForceOn();
+		turnGridForceOff();
 
 		poisolver = settings.getPoissonSolver();
 		interpolation = new SimpleInterpolationIterator(settings.getInterpolator());
@@ -134,19 +134,22 @@ public class Simulation {
 	                  ParticleBoundaries particleBoundaries,
 	                  InterpolationIterator interpolation) {
 
+		this.tstep = settings.getTimeStep();
 		this.width = settings.getSimulationWidth();
 		this.height = settings.getSimulationHeight();
-		this.grid = grid;
-		this.particles = (ArrayList<Particle>)particles;
-		this.interpolation = interpolation;
+		this.speedOfLight = settings.getSpeedOfLight();
 
-		tstep = settings.getTimeStep();
-		speedOfLight = settings.getSpeedOfLight();
+		this.particles = (ArrayList<Particle>)particles;
+		f = settings.getForce();
 
 		mover = new ParticleMover(
 				settings.getParticleSolver(),
 				particleBoundaries);
-		f = settings.getForce();
+
+		this.grid = grid;
+		turnGridForceOff();
+
+		this.interpolation = interpolation;
 
 		detector = settings.getCollisionDetector();
 		collisionalgorithm = settings.getCollisionAlgorithm();
