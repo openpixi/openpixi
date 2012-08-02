@@ -19,18 +19,8 @@ public class Interpolator {
 		int xCellPosition2 = xCellPosition;
 		int yCellPosition2 = yCellPosition;
 
-		//periodic boundaries
-		int xm = xCellPosition - 1;
 		int xp = xCellPosition + 1;
-		int ym = yCellPosition - 1;
 		int yp = yCellPosition + 1;
-
-		xCellPosition = checkPeriodicBoundary(xCellPosition, g.getNumCellsX());
-		xm = checkPeriodicBoundary(xm, g.getNumCellsX());
-		xp = checkPeriodicBoundary(xp, g.getNumCellsX());
-		yCellPosition = checkPeriodicBoundary(yCellPosition, g.getNumCellsY());
-		ym = checkPeriodicBoundary(ym, g.getNumCellsY());
-		yp = checkPeriodicBoundary(yp, g.getNumCellsY());
 
 		if (Debug.asserts) {
 			// Assert conditions for interpolation
