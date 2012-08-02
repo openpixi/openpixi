@@ -1,7 +1,5 @@
 package org.openpixi.pixi.physics.grid;
 
-import java.util.ArrayList;
-
 import org.openpixi.pixi.physics.Debug;
 import org.openpixi.pixi.physics.Particle;
 
@@ -10,13 +8,6 @@ public class ChargeConservingAreaWeighting extends Interpolator {
 	@Override
 	public void interpolateToGrid(Particle p, Grid g, double tstep) {
 		g.resetCurrentAndCharge();
-
-		//assuming rectangular particle shape i.e. area weighting
-
-		assertParticleInSimulationArea(p, g);
-
-		// TODO: The following assert fails!
-		//assertPreviousParticleInSimulationArea(p, g);
 
 		//local origin i.e. nearest grid point BEFORE particle push
 		int xStart = (int) Math.floor(p.getPrevX() / g.getCellWidth() + 0.5);
@@ -436,30 +427,5 @@ public class ChargeConservingAreaWeighting extends Interpolator {
 				}
 			}
 		}
-	}
-
-	/**
-	 * Test via asserts whether particle is within simulation area.
-	 * @param p
-	 * @param g
-	 */
-	private void assertParticleInSimulationArea(Particle p, Grid g) {
-		assert(p.getX() >= 0);
-		assert(p.getY() >= 0);
-		assert(p.getX() < g.getCellWidth() * g.getNumCellsX());
-		assert(p.getY() < g.getCellHeight() * g.getNumCellsY());
-	}
-
-	/**
-	 * Test via asserts whether particle from previous time step
-	 * is within simulation area.
-	 * @param p
-	 * @param g
-	 */
-	private void assertPreviousParticleInSimulationArea(Particle p, Grid g) {
-		assert(p.getPrevX() >= 0);
-		assert(p.getPrevY() >= 0);
-		assert(p.getPrevX() < g.getCellWidth() * g.getNumCellsX());
-		assert(p.getPrevY() < g.getCellHeight() * g.getNumCellsY());
 	}
 }
