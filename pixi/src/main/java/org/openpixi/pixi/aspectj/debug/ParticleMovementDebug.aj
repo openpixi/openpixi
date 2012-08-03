@@ -1,4 +1,4 @@
-package org.openpixi.pixi.aspectj;
+package org.openpixi.pixi.aspectj.debug;
 
 import org.aspectj.lang.annotation.AdviceName;
 import org.openpixi.pixi.distributed.SharedData;
