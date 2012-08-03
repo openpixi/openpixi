@@ -1,19 +1,16 @@
 package org.openpixi.pixi.physics.grid;
 
-import java.util.ArrayList;
-
-import org.openpixi.pixi.physics.Particle;
-import org.openpixi.pixi.physics.Simulation;
+import org.openpixi.pixi.physics.Settings;
 import org.openpixi.pixi.physics.fields.FieldSolver;
-import org.openpixi.pixi.physics.force.SimpleGridForce;
-import org.openpixi.pixi.physics.fields.PoissonSolver;
+
 
 public class Grid {
 
 	/**
 	 * The purpose of the extra cells is twofold.
-	 * 1) They assure that we always have a cell to interpolate to.
-	 *    For example, the hardwall boundaries allow the particle to be outside
+	 * 1) They represent the boundaries around the simulation area cells.
+	 *    The boundaries assure that we always have a cell to interpolate to.
+	 *    For example, the hardwall particle boundaries allow the particle to be outside
 	 *    of the simulation area.
 	 *    That means that the particle can be in a cell [numCellsX, numCellsY].
 	 *    If the particle is in this cell, it will be interpolated
@@ -29,41 +26,19 @@ public class Grid {
 	 *    With the extra cells we can comfortably iterate through the entire grid in a uniform way
 	 *    using the 0 values of extra cells when calculating the fields at the sides.
 	 */
-	static final int EXTRA_CELLS_BEFORE_GRID = 1;
-	static final int EXTRA_CELLS_AFTER_GRID = 2;
+	public static final int INTERPOLATION_RADIUS = 1;
+	public static final int HARDWALL_SAFETY_CELLS = 1;
+	public static final int EXTRA_CELLS_BEFORE_GRID =
+			INTERPOLATION_RADIUS + HARDWALL_SAFETY_CELLS - 1;
+	public static final int EXTRA_CELLS_AFTER_GRID =
+			INTERPOLATION_RADIUS + HARDWALL_SAFETY_CELLS;
 
-	/**contains the simulation instance that this grid belongs to*/
-	public Simulation simulation;
-	/**interpolation algorithm for current, charge density and force calculation*/
-	private Interpolator interp;
 	/**solver algorithm for the maxwell equations*/
 	private FieldSolver fsolver;
-	/**solver for the electrostatic poisson equation*/
-	private PoissonSolver poisolver;
 
-	/**electric current in x-Direction*/
-	private double [][] jx;
-	/**electric current in y-Direction*/
-	private double [][] jy;
+	private GridBoundaryType boundaryType;
 
-	/**sum of electric charges in a cell*/
-	private double [][] rho;
-	/**electrostatic potential*/
-	private double [][] phi;
-
-	/**electric field in x direction at time t+dt*/
-	private double [][] Ex;
-	/**electric field in y direction at time t+dt*/
-	private double [][] Ey;
-	/**magnetic field in z direction at time t+dt*/
-	private double [][] Bz;
-
-	/**electric field in x direction at time t*/
-	private double [][] Exo;
-	/**electric field in y direction at time t*/
-	private double [][] Eyo;
-	/**magnetic field in z direction at time t*/
-	private double [][] Bzo;
+	private Cell[][] cells;
 
 	/**number of cells in x direction*/
 	private int numCellsX;
@@ -74,14 +49,6 @@ public class Grid {
 	/**height of each cell*/
 	private double cellHeight;
 
-	public Interpolator getInterp() {
-		return interp;
-	}
-
-	public void setInterp(Interpolator interp) {
-		this.interp = interp;
-	}
-
 	public FieldSolver getFsolver() {
 		return fsolver;
 	}
@@ -91,123 +58,115 @@ public class Grid {
 	}
 
 	public double getJx(int x, int y) {
-		return jx[x+EXTRA_CELLS_BEFORE_GRID][y+EXTRA_CELLS_BEFORE_GRID];
+		return cells[index(x)][index(y)].jx;
 	}
 
 	public void setJx(int x, int y, double value) {
-		this.jx[x+EXTRA_CELLS_BEFORE_GRID][y+EXTRA_CELLS_BEFORE_GRID] = value;
+		cells[index(x)][index(y)].jx = value;
 	}
 
 	public void addJx(int x, int y, double value) {
-		this.jx[x+EXTRA_CELLS_BEFORE_GRID][y+EXTRA_CELLS_BEFORE_GRID] += value;
+		cells[index(x)][index(y)].jx += value;
 	}
 
 	public double getJy(int x, int y) {
-		return jy[x+EXTRA_CELLS_BEFORE_GRID][y+EXTRA_CELLS_BEFORE_GRID];
+		return cells[index(x)][index(y)].jy;
 	}
 
 	public void setJy(int x, int y, double value) {
-		this.jy[x+EXTRA_CELLS_BEFORE_GRID][y+EXTRA_CELLS_BEFORE_GRID] = value;
+		cells[index(x)][index(y)].jy = value;
 	}
 
 	public void addJy(int x, int y, double value) {
-		this.jy[x+EXTRA_CELLS_BEFORE_GRID][y+EXTRA_CELLS_BEFORE_GRID] += value;
+		cells[index(x)][index(y)].jy += value;
 	}
 
 	public double getRho(int x, int y) {
-		return this.rho[x+EXTRA_CELLS_BEFORE_GRID][y+EXTRA_CELLS_BEFORE_GRID];
+		return cells[index(x)][index(y)].rho;
 	}
 
 	public void setRho(int x, int y, double value) {
-		this.rho[x+EXTRA_CELLS_BEFORE_GRID][y+EXTRA_CELLS_BEFORE_GRID] = value;
+		cells[index(x)][index(y)].rho = value;
 	}
 	
 	public void addRho(int x, int y, double value) {
-		this.rho[x+EXTRA_CELLS_BEFORE_GRID][y+EXTRA_CELLS_BEFORE_GRID] += value;
+		cells[index(x)][index(y)].rho += value;
 	}
 
 	public double getPhi(int x, int y) {
-		return phi[x+EXTRA_CELLS_BEFORE_GRID][y+EXTRA_CELLS_BEFORE_GRID];
+		return cells[index(x)][index(y)].phi;
 	}
 
 	public void setPhi(int x, int y, double value) {
-		this.phi[x+EXTRA_CELLS_BEFORE_GRID][y+EXTRA_CELLS_BEFORE_GRID] = value;
+		cells[index(x)][index(y)].phi = value;
 	}
 
 	public double getEx(int x, int y) {
-		return Ex[x+EXTRA_CELLS_BEFORE_GRID][y+EXTRA_CELLS_BEFORE_GRID];
+		return cells[index(x)][index(y)].Ex;
 	}
 
 	public void setEx(int x, int y, double value) {
-		this.Ex[x+EXTRA_CELLS_BEFORE_GRID][y+EXTRA_CELLS_BEFORE_GRID] = value;
+		cells[index(x)][index(y)].Ex = value;
 	}
 
 	public void addEx(int x, int y, double value) {
-		this.Ex[x+EXTRA_CELLS_BEFORE_GRID][y+EXTRA_CELLS_BEFORE_GRID] += value;
+		cells[index(x)][index(y)].Ex += value;
 	}
 
 	public double getEy(int x, int y) {
-		return Ey[x+EXTRA_CELLS_BEFORE_GRID][y+EXTRA_CELLS_BEFORE_GRID];
+		return cells[index(x)][index(y)].Ey;
 	}
 
 	public void setEy(int x, int y, double value) {
-		this.Ey[x+EXTRA_CELLS_BEFORE_GRID][y+EXTRA_CELLS_BEFORE_GRID] = value;
+		cells[index(x)][index(y)].Ey = value;
 	}
 
 	public void addEy(int x, int y, double value) {
-		this.Ey[x+EXTRA_CELLS_BEFORE_GRID][y+EXTRA_CELLS_BEFORE_GRID] += value;
+		cells[index(x)][index(y)].Ey += value;
 	}
 
 	public double getBz(int x, int y) {
-		return Bz[x+EXTRA_CELLS_BEFORE_GRID][y+EXTRA_CELLS_BEFORE_GRID];
+		return cells[index(x)][index(y)].Bz;
 	}
 
 	public void setBz(int x, int y, double value) {
-		this.Bz[x+EXTRA_CELLS_BEFORE_GRID][y+EXTRA_CELLS_BEFORE_GRID] = value;
+		cells[index(x)][index(y)].Bz = value;
 	}
 
 	public void addBz(int x, int y, double value) {
-		this.Bz[x+EXTRA_CELLS_BEFORE_GRID][y+EXTRA_CELLS_BEFORE_GRID] += value;
+		cells[index(x)][index(y)].Bz += value;
 	}
 
 	public double getExo(int x, int y) {
-		return this.Exo[x+EXTRA_CELLS_BEFORE_GRID][y+EXTRA_CELLS_BEFORE_GRID];
+		return cells[index(x)][index(y)].Exo;
 	}
 
 	public void setExo(int x, int y, double value) {
-		this.Exo[x+EXTRA_CELLS_BEFORE_GRID][y+EXTRA_CELLS_BEFORE_GRID] = value;
+		cells[index(x)][index(y)].Exo = value;
 	}
 
 	public double getEyo(int x, int y) {
-		return this.Eyo[x+EXTRA_CELLS_BEFORE_GRID][y+EXTRA_CELLS_BEFORE_GRID];
+		return cells[index(x)][index(y)].Eyo;
 	}
 
 	public void setEyo(int x, int y, double value) {
-		this.Eyo[x+EXTRA_CELLS_BEFORE_GRID][y+EXTRA_CELLS_BEFORE_GRID] = value;
+		cells[index(x)][index(y)].Eyo = value;
 	}
 
 	public double getBzo(int x, int y) {
-		return this.Bzo[x+EXTRA_CELLS_BEFORE_GRID][y+EXTRA_CELLS_BEFORE_GRID];
+		return cells[index(x)][index(y)].Bzo;
 	}
 
 	public void setBzo(int x, int y, double value) {
-		this.Bzo[x+EXTRA_CELLS_BEFORE_GRID][y+EXTRA_CELLS_BEFORE_GRID] = value;
+		cells[index(x)][index(y)].Bzo = value;
 	}
 
 	public int getNumCellsX() {
 		return numCellsX;
 	}
 
-	public void setNumCellsX(int numCellsX) {
-		this.numCellsX = numCellsX;
-	}
-
 	public int getNumCellsY() {
 		return numCellsY;
-	}
-
-	public void setNumCellsY(int numCellsY) {
-		this.numCellsY = numCellsY;
 	}
 
 	public double getCellWidth() {
@@ -218,32 +177,42 @@ public class Grid {
 		return cellHeight;
 	}
 
-	public void setCellWidth(int cellWidth) {
-		this.cellWidth = cellWidth;
+	public Cell getCell(int x, int y) {
+		return cells[index(x)][index(y)];
 	}
 
-	public void setCellHeight(int cellHeight) {
-		this.cellHeight = cellHeight;
+
+	public Grid(Settings settings) {
+		this.boundaryType = settings.getGridBoundary();
+		this.fsolver = settings.getGridSolver();
+
+		set(settings.getGridCellsX(), settings.getGridCellsY(),
+				settings.getSimulationWidth(), settings.getSimulationHeight());
 	}
 
-	Grid(Simulation s,
-			int numCellsX, int numCellsY,
-			double simWidth, double simHeight,
-			FieldSolver fsolver,
-			Interpolator interp,
-			PoissonSolver poisolver) {
 
-		this.simulation = s;
+	/**
+	 * In the distributed version we want to create the grid from cell which come from master;
+	 * hence, this constructor.
+	 * Creates grid from the given cells.
+	 * The input cells have to contain also the boundary cells.
+	 */
+	public Grid(double simWidth, double simHeight, Cell[][] cells, FieldSolver fsolver) {
+		this.numCellsX = cells.length - EXTRA_CELLS_BEFORE_GRID - EXTRA_CELLS_AFTER_GRID;
+		this.numCellsY = cells[0].length - EXTRA_CELLS_BEFORE_GRID - EXTRA_CELLS_AFTER_GRID;
+		this.cellWidth = simWidth/numCellsX;
+		this.cellHeight = simHeight/numCellsY;
+
+		this.cells = cells;
 		this.fsolver = fsolver;
-		this.interp = interp;
-		this.poisolver = poisolver;
-
-		SimpleGridForce force = new SimpleGridForce();
-		s.f.add(force);
-
-		set(numCellsX, numCellsY, simWidth, simHeight);
 	}
 
+
+	/**
+	 * This method is dangerous as it would not work in distributed version.
+	 * TODO make sure the method can not be called in distributed version
+	 * E.g. throw an exception if this is distributed version
+	 */
 	public void set(int numCellsX, int numCellsY,
 			double simWidth, double simHeight) {
 
@@ -252,52 +221,119 @@ public class Grid {
 		this.cellWidth = simWidth/numCellsX;
 		this.cellHeight = simHeight/numCellsY;
 
-		int xcells = EXTRA_CELLS_BEFORE_GRID + numCellsX + EXTRA_CELLS_AFTER_GRID;
-		int ycells = EXTRA_CELLS_BEFORE_GRID + numCellsY + EXTRA_CELLS_AFTER_GRID;
-		jx = new double[xcells][ycells];
-		jy = new double[xcells][ycells];
-		rho = new double[xcells][ycells];
-		phi = new double[xcells][ycells];
-		Ex = new double[xcells][ycells];
-		Ey = new double[xcells][ycells];
-		Bz = new double[xcells][ycells];
-		Exo = new double[xcells][ycells];
-		Eyo = new double[xcells][ycells];
-		Bzo = new double[xcells][ycells];
-		
-		interp.interpolateChargedensity(simulation.particles, this);
-		poisolver.solve(this);
+		createGridWithBoundaries();
+	}
 
-		for (Particle p: simulation.particles){
-			//assuming rectangular particle shape i.e. area weighting
-			p.setChargedensity(p.getCharge() / (cellWidth * cellHeight));
+	private void createGridWithBoundaries() {
+		cells = new Cell[getNumCellsXTotal()][getNumCellsYTotal()];
+
+		// Create inner cells
+		for (int x = 0; x < getNumCellsX(); x++) {
+			for (int y = 0; y < getNumCellsY(); y++) {
+				cells[index(x)][index(y)] = new Cell();
+			}
+		}
+
+		createBoundaryCells();
+	}
+
+	private void createBoundaryCells() {
+		// left boundary (with corner cells)
+		for (int x = 0; x < EXTRA_CELLS_BEFORE_GRID; x++) {
+			for (int y = 0; y < getNumCellsYTotal(); y++) {
+				createBoundaryCell(x,y);
+			}
+		}
+		// right boundary (with corner cells)
+		for (int x = EXTRA_CELLS_BEFORE_GRID + numCellsX; x < getNumCellsXTotal(); x++) {
+			for (int y = 0; y < getNumCellsYTotal(); y++) {
+				createBoundaryCell(x,y);
+			}
+		}
+		// top boundary (without corner cells)
+		for (int x = EXTRA_CELLS_BEFORE_GRID; x < EXTRA_CELLS_BEFORE_GRID + numCellsX; x++) {
+			for (int y = 0; y < EXTRA_CELLS_BEFORE_GRID; y++) {
+				createBoundaryCell(x,y);
+			}
+		}
+		// bottom boundary (without corner cells)
+		for (int x = EXTRA_CELLS_BEFORE_GRID; x < EXTRA_CELLS_BEFORE_GRID + numCellsX; x++) {
+			for (int y = EXTRA_CELLS_BEFORE_GRID + numCellsY; y < getNumCellsYTotal(); y++) {
+				createBoundaryCell(x,y);
+			}
 		}
 	}
 
-	public void updateGrid(ArrayList<Particle> particles, double tstep) {
-		getInterp().interpolateToGrid(particles, this);
+	/**
+	 * Based on the boundary type creates the boundary cell.
+	 */
+	private void createBoundaryCell(int x, int y) {
+		if (boundaryType == GridBoundaryType.Hardwall) {
+			cells[x][y] = new Cell();
+		}
+		else if (boundaryType == GridBoundaryType.Periodic) {
+			int xmin = EXTRA_CELLS_BEFORE_GRID;
+			int xmax = numCellsX + EXTRA_CELLS_BEFORE_GRID - 1;
+			int ymin = EXTRA_CELLS_BEFORE_GRID;
+			int ymax = numCellsY + EXTRA_CELLS_BEFORE_GRID - 1;
+
+			int refX = x;
+			int refY = y;
+			if (x < xmin) {
+				refX += numCellsX;
+			} else if (x > xmax) {
+				refX -= numCellsX;
+			}
+			if (y < ymin) {
+				refY += numCellsY;
+			} else if (y > ymax) {
+				refY -= numCellsY;
+			}
+
+			cells[x][y] = cells[refX][refY];
+		}
+	}
+
+	public void updateGrid(double tstep) {
 		storeFields();
 		getFsolver().step(this, tstep);
-		getInterp().interpolateToParticle(particles, this);
 	}
 
 	public void resetCurrentAndCharge() {
-		for(int i = 0; i < getNumCellsX() + EXTRA_CELLS_BEFORE_GRID + EXTRA_CELLS_AFTER_GRID; i++) {
-			for(int k = 0; k < getNumCellsY() + EXTRA_CELLS_BEFORE_GRID + EXTRA_CELLS_AFTER_GRID; k++) {
-				jx[i][k] = 0.0;
-				jy[i][k] = 0.0;
-				rho[i][k] = 0.0;
+		for(int x = 0; x < getNumCellsXTotal(); x++) {
+			for(int y = 0; y < getNumCellsYTotal(); y++) {
+				cells[x][y].resetCharge();
+				cells[x][y].resetCurrent();
 			}
 		}
 	}
 
 	public void storeFields() {
-		for (int i = 0; i < getNumCellsX() + EXTRA_CELLS_BEFORE_GRID + EXTRA_CELLS_AFTER_GRID; i++) {
-			for (int j = 0; j < getNumCellsY() + EXTRA_CELLS_BEFORE_GRID + EXTRA_CELLS_AFTER_GRID; j++) {
-				Exo[i][j] = Ex[i][j];
-				Eyo[i][j] = Ey[i][j];
-				Bzo[i][j] = Bz[i][j];
+		for (int x = 0; x < getNumCellsXTotal(); x++) {
+			for (int y = 0; y < getNumCellsYTotal(); y++) {
+				cells[x][y].storeFields();
 			}
 		}
+	}
+
+	/**
+	 * Maps the client index which can be negative to the real array index
+	 * which has to be non-negative.
+	 * The client index can be negative if the client is asking for a cell which is within the
+	 * top or left boundary.
+	 * (By client we mean any code which is using this class)
+	 * */
+	private int index(int clientIdx) {
+		return EXTRA_CELLS_BEFORE_GRID + clientIdx;
+	}
+
+	/** Includes the extra cells. */
+	private int getNumCellsXTotal() {
+		return numCellsX + EXTRA_CELLS_BEFORE_GRID + EXTRA_CELLS_AFTER_GRID;
+	}
+
+	/** Includes the extra cells. */
+	private int getNumCellsYTotal() {
+		return numCellsY + EXTRA_CELLS_BEFORE_GRID + EXTRA_CELLS_AFTER_GRID;
 	}
 }

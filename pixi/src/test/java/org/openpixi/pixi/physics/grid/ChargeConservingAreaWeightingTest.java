@@ -1,13 +1,11 @@
 package org.openpixi.pixi.physics.grid;
 
 import junit.framework.TestCase;
-
-import org.openpixi.pixi.physics.InitialConditions;
 import org.openpixi.pixi.physics.Particle;
+import org.openpixi.pixi.physics.Settings;
 import org.openpixi.pixi.physics.Simulation;
-import org.openpixi.pixi.physics.force.*;
-import org.openpixi.pixi.physics.movement.boundary.ParticleBoundaryType;
-import org.openpixi.pixi.physics.solver.*;
+import org.openpixi.pixi.physics.fields.YeeSolver;
+import org.openpixi.pixi.physics.force.ConstantForce;
 
 /**
  * Unit test for Solver.
@@ -125,30 +123,22 @@ public class ChargeConservingAreaWeightingTest extends TestCase {
 	}
 
 	private void testMove(double x1, double y1, double x2, double y2, double charge, String text) {
-		Simulation s = InitialConditions.initEmptySimulation();
-
-		//basic simulation parameters
-		s.tstep = 1;
-		s.c = 0.7;
-		s.setWidth(10);
-		s.setHeight(10);
-		s.mover.psolver = new Boris();
-		s.mover.setBoundaryType(ParticleBoundaryType.Periodic);
+		Settings stt = GridTestCommon.getCommonSettings();
+		stt.setInterpolator(new ChargeConservingAreaWeighting());
+		stt.setGridSolver(new YeeSolver());
 
 		// Add single particle
 		Particle p = new Particle();
 		p.setX(x1);
 		p.setY(y1);
-		p.setVx((x2 - x1) / s.tstep);
-		p.setVy((y2 - y1) / s.tstep);
+		p.setVx((x2 - x1) / stt.getTimeStep());
+		p.setVy((y2 - y1) / stt.getTimeStep());
 		p.setMass(1);
 		p.setCharge(charge);
-		s.particles.add(p);
+		stt.addParticle(p);
 
+		Simulation s = new Simulation(stt);
 		s.prepareAllParticles();
-
-		// Use Yeegrid
-		Grid grid = GridFactory.createYeeGrid(s, 10, 10, 10, 10); // 10x10 grid
 
 		// Advance particle
 		s.particlePush();
@@ -158,19 +148,19 @@ public class ChargeConservingAreaWeightingTest extends TestCase {
 		double sy = p.getPrevY();
 
 		// Calculate current
-		grid.getInterp().interpolateToGrid(s.particles, grid);
+		s.getInterpolation().interpolateToGrid(s.particles, s.grid, s.tstep);
 
-		double jx = GridTestCommon.getJxSum(grid);
-		double jy = GridTestCommon.getJySum(grid);
+		double jx = GridTestCommon.getJxSum(s.grid);
+		double jy = GridTestCommon.getJySum(s.grid);
 
 		if (VERBOSE) System.out.println("Total current " + text + ": jx = " + jx + ", jy = " + jy
 				+ " (from " + sx + ", " + sy + " to " + p.getX() + ", " + p.getY() + ")");
 
-		GridTestCommon.checkSignJx(grid);
-		GridTestCommon.checkSignJy(grid);
+		GridTestCommon.checkSignJx(s.grid);
+		GridTestCommon.checkSignJy(s.grid);
 
-		assertAlmostEquals(text + ", jx", charge * (p.getX() - sx) / grid.simulation.tstep, jx, ACCURACY_LIMIT);
-		assertAlmostEquals(text + ", jy", charge * (p.getY() - sy) / grid.simulation.tstep, jy, ACCURACY_LIMIT);
+		assertAlmostEquals(text + ", jx", charge * (p.getX() - sx) / s.tstep, jx, ACCURACY_LIMIT);
+		assertAlmostEquals(text + ", jy", charge * (p.getY() - sy) / s.tstep, jy, ACCURACY_LIMIT);
 	}
 
 	public void testFourBoundaryMovesForce() {
@@ -207,15 +197,9 @@ public class ChargeConservingAreaWeightingTest extends TestCase {
 	 * @param text
 	 */
 	private void testMoveForce(double x1, double y1, double vx, double vy, double ex, double bz, double charge, String text) {
-		Simulation s = InitialConditions.initEmptySimulation();
-
-		//basic simulation parameters
-		s.tstep = 1;
-		s.c = 0.7;
-		s.setWidth(10);
-		s.setHeight(10);
-		s.mover.psolver = new Boris();
-		s.mover.setBoundaryType(ParticleBoundaryType.Periodic);
+		Settings stt = GridTestCommon.getCommonSettings();
+		stt.setInterpolator(new ChargeConservingAreaWeighting());
+		stt.setGridSolver(new YeeSolver());
 
 		// Add single particle
 		Particle p = new Particle();
@@ -225,18 +209,15 @@ public class ChargeConservingAreaWeightingTest extends TestCase {
 		p.setVy(vy);
 		p.setMass(1);
 		p.setCharge(charge);
-		s.particles.add(p);
+		stt.addParticle(p);
 
 		ConstantForce force = new ConstantForce();
 		force.ex = ex;
 		force.bz = bz;
-		s.f.add(force);
+		stt.addForce(force);
 
+		Simulation s = new Simulation(stt);
 		s.prepareAllParticles();
-
-		// Use Yeegrid
-		Grid grid = GridFactory.createYeeGrid(s, 10, 10, 10, 10); // 10x10 grid
-		//change default grid parameters here
 
 		// Advance particle
 		s.particlePush();
@@ -246,19 +227,19 @@ public class ChargeConservingAreaWeightingTest extends TestCase {
 		double sy = p.getPrevY();
 
 		// Calculate current
-		grid.getInterp().interpolateToGrid(s.particles, grid);
+		s.getInterpolation().interpolateToGrid(s.particles, s.grid, s.tstep);
 
-		double jx = GridTestCommon.getJxSum(grid);
-		double jy = GridTestCommon.getJySum(grid);
+		double jx = GridTestCommon.getJxSum(s.grid);
+		double jy = GridTestCommon.getJySum(s.grid);
 
 		if (VERBOSE) System.out.println("Total current " + text + ": jx = " + jx + ", jy = " + jy
 				+ " (from " + sx + ", " + sy + " to " + p.getX() + ", " + p.getY() + ")");
 
-		GridTestCommon.checkSignJx(grid);
-		GridTestCommon.checkSignJy(grid);
+		GridTestCommon.checkSignJx(s.grid);
+		GridTestCommon.checkSignJy(s.grid);
 
-		assertAlmostEquals(text + ", jx", charge * (p.getX() - sx) / grid.simulation.tstep, jx, ACCURACY_LIMIT);
-		assertAlmostEquals(text + ", jy", charge * (p.getY() - sy) / grid.simulation.tstep, jy, ACCURACY_LIMIT);
+		assertAlmostEquals(text + ", jx", charge * (p.getX() - sx) / s.tstep, jx, ACCURACY_LIMIT);
+		assertAlmostEquals(text + ", jy", charge * (p.getY() - sy) / s.tstep, jy, ACCURACY_LIMIT);
 	}
 
 }

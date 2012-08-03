@@ -1,14 +1,15 @@
 package org.openpixi.pixi.ui;
 
-import java.io.File;
-
-import org.openpixi.pixi.physics.InitialConditions;
+import org.openpixi.pixi.physics.Settings;
 import org.openpixi.pixi.physics.Simulation;
 import org.openpixi.pixi.physics.fields.PoissonSolver;
 import org.openpixi.pixi.physics.fields.PoissonSolverFFTPeriodic;
+import org.openpixi.pixi.physics.fields.YeeSolver;
+import org.openpixi.pixi.physics.grid.ChargeConservingAreaWeighting;
 import org.openpixi.pixi.physics.grid.Grid;
-import org.openpixi.pixi.physics.grid.GridFactory;
 import org.openpixi.pixi.ui.util.WriteFile;
+
+import java.io.File;
 
 public class PoissonSolverCalculations {
 	
@@ -17,12 +18,18 @@ public class PoissonSolverCalculations {
 	private PoissonSolver poisolver;
 	
 	public PoissonSolverCalculations() {
-		
-		this.s = InitialConditions.initEmptySimulation();
-		s.setWidth(100);
-		s.setHeight(100);
-		
-		this.g = GridFactory.createYeeGrid(s, 100, 100, s.getWidth(), s.getHeight());
+
+		Settings stt = new Settings();
+		stt.setSimulationWidth(100);
+		stt.setSimulationHeight(100);
+
+		stt.setGridCellsX(100);
+		stt.setGridCellsY(100);
+		stt.setGridSolver(new YeeSolver());
+		stt.setInterpolator(new ChargeConservingAreaWeighting());
+
+		this.s = new Simulation(stt);
+		this.g = s.grid;
 		g.resetCurrentAndCharge();
 		
 		this.poisolver = new PoissonSolverFFTPeriodic();
@@ -89,7 +96,7 @@ public class PoissonSolverCalculations {
 	
 	public static void output(Grid g) {
 		
-		double aspectratio = g.simulation.getHeight() / g.simulation.getWidth();
+		double aspectratio = g.getCellHeight() * g.getNumCellsY() / g.getCellWidth() * g.getNumCellsX();
 		//deletes the old files
 		File file1 = new File("\\efeld.dat");
 		file1.delete();
@@ -150,17 +157,24 @@ public class PoissonSolverCalculations {
 	}
 	
 	public static void interpolatorAndPoissonsolver() {
-		
-		Simulation s = InitialConditions.initEmptySimulation();
-		s.setWidth(100);
-		s.setHeight(100);
-		s.c = Math.sqrt(s.getWidth() * s.getWidth() + s.getHeight() * s.getHeight())/5;
-		s.particles = InitialConditions.createRandomParticles(s.getWidth(), s.getHeight(), s.c, 1, 1);
-		s.particles.get(0).setCharge(10);
-		
-		Grid g = GridFactory.createYeeGrid(s, 100, 100, s.getWidth(), s.getHeight());
-		
-		PoissonSolverCalculations.output(g);
+
+		Settings stt = new Settings();
+		stt.setSimulationWidth(100);
+		stt.setSimulationHeight(100);
+		stt.setSpeedOfLight(Math.sqrt(stt.getSimulationWidth() * stt.getSimulationWidth() +
+				stt.getSimulationHeight() * stt.getSimulationHeight())/5);
+
+		stt.setNumOfParticles(1);
+		stt.setParticleRadius(1);
+		stt.setParticleMaxSpeed(stt.getSpeedOfLight());
+
+		stt.setGridCellsX(100);
+		stt.setGridCellsY(100);
+		stt.setGridSolver(new YeeSolver());
+		stt.setInterpolator(new ChargeConservingAreaWeighting());
+
+		Simulation s = new Simulation(stt);
+		PoissonSolverCalculations.output(s.grid);
 	}
 
 }
