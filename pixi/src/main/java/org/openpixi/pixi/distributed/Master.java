@@ -42,6 +42,13 @@ public class Master {
 	 */
 	private IntBox[] partitions;
 
+	/* Results received from workers */
+	private Cell[][][] gridPartitions;
+	private List<List<Particle>> particlePartitions = new ArrayList<List<Particle>>();
+
+	private CountLock resultsLock;
+
+
 	Grid getInitialGrid() {
 		return initialGrid;
 	}
@@ -62,11 +69,13 @@ public class Master {
 	public Master(IbisRegistry registry, Settings settings) {
 		this.settings = settings;
 		try {
-			communicator = new MasterToWorkers(registry);
+			communicator = new MasterToWorkers(registry, new ResultHandler());
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw new RuntimeException(e);
 		}
+
+		// Initialize the grid
 
 		initialGrid = new Grid(settings);
 		initialParticles = settings.getParticles();
@@ -77,6 +86,14 @@ public class Master {
 				settings.getPoissonSolver(),
 				initialParticles,
 				initialGrid);
+
+		// Initialize the classes holding the result
+		gridPartitions = new Cell[settings.getNumOfNodes()][][];
+		for (int i = 0; i < settings.getNumOfNodes(); i++) {
+			particlePartitions.add(new ArrayList<Particle>());
+		}
+
+		resultsLock = new CountLock(settings.getNumOfNodes());
 	}
 
 
@@ -188,14 +205,10 @@ public class Master {
 
 
 	public void collectResults() {
-		try {
-			communicator.collectResults();
-			finalParticles = assembleParticles(communicator.getParticlePartitions());
-			finalGrid = assembleGrid(communicator.getGridPartitions());
-		} catch (Exception e) {
-			e.printStackTrace();
-			throw new RuntimeException(e);
-		}
+		resultsLock.waitForCount();
+		resultsLock.reset();
+		finalParticles = assembleParticles(particlePartitions);
+		finalGrid = assembleGrid(gridPartitions);
 	}
 
 
@@ -278,5 +291,14 @@ public class Master {
 
 	public void close() {
 		communicator.close();
+	}
+
+
+	private class ResultHandler implements IncomingResultHandler {
+		public void handle(int workerID, List<Particle> particles, Cell[][] cells) {
+			gridPartitions[workerID] = cells;
+			particlePartitions.set(workerID, particles);
+			resultsLock.increase();
+		}
 	}
 }

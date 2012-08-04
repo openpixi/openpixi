@@ -5,6 +5,7 @@ import org.openpixi.pixi.distributed.grid.DistributedInterpolationIterator;
 import org.openpixi.pixi.distributed.ibis.IbisRegistry;
 import org.openpixi.pixi.distributed.ibis.WorkerToMaster;
 import org.openpixi.pixi.distributed.movement.boundary.DistributedParticleBoundaries;
+import org.openpixi.pixi.physics.Particle;
 import org.openpixi.pixi.physics.Settings;
 import org.openpixi.pixi.physics.Simulation;
 import org.openpixi.pixi.physics.grid.Cell;
@@ -16,6 +17,7 @@ import org.openpixi.pixi.physics.util.DoubleBox;
 import org.openpixi.pixi.physics.util.IntBox;
 
 import java.io.IOException;
+import java.util.List;
 
 /**
  * Receives the problem, calculates the problem, sends back results.
@@ -35,11 +37,18 @@ public class Worker {
 
 	private SharedDataManager sharedDataManager;
 
+	/* Received problem */
+	private IntBox[] partitions;
+	private List<Particle> particles;
+	private Cell[][] cells;
+
+	private BooleanLock recvProblemLock = new BooleanLock();
+
 
 	public Worker(IbisRegistry registry, Settings settings) {
 		this.globalSettings = settings;
 		try {
-			communicator = new WorkerToMaster(registry);
+			communicator = new WorkerToMaster(registry, new ProblemHandler());
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw new RuntimeException(e);
@@ -54,14 +63,9 @@ public class Worker {
 
 
 	public void receiveProblem() {
-		try {
-			communicator.receiveProblem();
+			recvProblemLock.waitForTrue();
+			recvProblemLock.reset();
 			createSimulation();
-
-		} catch (Exception e) {
-			e.printStackTrace();
-			throw new RuntimeException(e);
-		}
 	}
 
 
@@ -88,7 +92,7 @@ public class Worker {
 	 * (because of hardwall boundaries).
 	 */
 	private Cell[][] getFinalCells(Grid grid) {
-		IntBox mypart = communicator.getPartitions()[workerID];
+		IntBox mypart = partitions[workerID];
 
 		int xstart = 0;
 		int ystart = 0;
@@ -131,7 +135,7 @@ public class Worker {
 		sharedDataManager.initializeCommunication();
 
 		this.simulation = new Simulation(
-				localSettings, grid, communicator.getParticles(),
+				localSettings, grid, particles,
 				particleBoundaries, interpolation);
 	}
 
@@ -142,7 +146,7 @@ public class Worker {
 	 * Thus, we need to correct them, so that they correspond to the local simulation.
 	 */
 	private void createLocalSettings() {
-		IntBox mypart = communicator.getPartitions()[workerID];
+		IntBox mypart = partitions[workerID];
 
 		double cellWidth = globalSettings.getCellWidth();
 		double cellHeight = globalSettings.getCellHeight();
@@ -175,7 +179,7 @@ public class Worker {
 				0, globalSettings.getGridCellsX() - 1, 0, globalSettings.getGridCellsY() - 1);
 		return new SharedDataManager(
 				workerID,
-				communicator.getPartitions(),
+				partitions,
 				simulationAreaInCellDimensions,
 				localSettings.getBoundaryType(),
 				communicator.getRegistry());
@@ -184,8 +188,8 @@ public class Worker {
 
 	private Grid createGrid(SharedDataManager sharedDataManager) {
 		DistributedGridFactory gridFactory = new DistributedGridFactory(
-				localSettings, communicator.getPartitions()[workerID],
-				communicator.getCells(), sharedDataManager);
+				localSettings, partitions[workerID],
+				cells, sharedDataManager);
 		return gridFactory.create();
 	}
 
@@ -205,5 +209,15 @@ public class Worker {
 	public void close() {
 		communicator.close();
 		sharedDataManager.close();
+	}
+
+
+	private class ProblemHandler implements IncomingProblemHandler {
+		public void handle(IntBox[] partitions, List<Particle> particles, Cell[][] cells) {
+			Worker.this.partitions = partitions;
+			Worker.this.particles = particles;
+			Worker.this.cells = cells;
+			recvProblemLock.setToTrue();
+		}
 	}
 }

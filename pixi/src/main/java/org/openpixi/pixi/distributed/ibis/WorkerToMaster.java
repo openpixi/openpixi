@@ -1,6 +1,7 @@
 package org.openpixi.pixi.distributed.ibis;
 
 import ibis.ipl.*;
+import org.openpixi.pixi.distributed.IncomingProblemHandler;
 import org.openpixi.pixi.physics.Particle;
 import org.openpixi.pixi.physics.grid.Cell;
 import org.openpixi.pixi.physics.util.IntBox;
@@ -19,45 +20,24 @@ public class WorkerToMaster {
 	private ReceivePort recvProblemPort;
 	private SendPort sendResultPort;
 
-	// Received data
-	private IntBox[] partitions;
-	private List<Particle> particles;
-	private Cell[][] cells;
+	private IncomingProblemHandler problemHandler;
 
-
-	public IntBox[] getPartitions() {
-		return partitions;
-	}
-
-	public List<Particle> getParticles() {
-		return particles;
-	}
-
-	public Cell[][] getCells() {
-		return cells;
-	}
 
 	public IbisRegistry getRegistry() {
 		return registry;
 	}
 
-	public WorkerToMaster(IbisRegistry registry) throws Exception {
+
+	public WorkerToMaster(IbisRegistry registry, IncomingProblemHandler problemHandler) throws Exception {
 		this.registry = registry;
+		this.problemHandler = problemHandler;
+
 		recvProblemPort = registry.getIbis().createReceivePort(
-				PixiPorts.ONE_TO_ONE_PORT, PixiPorts.DISTRIBUTE_PORT_ID);
+				PixiPorts.ONE_TO_ONE_PORT, PixiPorts.DISTRIBUTE_PORT_ID, new IncomingProblem());
 		recvProblemPort.enableConnections();
+		recvProblemPort.enableMessageUpcalls();
+
 		sendResultPort = registry.getIbis().createSendPort(PixiPorts.GATHER_PORT);
-	}
-
-
-	public void receiveProblem() throws IOException, ClassNotFoundException {
-		ReadMessage rm = recvProblemPort.receive();
-		partitions = (IntBox[])rm.readObject();
-		particles = (List<Particle>)rm.readObject();
-		cells = (Cell[][])rm.readObject();
-		rm.finish();
-
-		recvProblemPort.close();
 	}
 
 
@@ -82,6 +62,21 @@ public class WorkerToMaster {
 		} catch (IOException e) {
 			e.printStackTrace();
 			throw new RuntimeException(e);
+		}
+	}
+
+
+	private class IncomingProblem implements MessageUpcall {
+		public void upcall(ReadMessage readMessage) throws IOException, ClassNotFoundException {
+
+			IntBox[] partitions = (IntBox[])readMessage.readObject();
+			List<Particle> particles = (List<Particle>)readMessage.readObject();
+			Cell[][] cells = (Cell[][])readMessage.readObject();
+
+			problemHandler.handle(partitions, particles, cells);
+
+			readMessage.finish();
+			recvProblemPort.close();
 		}
 	}
 }

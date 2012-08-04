@@ -1,15 +1,12 @@
 package org.openpixi.pixi.distributed.ibis;
 
-import ibis.ipl.ReadMessage;
-import ibis.ipl.ReceivePort;
-import ibis.ipl.SendPort;
-import ibis.ipl.WriteMessage;
+import ibis.ipl.*;
+import org.openpixi.pixi.distributed.IncomingResultHandler;
 import org.openpixi.pixi.physics.Particle;
 import org.openpixi.pixi.physics.grid.Cell;
 import org.openpixi.pixi.physics.util.IntBox;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -20,42 +17,18 @@ public class MasterToWorkers {
 
 	private IbisRegistry registry;
 	private ReceivePort recvResultsPort;
-	private SendPort[] sendPorts;
-
-	// Received data
-	private List<List<Particle>> particlePartitions = new ArrayList<List<Particle>>();
-	private Cell[][][] gridPartitions;
+	private IncomingResultHandler resultHandler;
 
 
-	public List<List<Particle>> getParticlePartitions() {
-		return particlePartitions;
-	}
-
-	public Cell[][][] getGridPartitions() {
-		return gridPartitions;
-	}
-
-
-	public MasterToWorkers(IbisRegistry registry) throws Exception {
+	public MasterToWorkers(IbisRegistry registry, IncomingResultHandler resultHandler) throws Exception {
 		this.registry = registry;
+		this.resultHandler = resultHandler;
 
 		// Initialize ports
-
 		recvResultsPort = registry.getIbis().createReceivePort(
-				PixiPorts.GATHER_PORT, PixiPorts.GATHER_PORT_ID);
+				PixiPorts.GATHER_PORT, PixiPorts.GATHER_PORT_ID, new IncomingResults());
 		recvResultsPort.enableConnections();
-
-		sendPorts = new SendPort[registry.getWorkers().size()];
-		for (int i = 0; i < sendPorts.length; ++i) {
-			sendPorts[i] = registry.getIbis().createSendPort(PixiPorts.ONE_TO_ONE_PORT);
-		}
-
-		// Initialize the holders for received data
-		int numOfWorkers = registry.getWorkers().size();
-		gridPartitions = new Cell[numOfWorkers][][];
-		for (int i = 0; i < numOfWorkers; i++) {
-			particlePartitions.add(new ArrayList<Particle>());
-		}
+		recvResultsPort.enableMessageUpcalls();
 	}
 
 
@@ -66,13 +39,10 @@ public class MasterToWorkers {
 	public void sendProblem(int workerID, IntBox[] partitions,
 	                        List<Particle> particles,
 	                        Cell[][] cells) throws IOException {
-
-		SendPort sendPort = sendPorts[workerID];
-		if (sendPort.connectedTo().length == 0) {
-			sendPort.connect(
-					registry.convertWorkerIDToIbisID(workerID),
-					PixiPorts.DISTRIBUTE_PORT_ID);
-		}
+		SendPort sendPort = registry.getIbis().createSendPort(PixiPorts.ONE_TO_ONE_PORT);
+		sendPort.connect(
+				registry.convertWorkerIDToIbisID(workerID),
+				PixiPorts.DISTRIBUTE_PORT_ID);
 
 		WriteMessage wm = sendPort.newMessage();
 		wm.writeObject(partitions);
@@ -84,27 +54,22 @@ public class MasterToWorkers {
 	}
 
 
-	public void collectResults() throws Exception {
-		for (int i = 0; i < registry.getWorkers().size(); ++i) {
-
-			ReadMessage rm = recvResultsPort.receive();
-			int workerID = rm.readInt();
-			List<Particle> particles = (List<Particle>)rm.readObject();
-			Cell[][] cells = (Cell[][])rm.readObject();
-			rm.finish();
-
-			gridPartitions[workerID] = cells;
-			particlePartitions.set(workerID, particles);
-		}
-	}
-
-
 	public void close() {
 		try {
 			recvResultsPort.close();
 		} catch (IOException e) {
 			e.printStackTrace();
 			throw new RuntimeException(e);
+		}
+	}
+
+
+	private class IncomingResults implements MessageUpcall {
+		public void upcall(ReadMessage readMessage) throws IOException, ClassNotFoundException {
+			int workerID = readMessage.readInt();
+			List<Particle> particles = (List<Particle>)readMessage.readObject();
+			Cell[][] cells = (Cell[][])readMessage.readObject();
+			resultHandler.handle(workerID, particles, cells);
 		}
 	}
 }

@@ -1,7 +1,7 @@
 package org.openpixi.pixi.distributed.ibis;
 
 import ibis.ipl.*;
-import org.openpixi.pixi.distributed.IntLock;
+import org.openpixi.pixi.distributed.CountLock;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -22,7 +22,7 @@ public class IbisRegistry {
 	private static Logger logger = LoggerFactory.getLogger(IbisRegistry.class);
 
 	/** Lock to wait for all the workers to join. */
-	private IntLock numOfJoinedWorkersLock;
+	private CountLock numOfJoinedWorkersLock;
 
 	private final List<IbisIdentifier> workers =
 			Collections.synchronizedList(new ArrayList<IbisIdentifier>());
@@ -52,7 +52,7 @@ public class IbisRegistry {
 		System.setProperty("ibis.server.address", iplServer);
 		System.setProperty("ibis.pool.name", iplPool);
 
-		numOfJoinedWorkersLock = new IntLock(0);
+		numOfJoinedWorkersLock = new CountLock(numOfWorkers);
 		try {
 			ibis = IbisFactory.createIbis(ibisCapabilities, new RegistryEvent(), PixiPorts.ALL_PORTS);
 			master = ibis.registry().elect("Master");
@@ -66,7 +66,7 @@ public class IbisRegistry {
 			logger.info(" Master is {} ", master.name());
 		}
 
-		numOfJoinedWorkersLock.waitForValue(numOfWorkers);
+		numOfJoinedWorkersLock.waitForCount();
 
 		// Log the workers to verify whether they are in the same order on each node.
 		StringBuilder sb = new StringBuilder();
@@ -128,7 +128,7 @@ public class IbisRegistry {
 
 		public synchronized void joined(IbisIdentifier ii) {
 			workers.add(ii);
-			numOfJoinedWorkersLock.setValue(workers.size());
+			numOfJoinedWorkersLock.increase();
 
 			if (isMaster()) {
 				logger.info("Node {} joined the pool", ii.name());
