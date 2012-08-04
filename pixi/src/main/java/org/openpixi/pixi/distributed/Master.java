@@ -12,8 +12,6 @@ import org.openpixi.pixi.physics.grid.Grid;
 import org.openpixi.pixi.physics.grid.SimpleInterpolationIterator;
 import org.openpixi.pixi.physics.util.ClassCopier;
 import org.openpixi.pixi.physics.util.IntBox;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -24,8 +22,6 @@ import java.util.List;
  * To each worker we assign exactly one problem.
  */
 public class Master {
-
-	private static Logger logger = LoggerFactory.getLogger(Master.class);
 
 	private MasterToWorkers communicator;
 	private Settings settings;
@@ -94,7 +90,6 @@ public class Master {
 		Partitioner partitioner = new SimplePartitioner();
 		partitions = partitioner.partition(
 				settings.getGridCellsX(), settings.getGridCellsY(), settings.getNumOfNodes());
-		logger.debug("problem partitioning:\n{}", partitioner);
 
 		// Partition the data
 		List<Particle> initialParticlesCopy = copyInitialParticles();

@@ -6,8 +6,6 @@ import org.openpixi.pixi.physics.grid.Cell;
 import org.openpixi.pixi.physics.grid.Grid;
 import org.openpixi.pixi.physics.movement.boundary.ParticleBoundaries;
 import org.openpixi.pixi.physics.util.Point;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,14 +16,8 @@ import java.util.List;
  */
 public class SharedData {
 
-	private Logger logger = LoggerFactory.getLogger(this.getClass());
-
 	/** Handles the network communication with neighbor. */
 	private WorkerToWorker communicator;
-
-	/* For debugging purposes. */
-	private int neighborID;
-	private int myID;
 
 	/* Locks to wait for the data to be received. */
 	private BooleanLock arrivingParticlesLock = new BooleanLock();
@@ -71,9 +63,7 @@ public class SharedData {
 	}
 
 
-	public SharedData(int myID, int neighborID, WorkerToWorker communicator) {
-		this.myID = myID;
-		this.neighborID = neighborID;
+	public SharedData(WorkerToWorker communicator) {
 		this.communicator = communicator;
 
 		communicator.setGhostCellsHandler(new GhostCellsHandler());

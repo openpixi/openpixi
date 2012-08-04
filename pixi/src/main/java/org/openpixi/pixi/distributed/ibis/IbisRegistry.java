@@ -19,8 +19,6 @@ public class IbisRegistry {
             IbisCapabilities.ELECTIONS_STRICT, 
             IbisCapabilities.MEMBERSHIP_TOTALLY_ORDERED);
 
-	private static Logger logger = LoggerFactory.getLogger(IbisRegistry.class);
-
 	/** Lock to wait for all the workers to join. */
 	private CountLock numOfJoinedWorkersLock;
 
@@ -62,18 +60,7 @@ public class IbisRegistry {
 		}
 		ibis.registry().enableEvents();
 
-		if (isMaster()) {
-			logger.info(" Master is {} ", master.name());
-		}
-
 		numOfJoinedWorkersLock.waitForCount();
-
-		// Log the workers to verify whether they are in the same order on each node.
-		StringBuilder sb = new StringBuilder();
-		for (IbisIdentifier worker: workers) {
-			sb.append(worker.name() + "\t");
-		}
-		logger.debug("Workers: {}", sb.toString().trim());
 	}
 
 
@@ -129,10 +116,6 @@ public class IbisRegistry {
 		public synchronized void joined(IbisIdentifier ii) {
 			workers.add(ii);
 			numOfJoinedWorkersLock.increase();
-
-			if (isMaster()) {
-				logger.info("Node {} joined the pool", ii.name());
-			}
 		}
 
 		public void left(IbisIdentifier ii) {

@@ -37,19 +37,17 @@ public class TrueDistSimTest {
 			stt.setNumOfNodes(numOfNodes);
 			stt.setIplServer(iplServer);
 
-			System.out.println("Running test " + testName);
-
 			Node n = new Node(stt);
 			n.run();
-			compareResult(stt, n);
-
-			System.out.println();
+			compareResult(stt, n, testName);
 		}
 	}
 
 
-	private static void compareResult(Settings stt, Node n) {
+	private static void compareResult(Settings stt, Node n, String testName) {
 		if (n.isMaster()) {
+			System.out.println("Comparing result of " + testName + " test");
+
 			Simulation localSimulation = new Simulation(stt);
 			localSimulation.run();
 

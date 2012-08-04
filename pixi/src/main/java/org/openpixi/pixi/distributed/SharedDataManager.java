@@ -29,7 +29,6 @@ public class SharedDataManager {
 	private Map<Integer, SharedData> sharedData = new HashMap<Integer, SharedData>();
 
 	private IbisRegistry registry;
-	private int thisWorkerID;
 
 	private Thread particleExchangeThread;
 
@@ -41,7 +40,6 @@ public class SharedDataManager {
 	        GeneralBoundaryType boundaryType,
 	        IbisRegistry registry) {
 
-		this.thisWorkerID = thisWorkerID;
 		this.registry = registry;
 		this.neighborMap = new NeighborMap(thisWorkerID, partitions, globalSimArea, boundaryType);
 	}
@@ -101,7 +99,7 @@ public class SharedDataManager {
 		if (!sharedData.containsKey(neighbor)) {
 			sharedData.put(
 					neighbor,
-					new SharedData(thisWorkerID, neighbor, new WorkerToWorker(registry, neighbor)));
+					new SharedData(new WorkerToWorker(registry, neighbor)));
 		}
 		return sharedData.get(neighbor);
 	}
