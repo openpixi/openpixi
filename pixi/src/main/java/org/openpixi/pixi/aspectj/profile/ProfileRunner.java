@@ -3,6 +3,7 @@ package org.openpixi.pixi.aspectj.profile;
 import org.openpixi.pixi.distributed.Node;
 import org.openpixi.pixi.physics.Settings;
 import org.openpixi.pixi.physics.Simulation;
+import org.openpixi.pixi.physics.solver.Boris;
 
 /**
  * Based on the command line arguments runs either distributed or local simulation.
@@ -28,12 +29,13 @@ public class ProfileRunner {
 		assert numOfNodes > 0: "Invalid number of nodes!";
 
 		Settings settings = new Settings();
-		settings.setGridCellsX(128);
-		settings.setGridCellsY(128);
+		settings.setGridCellsX(16);
+		settings.setGridCellsY(16);
 		settings.setSimulationWidth(10 * settings.getGridCellsX());
 		settings.setSimulationHeight(10 * settings.getGridCellsY());
-		settings.setNumOfParticles(100);
-		settings.setIterations(100);
+		settings.setNumOfParticles(1000);
+		settings.setIterations(10);
+		settings.setParticleSolver(new Boris());
 		settings.setNumOfNodes(numOfNodes);
 		settings.setIplServer(iplServer);
 
