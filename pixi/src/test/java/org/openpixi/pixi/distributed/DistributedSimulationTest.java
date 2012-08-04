@@ -25,6 +25,10 @@ public class DistributedSimulationTest {
 		Settings defaultSettings = getDefaultSettings();
 
 		Settings settings = ClassCopier.copy(defaultSettings);
+		settings.setNumOfNodes(2);
+		variousTestSettings.put("2 nodes deadlock test", settings);
+
+		settings = ClassCopier.copy(defaultSettings);
 		variousTestSettings.put("Euler", settings);
 
 		settings = ClassCopier.copy(defaultSettings);
@@ -83,8 +87,8 @@ public class DistributedSimulationTest {
 		settings.setNumOfNodes(8);
 		settings.setGridCellsX(64);
 		settings.setGridCellsY(128);
-		settings.setSimulationWidth(160);
-		settings.setSimulationHeight(160);
+		settings.setSimulationWidth(10 * settings.getGridCellsX());
+		settings.setSimulationHeight(10 * settings.getGridCellsY());
 		settings.setNumOfParticles(10);
 		settings.setIterations(100);
 		settings.setParticleSolver(new Euler());
