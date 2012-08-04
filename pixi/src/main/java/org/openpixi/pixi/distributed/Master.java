@@ -49,14 +49,6 @@ public class Master {
 	private CountLock resultsLock;
 
 
-	Grid getInitialGrid() {
-		return initialGrid;
-	}
-
-	List<Particle> getInitialParticles() {
-		return initialParticles;
-	}
-
 	public Grid getFinalGrid() {
 		return finalGrid;
 	}
