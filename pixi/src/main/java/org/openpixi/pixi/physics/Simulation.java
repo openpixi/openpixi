@@ -45,6 +45,9 @@ public class Simulation {
 	private double  height;
 	private double speedOfLight;
 
+	/** Number of iterations in the non-interactive simulation. */
+	private int iterations;
+
 	/**Contains all Particle2D objects*/
 	public ArrayList<Particle> particles;
 	public CombinedForce f;
@@ -93,6 +96,7 @@ public class Simulation {
 		width = settings.getSimulationWidth();
 		height = settings.getSimulationHeight();
 		speedOfLight = settings.getSpeedOfLight();
+		iterations = settings.getIterations();
 
 		// TODO make particles a generic list
 		particles = (ArrayList<Particle>)settings.getParticles();
@@ -143,6 +147,7 @@ public class Simulation {
 		this.width = settings.getSimulationWidth();
 		this.height = settings.getSimulationHeight();
 		this.speedOfLight = settings.getSpeedOfLight();
+		this.iterations = settings.getIterations();
 
 		this.particles = (ArrayList<Particle>)particles;
 		f = settings.getForce();
@@ -184,6 +189,10 @@ public class Simulation {
 	}
 
 
+	/**
+	 * Runs the simulation in steps.
+	 * (for interactive simulations)
+	 */
 	public void step() {
 		particlePush();
 		if(collisionBoolean) {
@@ -193,6 +202,17 @@ public class Simulation {
 		interpolation.interpolateToGrid(particles, grid, tstep);
 		grid.updateGrid(tstep);
 		interpolation.interpolateToParticle(particles, grid);
+	}
+
+
+	/**
+	 * Runs the entire simulation at once.
+	 * (for non-interactive simulations)
+	 */
+	public void run() {
+		for (int i = 0; i < iterations; ++i) {
+			step();
+		}
 	}
 
 
