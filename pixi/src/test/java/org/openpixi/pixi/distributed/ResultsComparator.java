@@ -9,13 +9,13 @@ import java.util.List;
 /**
  * Compares the results of two simulations.
  */
-public class SimulationComparator {
+public class ResultsComparator {
 
 	private static final Double TOLERANCE = 1e-10;
    	private int iteration;
 
 
-	public SimulationComparator(int iteration) {
+	public ResultsComparator(int iteration) {
 		this.iteration = iteration;
 	}
 

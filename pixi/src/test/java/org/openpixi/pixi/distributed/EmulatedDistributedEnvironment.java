@@ -4,15 +4,15 @@ import org.openpixi.pixi.physics.Settings;
 import org.openpixi.pixi.physics.Simulation;
 
 /**
- * Simulates distributed environment on local host.
+ * Emulates distributed environment on local host.
  * Verifies whether the result of the distributed simulation
  * is the same as the result of non-distributed simulation.
  */
-public class SimulatedDistributedEnvironment {
+public class EmulatedDistributedEnvironment {
 
 	private Settings settings;
 
-	public SimulatedDistributedEnvironment(Settings settings) {
+	public EmulatedDistributedEnvironment(Settings settings) {
 		this.settings = settings;
 	}
 
@@ -122,7 +122,7 @@ public class SimulatedDistributedEnvironment {
 
 
 	private void compareResults(Master master, Simulation simulation, int iteration) {
-		SimulationComparator comparator = new SimulationComparator(iteration);
+		ResultsComparator comparator = new ResultsComparator(iteration);
 		comparator.compare(
 				simulation.particles, master.getFinalParticles(),
 				simulation.grid, master.getFinalGrid());

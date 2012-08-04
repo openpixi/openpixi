@@ -73,7 +73,7 @@ public class DistributedSimulationTest {
 		for (String testName: variousTestSettings.keySet()) {
 			System.out.println("Running test " + testName);
 
-			new SimulatedDistributedEnvironment(variousTestSettings.get(testName)).runInSteps();
+			new EmulatedDistributedEnvironment(variousTestSettings.get(testName)).runInSteps();
 
 			System.out.println("OK");
 			System.out.println();
