@@ -1,0 +1,6 @@
+#!/bin/bash
+
+export MAVEN_OPTS=-ea
+mvn -e exec:java \
+	-Dexec.mainClass="org.openpixi.pixi.aspectj.profile.ProfileRunner" \
+	-Dexec.args="$*"

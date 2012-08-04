@@ -1,0 +1,8 @@
+#!/bin/bash
+
+MAIN_CLASS=org.openpixi.pixi.distributed.TrueDistSimTest
+
+export MAVEN_OPTS=-ea
+mvn -e exec:java -Dexec.classpathScope="test" \
+	-Dexec.mainClass="$MAIN_CLASS" \
+	-Dexec.args="$*"
