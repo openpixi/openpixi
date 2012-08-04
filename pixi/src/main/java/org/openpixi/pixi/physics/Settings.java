@@ -73,7 +73,8 @@ public class Settings {
 	// Distributed version settings
 
 	private int numOfNodes = 1;
-	private String iplRegistryServer = "localhost";
+	private String iplServer = "localhost";
+	private String iplPool = "openpixi";
 
 	//----------------------------------------------------------------------------------------------
 	// SIMPLE GETTERS
@@ -139,12 +140,16 @@ public class Settings {
 		return iterations;
 	}
 
-	public String getIplRegistryServer() {
-		return iplRegistryServer;
+	public String getIplServer() {
+		return iplServer;
 	}
 
 	public boolean useGrid() {
 		return useGrid;
+	}
+
+	public String getIplPool() {
+		return iplPool;
 	}
 
 	//----------------------------------------------------------------------------------------------
@@ -295,12 +300,16 @@ public class Settings {
 		this.boundaryType = boundaryType;
 	}
 
-	public void setIplRegistryServer(String iplRegistryServer) {
-		this.iplRegistryServer = iplRegistryServer;
+	public void setIplServer(String iplServer) {
+		this.iplServer = iplServer;
 	}
 
 	public void useGrid(boolean useGrid) {
 		this.useGrid = useGrid;
+	}
+
+	public void setIplPool(String iplPool) {
+		this.iplPool = iplPool;
 	}
 
 	//----------------------------------------------------------------------------------------------
