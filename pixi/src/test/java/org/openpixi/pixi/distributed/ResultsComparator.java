@@ -12,11 +12,21 @@ import java.util.List;
 public class ResultsComparator {
 
 	private static final Double TOLERANCE = 1e-10;
-   	private int iteration;
+
+	private static final int NO_STEP_TRACKING = -1;
+   	private int stepNo = NO_STEP_TRACKING;
 
 
-	public ResultsComparator(int iteration) {
-		this.iteration = iteration;
+	public ResultsComparator() {
+
+	}
+
+
+	/**
+	 * In case of failure outputs also the step number in which the failure occurred.
+	 */
+	public ResultsComparator(int stepNo) {
+		this.stepNo = stepNo;
 	}
 
 
@@ -26,6 +36,8 @@ public class ResultsComparator {
 
 		compareParticleLists(expectedParticles, actualParticles, TOLERANCE);
 		compareGrids(expectedGrid, actualGrid, TOLERANCE);
+
+		System.out.println("COMPARE RESULTS ... OK");
 	}
 
 
@@ -123,7 +135,9 @@ public class ResultsComparator {
 
 	private void fail(String msg) {
 		System.out.println(msg);
-		System.out.println("ITERATION: " + iteration);
+		if (stepNo != NO_STEP_TRACKING) {
+			System.out.println("STEP NUMBER: " + stepNo);
+		}
 		System.out.println("!!! COMPARISON FAILED !!!");
 		System.exit(1);
 	}

@@ -20,7 +20,7 @@ public class EmulatedDistributedEnvironment {
 	/**
 	 * Runs the distributed simulation at once and compares the results at the end.
 	 */
-	public void runAtOnce() throws InterruptedException {
+	public void runAtOnce() {
 		final Node[] nodes = new Node[settings.getNumOfNodes()];
 		for (int i = 0; i < settings.getNumOfNodes(); i++) {
 			nodes[i] = new Node(settings);
@@ -43,7 +43,10 @@ public class EmulatedDistributedEnvironment {
 		}
 
 		// Compare results
-		compareResults(master, simulation, settings.getIterations() - 1);
+		ResultsComparator comparator = new ResultsComparator();
+		comparator.compare(
+				simulation.particles, master.getFinalParticles(),
+				simulation.grid, master.getFinalGrid());
 	}
 
 
@@ -104,7 +107,11 @@ public class EmulatedDistributedEnvironment {
 			simulation.step();
 			runRunnables(stepRuns);
 			runRunnables(collectRuns);
-			compareResults(master, simulation, i);
+
+			ResultsComparator comparator = new ResultsComparator(i);
+			comparator.compare(
+					simulation.particles, master.getFinalParticles(),
+					simulation.grid, master.getFinalGrid());
 		}
 
 		Runnable[] closeRuns = new Runnable[nodes.length];
@@ -118,14 +125,6 @@ public class EmulatedDistributedEnvironment {
 		}
 
 		runRunnables(closeRuns);
-	}
-
-
-	private void compareResults(Master master, Simulation simulation, int iteration) {
-		ResultsComparator comparator = new ResultsComparator(iteration);
-		comparator.compare(
-				simulation.particles, master.getFinalParticles(),
-				simulation.grid, master.getFinalGrid());
 	}
 
 

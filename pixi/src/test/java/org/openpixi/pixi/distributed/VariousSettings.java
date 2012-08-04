@@ -14,13 +14,11 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Tests the distributed version of openpixi against the non distributed version
- * under various but not all settings.
+ *
  */
-public class DistributedSimulationTest {
+public class VariousSettings {
 
-	public static void main(String[] args) throws Exception {
-
+	public static Map<String, Settings> getSettingsMap() {
 		Map<String, Settings> variousTestSettings = new HashMap<String, Settings>();
 		Settings defaultSettings = getDefaultSettings();
 
@@ -69,20 +67,11 @@ public class DistributedSimulationTest {
 		settings.addForce(constantForce);
 		variousTestSettings.put("MagneticForce", settings);
 
-		IplServer.start();
-		for (String testName: variousTestSettings.keySet()) {
-			System.out.println("Running test " + testName);
-
-			new EmulatedDistributedEnvironment(variousTestSettings.get(testName)).runInSteps();
-
-			System.out.println("OK");
-			System.out.println();
-		}
-		IplServer.end();
+		return variousTestSettings;
 	}
 
 
-	private static Settings getDefaultSettings() {
+	public static Settings getDefaultSettings() {
 		Settings settings = new Settings();
 		settings.setNumOfNodes(8);
 		settings.setGridCellsX(64);
@@ -99,7 +88,7 @@ public class DistributedSimulationTest {
 	/**
 	 * Used for debugging purposes when there is a need of a specific particle(s).
 	 */
-	private static void createParticles(Settings settings) {
+	public static void createParticles(Settings settings) {
 		Particle p1 = new Particle();
 		p1.setX(10);
 		p1.setY(75);

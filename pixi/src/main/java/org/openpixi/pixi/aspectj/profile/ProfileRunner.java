@@ -11,6 +11,7 @@ public class ProfileRunner {
 
 	public static void main(String[] args) {
 
+		// TODO replace with more powerfull settings class (command line arguments support)
 		int numOfNodes = 0;
 		String iplServer = null;
 		for (int i = 0; i < args.length; ++i) {
