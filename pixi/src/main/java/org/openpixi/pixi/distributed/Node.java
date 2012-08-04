@@ -48,7 +48,8 @@ public class Node implements Runnable {
 	 * => If more nodes exists in a single jvm, they have to call distribute in separate threads!
 	 */
 	public void distribute() {
-		registry = new IbisRegistry(settings.getNumOfNodes());
+		registry = new IbisRegistry(
+				settings.getNumOfNodes(), settings.getIplServer(), settings.getIplPool());
 		worker = new Worker(registry, settings);
 		if (registry.isMaster()) {
 			master = new Master(registry, settings);

@@ -21,8 +21,6 @@ public class SimulatedDistributedEnvironment {
 	 * Runs the distributed simulation at once and compares the results at the end.
 	 */
 	public void runAtOnce() throws InterruptedException {
-		setRequiredSystemProperties();
-
 		final Node[] nodes = new Node[settings.getNumOfNodes()];
 		for (int i = 0; i < settings.getNumOfNodes(); i++) {
 			nodes[i] = new Node(settings);
@@ -54,8 +52,6 @@ public class SimulatedDistributedEnvironment {
 	 * and compares the result after each step.
 	 */
 	public void runInSteps() {
-		setRequiredSystemProperties();
-
 		final Node[] nodes = new Node[settings.getNumOfNodes()];
 		for (int i = 0; i < settings.getNumOfNodes(); i++) {
 			nodes[i] = new Node(settings);
@@ -151,11 +147,5 @@ public class SimulatedDistributedEnvironment {
 				throw new RuntimeException(e);
 			}
 		}
-	}
-
-
-	private void setRequiredSystemProperties() {
-		System.setProperty("ibis.server.address", "localhost");
-		System.setProperty("ibis.pool.name", "test");
 	}
 }

@@ -48,7 +48,10 @@ public class IbisRegistry {
 	 * Creates the instance of ibis and immediately calls the election.
 	 * Waits for all the nodes to connect.
 	 */
-	public IbisRegistry(int numOfWorkers) {
+	public IbisRegistry(int numOfWorkers, String iplServer, String iplPool) {
+		System.setProperty("ibis.server.address", iplServer);
+		System.setProperty("ibis.pool.name", iplPool);
+
 		numOfJoinedWorkersLock = new IntLock(0);
 		try {
 			ibis = IbisFactory.createIbis(ibisCapabilities, new RegistryEvent(), PixiPorts.ALL_PORTS);
