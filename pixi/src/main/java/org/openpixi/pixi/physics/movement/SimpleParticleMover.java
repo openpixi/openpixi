@@ -11,7 +11,7 @@ import java.util.List;
 /**
  * Moves and checks the boundary of the particle.
  */
-public class ParticleMover {
+public class SimpleParticleMover {
 
 	/** Solver for the particle equations of motion. */
 	public Solver psolver;
@@ -19,7 +19,7 @@ public class ParticleMover {
 	private ParticleBoundaries boundaries;
 
 
-	public ParticleMover(Solver psolver, ParticleBoundaries boundaries) {
+	public SimpleParticleMover(Solver psolver, ParticleBoundaries boundaries) {
 		this.psolver = psolver;
 		this.boundaries = boundaries;
 	}

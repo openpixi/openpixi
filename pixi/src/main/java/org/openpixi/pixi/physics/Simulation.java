@@ -27,7 +27,7 @@ import org.openpixi.pixi.physics.force.SimpleGridForce;
 import org.openpixi.pixi.physics.grid.Grid;
 import org.openpixi.pixi.physics.grid.InterpolationIterator;
 import org.openpixi.pixi.physics.grid.SimpleInterpolationIterator;
-import org.openpixi.pixi.physics.movement.ParticleMover;
+import org.openpixi.pixi.physics.movement.SimpleParticleMover;
 import org.openpixi.pixi.physics.movement.boundary.ParticleBoundaries;
 import org.openpixi.pixi.physics.movement.boundary.SimpleParticleBoundaries;
 import org.openpixi.pixi.physics.util.DoubleBox;
@@ -51,7 +51,7 @@ public class Simulation {
 	/**Contains all Particle2D objects*/
 	public ArrayList<Particle> particles;
 	public CombinedForce f;
-	public ParticleMover mover;
+	public SimpleParticleMover mover;
 	/**Grid for dynamic field calculation*/
 	public Grid grid;
 	public Detector detector;
@@ -105,7 +105,7 @@ public class Simulation {
 		ParticleBoundaries particleBoundaries = new SimpleParticleBoundaries(
 				new DoubleBox(0, width, 0, height),
 				settings.getParticleBoundary());
-		mover = new ParticleMover(
+		mover = new SimpleParticleMover(
 				settings.getParticleSolver(),
 				particleBoundaries);
 
@@ -152,7 +152,7 @@ public class Simulation {
 		this.particles = (ArrayList<Particle>)particles;
 		f = settings.getForce();
 
-		mover = new ParticleMover(
+		mover = new SimpleParticleMover(
 				settings.getParticleSolver(),
 				particleBoundaries);
 
