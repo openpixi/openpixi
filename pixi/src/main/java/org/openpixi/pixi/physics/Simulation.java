@@ -27,6 +27,7 @@ import org.openpixi.pixi.physics.force.SimpleGridForce;
 import org.openpixi.pixi.physics.grid.Grid;
 import org.openpixi.pixi.physics.grid.InterpolationIterator;
 import org.openpixi.pixi.physics.grid.SimpleInterpolationIterator;
+import org.openpixi.pixi.physics.movement.ParticleMover;
 import org.openpixi.pixi.physics.movement.SimpleParticleMover;
 import org.openpixi.pixi.physics.movement.boundary.ParticleBoundaries;
 import org.openpixi.pixi.physics.movement.boundary.SimpleParticleBoundaries;
@@ -51,7 +52,7 @@ public class Simulation {
 	/**Contains all Particle2D objects*/
 	public ArrayList<Particle> particles;
 	public CombinedForce f;
-	public SimpleParticleMover mover;
+	private ParticleMover mover;
 	/**Grid for dynamic field calculation*/
 	public Grid grid;
 	public Detector detector;
@@ -87,6 +88,11 @@ public class Simulation {
 	public double getSpeedOfLight() {
 		return speedOfLight;
 	}
+
+	public ParticleMover getParticleMover() {
+		return mover;
+	}
+
 
 	/**
 	 * Constructor for non distributed simulation.
