@@ -235,28 +235,28 @@ public class Particle2DPanel extends JPanel {
 
 		switch(id) {
 		case 0:
-			s.mover.psolver = new EulerRichardson();
+			s.mover.setSolver(new EulerRichardson());
 			break;
 		case 1:
-			s.mover.psolver = new LeapFrog();
+			s.mover.setSolver(new LeapFrog());
 			break;
 		case 2:
-			s.mover.psolver = new LeapFrogDamped();
+			s.mover.setSolver(new LeapFrogDamped());
 			break;
 		case 3:
-			s.mover.psolver = new LeapFrogHalfStep();
+			s.mover.setSolver(new LeapFrogHalfStep());
 			break;
 		case 4:
-			s.mover.psolver = new Boris();
+			s.mover.setSolver(new Boris());
 			break;
 		case 5:
-			s.mover.psolver = new BorisDamped();
+			s.mover.setSolver(new BorisDamped());
 			break;
 		case 6:
-			s.mover.psolver = new SemiImplicitEuler();
+			s.mover.setSolver(new SemiImplicitEuler());
 			break;
 		case 7:
-			s.mover.psolver = new Euler();
+			s.mover.setSolver(new Euler());
 			break;
 			}
 
@@ -280,12 +280,12 @@ public class Particle2DPanel extends JPanel {
 			}
 			switch(i) {
 			case 1:
-				s.mover.psolver = new LeapFrog();
+				s.mover.setSolver(new LeapFrog());
 			case 4:
-				s.mover.psolver = new Boris();
+				s.mover.setSolver(new Boris());
 				break;
 			case 6:
-				s.mover.psolver = new SemiImplicitEuler();
+				s.mover.setSolver(new SemiImplicitEuler());
 				break;
 			}
 		}
@@ -305,12 +305,12 @@ public class Particle2DPanel extends JPanel {
 			}
 			switch(i) {
 			case 1:
-				s.mover.psolver = new LeapFrogRelativistic(s.getSpeedOfLight());
+				s.mover.setSolver(new LeapFrogRelativistic(s.getSpeedOfLight()));
 			case 4:
-				s.mover.psolver = new BorisRelativistic(s.getSpeedOfLight());
+				s.mover.setSolver(new BorisRelativistic(s.getSpeedOfLight()));
 				break;
 			case 6:
-				s.mover.psolver = new SemiImplicitEulerRelativistic(s.getSpeedOfLight());
+				s.mover.setSolver(new SemiImplicitEulerRelativistic(s.getSpeedOfLight()));
 				break;
 			}
 		}

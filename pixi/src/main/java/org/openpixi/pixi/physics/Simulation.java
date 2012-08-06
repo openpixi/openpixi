@@ -197,7 +197,7 @@ public class Simulation {
 		particlePush();
 		if(collisionBoolean) {
 			detector.run();
-			collisionalgorithm.collide(detector.getOverlappedPairs(), f, mover.psolver, tstep);
+			collisionalgorithm.collide(detector.getOverlappedPairs(), f, mover.getSolver(), tstep);
 		}
 		interpolation.interpolateToGrid(particles, grid, tstep);
 		grid.updateGrid(tstep);
