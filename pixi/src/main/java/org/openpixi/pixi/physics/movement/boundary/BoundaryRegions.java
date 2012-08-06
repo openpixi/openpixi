@@ -41,36 +41,43 @@ public class BoundaryRegions {
 	/** Box around the simulation area. */
 	private DoubleBox simulationArea;
 
-	/**
-	 * Helper box, so that we do not have to create a new box each time we call
-	 * getRegion(double, double).
-	 */
-	private DoubleBox helperBox = new DoubleBox(0, 0, 0, 0);
 
 	public BoundaryRegions(DoubleBox simulationArea) {
 		this.simulationArea = simulationArea;
 	}
 
-	/**
-	 * We do not get the region based on position but a whole box.
-	 * This way we are more flexible
-	 * - we can check particle's circumference to be in a boundary region.
-	 */
+
 	public int getRegion(DoubleBox particleBox) {
+		return getRegion(
+				particleBox.xmin(), particleBox.xmax(),
+				particleBox.ymin(), particleBox.ymax());
+	}
+
+
+	public int getRegion(double x, double y) {
+		return getRegion(x,x,y,y);
+	}
+
+
+	/**
+	 * Gets the region based on simulation area intersection with box.
+	 * This way we can check particle's circumference to be in a boundary region.
+	 */
+	private int getRegion(double xmin, double xmax, double ymin, double ymax) {
 		int xidx;
 		int yidx;
 
-		if (particleBox.xmin() < simulationArea.xmin()) {
+		if (xmin < simulationArea.xmin()) {
 			xidx  = X_MIN;
-		} else if (particleBox.xmax() >= simulationArea.xmax()) {
+		} else if (xmax >= simulationArea.xmax()) {
 			xidx = X_MAX;
 		} else {
 			xidx = X_CENTER;
 		}
 
-		if (particleBox.ymin() < simulationArea.ymin()) {
+		if (ymin < simulationArea.ymin()) {
 			yidx = Y_MIN;
-		} else if (particleBox.ymax() >= simulationArea.ymax()) {
+		} else if (ymax >= simulationArea.ymax()) {
 			yidx = Y_MAX;
 		} else {
 			yidx = Y_CENTER;
@@ -118,11 +125,5 @@ public class BoundaryRegions {
 		}
 		assert highetsY != -1;
 		return  highetsY;
-	}
-
-
-	public int getRegion(double x, double y) {
-	 	helperBox.set(x, x, y, y);
-		return getRegion(helperBox);
 	}
 }

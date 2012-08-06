@@ -41,7 +41,7 @@ public class ParticleMover {
 			p.storePosition();
 			psolver.step(p, force, tstep);
 			psolver.complete(p, force, tstep);
-			boundaries.apply(p);
+			boundaries.applyOnParticleCenter(p);
 			psolver.prepare(p, force, tstep);
 		}
 	}

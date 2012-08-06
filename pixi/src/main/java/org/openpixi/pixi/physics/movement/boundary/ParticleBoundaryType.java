@@ -41,7 +41,7 @@ public enum ParticleBoundaryType {
 	/**
 	 * Determines a bounding box around the particle.
 	 * For the determination of whether the particle is outside of the simulation area
-	 * we use the particle's bounding box.
+	 * we can use the particle's bounding box.
 	 */
 	public abstract DoubleBox getParticleBox(Particle p, DoubleBox pbb);
 }
