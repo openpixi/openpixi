@@ -1,11 +1,12 @@
 package org.openpixi.pixi.physics.grid;
 
-import java.util.ArrayList;
-
 import junit.framework.TestCase;
-import org.openpixi.pixi.physics.InitialConditions;
 import org.openpixi.pixi.physics.Particle;
+import org.openpixi.pixi.physics.Settings;
 import org.openpixi.pixi.physics.Simulation;
+import org.openpixi.pixi.physics.fields.YeeSolver;
+
+import java.util.ArrayList;
 
 public class InterpolatorTest extends TestCase {
 	
@@ -16,17 +17,26 @@ public class InterpolatorTest extends TestCase {
 	}
 	
 	public void testChargeInterpolation() {
-		
-		Simulation s = InitialConditions.initEmptySimulation();
-		s.setWidth(100);
-		s.setHeight(100);
-		s.c = Math.sqrt(s.getWidth() * s.getWidth() + s.getHeight() * s.getHeight())/5;
-		s.particles = InitialConditions.createRandomParticles(s.getWidth(), s.getHeight(), s.c, 100, 1);
-		
-		Grid g = GridFactory.createYeeGrid(s, 10, 10, s.getWidth(), s.getHeight());
-		
+
+		Settings stt = new Settings();
+		stt.setSimulationWidth(100);
+		stt.setSimulationHeight(100);
+		stt.setSpeedOfLight(Math.sqrt(stt.getSimulationWidth() * stt.getSimulationWidth() +
+				stt.getSimulationHeight() * stt.getSimulationHeight())/5);
+
+		stt.setNumOfParticles(100);
+		stt.setParticleRadius(1);
+		stt.setParticleMaxSpeed(stt.getSpeedOfLight());
+
+		stt.setGridCellsX(10);
+		stt.setGridCellsY(10);
+		stt.setGridSolver(new YeeSolver());
+		stt.setInterpolator(new ChargeConservingAreaWeighting());
+
+		Simulation s = new Simulation(stt);
+
 		// TODO: Test does not work:
-//		assertEquals(getTotalParticleCharge(s.particles), getChargedensitySum(g), ACCURACY_LIMIT);
+		//assertEquals(getTotalParticleCharge(s.particles), getChargedensitySum(s.grid), ACCURACY_LIMIT);
 	}
 	
 	public static double getChargedensitySum(Grid grid) {

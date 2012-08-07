@@ -19,7 +19,9 @@
 package org.openpixi.pixi.physics;
 
 
-public class Particle{
+import java.io.Serializable;
+
+public class Particle implements Serializable {
 
 	/** x-coordinate */
 	private double x;
@@ -263,6 +265,7 @@ public class Particle{
 		this.prevLinearDragCoefficient = prevLinearDragCoefficient;
 	}
 
+
 	/** Empty constructor */
 	public Particle() {
 	}
@@ -278,11 +281,29 @@ public class Particle{
 		ay = p.ay;
 		mass = p.mass;
 		charge = p.charge;
+		prevX = p.prevX;
+		prevY = p.prevY;
+		chargedensity = p.chargedensity;
+		Ex = p.Ex;
+		Ey = p.Ey;
+		Bz = p.Bz;
+		prevpositionComponentForceX = p.prevpositionComponentForceX;
+		prevpositionComponentForceY = p.prevpositionComponentForceY;
+		prevtangentVelocityComponentOfForceX = p.prevtangentVelocityComponentOfForceX;
+		prevtangentVelocityComponentOfForceY = p.prevtangentVelocityComponentOfForceY;
+		prevBz = p.prevBz;
+		prevLinearDragCoefficient = p.prevLinearDragCoefficient;
 	}
 
 
 	public void storePosition() {
 		prevX = x;
 		prevY = y;
+	}
+
+
+	@Override
+	public String toString() {
+		return String.format("[%.3f,%.3f]", x, y);
 	}
 }
