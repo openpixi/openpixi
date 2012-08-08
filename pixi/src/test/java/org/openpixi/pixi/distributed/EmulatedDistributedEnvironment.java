@@ -2,6 +2,7 @@ package org.openpixi.pixi.distributed;
 
 import org.openpixi.pixi.physics.Settings;
 import org.openpixi.pixi.physics.Simulation;
+import org.openpixi.pixi.util.ResultsComparator;
 
 /**
  * Emulates distributed environment on local host.
