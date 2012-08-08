@@ -233,7 +233,7 @@ public class SharedData {
 
 			arrivingParticles = particles;
 			for (Particle particle: particles) {
-				particleBoundaries.apply(particle);
+				particleBoundaries.applyOnParticleCenter(particle);
 			}
 			arrivingParticlesLock.setToTrue();
 		}

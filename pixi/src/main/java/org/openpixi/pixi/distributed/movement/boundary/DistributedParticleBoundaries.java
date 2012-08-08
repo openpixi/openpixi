@@ -132,7 +132,14 @@ public class DistributedParticleBoundaries implements ParticleBoundaries {
 	}
 
 
-	public void apply(Particle particle) {
+	public void applyOnParticleBoundingBox(Particle p) {
+		throw new UnsupportedOperationException(
+				"In distributed boundaries we can not deduce particle's position " +
+				"based on its bounding box as it would result in errors.");
+	}
+
+
+	public void applyOnParticleCenter(Particle particle) {
 		boundaryType.getParticleBox(particle, particleBox);
 
 		int boundaryRegion = boundaryRegions.getRegion(particleBox);
