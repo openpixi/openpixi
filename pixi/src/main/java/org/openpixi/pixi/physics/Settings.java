@@ -16,6 +16,8 @@ import org.openpixi.pixi.physics.solver.Solver;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  * Specifies default values of simulation parameters.
@@ -69,6 +71,14 @@ public class Settings {
 	// Batch version settings
 
 	private int iterations = 100;
+
+	// Parallel (threaded) version settings
+
+	private int numOfThreads = 1;
+	/* The creation and start of the new threads is expensive. Therefore, in the parallel
+	 * simulation we use ExecutorService which is maintaining a fixed number of threads running
+	 * all the time and assigns work to the threads on the fly according to demand. */
+	private ExecutorService threadsExecutor;
 
 	// Distributed version settings
 
@@ -152,6 +162,10 @@ public class Settings {
 		return iplPool;
 	}
 
+	public int getNumOfThreads() {
+		return numOfThreads;
+	}
+
 	//----------------------------------------------------------------------------------------------
 	// MORE COMPLEX GETTERS / BUILDERS
 	//----------------------------------------------------------------------------------------------
@@ -210,6 +224,16 @@ public class Settings {
 			default:
 				return ParticleBoundaryType.Hardwall;
 		}
+	}
+
+	/**
+	 * Create threads executor on the fly according to demand.
+	 */
+	public ExecutorService getThreadsExecutor() {
+		if (threadsExecutor == null) {
+			threadsExecutor = Executors.newFixedThreadPool(numOfThreads);
+		}
+		return threadsExecutor;
 	}
 
 	//----------------------------------------------------------------------------------------------
@@ -310,6 +334,10 @@ public class Settings {
 
 	public void setIplPool(String iplPool) {
 		this.iplPool = iplPool;
+	}
+
+	public void setNumOfThreads(int numOfThreads) {
+		this.numOfThreads = numOfThreads;
 	}
 
 	//----------------------------------------------------------------------------------------------
