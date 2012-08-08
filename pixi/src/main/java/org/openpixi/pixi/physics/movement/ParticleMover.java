@@ -14,7 +14,7 @@ import java.util.List;
 public abstract class ParticleMover {
 
 	/** Solver for the particle equations of motion. */
-	protected Solver psolver;
+	protected Solver solver;
 
 	protected ParticleBoundaries boundaries;
 
@@ -24,16 +24,16 @@ public abstract class ParticleMover {
 	}
 
 	public Solver getSolver() {
-		return psolver;
+		return solver;
 	}
 
 	public void setSolver(Solver psolver) {
-		this.psolver = psolver;
+		this.solver = psolver;
 	}
 
 
-	public ParticleMover(Solver psolver, ParticleBoundaries boundaries) {
-		this.psolver = psolver;
+	public ParticleMover(Solver solver, ParticleBoundaries boundaries) {
+		this.solver = solver;
 		this.boundaries = boundaries;
 	}
 

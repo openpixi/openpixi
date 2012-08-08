@@ -20,24 +20,24 @@ public class SimpleParticleMover extends ParticleMover {
 		for (Particle p : particles) {
 			// Before we move the particle we store its position
 			p.storePosition();
-			psolver.step(p, force, tstep);
-			psolver.complete(p, force, tstep);
+			solver.step(p, force, tstep);
+			solver.complete(p, force, tstep);
 			boundaries.applyOnParticleCenter(p);
-			psolver.prepare(p, force, tstep);
+			solver.prepare(p, force, tstep);
 		}
 	}
 
 
 	public void prepare(List<Particle> particles, Force force, double tstep) {
 		for (Particle p : particles) {
-			psolver.prepare(p, force, tstep);
+			solver.prepare(p, force, tstep);
 		}
 	}
 
 
 	public void complete(List<Particle> particles, Force force, double tstep) {
 		for (Particle p : particles) {
-			psolver.complete(p, force, tstep);
+			solver.complete(p, force, tstep);
 		}
 	}
 }
