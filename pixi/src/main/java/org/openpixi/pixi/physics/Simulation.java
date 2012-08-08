@@ -19,6 +19,7 @@
 
 package org.openpixi.pixi.physics;
 
+import org.openpixi.pixi.parallel.movement.ParallelParticleMover;
 import org.openpixi.pixi.physics.collision.algorithms.CollisionAlgorithm;
 import org.openpixi.pixi.physics.collision.detectors.Detector;
 import org.openpixi.pixi.physics.fields.PoissonSolver;
@@ -111,9 +112,7 @@ public class Simulation {
 		ParticleBoundaries particleBoundaries = new SimpleParticleBoundaries(
 				new DoubleBox(0, width, 0, height),
 				settings.getParticleBoundary());
-		mover = new SimpleParticleMover(
-				settings.getParticleSolver(),
-				particleBoundaries);
+		initializeParticleMover(settings, particleBoundaries);
 
 		grid = new Grid(settings);
 		if (settings.useGrid()) {
@@ -158,9 +157,7 @@ public class Simulation {
 		this.particles = (ArrayList<Particle>)particles;
 		f = settings.getForce();
 
-		mover = new SimpleParticleMover(
-				settings.getParticleSolver(),
-				particleBoundaries);
+		initializeParticleMover(settings, particleBoundaries);
 
 		this.grid = grid;
 		if (settings.useGrid()) {
@@ -176,6 +173,26 @@ public class Simulation {
 		collisionalgorithm = settings.getCollisionAlgorithm();
 
 		prepareAllParticles();
+	}
+
+
+	private void initializeParticleMover(Settings settings, ParticleBoundaries particleBoundaries) {
+		if (settings.getNumOfThreads() == 1) {
+			mover = new SimpleParticleMover(settings.getParticleSolver(), particleBoundaries);
+		}
+		else if (settings.getNumOfThreads() > 1) {
+			mover = new ParallelParticleMover(
+					settings.getParticleSolver(),
+					particleBoundaries,
+					f,
+					particles,
+					settings.getThreadsExecutor(),
+					tstep,
+					settings.getNumOfThreads());
+		}
+		else {
+			throw new RuntimeException("Invalid number of threads!");
+		}
 	}
 
 
