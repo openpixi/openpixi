@@ -58,107 +58,99 @@ public class Grid {
 	}
 
 	public double getJx(int x, int y) {
-		return cells[index(x)][index(y)].jx;
-	}
-
-	public void setJx(int x, int y, double value) {
-		cells[index(x)][index(y)].jx = value;
+		return cells[index(x)][index(y)].getJx();
 	}
 
 	public void addJx(int x, int y, double value) {
-		cells[index(x)][index(y)].jx += value;
+		cells[index(x)][index(y)].addJx(value);
 	}
 
 	public double getJy(int x, int y) {
-		return cells[index(x)][index(y)].jy;
-	}
-
-	public void setJy(int x, int y, double value) {
-		cells[index(x)][index(y)].jy = value;
+		return cells[index(x)][index(y)].getJy();
 	}
 
 	public void addJy(int x, int y, double value) {
-		cells[index(x)][index(y)].jy += value;
+		cells[index(x)][index(y)].addJy(value);
 	}
 
 	public double getRho(int x, int y) {
-		return cells[index(x)][index(y)].rho;
+		return cells[index(x)][index(y)].getRho();
 	}
 
 	public void setRho(int x, int y, double value) {
-		cells[index(x)][index(y)].rho = value;
+		cells[index(x)][index(y)].setRho(value);
 	}
 	
 	public void addRho(int x, int y, double value) {
-		cells[index(x)][index(y)].rho += value;
+		cells[index(x)][index(y)].addRho(value);
 	}
 
 	public double getPhi(int x, int y) {
-		return cells[index(x)][index(y)].phi;
+		return cells[index(x)][index(y)].getPhi();
 	}
 
 	public void setPhi(int x, int y, double value) {
-		cells[index(x)][index(y)].phi = value;
+		cells[index(x)][index(y)].setPhi(value);
 	}
 
 	public double getEx(int x, int y) {
-		return cells[index(x)][index(y)].Ex;
+		return cells[index(x)][index(y)].getEx();
 	}
 
 	public void setEx(int x, int y, double value) {
-		cells[index(x)][index(y)].Ex = value;
+		cells[index(x)][index(y)].setEx(value);
 	}
 
 	public void addEx(int x, int y, double value) {
-		cells[index(x)][index(y)].Ex += value;
+		cells[index(x)][index(y)].setEx(cells[index(x)][index(y)].getEx() + value);
 	}
 
 	public double getEy(int x, int y) {
-		return cells[index(x)][index(y)].Ey;
+		return cells[index(x)][index(y)].getEy();
 	}
 
 	public void setEy(int x, int y, double value) {
-		cells[index(x)][index(y)].Ey = value;
+		cells[index(x)][index(y)].setEy(value);
 	}
 
 	public void addEy(int x, int y, double value) {
-		cells[index(x)][index(y)].Ey += value;
+		cells[index(x)][index(y)].setEy(cells[index(x)][index(y)].getEy() + value);
 	}
 
 	public double getBz(int x, int y) {
-		return cells[index(x)][index(y)].Bz;
+		return cells[index(x)][index(y)].getBz();
 	}
 
 	public void setBz(int x, int y, double value) {
-		cells[index(x)][index(y)].Bz = value;
+		cells[index(x)][index(y)].setBz(value);
 	}
 
 	public void addBz(int x, int y, double value) {
-		cells[index(x)][index(y)].Bz += value;
+		cells[index(x)][index(y)].setBz(cells[index(x)][index(y)].getBz() + value);
 	}
 
 	public double getExo(int x, int y) {
-		return cells[index(x)][index(y)].Exo;
+		return cells[index(x)][index(y)].getExo();
 	}
 
 	public void setExo(int x, int y, double value) {
-		cells[index(x)][index(y)].Exo = value;
+		cells[index(x)][index(y)].setExo(value);
 	}
 
 	public double getEyo(int x, int y) {
-		return cells[index(x)][index(y)].Eyo;
+		return cells[index(x)][index(y)].getEyo();
 	}
 
 	public void setEyo(int x, int y, double value) {
-		cells[index(x)][index(y)].Eyo = value;
+		cells[index(x)][index(y)].setEyo(value);
 	}
 
 	public double getBzo(int x, int y) {
-		return cells[index(x)][index(y)].Bzo;
+		return cells[index(x)][index(y)].getBzo();
 	}
 
 	public void setBzo(int x, int y, double value) {
-		cells[index(x)][index(y)].Bzo = value;
+		cells[index(x)][index(y)].setBzo(value);
 	}
 
 	public int getNumCellsX() {
