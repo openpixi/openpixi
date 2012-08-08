@@ -63,6 +63,7 @@ public class ParallelParticleMover extends ParticleMover {
 		}
 	}
 
+
 	@Override
 	public void prepare(List<Particle> particles, Force force, double tstep) {
 		try {
@@ -76,6 +77,7 @@ public class ParallelParticleMover extends ParticleMover {
 			throw new RuntimeException(e);
 		}
 	}
+
 
 	@Override
 	public void complete(List<Particle> particles, Force force, double tstep) {

@@ -19,15 +19,18 @@ public abstract class ThreadWork implements Callable<Object> {
 	private int numOfThreads;
 	private int numOfItems;
 
+
 	public ThreadWork(int threadIdx, int numOfThreads, int numOfItems) {
 		this.threadIdx = threadIdx;
 		this.numOfThreads = numOfThreads;
 		this.numOfItems = numOfItems;
 	}
 
+
 	public void setNumOfItems(int numOfItems) {
 		this.numOfItems = numOfItems;
 	}
+
 
 	public Object call() {
 		for (int item = threadIdx; item < numOfItems; item += numOfThreads) {
@@ -35,6 +38,7 @@ public abstract class ThreadWork implements Callable<Object> {
 		}
 		return null;
 	}
+
 
 	/**
 	 * This is a template method and needs to be overriden by the children of this class.
