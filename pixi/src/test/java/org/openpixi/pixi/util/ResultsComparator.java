@@ -134,11 +134,11 @@ public class ResultsComparator {
 
 
 	private void fail(String msg) {
-		System.out.println(msg);
+		StringBuilder finalMsg = new StringBuilder(msg);
 		if (stepNo != NO_STEP_TRACKING) {
-			System.out.println("STEP NUMBER: " + stepNo);
+			finalMsg.append("\nSTEP NUMBER: " + stepNo);
 		}
-		System.out.println("!!! COMPARISON FAILED !!!");
-		System.exit(1);
+		finalMsg.append("!!! COMPARISON FAILED !!!");
+		throw new ComparisonFailedException(finalMsg.toString());
 	}
 }
