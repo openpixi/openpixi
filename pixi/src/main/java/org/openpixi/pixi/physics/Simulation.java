@@ -19,6 +19,7 @@
 
 package org.openpixi.pixi.physics;
 
+import org.openpixi.pixi.parallel.grid.ParallelInterpolationIterator;
 import org.openpixi.pixi.parallel.movement.ParallelParticleMover;
 import org.openpixi.pixi.physics.collision.algorithms.CollisionAlgorithm;
 import org.openpixi.pixi.physics.collision.detectors.Detector;
@@ -123,7 +124,7 @@ public class Simulation {
 		}
 
 		poisolver = settings.getPoissonSolver();
-		interpolation = new SimpleInterpolationIterator(settings.getInterpolator());
+		interpolation = initializeInterpolator(settings);
 		particleGridInitializer.initialize(interpolation, poisolver, particles, grid);
 
 		detector = settings.getCollisionDetector();
@@ -173,6 +174,28 @@ public class Simulation {
 		collisionalgorithm = settings.getCollisionAlgorithm();
 
 		prepareAllParticles();
+	}
+
+
+	/**
+	 * Based on the number of threads creates either single or
+	 * multi threaded interpolation iterator.
+	 */
+	public static InterpolationIterator initializeInterpolator(Settings settings) {
+		InterpolationIterator retval;
+		if (settings.getNumOfThreads() == 1) {
+			retval = new SimpleInterpolationIterator(settings.getInterpolator());
+		}
+		else if (settings.getNumOfThreads() > 1) {
+			retval = new ParallelInterpolationIterator(
+					settings.getInterpolator(),
+					settings.getThreadsExecutor(),
+					settings.getNumOfThreads());
+		}
+		else {
+			throw new RuntimeException("Invalid number of threads!");
+		}
+		return retval;
 	}
 
 
