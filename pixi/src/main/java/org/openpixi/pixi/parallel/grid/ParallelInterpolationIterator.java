@@ -34,6 +34,9 @@ public class ParallelInterpolationIterator extends InterpolationIterator {
 		this.threadsExecutor = threadsExecutor;
 
 		for (int i = 0; i < numOfThreads; ++i) {
+			toGridTasks.add(new ToGrid(i, numOfThreads, 0));
+			toParticleTasks.add(new ToParticle(i, numOfThreads, 0));
+			chargeDensityTasks.add(new ChargeDensity(i, numOfThreads, 0));
 		}
 	}
 
