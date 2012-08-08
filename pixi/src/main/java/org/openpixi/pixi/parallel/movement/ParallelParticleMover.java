@@ -13,15 +13,6 @@ import java.util.concurrent.ExecutorService;
 
 /**
  *  Multi-threaded particle mover.
- *
- *  TODO create interactive version.
- *  This version is non-interactive.
- *  That means, it can not be used under a situation
- *  where the force or time step change during the simulation.
- *  In order to be able to create an interactive version one first needs to encapsulate
- *  the setting of force and time step in the simulation class, so that one can forward
- *  the request for change to the particle movement and further to the inner classes
- *  Push, Prepare and Complete.
  */
 public class ParallelParticleMover extends ParticleMover {
 
@@ -39,15 +30,11 @@ public class ParallelParticleMover extends ParticleMover {
 
 	public ParallelParticleMover(
 			Solver psolver, ParticleBoundaries boundaries,
-			Force force, List<Particle> particles,
 			ExecutorService threadsExecutor,
-			double timeStep, int numOfThreads) {
+			int numOfThreads) {
 		super(psolver, boundaries);
 
-		this.force = force;
-		this.particles = particles;
 		this.threadsExecutor = threadsExecutor;
-		this.timeStep = timeStep;
 		this.numOfThreads = numOfThreads;
 
 		for (int i = 0; i < numOfThreads; i++) {
@@ -66,6 +53,8 @@ public class ParallelParticleMover extends ParticleMover {
 	@Override
 	public void push(List<Particle> particles, Force force, double tstep) {
 		try {
+			// The particles, force and time step can change and thus, are set in each iteration
+			setFields(particles, force, tstep);
 			threadsExecutor.invokeAll(pushTasks);
 		} catch (InterruptedException e) {
 			e.printStackTrace();
@@ -76,6 +65,7 @@ public class ParallelParticleMover extends ParticleMover {
 	@Override
 	public void prepare(List<Particle> particles, Force force, double tstep) {
 		try {
+			setFields(particles, force, tstep);
 			threadsExecutor.invokeAll(prepareTasks);
 		} catch (InterruptedException e) {
 			e.printStackTrace();
@@ -86,11 +76,19 @@ public class ParallelParticleMover extends ParticleMover {
 	@Override
 	public void complete(List<Particle> particles, Force force, double tstep) {
 		try {
+			setFields(particles, force, tstep);
 			threadsExecutor.invokeAll(completeTasks);
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 			throw new RuntimeException(e);
 		}
+	}
+
+
+	private void setFields(List<Particle> particles, Force force, double tstep) {
+		this.particles = particles;
+		this.force = force;
+		this.timeStep = tstep;
 	}
 
 	//----------------------------------------------------------------------------------------------

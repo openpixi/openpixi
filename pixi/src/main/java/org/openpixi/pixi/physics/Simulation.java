@@ -176,6 +176,9 @@ public class Simulation {
 	}
 
 
+	/**
+	 * Based on the number of threads creates either single or multi threaded particle mover.
+	 */
 	private void initializeParticleMover(Settings settings, ParticleBoundaries particleBoundaries) {
 		if (settings.getNumOfThreads() == 1) {
 			mover = new SimpleParticleMover(settings.getParticleSolver(), particleBoundaries);
@@ -184,10 +187,7 @@ public class Simulation {
 			mover = new ParallelParticleMover(
 					settings.getParticleSolver(),
 					particleBoundaries,
-					f,
-					particles,
 					settings.getThreadsExecutor(),
-					tstep,
 					settings.getNumOfThreads());
 		}
 		else {
