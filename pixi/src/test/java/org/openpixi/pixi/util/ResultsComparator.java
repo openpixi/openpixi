@@ -136,9 +136,9 @@ public class ResultsComparator {
 	private void fail(String msg) {
 		StringBuilder finalMsg = new StringBuilder(msg);
 		if (stepNo != NO_STEP_TRACKING) {
-			finalMsg.append("\nSTEP NUMBER: " + stepNo);
+			finalMsg.append(" STEP NUMBER: " + stepNo);
 		}
-		finalMsg.append("!!! COMPARISON FAILED !!!");
+		finalMsg.append(" !!! COMPARISON FAILED !!! ");
 		throw new ComparisonFailedException(finalMsg.toString());
 	}
 }
