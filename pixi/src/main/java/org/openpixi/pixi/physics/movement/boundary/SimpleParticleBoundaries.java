@@ -69,7 +69,7 @@ public class SimpleParticleBoundaries implements ParticleBoundaries {
 	}
 
 
-	public void apply(Particle p) {
+	public void applyOnParticleBoundingBox(Particle p) {
 
 		/*
 		 * Since there can be a large number of particles,
@@ -79,6 +79,12 @@ public class SimpleParticleBoundaries implements ParticleBoundaries {
 		boundaryType.getParticleBox(p, particleBox);
 
 		int region = boundaryRegions.getRegion(particleBox);
+		regionBoundaryMap[region].apply(p);
+	}
+
+
+	public void applyOnParticleCenter(Particle p) {
+		int region = boundaryRegions.getRegion(p.getX(), p.getY());
 		regionBoundaryMap[region].apply(p);
 	}
 }

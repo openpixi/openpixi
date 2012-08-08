@@ -19,6 +19,7 @@
 
 package org.openpixi.pixi.physics;
 
+import org.openpixi.pixi.parallel.movement.ParallelParticleMover;
 import org.openpixi.pixi.physics.collision.algorithms.CollisionAlgorithm;
 import org.openpixi.pixi.physics.collision.detectors.Detector;
 import org.openpixi.pixi.physics.fields.PoissonSolver;
@@ -28,6 +29,7 @@ import org.openpixi.pixi.physics.grid.Grid;
 import org.openpixi.pixi.physics.grid.InterpolationIterator;
 import org.openpixi.pixi.physics.grid.SimpleInterpolationIterator;
 import org.openpixi.pixi.physics.movement.ParticleMover;
+import org.openpixi.pixi.physics.movement.SimpleParticleMover;
 import org.openpixi.pixi.physics.movement.boundary.ParticleBoundaries;
 import org.openpixi.pixi.physics.movement.boundary.SimpleParticleBoundaries;
 import org.openpixi.pixi.physics.util.DoubleBox;
@@ -51,7 +53,7 @@ public class Simulation {
 	/**Contains all Particle2D objects*/
 	public ArrayList<Particle> particles;
 	public CombinedForce f;
-	public ParticleMover mover;
+	private ParticleMover mover;
 	/**Grid for dynamic field calculation*/
 	public Grid grid;
 	public Detector detector;
@@ -88,6 +90,11 @@ public class Simulation {
 		return speedOfLight;
 	}
 
+	public ParticleMover getParticleMover() {
+		return mover;
+	}
+
+
 	/**
 	 * Constructor for non distributed simulation.
 	 */
@@ -105,9 +112,7 @@ public class Simulation {
 		ParticleBoundaries particleBoundaries = new SimpleParticleBoundaries(
 				new DoubleBox(0, width, 0, height),
 				settings.getParticleBoundary());
-		mover = new ParticleMover(
-				settings.getParticleSolver(),
-				particleBoundaries);
+		initializeParticleMover(settings, particleBoundaries);
 
 		grid = new Grid(settings);
 		if (settings.useGrid()) {
@@ -152,9 +157,7 @@ public class Simulation {
 		this.particles = (ArrayList<Particle>)particles;
 		f = settings.getForce();
 
-		mover = new ParticleMover(
-				settings.getParticleSolver(),
-				particleBoundaries);
+		initializeParticleMover(settings, particleBoundaries);
 
 		this.grid = grid;
 		if (settings.useGrid()) {
@@ -170,6 +173,26 @@ public class Simulation {
 		collisionalgorithm = settings.getCollisionAlgorithm();
 
 		prepareAllParticles();
+	}
+
+
+	private void initializeParticleMover(Settings settings, ParticleBoundaries particleBoundaries) {
+		if (settings.getNumOfThreads() == 1) {
+			mover = new SimpleParticleMover(settings.getParticleSolver(), particleBoundaries);
+		}
+		else if (settings.getNumOfThreads() > 1) {
+			mover = new ParallelParticleMover(
+					settings.getParticleSolver(),
+					particleBoundaries,
+					f,
+					particles,
+					settings.getThreadsExecutor(),
+					tstep,
+					settings.getNumOfThreads());
+		}
+		else {
+			throw new RuntimeException("Invalid number of threads!");
+		}
 	}
 
 
@@ -197,7 +220,7 @@ public class Simulation {
 		particlePush();
 		if(collisionBoolean) {
 			detector.run();
-			collisionalgorithm.collide(detector.getOverlappedPairs(), f, mover.psolver, tstep);
+			collisionalgorithm.collide(detector.getOverlappedPairs(), f, mover.getSolver(), tstep);
 		}
 		interpolation.interpolateToGrid(particles, grid, tstep);
 		grid.updateGrid(tstep);

@@ -9,24 +9,32 @@ import org.openpixi.pixi.physics.solver.Solver;
 import java.util.List;
 
 /**
- * Moves and checks the boundary of the particle.
+ * Interface for single threaded and multi threaded particle movers.
  */
-public class ParticleMover {
+public abstract class ParticleMover {
 
 	/** Solver for the particle equations of motion. */
-	public Solver psolver;
+	protected Solver solver;
 
-	private ParticleBoundaries boundaries;
-
-
-	public ParticleMover(Solver psolver, ParticleBoundaries boundaries) {
-		this.psolver = psolver;
-		this.boundaries = boundaries;
-	}
+	protected ParticleBoundaries boundaries;
 
 
 	public ParticleBoundaryType getBoundaryType() {
 		return boundaries.getType();
+	}
+
+	public Solver getSolver() {
+		return solver;
+	}
+
+	public void setSolver(Solver psolver) {
+		this.solver = psolver;
+	}
+
+
+	public ParticleMover(Solver solver, ParticleBoundaries boundaries) {
+		this.solver = solver;
+		this.boundaries = boundaries;
 	}
 
 
@@ -35,28 +43,9 @@ public class ParticleMover {
 	}
 
 
-	public void push(List<Particle> particles, Force force, double tstep) {
-		for (Particle p : particles) {
-			// Before we move the particle we store its position
-			p.storePosition();
-			psolver.step(p, force, tstep);
-			psolver.complete(p, force, tstep);
-			boundaries.apply(p);
-			psolver.prepare(p, force, tstep);
-		}
-	}
+	public abstract void push(List<Particle> particles, Force force, double tstep);
 
+	public abstract void prepare(List<Particle> particles, Force force, double tstep);
 
-	public void prepare(List<Particle> particles, Force force, double tstep) {
-		for (Particle p : particles) {
-			psolver.prepare(p, force, tstep);
-		}
-	}
-
-
-	public void complete(List<Particle> particles, Force force, double tstep) {
-		for (Particle p : particles) {
-			psolver.complete(p, force, tstep);
-		}
-	}
+	public abstract void complete(List<Particle> particles, Force force, double tstep);
 }
