@@ -191,17 +191,23 @@ public class Settings {
 
 	/**
 	 * If no particles are specified creates random particles.
+	 *
+	 * !!! IMPORTANT !!!
+	 * Always returns deep copy of the actual particle list!
 	 */
 	public List<Particle> getParticles() {
-		if (particles.size() != 0) {
-			return particles;
-		}
-		else {
+		if (particles.size() == 0) {
 			this.particles = InitialConditions.createRandomParticles(
 					simulationWidth,  simulationHeight,
 					particleMaxSpeed, numOfParticles, particleRadius);
-			return this.particles;
 		}
+
+		List<Particle> copy = new ArrayList<Particle>();
+		for (Particle p: particles) {
+			copy.add(new Particle(p));
+		}
+
+		return copy;
 	}
 
 	public GridBoundaryType getGridBoundary() {
