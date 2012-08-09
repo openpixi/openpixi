@@ -19,7 +19,7 @@ public privileged aspect ParticleMovementDebug {
 	//----------------------------------------------------------------------------------------------
 
 	pointcut particleChecked(Particle p):
-		call(* *..ParticleBoundaries.apply(..)) && args(p)
+		call(* *..ParticleBoundaries.applyOnParticleCenter(..)) && args(p)
 		&& withincode(* *..ParticleMover.push(..));
 
 
