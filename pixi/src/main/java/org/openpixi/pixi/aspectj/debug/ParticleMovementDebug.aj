@@ -10,9 +10,7 @@ import org.openpixi.pixi.physics.util.IntBox;
 import java.util.ArrayList;
 import java.util.List;
 
-public privileged aspect ParticleMovementDebug {
-
-	pointcut underWorkerStep(Worker w): cflow(call(* *..step(..)) && target(w));
+public privileged aspect ParticleMovementDebug extends DistributedSimulationDebug {
 
 	//----------------------------------------------------------------------------------------------
 	// Log particle movement
