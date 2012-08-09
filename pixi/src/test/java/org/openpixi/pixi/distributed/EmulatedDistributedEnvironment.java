@@ -45,9 +45,7 @@ public class EmulatedDistributedEnvironment {
 
 		// Compare results
 		ResultsComparator comparator = new ResultsComparator();
-		comparator.compare(
-				simulation.particles, master.getFinalParticles(),
-				simulation.grid, master.getFinalGrid());
+		compareResults(master, simulation, comparator);
 	}
 
 
@@ -110,9 +108,7 @@ public class EmulatedDistributedEnvironment {
 			runRunnables(collectRuns);
 
 			ResultsComparator comparator = new ResultsComparator(i);
-			comparator.compare(
-					simulation.particles, master.getFinalParticles(),
-					simulation.grid, master.getFinalGrid());
+			compareResults(master, simulation, comparator);
 		}
 
 		Runnable[] closeRuns = new Runnable[nodes.length];
@@ -126,6 +122,19 @@ public class EmulatedDistributedEnvironment {
 		}
 
 		runRunnables(closeRuns);
+	}
+
+
+	private void compareResults(Master master, Simulation simulation, ResultsComparator comparator) {
+		try {
+			comparator.compare(
+					simulation.particles, master.getFinalParticles(),
+					simulation.grid, master.getFinalGrid());
+		} catch (Exception e) {
+			e.printStackTrace();
+			System.out.println(e.getMessage());
+			System.exit(-1);
+		}
 	}
 
 
