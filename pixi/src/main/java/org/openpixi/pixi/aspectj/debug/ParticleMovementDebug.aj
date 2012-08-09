@@ -25,7 +25,7 @@ public privileged aspect ParticleMovementDebug {
 
 	@AdviceName("logDistributedMovement")
 	after(Particle p, Worker w): particleChecked(p) && underWorkerStep(w) {
-		IntBox partition = w.communicator.getPartitions()[w.workerID];
+		IntBox partition = w.partitions[w.workerID];
 		double xoffset = partition.xmin() * w.globalSettings.getCellWidth();
 		double yoffset = partition.ymin() * w.globalSettings.getCellHeight();
 		double xPosGlobal = xoffset + p.getX();
