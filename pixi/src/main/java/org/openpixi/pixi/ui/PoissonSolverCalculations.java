@@ -30,7 +30,7 @@ public class PoissonSolverCalculations {
 
 		this.s = new Simulation(stt);
 		this.g = s.grid;
-		g.resetCurrentAndCharge();
+		g.resetCurrent();
 		
 		this.poisolver = new PoissonSolverFFTPeriodic();
 	}

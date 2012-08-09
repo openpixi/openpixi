@@ -96,6 +96,11 @@ public class CloudInCellTest extends TestCase {
 		Simulation s = new Simulation(stt);
 		s.prepareAllParticles();
 
+		// The simulation always creates its own copy of particles
+		// (in fact the setting class does so)
+		// and we would like to obtain the reference to our initial particle p.
+		p = s.particles.get(0);
+
 		// Advance particle
 		s.particlePush();
 
@@ -167,6 +172,11 @@ public class CloudInCellTest extends TestCase {
 
 		// Advance particle
 		s.particlePush();
+
+		// The simulation always creates its own copy of particles
+		// (in fact the setting class does so)
+		// and we would like to obtain the reference to our initial particle p.
+		p = s.particles.get(0);
 
 		//Remember old values after boundary check
 		double sx = p.getPrevX();

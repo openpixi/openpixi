@@ -65,7 +65,6 @@ public class Interpolator {
 	}
 
 	public void interpolateChargedensity(Particle p, Grid g) {
-		g.resetCurrentAndCharge();		
 		double cellArea = g.getCellWidth() * g.getCellHeight();
 		
 		assertParticleInSimulationArea(p, g);

@@ -5,13 +5,14 @@ import org.openpixi.pixi.physics.collision.detectors.Detector;
 import org.openpixi.pixi.physics.fields.FieldSolver;
 import org.openpixi.pixi.physics.fields.PoissonSolver;
 import org.openpixi.pixi.physics.fields.PoissonSolverFFTPeriodic;
+import org.openpixi.pixi.physics.fields.SimpleSolver;
 import org.openpixi.pixi.physics.force.CombinedForce;
 import org.openpixi.pixi.physics.force.Force;
 import org.openpixi.pixi.physics.grid.CloudInCell;
 import org.openpixi.pixi.physics.grid.GridBoundaryType;
 import org.openpixi.pixi.physics.grid.Interpolator;
 import org.openpixi.pixi.physics.movement.boundary.ParticleBoundaryType;
-import org.openpixi.pixi.physics.solver.EmptySolver;
+import org.openpixi.pixi.physics.solver.Euler;
 import org.openpixi.pixi.physics.solver.Solver;
 
 import java.util.ArrayList;
@@ -50,7 +51,7 @@ public class Settings {
 	private int gridCellsX = 10;
 	private int gridCellsY = 10;
 
-	private FieldSolver gridSolver = new FieldSolver();
+	private FieldSolver gridSolver = new SimpleSolver();
 	private PoissonSolver poissonSolver = new PoissonSolverFFTPeriodic();
 
 	private boolean useGrid = true;
@@ -65,7 +66,7 @@ public class Settings {
 
 	private Detector collisionDetector = new Detector();
 	private CollisionAlgorithm collisionResolver = new CollisionAlgorithm();
-	private Solver particleSolver = new EmptySolver();
+	private Solver particleSolver = new Euler();
 	private List<Force> forces = new ArrayList<Force>();
 
 	// Batch version settings
@@ -191,17 +192,23 @@ public class Settings {
 
 	/**
 	 * If no particles are specified creates random particles.
+	 *
+	 * !!! IMPORTANT !!!
+	 * Always returns deep copy of the actual particle list!
 	 */
 	public List<Particle> getParticles() {
-		if (particles.size() != 0) {
-			return particles;
-		}
-		else {
+		if (particles.size() == 0) {
 			this.particles = InitialConditions.createRandomParticles(
 					simulationWidth,  simulationHeight,
 					particleMaxSpeed, numOfParticles, particleRadius);
-			return this.particles;
 		}
+
+		List<Particle> copy = new ArrayList<Particle>();
+		for (Particle p: particles) {
+			copy.add(new Particle(p));
+		}
+
+		return copy;
 	}
 
 	public GridBoundaryType getGridBoundary() {

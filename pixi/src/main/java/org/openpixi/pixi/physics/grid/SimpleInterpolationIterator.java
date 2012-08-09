@@ -15,6 +15,7 @@ public class SimpleInterpolationIterator extends InterpolationIterator {
 
 	@Override
 	public void interpolateToGrid(List<Particle> particles, Grid grid, double tstep) {
+		grid.resetCurrent();
 		for (Particle p: particles) {
 			interpolator.interpolateToGrid(p, grid, tstep);
 		}
@@ -29,6 +30,7 @@ public class SimpleInterpolationIterator extends InterpolationIterator {
 
 	@Override
 	public void interpolateChargedensity(List<Particle> particles, Grid grid) {
+		grid.resetCharge();
 		for (Particle p: particles) {
 			interpolator.interpolateChargedensity(p, grid);
 		}

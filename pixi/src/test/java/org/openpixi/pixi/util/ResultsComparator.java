@@ -120,13 +120,13 @@ public class ResultsComparator {
 	 * Compares just the electric and magnetic fields.
 	 */
 	private boolean compareCells(Cell cellA, Cell cellB, double tolerance) {
-		if (Math.abs(cellA.Ex - cellB.Ex) > tolerance) {
+		if (Math.abs(cellA.getEx() - cellB.getEx()) > tolerance) {
 			return false;
 		}
-		if (Math.abs(cellA.Ey - cellB.Ey) > tolerance) {
+		if (Math.abs(cellA.getEy() - cellB.getEy()) > tolerance) {
 			return false;
 		}
-		if (Math.abs(cellA.Bz - cellB.Bz) > tolerance) {
+		if (Math.abs(cellA.getBz() - cellB.getBz()) > tolerance) {
 			return false;
 		}
 		return true;
@@ -136,9 +136,9 @@ public class ResultsComparator {
 	private void fail(String msg) {
 		StringBuilder finalMsg = new StringBuilder(msg);
 		if (stepNo != NO_STEP_TRACKING) {
-			finalMsg.append("\nSTEP NUMBER: " + stepNo);
+			finalMsg.append(" STEP NUMBER: " + stepNo);
 		}
-		finalMsg.append("!!! COMPARISON FAILED !!!");
+		finalMsg.append(" !!! COMPARISON FAILED !!! ");
 		throw new ComparisonFailedException(finalMsg.toString());
 	}
 }

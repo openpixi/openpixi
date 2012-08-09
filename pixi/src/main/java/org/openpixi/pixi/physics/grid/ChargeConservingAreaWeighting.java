@@ -7,7 +7,6 @@ public class ChargeConservingAreaWeighting extends Interpolator {
 
 	@Override
 	public void interpolateToGrid(Particle p, Grid g, double tstep) {
-		g.resetCurrentAndCharge();
 
 		//local origin i.e. nearest grid point BEFORE particle push
 		int xStart = (int) Math.floor(p.getPrevX() / g.getCellWidth() + 0.5);
