@@ -43,7 +43,9 @@ public class ParallelInterpolationIterator extends InterpolationIterator {
 
 	@Override
 	public void interpolateToGrid(List<Particle> particles, Grid grid, double tstep) {
-		// TODO reset current
+		// TODO parallelize
+		grid.resetCurrent();
+
 		setFields(particles, grid, tstep);
 		ThreadWork.setNumOfItems(particles.size(), toGridTasks);
 		try {
@@ -70,7 +72,9 @@ public class ParallelInterpolationIterator extends InterpolationIterator {
 
 	@Override
 	public void interpolateChargedensity(List<Particle> particles, Grid grid) {
-		// TODO reset charge
+		// TODO parallelize
+		grid.resetCharge();
+
 		setFields(particles, grid, 0);
 		ThreadWork.setNumOfItems(particles.size(), chargeDensityTasks);
 		try {

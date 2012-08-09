@@ -17,8 +17,8 @@ public class ParallelSimulationTest extends TestCase {
 		Settings defaultSettings = new Settings();
 		defaultSettings.setGridCellsX(2);
 		defaultSettings.setGridCellsY(2);
-		defaultSettings.setNumOfParticles(3);
-		defaultSettings.setIterations(10);
+		defaultSettings.setNumOfParticles(100);
+		defaultSettings.setIterations(100);
 		defaultSettings.setParticleSolver(new Boris());
 
 		Simulation singleThreadedSimulation = new Simulation(defaultSettings);
