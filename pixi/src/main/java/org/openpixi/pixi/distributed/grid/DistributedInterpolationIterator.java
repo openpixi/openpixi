@@ -49,6 +49,7 @@ public class DistributedInterpolationIterator extends InterpolationIterator {
 	public void interpolateToGrid(List<Particle> localParticles, Grid grid, double tstep) {
 
 		sharedDataManager.startExchangeOfParticles();
+		grid.resetCurrent();
 
 		// Remove leaving particles
 		List<Particle> leavingParticles = sharedDataManager.getLeavingParticles();
@@ -92,6 +93,7 @@ public class DistributedInterpolationIterator extends InterpolationIterator {
 		// Initiate the exchange of cells
 		sharedDataManager.exchangeCells();
 
+		// TODO do not create a new array list in each time step, just reuse one
 		List<Particle> particlesWithOutsideInfluence = new ArrayList<Particle>();
 		for (Particle particle: particles) {
 			if (zoneOfLocalInfluence.contains(particle.getX(), particle.getY())) {
