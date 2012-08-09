@@ -291,11 +291,18 @@ public class Grid {
 		getFsolver().step(this, tstep);
 	}
 
-	public void resetCurrentAndCharge() {
+	public void resetCurrent() {
+		for(int x = 0; x < getNumCellsXTotal(); x++) {
+			for(int y = 0; y < getNumCellsYTotal(); y++) {
+				cells[x][y].resetCurrent();
+			}
+		}
+	}
+
+	public void resetCharge() {
 		for(int x = 0; x < getNumCellsXTotal(); x++) {
 			for(int y = 0; y < getNumCellsYTotal(); y++) {
 				cells[x][y].resetCharge();
-				cells[x][y].resetCurrent();
 			}
 		}
 	}

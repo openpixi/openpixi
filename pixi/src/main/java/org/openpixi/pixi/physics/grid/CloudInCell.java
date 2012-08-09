@@ -7,7 +7,6 @@ public class CloudInCell extends Interpolator {
 
 	@Override
 	public void interpolateToGrid(Particle p, Grid g, double tstep) {
-		g.resetCurrentAndCharge();
 
 		int xCellPosition = (int) (Math.floor((p.getX() / g.getCellWidth())));
 		int yCellPosition = (int) (Math.floor((p.getY() / g.getCellHeight())));
