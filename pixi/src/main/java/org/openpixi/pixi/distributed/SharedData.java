@@ -30,8 +30,13 @@ public class SharedData {
 
 	/** Border cells which need to be send out to neighbor. */
 	private List<Cell> borderCells = new ArrayList<Cell>();
-	/** Ghost cells which are received from neighbor. */
-	private List<Cell> ghostCells = new ArrayList<Cell>();
+	/** Ghost cells references which are shared with the grid class and thus are global. */
+	private List<Cell> globalGhostCells = new ArrayList<Cell>();
+	/** Ghost cells which are received from neighbor and local to this class,
+	 * not visible from outside.
+	 * It can happen that the ghost cells arrive too early (in the solve fields phase).
+	 * In such case they can not be copied to the grid cells; hence, the local list. */
+	private List<Cell> localGhostCells;
 
 	/** Ghost particles of neighbors - particles to be send to neighbors. */
 	private List<Particle> borderParticles = new ArrayList<Particle>();
@@ -120,8 +125,16 @@ public class SharedData {
 	}
 
 
+	/**
+	 * Has a twofold function:
+	 * 1) Waits for the ghost cells to arrive.
+	 * 2) Makes the ghost cells visible to simulation and grid classes.
+	 */
 	public void waitForGhostCells() {
 		ghostCellsLock.waitForTrue();
+		for (int i = 0; i < localGhostCells.size(); ++i) {
+			globalGhostCells.get(i).copyFrom(localGhostCells.get(i));
+		}
 	}
 
 
@@ -189,7 +202,7 @@ public class SharedData {
 		public void handle(List<Point> ghostCellsMap) {
 			assert grid != null;
 			for (Point cellIndex: ghostCellsMap) {
-				ghostCells.add(grid.getCell(cellIndex.x, cellIndex.y));
+				globalGhostCells.add(grid.getCell(cellIndex.x, cellIndex.y));
 			}
 			ghostCellsIndexesLock.setToTrue();
 		}
@@ -197,17 +210,9 @@ public class SharedData {
 
 
 	private class GhostCellsHandler implements IncomingCellsHandler {
-
-		/**
-		 * The values of incoming ghost cells have to be copied to the existing cells.
-		 * We can not simply use new reference to the cell
-		 * since the very reference that we have is also used by the grid.
-		 */
 		public void handle(List<Cell> cells) {
-			assert cells.size() == ghostCells.size();
-			for (int i = 0; i < cells.size(); ++i) {
-				ghostCells.get(i).copyFrom(cells.get(i));
-			}
+			assert cells.size() == globalGhostCells.size();
+			localGhostCells = cells;
 			ghostCellsLock.setToTrue();
 		}
 	}
@@ -229,8 +234,6 @@ public class SharedData {
 		 * Furthermore, they might also lie outside of the simulation area.
 		 */
 		public void handle(List<Particle> particles) {
-			//assert !sending; // todo delete
-
 			arrivingParticles = particles;
 			for (Particle particle: particles) {
 				particleBoundaries.applyOnParticleCenter(particle);
