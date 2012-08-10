@@ -75,10 +75,10 @@ public class ResultsComparator {
 	 * Compares just the position.
 	 */
 	private boolean compareParticles(Particle p1, Particle p2, Double tolerance) {
-		if (Math.abs(p1.getX()-p2.getX()) > tolerance) {
+		if (Math.abs(p1.getX() - p2.getX()) > tolerance) {
 			return false;
 		}
-		if (Math.abs(p1.getY()-p2.getY()) > tolerance) {
+		if (Math.abs(p1.getY() - p2.getY()) > tolerance) {
 			return false;
 		}
 		return true;
@@ -99,37 +99,87 @@ public class ResultsComparator {
 			fail("Actual grid is smaller in Y direction!");
 		}
 
-		for (int x = -Grid.EXTRA_CELLS_BEFORE_GRID;
-		     x < expectedGrid.getNumCellsX() + Grid.EXTRA_CELLS_AFTER_GRID; ++x) {
-			for (int y = -Grid.EXTRA_CELLS_BEFORE_GRID;
-			     y < expectedGrid.getNumCellsY() + Grid.EXTRA_CELLS_AFTER_GRID; ++y) {
+		/*
+		 * We only compare the cells up till interpolation radius
+		 * (ie. we do not compare the last row and column of the cells).
+		 * The last row and column would be different in periodic boundaries because
+		 * in the non distributed simulation these rows and cells point inside of the grid,
+		 * whereas in distributed simulation they are not exchanged since they are not needed
+		 * for any interpolation.
+		 */
+		int differences = 0;
+		for (int x = -Grid.INTERPOLATION_RADIUS;
+		     x < expectedGrid.getNumCellsX() + Grid.INTERPOLATION_RADIUS; ++x) {
+			for (int y = -Grid.INTERPOLATION_RADIUS;
+			     y < expectedGrid.getNumCellsY() + Grid.INTERPOLATION_RADIUS; ++y) {
 
 				Cell expectedCell = expectedGrid.getCell(x,y);
 				Cell actualCell = actualGrid.getCell(x,y);
 				if (!compareCells(expectedCell, actualCell, tolerance)) {
-					fail("Cells at [" + x + "," + y + "] are not equal! " +
-							"Expected: " + expectedCell + " Actual: " + actualCell);
+					++differences;
+					System.out.println(" -> differences in cell: " + x + "," + y);
 				}
 			}
 		}
 
+		if (differences > 0) {
+			System.out.println("Expected fields");
+			printFields(expectedGrid);
+			System.out.println("Actual fields");
+			printFields(actualGrid);
+			fail(String.format("%d cells were different!", differences));
+		}
 	}
 
 
-	/**
-	 * Compares just the electric and magnetic fields.
-	 */
 	private boolean compareCells(Cell cellA, Cell cellB, double tolerance) {
-		if (Math.abs(cellA.getEx() - cellB.getEx()) > tolerance) {
-			return false;
+		boolean ok = true;
+		double difference = Math.abs(cellA.getEx() - cellB.getEx());
+		if (difference > tolerance) {
+			printSingleMemberDifference("ex", difference);
+			ok = false;
 		}
-		if (Math.abs(cellA.getEy() - cellB.getEy()) > tolerance) {
-			return false;
+		difference = Math.abs(cellA.getEy() - cellB.getEy());
+		if (difference > tolerance) {
+			printSingleMemberDifference("ey", difference);
+			ok = false;
 		}
-		if (Math.abs(cellA.getBz() - cellB.getBz()) > tolerance) {
-			return false;
+		difference = Math.abs(cellA.getBz() - cellB.getBz());
+		if (difference > tolerance) {
+			printSingleMemberDifference("bz", difference);
+			ok = false;
 		}
-		return true;
+		difference = Math.abs(cellA.getExo() - cellB.getExo());
+		if (difference > tolerance) {
+			printSingleMemberDifference("exo", difference);
+			ok = false;
+		}
+		difference = Math.abs(cellA.getEyo() - cellB.getEyo());
+		if (difference > tolerance) {
+			printSingleMemberDifference("eyo", difference);
+			ok = false;
+		}
+		difference = Math.abs(cellA.getBzo() - cellB.getBzo());
+		if (difference > tolerance) {
+			printSingleMemberDifference("bzo", difference);
+			ok = false;
+		}
+		difference = Math.abs(cellA.getJx() - cellB.getJx());
+		if (difference > tolerance) {
+			printSingleMemberDifference("jx", difference);
+			ok = false;
+		}
+		Math.abs(cellA.getJy() - cellB.getJy());
+		if (difference > tolerance) {
+			printSingleMemberDifference("jy", difference);
+			ok = false;
+		}
+		return ok;
+	}
+
+
+	private void printSingleMemberDifference(String member, double difference) {
+		System.out.print(String.format("%s (%.6f) ", member,  difference));
 	}
 
 
@@ -140,5 +190,33 @@ public class ResultsComparator {
 		}
 		finalMsg.append(" !!! COMPARISON FAILED !!! ");
 		throw new ComparisonFailedException(finalMsg.toString());
+	}
+
+
+	private void printFields(Grid grid) {
+		for (int y = -Grid.EXTRA_CELLS_BEFORE_GRID;
+		     y < grid.getNumCellsY() + Grid.EXTRA_CELLS_AFTER_GRID; ++y) {
+			for (int x = -Grid.EXTRA_CELLS_BEFORE_GRID;
+			     x < grid.getNumCellsX() + Grid.EXTRA_CELLS_AFTER_GRID; ++x) {
+
+				System.out.print(String.format("[%9.6f,%9.6f] ",
+						grid.getCell(x, y).getEx(), grid.getCell(x, y).getEy()));
+			}
+			System.out.println();
+		}
+	}
+
+
+	private void printCurrents(Grid grid) {
+		for (int y = -Grid.EXTRA_CELLS_BEFORE_GRID;
+		     y < grid.getNumCellsY() + Grid.EXTRA_CELLS_AFTER_GRID; ++y) {
+			for (int x = -Grid.EXTRA_CELLS_BEFORE_GRID;
+			     x < grid.getNumCellsX() + Grid.EXTRA_CELLS_AFTER_GRID; ++x) {
+
+				System.out.print(String.format("[%.6f,%.6f] ",
+						grid.getCell(x, y).getJx(), grid.getCell(x, y).getJy()));
+			}
+			System.out.println();
+		}
 	}
 }
