@@ -23,12 +23,6 @@ public class DistributedParticleBoundaries implements ParticleBoundaries {
 	private List<List<BorderGate>> borderMap =
 			new ArrayList<List<BorderGate>>(BorderRegions.NUM_OF_REGIONS);
 
-	/**
-	 * Box around the particle which is used to determine
-	 * whether the particle lies outside of the simulation area or not.
-	 */
-	private DoubleBox particleBox = new DoubleBox(0,0,0,0);
-
 	private ParticleBoundaryType boundaryType;
 	private DoubleBox simulationArea;
 
@@ -140,9 +134,7 @@ public class DistributedParticleBoundaries implements ParticleBoundaries {
 
 
 	public void applyOnParticleCenter(Particle particle) {
-		boundaryType.getParticleBox(particle, particleBox);
-
-		int boundaryRegion = boundaryRegions.getRegion(particleBox);
+		int boundaryRegion = boundaryRegions.getRegion(particle.getX(), particle.getY());
 		boundaryMap[boundaryRegion].apply(particle);
 
 		int borderRegion = borderRegions.getRegion(particle.getX(), particle.getY());
