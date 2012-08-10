@@ -6,6 +6,7 @@ import org.openpixi.pixi.physics.grid.Grid;
 
 /**
  * Prints out the ids of the cells on each node before and after the cell exchange.
+ * The id is cell's x and y index in string format.
  */
 public privileged aspect CellExchangeDebug extends DistributedSimulationDebug {
 
@@ -45,7 +46,7 @@ public privileged aspect CellExchangeDebug extends DistributedSimulationDebug {
 
 		for (int y = ymin; y <= ymax; ++y) {
 			for (int x = xmin; x <= xmax; ++x) {
-				System.out.print(String.format("%3d", grid.getCell(x, y).id));
+				System.out.print(String.format("%s ", grid.getCell(x, y).id));
 			}
 			System.out.println();
 		}

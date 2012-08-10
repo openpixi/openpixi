@@ -9,22 +9,15 @@ import org.openpixi.pixi.physics.grid.Grid;
  */
 public privileged aspect CellID {
 
-	int Cell.id;
+	String Cell.id;
 
 
 	@AdviceName("setCellID")
 	after(Grid grid): execution(*..Grid.new(*..Settings)) && this(grid) &&
 			cflow(within(*..Master)) {
-		int xmin = -Grid.EXTRA_CELLS_BEFORE_GRID;
-		int ymin = -Grid.EXTRA_CELLS_BEFORE_GRID;
-		int xmax = grid.getNumCellsX() + Grid.EXTRA_CELLS_AFTER_GRID - 1;
-		int ymax = grid.getNumCellsY() + Grid.EXTRA_CELLS_AFTER_GRID - 1;
-
-		int id = 0;
-		for (int x = xmin; x <= xmax; ++x) {
-			for (int y = ymin; y <= ymax; ++y) {
-				grid.getCell(x,y).id = id;
-				++id;
+		for (int x = 0; x < grid.getNumCellsX(); ++x) {
+			for (int y = 0; y < grid.getNumCellsY(); ++y) {
+				grid.getCell(x,y).id = String.format("[%d,%d]", x, y);
 			}
 		}
 	}
