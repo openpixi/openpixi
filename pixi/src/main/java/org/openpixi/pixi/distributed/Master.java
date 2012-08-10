@@ -156,7 +156,10 @@ public class Master {
 		Cell[][] subGrid = new Cell[endX - startX + 1][endY - startY + 1];
 		for (int x = startX; x <= endX ; x++) {
 			for (int y = startY; y <= endY; y++) {
-				subGrid[x - startX][y - startY] = grid.getCell(x,y);
+				// We create a new copy of the cell so that each cell is unique.
+				// In another words we want to avoid shared references
+				// present in periodic boundaries.
+				subGrid[x - startX][y - startY] = ClassCopier.copy(grid.getCell(x,y));
 			}
 		}
 		return  subGrid;
