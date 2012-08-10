@@ -1,4 +1,4 @@
-package org.openpixi.pixi.distributed;
+package org.openpixi.pixi.distributed.util;
 
 /**
  *  Boolean lock which waits for true.

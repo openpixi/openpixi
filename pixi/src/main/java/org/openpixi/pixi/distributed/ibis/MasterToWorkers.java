@@ -1,7 +1,7 @@
 package org.openpixi.pixi.distributed.ibis;
 
 import ibis.ipl.*;
-import org.openpixi.pixi.distributed.IncomingResultHandler;
+import org.openpixi.pixi.distributed.util.IncomingResultHandler;
 import org.openpixi.pixi.physics.Particle;
 import org.openpixi.pixi.physics.grid.Cell;
 import org.openpixi.pixi.physics.util.IntBox;

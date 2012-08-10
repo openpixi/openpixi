@@ -1,4 +1,4 @@
-package org.openpixi.pixi.distributed;
+package org.openpixi.pixi.distributed.util;
 
 /**
  * Simple integer lock which waits for a certain positive value to be reached.

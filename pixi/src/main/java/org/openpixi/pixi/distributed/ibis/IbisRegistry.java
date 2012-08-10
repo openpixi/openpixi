@@ -1,9 +1,7 @@
 package org.openpixi.pixi.distributed.ibis;
 
 import ibis.ipl.*;
-import org.openpixi.pixi.distributed.CountLock;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.openpixi.pixi.distributed.util.CountLock;
 
 import java.io.IOException;
 import java.util.ArrayList;

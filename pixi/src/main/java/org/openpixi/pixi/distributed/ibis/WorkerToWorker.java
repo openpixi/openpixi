@@ -1,9 +1,9 @@
 package org.openpixi.pixi.distributed.ibis;
 
 import ibis.ipl.*;
-import org.openpixi.pixi.distributed.IncomingCellsHandler;
-import org.openpixi.pixi.distributed.IncomingParticlesHandler;
-import org.openpixi.pixi.distributed.IncomingPointsHandler;
+import org.openpixi.pixi.distributed.util.IncomingCellsHandler;
+import org.openpixi.pixi.distributed.util.IncomingParticlesHandler;
+import org.openpixi.pixi.distributed.util.IncomingPointsHandler;
 import org.openpixi.pixi.physics.Particle;
 import org.openpixi.pixi.physics.grid.Cell;
 import org.openpixi.pixi.physics.util.Point;
