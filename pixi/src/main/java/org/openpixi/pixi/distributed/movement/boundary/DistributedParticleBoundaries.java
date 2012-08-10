@@ -134,12 +134,14 @@ public class DistributedParticleBoundaries implements ParticleBoundaries {
 
 
 	public void applyOnParticleCenter(Particle particle) {
-		int boundaryRegion = boundaryRegions.getRegion(particle.getX(), particle.getY());
-		boundaryMap[boundaryRegion].apply(particle);
-
 		int borderRegion = borderRegions.getRegion(particle.getX(), particle.getY());
 		for (BorderGate bg: borderMap.get(borderRegion)) {
 			bg.apply(particle);
 		}
+
+		// Boundary gates have to be called after border gates as they change the position
+		// of the particle.
+		int boundaryRegion = boundaryRegions.getRegion(particle.getX(), particle.getY());
+		boundaryMap[boundaryRegion].apply(particle);
 	}
 }
