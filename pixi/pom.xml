@@ -110,6 +110,7 @@
 			</build>
 		</profile>
 
+		<!-- Profile for distributed version which requires IBIS to be installed -->
 		<profile>
 			<id>distributed</id>
 			<dependencies>
