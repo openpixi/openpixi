@@ -7,7 +7,7 @@
 
 NODES=$1
 MAIN_CLASS="org.openpixi.pixi.aspectj.profile.ProfileRunner"
-IPL_SERVER="128.130.35.5"
+IPL_SERVER="localhost"
 
 # Options for qsub when running on a cluster
 #$ -N pixi
@@ -27,8 +27,8 @@ export MAVEN_OPTS=-ea
 
 # Run the main class through maven 
 # (maven fills in the required classpath for us)
-mvn -e exec:java \
-	-Dexec.classpathScope="runtime" \
+mvn -e -P distributed,aspectj-profile exec:java \
 	-Dexec.mainClass="$MAIN_CLASS" \
+ 	-Dexec.classpathScope="runtime" \
 	-Dexec.args="-numOfNodes $NODES -iplServer $IPL_SERVER"
 
