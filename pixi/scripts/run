@@ -1,0 +1,34 @@
+#!/bin/bash
+
+#-------------------------------------------------------------------------------
+# Script for running openpixi.
+# Can be used on a cluster but also on a simple node.
+#-------------------------------------------------------------------------------
+
+NODES=$1
+MAIN_CLASS="org.openpixi.pixi.aspectj.profile.ProfileRunner"
+IPL_SERVER="128.130.35.5"
+
+# Options for qsub when running on a cluster
+#$ -N pixi
+#$ -cwd
+#$ -V
+# Change the number in the following line to number of cores the compute node 
+# has to ensure the allocation of the entire node.
+#$ -pe mpich 8
+#$ -sync y
+#$ -j y
+#$ -l h_rt=00:10:00
+
+echo "Running on node $HOSTNAME"
+
+# Enable assertions in maven
+export MAVEN_OPTS=-ea
+
+# Run the main class through maven 
+# (maven fills in the required classpath for us)
+mvn -e exec:java \
+	-Dexec.classpathScope="runtime" \
+	-Dexec.mainClass="$MAIN_CLASS" \
+	-Dexec.args="-numOfNodes $NODES -iplServer $IPL_SERVER"
+

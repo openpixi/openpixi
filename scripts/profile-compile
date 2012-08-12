@@ -1,3 +1,0 @@
-#!/bin/bash
-
-mvn -P aspectj compile
