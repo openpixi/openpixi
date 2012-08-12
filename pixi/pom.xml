@@ -21,13 +21,7 @@
 			<groupId>com.github.rwl</groupId>
 			<artifactId>jtransforms</artifactId>
 			<version>2.4.0</version>
-		</dependency>
-
-		<dependency>
-			<groupId>org.openpixi.pixi</groupId>
-			<artifactId>ipl</artifactId>
-			<version>2.3</version>
-		</dependency>
+		</dependency>		
 
 		<dependency>
 			<groupId>org.slf4j</groupId>
@@ -42,13 +36,13 @@
 		</dependency>
 	</dependencies>
 
-	<!-- Debug profile for aspectj-->
 	<profiles>
+
+		<!-- Debug profile for aspectj-->
 		<profile>
-			<id>aspectj</id>
+			<id>aspectj-debug</id>
 			<build>
 				<plugins>
-					<!-- AspectJ -->
 					<plugin>
 						<groupId>org.codehaus.mojo</groupId>
 						<artifactId>aspectj-maven-plugin</artifactId>
@@ -70,11 +64,93 @@
 						</dependencies>
 						<configuration>
 							<excludes>
-								<!--<exclude>**/debug/*.aj</exclude>-->
+								<exclude>**/profile/*.aj</exclude>
 							</excludes>
 							<source>1.5</source>
 							<target>1.5</target>
 						</configuration>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+
+		<!-- Profiling profile for aspectj-->
+		<profile>
+			<id>aspectj-profile</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.codehaus.mojo</groupId>
+						<artifactId>aspectj-maven-plugin</artifactId>
+						<version>1.4</version>
+						<executions>
+							<execution>
+								<goals>
+									<goal>compile</goal>       <!-- use this goal to weave all your main classes -->
+									<goal>test-compile</goal>  <!-- use this goal to weave all your test classes -->
+								</goals>
+							</execution>
+						</executions>
+						<dependencies>
+							<dependency>
+								<groupId>org.aspectj</groupId>
+								<artifactId>aspectjtools</artifactId>
+								<version>1.6.11</version>
+							</dependency>
+						</dependencies>
+						<configuration>
+							<excludes>
+								<exclude>**/debug/*.aj</exclude>
+							</excludes>
+							<source>1.5</source>
+							<target>1.5</target>
+						</configuration>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+
+		<profile>
+			<id>distributed</id>
+			<dependencies>
+				<dependency>
+					<groupId>org.openpixi.pixi</groupId>
+					<artifactId>ipl</artifactId>
+					<version>2.3</version>
+				</dependency>
+			</dependencies>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.codehaus.mojo</groupId>
+						<artifactId>build-helper-maven-plugin</artifactId>
+						<version>1.7</version>
+						<executions>
+							<execution>
+								<id>add-source</id>
+								<phase>generate-sources</phase>
+								<goals>
+									<goal>add-source</goal>
+								</goals>
+								<configuration>
+									<sources>
+										<source>src/distributed/java</source>
+									</sources>
+								</configuration>
+							</execution>
+							<execution>
+								<id>add-test-source</id>
+								<phase>generate-sources</phase>
+								<goals>
+									<goal>add-test-source</goal>
+								</goals>
+								<configuration>
+									<sources>
+										<source>src/distributed-test/java</source>
+									</sources>
+								</configuration>
+							</execution>
+						</executions>
 					</plugin>
 				</plugins>
 			</build>

@@ -1,4 +1,4 @@
-package org.openpixi.pixi.util;
+package org.openpixi.pixi.physics.util;
 
 import org.openpixi.pixi.physics.Particle;
 import org.openpixi.pixi.physics.grid.Cell;

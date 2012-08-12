@@ -87,7 +87,7 @@ Version 0.2 - March 14, 2012
 * Additional solvers: Boris, BorisDamped, Euler, LeapFrog, LeapFrogDamped,
   SemiImplicitEuler
 * New spring force
-* Periodic boundary
+* Periodic org.openpixi.pixi.distributed.movement.boundary
 * Basic accuracy test at 1/100 of the step size
 * Display current at variable grid size
 

@@ -1,4 +1,4 @@
-package org.openpixi.pixi.util;
+package org.openpixi.pixi.physics.util;
 
 public class ComparisonFailedException extends RuntimeException {
 	public ComparisonFailedException(String msg) {

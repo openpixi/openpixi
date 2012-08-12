@@ -1,6 +1,8 @@
 package org.openpixi.pixi.distributed.partitioning;
 
 import junit.framework.TestCase;
+import org.junit.Assert;
+import org.openpixi.pixi.distributed.partitioning.SimplePartitioner;
 import org.openpixi.pixi.physics.util.IntBox;
 
 /**
@@ -25,7 +27,7 @@ public class SimplePartitionerTest extends TestCase {
 		SimplePartitioner partitioner = new SimplePartitioner();
 		IntBox[] partitions = partitioner.partition(NUM_CELLS_X, NUM_CELLS_Y, NUM_PARTITIONS);
 
-		assertEquals(NUM_PARTITIONS, partitions.length);
+		Assert.assertEquals(NUM_PARTITIONS, partitions.length);
 
 		int largestXmax = Integer.MIN_VALUE;
 		int smallestXmin = Integer.MAX_VALUE;
@@ -36,7 +38,7 @@ public class SimplePartitionerTest extends TestCase {
 			IntBox b = partitions[i];
 
 			if (isMalformed(b)) {
-				fail("Malformed partition! " + b);
+				Assert.fail("Malformed partition! " + b);
 			}
 
 			if (b.xmax() > largestXmax) {
@@ -55,10 +57,10 @@ public class SimplePartitionerTest extends TestCase {
 			for (int j = i + 1; j < partitions.length; ++j) {
 				IntBox b2 = partitions[j];
 				if (areEqual(b, b2)) {
-					fail("Equal partitions: " + b + " " + b2);
+					Assert.fail("Equal partitions: " + b + " " + b2);
 				}
 				if (interleave(b, b2)) {
-					fail("Interleaving partitions: "  + b + " " + b2);
+					Assert.fail("Interleaving partitions: " + b + " " + b2);
 				}
 			}
 		}
@@ -66,10 +68,10 @@ public class SimplePartitionerTest extends TestCase {
 		int xsize = largestXmax - smallestXmin + 1;
 		int ysize = largestYmax - smallestYmin + 1;
 		if (xsize < NUM_CELLS_X || ysize < NUM_CELLS_Y) {
-			fail("The created partitions do not fill the original area!");
+			Assert.fail("The created partitions do not fill the original area!");
 		}
 		else if (xsize > NUM_CELLS_X || ysize > NUM_CELLS_Y) {
-			fail("The created partitions cross the original area!");
+			Assert.fail("The created partitions cross the original area!");
 		}
 	}
 

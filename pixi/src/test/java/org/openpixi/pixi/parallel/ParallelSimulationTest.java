@@ -5,7 +5,7 @@ import org.openpixi.pixi.physics.Settings;
 import org.openpixi.pixi.physics.Simulation;
 import org.openpixi.pixi.physics.solver.Boris;
 import org.openpixi.pixi.physics.util.ClassCopier;
-import org.openpixi.pixi.util.ResultsComparator;
+import org.openpixi.pixi.physics.util.ResultsComparator;
 
 /**
  * Tests the parallel (threaded) version of openpixi.

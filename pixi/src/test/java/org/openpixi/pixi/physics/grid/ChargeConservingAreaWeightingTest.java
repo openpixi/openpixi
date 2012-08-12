@@ -117,9 +117,9 @@ public class ChargeConservingAreaWeightingTest extends TestCase {
 
 	public void testPeriodicBoundary() {
 		int charge = 1;
-		testMoveForce(0.3, 5.2, -2, 0.1, 1, 2, charge, "boundary");
-		testMove(9.8, 5.2, 10.3, 5.2, charge, "boundary");
-		testMove(5.2, 9.3, 5.2, 10.6, charge, "boundary");
+		testMoveForce(0.3, 5.2, -2, 0.1, 1, 2, charge, "org/openpixi/pixi/distributed/movement/boundary");
+		testMove(9.8, 5.2, 10.3, 5.2, charge, "org/openpixi/pixi/distributed/movement/boundary");
+		testMove(5.2, 9.3, 5.2, 10.6, charge, "org/openpixi/pixi/distributed/movement/boundary");
 	}
 
 	private void testMove(double x1, double y1, double x2, double y2, double charge, String text) {
