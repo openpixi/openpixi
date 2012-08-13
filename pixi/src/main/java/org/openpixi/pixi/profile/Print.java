@@ -6,7 +6,7 @@ package org.openpixi.pixi.profile;
 public class Print {
 
 	private static String timeInSec(long nanoTime) {
-		return String.format("%.3fs", nanoTime * 1e-9f);
+		return String.format("%7.3fs", nanoTime * 1e-9f);
 	}
 
 	private static  String timeInPercents(long partTime, long totalTime) {
@@ -19,6 +19,6 @@ public class Print {
 
 	public static void partTime(String timeName, long partTime, long totalTime) {
 		System.out.println(String.format(
-				"%s %s ..... %s", timeInSec(partTime), timeInPercents(partTime, totalTime), timeName));
+				"%s\t%s ..... %s", timeInSec(partTime), timeInPercents(partTime, totalTime), timeName));
 	}
 }
