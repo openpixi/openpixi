@@ -8,6 +8,7 @@ import java.util.List;
 
 /**
  * Compares the results of two simulations.
+ * In case of failure throws ComparisonFailedException.
  */
 public class ResultsComparator {
 
@@ -36,8 +37,6 @@ public class ResultsComparator {
 
 		compareParticleLists(expectedParticles, actualParticles, TOLERANCE);
 		compareGrids(expectedGrid, actualGrid, TOLERANCE);
-
-		System.out.println("COMPARE RESULTS ... OK");
 	}
 
 
@@ -123,10 +122,6 @@ public class ResultsComparator {
 		}
 
 		if (differences > 0) {
-			System.out.println("Expected fields");
-			printFields(expectedGrid);
-			System.out.println("Actual fields");
-			printFields(actualGrid);
 			fail(String.format("%d cells were different!", differences));
 		}
 	}
@@ -188,11 +183,14 @@ public class ResultsComparator {
 		if (stepNo != NO_STEP_TRACKING) {
 			finalMsg.append(" STEP NUMBER: " + stepNo);
 		}
-		finalMsg.append(" !!! COMPARISON FAILED !!! ");
+		finalMsg.append(", COMPARISON FAILED !!! ");
 		throw new ComparisonFailedException(finalMsg.toString());
 	}
 
 
+	/**
+	 * Used in debugging for fields comparison.
+	 */
 	private void printFields(Grid grid) {
 		for (int y = -Grid.EXTRA_CELLS_BEFORE_GRID;
 		     y < grid.getNumCellsY() + Grid.EXTRA_CELLS_AFTER_GRID; ++y) {
@@ -207,6 +205,9 @@ public class ResultsComparator {
 	}
 
 
+	/**
+	 * Used in debugging for currents comparison.
+	 */
 	private void printCurrents(Grid grid) {
 		for (int y = -Grid.EXTRA_CELLS_BEFORE_GRID;
 		     y < grid.getNumCellsY() + Grid.EXTRA_CELLS_AFTER_GRID; ++y) {
