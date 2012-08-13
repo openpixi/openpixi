@@ -1,4 +1,4 @@
-package org.openpixi.pixi.distributed;
+package org.openpixi.pixi.distributed.utils;
 
 import org.openpixi.pixi.distributed.Master;
 import org.openpixi.pixi.distributed.Node;
@@ -128,15 +128,9 @@ public class EmulatedDistributedEnvironment {
 
 
 	private void compareResults(Master master, Simulation simulation, ResultsComparator comparator) {
-		try {
-			comparator.compare(
-					simulation.particles, master.getFinalParticles(),
-					simulation.grid, master.getFinalGrid());
-		} catch (Exception e) {
-			e.printStackTrace();
-			System.out.println(e.getMessage());
-			System.exit(-1);
-		}
+		comparator.compare(
+				simulation.particles, master.getFinalParticles(),
+				simulation.grid, master.getFinalGrid());
 	}
 
 

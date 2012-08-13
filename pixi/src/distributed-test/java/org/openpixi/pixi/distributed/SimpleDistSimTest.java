@@ -1,5 +1,7 @@
 package org.openpixi.pixi.distributed;
 
+import org.openpixi.pixi.distributed.utils.EmulatedDistributedEnvironment;
+import org.openpixi.pixi.distributed.utils.IplServer;
 import org.openpixi.pixi.physics.Particle;
 import org.openpixi.pixi.physics.Settings;
 
@@ -25,6 +27,7 @@ public class SimpleDistSimTest {
 		IplServer.start();
 		new EmulatedDistributedEnvironment(settings).runInSteps();
 		IplServer.end();
+		System.out.println("PASSED ..... simple distributed simulation test");
 	}
 
 

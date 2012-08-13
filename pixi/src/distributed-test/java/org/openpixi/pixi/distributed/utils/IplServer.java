@@ -1,4 +1,4 @@
-package org.openpixi.pixi.distributed;
+package org.openpixi.pixi.distributed.utils;
 
 /**
  * Handles the creation and destruction of ipl registry server.

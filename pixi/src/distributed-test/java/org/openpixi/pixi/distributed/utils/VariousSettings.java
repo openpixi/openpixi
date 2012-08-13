@@ -1,8 +1,11 @@
-package org.openpixi.pixi.distributed;
+package org.openpixi.pixi.distributed.utils;
 
 import org.openpixi.pixi.physics.Settings;
+import org.openpixi.pixi.physics.fields.YeeSolver;
 import org.openpixi.pixi.physics.force.ConstantForce;
+import org.openpixi.pixi.physics.grid.ChargeConservingAreaWeighting;
 import org.openpixi.pixi.physics.grid.Interpolator;
+import org.openpixi.pixi.physics.solver.Boris;
 import org.openpixi.pixi.physics.solver.Euler;
 import org.openpixi.pixi.physics.solver.relativistic.SemiImplicitEulerRelativistic;
 import org.openpixi.pixi.physics.util.ClassCopier;
@@ -11,7 +14,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- *
+ * Defines various settings for distributed simulation testing.
+ * Modify this class if you want to extend the coverage of tested settings.
  */
 public class VariousSettings {
 
@@ -26,10 +30,13 @@ public class VariousSettings {
 		settings = ClassCopier.copy(defaultSettings);
 		variousTestSettings.put("Euler", settings);
 
+		// Fails probably because Boris remembers a lot of information about the force
+		// in the particle. This information remembering probably causes problem when particles
+		// are transferred from one node to the other.
 		// TODO find solution
-//		settings = ClassCopier.copy(defaultSettings);
-//		settings.setParticleSolver(new Boris());
-//		variousTestSettings.put("Boris", settings);
+		settings = ClassCopier.copy(defaultSettings);
+		settings.setParticleSolver(new Boris());
+		variousTestSettings.put("Boris", settings);
 
 		settings = ClassCopier.copy(defaultSettings);
 		settings.setParticleSolver(
@@ -37,17 +44,19 @@ public class VariousSettings {
 		variousTestSettings.put("SemiImplicitEulerRelativistic", settings);
 
 		// Fails because additional addition and subtraction cause the position to diverge
-		// slowly from the position calculated by local simulation
-		// TODO find solution
-		settings = ClassCopier.copy(defaultSettings);
-		settings.setIterations(10000);
-		settings.setNumOfParticles(10);
-		variousTestSettings.put("10 000 iterations", settings);
-
+		// slowly from the position calculated by local simulation.
+		// If we run the entire simulation at once throws IndexOutOfBoundsException
+		// because we try to interpolate to a cell we do not have (the particles get too fast).
 		// TODO find solution
 //		settings = ClassCopier.copy(defaultSettings);
-//		settings.setInterpolator(new ChargeConservingAreaWeighting());
-//		variousTestSettings.put("ChargeConservingAreaWeighting", settings);
+//		settings.setIterations(10000);
+//		settings.setNumOfParticles(10);
+//		variousTestSettings.put("10 000 iterations", settings);
+
+		// TODO find solution
+		settings = ClassCopier.copy(defaultSettings);
+		settings.setInterpolator(new ChargeConservingAreaWeighting());
+		variousTestSettings.put("ChargeConservingAreaWeighting", settings);
 
 		settings = ClassCopier.copy(defaultSettings);
 		settings.setInterpolator(new Interpolator());
@@ -56,9 +65,9 @@ public class VariousSettings {
 		// Fails because YeeSolver relies too much on gridCellsX and gridCellsY which differ
 		// in the distributed and local simulations.
 		// TODO find solution
-//		settings = ClassCopier.copy(defaultSettings);
-//		settings.setGridSolver(new YeeSolver());
-//		variousTestSettings.put("YeeSolver", settings);
+		settings = ClassCopier.copy(defaultSettings);
+		settings.setGridSolver(new YeeSolver());
+		variousTestSettings.put("YeeSolver", settings);
 
 		// Fails because SpringForce uses particle's absolute y position to calculate the force.
 		// Since the y position in local and distributed simulation differs,

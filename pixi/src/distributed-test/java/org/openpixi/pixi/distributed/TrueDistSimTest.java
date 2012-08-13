@@ -1,9 +1,13 @@
 package org.openpixi.pixi.distributed;
 
+import org.openpixi.pixi.distributed.utils.Print;
+import org.openpixi.pixi.distributed.utils.VariousSettings;
 import org.openpixi.pixi.physics.Settings;
 import org.openpixi.pixi.physics.Simulation;
+import org.openpixi.pixi.physics.util.ComparisonFailedException;
 import org.openpixi.pixi.physics.util.ResultsComparator;
 
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -33,6 +37,7 @@ public class TrueDistSimTest {
 		assert iplServer != null: "Ipl server was not specified!";
 
 		Map<String, Settings> settingsMap = VariousSettings.getSettingsMap();
+		Map<String, Boolean> resultsMap = new HashMap<String, Boolean>();
 		for (String testName: settingsMap.keySet()) {
 			Settings stt = settingsMap.get(testName);
 			stt.setNumOfNodes(numOfNodes);
@@ -40,8 +45,16 @@ public class TrueDistSimTest {
 
 			Node n = new Node(stt);
 			n.run();
-			compareResult(stt, n, testName);
+			try {
+				compareResult(stt, n, testName);
+				resultsMap.put(testName, true);
+			} catch (ComparisonFailedException e) {
+				System.out.println(e.getMessage());
+				resultsMap.put(testName, false);
+			}
 		}
+
+		Print.testResults(resultsMap);
 	}
 
 
