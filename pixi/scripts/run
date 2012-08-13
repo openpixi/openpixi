@@ -6,8 +6,8 @@
 #-------------------------------------------------------------------------------
 
 NODES=$1
+IPL_SERVER=$2
 MAIN_CLASS="org.openpixi.pixi.distributed.profile.MainProfile"
-IPL_SERVER="localhost"
 
 # Options for qsub when running on a cluster
 #$ -N pixi

@@ -1,9 +1,10 @@
 #!/bin/bash
 
-NODES=$1
+NODES="$1"
+IPL_SERVER="172.16.9.177"
 
 # JAVA_HOME has to point to some Java which is available at the compute nodes
 export JAVA_HOME=/usr/lib/jvm/jre
 
 # Issues array of jobs from 1 to $NODES
-qsub -t 1-$NODES ./scripts/run $NODES
+qsub -t 1-$NODES ./scripts/run $NODES $IPL_SERVER
