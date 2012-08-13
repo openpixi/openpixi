@@ -38,6 +38,8 @@
 
 	<profiles>
 
+		<!-- ONLY ONE OF THE ASPECTJ PROFILES CAN BE ACTIVE AT A TIME! -->
+
 		<!-- Debug profile for aspectj-->
 		<profile>
 			<id>aspectj-debug</id>
@@ -65,6 +67,8 @@
 						<configuration>
 							<excludes>
 								<exclude>**/profile/*.aj</exclude>
+								<exclude>**/debug/CellExchangeDebug.aj</exclude>
+								<exclude>**/debug/CellID.aj</exclude>
 							</excludes>
 							<source>1.5</source>
 							<target>1.5</target>

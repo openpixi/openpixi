@@ -1,10 +1,8 @@
 package org.openpixi.pixi.distributed.profile;
 
 import org.openpixi.pixi.distributed.Node;
-import org.openpixi.pixi.distributed.profile.DistributedProfileInfo;
 import org.openpixi.pixi.physics.Settings;
 import org.openpixi.pixi.physics.Simulation;
-import org.openpixi.pixi.physics.solver.Boris;
 import org.openpixi.pixi.profile.ProfileInfo;
 
 /**
@@ -36,9 +34,8 @@ public class MainProfile {
 		settings.setGridCellsY(16);
 		settings.setSimulationWidth(10 * settings.getGridCellsX());
 		settings.setSimulationHeight(10 * settings.getGridCellsY());
-		settings.setNumOfParticles(1000);
-		settings.setIterations(10);
-		settings.setParticleSolver(new Boris());
+		settings.setNumOfParticles(10);
+		settings.setIterations(10000);
 		settings.setNumOfNodes(numOfNodes);
 		settings.setIplServer(iplServer);
 

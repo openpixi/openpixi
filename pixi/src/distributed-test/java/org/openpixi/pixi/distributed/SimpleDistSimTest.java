@@ -20,7 +20,7 @@ public class SimpleDistSimTest {
 		// If number of iterations is set to 0 we get a simple test
 		// of problem distribution and results collection (we must use runAtOnce() method of
 		// the EmulatedDistributedEnvironment).
-		settings.setIterations(100);
+		settings.setIterations(10000);
 
 		IplServer.start();
 		new EmulatedDistributedEnvironment(settings).runInSteps();

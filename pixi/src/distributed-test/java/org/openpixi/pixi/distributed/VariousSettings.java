@@ -21,7 +21,7 @@ public class VariousSettings {
 
 		Settings settings = ClassCopier.copy(defaultSettings);
 		settings.setNumOfNodes(2);
-		variousTestSettings.put("2 nodes - self communication test", settings);
+		variousTestSettings.put("2 nodes - self communication", settings);
 
 		settings = ClassCopier.copy(defaultSettings);
 		variousTestSettings.put("Euler", settings);
@@ -35,6 +35,14 @@ public class VariousSettings {
 		settings.setParticleSolver(
 				new SemiImplicitEulerRelativistic(settings.getSpeedOfLight()));
 		variousTestSettings.put("SemiImplicitEulerRelativistic", settings);
+
+		// Fails because additional addition and subtraction cause the position to diverge
+		// slowly from the position calculated by local simulation
+		// TODO find solution
+		settings = ClassCopier.copy(defaultSettings);
+		settings.setIterations(10000);
+		settings.setNumOfParticles(10);
+		variousTestSettings.put("10 000 iterations", settings);
 
 		// TODO find solution
 //		settings = ClassCopier.copy(defaultSettings);

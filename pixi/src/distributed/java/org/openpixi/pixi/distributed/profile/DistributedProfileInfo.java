@@ -44,10 +44,10 @@ public class DistributedProfileInfo extends ProfileInfo {
 	public static void printProfileInfo() {
 		ProfileInfo.printProfileInfo();
 		Print.partTime("Arriving particles waiting time",
-				arrivingParticlesWaitingTime, ProfileInfo.getInterpolateToGridTime());
+				arrivingParticlesWaitingTime, ProfileInfo.getSimulationTime());
 		Print.partTime("Ghost particles waiting time",
-				ghostParticlesWaitingTime, ProfileInfo.getInterpolateToGridTime());
+				ghostParticlesWaitingTime, ProfileInfo.getSimulationTime());
 		Print.partTime("Ghost cells waiting time",
-				ghostCellsWaitingTime, ProfileInfo.getInterpolateToParticleTime());
+				ghostCellsWaitingTime, ProfileInfo.getSimulationTime());
 	}
 }

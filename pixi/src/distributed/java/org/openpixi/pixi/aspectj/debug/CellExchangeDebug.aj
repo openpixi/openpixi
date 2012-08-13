@@ -6,6 +6,8 @@ import org.openpixi.pixi.physics.grid.Grid;
 
 /**
  * Prints out the ids of the cells on each node before and after the cell exchange.
+ * With the printed ids one can verify whether the ghost and border cells were well matched.
+ * The id's should not change across the iterations.
  * The id is cell's x and y index in string format.
  */
 public privileged aspect CellExchangeDebug extends DistributedSimulationDebug {

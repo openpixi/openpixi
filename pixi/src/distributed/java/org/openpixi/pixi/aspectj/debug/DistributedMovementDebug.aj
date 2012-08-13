@@ -10,7 +10,15 @@ import org.openpixi.pixi.physics.util.IntBox;
 import java.util.ArrayList;
 import java.util.List;
 
-public privileged aspect ParticleMovementDebug extends DistributedSimulationDebug {
+/**
+ * Logs the following information:
+ * - global position of particle
+ * - arriving particles
+ * - leaving particles
+ * - border particles
+ * - ghost particles
+ */
+public privileged aspect DistributedMovementDebug extends DistributedSimulationDebug {
 
 	//----------------------------------------------------------------------------------------------
 	// Log particle movement
@@ -29,27 +37,12 @@ public privileged aspect ParticleMovementDebug extends DistributedSimulationDebu
 		double xPosGlobal = xoffset + p.getX();
 		double yPosGlobal = yoffset + p.getY();
 
-		String msg = String.format(
-				"Worker %d %s global [%.3f, %.3f]",
-				w.workerID,
-				particleMovementToStr(p),
-				xPosGlobal,
-				yPosGlobal);
-		System.out.println(msg);
-	}
-
-
-	@AdviceName("logNonDistributedMovement")
-	after(Particle p): particleChecked(p) && !underWorkerStep(Worker) {
-		System.out.println("Non-distributed simulation " + particleMovementToStr(p));
-	}
-
-
-	private String particleMovementToStr(Particle p) {
-		return String.format("ID %d [%.3f, %.3f] -> [%.3f, %.3f]",
+		System.out.println(String.format(
+				"Particle %d at node %d moved to global position global [%.3f, %.3f]",
 				p.id,
-				p.getPrevX(), p.getPrevY(),
-				p.getX(), p.getY());
+				w.workerID,
+				xPosGlobal,
+				yPosGlobal));
 	}
 
 	//----------------------------------------------------------------------------------------------
@@ -62,7 +55,7 @@ public privileged aspect ParticleMovementDebug extends DistributedSimulationDebu
 	@AdviceName("logArrivingParticles")
 	after(Worker w) returning(List<Particle> particles):
 			getArrivingParticles() && underWorkerStep(w) {
-		logParticleList(w.workerID, "arriving", particles);
+		logParticleList(w.workerID, "Arriving", particles);
 	}
 
 
@@ -72,7 +65,7 @@ public privileged aspect ParticleMovementDebug extends DistributedSimulationDebu
 	@AdviceName("logLeavingParticles")
 	after(Worker w) returning(List<Particle> particles):
 			getLeavingParticles() && underWorkerStep(w) {
-		logParticleList(w.workerID, "leaving", particles);
+		logParticleList(w.workerID, "Leaving", particles);
 	}
 
 
@@ -82,7 +75,7 @@ public privileged aspect ParticleMovementDebug extends DistributedSimulationDebu
 	@AdviceName("logGhostParticles")
 	after(Worker w) returning(List<Particle> particles):
 			getGhostParticles() && underWorkerStep(w) {
-		logParticleList(w.workerID, "ghost", particles);
+		logParticleList(w.workerID, "Ghost", particles);
 	}
 
 
@@ -95,7 +88,7 @@ public privileged aspect ParticleMovementDebug extends DistributedSimulationDebu
 		for (SharedData sd: sdm.sharedData.values()) {
 			allBorderParticles.addAll(sd.borderParticles);
 		}
-		logParticleList(w.workerID, "border", allBorderParticles);
+		logParticleList(w.workerID, "Border", allBorderParticles);
 	}
 
 
@@ -104,7 +97,7 @@ public privileged aspect ParticleMovementDebug extends DistributedSimulationDebu
 			return;
 		}
 
-		System.out.print("Worker " + workerID + " " + particlesName);
+		System.out.print(String.format("%s particles at node %d are", particlesName, workerID));
 		for (Particle p: particles) {
 			System.out.print(" " + p.id);
 		}
