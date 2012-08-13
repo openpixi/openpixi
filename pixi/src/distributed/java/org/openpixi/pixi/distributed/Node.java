@@ -30,16 +30,12 @@ public class Node implements Runnable {
 	 * Distributed the problem, runs the simulation and then collects the results.
 	 */
 	public void run() {
-		try {
-			distribute();
-			for (int i = 0; i < settings.getIterations(); ++i) {
-				step();
-			}
-			collect();
-			close();
-		} catch (Exception e) {
-			throw new RuntimeException(e);
+		distribute();
+		for (int i = 0; i < settings.getIterations(); ++i) {
+			step();
 		}
+		collect();
+		close();
 	}
 
 
