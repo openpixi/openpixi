@@ -1,14 +1,17 @@
-package org.openpixi.pixi.aspectj.profile;
+package org.openpixi.pixi.distributed.profile;
 
 import org.openpixi.pixi.distributed.Node;
+import org.openpixi.pixi.distributed.profile.DistributedProfileInfo;
 import org.openpixi.pixi.physics.Settings;
 import org.openpixi.pixi.physics.Simulation;
 import org.openpixi.pixi.physics.solver.Boris;
+import org.openpixi.pixi.profile.ProfileInfo;
 
 /**
  * Based on the command line arguments runs either distributed or local simulation.
+ * Afterwards displays profiling information.
  */
-public class ProfileRunner {
+public class MainProfile {
 
 	public static void main(String[] args) {
 
@@ -42,11 +45,13 @@ public class ProfileRunner {
 		if (numOfNodes == 1) {
 			Simulation simulation = new Simulation(settings);
 			simulation.run();
+			ProfileInfo.printProfileInfo();
 		}
 		else if (numOfNodes > 1) {
 			assert iplServer != null;
 			Node node = new Node(settings);
 			node.run();
+			DistributedProfileInfo.printProfileInfo();
 		}
 	}
 }

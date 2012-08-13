@@ -6,7 +6,7 @@
 #-------------------------------------------------------------------------------
 
 NODES=$1
-MAIN_CLASS="org.openpixi.pixi.aspectj.profile.ProfileRunner"
+MAIN_CLASS="org.openpixi.pixi.distributed.profile.MainProfile"
 IPL_SERVER="localhost"
 
 # Options for qsub when running on a cluster

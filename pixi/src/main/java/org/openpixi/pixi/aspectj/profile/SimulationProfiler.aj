@@ -1,6 +1,7 @@
 package org.openpixi.pixi.aspectj.profile;
 
 import org.aspectj.lang.annotation.AdviceName;
+import org.openpixi.pixi.profile.ProfileInfo;
 
 /**
  * Measures the duration of the simulation and the duration of its four main steps
@@ -8,39 +9,11 @@ import org.aspectj.lang.annotation.AdviceName;
  */
 public aspect SimulationProfiler {
 
-	private long simulationTime;
-	private long pushParticlesTime;
-	private long interpolateToGridTime;
-	private long solveFieldsTime;
-	private long interpolateToParticleTime;
-
-
-	public long getSimulationTime() {
-		return simulationTime;
-	}
-
-	public long getPushParticlesTime() {
-		return pushParticlesTime;
-	}
-
-	public long getInterpolateToGridTime() {
-		return interpolateToGridTime;
-	}
-
-	public long getSolveFieldsTime() {
-		return solveFieldsTime;
-	}
-
-	public long getInterpolateToParticleTime() {
-		return interpolateToParticleTime;
-	}
-
-
 	@AdviceName("recordSimulationStepTime")
 	Object around(): execution(* *..Simulation.step()) {
 		long start = System.nanoTime();
 		Object o = proceed();
-		simulationTime += System.nanoTime() - start;
+		ProfileInfo.addSimulationTime(System.nanoTime() - start);
 		return o;
 	}
 
@@ -49,7 +22,7 @@ public aspect SimulationProfiler {
 	Object around(): execution(* *..ParticleMover.push(..)) {
 		long start = System.nanoTime();
 		Object o = proceed();
-		pushParticlesTime += System.nanoTime() - start;
+		ProfileInfo.addPushParticlesTime(System.nanoTime() - start);
 		return o;
 	}
 
@@ -58,7 +31,7 @@ public aspect SimulationProfiler {
 	Object around(): execution(* *..InterpolationIterator.interpolateToGrid(..)) {
 		long start = System.nanoTime();
 		Object o = proceed();
-		interpolateToGridTime += System.nanoTime() - start;
+		ProfileInfo.addInterpolateToGridTime(System.nanoTime() - start);
 		return o;
 	}
 
@@ -67,7 +40,7 @@ public aspect SimulationProfiler {
 	Object around(): execution(* *..InterpolationIterator.interpolateToParticle(..)) {
 		long start = System.nanoTime();
 		Object o = proceed();
-		interpolateToParticleTime += System.nanoTime() - start;
+		ProfileInfo.addInterpolateToParticleTime(System.nanoTime() - start);
 		return o;
 	}
 
@@ -76,17 +49,7 @@ public aspect SimulationProfiler {
 	Object around(): execution(* *..Grid.updateGrid(..)) {
 		long start = System.nanoTime();
 		Object o = proceed();
-		solveFieldsTime += System.nanoTime() - start;
+		ProfileInfo.addSolveFieldsTime(System.nanoTime() - start);
 		return o;
-	}
-
-
-	@AdviceName("printTimes")
-	after(): execution(* *..ProfileRunner.main(..)) {
-		Print.totalTime("Simulation time", simulationTime);
-		Print.partTime("Push particles time", pushParticlesTime, simulationTime);
-		Print.partTime("Interpolate to grid time", interpolateToGridTime, simulationTime);
-		Print.partTime("Solve fields time", solveFieldsTime, simulationTime);
-		Print.partTime("Interpolate to particle time", interpolateToParticleTime, simulationTime);
 	}
 }
