@@ -203,13 +203,18 @@ public class Settings {
 					particleMaxSpeed, numOfParticles, particleRadius);
 		}
 
+		return cloneParticles();
+	}
+
+
+	private List<Particle> cloneParticles() {
 		List<Particle> copy = new ArrayList<Particle>();
 		for (Particle p: particles) {
 			copy.add(new Particle(p));
 		}
-
 		return copy;
 	}
+
 
 	public GridBoundaryType getGridBoundary() {
 		switch (boundaryType) {
