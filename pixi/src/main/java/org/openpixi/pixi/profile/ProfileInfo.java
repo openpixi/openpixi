@@ -14,6 +14,17 @@ public class ProfileInfo {
 	private static long solveFieldsTime;
 	private static long interpolateToParticleTime;
 
+	/** Signalizes whether the profiling information was captured or not */
+	private static boolean isProfilingOn;
+
+
+	public static boolean isProfilingOn() {
+		return isProfilingOn;
+	}
+
+	public static void setProfilingOn() {
+		isProfilingOn = true;
+	}
 
 	public static long getSimulationTime() {
 		return simulationTime;
@@ -57,6 +68,11 @@ public class ProfileInfo {
 
 
 	public static void printProfileInfo() {
+		if (!isProfilingOn()) {
+			System.out.println("Profiling information was not captured.");
+			return;
+		}
+
 		Print.partTime("Simulation time", simulationTime, simulationTime);
 		Print.partTime("Push particles time", pushParticlesTime, simulationTime);
 		Print.partTime("Interpolate to grid time", interpolateToGridTime, simulationTime);

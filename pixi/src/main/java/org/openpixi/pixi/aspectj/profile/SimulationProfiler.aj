@@ -9,6 +9,13 @@ import org.openpixi.pixi.profile.ProfileInfo;
  */
 public aspect SimulationProfiler {
 
+
+	@AdviceName("recordProfilingOn")
+	after(): call(*..Simulation.new(..)) {
+		ProfileInfo.setProfilingOn();
+	}
+
+
 	@AdviceName("recordSimulationStepTime")
 	Object around(): execution(* *..Simulation.step()) {
 		long start = System.nanoTime();

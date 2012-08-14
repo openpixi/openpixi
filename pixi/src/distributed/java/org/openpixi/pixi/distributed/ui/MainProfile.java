@@ -1,6 +1,7 @@
-package org.openpixi.pixi.distributed.profile;
+package org.openpixi.pixi.distributed.ui;
 
 import org.openpixi.pixi.distributed.Node;
+import org.openpixi.pixi.distributed.profile.DistributedProfileInfo;
 import org.openpixi.pixi.physics.Settings;
 import org.openpixi.pixi.physics.Simulation;
 import org.openpixi.pixi.profile.ProfileInfo;
@@ -35,7 +36,7 @@ public class MainProfile {
 		settings.setSimulationWidth(10 * settings.getGridCellsX());
 		settings.setSimulationHeight(10 * settings.getGridCellsY());
 		settings.setNumOfParticles(10);
-		settings.setIterations(10000);
+		settings.setIterations(100);
 		settings.setNumOfNodes(numOfNodes);
 		settings.setIplServer(iplServer);
 

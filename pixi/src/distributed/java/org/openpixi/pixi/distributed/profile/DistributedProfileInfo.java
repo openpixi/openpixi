@@ -42,6 +42,11 @@ public class DistributedProfileInfo extends ProfileInfo {
 
 
 	public static void printProfileInfo() {
+		if (!ProfileInfo.isProfilingOn()) {
+			System.out.println("Profiling information was not captured.");
+			return;
+		}
+
 		ProfileInfo.printProfileInfo();
 		Print.partTime("Arriving particles waiting time",
 				arrivingParticlesWaitingTime, ProfileInfo.getSimulationTime());
