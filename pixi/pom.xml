@@ -67,6 +67,12 @@
 						<configuration>
 							<excludes>
 								<exclude>**/profile/*.aj</exclude>
+								<!--
+									Exclude the debugging information for cells exchange
+									in the distributed version. We would like to see
+									this information only in very specific cases when we are
+									interested in correct cells exchange.
+								-->
 								<exclude>**/debug/CellExchangeDebug.aj</exclude>
 								<exclude>**/debug/CellID.aj</exclude>
 							</excludes>
