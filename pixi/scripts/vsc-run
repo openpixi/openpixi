@@ -20,5 +20,5 @@ SLOTS=`expr $NUM_OF_NODES \* $SLOTS_PER_NODE`
 IPL_SERVER="172.16.9.177"
 
 # qsub reserves number of slots we ask for and once we have them calls
-# the specified command / script on the LOGIN node!
+# the specified command / script on the LOGIN node (not on the compute nodes !!!)
 qsub -pe mpich $SLOTS ./scripts/vsc-distribute $NUM_OF_NODES $NUM_PROCESSES $IPL_SERVER
