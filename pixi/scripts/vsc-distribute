@@ -30,7 +30,7 @@ do
 	for PROCESS in `seq $NUM_OF_PROCESSES`
 	do
 		echo "Starting process $PROCESS at node $NODE"
-		OUT_FILE="out.$JOB_ID.$NODE.$PROCESS"
+		OUT_FILE="out.$NUM_OF_NODES.$NUM_OF_PROCESSES.$JOB_ID.$NODE.$PROCESS"
 		
 		# Connect to the compute node, run the simulation there and
 		# at the end copy the output back.
@@ -39,8 +39,7 @@ do
 		ssh $NODE " \
 			export JAVA_HOME=$JAVA_HOME; \
 			cd openpixi/pixi; \
-			echo Nodes $NUM_OF_NODES, Processes $NUM_OF_PROCESSES > $OUT_FILE; \
-			./scripts/run $TOTAL_PROCESSES $IPL_SERVER >> $OUT_FILE; \
+			./scripts/run $TOTAL_PROCESSES $IPL_SERVER > $OUT_FILE; \
 			cp $OUT_FILE ${SGE_O_WORKDIR}; \
 			exit" &	
 	done	
