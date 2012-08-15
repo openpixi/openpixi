@@ -7,20 +7,7 @@
 
 NODES=$1
 IPL_SERVER=$2
-MAIN_CLASS="org.openpixi.pixi.distributed.profile.MainProfile"
-
-# Options for qsub when running on a cluster
-#$ -N pixi
-#$ -cwd
-#$ -V
-# Change the number in the following line to number of cores the compute node 
-# has to ensure the allocation of the entire node.
-#$ -pe mpich 8
-#$ -sync y
-#$ -j y
-#$ -l h_rt=00:10:00
-
-echo "Running on node $HOSTNAME"
+MAIN_CLASS="org.openpixi.pixi.distributed.ui.MainProfile"
 
 # Enable assertions in maven
 export MAVEN_OPTS=-ea
