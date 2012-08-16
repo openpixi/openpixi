@@ -6,6 +6,10 @@ import org.openpixi.pixi.physics.fields.FieldSolver;
 
 public class Grid {
 
+	/*
+	 * TODO remove the accessors for individual cell fields and call directly the accessors on the cell
+	 */
+
 	/**
 	 * The purpose of the extra cells is twofold.
 	 * 1) They represent the boundaries around the simulation area cells.

@@ -37,6 +37,10 @@ public class Cell implements Serializable {
 		return jx;
 	}
 
+	/**
+	 * Needs to be synchronized as we expect in the parallel version
+	 * two threads trying to update the field at the same time.
+	 */
 	public synchronized void addJx(double value) {
 		this.jx += value;
 	}
@@ -45,6 +49,10 @@ public class Cell implements Serializable {
 		return jy;
 	}
 
+	/**
+	 * Needs to be synchronized as we expect in the parallel version
+	 * two threads trying to update the field at the same time.
+	 */
 	public synchronized void addJy(double value) {
 		this.jy += value;
 	}
@@ -57,6 +65,10 @@ public class Cell implements Serializable {
 		this.rho = rho;
 	}
 
+	/**
+	 * Needs to be synchronized as we expect in the parallel version
+	 * two threads trying to update the field at the same time.
+	 */
 	public synchronized void addRho(double value) {
 		this.rho += value;
 	}
