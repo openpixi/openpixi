@@ -19,8 +19,6 @@
 
 package org.openpixi.pixi.physics;
 
-import org.openpixi.pixi.parallel.grid.ParallelInterpolationIterator;
-import org.openpixi.pixi.parallel.movement.ParallelParticleMover;
 import org.openpixi.pixi.physics.collision.algorithms.CollisionAlgorithm;
 import org.openpixi.pixi.physics.collision.detectors.Detector;
 import org.openpixi.pixi.physics.fields.PoissonSolver;
@@ -30,7 +28,6 @@ import org.openpixi.pixi.physics.grid.Grid;
 import org.openpixi.pixi.physics.grid.InterpolationIterator;
 import org.openpixi.pixi.physics.grid.SimpleInterpolationIterator;
 import org.openpixi.pixi.physics.movement.ParticleMover;
-import org.openpixi.pixi.physics.movement.SimpleParticleMover;
 import org.openpixi.pixi.physics.movement.boundary.ParticleBoundaries;
 import org.openpixi.pixi.physics.movement.boundary.SimpleParticleBoundaries;
 import org.openpixi.pixi.physics.util.DoubleBox;
@@ -75,6 +72,7 @@ public class Simulation {
 	/**solver for the electrostatic poisson equation*/
 	private PoissonSolver poisolver;
 
+
 	public InterpolationIterator getInterpolation() {
 		return interpolation;
 	}
@@ -113,7 +111,10 @@ public class Simulation {
 		ParticleBoundaries particleBoundaries = new SimpleParticleBoundaries(
 				new DoubleBox(0, width, 0, height),
 				settings.getParticleBoundary());
-		initializeParticleMover(settings, particleBoundaries);
+		mover = new ParticleMover(
+				settings.getParticleSolver(),
+				particleBoundaries,
+				settings.getParticleIterator());
 
 		grid = new Grid(settings);
 		if (settings.useGrid()) {
@@ -124,7 +125,8 @@ public class Simulation {
 		}
 
 		poisolver = settings.getPoissonSolver();
-		interpolation = initializeInterpolator(settings);
+		interpolation = new SimpleInterpolationIterator(
+				settings.getInterpolator(), settings.getParticleIterator());
 		particleGridInitializer.initialize(interpolation, poisolver, particles, grid);
 
 		detector = settings.getCollisionDetector();
@@ -158,7 +160,10 @@ public class Simulation {
 		this.particles = (ArrayList<Particle>)particles;
 		f = settings.getForce();
 
-		initializeParticleMover(settings, particleBoundaries);
+		mover = new ParticleMover(
+				settings.getParticleSolver(),
+				particleBoundaries,
+				settings.getParticleIterator());
 
 		this.grid = grid;
 		if (settings.useGrid()) {
@@ -174,48 +179,6 @@ public class Simulation {
 		collisionalgorithm = settings.getCollisionAlgorithm();
 
 		prepareAllParticles();
-	}
-
-
-	/**
-	 * Based on the number of threads creates either single or
-	 * multi threaded interpolation iterator.
-	 */
-	public static InterpolationIterator initializeInterpolator(Settings settings) {
-		InterpolationIterator retval;
-		if (settings.getNumOfThreads() == 1) {
-			retval = new SimpleInterpolationIterator(settings.getInterpolator());
-		}
-		else if (settings.getNumOfThreads() > 1) {
-			retval = new ParallelInterpolationIterator(
-					settings.getInterpolator(),
-					settings.getThreadsExecutor(),
-					settings.getNumOfThreads());
-		}
-		else {
-			throw new RuntimeException("Invalid number of threads!");
-		}
-		return retval;
-	}
-
-
-	/**
-	 * Based on the number of threads creates either single or multi threaded particle mover.
-	 */
-	private void initializeParticleMover(Settings settings, ParticleBoundaries particleBoundaries) {
-		if (settings.getNumOfThreads() == 1) {
-			mover = new SimpleParticleMover(settings.getParticleSolver(), particleBoundaries);
-		}
-		else if (settings.getNumOfThreads() > 1) {
-			mover = new ParallelParticleMover(
-					settings.getParticleSolver(),
-					particleBoundaries,
-					settings.getThreadsExecutor(),
-					settings.getNumOfThreads());
-		}
-		else {
-			throw new RuntimeException("Invalid number of threads!");
-		}
 	}
 
 

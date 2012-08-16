@@ -3,7 +3,7 @@ package org.openpixi.pixi.parallel;
 import junit.framework.TestCase;
 import org.openpixi.pixi.physics.Settings;
 import org.openpixi.pixi.physics.Simulation;
-import org.openpixi.pixi.physics.solver.Boris;
+import org.openpixi.pixi.physics.solver.Euler;
 import org.openpixi.pixi.physics.util.ClassCopier;
 import org.openpixi.pixi.physics.util.ResultsComparator;
 
@@ -15,11 +15,11 @@ public class ParallelSimulationTest extends TestCase {
 
 	public void testParallelSimulation() {
 		Settings defaultSettings = new Settings();
-		defaultSettings.setGridCellsX(2);
-		defaultSettings.setGridCellsY(2);
-		defaultSettings.setNumOfParticles(100);
-		defaultSettings.setIterations(100);
-		defaultSettings.setParticleSolver(new Boris());
+		defaultSettings.setGridCellsX(100);
+		defaultSettings.setGridCellsY(100);
+		defaultSettings.setNumOfParticles(2000);
+		defaultSettings.setIterations(10);
+		defaultSettings.setParticleSolver(new Euler());
 
 		Simulation singleThreadedSimulation = new Simulation(defaultSettings);
 

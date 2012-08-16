@@ -1,5 +1,8 @@
 package org.openpixi.pixi.physics;
 
+import org.openpixi.pixi.parallel.ParallelParticleIterator;
+import org.openpixi.pixi.parallel.ParticleIterator;
+import org.openpixi.pixi.parallel.SequentialParticleIterator;
 import org.openpixi.pixi.physics.collision.algorithms.CollisionAlgorithm;
 import org.openpixi.pixi.physics.collision.detectors.Detector;
 import org.openpixi.pixi.physics.fields.FieldSolver;
@@ -163,10 +166,6 @@ public class Settings {
 		return iplPool;
 	}
 
-	public int getNumOfThreads() {
-		return numOfThreads;
-	}
-
 	//----------------------------------------------------------------------------------------------
 	// MORE COMPLEX GETTERS / BUILDERS
 	//----------------------------------------------------------------------------------------------
@@ -238,10 +237,22 @@ public class Settings {
 		}
 	}
 
+	public ParticleIterator getParticleIterator() {
+		if (numOfThreads == 1) {
+			return new SequentialParticleIterator();
+		}
+		else if (numOfThreads > 1) {
+			return  new ParallelParticleIterator(numOfThreads, getThreadsExecutor());
+		}
+		else {
+			throw new RuntimeException("Invalid number of threads: " + numOfThreads);
+		}
+	}
+
 	/**
 	 * Create threads executor on the fly according to demand.
 	 */
-	public ExecutorService getThreadsExecutor() {
+	private ExecutorService getThreadsExecutor() {
 		if (threadsExecutor == null) {
 			threadsExecutor = Executors.newFixedThreadPool(numOfThreads);
 		}

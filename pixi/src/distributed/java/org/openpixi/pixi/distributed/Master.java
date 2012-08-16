@@ -74,7 +74,8 @@ public class Master {
 
 		ParticleGridInitializer pgi = new ParticleGridInitializer();
 		pgi.initialize(
-				new SimpleInterpolationIterator(settings.getInterpolator()),
+				new SimpleInterpolationIterator(
+						settings.getInterpolator(), settings.getParticleIterator()),
 				settings.getPoissonSolver(),
 				initialParticles,
 				initialGrid);
