@@ -2,9 +2,10 @@ package org.openpixi.pixi.physics.fields;
 
 import org.openpixi.pixi.physics.grid.Grid;
 
+/**
+ * TODO remake so that we can use the super class cell iterator and take advantage of threads
+ */
 public class YeeSolver extends FieldSolver {
-
-	double cx, cy, cz;
 
 	public YeeSolver() {
 
@@ -16,6 +17,8 @@ public class YeeSolver extends FieldSolver {
 	*/
 	@Override
 	public void step(Grid g, double tstep) {
+
+		double cx, cy, cz;
 
 		//update boundary for y=const
 		for (int i = 0; i < g.getNumCellsX(); i++) {
