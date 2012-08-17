@@ -1,7 +1,7 @@
 package org.openpixi.pixi.physics.movement;
 
-import org.openpixi.pixi.parallel.ParticleAction;
-import org.openpixi.pixi.parallel.ParticleIterator;
+import org.openpixi.pixi.parallel.particleaccess.ParticleAction;
+import org.openpixi.pixi.parallel.particleaccess.ParticleIterator;
 import org.openpixi.pixi.physics.Particle;
 import org.openpixi.pixi.physics.force.Force;
 import org.openpixi.pixi.physics.movement.boundary.ParticleBoundaries;

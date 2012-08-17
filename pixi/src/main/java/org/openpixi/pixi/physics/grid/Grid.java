@@ -1,7 +1,7 @@
 package org.openpixi.pixi.physics.grid;
 
-import org.openpixi.pixi.parallel.CellAction;
-import org.openpixi.pixi.parallel.CellIterator;
+import org.openpixi.pixi.parallel.cellaccess.CellAction;
+import org.openpixi.pixi.parallel.cellaccess.CellIterator;
 import org.openpixi.pixi.physics.Settings;
 import org.openpixi.pixi.physics.fields.FieldSolver;
 

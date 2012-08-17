@@ -1,4 +1,4 @@
-package org.openpixi.pixi.parallel;
+package org.openpixi.pixi.parallel.particleaccess;
 
 import org.openpixi.pixi.physics.Particle;
 

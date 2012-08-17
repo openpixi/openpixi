@@ -1,6 +1,6 @@
 package org.openpixi.pixi.physics.fields;
 
-import org.openpixi.pixi.parallel.CellAction;
+import org.openpixi.pixi.parallel.cellaccess.CellAction;
 import org.openpixi.pixi.physics.grid.Cell;
 import org.openpixi.pixi.physics.grid.Grid;
 

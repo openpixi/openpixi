@@ -1,6 +1,11 @@
 package org.openpixi.pixi.physics;
 
-import org.openpixi.pixi.parallel.*;
+import org.openpixi.pixi.parallel.cellaccess.CellIterator;
+import org.openpixi.pixi.parallel.cellaccess.ParallelCellIterator;
+import org.openpixi.pixi.parallel.cellaccess.SequentialCellIterator;
+import org.openpixi.pixi.parallel.particleaccess.ParallelParticleIterator;
+import org.openpixi.pixi.parallel.particleaccess.ParticleIterator;
+import org.openpixi.pixi.parallel.particleaccess.SequentialParticleIterator;
 import org.openpixi.pixi.physics.collision.algorithms.CollisionAlgorithm;
 import org.openpixi.pixi.physics.collision.detectors.Detector;
 import org.openpixi.pixi.physics.fields.FieldSolver;

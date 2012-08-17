@@ -19,7 +19,7 @@
 
 package org.openpixi.pixi.physics.fields;
 
-import org.openpixi.pixi.parallel.CellIterator;
+import org.openpixi.pixi.parallel.cellaccess.CellIterator;
 import org.openpixi.pixi.physics.grid.*;
 
 /**

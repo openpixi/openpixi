@@ -1,4 +1,4 @@
-package org.openpixi.pixi.parallel;
+package org.openpixi.pixi.parallel.cellaccess;
 
 import org.openpixi.pixi.physics.grid.Grid;
 import org.openpixi.pixi.physics.util.IntBox;
