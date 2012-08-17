@@ -7,6 +7,8 @@ import org.openpixi.pixi.physics.grid.ChargeConservingAreaWeighting;
 import org.openpixi.pixi.physics.grid.Interpolator;
 import org.openpixi.pixi.physics.solver.Boris;
 import org.openpixi.pixi.physics.solver.Euler;
+import org.openpixi.pixi.physics.solver.LeapFrogDamped;
+import org.openpixi.pixi.physics.solver.relativistic.LeapFrogRelativistic;
 import org.openpixi.pixi.physics.solver.relativistic.SemiImplicitEulerRelativistic;
 import org.openpixi.pixi.physics.util.ClassCopier;
 
@@ -19,6 +21,9 @@ import java.util.Map;
  */
 public class VariousSettings {
 
+	/**
+	 * TODO find solution: every solver that has a prepare and complete method seems to fail
+	 */
 	public static Map<String, Settings> getSettingsMap() {
 		Map<String, Settings> variousTestSettings = new HashMap<String, Settings>();
 		Settings defaultSettings = getDefaultSettings();
@@ -39,19 +44,20 @@ public class VariousSettings {
 		variousTestSettings.put("Boris", settings);
 
 		settings = ClassCopier.copy(defaultSettings);
-		settings.setParticleSolver(
-				new SemiImplicitEulerRelativistic(settings.getSpeedOfLight()));
+		settings.setParticleSolver(new SemiImplicitEulerRelativistic(
+				settings.getCellWidth() / settings.getTimeStep()));
 		variousTestSettings.put("SemiImplicitEulerRelativistic", settings);
 
-		// Fails because additional addition and subtraction cause the position to diverge
-		// slowly from the position calculated by local simulation.
-		// If we run the entire simulation at once throws IndexOutOfBoundsException
-		// because we try to interpolate to a cell we do not have (the particles get too fast).
-		// TODO find solution
-//		settings = ClassCopier.copy(defaultSettings);
-//		settings.setIterations(10000);
-//		settings.setNumOfParticles(10);
-//		variousTestSettings.put("10 000 iterations", settings);
+		settings = ClassCopier.copy(defaultSettings);
+		settings.setParticleSolver(new LeapFrogDamped());
+		variousTestSettings.put("LeapFrogDamped", settings);
+
+		settings = ClassCopier.copy(defaultSettings);
+		settings.setIterations(5000);
+		settings.setNumOfParticles(10);
+		settings.setParticleSolver(new LeapFrogRelativistic(
+				settings.getCellWidth() / settings.getTimeStep()));
+		variousTestSettings.put("5000 iterations", settings);
 
 		// TODO find solution
 		settings = ClassCopier.copy(defaultSettings);
