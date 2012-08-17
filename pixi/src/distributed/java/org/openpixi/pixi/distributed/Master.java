@@ -11,7 +11,7 @@ import org.openpixi.pixi.physics.ParticleGridInitializer;
 import org.openpixi.pixi.physics.Settings;
 import org.openpixi.pixi.physics.grid.Cell;
 import org.openpixi.pixi.physics.grid.Grid;
-import org.openpixi.pixi.physics.grid.SimpleInterpolationIterator;
+import org.openpixi.pixi.physics.grid.LocalInterpolation;
 import org.openpixi.pixi.physics.util.ClassCopier;
 import org.openpixi.pixi.physics.util.IntBox;
 import org.slf4j.Logger;
@@ -74,7 +74,7 @@ public class Master {
 
 		ParticleGridInitializer pgi = new ParticleGridInitializer();
 		pgi.initialize(
-				new SimpleInterpolationIterator(
+				new LocalInterpolation(
 						settings.getInterpolator(), settings.getParticleIterator()),
 				settings.getPoissonSolver(),
 				initialParticles,

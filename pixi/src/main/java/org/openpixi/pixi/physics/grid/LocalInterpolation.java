@@ -10,7 +10,7 @@ import java.util.List;
  * Calls the specific interpolation algorithm.
  * Implements the iteration over the particles using the ParticleIterator.
  */
-public class SimpleInterpolationIterator extends InterpolationIterator {
+public class LocalInterpolation extends Interpolation {
 
 	private ParticleIterator particleIterator;
 
@@ -22,7 +22,7 @@ public class SimpleInterpolationIterator extends InterpolationIterator {
 	private InterpolateChargedensity interpolateChargedensity = new InterpolateChargedensity();
 
 
-	public SimpleInterpolationIterator(
+	public LocalInterpolation(
 			InterpolatorAlgorithm interpolator,
 			ParticleIterator particleIterator) {
 		super(interpolator);

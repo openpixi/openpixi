@@ -5,13 +5,13 @@ import org.openpixi.pixi.physics.Particle;
 import java.util.List;
 
 /**
- * Determines how are the particles iterated when interpolation happens.
+ * Base class for local and distributed interpolation.
  */
-public abstract class InterpolationIterator {
+public abstract class Interpolation {
 
 	protected InterpolatorAlgorithm interpolator;
 
-	public InterpolationIterator(InterpolatorAlgorithm interpolator) {
+	public Interpolation(InterpolatorAlgorithm interpolator) {
 		this.interpolator = interpolator;
 	}
 

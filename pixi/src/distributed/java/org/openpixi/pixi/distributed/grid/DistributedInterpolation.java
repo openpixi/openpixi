@@ -3,7 +3,7 @@ package org.openpixi.pixi.distributed.grid;
 import org.openpixi.pixi.distributed.SharedDataManager;
 import org.openpixi.pixi.physics.Particle;
 import org.openpixi.pixi.physics.grid.Grid;
-import org.openpixi.pixi.physics.grid.InterpolationIterator;
+import org.openpixi.pixi.physics.grid.Interpolation;
 import org.openpixi.pixi.physics.grid.InterpolatorAlgorithm;
 import org.openpixi.pixi.physics.util.DoubleBox;
 
@@ -15,7 +15,7 @@ import java.util.List;
  * When iterating through particles takes also into account the arriving particles
  * and the border particles.
  */
-public class DistributedInterpolationIterator extends InterpolationIterator {
+public class DistributedInterpolation extends Interpolation {
 
 	private SharedDataManager sharedDataManager;
 	/**
@@ -25,7 +25,7 @@ public class DistributedInterpolationIterator extends InterpolationIterator {
 	private DoubleBox zoneOfLocalInfluence;
 
 
-	public DistributedInterpolationIterator(
+	public DistributedInterpolation(
 			InterpolatorAlgorithm interpolator,
 			SharedDataManager sharedDataManager,
 			DoubleBox zoneOfLocalInfluence) {

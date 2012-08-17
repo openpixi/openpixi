@@ -25,8 +25,8 @@ import org.openpixi.pixi.physics.fields.PoissonSolver;
 import org.openpixi.pixi.physics.force.CombinedForce;
 import org.openpixi.pixi.physics.force.SimpleGridForce;
 import org.openpixi.pixi.physics.grid.Grid;
-import org.openpixi.pixi.physics.grid.InterpolationIterator;
-import org.openpixi.pixi.physics.grid.SimpleInterpolationIterator;
+import org.openpixi.pixi.physics.grid.Interpolation;
+import org.openpixi.pixi.physics.grid.LocalInterpolation;
 import org.openpixi.pixi.physics.movement.ParticleMover;
 import org.openpixi.pixi.physics.movement.boundary.ParticleBoundaries;
 import org.openpixi.pixi.physics.movement.boundary.SimpleParticleBoundaries;
@@ -67,13 +67,13 @@ public class Simulation {
 
 	private ParticleGridInitializer particleGridInitializer = new ParticleGridInitializer();
 
-	private InterpolationIterator interpolation;
+	private Interpolation interpolation;
 
 	/**solver for the electrostatic poisson equation*/
 	private PoissonSolver poisolver;
 
 
-	public InterpolationIterator getInterpolation() {
+	public Interpolation getInterpolation() {
 		return interpolation;
 	}
 
@@ -125,7 +125,7 @@ public class Simulation {
 		}
 
 		poisolver = settings.getPoissonSolver();
-		interpolation = new SimpleInterpolationIterator(
+		interpolation = new LocalInterpolation(
 				settings.getInterpolator(), settings.getParticleIterator());
 		particleGridInitializer.initialize(interpolation, poisolver, particles, grid);
 
@@ -149,7 +149,7 @@ public class Simulation {
 	                  Grid grid,
 	                  List<Particle> particles,
 	                  ParticleBoundaries particleBoundaries,
-	                  InterpolationIterator interpolation) {
+	                  Interpolation interpolation) {
 
 		this.tstep = settings.getTimeStep();
 		this.width = settings.getSimulationWidth();

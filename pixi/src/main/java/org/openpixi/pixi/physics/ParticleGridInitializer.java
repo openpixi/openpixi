@@ -2,7 +2,7 @@ package org.openpixi.pixi.physics;
 
 import org.openpixi.pixi.physics.fields.PoissonSolver;
 import org.openpixi.pixi.physics.grid.Grid;
-import org.openpixi.pixi.physics.grid.InterpolationIterator;
+import org.openpixi.pixi.physics.grid.Interpolation;
 
 import java.util.List;
 
@@ -11,7 +11,7 @@ import java.util.List;
  * the other class.
  */
 public class ParticleGridInitializer {
-	public void initialize(InterpolationIterator interpolation, PoissonSolver poissonSolver,
+	public void initialize(Interpolation interpolation, PoissonSolver poissonSolver,
 	                       List<Particle> particles, Grid grid) {
 		interpolation.interpolateChargedensity(particles, grid);
 		poissonSolver.solve(grid);

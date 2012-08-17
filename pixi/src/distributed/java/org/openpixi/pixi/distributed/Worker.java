@@ -1,7 +1,7 @@
 package org.openpixi.pixi.distributed;
 
 import org.openpixi.pixi.distributed.grid.DistributedGridFactory;
-import org.openpixi.pixi.distributed.grid.DistributedInterpolationIterator;
+import org.openpixi.pixi.distributed.grid.DistributedInterpolation;
 import org.openpixi.pixi.distributed.ibis.IbisRegistry;
 import org.openpixi.pixi.distributed.ibis.WorkerToMaster;
 import org.openpixi.pixi.distributed.movement.boundary.DistributedParticleBoundaries;
@@ -12,7 +12,7 @@ import org.openpixi.pixi.physics.Settings;
 import org.openpixi.pixi.physics.Simulation;
 import org.openpixi.pixi.physics.grid.Cell;
 import org.openpixi.pixi.physics.grid.Grid;
-import org.openpixi.pixi.physics.grid.InterpolationIterator;
+import org.openpixi.pixi.physics.grid.Interpolation;
 import org.openpixi.pixi.physics.movement.boundary.ParticleBoundaries;
 import org.openpixi.pixi.physics.util.ClassCopier;
 import org.openpixi.pixi.physics.util.DoubleBox;
@@ -131,7 +131,7 @@ public class Worker {
 		sharedDataManager.setParticleBoundaries(particleBoundaries);
 
 		Grid grid = createGrid(sharedDataManager);
-		InterpolationIterator interpolation = createInterpolationIterator(sharedDataManager);
+		Interpolation interpolation = createInterpolationIterator(sharedDataManager);
 		sharedDataManager.setGrid(grid);
 
 		sharedDataManager.initializeCommunication();
@@ -162,7 +162,7 @@ public class Worker {
 	}
 
 
-	private InterpolationIterator createInterpolationIterator(SharedDataManager sharedDataManager) {
+	private Interpolation createInterpolationIterator(SharedDataManager sharedDataManager) {
 		DoubleBox zoneOfLocalInfluence = new DoubleBox(
 				(Grid.INTERPOLATION_RADIUS - 1) * localSettings.getCellWidth(),
 				localSettings.getSimulationWidth() -
@@ -170,7 +170,7 @@ public class Worker {
 				(Grid.INTERPOLATION_RADIUS - 1) * localSettings.getCellHeight(),
 				localSettings.getSimulationHeight() -
 						Grid.INTERPOLATION_RADIUS * localSettings.getCellHeight());
-		return new DistributedInterpolationIterator(
+		return new DistributedInterpolation(
 				localSettings.getInterpolator(),
 				sharedDataManager, zoneOfLocalInfluence);
 	}
