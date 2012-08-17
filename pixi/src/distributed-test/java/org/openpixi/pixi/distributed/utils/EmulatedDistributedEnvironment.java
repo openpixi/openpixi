@@ -148,7 +148,6 @@ public class EmulatedDistributedEnvironment {
 			try {
 				t.join();
 			} catch (InterruptedException e) {
-				e.printStackTrace();
 				throw new RuntimeException(e);
 			}
 		}

@@ -20,6 +20,7 @@ import org.openpixi.pixi.physics.grid.InterpolatorAlgorithm;
 import org.openpixi.pixi.physics.movement.boundary.ParticleBoundaryType;
 import org.openpixi.pixi.physics.solver.Euler;
 import org.openpixi.pixi.physics.solver.Solver;
+import org.openpixi.pixi.physics.util.ClassCopier;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -130,7 +131,11 @@ public class Settings {
 	}
 
 	public FieldSolver getGridSolver() {
-		return gridSolver;
+		/*
+		 * For the distributed tests to pass we need to create new grid solver so that the two
+		 * simulation instances do not share the cell iterator!
+		 */
+		return ClassCopier.copy(gridSolver);
 	}
 
 	public PoissonSolver getPoissonSolver() {

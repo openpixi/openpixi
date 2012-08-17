@@ -1,6 +1,8 @@
 package org.openpixi.pixi.distributed.grid;
 
 import org.openpixi.pixi.distributed.SharedDataManager;
+import org.openpixi.pixi.parallel.particleaccess.ParticleAction;
+import org.openpixi.pixi.parallel.particleaccess.ParticleIterator;
 import org.openpixi.pixi.physics.Particle;
 import org.openpixi.pixi.physics.grid.Grid;
 import org.openpixi.pixi.physics.grid.Interpolation;
@@ -8,12 +10,12 @@ import org.openpixi.pixi.physics.grid.InterpolatorAlgorithm;
 import org.openpixi.pixi.physics.util.DoubleBox;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 
 /**
- * When iterating through particles takes also into account the arriving particles
- * and the border particles.
+ * Does the necessary communication before interpolation.
  */
 public class DistributedInterpolation extends Interpolation {
 
@@ -23,17 +25,31 @@ public class DistributedInterpolation extends Interpolation {
 	 * without any need of cells from neighbors.
 	 */
 	private DoubleBox zoneOfLocalInfluence;
+	private List<Particle> particlesWithOutsideInfluence =
+			Collections.synchronizedList(new ArrayList<Particle>());
+
+	/* These are passed to inner classes as a parameter to theirs methods. */
+	private Grid grid;
+	private double timeStep;
+
+	private ParticleIterator particleIterator;
+
+	private InterpolateToInsideParticle interpolateToInsideParticle = new InterpolateToInsideParticle();
+	private InterpolateToOutsideParticle interpolateToOutsideParticle = new InterpolateToOutsideParticle();
+	private InterpolateToGrid interpolateToGrid = new InterpolateToGrid();
 
 
 	public DistributedInterpolation(
 			InterpolatorAlgorithm interpolator,
 			SharedDataManager sharedDataManager,
-			DoubleBox zoneOfLocalInfluence) {
+			DoubleBox zoneOfLocalInfluence,
+			ParticleIterator particleIterator) {
 
 		super(interpolator);
 
 		this.sharedDataManager = sharedDataManager;
 		this.zoneOfLocalInfluence = zoneOfLocalInfluence;
+		this.particleIterator = particleIterator;
 	}
 
 
@@ -46,9 +62,9 @@ public class DistributedInterpolation extends Interpolation {
 	 * we interpolate our local particles.
 	 */
 	@Override
-	public void interpolateToGrid(List<Particle> localParticles, Grid grid, double tstep) {
-
-		sharedDataManager.startExchangeOfParticles();
+	public void interpolateToGrid(List<Particle> localParticles, Grid grid, double timeStep) {	   	
+		
+		sharedDataManager.startExchangeOfParticles();		
 		grid.resetCurrent();
 
 		// Remove leaving particles
@@ -56,23 +72,20 @@ public class DistributedInterpolation extends Interpolation {
 		for (Particle leavingParticle: leavingParticles) {
 			localParticles.remove(leavingParticle);
 		}
-
+		
+		this.grid = grid;
+		this.timeStep = timeStep;
+		
 		// Interpolate local particles
-		for (Particle localParticle: localParticles) {
-			interpolator.interpolateToGrid(localParticle, grid, tstep);
-		}
+		particleIterator.execute(localParticles, interpolateToGrid);
 
 		// Interpolate arriving particles
 		List<Particle> arrivingParticles = sharedDataManager.getArrivingParticles();
-		for (Particle arrivingParticle: arrivingParticles) {
-			interpolator.interpolateToGrid(arrivingParticle, grid, tstep);
-		}
+		particleIterator.execute(arrivingParticles, interpolateToGrid);
 
 		// Interpolate ghost particles
 		List<Particle> ghostParticles = sharedDataManager.getGhostParticles();
-		for (Particle ghostParticle: ghostParticles) {
-			interpolator.interpolateToGrid(ghostParticle, grid, tstep);
-		}
+		particleIterator.execute(ghostParticles, interpolateToGrid);
 
 		// Add arriving particles to the list of local particles
 		localParticles.addAll(arrivingParticles);
@@ -93,23 +106,16 @@ public class DistributedInterpolation extends Interpolation {
 		// Initiate the exchange of cells
 		sharedDataManager.exchangeCells();
 
-		// TODO do not create a new array list in each time step, just reuse one
-		List<Particle> particlesWithOutsideInfluence = new ArrayList<Particle>();
-		for (Particle particle: particles) {
-			if (zoneOfLocalInfluence.contains(particle.getX(), particle.getY())) {
-				interpolator.interpolateToParticle(particle, grid);
-			}
-			else {
-				particlesWithOutsideInfluence.add(particle);
-			}
-		}
+		// Here, due to an "if" statement (see the inner class),
+		// we can not reuse the local interpolation and we have to do the iteration ourselves.
+		this.grid = grid;
+		particleIterator.execute(particles, interpolateToInsideParticle);
 
 		sharedDataManager.waitForGhostCells();
-		for (Particle particle: particlesWithOutsideInfluence) {
-			interpolator.interpolateToParticle(particle, grid);
-		}
+		particleIterator.execute(particlesWithOutsideInfluence, interpolateToOutsideParticle);
 
 		sharedDataManager.cleanUpCellCommunication();
+		particlesWithOutsideInfluence.clear();
 	}
 
 
@@ -122,4 +128,28 @@ public class DistributedInterpolation extends Interpolation {
 	}
 
 
+	private class InterpolateToInsideParticle implements ParticleAction {
+		public void execute(Particle particle) {
+			if (zoneOfLocalInfluence.contains(particle.getX(), particle.getY())) {
+				interpolator.interpolateToParticle(particle, grid);
+			}
+			else {
+				particlesWithOutsideInfluence.add(particle);
+			}
+		}
+	}
+
+
+	private class InterpolateToOutsideParticle implements ParticleAction {
+		public void execute(Particle particle) {
+			interpolator.interpolateToParticle(particle, grid);
+		}
+	}
+
+
+	private class InterpolateToGrid implements ParticleAction {
+		public void execute(Particle particle) {
+			interpolator.interpolateToGrid(particle, grid, timeStep);
+		}
+	}
 }

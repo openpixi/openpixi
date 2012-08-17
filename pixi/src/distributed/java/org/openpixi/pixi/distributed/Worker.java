@@ -172,7 +172,7 @@ public class Worker {
 						Grid.INTERPOLATION_RADIUS * localSettings.getCellHeight());
 		return new DistributedInterpolation(
 				localSettings.getInterpolator(),
-				sharedDataManager, zoneOfLocalInfluence);
+				sharedDataManager, zoneOfLocalInfluence, localSettings.getParticleIterator());
 	}
 
 

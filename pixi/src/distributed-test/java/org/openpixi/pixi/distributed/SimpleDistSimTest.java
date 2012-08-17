@@ -14,15 +14,16 @@ public class SimpleDistSimTest {
 	public static void main(String[] args) {
 		Settings settings = new Settings();
 		settings.setNumOfNodes(2);
+		settings.setNumOfThreads(2);
 		settings.setGridCellsX(8);
 		settings.setGridCellsY(8);
 		settings.setSimulationWidth(10 * settings.getGridCellsX());
 		settings.setSimulationHeight(10 * settings.getGridCellsY());
-		createParticles(settings);
+		settings.setNumOfParticles(100);
 		// If number of iterations is set to 0 we get a simple test
 		// of problem distribution and results collection (we must use runAtOnce() method of
 		// the EmulatedDistributedEnvironment).
-		settings.setIterations(10000);
+		settings.setIterations(100);
 
 		IplServer.start();
 		new EmulatedDistributedEnvironment(settings).runInSteps();

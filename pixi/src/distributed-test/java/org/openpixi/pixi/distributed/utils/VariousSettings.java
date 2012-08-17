@@ -8,7 +8,6 @@ import org.openpixi.pixi.physics.grid.InterpolatorAlgorithm;
 import org.openpixi.pixi.physics.solver.Boris;
 import org.openpixi.pixi.physics.solver.Euler;
 import org.openpixi.pixi.physics.solver.LeapFrogDamped;
-import org.openpixi.pixi.physics.solver.relativistic.LeapFrogRelativistic;
 import org.openpixi.pixi.physics.solver.relativistic.SemiImplicitEulerRelativistic;
 import org.openpixi.pixi.physics.util.ClassCopier;
 
@@ -33,7 +32,13 @@ public class VariousSettings {
 		variousTestSettings.put("2 nodes - self communication", settings);
 
 		settings = ClassCopier.copy(defaultSettings);
+		settings.setParticleSolver(new Euler());
 		variousTestSettings.put("Euler", settings);
+
+		settings = ClassCopier.copy(defaultSettings);
+		settings.setNumOfThreads(5);
+		settings.setParticleSolver(new Euler());
+		variousTestSettings.put("Threaded version", settings);
 
 		// Fails probably because Boris remembers a lot of information about the force
 		// in the particle. This information remembering probably causes problem when particles
@@ -55,7 +60,7 @@ public class VariousSettings {
 		settings = ClassCopier.copy(defaultSettings);
 		settings.setIterations(5000);
 		settings.setNumOfParticles(10);
-		settings.setParticleSolver(new LeapFrogRelativistic(
+		settings.setParticleSolver(new SemiImplicitEulerRelativistic(
 				settings.getCellWidth() / settings.getTimeStep()));
 		variousTestSettings.put("5000 iterations", settings);
 
