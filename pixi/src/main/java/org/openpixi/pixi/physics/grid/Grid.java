@@ -1,5 +1,7 @@
 package org.openpixi.pixi.physics.grid;
 
+import org.openpixi.pixi.parallel.CellAction;
+import org.openpixi.pixi.parallel.CellIterator;
 import org.openpixi.pixi.physics.Settings;
 import org.openpixi.pixi.physics.fields.FieldSolver;
 
@@ -8,6 +10,9 @@ public class Grid {
 
 	/*
 	 * TODO remove the accessors for individual cell fields and call directly the accessors on the cell
+	 * TODO extract field solver to simulation
+	 *      - makes grid simpler
+	 *      - makes all the important initialization to happen at one place (in simulation)
 	 */
 
 	/**
@@ -41,6 +46,11 @@ public class Grid {
 	private FieldSolver fsolver;
 
 	private GridBoundaryType boundaryType;
+
+	private CellIterator cellIterator;
+	private ResetChargeAction resetCharge = new ResetChargeAction();
+	private ResetCurrentAction resetCurrent = new ResetCurrentAction();
+	private StoreFieldsAction storeFields = new StoreFieldsAction();
 
 	private Cell[][] cells;
 
@@ -180,27 +190,43 @@ public class Grid {
 
 	public Grid(Settings settings) {
 		this.boundaryType = settings.getGridBoundary();
-		this.fsolver = settings.getGridSolver();
 
 		set(settings.getGridCellsX(), settings.getGridCellsY(),
 				settings.getSimulationWidth(), settings.getSimulationHeight());
+
+		this.fsolver = settings.getGridSolver();
+		this.fsolver.initializeIterator(settings.getCellIterator(), numCellsX,  numCellsY);
+
+		this.cellIterator = settings.getCellIterator();
+		this.cellIterator.setExtraCellsMode(numCellsX, numCellsY);
 	}
 
 
 	/**
-	 * In the distributed version we want to create the grid from cell which come from master;
+	 * In the distributed version we want to create the grid from cells which come from master;
 	 * hence, this constructor.
 	 * Creates grid from the given cells.
 	 * The input cells have to contain also the boundary cells.
 	 */
-	public Grid(double simWidth, double simHeight, Cell[][] cells, FieldSolver fsolver) {
+	public Grid(Settings settings, Cell[][] cells) {
 		this.numCellsX = cells.length - EXTRA_CELLS_BEFORE_GRID - EXTRA_CELLS_AFTER_GRID;
 		this.numCellsY = cells[0].length - EXTRA_CELLS_BEFORE_GRID - EXTRA_CELLS_AFTER_GRID;
-		this.cellWidth = simWidth/numCellsX;
-		this.cellHeight = simHeight/numCellsY;
+		this.cellWidth = settings.getSimulationWidth() / numCellsX;
+		this.cellHeight = settings.getSimulationHeight() / numCellsY;
 
 		this.cells = cells;
-		this.fsolver = fsolver;
+
+		/*
+		 * Grid and FieldSolver must have each its own cell iterator!
+		 * They use different modes of iteration.
+		 * While the grid iterates also over the extra cells the field solver does not.
+		 */
+
+		this.fsolver = settings.getGridSolver();
+		fsolver.initializeIterator(settings.getCellIterator(), numCellsX, numCellsY);
+
+		this.cellIterator = settings.getCellIterator();
+		this.cellIterator.setExtraCellsMode(this.numCellsX, this.numCellsY);
 	}
 
 
@@ -296,27 +322,15 @@ public class Grid {
 	}
 
 	public void resetCurrent() {
-		for(int x = 0; x < getNumCellsXTotal(); x++) {
-			for(int y = 0; y < getNumCellsYTotal(); y++) {
-				cells[x][y].resetCurrent();
-			}
-		}
+		cellIterator.execute(this, resetCurrent);
 	}
 
 	public void resetCharge() {
-		for(int x = 0; x < getNumCellsXTotal(); x++) {
-			for(int y = 0; y < getNumCellsYTotal(); y++) {
-				cells[x][y].resetCharge();
-			}
-		}
+		cellIterator.execute(this, resetCharge);
 	}
 
 	public void storeFields() {
-		for (int x = 0; x < getNumCellsXTotal(); x++) {
-			for (int y = 0; y < getNumCellsYTotal(); y++) {
-				cells[x][y].storeFields();
-			}
-		}
+		cellIterator.execute(this, storeFields);
 	}
 
 	/**
@@ -338,5 +352,26 @@ public class Grid {
 	/** Includes the extra cells. */
 	private int getNumCellsYTotal() {
 		return numCellsY + EXTRA_CELLS_BEFORE_GRID + EXTRA_CELLS_AFTER_GRID;
+	}
+
+
+	private class ResetCurrentAction implements CellAction {
+		public void execute(Grid grid, int x, int y) {
+			grid.getCell(x,y).resetCurrent();
+		}
+	}
+
+
+	private class ResetChargeAction implements CellAction {
+		public void execute(Grid grid, int x, int y) {
+			grid.getCell(x, y).resetCharge();
+		}
+	}
+
+
+	private class StoreFieldsAction implements CellAction {
+		public void execute(Grid grid, int x, int y) {
+			grid.getCell(x, y).storeFields();
+		}
 	}
 }

@@ -17,6 +17,8 @@ import java.util.concurrent.ExecutorService;
  */
 public class ParallelParticleIterator implements ParticleIterator {
 
+	/* These are exposed here for inner classes
+	   since they can to be passed to them as method arguments */
 	private ParticleAction action;
 	private List<Particle> particles;
 

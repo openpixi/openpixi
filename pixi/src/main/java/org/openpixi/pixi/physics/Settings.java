@@ -1,8 +1,6 @@
 package org.openpixi.pixi.physics;
 
-import org.openpixi.pixi.parallel.ParallelParticleIterator;
-import org.openpixi.pixi.parallel.ParticleIterator;
-import org.openpixi.pixi.parallel.SequentialParticleIterator;
+import org.openpixi.pixi.parallel.*;
 import org.openpixi.pixi.physics.collision.algorithms.CollisionAlgorithm;
 import org.openpixi.pixi.physics.collision.detectors.Detector;
 import org.openpixi.pixi.physics.fields.FieldSolver;
@@ -243,6 +241,18 @@ public class Settings {
 		}
 		else if (numOfThreads > 1) {
 			return  new ParallelParticleIterator(numOfThreads, getThreadsExecutor());
+		}
+		else {
+			throw new RuntimeException("Invalid number of threads: " + numOfThreads);
+		}
+	}
+
+	public CellIterator getCellIterator() {
+		if (numOfThreads == 1) {
+			return new SequentialCellIterator();
+		}
+		else if (numOfThreads > 1) {
+			return  new ParallelCellIterator(numOfThreads, getThreadsExecutor());
 		}
 		else {
 			throw new RuntimeException("Invalid number of threads: " + numOfThreads);

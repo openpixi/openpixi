@@ -252,8 +252,7 @@ public class Master {
 			fillSubgrid(partitions[workerID], gridPartitions[workerID], cells);
 		}
 
-		return new Grid(settings.getSimulationWidth(), settings.getSimulationHeight(),
-				cells, settings.getGridSolver());
+		return new Grid(settings, cells);
 	}
 
 

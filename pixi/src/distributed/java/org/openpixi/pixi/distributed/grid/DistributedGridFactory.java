@@ -41,11 +41,7 @@ public class DistributedGridFactory {
 		Cell[][] myCells = setUpCellValues();
 		setUpBorderCells(myCells);
 
-		return new Grid(
-				settings.getSimulationWidth(),
-				settings.getSimulationHeight(),
-				myCells,
-				settings.getGridSolver());
+		return new Grid(settings, myCells);
 	}
 
 
