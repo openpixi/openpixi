@@ -37,6 +37,12 @@ import java.util.concurrent.Executors;
  * To assure that the class is used in the intended way
  * THE SETTERS SHOULD BE CALLED RIGHT AFTER A PARAMETERLESS CONSTRUCTOR
  * AND BEFORE ANY OF THE MORE COMPLEX GETTERS IS CALLED !!!
+ *
+ * In the tests of the distributed version we pass the same settings class to all the different
+ * threads which simulate the distributed behaviour.
+ * Consequently, the different simultaneously running simulations do have the same particle solver,
+ * interpolator etc. and this is very dangerous.
+ * TODO ensure that all the getters retrieve new objects
  */
 public class Settings {
 
