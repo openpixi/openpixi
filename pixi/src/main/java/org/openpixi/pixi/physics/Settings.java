@@ -16,7 +16,7 @@ import org.openpixi.pixi.physics.force.CombinedForce;
 import org.openpixi.pixi.physics.force.Force;
 import org.openpixi.pixi.physics.grid.CloudInCell;
 import org.openpixi.pixi.physics.grid.GridBoundaryType;
-import org.openpixi.pixi.physics.grid.Interpolator;
+import org.openpixi.pixi.physics.grid.InterpolatorAlgorithm;
 import org.openpixi.pixi.physics.movement.boundary.ParticleBoundaryType;
 import org.openpixi.pixi.physics.solver.Euler;
 import org.openpixi.pixi.physics.solver.Solver;
@@ -50,7 +50,7 @@ public class Settings {
 
 	private GeneralBoundaryType boundaryType = GeneralBoundaryType.Periodic;
 
-	private Interpolator interpolator = new CloudInCell();
+	private InterpolatorAlgorithm interpolator = new CloudInCell();
 
 	// Grid related settings
 
@@ -141,7 +141,7 @@ public class Settings {
 		return particleSolver;
 	}
 
-	public Interpolator getInterpolator() {
+	public InterpolatorAlgorithm getInterpolator() {
 		return interpolator;
 	}
 
@@ -322,7 +322,7 @@ public class Settings {
 		this.particleSolver = particleSolver;
 	}
 
-	public void setInterpolator(Interpolator interpolator) {
+	public void setInterpolator(InterpolatorAlgorithm interpolator) {
 		this.interpolator = interpolator;
 	}
 

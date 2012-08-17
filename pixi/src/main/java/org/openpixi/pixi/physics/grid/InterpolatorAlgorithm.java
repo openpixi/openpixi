@@ -3,7 +3,7 @@ package org.openpixi.pixi.physics.grid;
 import org.openpixi.pixi.physics.Debug;
 import org.openpixi.pixi.physics.Particle;
 
-public class Interpolator {
+public class InterpolatorAlgorithm {
 
 	public void interpolateToGrid(Particle p, Grid g, double tstep) {
 

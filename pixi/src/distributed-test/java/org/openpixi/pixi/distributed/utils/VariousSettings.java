@@ -4,7 +4,7 @@ import org.openpixi.pixi.physics.Settings;
 import org.openpixi.pixi.physics.fields.YeeSolver;
 import org.openpixi.pixi.physics.force.ConstantForce;
 import org.openpixi.pixi.physics.grid.ChargeConservingAreaWeighting;
-import org.openpixi.pixi.physics.grid.Interpolator;
+import org.openpixi.pixi.physics.grid.InterpolatorAlgorithm;
 import org.openpixi.pixi.physics.solver.Boris;
 import org.openpixi.pixi.physics.solver.Euler;
 import org.openpixi.pixi.physics.solver.LeapFrogDamped;
@@ -65,7 +65,7 @@ public class VariousSettings {
 		variousTestSettings.put("ChargeConservingAreaWeighting", settings);
 
 		settings = ClassCopier.copy(defaultSettings);
-		settings.setInterpolator(new Interpolator());
+		settings.setInterpolator(new InterpolatorAlgorithm());
 		variousTestSettings.put("BaseInterpolator", settings);
 
 		// Fails because YeeSolver relies too much on gridCellsX and gridCellsY which differ

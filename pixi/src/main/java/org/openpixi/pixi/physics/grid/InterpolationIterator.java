@@ -9,9 +9,9 @@ import java.util.List;
  */
 public abstract class InterpolationIterator {
 
-	protected Interpolator interpolator;
+	protected InterpolatorAlgorithm interpolator;
 
-	public InterpolationIterator(Interpolator interpolator) {
+	public InterpolationIterator(InterpolatorAlgorithm interpolator) {
 		this.interpolator = interpolator;
 	}
 

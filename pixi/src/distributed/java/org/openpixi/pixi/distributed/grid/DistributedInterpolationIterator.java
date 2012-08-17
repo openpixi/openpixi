@@ -4,7 +4,7 @@ import org.openpixi.pixi.distributed.SharedDataManager;
 import org.openpixi.pixi.physics.Particle;
 import org.openpixi.pixi.physics.grid.Grid;
 import org.openpixi.pixi.physics.grid.InterpolationIterator;
-import org.openpixi.pixi.physics.grid.Interpolator;
+import org.openpixi.pixi.physics.grid.InterpolatorAlgorithm;
 import org.openpixi.pixi.physics.util.DoubleBox;
 
 import java.util.ArrayList;
@@ -26,7 +26,7 @@ public class DistributedInterpolationIterator extends InterpolationIterator {
 
 
 	public DistributedInterpolationIterator(
-			Interpolator interpolator,
+			InterpolatorAlgorithm interpolator,
 			SharedDataManager sharedDataManager,
 			DoubleBox zoneOfLocalInfluence) {
 

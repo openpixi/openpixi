@@ -23,7 +23,7 @@ public class SimpleInterpolationIterator extends InterpolationIterator {
 
 
 	public SimpleInterpolationIterator(
-			Interpolator interpolator,
+			InterpolatorAlgorithm interpolator,
 			ParticleIterator particleIterator) {
 		super(interpolator);
 		this.particleIterator = particleIterator;
