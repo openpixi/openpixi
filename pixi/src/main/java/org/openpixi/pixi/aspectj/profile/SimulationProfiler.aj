@@ -35,7 +35,7 @@ public aspect SimulationProfiler {
 
 
 	@AdviceName("recordInterpolateToGridTime")
-	Object around(): execution(* *..InterpolationIterator.interpolateToGrid(..)) {
+	Object around(): execution(* *..Interpolation.interpolateToGrid(..)) {
 		long start = System.nanoTime();
 		Object o = proceed();
 		ProfileInfo.addInterpolateToGridTime(System.nanoTime() - start);
@@ -44,7 +44,7 @@ public aspect SimulationProfiler {
 
 
 	@AdviceName("recordInterpolateToParticleTime")
-	Object around(): execution(* *..InterpolationIterator.interpolateToParticle(..)) {
+	Object around(): execution(* *..Interpolation.interpolateToParticle(..)) {
 		long start = System.nanoTime();
 		Object o = proceed();
 		ProfileInfo.addInterpolateToParticleTime(System.nanoTime() - start);

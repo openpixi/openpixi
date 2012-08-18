@@ -31,12 +31,13 @@ public class MainProfile {
 		assert numOfNodes > 0: "Invalid number of nodes!";
 
 		Settings settings = new Settings();
+		settings.setNumOfThreads(2);
 		settings.setGridCellsX(16);
 		settings.setGridCellsY(16);
 		settings.setSimulationWidth(10 * settings.getGridCellsX());
 		settings.setSimulationHeight(10 * settings.getGridCellsY());
-		settings.setNumOfParticles(10);
-		settings.setIterations(100);
+		settings.setNumOfParticles(10000);
+		settings.setIterations(1000);
 		settings.setNumOfNodes(numOfNodes);
 		settings.setIplServer(iplServer);
 
