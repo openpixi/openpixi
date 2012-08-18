@@ -19,7 +19,6 @@ JAVA_HOME=/usr/lib/jvm/jre
 #$ -q all.q
 #$ -cwd
 #$ -V
-#$ -sync y
 #$ -j y
 #$ -l h_rt=00:10:00
 
@@ -31,14 +30,15 @@ do
 	do
 		echo "Starting process $PROCESS at node $NODE"
 		OUT_FILE="out.$NUM_OF_NODES.$NUM_OF_PROCESSES.$JOB_ID.$NODE.$PROCESS"
-		
+		CURRENT_DIR=`pwd`		
+
 		# Connect to the compute node, run the simulation there and
 		# at the end copy the output back.
 		# Has to be run asynchronously as the different processes
 		# at different nodes communicate with each other.
 		ssh $NODE " \
 			export JAVA_HOME=$JAVA_HOME; \
-			cd openpixi/pixi; \
+			cd $CURRENT_DIR; \
 			./scripts/run $TOTAL_PROCESSES $IPL_SERVER > $OUT_FILE; \
 			cp $OUT_FILE ${SGE_O_WORKDIR}; \
 			exit" &	
