@@ -33,6 +33,8 @@ public class ParallelSimulationTest extends TestCase {
 		singleThreadedSimulation.run();
 		multiThreadedSimulation.run();
 
+		multiThreadedSettings.terminateThreads();
+
 		ResultsComparator comparator = new ResultsComparator();
 		comparator.compare(
 				singleThreadedSimulation.particles, multiThreadedSimulation.particles,

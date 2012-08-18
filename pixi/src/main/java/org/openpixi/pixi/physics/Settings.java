@@ -390,7 +390,7 @@ public class Settings {
 	}
 
 	//----------------------------------------------------------------------------------------------
-	// CONSTRUCTORS
+	// VARIOUS
 	//----------------------------------------------------------------------------------------------
 
 	public Settings() {
@@ -410,5 +410,18 @@ public class Settings {
 	 */
 	public Settings(String[] cmdLine) {
 		throw new UnsupportedOperationException();
+	}
+
+
+	/**
+	 * Has to be called every time numOfThreads is set to a value higher than 1!
+	 * Terminates the threads used by executor service.
+	 * Is idempotent (can be called multiple times without side-effects).
+	 */
+	public void terminateThreads() {
+		if (threadsExecutor != null) {
+			threadsExecutor.shutdown();
+			threadsExecutor = null;
+		}
 	}
 }

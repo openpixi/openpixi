@@ -41,9 +41,9 @@ public class EmulatedDistributedEnvironment {
 
 		// Run non-distributed simulation
 		Simulation simulation = new Simulation(settings);
-		for (int i = 0; i < settings.getIterations(); ++i) {
-			simulation.step();
-		}
+		simulation.run();
+
+		settings.terminateThreads();
 
 		// Compare results
 		ResultsComparator comparator = new ResultsComparator();
@@ -124,6 +124,7 @@ public class EmulatedDistributedEnvironment {
 		}
 
 		runRunnables(closeRuns);
+		settings.terminateThreads();
 	}
 
 
