@@ -21,9 +21,6 @@ import java.util.Map;
  */
 public class VariousSettings {
 
-	/**
-	 * TODO find solution: every solver that has a prepare and complete method seems to fail
-	 */
 	public static Map<String, Settings> getSettingsMap() {
 		Map<String, Settings> variousTestSettings = new HashMap<String, Settings>();
 		Settings defaultSettings = getDefaultSettings();
