@@ -240,7 +240,10 @@ public class SharedData {
 		public void handle(List<Particle> particles) {
 			arrivingParticles = particles;
 			for (Particle particle: particles) {
-				particleBoundaries.applyOnParticleCenter(particle);
+				/**
+				 * The nulls won't work with hardwall boundaries!!!
+				 */
+				particleBoundaries.applyOnParticleCenter(null, null, particle, 0);
 			}
 			arrivingParticlesLock.setToTrue();
 		}

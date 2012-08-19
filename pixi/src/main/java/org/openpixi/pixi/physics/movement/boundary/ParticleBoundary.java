@@ -1,6 +1,8 @@
 package org.openpixi.pixi.physics.movement.boundary;
 
 import org.openpixi.pixi.physics.Particle;
+import org.openpixi.pixi.physics.force.Force;
+import org.openpixi.pixi.physics.solver.Solver;
 
 /**
  * Determines how the particle behaves when it leaves the simulation area.
@@ -26,5 +28,5 @@ public abstract class ParticleBoundary {
 		this.yoffset = yoffset;
 	}
 
-	public abstract void apply(Particle p);
+	public abstract void apply(Solver solver, Force force, Particle particle, double timeStep);
 }

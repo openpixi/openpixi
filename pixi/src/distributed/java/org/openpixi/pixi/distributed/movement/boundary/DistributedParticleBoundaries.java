@@ -3,7 +3,9 @@ package org.openpixi.pixi.distributed.movement.boundary;
 import org.openpixi.pixi.distributed.SharedData;
 import org.openpixi.pixi.distributed.SharedDataManager;
 import org.openpixi.pixi.physics.Particle;
+import org.openpixi.pixi.physics.force.Force;
 import org.openpixi.pixi.physics.movement.boundary.*;
+import org.openpixi.pixi.physics.solver.Solver;
 import org.openpixi.pixi.physics.util.DoubleBox;
 import org.openpixi.pixi.physics.util.Point;
 
@@ -126,22 +128,24 @@ public class DistributedParticleBoundaries implements ParticleBoundaries {
 	}
 
 
-	public void applyOnParticleBoundingBox(Particle p) {
+	public void applyOnParticleBoundingBox(
+			Solver solver, Force force, Particle particle, double timeStep) {
 		throw new UnsupportedOperationException(
 				"In distributed boundaries we can not deduce particle's position " +
 				"based on its bounding box as it would result in errors.");
 	}
 
 
-	public void applyOnParticleCenter(Particle particle) {
+	public void applyOnParticleCenter(
+			Solver solver, Force force, Particle particle, double timeStep) {
 		int borderRegion = borderRegions.getRegion(particle.getX(), particle.getY());
 		for (BorderGate bg: borderMap.get(borderRegion)) {
-			bg.apply(particle);
+			bg.apply(solver, force, particle, timeStep);
 		}
 
 		// Boundary gates have to be called after border gates as they change the position
 		// of the particle.
 		int boundaryRegion = boundaryRegions.getRegion(particle.getX(), particle.getY());
-		boundaryMap[boundaryRegion].apply(particle);
+		boundaryMap[boundaryRegion].apply(solver, force, particle, timeStep);
 	}
 }

@@ -1,6 +1,8 @@
 package org.openpixi.pixi.physics.movement.boundary;
 
 import org.openpixi.pixi.physics.Particle;
+import org.openpixi.pixi.physics.force.Force;
+import org.openpixi.pixi.physics.solver.Solver;
 
 /**
  * If the particle leaves at one side, it reappears at the
@@ -13,10 +15,10 @@ public class PeriodicBoundary extends ParticleBoundary {
 	}
 
 	@Override
-	public void apply(Particle p) {
-		p.addX(-xoffset);
-		p.addPrevX(-xoffset);
-		p.addY(-yoffset);
-		p.addPrevY(-yoffset);
+	public void apply(Solver solver, Force force, Particle particle, double timeStep) {
+		particle.addX(-xoffset);
+		particle.addPrevX(-xoffset);
+		particle.addY(-yoffset);
+		particle.addPrevY(-yoffset);
 	}
 }

@@ -31,7 +31,7 @@ public class MainProfile {
 		assert numOfNodes > 0: "Invalid number of nodes!";
 
 		Settings settings = new Settings();
-		settings.setNumOfThreads(4);
+		settings.setNumOfThreads(1);
 		settings.setGridCellsX(16);
 		settings.setGridCellsY(16);
 		settings.setSimulationWidth(10 * settings.getGridCellsX());

@@ -1,6 +1,8 @@
 package org.openpixi.pixi.physics.movement.boundary;
 
 import org.openpixi.pixi.physics.Particle;
+import org.openpixi.pixi.physics.force.Force;
+import org.openpixi.pixi.physics.solver.Solver;
 
 public interface ParticleBoundaries {
 	void changeType(ParticleBoundaryType boundaryType);
@@ -19,9 +21,9 @@ public interface ParticleBoundaries {
 	 *   is not thread safe. On the other hand, to create a new bounding box (call constructor)
 	 *   for each particle would be thread safe but also slow.
 	 */
-	void applyOnParticleBoundingBox(Particle p);
+	void applyOnParticleBoundingBox(Solver solver, Force force, Particle particle, double timeStep);
 
-	void applyOnParticleCenter(Particle p);
+	void applyOnParticleCenter(Solver solver, Force force, Particle particle, double timeStep);
 
 	ParticleBoundaryType getType();
 }

@@ -82,9 +82,7 @@ public class ParticleMover {
 		public void execute(Particle particle) {
 			particle.storePosition();
 			solver.step(particle, force, timeStep);
-			solver.complete(particle, force, timeStep);
-			boundaries.applyOnParticleCenter(particle);
-			solver.prepare(particle, force, timeStep);
+			boundaries.applyOnParticleCenter(solver, force, particle, timeStep);
 		}
 	}
 
