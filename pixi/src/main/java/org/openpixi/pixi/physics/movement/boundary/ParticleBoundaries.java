@@ -23,6 +23,12 @@ public interface ParticleBoundaries {
 	 */
 	void applyOnParticleBoundingBox(Solver solver, Force force, Particle particle, double timeStep);
 
+	/**
+	 * We need to pass the solver force and time step so that the hardwall boundary can call
+	 * complete and prepare methods from solver.
+	 * This solution is very ugly and cumbersome but if we want to have the periodic boundaries
+	 * fast we have no other solution.
+	 */
 	void applyOnParticleCenter(Solver solver, Force force, Particle particle, double timeStep);
 
 	ParticleBoundaryType getType();

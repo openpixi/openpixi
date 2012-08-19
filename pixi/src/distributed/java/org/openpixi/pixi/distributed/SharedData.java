@@ -242,6 +242,7 @@ public class SharedData {
 			for (Particle particle: particles) {
 				/**
 				 * The nulls won't work with hardwall boundaries!!!
+				 * TODO inject the solver, force and time step into shared data from classes above
 				 */
 				particleBoundaries.applyOnParticleCenter(null, null, particle, 0);
 			}
