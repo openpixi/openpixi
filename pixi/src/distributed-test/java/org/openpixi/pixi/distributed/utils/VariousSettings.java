@@ -8,6 +8,7 @@ import org.openpixi.pixi.physics.grid.InterpolatorAlgorithm;
 import org.openpixi.pixi.physics.solver.Boris;
 import org.openpixi.pixi.physics.solver.Euler;
 import org.openpixi.pixi.physics.solver.LeapFrogDamped;
+import org.openpixi.pixi.physics.solver.relativistic.BorisRelativistic;
 import org.openpixi.pixi.physics.solver.relativistic.SemiImplicitEulerRelativistic;
 import org.openpixi.pixi.physics.util.ClassCopier;
 
@@ -57,6 +58,10 @@ public class VariousSettings {
 		settings.setParticleSolver(new LeapFrogDamped());
 		variousTestSettings.put("LeapFrogDamped", settings);
 
+		// Fails because in the distributed version we do additions upon particle's position
+		// when it is transferred from one node to another. These additions are cause of the small
+		// deviation from the non distributed simulation solution.
+		// TODO find solution?
 		settings = ClassCopier.copy(defaultSettings);
 		settings.setIterations(5000);
 		settings.setNumOfParticles(10);
@@ -73,8 +78,9 @@ public class VariousSettings {
 		settings.setInterpolator(new InterpolatorAlgorithm());
 		variousTestSettings.put("BaseInterpolator", settings);
 
-		// Fails because YeeSolver relies too much on gridCellsX and gridCellsY which differ
-		// in the distributed and local simulations.
+		// Fails because YeeSolver calculates the fields at the borders of the simulation area
+		// differently then in the center, One needs to remake the YeeSolver in the same style
+		// as SimpleFieldSolver.
 		// TODO find solution
 		settings = ClassCopier.copy(defaultSettings);
 		settings.setGridSolver(new YeeSolver());
@@ -107,7 +113,9 @@ public class VariousSettings {
 		settings.setSimulationHeight(10 * settings.getGridCellsY());
 		settings.setNumOfParticles(100);
 		settings.setIterations(100);
-		settings.setParticleSolver(new Euler());
+		// Ensures that the particles do not get too fast.
+		settings.setParticleSolver(new BorisRelativistic(
+				settings.getSimulationWidth() / settings.getTimeStep()));
 		return settings;
 	}
 }
