@@ -57,11 +57,24 @@ To launch Pixi in Eclipse ( http://www.eclipse.org/ ) do the following:
 6) Select the local folder that you have chosen previously
 
 
+DISTRIBUTED VERSION
+===================
+
+To get started with the distributed version see our wiki
+https://github.com/openpixi/openpixi/wiki/Getting-Started-with-Distributed-Version
+
+
 VERSION HISTORY
 ===============
 
 ---
 Version 0.5 - ?
+
+* Ditributed version of OpenPixi which uses IBIS framework for communication
+* Framework for throurough testing of the distributed version
+* Parallel version of OpenPixi which uses threads
+* Support for debugging and profiling through AspectJ
+* Introduced Settings class to hold all the simulation settings
 
 ---
 Version 0.4 - June 28, 2012
