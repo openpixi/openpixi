@@ -1,6 +1,8 @@
 package org.openpixi.pixi.physics.movement.boundary;
 
 import org.openpixi.pixi.physics.Particle;
+import org.openpixi.pixi.physics.force.Force;
+import org.openpixi.pixi.physics.solver.Solver;
 import org.openpixi.pixi.physics.util.DoubleBox;
 
 /**
@@ -69,16 +71,24 @@ public class SimpleParticleBoundaries implements ParticleBoundaries {
 	}
 
 
-	public void apply(Particle p) {
+	public void applyOnParticleBoundingBox(
+			Solver solver, Force force, Particle particle, double timeStep) {
 
 		/*
 		 * Since there can be a large number of particles,
 		 * it is costly to create new bounding box for each particle in each time step;
 		 * thus, we reuse single bounding box.
 		 */
-		boundaryType.getParticleBox(p, particleBox);
+		boundaryType.getParticleBox(particle, particleBox);
 
 		int region = boundaryRegions.getRegion(particleBox);
-		regionBoundaryMap[region].apply(p);
+		regionBoundaryMap[region].apply(solver, force, particle, timeStep);
+	}
+
+
+	public void applyOnParticleCenter(
+			Solver solver, Force force, Particle particle, double timeStep) {
+		int region = boundaryRegions.getRegion(particle.getX(), particle.getY());
+		regionBoundaryMap[region].apply(solver, force, particle, timeStep);
 	}
 }

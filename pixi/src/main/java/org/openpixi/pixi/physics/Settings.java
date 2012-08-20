@@ -1,21 +1,31 @@
 package org.openpixi.pixi.physics;
 
+import org.openpixi.pixi.parallel.cellaccess.CellIterator;
+import org.openpixi.pixi.parallel.cellaccess.ParallelCellIterator;
+import org.openpixi.pixi.parallel.cellaccess.SequentialCellIterator;
+import org.openpixi.pixi.parallel.particleaccess.ParallelParticleIterator;
+import org.openpixi.pixi.parallel.particleaccess.ParticleIterator;
+import org.openpixi.pixi.parallel.particleaccess.SequentialParticleIterator;
 import org.openpixi.pixi.physics.collision.algorithms.CollisionAlgorithm;
 import org.openpixi.pixi.physics.collision.detectors.Detector;
 import org.openpixi.pixi.physics.fields.FieldSolver;
 import org.openpixi.pixi.physics.fields.PoissonSolver;
 import org.openpixi.pixi.physics.fields.PoissonSolverFFTPeriodic;
+import org.openpixi.pixi.physics.fields.SimpleSolver;
 import org.openpixi.pixi.physics.force.CombinedForce;
 import org.openpixi.pixi.physics.force.Force;
 import org.openpixi.pixi.physics.grid.CloudInCell;
 import org.openpixi.pixi.physics.grid.GridBoundaryType;
-import org.openpixi.pixi.physics.grid.Interpolator;
+import org.openpixi.pixi.physics.grid.InterpolatorAlgorithm;
 import org.openpixi.pixi.physics.movement.boundary.ParticleBoundaryType;
-import org.openpixi.pixi.physics.solver.EmptySolver;
+import org.openpixi.pixi.physics.solver.Euler;
 import org.openpixi.pixi.physics.solver.Solver;
+import org.openpixi.pixi.physics.util.ClassCopier;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  * Specifies default values of simulation parameters.
@@ -27,6 +37,12 @@ import java.util.List;
  * To assure that the class is used in the intended way
  * THE SETTERS SHOULD BE CALLED RIGHT AFTER A PARAMETERLESS CONSTRUCTOR
  * AND BEFORE ANY OF THE MORE COMPLEX GETTERS IS CALLED !!!
+ *
+ * In the tests of the distributed version we pass the same settings class to all the different
+ * threads which simulate the distributed behaviour.
+ * Consequently, the different simultaneously running simulations do have the same particle solver,
+ * interpolator etc. and this is very dangerous.
+ * TODO ensure that all the getters retrieve new objects
  */
 public class Settings {
 
@@ -41,14 +57,14 @@ public class Settings {
 
 	private GeneralBoundaryType boundaryType = GeneralBoundaryType.Periodic;
 
-	private Interpolator interpolator = new CloudInCell();
+	private InterpolatorAlgorithm interpolator = new CloudInCell();
 
 	// Grid related settings
 
 	private int gridCellsX = 10;
 	private int gridCellsY = 10;
 
-	private FieldSolver gridSolver = new FieldSolver();
+	private FieldSolver gridSolver = new SimpleSolver();
 	private PoissonSolver poissonSolver = new PoissonSolverFFTPeriodic();
 
 	private boolean useGrid = true;
@@ -63,17 +79,26 @@ public class Settings {
 
 	private Detector collisionDetector = new Detector();
 	private CollisionAlgorithm collisionResolver = new CollisionAlgorithm();
-	private Solver particleSolver = new EmptySolver();
+	private Solver particleSolver = new Euler();
 	private List<Force> forces = new ArrayList<Force>();
 
 	// Batch version settings
 
 	private int iterations = 100;
 
+	// Parallel (threaded) version settings
+
+	private int numOfThreads = 1;
+	/* The creation and start of the new threads is expensive. Therefore, in the parallel
+	 * simulation we use ExecutorService which is maintaining a fixed number of threads running
+	 * all the time and assigns work to the threads on the fly according to demand. */
+	private ExecutorService threadsExecutor;
+
 	// Distributed version settings
 
 	private int numOfNodes = 1;
-	private String iplRegistryServer = "localhost";
+	private String iplServer = "localhost";
+	private String iplPool = "openpixi";
 
 	//----------------------------------------------------------------------------------------------
 	// SIMPLE GETTERS
@@ -112,7 +137,11 @@ public class Settings {
 	}
 
 	public FieldSolver getGridSolver() {
-		return gridSolver;
+		/*
+		 * For the distributed tests to pass we need to create new grid solver so that the two
+		 * simulation instances do not share the cell iterator!
+		 */
+		return ClassCopier.copy(gridSolver);
 	}
 
 	public PoissonSolver getPoissonSolver() {
@@ -123,7 +152,7 @@ public class Settings {
 		return particleSolver;
 	}
 
-	public Interpolator getInterpolator() {
+	public InterpolatorAlgorithm getInterpolator() {
 		return interpolator;
 	}
 
@@ -139,12 +168,16 @@ public class Settings {
 		return iterations;
 	}
 
-	public String getIplRegistryServer() {
-		return iplRegistryServer;
+	public String getIplServer() {
+		return iplServer;
 	}
 
 	public boolean useGrid() {
 		return useGrid;
+	}
+
+	public String getIplPool() {
+		return iplPool;
 	}
 
 	//----------------------------------------------------------------------------------------------
@@ -172,18 +205,29 @@ public class Settings {
 
 	/**
 	 * If no particles are specified creates random particles.
+	 *
+	 * !!! IMPORTANT !!!
+	 * Always returns deep copy of the actual particle list!
 	 */
 	public List<Particle> getParticles() {
-		if (particles.size() != 0) {
-			return particles;
-		}
-		else {
+		if (particles.size() == 0) {
 			this.particles = InitialConditions.createRandomParticles(
 					simulationWidth,  simulationHeight,
 					particleMaxSpeed, numOfParticles, particleRadius);
-			return this.particles;
 		}
+
+		return cloneParticles();
 	}
+
+
+	private List<Particle> cloneParticles() {
+		List<Particle> copy = new ArrayList<Particle>();
+		for (Particle p: particles) {
+			copy.add(new Particle(p));
+		}
+		return copy;
+	}
+
 
 	public GridBoundaryType getGridBoundary() {
 		switch (boundaryType) {
@@ -205,6 +249,40 @@ public class Settings {
 			default:
 				return ParticleBoundaryType.Hardwall;
 		}
+	}
+
+	public ParticleIterator getParticleIterator() {
+		if (numOfThreads == 1) {
+			return new SequentialParticleIterator();
+		}
+		else if (numOfThreads > 1) {
+			return  new ParallelParticleIterator(numOfThreads, getThreadsExecutor());
+		}
+		else {
+			throw new RuntimeException("Invalid number of threads: " + numOfThreads);
+		}
+	}
+
+	public CellIterator getCellIterator() {
+		if (numOfThreads == 1) {
+			return new SequentialCellIterator();
+		}
+		else if (numOfThreads > 1) {
+			return  new ParallelCellIterator(numOfThreads, getThreadsExecutor());
+		}
+		else {
+			throw new RuntimeException("Invalid number of threads: " + numOfThreads);
+		}
+	}
+
+	/**
+	 * Create threads executor on the fly according to demand.
+	 */
+	private ExecutorService getThreadsExecutor() {
+		if (threadsExecutor == null) {
+			threadsExecutor = Executors.newFixedThreadPool(numOfThreads);
+		}
+		return threadsExecutor;
 	}
 
 	//----------------------------------------------------------------------------------------------
@@ -255,7 +333,7 @@ public class Settings {
 		this.particleSolver = particleSolver;
 	}
 
-	public void setInterpolator(Interpolator interpolator) {
+	public void setInterpolator(InterpolatorAlgorithm interpolator) {
 		this.interpolator = interpolator;
 	}
 
@@ -295,16 +373,24 @@ public class Settings {
 		this.boundaryType = boundaryType;
 	}
 
-	public void setIplRegistryServer(String iplRegistryServer) {
-		this.iplRegistryServer = iplRegistryServer;
+	public void setIplServer(String iplServer) {
+		this.iplServer = iplServer;
 	}
 
 	public void useGrid(boolean useGrid) {
 		this.useGrid = useGrid;
 	}
 
+	public void setIplPool(String iplPool) {
+		this.iplPool = iplPool;
+	}
+
+	public void setNumOfThreads(int numOfThreads) {
+		this.numOfThreads = numOfThreads;
+	}
+
 	//----------------------------------------------------------------------------------------------
-	// CONSTRUCTORS
+	// VARIOUS
 	//----------------------------------------------------------------------------------------------
 
 	public Settings() {
@@ -324,5 +410,18 @@ public class Settings {
 	 */
 	public Settings(String[] cmdLine) {
 		throw new UnsupportedOperationException();
+	}
+
+
+	/**
+	 * Has to be called every time numOfThreads is set to a value higher than 1!
+	 * Terminates the threads used by executor service.
+	 * Is idempotent (can be called multiple times without side-effects).
+	 */
+	public void terminateThreads() {
+		if (threadsExecutor != null) {
+			threadsExecutor.shutdown();
+			threadsExecutor = null;
+		}
 	}
 }

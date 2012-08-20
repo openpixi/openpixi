@@ -22,6 +22,7 @@ package org.openpixi.pixi.ui;
 import org.openpixi.pixi.physics.Debug;
 import org.openpixi.pixi.physics.Settings;
 import org.openpixi.pixi.physics.Simulation;
+import org.openpixi.pixi.profile.ProfileInfo;
 
 public class MainBatch {
 
@@ -45,13 +46,9 @@ public class MainBatch {
 
 		System.out.println("\n-------- SIMULATION RESULTS --------");
 
-		long start = System.currentTimeMillis();
-
 		for (int i = 0; i < steps; i++) {
 			s.step();
 		}
-
-		long elapsed = System.currentTimeMillis()-start;
 
 		for (int i=0; i < 10; i++) {
 			System.out.println(s.particles.get(i).getX());
@@ -63,9 +60,10 @@ public class MainBatch {
 				System.out.println(s.grid.getJx(i,2));
 		}
 
-		System.out.println("\nCalculation time: "+elapsed);
 		System.out.println(s.grid.getCellWidth());
 		System.out.println(s.grid.getCellHeight());
+
+		ProfileInfo.printProfileInfo();
 	}
 
 }

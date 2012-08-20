@@ -1,10 +1,19 @@
 package org.openpixi.pixi.physics.grid;
 
+import org.openpixi.pixi.parallel.cellaccess.CellAction;
+import org.openpixi.pixi.parallel.cellaccess.CellIterator;
 import org.openpixi.pixi.physics.Settings;
 import org.openpixi.pixi.physics.fields.FieldSolver;
 
 
 public class Grid {
+
+	/*
+	 * TODO remove the accessors for individual cell fields and call directly the accessors on the cell
+	 * TODO extract field solver to simulation
+	 *      - makes grid simpler
+	 *      - makes all the important initialization to happen at one place (in simulation)
+	 */
 
 	/**
 	 * The purpose of the extra cells is twofold.
@@ -38,6 +47,11 @@ public class Grid {
 
 	private GridBoundaryType boundaryType;
 
+	private CellIterator cellIterator;
+	private ResetChargeAction resetCharge = new ResetChargeAction();
+	private ResetCurrentAction resetCurrent = new ResetCurrentAction();
+	private StoreFieldsAction storeFields = new StoreFieldsAction();
+
 	private Cell[][] cells;
 
 	/**number of cells in x direction*/
@@ -58,107 +72,99 @@ public class Grid {
 	}
 
 	public double getJx(int x, int y) {
-		return cells[index(x)][index(y)].jx;
-	}
-
-	public void setJx(int x, int y, double value) {
-		cells[index(x)][index(y)].jx = value;
+		return cells[index(x)][index(y)].getJx();
 	}
 
 	public void addJx(int x, int y, double value) {
-		cells[index(x)][index(y)].jx += value;
+		cells[index(x)][index(y)].addJx(value);
 	}
 
 	public double getJy(int x, int y) {
-		return cells[index(x)][index(y)].jy;
-	}
-
-	public void setJy(int x, int y, double value) {
-		cells[index(x)][index(y)].jy = value;
+		return cells[index(x)][index(y)].getJy();
 	}
 
 	public void addJy(int x, int y, double value) {
-		cells[index(x)][index(y)].jy += value;
+		cells[index(x)][index(y)].addJy(value);
 	}
 
 	public double getRho(int x, int y) {
-		return cells[index(x)][index(y)].rho;
+		return cells[index(x)][index(y)].getRho();
 	}
 
 	public void setRho(int x, int y, double value) {
-		cells[index(x)][index(y)].rho = value;
+		cells[index(x)][index(y)].setRho(value);
 	}
 	
 	public void addRho(int x, int y, double value) {
-		cells[index(x)][index(y)].rho += value;
+		cells[index(x)][index(y)].addRho(value);
 	}
 
 	public double getPhi(int x, int y) {
-		return cells[index(x)][index(y)].phi;
+		return cells[index(x)][index(y)].getPhi();
 	}
 
 	public void setPhi(int x, int y, double value) {
-		cells[index(x)][index(y)].phi = value;
+		cells[index(x)][index(y)].setPhi(value);
 	}
 
 	public double getEx(int x, int y) {
-		return cells[index(x)][index(y)].Ex;
+		return cells[index(x)][index(y)].getEx();
 	}
 
 	public void setEx(int x, int y, double value) {
-		cells[index(x)][index(y)].Ex = value;
+		cells[index(x)][index(y)].setEx(value);
 	}
 
 	public void addEx(int x, int y, double value) {
-		cells[index(x)][index(y)].Ex += value;
+		cells[index(x)][index(y)].setEx(cells[index(x)][index(y)].getEx() + value);
 	}
 
 	public double getEy(int x, int y) {
-		return cells[index(x)][index(y)].Ey;
+		return cells[index(x)][index(y)].getEy();
 	}
 
 	public void setEy(int x, int y, double value) {
-		cells[index(x)][index(y)].Ey = value;
+		cells[index(x)][index(y)].setEy(value);
 	}
 
 	public void addEy(int x, int y, double value) {
-		cells[index(x)][index(y)].Ey += value;
+		cells[index(x)][index(y)].setEy(cells[index(x)][index(y)].getEy() + value);
 	}
 
 	public double getBz(int x, int y) {
-		return cells[index(x)][index(y)].Bz;
+		return cells[index(x)][index(y)].getBz();
 	}
 
 	public void setBz(int x, int y, double value) {
-		cells[index(x)][index(y)].Bz = value;
+		cells[index(x)][index(y)].setBz(value);
 	}
 
 	public void addBz(int x, int y, double value) {
-		cells[index(x)][index(y)].Bz += value;
+		cells[index(x)][index(y)].setBz(cells[index(x)][index(y)].getBz() + value);
 	}
 
 	public double getExo(int x, int y) {
-		return cells[index(x)][index(y)].Exo;
+		return cells[index(x)][index(y)].getExo();
 	}
 
 	public void setExo(int x, int y, double value) {
-		cells[index(x)][index(y)].Exo = value;
+		cells[index(x)][index(y)].setExo(value);
 	}
 
 	public double getEyo(int x, int y) {
-		return cells[index(x)][index(y)].Eyo;
+		return cells[index(x)][index(y)].getEyo();
 	}
 
 	public void setEyo(int x, int y, double value) {
-		cells[index(x)][index(y)].Eyo = value;
+		cells[index(x)][index(y)].setEyo(value);
 	}
 
 	public double getBzo(int x, int y) {
-		return cells[index(x)][index(y)].Bzo;
+		return cells[index(x)][index(y)].getBzo();
 	}
 
 	public void setBzo(int x, int y, double value) {
-		cells[index(x)][index(y)].Bzo = value;
+		cells[index(x)][index(y)].setBzo(value);
 	}
 
 	public int getNumCellsX() {
@@ -184,27 +190,43 @@ public class Grid {
 
 	public Grid(Settings settings) {
 		this.boundaryType = settings.getGridBoundary();
-		this.fsolver = settings.getGridSolver();
 
 		set(settings.getGridCellsX(), settings.getGridCellsY(),
 				settings.getSimulationWidth(), settings.getSimulationHeight());
+
+		this.fsolver = settings.getGridSolver();
+		this.fsolver.initializeIterator(settings.getCellIterator(), numCellsX,  numCellsY);
+
+		this.cellIterator = settings.getCellIterator();
+		this.cellIterator.setExtraCellsMode(numCellsX, numCellsY);
 	}
 
 
 	/**
-	 * In the distributed version we want to create the grid from cell which come from master;
+	 * In the distributed version we want to create the grid from cells which come from master;
 	 * hence, this constructor.
 	 * Creates grid from the given cells.
 	 * The input cells have to contain also the boundary cells.
 	 */
-	public Grid(double simWidth, double simHeight, Cell[][] cells, FieldSolver fsolver) {
+	public Grid(Settings settings, Cell[][] cells) {
 		this.numCellsX = cells.length - EXTRA_CELLS_BEFORE_GRID - EXTRA_CELLS_AFTER_GRID;
 		this.numCellsY = cells[0].length - EXTRA_CELLS_BEFORE_GRID - EXTRA_CELLS_AFTER_GRID;
-		this.cellWidth = simWidth/numCellsX;
-		this.cellHeight = simHeight/numCellsY;
+		this.cellWidth = settings.getSimulationWidth() / numCellsX;
+		this.cellHeight = settings.getSimulationHeight() / numCellsY;
 
 		this.cells = cells;
-		this.fsolver = fsolver;
+
+		/*
+		 * Grid and FieldSolver must have each its own cell iterator!
+		 * They use different modes of iteration.
+		 * While the grid iterates also over the extra cells the field solver does not.
+		 */
+
+		this.fsolver = settings.getGridSolver();
+		fsolver.initializeIterator(settings.getCellIterator(), numCellsX, numCellsY);
+
+		this.cellIterator = settings.getCellIterator();
+		this.cellIterator.setExtraCellsMode(this.numCellsX, this.numCellsY);
 	}
 
 
@@ -299,21 +321,16 @@ public class Grid {
 		getFsolver().step(this, tstep);
 	}
 
-	public void resetCurrentAndCharge() {
-		for(int x = 0; x < getNumCellsXTotal(); x++) {
-			for(int y = 0; y < getNumCellsYTotal(); y++) {
-				cells[x][y].resetCharge();
-				cells[x][y].resetCurrent();
-			}
-		}
+	public void resetCurrent() {
+		cellIterator.execute(this, resetCurrent);
+	}
+
+	public void resetCharge() {
+		cellIterator.execute(this, resetCharge);
 	}
 
 	public void storeFields() {
-		for (int x = 0; x < getNumCellsXTotal(); x++) {
-			for (int y = 0; y < getNumCellsYTotal(); y++) {
-				cells[x][y].storeFields();
-			}
-		}
+		cellIterator.execute(this, storeFields);
 	}
 
 	/**
@@ -335,5 +352,26 @@ public class Grid {
 	/** Includes the extra cells. */
 	private int getNumCellsYTotal() {
 		return numCellsY + EXTRA_CELLS_BEFORE_GRID + EXTRA_CELLS_AFTER_GRID;
+	}
+
+
+	private class ResetCurrentAction implements CellAction {
+		public void execute(Grid grid, int x, int y) {
+			grid.getCell(x,y).resetCurrent();
+		}
+	}
+
+
+	private class ResetChargeAction implements CellAction {
+		public void execute(Grid grid, int x, int y) {
+			grid.getCell(x, y).resetCharge();
+		}
+	}
+
+
+	private class StoreFieldsAction implements CellAction {
+		public void execute(Grid grid, int x, int y) {
+			grid.getCell(x, y).storeFields();
+		}
 	}
 }

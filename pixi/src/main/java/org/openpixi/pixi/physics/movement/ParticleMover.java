@@ -1,5 +1,7 @@
 package org.openpixi.pixi.physics.movement;
 
+import org.openpixi.pixi.parallel.particleaccess.ParticleAction;
+import org.openpixi.pixi.parallel.particleaccess.ParticleIterator;
 import org.openpixi.pixi.physics.Particle;
 import org.openpixi.pixi.physics.force.Force;
 import org.openpixi.pixi.physics.movement.boundary.ParticleBoundaries;
@@ -14,19 +16,39 @@ import java.util.List;
 public class ParticleMover {
 
 	/** Solver for the particle equations of motion. */
-	public Solver psolver;
-
+	private Solver solver;
 	private ParticleBoundaries boundaries;
+	private ParticleIterator particleIterator;
 
+	/* These are set in each iteration to enable the inner classes to read them. */
+	private Force force;
+	private double timeStep;
 
-	public ParticleMover(Solver psolver, ParticleBoundaries boundaries) {
-		this.psolver = psolver;
-		this.boundaries = boundaries;
-	}
+	private Push push = new Push();
+	private Prepare prepare = new Prepare();
+	private Complete complete = new Complete();
 
 
 	public ParticleBoundaryType getBoundaryType() {
 		return boundaries.getType();
+	}
+
+	public Solver getSolver() {
+		return solver;
+	}
+
+	public void setSolver(Solver psolver) {
+		this.solver = psolver;
+	}
+
+
+	public ParticleMover(
+			Solver solver,
+			ParticleBoundaries boundaries,
+			ParticleIterator particleIterator) {
+		this.solver = solver;
+		this.boundaries = boundaries;
+		this.particleIterator = particleIterator;
 	}
 
 
@@ -35,28 +57,46 @@ public class ParticleMover {
 	}
 
 
-	public void push(List<Particle> particles, Force force, double tstep) {
-		for (Particle p : particles) {
-			// Before we move the particle we store its position
-			p.storePosition();
-			psolver.step(p, force, tstep);
-			psolver.complete(p, force, tstep);
-			boundaries.apply(p);
-			psolver.prepare(p, force, tstep);
+	public void push(List<Particle> particles, Force force, double timeStep) {
+		this.force = force;
+		this.timeStep = timeStep;
+		particleIterator.execute(particles, push);
+	}
+
+
+	public void prepare(List<Particle> particles, Force force, double timeStep) {
+		this.force = force;
+		this.timeStep = timeStep;
+		particleIterator.execute(particles, prepare);
+	}
+
+
+	public void complete(List<Particle> particles, Force force, double timeStep) {
+		this.force = force;
+		this.timeStep = timeStep;
+		particleIterator.execute(particles, complete);
+	}
+
+
+	private class Push implements ParticleAction {
+		public void execute(Particle particle) {
+			particle.storePosition();
+			solver.step(particle, force, timeStep);
+			boundaries.applyOnParticleCenter(solver, force, particle, timeStep);
 		}
 	}
 
 
-	public void prepare(List<Particle> particles, Force force, double tstep) {
-		for (Particle p : particles) {
-			psolver.prepare(p, force, tstep);
+	private class Prepare implements ParticleAction {
+		public void execute(Particle particle) {
+			solver.prepare(particle, force, timeStep);
 		}
 	}
 
 
-	public void complete(List<Particle> particles, Force force, double tstep) {
-		for (Particle p : particles) {
-			psolver.complete(p, force, tstep);
+	private class Complete implements ParticleAction {
+		public void execute(Particle particle) {
+			solver.complete(particle, force, timeStep);
 		}
 	}
 }

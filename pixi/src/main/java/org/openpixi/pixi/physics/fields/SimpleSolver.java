@@ -1,40 +1,47 @@
 package org.openpixi.pixi.physics.fields;
 
+import org.openpixi.pixi.parallel.cellaccess.CellAction;
+import org.openpixi.pixi.physics.grid.Cell;
 import org.openpixi.pixi.physics.grid.Grid;
 
 public class SimpleSolver extends FieldSolver {
 
-	double cx, cy, cz;
+	private double timeStep;
+	private Solve solve = new Solve();
 
-	public SimpleSolver() {
-
-	}
 
 	/**A simple LeapFrog algorithm
-	 * @param g before the update: E(t), B(t+dt/2);
+	 * @param grid before the update: E(t), B(t+dt/2);
 	 * 						after the update: E(t+dt), B(t+3dt/2)
 	*/
 	@Override
-	public void step(Grid g, double tstep) {
+	public void step(Grid grid, double timeStep) {
+		this.timeStep = timeStep;
+		cellIterator.execute(grid, solve);
+	}
 
-		for (int i = 0; i < g.getNumCellsX(); i++) {
-			for (int j = 0; j < g.getNumCellsY(); j++) {
 
-				/**curl of the E field using center difference*/
-				cz = (g.getEyo(i+1, j) - g.getEyo(i-1, j)) / ( 2 * g.getCellWidth()) -
-						(g.getExo(i, j+1) - g.getExo(i, j-1)) / ( 2 * g.getCellHeight());
+	private class Solve implements CellAction {
 
-				/**Maxwell equations*/
-				g.addBz(i, j, -tstep * cz);
+		public void execute(Cell cell) {
+			throw new UnsupportedOperationException();
+		}
 
-				/**curl of the B field using center difference*/
-				cx = (g.getBzo(i, j+1) - g.getBzo(i, j-1)) / ( 2 * g.getCellHeight());
-				cy = -(g.getBzo(i+1, j) - g.getBzo(i-1, j)) / ( 2 * g.getCellWidth());
+		public void execute(Grid grid, int x, int y) {
+			/**curl of the E field using center difference*/
+			double cz = (grid.getEyo(x+1, y) - grid.getEyo(x-1, y)) / ( 2 * grid.getCellWidth()) -
+					(grid.getExo(x, y+1) - grid.getExo(x, y-1)) / ( 2 * grid.getCellHeight());
 
-				/**Maxwell EQ*/
-				g.addEx(i, j, tstep * (cx - g.getJx(i, j)));
-				g.addEy(i, j, tstep * (cy - g.getJy(i, j)));
-			}
+			/**Maxwell equations*/
+			grid.addBz(x, y, -timeStep * cz);
+
+			/**curl of the B field using center difference*/
+			double cx = (grid.getBzo(x, y+1) - grid.getBzo(x, y-1)) / ( 2 * grid.getCellHeight());
+			double cy = -(grid.getBzo(x+1, y) - grid.getBzo(x-1, y)) / ( 2 * grid.getCellWidth());
+
+			/**Maxwell EQ*/
+			grid.addEx(x, y, timeStep * (cx - grid.getJx(x, y)));
+			grid.addEy(x, y, timeStep * (cy - grid.getJy(x, y)));
 		}
 	}
 

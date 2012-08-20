@@ -235,28 +235,28 @@ public class Particle2DPanel extends JPanel {
 
 		switch(id) {
 		case 0:
-			s.mover.psolver = new EulerRichardson();
+			s.getParticleMover().setSolver(new EulerRichardson());
 			break;
 		case 1:
-			s.mover.psolver = new LeapFrog();
+			s.getParticleMover().setSolver(new LeapFrog());
 			break;
 		case 2:
-			s.mover.psolver = new LeapFrogDamped();
+			s.getParticleMover().setSolver(new LeapFrogDamped());
 			break;
 		case 3:
-			s.mover.psolver = new LeapFrogHalfStep();
+			s.getParticleMover().setSolver(new LeapFrogHalfStep());
 			break;
 		case 4:
-			s.mover.psolver = new Boris();
+			s.getParticleMover().setSolver(new Boris());
 			break;
 		case 5:
-			s.mover.psolver = new BorisDamped();
+			s.getParticleMover().setSolver(new BorisDamped());
 			break;
 		case 6:
-			s.mover.psolver = new SemiImplicitEuler();
+			s.getParticleMover().setSolver(new SemiImplicitEuler());
 			break;
 		case 7:
-			s.mover.psolver = new Euler();
+			s.getParticleMover().setSolver(new Euler());
 			break;
 			}
 
@@ -280,12 +280,12 @@ public class Particle2DPanel extends JPanel {
 			}
 			switch(i) {
 			case 1:
-				s.mover.psolver = new LeapFrog();
+				s.getParticleMover().setSolver(new LeapFrog());
 			case 4:
-				s.mover.psolver = new Boris();
+				s.getParticleMover().setSolver(new Boris());
 				break;
 			case 6:
-				s.mover.psolver = new SemiImplicitEuler();
+				s.getParticleMover().setSolver(new SemiImplicitEuler());
 				break;
 			}
 		}
@@ -305,12 +305,12 @@ public class Particle2DPanel extends JPanel {
 			}
 			switch(i) {
 			case 1:
-				s.mover.psolver = new LeapFrogRelativistic(s.getSpeedOfLight());
+				s.getParticleMover().setSolver(new LeapFrogRelativistic(s.getSpeedOfLight()));
 			case 4:
-				s.mover.psolver = new BorisRelativistic(s.getSpeedOfLight());
+				s.getParticleMover().setSolver(new BorisRelativistic(s.getSpeedOfLight()));
 				break;
 			case 6:
-				s.mover.psolver = new SemiImplicitEulerRelativistic(s.getSpeedOfLight());
+				s.getParticleMover().setSolver(new SemiImplicitEulerRelativistic(s.getSpeedOfLight()));
 				break;
 			}
 		}
@@ -360,10 +360,10 @@ public class Particle2DPanel extends JPanel {
 	public void boundariesChange(int i) {
 		switch(i) {
 		case 0:
-			s.mover.changeBoundaryType(ParticleBoundaryType.Hardwall);
+			s.getParticleMover().changeBoundaryType(ParticleBoundaryType.Hardwall);
 			break;
 		case 1:
-			s.mover.changeBoundaryType(ParticleBoundaryType.Periodic);
+			s.getParticleMover().changeBoundaryType(ParticleBoundaryType.Periodic);
 		}
 
 	}

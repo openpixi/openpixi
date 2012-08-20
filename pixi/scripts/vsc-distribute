@@ -1,0 +1,50 @@
+#!/bin/bash
+
+#------------------------------------------------------------------------------
+# Once the nodes have been allocated this script connects to each node
+# and starts the run script on each node.
+#------------------------------------------------------------------------------
+
+# Parameters for openpixi application
+NUM_OF_NODES=$1
+NUM_OF_PROCESSES=$2
+IPL_SERVER=$3
+TOTAL_PROCESSES=`expr $NUM_OF_NODES \* $NUM_OF_PROCESSES`
+
+# This java has to be available at the compute nodes
+JAVA_HOME=/usr/lib/jvm/jre
+
+# Further options for qsub
+#$ -N pixi
+#$ -q all.q
+#$ -cwd
+#$ -V
+#$ -j y
+#$ -l h_rt=00:10:00
+
+# Get the names of the allocated hosts
+NODES_NAMES=`cat $TMPDIR/machines | uniq`
+for NODE in $NODES_NAMES
+do
+	for PROCESS in `seq $NUM_OF_PROCESSES`
+	do
+		echo "Starting process $PROCESS at node $NODE"
+		OUT_FILE="out.$NUM_OF_NODES.$NUM_OF_PROCESSES.$JOB_ID.$NODE.$PROCESS"
+		CURRENT_DIR=`pwd`		
+
+		# Connect to the compute node, run the simulation there and
+		# at the end copy the output back.
+		# Has to be run asynchronously as the different processes
+		# at different nodes communicate with each other.
+		ssh $NODE " \
+			export JAVA_HOME=$JAVA_HOME; \
+			cd $CURRENT_DIR; \
+			./scripts/run $TOTAL_PROCESSES $IPL_SERVER > $OUT_FILE; \
+			cp $OUT_FILE ${SGE_O_WORKDIR}; \
+			exit" &	
+	done	
+done
+
+# Wait for all the processes started through asynchronous ssh to finish
+wait
+

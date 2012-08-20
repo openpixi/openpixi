@@ -3,11 +3,10 @@ package org.openpixi.pixi.physics.grid;
 import org.openpixi.pixi.physics.Debug;
 import org.openpixi.pixi.physics.Particle;
 
-public class CloudInCell extends Interpolator {
+public class CloudInCell extends InterpolatorAlgorithm {
 
 	@Override
 	public void interpolateToGrid(Particle p, Grid g, double tstep) {
-		g.resetCurrentAndCharge();
 
 		int xCellPosition = (int) (Math.floor((p.getX() / g.getCellWidth())));
 		int yCellPosition = (int) (Math.floor((p.getY() / g.getCellHeight())));

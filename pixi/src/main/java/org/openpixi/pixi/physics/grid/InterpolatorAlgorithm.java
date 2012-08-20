@@ -3,7 +3,7 @@ package org.openpixi.pixi.physics.grid;
 import org.openpixi.pixi.physics.Debug;
 import org.openpixi.pixi.physics.Particle;
 
-public class Interpolator {
+public class InterpolatorAlgorithm {
 
 	public void interpolateToGrid(Particle p, Grid g, double tstep) {
 
@@ -65,7 +65,6 @@ public class Interpolator {
 	}
 
 	public void interpolateChargedensity(Particle p, Grid g) {
-		g.resetCurrentAndCharge();		
 		double cellArea = g.getCellWidth() * g.getCellHeight();
 		
 		assertParticleInSimulationArea(p, g);

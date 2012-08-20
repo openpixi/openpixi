@@ -22,6 +22,7 @@ package org.openpixi.pixi.physics;
 import org.openpixi.pixi.physics.force.ConstantForce;
 import org.openpixi.pixi.physics.force.SpringForce;
 import org.openpixi.pixi.physics.solver.EulerRichardson;
+import org.openpixi.pixi.physics.solver.relativistic.BorisRelativistic;
 
 import java.util.ArrayList;
 
@@ -45,6 +46,8 @@ public class InitialConditions {
 
 		stt.setBoundary(GeneralBoundaryType.Hardwall);
 		stt.setParticleSolver(new EulerRichardson());
+		stt.setParticleSolver(new BorisRelativistic(
+				stt.getCellWidth() / stt.getTimeStep()));
 
 		Simulation simulation = new Simulation(stt);
 		return simulation;

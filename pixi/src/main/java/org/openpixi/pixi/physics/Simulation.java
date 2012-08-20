@@ -25,8 +25,8 @@ import org.openpixi.pixi.physics.fields.PoissonSolver;
 import org.openpixi.pixi.physics.force.CombinedForce;
 import org.openpixi.pixi.physics.force.SimpleGridForce;
 import org.openpixi.pixi.physics.grid.Grid;
-import org.openpixi.pixi.physics.grid.InterpolationIterator;
-import org.openpixi.pixi.physics.grid.SimpleInterpolationIterator;
+import org.openpixi.pixi.physics.grid.Interpolation;
+import org.openpixi.pixi.physics.grid.LocalInterpolation;
 import org.openpixi.pixi.physics.movement.ParticleMover;
 import org.openpixi.pixi.physics.movement.boundary.ParticleBoundaries;
 import org.openpixi.pixi.physics.movement.boundary.SimpleParticleBoundaries;
@@ -45,10 +45,13 @@ public class Simulation {
 	private double  height;
 	private double speedOfLight;
 
+	/** Number of iterations in the non-interactive simulation. */
+	private int iterations;
+
 	/**Contains all Particle2D objects*/
 	public ArrayList<Particle> particles;
 	public CombinedForce f;
-	public ParticleMover mover;
+	private ParticleMover mover;
 	/**Grid for dynamic field calculation*/
 	public Grid grid;
 	public Detector detector;
@@ -64,12 +67,13 @@ public class Simulation {
 
 	private ParticleGridInitializer particleGridInitializer = new ParticleGridInitializer();
 
-	private InterpolationIterator interpolation;
+	private Interpolation interpolation;
 
 	/**solver for the electrostatic poisson equation*/
 	private PoissonSolver poisolver;
 
-	public InterpolationIterator getInterpolation() {
+
+	public Interpolation getInterpolation() {
 		return interpolation;
 	}
 
@@ -85,6 +89,11 @@ public class Simulation {
 		return speedOfLight;
 	}
 
+	public ParticleMover getParticleMover() {
+		return mover;
+	}
+
+
 	/**
 	 * Constructor for non distributed simulation.
 	 */
@@ -93,6 +102,7 @@ public class Simulation {
 		width = settings.getSimulationWidth();
 		height = settings.getSimulationHeight();
 		speedOfLight = settings.getSpeedOfLight();
+		iterations = settings.getIterations();
 
 		// TODO make particles a generic list
 		particles = (ArrayList<Particle>)settings.getParticles();
@@ -103,7 +113,8 @@ public class Simulation {
 				settings.getParticleBoundary());
 		mover = new ParticleMover(
 				settings.getParticleSolver(),
-				particleBoundaries);
+				particleBoundaries,
+				settings.getParticleIterator());
 
 		grid = new Grid(settings);
 		if (settings.useGrid()) {
@@ -114,7 +125,8 @@ public class Simulation {
 		}
 
 		poisolver = settings.getPoissonSolver();
-		interpolation = new SimpleInterpolationIterator(settings.getInterpolator());
+		interpolation = new LocalInterpolation(
+				settings.getInterpolator(), settings.getParticleIterator());
 		particleGridInitializer.initialize(interpolation, poisolver, particles, grid);
 
 		detector = settings.getCollisionDetector();
@@ -137,19 +149,21 @@ public class Simulation {
 	                  Grid grid,
 	                  List<Particle> particles,
 	                  ParticleBoundaries particleBoundaries,
-	                  InterpolationIterator interpolation) {
+	                  Interpolation interpolation) {
 
 		this.tstep = settings.getTimeStep();
 		this.width = settings.getSimulationWidth();
 		this.height = settings.getSimulationHeight();
 		this.speedOfLight = settings.getSpeedOfLight();
+		this.iterations = settings.getIterations();
 
 		this.particles = (ArrayList<Particle>)particles;
 		f = settings.getForce();
 
 		mover = new ParticleMover(
 				settings.getParticleSolver(),
-				particleBoundaries);
+				particleBoundaries,
+				settings.getParticleIterator());
 
 		this.grid = grid;
 		if (settings.useGrid()) {
@@ -184,15 +198,30 @@ public class Simulation {
 	}
 
 
+	/**
+	 * Runs the simulation in steps.
+	 * (for interactive simulations)
+	 */
 	public void step() {
 		particlePush();
 		if(collisionBoolean) {
 			detector.run();
-			collisionalgorithm.collide(detector.getOverlappedPairs(), f, mover.psolver, tstep);
+			collisionalgorithm.collide(detector.getOverlappedPairs(), f, mover.getSolver(), tstep);
 		}
 		interpolation.interpolateToGrid(particles, grid, tstep);
 		grid.updateGrid(tstep);
 		interpolation.interpolateToParticle(particles, grid);
+	}
+
+
+	/**
+	 * Runs the entire simulation at once.
+	 * (for non-interactive simulations)
+	 */
+	public void run() {
+		for (int i = 0; i < iterations; ++i) {
+			step();
+		}
 	}
 
 

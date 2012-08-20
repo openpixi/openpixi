@@ -809,11 +809,11 @@ public class MainControlApplet extends JApplet {
 		filedirectory.setEditable(false);
 		filedirectory.setEnabled(false);
 		filedirectory.setText("direc., ex. C:\\Pixi");
-		if(particlePanel.s.mover.getBoundaryType() == ParticleBoundaryType.Hardwall) {
+		if(particlePanel.s.getParticleMover().getBoundaryType() == ParticleBoundaryType.Hardwall) {
 			hardBoundaries.setSelected(true);
 			periodicBoundaries.setSelected(false);
 		}
-		else if(particlePanel.s.mover.getBoundaryType() == ParticleBoundaryType.Periodic) {
+		else if(particlePanel.s.getParticleMover().getBoundaryType() == ParticleBoundaryType.Periodic) {
 			hardBoundaries.setSelected(false);
 			periodicBoundaries.setSelected(true);
 		}
