@@ -1,0 +1,25 @@
+#!/bin/bash
+
+#------------------------------------------------------------------------------
+# Reserves desired number of nodes and calls a script 
+# which starts openpixi at each reserved node.
+#------------------------------------------------------------------------------
+
+# Number of nodes we want to use
+NUM_OF_NODES="$1"
+# Number of processes we want to start on each node
+NUM_PROCESSES="$2"
+
+# Available slots at one node
+SLOTS_PER_NODE=16
+# Number of slots we want to reserve.
+# We want to reserve the entire node.
+SLOTS=`expr $NUM_OF_NODES \* $SLOTS_PER_NODE`
+
+# Address of the node where we expect the ipl server to be running
+IPL_SERVER="10.10.0.21"
+
+# qsub reserves number of slots we ask for and once we have them calls
+# the specified command / script on the LOGIN node (not on the compute nodes !!!)
+qsub -pe mpich $SLOTS ./scripts/vsc-distribute $NUM_OF_NODES $NUM_PROCESSES $IPL_SERVER
+
