@@ -117,9 +117,9 @@ public class ChargeConservingAreaWeightingTest extends TestCase {
 
 	public void testPeriodicBoundary() {
 		int charge = 1;
-		testMoveForce(0.3, 5.2, -2, 0.1, 1, 2, charge, "boundary");
-		testMove(9.8, 5.2, 10.3, 5.2, charge, "boundary");
-		testMove(5.2, 9.3, 5.2, 10.6, charge, "boundary");
+		testMoveForce(0.3, 5.2, -2, 0.1, 1, 2, charge, "org/openpixi/pixi/distributed/movement/boundary");
+		testMove(9.8, 5.2, 10.3, 5.2, charge, "org/openpixi/pixi/distributed/movement/boundary");
+		testMove(5.2, 9.3, 5.2, 10.6, charge, "org/openpixi/pixi/distributed/movement/boundary");
 	}
 
 	private void testMove(double x1, double y1, double x2, double y2, double charge, String text) {
@@ -142,6 +142,11 @@ public class ChargeConservingAreaWeightingTest extends TestCase {
 
 		// Advance particle
 		s.particlePush();
+
+		// The simulation always creates its own copy of particles
+		// (in fact the setting class does so)
+		// and we would like to obtain the reference to our initial particle p.
+		p = s.particles.get(0);
 
 		//Remember old values after boundary check
 		double sx = p.getPrevX();
@@ -218,6 +223,11 @@ public class ChargeConservingAreaWeightingTest extends TestCase {
 
 		Simulation s = new Simulation(stt);
 		s.prepareAllParticles();
+
+		// The simulation always creates its own copy of particles
+		// (in fact the setting class does so)
+		// and we would like to obtain the reference to our initial particle p.
+		p = s.particles.get(0);
 
 		// Advance particle
 		s.particlePush();

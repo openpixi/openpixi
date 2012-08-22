@@ -29,6 +29,8 @@ import org.openpixi.pixi.physics.solver.Solver;
 public class SemiImplicitEulerRelativistic implements Solver {
 	
 	RelativisticVelocity relvelocity;
+
+	private SemiImplicitEulerRelativistic() {}
 	
 	public SemiImplicitEulerRelativistic(double c)
 	{

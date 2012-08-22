@@ -9,28 +9,126 @@ import java.io.Serializable;
  */
 public class Cell implements Serializable {
 	/**electric current in x-Direction*/
-	public double jx;
+	private double jx;
 	/**electric current in y-Direction*/
-	public double jy;
+	private double jy;
 
 	/**sum of electric charges in a cell*/
-	public double rho;
+	private double rho;
 	/**electrostatic potential*/
-	public double phi;
+	private double phi;
 
 	/**electric field in x direction at time t+dt*/
-	public double Ex;
+	private double Ex;
 	/**electric field in y direction at time t+dt*/
-	public double Ey;
+	private double Ey;
 	/**magnetic field in z direction at time t+dt*/
-	public double Bz;
+	private double Bz;
 
 	/**electric field in x direction at time t*/
-	public double Exo;
+	private double Exo;
 	/**electric field in y direction at time t*/
-	public double Eyo;
+	private double Eyo;
 	/**magnetic field in z direction at time t*/
-	public double Bzo;
+	private double Bzo;
+
+
+	public double getJx() {
+		return jx;
+	}
+
+	/**
+	 * Needs to be synchronized as we expect in the parallel version
+	 * two threads trying to update the field at the same time.
+	 */
+	public synchronized void addJx(double value) {
+		this.jx += value;
+	}
+
+	public double getJy() {
+		return jy;
+	}
+
+	/**
+	 * Needs to be synchronized as we expect in the parallel version
+	 * two threads trying to update the field at the same time.
+	 */
+	public synchronized void addJy(double value) {
+		this.jy += value;
+	}
+
+	public double getRho() {
+		return rho;
+	}
+
+	public void setRho(double rho) {
+		this.rho = rho;
+	}
+
+	/**
+	 * Needs to be synchronized as we expect in the parallel version
+	 * two threads trying to update the field at the same time.
+	 */
+	public synchronized void addRho(double value) {
+		this.rho += value;
+	}
+
+	public double getPhi() {
+		return phi;
+	}
+
+	public void setPhi(double phi) {
+		this.phi = phi;
+	}
+
+	public double getEx() {
+		return Ex;
+	}
+
+	public void setEx(double ex) {
+		Ex = ex;
+	}
+
+	public double getEy() {
+		return Ey;
+	}
+
+	public void setEy(double ey) {
+		Ey = ey;
+	}
+
+	public double getBz() {
+		return Bz;
+	}
+
+	public void setBz(double bz) {
+		Bz = bz;
+	}
+
+	public double getExo() {
+		return Exo;
+	}
+
+	public void setExo(double exo) {
+		Exo = exo;
+	}
+
+	public double getEyo() {
+		return Eyo;
+	}
+
+	public void setEyo(double eyo) {
+		Eyo = eyo;
+	}
+
+	public double getBzo() {
+		return Bzo;
+	}
+
+	public void setBzo(double bzo) {
+		Bzo = bzo;
+	}
+
 
 	public void resetCurrent() {
 		jx = 0;

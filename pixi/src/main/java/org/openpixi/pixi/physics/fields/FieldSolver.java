@@ -19,15 +19,27 @@
 
 package org.openpixi.pixi.physics.fields;
 
+import org.openpixi.pixi.parallel.cellaccess.CellIterator;
 import org.openpixi.pixi.physics.grid.*;
 
+/**
+ * TODO extract the iteration over the cells to a separate higher level class
+ * TODO make this class an interface
+ */
 public class FieldSolver {
+
+	protected CellIterator cellIterator;
 
 	public FieldSolver() {
 
 	}
 
-	public void step(Grid g, double tstep) {
+	public void initializeIterator(CellIterator cellIterator, int numCellsX, int numCellsY) {
+		this.cellIterator = cellIterator;
+		this.cellIterator.setNormalMode(numCellsX, numCellsY);
+	}
+
+	public void step(Grid g, double timeStep) {
 
 	}
 

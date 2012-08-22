@@ -1,0 +1,21 @@
+#!/bin/bash
+
+#-------------------------------------------------------------------------------
+# Script for running openpixi.
+# Can be used on a cluster but also on a simple node.
+#-------------------------------------------------------------------------------
+
+NODES=$1
+IPL_SERVER=$2
+MAIN_CLASS="org.openpixi.pixi.distributed.ui.MainProfile"
+
+# Enable assertions in maven
+export MAVEN_OPTS=-ea
+
+# Run the main class through maven 
+# (maven fills in the required classpath for us)
+mvn -e -P distributed,aspectj-profile exec:java \
+	-Dexec.mainClass="$MAIN_CLASS" \
+ 	-Dexec.classpathScope="runtime" \
+	-Dexec.args="-numOfNodes $NODES -iplServer $IPL_SERVER"
+

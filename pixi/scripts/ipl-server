@@ -1,0 +1,5 @@
+#!/bin/bash
+
+IPL_LOCATION=$HOME/.m2/repository/org/openpixi/pixi/ipl/2.3/ipl-2.3.jar
+java -cp $IPL_LOCATION ibis.ipl.server.Server --events
+

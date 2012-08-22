@@ -29,7 +29,7 @@ public class PoissonSolverTest extends TestCase {
 		
 		this.s = new Simulation(stt);
 		this.g = s.grid;
-		this.g.resetCurrentAndCharge();
+		this.g.resetCurrent();
 		
 		this.poisolver = new PoissonSolverFFTPeriodic();
 	}
