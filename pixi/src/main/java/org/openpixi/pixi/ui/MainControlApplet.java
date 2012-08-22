@@ -27,6 +27,8 @@ import javax.swing.event.*;
 import org.openpixi.pixi.physics.Debug;
 import org.openpixi.pixi.physics.force.*;
 import org.openpixi.pixi.physics.movement.boundary.ParticleBoundaryType;
+import org.openpixi.pixi.physics.solver.*;
+import org.openpixi.pixi.physics.solver.relativistic.*;
 
 /**
  * Displays the animation of particles.
@@ -822,6 +824,22 @@ public class MainControlApplet extends JApplet {
 		collisionComboBox.setSelectedIndex(0);
 		collisionDetector.setSelectedIndex(0);
 		collisionAlgorithm.setSelectedIndex(0);
+
+		// Set algorithm UI according to current setting
+		Solver solver = particlePanel.s.getParticleMover().getSolver();
+		if (solver instanceof Boris) {
+			algorithmComboBox.setSelectedIndex(4);
+			relativisticCheck.setSelected(false);
+		} else if (solver instanceof BorisRelativistic) {
+			algorithmComboBox.setSelectedIndex(4);
+			relativisticCheck.setSelected(true);
+		} else if (solver instanceof EulerRichardson) {
+			algorithmComboBox.setSelectedIndex(0);
+			relativisticCheck.setSelected(false);
+		}
+		// TODO: Implement this for other solvers.
+		// (Currently only implemented for solvers used in InitialConditions.)
+
 		linkConstantForce();
 	}
 
