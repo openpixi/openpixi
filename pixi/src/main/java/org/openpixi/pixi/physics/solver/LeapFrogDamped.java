@@ -111,7 +111,7 @@ public class LeapFrogDamped implements Solver{
 	}
 	/**
 	 * complete method for bringing the velocity in the desired half step
-	 * @param p before the update: v(t+dt/2);
+	 * @param p before the update: v(t-dt/2);
 	 *                 after the update: v(t)
 	 */
 	public void complete(Particle p, Force f, double dt)
