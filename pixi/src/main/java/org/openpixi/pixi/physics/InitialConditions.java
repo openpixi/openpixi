@@ -35,19 +35,22 @@ public class InitialConditions {
 		Settings stt = new Settings();
 
 		stt.setTimeStep(1);
-		stt.setSpeedOfLight(3);
+
+		//stt.setSpeedOfLight(3);
+		// Use maximum speed available by grid
+		stt.setSpeedOfLight(stt.getCellWidth() / stt.getTimeStep());
+
 		stt.setSimulationWidth(100);
 		stt.setSimulationHeight(100);
 
 		stt.addForce(new ConstantForce());
 		stt.setNumOfParticles(count);
 		stt.setParticleRadius(radius);
-		stt.setParticleMaxSpeed(stt.getSpeedOfLight());
+		stt.setParticleMaxSpeed(stt.getSpeedOfLight() / 3);
 
 		stt.setBoundary(GeneralBoundaryType.Hardwall);
-		stt.setParticleSolver(new EulerRichardson());
-		stt.setParticleSolver(new BorisRelativistic(
-				stt.getCellWidth() / stt.getTimeStep()));
+		//stt.setParticleSolver(new EulerRichardson());
+		stt.setParticleSolver(new BorisRelativistic(stt.getSpeedOfLight()));
 
 		Simulation simulation = new Simulation(stt);
 		return simulation;
