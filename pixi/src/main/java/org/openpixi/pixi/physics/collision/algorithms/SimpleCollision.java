@@ -15,7 +15,7 @@ public class SimpleCollision extends CollisionAlgorithm{
 	}
 	
 	private void doCollision(Particle p1, Particle p2) {
-		
+		/*
 		//distance between the particles
 		double distance = Math.sqrt((p1.getX() - p2.getX()) * (p1.getX() - p2.getX()) + (p1.getY() - p2.getY()) * (p1.getY() - p2.getY()));
 		
@@ -56,6 +56,37 @@ public class SimpleCollision extends CollisionAlgorithm{
 	    p2.setVy(p2.getVy() + angle * dvx2);
 	    p1.setVx(p1.getVx() - m21 * dvx2);
 	    p1.setVy(p1.getVy() - angle * m21 * dvx2);
+            */
+            
+            double a = (p1.getVx()-p2.getVx())*(p1.getVx()-p2.getVx()) + (p1.getVy()-p2.getVy())*(p1.getVy()-p2.getVy());
+            double b = (p2.getX()-p1.getX())*(p1.getVx()-p2.getVx()) + (p2.getY()-p1.getY())*(p1.getVy()-p2.getVy());
+            double c = (p2.getX()-p1.getX())*(p2.getX()-p1.getX()) + (p2.getY()-p1.getY())*(p2.getY()-p1.getY()) - (p1.getRadius()+p2.getRadius())*(p1.getRadius()+p2.getRadius());
+            
+            
+            //find the time where the particles actually collide
+            double tau = (-b+Math.sqrt(b*b-a*c))/a;
+            
+            
+            //the equation follows from the conservation of momentum and energy
+            double vx1 = (p1.getVx()*(p1.getMass()-p2.getMass())+p2.getVx()*2*p2.getMass())/(p1.getMass()+p2.getMass());
+            double vy1 = (p1.getVy()*(p1.getMass()-p2.getMass())+p2.getVy()*2*p2.getMass())/(p1.getMass()+p2.getMass());
+            double vx2 = (p2.getVx()*(p2.getMass()-p1.getMass())+p1.getVx()*2*p1.getMass())/(p2.getMass()+p1.getMass());
+            double vy2 = (p2.getVy()*(p2.getMass()-p1.getMass())+p1.getVy()*2*p1.getMass())/(p2.getMass()+p1.getMass()); 
+            
+            
+            //The Particle could be outside the simulation box (not covered)
+            p1.setX(p1.getX()-tau*p1.getVx()+tau*vx1);
+            p1.setY(p1.getY()-tau*p1.getVy()+tau*vy1);
+            p2.setX(p2.getX()-tau*p2.getVx()+tau*vx2);
+            p2.setY(p2.getY()-tau*p2.getVy()+tau*vy2);
+            
+            
+            p1.setVx(vx1);
+            p1.setVy(vy1);
+            p2.setVx(vx2);
+            p2.setVy(vy2);
+            
+            
 	}
 	
 	public void collide(ArrayList<Pair<Particle, Particle>> pairs, Force f, Solver s, double step) {
