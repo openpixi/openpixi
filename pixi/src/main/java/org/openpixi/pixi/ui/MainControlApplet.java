@@ -128,7 +128,8 @@ public class MainControlApplet extends JApplet {
 
 	String[] collisiondetectorString = {
 			"All particles",
-			"Sweep & Prune"
+			"Sweep & Prune",
+                        "KD-Tree"
 	};
 
 	String[] collisionalgorithmString = {

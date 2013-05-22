@@ -28,6 +28,7 @@ import org.openpixi.pixi.physics.collision.algorithms.VectorTransformation;
 import org.openpixi.pixi.physics.collision.detectors.AllParticles;
 import org.openpixi.pixi.physics.collision.detectors.Detector;
 import org.openpixi.pixi.physics.collision.detectors.SweepAndPrune;
+import org.openpixi.pixi.physics.collision.detectors.KdTreeCollision;
 import org.openpixi.pixi.physics.force.CombinedForce;
 import org.openpixi.pixi.physics.force.ConstantForce;
 import org.openpixi.pixi.physics.force.Force;
@@ -340,6 +341,9 @@ public class Particle2DPanel extends JPanel {
 		case 1:
 			s.detector = new SweepAndPrune(s.particles);
 			break;
+                case 2:
+                        s.detector = new KdTreeCollision(s.particles);
+                        break;
 		}
 	}
 

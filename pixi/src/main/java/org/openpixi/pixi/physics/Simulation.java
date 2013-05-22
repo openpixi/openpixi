@@ -205,8 +205,11 @@ public class Simulation {
 	public void step() {
 		particlePush();
 		if(collisionBoolean) {
+                    long startTime = System.currentTimeMillis();
 			detector.run();
 			collisionalgorithm.collide(detector.getOverlappedPairs(), f, mover.getSolver(), tstep);
+                    long endTime = System.currentTimeMillis();
+                    System.out.println("Die Berechnung der Kollisionen dauert: " + (endTime-startTime));
 		}
 		interpolation.interpolateToGrid(particles, grid, tstep);
 		grid.updateGrid(tstep);
