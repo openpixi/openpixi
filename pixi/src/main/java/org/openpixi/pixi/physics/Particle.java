@@ -73,6 +73,12 @@ public class Particle implements Serializable {
 
 	/**previous tangent velocity component of the force in y - direction used in Boris*/
 	private double prevtangentVelocityComponentOfForceY;
+	
+	/**previous normal velocity component of the force in x - direction used in LeapFrogDamped*/
+	private double prevnormalVelocityComponentOfForceX;
+
+	/**previous normal velocity component of the force in y - direction used in LeapFrogDamped*/
+	private double prevnormalVelocityComponentOfForceY;	
 
 	/**previous magnetic field used in Boris & BorisDamped*/
 	private double prevBz;
@@ -247,6 +253,22 @@ public class Particle implements Serializable {
 
 	public void setPrevTangentVelocityComponentOfForceY(double prevtangentVelocityComponentOfForceY) {
 		this.prevtangentVelocityComponentOfForceY = prevtangentVelocityComponentOfForceY;
+	}
+	
+	public double getPrevNormalVelocityComponentOfForceX() {
+		return prevnormalVelocityComponentOfForceX;
+	}
+
+	public void setPrevNormalVelocityComponentOfForceX(double prevnormalVelocityComponentOfForceX) {
+		this.prevnormalVelocityComponentOfForceX = prevnormalVelocityComponentOfForceX;
+	}
+
+	public double getPrevNormalVelocityComponentOfForceY() {
+		return prevnormalVelocityComponentOfForceY;
+	}
+
+	public void setPrevNormalVelocityComponentOfForceY(double prevnormalVelocityComponentOfForceY) {
+		this.prevnormalVelocityComponentOfForceY = prevnormalVelocityComponentOfForceY;
 	}
 	
 	public double getPrevBz() {
