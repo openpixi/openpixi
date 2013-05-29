@@ -2,7 +2,7 @@ LICENSE
 =======
 
 OpenPixi - Open Particle-in-Cell (PIC) simulator.
-Copyright (C) 2012  OpenPixi.org
+Copyright (C) 2012-2013  OpenPixi.org
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -68,7 +68,7 @@ VERSION HISTORY
 ===============
 
 ---
-Version 0.5 - ?
+Version 0.5 - May 29, 2013
 
 * Ditributed version of OpenPixi which uses IBIS framework for communication
 * Framework for throurough testing of the distributed version
