@@ -68,6 +68,9 @@ VERSION HISTORY
 ===============
 
 ---
+Version 0.6 - ?
+
+---
 Version 0.5 - May 29, 2013
 
 * Ditributed version of OpenPixi which uses IBIS framework for communication
