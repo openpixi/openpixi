@@ -320,12 +320,10 @@ public class Particle2DPanel extends JPanel {
 	public void collisionChange(int i) {
 		switch(i) {
 		case 0:
-			s.collisionBoolean = false;
 			s.detector = new Detector();
 			s.collisionalgorithm = new CollisionAlgorithm();
 			break;
 		case 1:
-			s.collisionBoolean = true;
 			s.detector = new AllParticles(s.particles);
 			s.collisionalgorithm = new SimpleCollision();
 			break;
@@ -335,9 +333,11 @@ public class Particle2DPanel extends JPanel {
 	public void detectorChange(int i) {
 		switch(i) {
 		case 0:
-			s.detector = new AllParticles(s.particles);
 			break;
 		case 1:
+			s.detector = new AllParticles(s.particles);
+			break;
+		case 2:
 			s.detector = new SweepAndPrune(s.particles);
 			break;
 		}
@@ -346,12 +346,14 @@ public class Particle2DPanel extends JPanel {
 	public void algorithmCollisionChange(int i) {
 		switch(i) {
 		case 0:
-			s.collisionalgorithm = new SimpleCollision();
 			break;
 		case 1:
-			s.collisionalgorithm = new VectorTransformation();
+			s.collisionalgorithm = new SimpleCollision();
 			break;
 		case 2:
+			s.collisionalgorithm = new VectorTransformation();
+			break;
+		case 3:
 			s.collisionalgorithm = new MatrixTransformation();
 			break;
 		}

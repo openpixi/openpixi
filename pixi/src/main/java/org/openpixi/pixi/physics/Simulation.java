@@ -56,7 +56,6 @@ public class Simulation {
 	public Grid grid;
 	public Detector detector;
 	public CollisionAlgorithm collisionalgorithm;
-	public boolean collisionBoolean = false;
 
 	/**
 	 * We can turn on or off the effect of the grid on particles by
@@ -204,10 +203,10 @@ public class Simulation {
 	 */
 	public void step() {
 		particlePush();
-		if(collisionBoolean) {
-			detector.run();
-			collisionalgorithm.collide(detector.getOverlappedPairs(), f, mover.getSolver(), tstep);
-		}
+			
+		detector.run();
+		collisionalgorithm.collide(detector.getOverlappedPairs(), f, mover.getSolver(), tstep);
+
 		interpolation.interpolateToGrid(particles, grid, tstep);
 		grid.updateGrid(tstep);
 		interpolation.interpolateToParticle(particles, grid);
