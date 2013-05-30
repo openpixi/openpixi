@@ -129,11 +129,13 @@ public class MainControlApplet extends JApplet {
 	};
 
 	String[] collisiondetectorString = {
+			"Enable collisions first",
 			"All particles",
 			"Sweep & Prune"
 	};
 
 	String[] collisionalgorithmString = {
+			"Enable collisions first",
 			"Simple collision",
 			"With vectors",
 			"With matrices"
@@ -214,10 +216,17 @@ public class MainControlApplet extends JApplet {
 			particlePanel.collisionChange(i);
 			if(i == 0) {
 				collisionDetector.setEnabled(false);
+				collisionDetector.setSelectedIndex(0);
 				collisionAlgorithm.setEnabled(false);
+				collisionAlgorithm.setSelectedIndex(0);
 			} else {
 				collisionDetector.setEnabled(true);
+				//Index is set to 1 because Particle2DPanel enables AllParticles Detector and
+				//SimpleCollision Algorithm which correspond to index 1 in the list
+				//ALWAYS KEEP THIS IN SYNC WITH THE collisionChange() method in Particle2DPanel
+				collisionDetector.setSelectedIndex(1);
 				collisionAlgorithm.setEnabled(true);
+				collisionAlgorithm.setSelectedIndex(1);
 			}
 		}
 	}
