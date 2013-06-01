@@ -11,27 +11,27 @@ import org.openpixi.pixi.physics.Particle;
  */
 public class ParticleBoundingBoxPoint {
 
-    private Particle par;
-    private double x;
-    private double y;
-    
-    public ParticleBoundingBoxPoint(Particle par, double x, double y) {
-        this.par = par;
-        this.x = x;
-        this.y = y;
-    }
+	private Particle par;
+	private double x;
+	private double y;
+	
+	public ParticleBoundingBoxPoint(Particle par, double x, double y) {
+		this.par = par;
+		this.x = x;
+		this.y = y;
+	}
 
-    public Particle getPar() {
-        return par;
-    }
+	public Particle getPar() {
+		return par;
+	}
 
-    public double getX() {
-        return x;
-    }
+	public double getX() {
+		return x;
+	}
 
-    public double getY() {
-        return y;
-    }
-    
-    
+	public double getY() {
+		return y;
+	}
+	
+	
 }

@@ -146,10 +146,10 @@ public class Simulation {
 	 * master node).
 	 */
 	public Simulation(Settings settings,
-	                  Grid grid,
-	                  List<Particle> particles,
-	                  ParticleBoundaries particleBoundaries,
-	                  Interpolation interpolation) {
+					  Grid grid,
+					  List<Particle> particles,
+					  ParticleBoundaries particleBoundaries,
+					  Interpolation interpolation) {
 
 		this.tstep = settings.getTimeStep();
 		this.width = settings.getSimulationWidth();
@@ -205,11 +205,11 @@ public class Simulation {
 	public void step() {
 		particlePush();
 		if(collisionBoolean) {
-                    long startTime = System.currentTimeMillis();
+					long startTime = System.currentTimeMillis();
 			detector.run();
 			collisionalgorithm.collide(detector.getOverlappedPairs(), f, mover.getSolver(), tstep);
-                    long endTime = System.currentTimeMillis();
-                    System.out.println("Die Berechnung der Kollisionen dauert: " + (endTime-startTime));
+					long endTime = System.currentTimeMillis();
+					System.out.println("Die Berechnung der Kollisionen dauert: " + (endTime-startTime));
 		}
 		interpolation.interpolateToGrid(particles, grid, tstep);
 		grid.updateGrid(tstep);

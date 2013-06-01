@@ -44,7 +44,7 @@ public class MainControlApplet extends JApplet {
 	 * Problems:
 	 * 1) default file path is "null/null.dat"
 	 * 2) widgets don't fit on screen unless one resizes
-	 *    the window to larger size.
+	 *	the window to larger size.
 	 */
 	private static boolean enableWriteFile = false;
 
@@ -129,7 +129,7 @@ public class MainControlApplet extends JApplet {
 	String[] collisiondetectorString = {
 			"All particles",
 			"Sweep & Prune",
-                        "KD-Tree"
+						"KD-Tree"
 	};
 
 	String[] collisionalgorithmString = {
