@@ -320,24 +320,13 @@ public class Particle2DPanel extends JPanel {
 	public void collisionChange(int i) {
 		switch(i) {
 		case 0:
-			s.collisionBoolean = false;
 			s.detector = new Detector();
 			s.collisionalgorithm = new CollisionAlgorithm();
 			break;
 		case 1:
-			s.collisionBoolean = true;
-			s.detector = new AllParticles(s.particles);
-			s.collisionalgorithm = new SimpleCollision();
-			break;
-		}
-	}
-
-	public void detectorChange(int i) {
-		switch(i) {
-		case 0:
 			s.detector = new AllParticles(s.particles);
 			break;
-		case 1:
+		case 2:
 			s.detector = new SweepAndPrune(s.particles);
 			break;
 		}
