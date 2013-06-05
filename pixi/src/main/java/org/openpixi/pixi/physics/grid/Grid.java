@@ -11,29 +11,29 @@ public class Grid {
 	/*
 	 * TODO remove the accessors for individual cell fields and call directly the accessors on the cell
 	 * TODO extract field solver to simulation
-	 *      - makes grid simpler
-	 *      - makes all the important initialization to happen at one place (in simulation)
+	 *	  - makes grid simpler
+	 *	  - makes all the important initialization to happen at one place (in simulation)
 	 */
 
 	/**
 	 * The purpose of the extra cells is twofold.
 	 * 1) They represent the boundaries around the simulation area cells.
-	 *    The boundaries assure that we always have a cell to interpolate to.
-	 *    For example, the hardwall particle boundaries allow the particle to be outside
-	 *    of the simulation area.
-	 *    That means that the particle can be in a cell [numCellsX, numCellsY].
-	 *    If the particle is in this cell, it will be interpolated
-	 *    to the four surrounding cells from [numCellsX, numCellsY] to [numCellsX+1, numCellsY+1].
-	 *    Hence, the two extra cells after the grid's end.
-	 *    However, at the beginning we only need one extra cell as the particle in cell
-	 *    [-1,-1] interpolates to cells from [-1,-1] to [0,0].
+	 *	The boundaries assure that we always have a cell to interpolate to.
+	 *	For example, the hardwall particle boundaries allow the particle to be outside
+	 *	of the simulation area.
+	 *	That means that the particle can be in a cell [numCellsX, numCellsY].
+	 *	If the particle is in this cell, it will be interpolated
+	 *	to the four surrounding cells from [numCellsX, numCellsY] to [numCellsX+1, numCellsY+1].
+	 *	Hence, the two extra cells after the grid's end.
+	 *	However, at the beginning we only need one extra cell as the particle in cell
+	 *	[-1,-1] interpolates to cells from [-1,-1] to [0,0].
 	 *
 	 * 2) In the field solver we usually have to use left, right, top and bottom neighboring cell
-	 *    to update the value of the current cell.
-	 *    Without the extra cells we would have to treat each side separately in order not to get
-	 *    IndexOutOfBounds exception.
-	 *    With the extra cells we can comfortably iterate through the entire grid in a uniform way
-	 *    using the 0 values of extra cells when calculating the fields at the sides.
+	 *	to update the value of the current cell.
+	 *	Without the extra cells we would have to treat each side separately in order not to get
+	 *	IndexOutOfBounds exception.
+	 *	With the extra cells we can comfortably iterate through the entire grid in a uniform way
+	 *	using the 0 values of extra cells when calculating the fields at the sides.
 	 */
 	public static final int INTERPOLATION_RADIUS = 1;
 	public static final int HARDWALL_SAFETY_CELLS = 1;

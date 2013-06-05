@@ -28,6 +28,7 @@ import org.openpixi.pixi.physics.collision.algorithms.VectorTransformation;
 import org.openpixi.pixi.physics.collision.detectors.AllParticles;
 import org.openpixi.pixi.physics.collision.detectors.Detector;
 import org.openpixi.pixi.physics.collision.detectors.SweepAndPrune;
+import org.openpixi.pixi.physics.collision.detectors.KdTreeCollision;
 import org.openpixi.pixi.physics.force.CombinedForce;
 import org.openpixi.pixi.physics.force.ConstantForce;
 import org.openpixi.pixi.physics.force.Force;
@@ -51,6 +52,7 @@ import java.util.ArrayList;
 
 import static java.awt.geom.AffineTransform.getRotateInstance;
 import static java.awt.geom.AffineTransform.getTranslateInstance;
+import org.openpixi.pixi.physics.collision.algorithms.*;
 
 
 /**
@@ -340,6 +342,9 @@ public class Particle2DPanel extends JPanel {
 		case 1:
 			s.detector = new SweepAndPrune(s.particles);
 			break;
+				case 2:
+						s.detector = new KdTreeCollision(s.particles);
+						break;
 		}
 	}
 
@@ -354,6 +359,8 @@ public class Particle2DPanel extends JPanel {
 		case 2:
 			s.collisionalgorithm = new MatrixTransformation();
 			break;
+		case 3:
+			s.collisionalgorithm = new TestCollisionDetection();
 		}
 	}
 
@@ -455,24 +462,24 @@ public class Particle2DPanel extends JPanel {
 
 		int ARR_SIZE = 5;
 
-        double dx = x2 - x1, dy = y2 - y1;
-        double angle = Math.atan2(dy, dx);
-        int len = (int) Math.sqrt(dx*dx + dy*dy);
-        // get the old transform matrix
-        AffineTransform old = g.getTransform();
-        AffineTransform at = getTranslateInstance(x1, y1);
-        at.concatenate(getRotateInstance(angle));
-        g.transform(at);
-        //g.setTransform(at);
+		double dx = x2 - x1, dy = y2 - y1;
+		double angle = Math.atan2(dy, dx);
+		int len = (int) Math.sqrt(dx*dx + dy*dy);
+		// get the old transform matrix
+		AffineTransform old = g.getTransform();
+		AffineTransform at = getTranslateInstance(x1, y1);
+		at.concatenate(getRotateInstance(angle));
+		g.transform(at);
+		//g.setTransform(at);
 
-        // Draw horizontal arrow starting in (0, 0)
-        g.drawLine(0, 0, (int) len, 0);
-        if(Math.abs(x2 - x1) > 0 || Math.abs(y2 - y1) > 0)
-        	g.fillPolygon(new int[] {len, len-ARR_SIZE, len-ARR_SIZE, len},
-        				  new int[] {0, -ARR_SIZE, ARR_SIZE, 0}, 4);
+		// Draw horizontal arrow starting in (0, 0)
+		g.drawLine(0, 0, (int) len, 0);
+		if(Math.abs(x2 - x1) > 0 || Math.abs(y2 - y1) > 0)
+			g.fillPolygon(new int[] {len, len-ARR_SIZE, len-ARR_SIZE, len},
+						  new int[] {0, -ARR_SIZE, ARR_SIZE, 0}, 4);
 
-        // reset transformationmatrix
-        g.setTransform(old);
-     }
+		// reset transformationmatrix
+		g.setTransform(old);
+	 }
 
 }
