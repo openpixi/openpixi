@@ -109,7 +109,8 @@ public class MainControlApplet extends JApplet {
 			"Single particle in gravity",
 			"Single particle in el. Field",
 			"3 part. in magnetic field",
-			"Spring force test"};
+			"Spring force test",
+			"Collision detection Test"};
 
 	String[] solverString = {
 			"Euler Richardson",
@@ -135,7 +136,8 @@ public class MainControlApplet extends JApplet {
 	String[] collisionalgorithmString = {
 			"Simple collision",
 			"With vectors",
-			"With matrices"
+			"With matrices",
+			"TestCollisionDetection"
 	};
 
 
