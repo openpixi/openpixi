@@ -82,7 +82,6 @@ public class MainControlApplet extends JApplet {
 	private JComboBox algorithmComboBox;
 	private JCheckBox traceCheck;
 	private JComboBox collisionComboBox;
-	private JComboBox collisionDetector;
 	private JComboBox collisionAlgorithm;
 
 	private JRadioButton hardBoundaries;
@@ -125,10 +124,6 @@ public class MainControlApplet extends JApplet {
 
 	String[] collisionsString = {
 			"No collisions",
-			"Elastic collisions"
-	};
-
-	String[] collisiondetectorString = {
 			"All particles",
 			"Sweep & Prune"
 	};
@@ -213,32 +208,33 @@ public class MainControlApplet extends JApplet {
 			int i = cbox.getSelectedIndex();
 			particlePanel.collisionChange(i);
 			if(i == 0) {
-				collisionDetector.setEnabled(false);
 				collisionAlgorithm.setEnabled(false);
+				collisionAlgorithm.addItem("Enable collisions first");
+				collisionAlgorithm.setSelectedItem("Enable collisions first");
 			} else {
-				collisionDetector.setEnabled(true);
 				collisionAlgorithm.setEnabled(true);
+				//setSelectedIndex() automatically calls collisionAlgorithm.actionPerformed()!
+				collisionAlgorithm.setSelectedIndex(0);
+				collisionAlgorithm.removeItem("Enable collisions first");
 			}
 		}
 	}
 
-	class CollisionDetector implements ActionListener {
-		public void actionPerformed(ActionEvent eve) {
-			JComboBox cbox = (JComboBox) eve.getSource();
-			int i = cbox.getSelectedIndex();
-			particlePanel.detectorChange(i);
-		}
-	}
-
 	class CollisionAlgorithm implements ActionListener {
+		
 		public void actionPerformed(ActionEvent eve) {
 			JComboBox cbox = (JComboBox) eve.getSource();
 			int i = cbox.getSelectedIndex();
-			particlePanel.algorithmCollisionChange(i);
+			int j = collisionComboBox.getSelectedIndex();
+			if (j == 0) {
+				collisionAlgorithm.setSelectedItem("Enable collisions first");
+			} else {
+				particlePanel.algorithmCollisionChange(i);
+			}
 		}
 	}
 
-
+ 
 	/**
 	 * Listener for start button.
 	 */
@@ -584,11 +580,6 @@ public class MainControlApplet extends JApplet {
 		//collisionComboBox.setPreferredSize(new Dimension(collisionComboBox.getPreferredSize().width, 5));
 		JLabel collisionsLabel = new JLabel("Collisions");
 
-		collisionDetector = new JComboBox(collisiondetectorString);
-		collisionDetector.setSelectedIndex(0);
-		collisionDetector.addActionListener(new CollisionDetector());
-		JLabel colDetectorLabel = new JLabel("Detection method");
-
 		collisionAlgorithm = new JComboBox(collisionalgorithmString);
 		collisionAlgorithm.setSelectedIndex(0);
 		collisionAlgorithm.addActionListener(new CollisionAlgorithm());
@@ -597,9 +588,6 @@ public class MainControlApplet extends JApplet {
 		Box collisionBox = Box.createVerticalBox();
 		collisionBox.add(collisionsLabel);
 		collisionBox.add(collisionComboBox);
-		collisionBox.add(Box.createVerticalGlue());
-		collisionBox.add(colDetectorLabel);
-		collisionBox.add(collisionDetector);
 		collisionBox.add(Box.createVerticalGlue());
 		collisionBox.add(colAlgorithmLabel);
 		collisionBox.add(collisionAlgorithm);
@@ -819,10 +807,9 @@ public class MainControlApplet extends JApplet {
 			hardBoundaries.setSelected(false);
 			periodicBoundaries.setSelected(true);
 		}
-		//particlePanel.s.collision.alg = new CollisionAlgorithm();
-		//particlePanel.s.detector = new Detector();
+		
+		//ordering of these two is important!
 		collisionComboBox.setSelectedIndex(0);
-		collisionDetector.setSelectedIndex(0);
 		collisionAlgorithm.setSelectedIndex(0);
 
 		// Set algorithm UI according to current setting
