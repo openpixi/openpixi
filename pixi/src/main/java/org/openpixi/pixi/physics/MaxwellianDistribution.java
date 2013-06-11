@@ -119,7 +119,7 @@ public class MaxwellianDistribution implements ParticleLoader {
 			particles.add(p);
 		}
 		
-		return null;
+		return particles;
 	}
 
 }
