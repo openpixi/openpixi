@@ -6,14 +6,55 @@ import java.util.Random;
 
 public class MaxwellianDistribution implements ParticleLoader {
 
-	private Random rand = new Random(1);
-	double rnd1;
-	double rnd2;
-	double rnd3;
+	private Random rand;
+	//Boltzmann constant
+	private double k;
 	
-	/* Generates a thermal VELOCITY distribution
+	/*Velocity normalization in x direction, temperature dependent */
+	private double vNormX;
+	/*Velocity normalization in x direction, temperature dependent */
+	private double vNormY;
+	
+	private double rnd1;
+	private double rnd2;
+	private double rnd3;
+	
+	/** Generates a thermal VELOCITY distribution
+	 * TODO make this loader relativistic
+	 * TODO THINK ABOUT USEFUL UNITS FOR K AND T! cgs?
+	 * @param temperature
+	 */
+	public MaxwellianDistribution (long seed, double boltzmannk, double temperature) {
+		
+		rand = new Random(seed);
+		k = boltzmannk;
+		setNorms(temperature, temperature);
+		
+	}
+	
+	/** Generates a thermal VELOCITY distribution
 	 * TODO make this loader relativistic
 	 */
+	public MaxwellianDistribution (long seed, double boltzmannk,
+			double temperatureX, double temperatureY) {
+		
+		rand = new Random(seed);
+		k = boltzmannk;
+		setNorms(temperatureX, temperatureY);
+		
+	}
+	
+	private void setNorms (double temperatureX, double temperatureY) {
+		//0.5 is the mass of the electron that is used later
+		//Factor of 2 comes from the denominator in the exponent of
+		//the Maxwellian distribution.
+		//NOTE: There are no further factors because we are inverting
+		//the cumulative distribution hence the factors cancel
+		vNormX = Math.sqrt(2 * k * temperatureX / 0.5);
+		vNormY = Math.sqrt(2 * k * temperatureY / 0.5);
+	}
+	
+	
 	@Override
 	public List<Particle> load (int numOfParticles, int numCellsX, int numCellsY,
 			double simulationWidth, double simulationHeight, double radius) {
@@ -51,8 +92,8 @@ public class MaxwellianDistribution implements ParticleLoader {
 			} while (rnd3 > 1);
 			
 			rnd3 = Math.sqrt( - Math.log(rnd3) / rnd3 );
-			p.setVx( rnd1 * rnd3 );
-			p.setVy( rnd2 * rnd3 );		
+			p.setVx( vNormX * rnd1 * rnd3 );
+			p.setVy( vNormY * rnd2 * rnd3 );		
 			
 			p.setCharge(-1);
 			p.setMass(0.5);		
