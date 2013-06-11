@@ -103,20 +103,22 @@ public class MaxwellianDistribution implements ParticleLoader {
 		}
 		
 		//Generates a spatially uniform, cold and heavy ion background
-		for (int i = 0; i < numOfIons; i++) {
-			Particle p = new Particle();
-			
-			p.setX( (i+1) * deltaX );
-			p.setY( (i+1) * deltaY );
-			
-			p.setVx(0);
-			p.setVy(0);
-			
-			p.setCharge(-1);
-			p.setMass(2000);		
-			p.setRadius(radius);
-			
-			particles.add(p);
+		for (int i = 0; i < nX; i++) {
+			for (int j = 0; j < nY; j++) {
+				Particle p = new Particle();
+				
+				p.setX( (i+1) * deltaX );
+				p.setY( (j+1) * deltaY );
+				
+				p.setVx(0);
+				p.setVy(0);
+				
+				p.setCharge(-1);
+				p.setMass(2000);		
+				p.setRadius(radius);
+				
+				particles.add(p);
+			}
 		}
 		
 		return particles;
