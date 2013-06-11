@@ -7,13 +7,14 @@ import java.util.Random;
 public class MaxwellianDistribution implements ParticleLoader {
 
 	private Random rand;
-	//Boltzmann constant
-	private double k;
+	private boolean usecutoff;
 	
-	/*Velocity normalization in x direction, temperature dependent */
-	private double vNormX;
-	/*Velocity normalization in x direction, temperature dependent */
-	private double vNormY;
+	/**Velocity normalization in x direction, temperature dependent */
+	private double vnormX;
+	/**Velocity normalization in x direction, temperature dependent */
+	private double vnormY;
+	/**Cutoff velocity SQUARED*/
+	private double vcutoff;
 	
 	private double rnd1;
 	private double rnd2;
@@ -21,37 +22,43 @@ public class MaxwellianDistribution implements ParticleLoader {
 	
 	/** Generates a thermal VELOCITY distribution
 	 * TODO make this loader relativistic
-	 * TODO THINK ABOUT USEFUL UNITS FOR K AND T! cgs?
 	 * @param temperature
 	 */
-	public MaxwellianDistribution (long seed, double boltzmannk, double temperature) {
+	public MaxwellianDistribution (long seed, double vthermal) {
 		
 		rand = new Random(seed);
-		k = boltzmannk;
-		setNorms(temperature, temperature);
+		usecutoff = false;
+		setNorms(vthermal, vthermal);
 		
 	}
 	
-	/** Generates a thermal VELOCITY distribution
-	 * TODO make this loader relativistic
-	 */
-	public MaxwellianDistribution (long seed, double boltzmannk,
-			double temperatureX, double temperatureY) {
+	public MaxwellianDistribution (long seed, double vthermalX,
+			double vthermalY) {
 		
 		rand = new Random(seed);
-		k = boltzmannk;
-		setNorms(temperatureX, temperatureY);
+		usecutoff = false;
+		setNorms(vthermalX, vthermalY);
 		
 	}
 	
-	private void setNorms (double temperatureX, double temperatureY) {
+	public MaxwellianDistribution (long seed, double vthermalX,
+			double vthermalY, double vcutoff) {
+		
+		rand = new Random(seed);
+		usecutoff = true;
+		this.vcutoff = vcutoff * vcutoff;
+		setNorms(vthermalX, vthermalY);
+		
+	}
+	
+	private void setNorms (double vthermalX, double vthermalY) {
 		//0.5 is the mass of the electron that is used later
 		//Factor of 2 comes from the denominator in the exponent of
 		//the Maxwellian distribution.
 		//NOTE: There are no further factors because we are inverting
 		//the cumulative distribution hence the factors cancel
-		vNormX = Math.sqrt(2 * k * temperatureX / 0.5);
-		vNormY = Math.sqrt(2 * k * temperatureY / 0.5);
+		vnormX = Math.sqrt(2) * vthermalX;
+		vnormY = Math.sqrt(2) * vthermalY;
 	}
 	
 	
@@ -76,7 +83,7 @@ public class MaxwellianDistribution implements ParticleLoader {
 		}
 		
 		List<Particle> particles = new ArrayList<Particle>();
-		
+
 		//Generates thermal electrons that are randomly distributed
 		//across the simulation area
 		for (int i = 0; i < numOfElectrons; i++) {
@@ -91,9 +98,17 @@ public class MaxwellianDistribution implements ParticleLoader {
 				rnd3 = (rnd1*rnd1 + rnd2*rnd2);
 			} while (rnd3 > 1);
 			
-			rnd3 = Math.sqrt( - Math.log(rnd3) / rnd3 );
-			p.setVx( vNormX * rnd1 * rnd3 );
-			p.setVy( vNormY * rnd2 * rnd3 );		
+			if (usecutoff) {
+				rnd3 = Math.sqrt(
+						(vcutoff*vcutoff - Math.log(rnd3 + (1-rnd3) * Math.exp(vcutoff*vcutoff)))
+						/ rnd3);
+				p.setVx( vnormX * rnd1 * rnd3 );
+				p.setVy( vnormY * rnd2 * rnd3 );
+			} else {
+				rnd3 = Math.sqrt( - Math.log(rnd3) / rnd3 );
+				p.setVx( vnormX * rnd1 * rnd3 );
+				p.setVy( vnormY * rnd2 * rnd3 );
+			}
 			
 			p.setCharge(-1);
 			p.setMass(0.5);		
@@ -113,7 +128,7 @@ public class MaxwellianDistribution implements ParticleLoader {
 				p.setVx(0);
 				p.setVy(0);
 				
-				p.setCharge(-1);
+				p.setCharge(1);
 				p.setMass(2000);		
 				p.setRadius(radius);
 				
