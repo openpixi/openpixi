@@ -66,6 +66,7 @@ public class CloudInCell implements InterpolatorAlgorithm {
 
 	}
 
+	@Override
 	public void interpolateChargedensity(Particle p, Grid g) {
 		double cellArea = g.getCellWidth() * g.getCellHeight();
 
