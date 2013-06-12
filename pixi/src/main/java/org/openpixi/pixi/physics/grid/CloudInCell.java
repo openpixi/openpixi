@@ -70,21 +70,44 @@ public class CloudInCell implements InterpolatorAlgorithm {
 	public void interpolateChargedensity(Particle p, Grid g) {
 		double cellArea = g.getCellWidth() * g.getCellHeight();
 
-		//nearest grid point that has a lower x and y coordinate than the particle
-		int xCellPosition = (int) (Math.floor(p.getX() / g.getCellWidth()));
-		int yCellPosition = (int) (Math.floor(p.getY() / g.getCellHeight()));
+		//Determine the nearest lower left grid point on a grid that is shifted
+		//upward and to the right by half a cell height and width respectively.
+		//THIS CAN BE NEGATIVE if particle is behind the left or the lower boundary
+		int i = (int) (Math.floor( p.getX() / g.getCellWidth() - 0.5));
+		int j = (int) (Math.floor( p.getY() / g.getCellHeight() - 0.5));
+		
+		/**Distance to the left cell boundary*/
+		double a;
+		/**Distance to the right cell boundary*/
+		double b;
+		/**Distance to the lower cell boundary*/
+		double c;
+		/**Distance to the upper cell boundary*/
+		double d;
+		
+		//The +0.5*cellWidth is there to shift the grid
+		a = p.getX() - (i - 0.5) * g.getCellWidth();
+		//Checks if the particle is behind the left simulation boundary
+		if ( a < 0 ) {
+			a *= (-1);
+		}
+		b = g.getCellWidth() - a;
+
+		//The +0.5*cellWidth is there to shift the grid
+		c = p.getY() -  (j - 0.5) * g.getCellHeight();
+		//Checks if the particle is behind the lower simulation boundary
+		if ( c < 0 ) {
+			c *= (-1);
+		}
+		d = g.getCellHeight() - c;
 
 		//assign a portion of the charge to the four surrounding points depending on distance
 		//Math.abs is for the case when a particle is outside of the simulation area,
 		//i.e. when xCellPosition or yCellPosition are > than p.getX() or p.getY() respectively
-		g.addRho(xCellPosition, yCellPosition, p.getCharge() * Math.abs(((xCellPosition+1) * g.getCellWidth() - p.getX()) *
-				((yCellPosition+1) * g.getCellHeight() - p.getY()) / cellArea));
-		g.addRho(xCellPosition+1, yCellPosition, p.getCharge() * Math.abs((p.getX() - xCellPosition * g.getCellWidth()) *
-				((yCellPosition+1) * g.getCellHeight() - p.getY()) / cellArea));
-		g.addRho(xCellPosition,yCellPosition+1, p.getCharge() * Math.abs(((xCellPosition+1) * g.getCellWidth() - p.getX()) *
-				(p.getY() - yCellPosition * g.getCellHeight()) / cellArea));
-		g.addRho(xCellPosition + 1,yCellPosition + 1, p.getCharge() * Math.abs((p.getX() - xCellPosition * g.getCellWidth()) *
-				(p.getY() - yCellPosition * g.getCellHeight()) / cellArea));
+		g.addRho(i, j, p.getCharge() * b * d / cellArea);
+		g.addRho(i,j+1, p.getCharge() * b * c / cellArea);
+		g.addRho(i + 1,j + 1, p.getCharge() * a * c / cellArea);
+		g.addRho(i+1, j, p.getCharge() * a * d / cellArea);
 	}
 	
 	@Override
@@ -99,34 +122,24 @@ public class CloudInCell implements InterpolatorAlgorithm {
 		double a;
 		/**Distance to the right cell boundary*/
 		double b;
-		/**Distance to the lower left grid point*/
+		/**Distance to the lower cell boundary*/
 		double c;
-		/**Distance to the upper left grid point*/
+		/**Distance to the upper cell boundary*/
 		double d;
 		
+		a = p.getX() - i * g.getCellWidth();
 		//Checks if the particle is behind the left simulation boundary
-		if ( i < 0 ) {
-			a = i * g.getCellWidth() - p.getX();
-			b = g.getCellWidth() - a;
-		} else {
-			a = p.getX() - i * g.getCellWidth();
-			b = g.getCellWidth() - a;
+		if ( a < 0 ) {
+			a *= (-1);
 		}
-		
-		//Checks if the particle is behind the lower simulation boundary
-		if ( j < 0 ) {
-			c = j * g.getCellHeight() - p.getY();
-			d = g.getCellHeight() - c;
-		} else {
-			c = p.getY() - j * g.getCellHeight();
-			d = g.getCellHeight() - c;
-		}
+		b = g.getCellWidth() - a;
 
-		if (Debug.asserts) {
-			// Assert conditions for interpolation
-			assert a > 0 : a;
-			assert c > 0 : c;
+		c = p.getY() -  j * g.getCellHeight();
+		//Checks if the particle is behind the lower simulation boundary
+		if ( c < 0 ) {
+			c *= (-1);
 		}
+		d = g.getCellHeight() - c;
 		
 		//The magnetic field is located at the grid points no adjustments are necessary
 		p.setBz(formFactor(
@@ -190,15 +203,14 @@ public class CloudInCell implements InterpolatorAlgorithm {
 	 * @param B value at the upper left grid point
 	 * @param C value at the upper right grid point
 	 * @param D value at the lower right grid point
-	 * @param a distance to the left grid boundary
-	 * @param b distance to the right grid boundary
-	 * @param c distance to the lower grid boundary
-	 * @param d distance to the upper grid boundary
+	 * @param a distance to the left cell boundary
+	 * @param b distance to the right cell boundary
+	 * @param c distance to the lower cell boundary
+	 * @param d distance to the upper cell boundary
 	 * @return Total value at the particle position
 	 */
 	private double formFactor(double A, double B, double C, double D,
 			double a, double b, double c, double d){
 		return A*b*d + B*b*c + C*a*c + D*a*d;
 	}
-	
 }
