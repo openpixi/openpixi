@@ -64,28 +64,6 @@ public class InterpolatorAlgorithm {
 				(g.getCellWidth() * g.getCellHeight()));
 	}
 
-	public void interpolateChargedensity(Particle p, Grid g) {
-		double cellArea = g.getCellWidth() * g.getCellHeight();
-		
-		assertParticleInSimulationArea(p, g);
-
-		//nearest grid point that has a lower x and y coordinate than the particle
-		int xCellPosition = (int) (Math.floor(p.getX() / g.getCellWidth()));
-		int yCellPosition = (int) (Math.floor(p.getY() / g.getCellHeight()));
-
-		//assign a portion of the charge to the four surrounding points depending on distance
-		//Math.abs is for the case when a particle is outside of the simulation area,
-		//i.e. when xCellPosition or yCellPosition are > than p.getX() or p.getY() respectively
-		g.addRho(xCellPosition, yCellPosition, p.getCharge() * Math.abs(((xCellPosition+1) * g.getCellWidth() - p.getX()) *
-				((yCellPosition+1) * g.getCellHeight() - p.getY()) / cellArea));
-		g.addRho(xCellPosition+1, yCellPosition, p.getCharge() * Math.abs((p.getX() - xCellPosition * g.getCellWidth()) *
-				((yCellPosition+1) * g.getCellHeight() - p.getY()) / cellArea));
-		g.addRho(xCellPosition,yCellPosition+1, p.getCharge() * Math.abs(((xCellPosition+1) * g.getCellWidth() - p.getX()) *
-				(p.getY() - yCellPosition * g.getCellHeight()) / cellArea));
-		g.addRho(xCellPosition + 1,yCellPosition + 1, p.getCharge() * Math.abs((p.getX() - xCellPosition * g.getCellWidth()) *
-				(p.getY() - yCellPosition * g.getCellHeight()) / cellArea));
-	}
-
 	/**
 	 * Test via asserts whether particle is within simulation area.
 	 * @param p
