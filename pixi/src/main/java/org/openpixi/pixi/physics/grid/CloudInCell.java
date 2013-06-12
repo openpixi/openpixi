@@ -3,7 +3,7 @@ package org.openpixi.pixi.physics.grid;
 import org.openpixi.pixi.physics.Debug;
 import org.openpixi.pixi.physics.Particle;
 
-public class CloudInCell extends InterpolatorAlgorithm {
+public class CloudInCell implements InterpolatorAlgorithm {
 
 	@Override
 	public void interpolateToGrid(Particle p, Grid g, double tstep) {

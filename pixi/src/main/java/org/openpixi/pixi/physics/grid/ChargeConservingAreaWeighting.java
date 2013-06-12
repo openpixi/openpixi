@@ -3,7 +3,7 @@ package org.openpixi.pixi.physics.grid;
 import org.openpixi.pixi.physics.Debug;
 import org.openpixi.pixi.physics.Particle;
 
-public class ChargeConservingAreaWeighting extends InterpolatorAlgorithm {
+public class ChargeConservingAreaWeighting extends CloudInCell {
 
 	@Override
 	public void interpolateToGrid(Particle p, Grid g, double tstep) {
