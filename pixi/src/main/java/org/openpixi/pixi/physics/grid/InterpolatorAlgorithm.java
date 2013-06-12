@@ -85,20 +85,6 @@ public class InterpolatorAlgorithm {
 		g.addRho(xCellPosition + 1,yCellPosition + 1, p.getCharge() * Math.abs((p.getX() - xCellPosition * g.getCellWidth()) *
 				(p.getY() - yCellPosition * g.getCellHeight()) / cellArea));
 	}
-	
-	public int checkPeriodicBoundary(int a, int b) {
-
-		if (a >= b) {
-			a -= b;
-		}
-		else {
-			if (a < 0) {
-				a += b;
-			}
-		}
-
-		return a;
-	}
 
 	/**
 	 * Test via asserts whether particle is within simulation area.

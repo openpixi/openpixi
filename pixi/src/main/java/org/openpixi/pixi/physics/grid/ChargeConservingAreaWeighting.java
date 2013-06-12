@@ -427,4 +427,19 @@ public class ChargeConservingAreaWeighting extends InterpolatorAlgorithm {
 			}
 		}
 	}
+	
+	public int checkPeriodicBoundary(int a, int b) {
+
+		if (a >= b) {
+			a -= b;
+		}
+		else {
+			if (a < 0) {
+				a += b;
+			}
+		}
+
+		return a;
+	}
+
 }
