@@ -87,17 +87,23 @@ public class CloudInCell implements InterpolatorAlgorithm {
 		
 		//The +0.5*cellWidth is there to shift the grid
 		a = p.getX() - (i - 0.5) * g.getCellWidth();
-		//Checks if the particle is behind the left simulation boundary
-		if ( a < 0 ) {
-			a *= (-1);
+		//Checks if the particle is behind the left simulation boundary. If so
+		//removes the +0.5*cellWidth  correction applied before. This correction
+		//is implicit now because the origin of the coordinates is now on the right
+		//side of the cell.
+		if ( i < 0 ) {
+			a -= 0.5  * g.getCellWidth();
 		}
 		b = g.getCellWidth() - a;
 
 		//The +0.5*cellWidth is there to shift the grid
 		c = p.getY() -  (j - 0.5) * g.getCellHeight();
-		//Checks if the particle is behind the lower simulation boundary
-		if ( c < 0 ) {
-			c *= (-1);
+		//Checks if the particle is behind the left simulation boundary. If so
+		//removes the +0.5*cellWidth  correction applied before. This correction
+		//is implicit now because the origin of the coordinates is now on the right
+		//side of the cell.
+		if ( j < 0 ) {
+			c -= 0.5 * g.getCellHeight();
 		}
 		d = g.getCellHeight() - c;
 
