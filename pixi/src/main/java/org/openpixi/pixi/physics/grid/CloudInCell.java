@@ -141,10 +141,15 @@ public class CloudInCell implements InterpolatorAlgorithm {
 		}
 		d = g.getCellHeight() - c;
 		
-		//The magnetic field is located at the grid points no adjustments are necessary
-		p.setBz(formFactor(
-				g.getBz(i, j), g.getBz(i, j+1), g.getBz(i+1, j+1), g.getBz(i+1, j),
-				a, b, c, d));
+		//Bz as given by the FDTD field solver is defined half a timestep ahead of particle
+		//time. Therefore we have to average over the old Bz (that is half a timestep behind)
+		//and the current Bz. The magnetic field is located at the grid points. 
+		//No adjustments to the grid are necessary.
+		p.setBz((formFactor(
+				g.getBzo(i, j), g.getBzo(i, j+1), g.getBzo(i+1, j+1), g.getBzo(i+1, j),
+				a, b, c, d) + 
+				formFactor(g.getBz(i, j), g.getBz(i, j+1), g.getBz(i+1, j+1), g.getBz(i+1, j),
+				a, b, c, d)) / 2);
 		
 		//The Ex-field is located in the middle of the left cell boundary.
 		//This means that the Ey-field-grid is shifted upwards by half a cell height.
