@@ -128,17 +128,8 @@ public class CloudInCell implements InterpolatorAlgorithm {
 		double d;
 		
 		a = p.getX() - i * g.getCellWidth();
-		//Checks if the particle is behind the left simulation boundary
-		if ( a < 0 ) {
-			a *= (-1);
-		}
 		b = g.getCellWidth() - a;
-
 		c = p.getY() -  j * g.getCellHeight();
-		//Checks if the particle is behind the lower simulation boundary
-		if ( c < 0 ) {
-			c *= (-1);
-		}
 		d = g.getCellHeight() - c;
 		
 		//Bz as given by the FDTD field solver is defined half a timestep ahead of particle
