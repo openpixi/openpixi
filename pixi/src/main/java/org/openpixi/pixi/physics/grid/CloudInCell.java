@@ -36,6 +36,7 @@ public class CloudInCell implements InterpolatorAlgorithm {
 		if( c < g.getCellHeight()/2 ){
 			j -= 1;
 			c += g.getCellHeight()/2;
+			d = g.getCellHeight() - c;
 			
 			g.addJx(i, j, p.getCharge() * p.getVx() * b * d / cellArea);
 			g.addJx(i,j+1, p.getCharge() * p.getVx() * b * c / cellArea);
@@ -43,16 +44,19 @@ public class CloudInCell implements InterpolatorAlgorithm {
 			g.addJx(i+1, j, p.getCharge() * p.getVx() * a * d / cellArea);
 			
 			c -= g.getCellHeight()/2;
+			d = g.getCellHeight() - c;
 			j += 1;
 		} else {
 			c -= g.getCellHeight()/2;
+			d = g.getCellHeight() - c;
 			
 			g.addJx(i, j, p.getCharge() * p.getVx() * b * d / cellArea);
 			g.addJx(i,j+1, p.getCharge() * p.getVx() * b * c / cellArea);
 			g.addJx(i + 1,j + 1, p.getCharge() * p.getVx() * a * c / cellArea);
 			g.addJx(i+1, j, p.getCharge() * p.getVx() * a * d / cellArea);
 			
-			c += g.getCellHeight()/2;			
+			c += g.getCellHeight()/2;
+			d = g.getCellHeight() - c;
 		}
 
 		//The Jy-field is located in the middle of the lower cell boundary.
@@ -62,24 +66,27 @@ public class CloudInCell implements InterpolatorAlgorithm {
 		//after the calculation.
 		if( a < g.getCellWidth()/2 ){
 			i -= 1;
-			c += g.getCellWidth()/2;
+			a += g.getCellWidth()/2;
+			b = g.getCellWidth() - a;
 			
 			g.addJy(i, j, p.getCharge() * p.getVy() * b * d / cellArea);
 			g.addJy(i,j+1, p.getCharge() * p.getVy() * b * c / cellArea);
 			g.addJy(i + 1,j + 1, p.getCharge() * p.getVy() * a * c / cellArea);
 			g.addJy(i+1, j, p.getCharge() * p.getVy() * a * d / cellArea);
 			
-			c -= g.getCellWidth()/2;
-			i += 1;
+			//No need to return the values to their previous state because they are
+			//not going to be used anymore.
 		} else {
-			c -= g.getCellWidth()/2;
+			a -= g.getCellWidth()/2;
+			b = g.getCellWidth() - a;
 			
 			g.addJy(i, j, p.getCharge() * p.getVy() * b * d / cellArea);
 			g.addJy(i,j+1, p.getCharge() * p.getVy() * b * c / cellArea);
 			g.addJy(i + 1,j + 1, p.getCharge() * p.getVy() * a * c / cellArea);
 			g.addJy(i+1, j, p.getCharge() * p.getVy() * a * d / cellArea);
 			
-			c += g.getCellWidth()/2;			
+			//No need to return the values to their previous state because they are
+			//not going to be used anymore.			
 		}
 	}
 
@@ -158,21 +165,25 @@ public class CloudInCell implements InterpolatorAlgorithm {
 		if( c < g.getCellHeight()/2 ){
 			j -= 1;
 			c += g.getCellHeight()/2;
+			d = g.getCellHeight() - c;
 			
 			p.setEx(formFactor(
 					g.getEx(i, j), g.getEx(i, j+1), g.getEx(i+1, j+1), g.getEx(i+1, j),
 					a, b, c, d));
 			
 			c -= g.getCellHeight()/2;
+			d = g.getCellHeight() - c;
 			j += 1;
 		} else {
 			c -= g.getCellHeight()/2;
+			d = g.getCellHeight() - c;
 			
 			p.setEx(formFactor(
 					g.getEx(i, j), g.getEx(i, j+1), g.getEx(i+1, j+1), g.getEx(i+1, j),
 					a, b, c, d));
 			
-			c += g.getCellHeight()/2;			
+			c += g.getCellHeight()/2;
+			d = g.getCellHeight() - c;
 		}
 		
 		//The Ey-field is located in the middle of the lower cell boundary.
@@ -182,22 +193,25 @@ public class CloudInCell implements InterpolatorAlgorithm {
 		//after the calculation.
 		if( a < g.getCellWidth()/2 ){
 			i -= 1;
-			c += g.getCellWidth()/2;
+			a += g.getCellWidth()/2;
+			b = g.getCellWidth() - a;
 			
 			p.setEy(formFactor(
 					g.getEy(i, j), g.getEy(i, j+1), g.getEy(i+1, j+1), g.getEy(i+1, j),
 					a, b, c, d));
 			
-			c -= g.getCellWidth()/2;
-			i += 1;
+			//No need to return the values to their previous state because they are
+			//not going to be used anymore.
 		} else {
-			c -= g.getCellWidth()/2;
+			a -= g.getCellWidth()/2;
+			b = g.getCellWidth() - a;
 			
 			p.setEy(formFactor(
 					g.getEy(i, j), g.getEy(i, j+1), g.getEy(i+1, j+1), g.getEy(i+1, j),
 					a, b, c, d));
 			
-			c += g.getCellWidth()/2;			
+			//No need to return the values to their previous state because they are
+			//not going to be used anymore.		
 		}
 	}
 
