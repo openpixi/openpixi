@@ -85,31 +85,16 @@ public class CloudInCell implements InterpolatorAlgorithm {
 		/**Distance to the upper cell boundary*/
 		double d;
 		
-		//The +0.5*cellWidth is there to shift the grid
-		a = p.getX() - (i - 0.5) * g.getCellWidth();
-		//Checks if the particle is behind the left simulation boundary. If so
-		//removes the +0.5*cellWidth  correction applied before. This correction
-		//is implicit now because the origin of the coordinates is now on the right
-		//side of the cell.
-		if ( i < 0 ) {
-			a -= 0.5  * g.getCellWidth();
-		}
+		//The -0.5*cellWidth is there to shift the grid
+		a = p.getX() - (i + 0.5) * g.getCellWidth();
 		b = g.getCellWidth() - a;
 
-		//The +0.5*cellWidth is there to shift the grid
-		c = p.getY() -  (j - 0.5) * g.getCellHeight();
-		//Checks if the particle is behind the left simulation boundary. If so
-		//removes the +0.5*cellWidth  correction applied before. This correction
-		//is implicit now because the origin of the coordinates is now on the right
-		//side of the cell.
-		if ( j < 0 ) {
-			c -= 0.5 * g.getCellHeight();
-		}
+		//The -0.5*cellWidth is there to shift the grid
+		c = p.getY() -  (j + 0.5) * g.getCellHeight();
 		d = g.getCellHeight() - c;
 
-		//assign a portion of the charge to the four surrounding points depending on distance
-		//Math.abs is for the case when a particle is outside of the simulation area,
-		//i.e. when xCellPosition or yCellPosition are > than p.getX() or p.getY() respectively
+		//Assign a portion of the charge to the four surrounding points depending on
+		//the distance.
 		g.addRho(i, j, p.getCharge() * b * d / cellArea);
 		g.addRho(i,j+1, p.getCharge() * b * c / cellArea);
 		g.addRho(i + 1,j + 1, p.getCharge() * a * c / cellArea);
@@ -154,8 +139,8 @@ public class CloudInCell implements InterpolatorAlgorithm {
 		//only changes to be made are in the vertical plane. All changes are reversed
 		//after the calculation.
 		if( c < g.getCellHeight()/2 ){
-			c += g.getCellHeight()/2;
 			j -= 1;
+			c += g.getCellHeight()/2;
 			
 			p.setEx(formFactor(
 					g.getEx(i, j), g.getEx(i, j+1), g.getEx(i+1, j+1), g.getEx(i+1, j),
@@ -179,8 +164,8 @@ public class CloudInCell implements InterpolatorAlgorithm {
 		//only changes to be made are in the horizontal plane. All changes are reversed
 		//after the calculation.
 		if( a < g.getCellWidth()/2 ){
-			c += g.getCellWidth()/2;
 			i -= 1;
+			c += g.getCellWidth()/2;
 			
 			p.setEy(formFactor(
 					g.getEy(i, j), g.getEy(i, j+1), g.getEy(i+1, j+1), g.getEy(i+1, j),
