@@ -3,7 +3,7 @@ package org.openpixi.pixi.physics.grid;
 import org.openpixi.pixi.physics.Debug;
 import org.openpixi.pixi.physics.Particle;
 
-public class ChargeConservingAreaWeighting extends InterpolatorAlgorithm {
+public class ChargeConservingAreaWeighting extends CloudInCell {
 
 	@Override
 	public void interpolateToGrid(Particle p, Grid g, double tstep) {
@@ -427,4 +427,19 @@ public class ChargeConservingAreaWeighting extends InterpolatorAlgorithm {
 			}
 		}
 	}
+	
+	public int checkPeriodicBoundary(int a, int b) {
+
+		if (a >= b) {
+			a -= b;
+		}
+		else {
+			if (a < 0) {
+				a += b;
+			}
+		}
+
+		return a;
+	}
+
 }

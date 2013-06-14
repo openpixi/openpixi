@@ -29,7 +29,7 @@ public class MainBatch {
 	public static final int num_particles = 100;
 	public static final double particle_radius = 0.1;
 	/**Total number of timesteps*/
-	public static final int steps = 10;
+	public static final int steps = 100;
 
 	public static Simulation s;
 

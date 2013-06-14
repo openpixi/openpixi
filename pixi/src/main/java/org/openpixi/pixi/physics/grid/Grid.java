@@ -37,8 +37,10 @@ public class Grid {
 	 */
 	public static final int INTERPOLATION_RADIUS = 1;
 	public static final int HARDWALL_SAFETY_CELLS = 1;
+	//Check comment above, but due to the CIC to particle interpolator
+	//we actually need two cells at the beginning. But for an other reason than at the end.
 	public static final int EXTRA_CELLS_BEFORE_GRID =
-			INTERPOLATION_RADIUS + HARDWALL_SAFETY_CELLS - 1;
+			INTERPOLATION_RADIUS + HARDWALL_SAFETY_CELLS - 1 + 1;
 	public static final int EXTRA_CELLS_AFTER_GRID =
 			INTERPOLATION_RADIUS + HARDWALL_SAFETY_CELLS;
 

@@ -3,46 +3,74 @@ package org.openpixi.pixi.physics.grid;
 import junit.framework.TestCase;
 import org.openpixi.pixi.physics.Particle;
 import org.openpixi.pixi.physics.Settings;
-import org.openpixi.pixi.physics.Simulation;
-import org.openpixi.pixi.physics.fields.YeeSolver;
-
+import org.openpixi.pixi.physics.grid.CloudInCell;
+import java.util.Random;
 import java.util.ArrayList;
 
 public class InterpolatorTest extends TestCase {
 	
-	double ACCURACY_LIMIT = 1.e-16;
+	double ACCURACY_LIMIT = 1.e-13;
+	Random random = new Random();
 	
 	public InterpolatorTest(String testName) {
 		super(testName);
 	}
 	
+	/**Tests the interpolateChargeDensity() method of InterpolatorAlgorithm
+	 * classes. Except of the interpolator class itself it also relies on the
+	 * proper functioning of grid accessors as well as on the Cell class.
+	 */
 	public void testChargeInterpolation() {
 
 		Settings stt = new Settings();
 		stt.setSimulationWidth(100);
 		stt.setSimulationHeight(100);
-		stt.setSpeedOfLight(Math.sqrt(stt.getSimulationWidth() * stt.getSimulationWidth() +
-				stt.getSimulationHeight() * stt.getSimulationHeight())/5);
+		stt.setGridCellsX(100);
+		stt.setGridCellsY(100);
 
-		stt.setNumOfParticles(100);
-		stt.setParticleRadius(1);
-		stt.setParticleMaxSpeed(stt.getSpeedOfLight());
+		Grid grid = new Grid(stt);
+		
+		//We iterate over all the grid cells manually to avoid dependence of this
+		//test on the cellIterator implementation. But using the grid method
+		//grid.resetCharge() should also work!
+		for (int x = -grid.EXTRA_CELLS_BEFORE_GRID; x < 
+				(grid.getNumCellsX()+grid.EXTRA_CELLS_AFTER_GRID); x++) {
+			for (int y = -grid.EXTRA_CELLS_BEFORE_GRID; y < 
+					(grid.getNumCellsY()+grid.EXTRA_CELLS_AFTER_GRID); y++) {
+				grid.getCell(x, y).resetCharge();
+			}
+		}
 
-		stt.setGridCellsX(10);
-		stt.setGridCellsY(10);
-		stt.setGridSolver(new YeeSolver());
-		stt.setInterpolator(new ChargeConservingAreaWeighting());
+		
+		ArrayList<Particle> particles = new ArrayList<Particle>(); 
+		
+		for (int i=0; i < 100; i++) {
+			Particle p = new Particle();
+			p.setX(random.nextDouble()*stt.getSimulationWidth());
+			p.setY(random.nextDouble()*stt.getSimulationHeight());
+			//Assign random integer charge in the range (-10,10)
+			//Accuracy decreases with non integer charge, more particles
+			//as well as more cells.
+			p.setCharge((random.nextInt(20)-10));
+			particles.add(p);
+		}
+		
+		InterpolatorAlgorithm interpolation = new CloudInCell();
+		
+		for (Particle p : particles) {
+			interpolation.interpolateChargedensity(p, grid);
+		}
 
-		Simulation s = new Simulation(stt);
-
-		// TODO: Test does not work:
-		//assertEquals(getTotalParticleCharge(s.particles), getChargedensitySum(s.grid), ACCURACY_LIMIT);
+		assertEquals(getTotalParticleCharge(particles), getChargedensitySum(grid), ACCURACY_LIMIT);
 	}
 	
 	public static double getChargedensitySum(Grid grid) {
 		double sum = 0;
-		for (int x = -1; x < grid.getNumCellsX()+1; x++) {
-			for (int y = -1; y < grid.getNumCellsY()+1; y++) {
+		//NOTE: If periodic boundaries are chosen the sum has to go over the "real" cells.
+		//In the hardwall boundary case the extra cells have to be included.
+		//This behavior is ok and consistent.
+		for (int x = 0; x < grid.getNumCellsX(); x++) {
+			for (int y = 0; y < grid.getNumCellsY(); y++) {
 				sum += grid.getRho(x, y);
 			}
 		}
