@@ -4,7 +4,7 @@ import junit.framework.TestCase;
 import org.openpixi.pixi.physics.Particle;
 import org.openpixi.pixi.physics.Settings;
 import org.openpixi.pixi.physics.Simulation;
-import org.openpixi.pixi.physics.fields.YeeSolver;
+import org.openpixi.pixi.physics.fields.SimpleSolver;
 import org.openpixi.pixi.physics.force.ConstantForce;
 
 /**
@@ -125,7 +125,7 @@ public class ChargeConservingAreaWeightingTest extends TestCase {
 	private void testMove(double x1, double y1, double x2, double y2, double charge, String text) {
 		Settings stt = GridTestCommon.getCommonSettings();
 		stt.setInterpolator(new ChargeConservingAreaWeighting());
-		stt.setGridSolver(new YeeSolver());
+		stt.setGridSolver(new SimpleSolver());
 
 		// Add single particle
 		Particle p = new Particle();
@@ -204,7 +204,7 @@ public class ChargeConservingAreaWeightingTest extends TestCase {
 	private void testMoveForce(double x1, double y1, double vx, double vy, double ex, double bz, double charge, String text) {
 		Settings stt = GridTestCommon.getCommonSettings();
 		stt.setInterpolator(new ChargeConservingAreaWeighting());
-		stt.setGridSolver(new YeeSolver());
+		stt.setGridSolver(new SimpleSolver());
 
 		// Add single particle
 		Particle p = new Particle();
