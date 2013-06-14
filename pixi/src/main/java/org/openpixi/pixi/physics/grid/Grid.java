@@ -145,22 +145,6 @@ public class Grid {
 		cells[index(x)][index(y)].setBz(cells[index(x)][index(y)].getBz() + value);
 	}
 
-	public double getExo(int x, int y) {
-		return cells[index(x)][index(y)].getExo();
-	}
-
-	public void setExo(int x, int y, double value) {
-		cells[index(x)][index(y)].setExo(value);
-	}
-
-	public double getEyo(int x, int y) {
-		return cells[index(x)][index(y)].getEyo();
-	}
-
-	public void setEyo(int x, int y, double value) {
-		cells[index(x)][index(y)].setEyo(value);
-	}
-
 	public double getBzo(int x, int y) {
 		return cells[index(x)][index(y)].getBzo();
 	}
