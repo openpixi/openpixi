@@ -18,14 +18,14 @@ public class Cell implements Serializable {
 	/**electrostatic potential*/
 	private double phi;
 
-	/**electric field in x direction at time t+dt*/
+	/**electric field in x direction at time t*/
 	private double Ex;
-	/**electric field in y direction at time t+dt*/
+	/**electric field in y direction at time t*/
 	private double Ey;
-	/**magnetic field in z direction at time t+dt*/
+	/**magnetic field in z direction at time t+dt/2*/
 	private double Bz;
 
-	/**magnetic field in z direction at time t*/
+	/**magnetic field in z direction at time t-dt/2*/
 	private double Bzo;
 
 
