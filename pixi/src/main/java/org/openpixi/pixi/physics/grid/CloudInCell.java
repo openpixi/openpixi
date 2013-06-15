@@ -127,25 +127,28 @@ public class CloudInCell implements InterpolatorAlgorithm {
 	
 	@Override
 	public void interpolateToParticle(Particle p, Grid g) {
-
-		//Determine the nearest lower left grid point
-		//THIS CAN BE NEGATIVE if particle is behind the left or the lower boundary
-		int i = (int) Math.floor(p.getX() / g.getCellWidth());
-		int j = (int) Math.floor(p.getY() / g.getCellHeight());
-		
-		/**Distance to the left cell boundary*/
+		/**X index of the grid point that is left from or at the x position of the particle*/
+		int i;
+		/**Y index of the grid point that is below or at the y position of the particle*/
+		int j;		
+		/**Normalized distance to the left cell boundary*/
 		double a;
-		/**Distance to the right cell boundary*/
+		/**Normalized distance to the right cell boundary*/
 		double b;
-		/**Distance to the lower cell boundary*/
+		/**Normalized distance to the lower cell boundary*/
 		double c;
-		/**Distance to the upper cell boundary*/
+		/**Normalized distance to the upper cell boundary*/
 		double d;
 		
-		a = p.getX() - i * g.getCellWidth();
-		b = g.getCellWidth() - a;
-		c = p.getY() -  j * g.getCellHeight();
-		d = g.getCellHeight() - c;
+		a = p.getX() / g.getCellWidth();
+		i = (int) Math.floor(a);
+		a -= i;
+		b = 1 - a;
+		
+		c = p.getY() / g.getCellHeight();
+		j = (int) Math.floor(c);
+		c -= j;
+		d = 1 - c;
 		
 		//Bz as given by the FDTD field solver is defined half a timestep ahead of particle
 		//time. Therefore we have to average over the old Bz (that is half a timestep behind)
@@ -162,39 +165,38 @@ public class CloudInCell implements InterpolatorAlgorithm {
 		//The adjustments are made to calculate the distance to the shifted grid. The
 		//only changes to be made are in the vertical plane. All changes are reversed
 		//after the calculation.
-		if( c < g.getCellHeight()/2 ){
+		if( c < 0.5 ){
 			j -= 1;
-			c += g.getCellHeight()/2;
-			d = g.getCellHeight() - c;
+			c += 0.5;
+			d -= 0.5;
 			
 			p.setEx(formFactor(
 					g.getEx(i, j), g.getEx(i, j+1), g.getEx(i+1, j+1), g.getEx(i+1, j),
 					a, b, c, d));
 			
-			c -= g.getCellHeight()/2;
-			d = g.getCellHeight() - c;
+			c -= 0.5;
+			d += 0.5;
 			j += 1;
 		} else {
-			c -= g.getCellHeight()/2;
-			d = g.getCellHeight() - c;
+			c -= 0.5;
+			d += 0.5;
 			
 			p.setEx(formFactor(
 					g.getEx(i, j), g.getEx(i, j+1), g.getEx(i+1, j+1), g.getEx(i+1, j),
 					a, b, c, d));
 			
-			c += g.getCellHeight()/2;
-			d = g.getCellHeight() - c;
+			c += 0.5;
+			d -= 0.5;
 		}
 		
 		//The Ey-field is located in the middle of the lower cell boundary.
 		//This means that the Ey-field-grid is shifted to the right by half a cell width.
 		//The adjustments are made to calculate the distance to the shifted grid. The
-		//only changes to be made are in the horizontal plane. All changes are reversed
-		//after the calculation.
-		if( a < g.getCellWidth()/2 ){
+		//only changes to be made are in the horizontal plane.
+		if( a < 0.5 ){
 			i -= 1;
-			a += g.getCellWidth()/2;
-			b = g.getCellWidth() - a;
+			a += 0.5;
+			b -= 0.5;
 			
 			p.setEy(formFactor(
 					g.getEy(i, j), g.getEy(i, j+1), g.getEy(i+1, j+1), g.getEy(i+1, j),
@@ -203,8 +205,8 @@ public class CloudInCell implements InterpolatorAlgorithm {
 			//No need to return the values to their previous state because they are
 			//not going to be used anymore.
 		} else {
-			a -= g.getCellWidth()/2;
-			b = g.getCellWidth() - a;
+			a -= 0.5;
+			b += 0.5;
 			
 			p.setEy(formFactor(
 					g.getEy(i, j), g.getEy(i, j+1), g.getEy(i+1, j+1), g.getEy(i+1, j),
