@@ -144,16 +144,6 @@ public class ResultsComparator {
 			printSingleMemberDifference("bz", difference);
 			ok = false;
 		}
-		difference = Math.abs(cellA.getExo() - cellB.getExo());
-		if (difference > tolerance) {
-			printSingleMemberDifference("exo", difference);
-			ok = false;
-		}
-		difference = Math.abs(cellA.getEyo() - cellB.getEyo());
-		if (difference > tolerance) {
-			printSingleMemberDifference("eyo", difference);
-			ok = false;
-		}
 		difference = Math.abs(cellA.getBzo() - cellB.getBzo());
 		if (difference > tolerance) {
 			printSingleMemberDifference("bzo", difference);
