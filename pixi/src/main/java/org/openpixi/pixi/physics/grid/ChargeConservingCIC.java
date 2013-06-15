@@ -11,7 +11,7 @@ import org.openpixi.pixi.physics.Particle;
  *NOTE: On a coarser grid this algorithm will give a lower current compared to a finer grid
  *when the particle travels the same absolute distance in both cases. 
  */
-public class ChargeConservingAreaWeighting extends CloudInCell {
+public class ChargeConservingCIC extends CloudInCell {
 
 	@Override
 	public void interpolateToGrid(Particle p, Grid g, double tstep) {

@@ -4,7 +4,7 @@ import edu.emory.mathcs.jtransforms.fft.DoubleFFT_2D;
 import junit.framework.TestCase;
 import org.openpixi.pixi.physics.Settings;
 import org.openpixi.pixi.physics.Simulation;
-import org.openpixi.pixi.physics.grid.ChargeConservingAreaWeighting;
+import org.openpixi.pixi.physics.grid.ChargeConservingCIC;
 import org.openpixi.pixi.physics.grid.Grid;
 
 public class PoissonSolverTest extends TestCase {
@@ -24,7 +24,7 @@ public class PoissonSolverTest extends TestCase {
 		Settings stt = new Settings();
 		stt.setSimulationWidth(10);
 		stt.setSimulationHeight(10);
-		stt.setInterpolator(new ChargeConservingAreaWeighting());
+		stt.setInterpolator(new ChargeConservingCIC());
 		stt.setGridSolver(new YeeSolver());
 		
 		this.s = new Simulation(stt);

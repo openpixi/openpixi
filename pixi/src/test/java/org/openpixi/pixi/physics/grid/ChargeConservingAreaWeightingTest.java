@@ -127,7 +127,7 @@ public class ChargeConservingAreaWeightingTest extends TestCase {
 	 */
 	private void testMove(double x1, double y1, double x2, double y2, double charge, String text) {
 		Settings stt = GridTestCommon.getCommonSettings();
-		stt.setInterpolator(new ChargeConservingAreaWeighting());
+		stt.setInterpolator(new ChargeConservingCIC());
 		stt.setGridSolver(new YeeSolver());
 
 		// Add single particle
@@ -198,7 +198,7 @@ public class ChargeConservingAreaWeightingTest extends TestCase {
 	 */
 	private void testMoveForce(double x1, double y1, double vx, double vy, double ex, double bz, double charge, String text) {
 		Settings stt = GridTestCommon.getCommonSettings();
-		stt.setInterpolator(new ChargeConservingAreaWeighting());
+		stt.setInterpolator(new ChargeConservingCIC());
 		stt.setGridSolver(new YeeSolver());
 
 		// Add single particle
