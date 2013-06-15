@@ -223,10 +223,10 @@ public class CloudInCell implements InterpolatorAlgorithm {
 	 * @param B value at the upper left grid point
 	 * @param C value at the upper right grid point
 	 * @param D value at the lower right grid point
-	 * @param a distance to the left cell boundary
-	 * @param b distance to the right cell boundary
-	 * @param c distance to the lower cell boundary
-	 * @param d distance to the upper cell boundary
+	 * @param a normalized distance to the left cell boundary
+	 * @param b normalized distance to the right cell boundary
+	 * @param c normalized distance to the lower cell boundary
+	 * @param d normalized distance to the upper cell boundary
 	 * @return Total value at the particle position
 	 */
 	private double formFactor(double A, double B, double C, double D,
