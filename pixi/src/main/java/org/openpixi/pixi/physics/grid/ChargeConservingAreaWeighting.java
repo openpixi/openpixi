@@ -81,19 +81,6 @@ public class ChargeConservingAreaWeighting extends CloudInCell {
 	 */
 	private void fourBoundaryMove(int lx, int ly, double x, double y,
 								  double deltaX, double deltaY, Particle p, Grid g, double tstep) {
-
-		int lxm = lx - 1;
-		int lym = ly - 1;
-
-//		System.out.println(lx + " " + lxm + " " + ly + " " + lym);
-
-		lx = checkPeriodicBoundary(lx, g.getNumCellsX());
-		lxm = checkPeriodicBoundary(lxm, g.getNumCellsX());
-		ly = checkPeriodicBoundary(ly, g.getNumCellsY());
-		lym = checkPeriodicBoundary(lym, g.getNumCellsY());
-
-//		System.out.println(lx + " " + lxm + " " + ly + " " + lym);
-
 		//A few cancellations were made to reduce computation time. Till this point the algorithm has
 		//calculated the area that swept over a cell boundary for a normalized grid (i.e. unit square cells).
 		//and unit square charges. This area needs to be denormalized and then multiplied with the charge
@@ -425,19 +412,4 @@ public class ChargeConservingAreaWeighting extends CloudInCell {
 			}
 		}
 	}
-	
-	public int checkPeriodicBoundary(int a, int b) {
-
-		if (a >= b) {
-			a -= b;
-		}
-		else {
-			if (a < 0) {
-				a += b;
-			}
-		}
-
-		return a;
-	}
-
 }
