@@ -15,9 +15,5 @@ public class ParticleGridInitializer {
 	                       List<Particle> particles, Grid grid) {
 		interpolation.interpolateChargedensity(particles, grid);
 		poissonSolver.solve(grid);
-		for (Particle p: particles){
-			// Assuming rectangular particle shape i.e. area weighting
-			p.setChargedensity(p.getCharge() / (grid.getCellWidth() * grid.getCellHeight()));
-		}
 	}
 }
