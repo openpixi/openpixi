@@ -55,9 +55,6 @@ public class Particle implements Serializable {
 	/**previous y position of particle*/
 	private double prevY;
 
-	/**charge density of particle for a specific form factor*/
-	private double chargedensity;
-
 	private double Ex;
 	private double Ey;
 	private double Bz;
@@ -190,14 +187,6 @@ public class Particle implements Serializable {
 		this.prevY += y;
 	}
 
-	public double getChargedensity() {
-		return chargedensity;
-	}
-
-	public void setChargedensity(double chargedensity) {
-		this.chargedensity = chargedensity;
-	}
-
 	public double getEx() {
 		return Ex;
 	}
@@ -305,7 +294,6 @@ public class Particle implements Serializable {
 		charge = p.charge;
 		prevX = p.prevX;
 		prevY = p.prevY;
-		chargedensity = p.chargedensity;
 		Ex = p.Ex;
 		Ey = p.Ey;
 		Bz = p.Bz;
