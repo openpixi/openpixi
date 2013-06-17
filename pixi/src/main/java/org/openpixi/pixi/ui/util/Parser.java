@@ -39,9 +39,9 @@ public class Parser extends DefaultHandler {
 		} catch (ParserConfigurationException e) {
 			System.out.println("ParserConfig error");
 		} catch (SAXException e) {
-			System.out.println("SAXException! Settings file was not parsed!\n" +
+			System.out.println("Parsing aborted!\n" +
 					"Probably the xml file is not formated correctly!\n" +
-					"Reverting to defaults...");
+					"Not all üarameters were processed!");
 		} catch (IOException e) {
 			System.out.println("IO error! Settings file was not parsed!\n" +
 					"Probably the settings file is missing or is in the wrong path!\n" +
