@@ -4,7 +4,7 @@ import org.openpixi.pixi.physics.Settings;
 import org.openpixi.pixi.physics.Simulation;
 import org.openpixi.pixi.physics.fields.PoissonSolver;
 import org.openpixi.pixi.physics.fields.PoissonSolverFFTPeriodic;
-import org.openpixi.pixi.physics.fields.YeeSolver;
+import org.openpixi.pixi.physics.fields.SimpleSolver;
 import org.openpixi.pixi.physics.grid.ChargeConservingAreaWeighting;
 import org.openpixi.pixi.physics.grid.Grid;
 import org.openpixi.pixi.ui.util.WriteFile;
@@ -25,7 +25,7 @@ public class PoissonSolverCalculations {
 
 		stt.setGridCellsX(100);
 		stt.setGridCellsY(100);
-		stt.setGridSolver(new YeeSolver());
+		stt.setGridSolver(new SimpleSolver());
 		stt.setInterpolator(new ChargeConservingAreaWeighting());
 
 		this.s = new Simulation(stt);
@@ -170,7 +170,7 @@ public class PoissonSolverCalculations {
 
 		stt.setGridCellsX(100);
 		stt.setGridCellsY(100);
-		stt.setGridSolver(new YeeSolver());
+		stt.setGridSolver(new SimpleSolver());
 		stt.setInterpolator(new ChargeConservingAreaWeighting());
 
 		Simulation s = new Simulation(stt);

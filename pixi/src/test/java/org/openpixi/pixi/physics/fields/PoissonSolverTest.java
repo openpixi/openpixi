@@ -25,7 +25,7 @@ public class PoissonSolverTest extends TestCase {
 		stt.setSimulationWidth(10);
 		stt.setSimulationHeight(10);
 		stt.setInterpolator(new ChargeConservingAreaWeighting());
-		stt.setGridSolver(new YeeSolver());
+		stt.setGridSolver(new SimpleSolver());
 		
 		this.s = new Simulation(stt);
 		this.g = s.grid;
