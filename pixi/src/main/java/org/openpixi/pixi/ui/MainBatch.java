@@ -38,9 +38,11 @@ public class MainBatch {
 		Debug.checkAssertsEnabled();
 		
 		Settings stt = new Settings();
-		Parser parser = new Parser(stt);
-		parser.parse(args[0]);
-
+		if (args.length != 0){
+			Parser parser = new Parser(stt);
+			parser.parse(args[0]);
+		}
+		
 		s = new Simulation(stt);
 
 		System.out.println("-------- INITIAL CONDITIONS--------");
