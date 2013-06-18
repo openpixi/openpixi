@@ -41,7 +41,7 @@ public class MainBatch {
 	private static String runid = "test";
 
 	private static Simulation s;
-	private static Diagnostics localDiagnostics;
+	private static Diagnostics diagnostics;
 	private static EmptyParticleDataOutput pdo;
 	private static EmptyGridDataOutput gdo;
 
@@ -53,7 +53,7 @@ public class MainBatch {
 		
 		stt.getParticleDiagnostics().add(new KineticEnergy());
 		stt.getGridDiagnostics().add(new Potential(s.grid));
-		localDiagnostics = new Diagnostics(s.grid, s.particles, stt);
+		diagnostics = new Diagnostics(s.grid, s.particles, stt);
 		
 		if (args.length == 0) {
 			pdo = new EmptyParticleDataOutput();
@@ -71,24 +71,24 @@ public class MainBatch {
 		}
 		
 		pdo.startIteration(0);
-		localDiagnostics.particles();
-		localDiagnostics.outputParticles(pdo);
+		diagnostics.particles();
+		diagnostics.outputParticles(pdo);
 		gdo.startIteration(0);
-		localDiagnostics.grid();
-		localDiagnostics.outputGrid(gdo);
+		diagnostics.grid();
+		diagnostics.outputGrid(gdo);
 		
 		for (int i = 0; i < steps; i++) {
 			s.step();
 			if ( i == particleDiagnosticsIntervall) {
 				pdo.startIteration(i);
-				localDiagnostics.particles();
-				localDiagnostics.outputParticles(pdo);
+				diagnostics.particles();
+				diagnostics.outputParticles(pdo);
 				particleDiagnosticsIntervall *= 2;
 			}
 			if ( i == gridDiagnosticsIntervall) {
 				gdo.startIteration(i);
-				localDiagnostics.grid();
-				localDiagnostics.outputGrid(gdo);
+				diagnostics.grid();
+				diagnostics.outputGrid(gdo);
 				gridDiagnosticsIntervall *= 2;
 			}
 		}
