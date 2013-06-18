@@ -164,7 +164,7 @@ public class Parser extends DefaultHandler {
 					"Setting it to 100.");
 			n = 100;
 		}
-		settings.setNumOfParticles(n);
+		settings.setIterations(n);
 	}
 	
 	private void setGridIntervall(char ch[], int start, int length) {
