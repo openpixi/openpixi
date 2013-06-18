@@ -63,8 +63,8 @@ public class Settings {
 
 	// Grid related settings
 
-	private int gridCellsX = 10;
-	private int gridCellsY = 10;
+	private int gridCellsX = 100;
+	private int gridCellsY = 100;
 
 	private FieldSolver gridSolver = new SimpleSolver();
 	private PoissonSolver poissonSolver = new PoissonSolverFFTPeriodic();

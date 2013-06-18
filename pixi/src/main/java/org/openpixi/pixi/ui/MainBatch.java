@@ -24,6 +24,7 @@ import org.openpixi.pixi.physics.Settings;
 import org.openpixi.pixi.physics.Simulation;
 import org.openpixi.pixi.diagnostics.LocalDiagnostics;
 import org.openpixi.pixi.diagnostics.KineticEnergy;
+import org.openpixi.pixi.diagnostics.Potential;
 import org.openpixi.pixi.profile.ProfileInfo;
 import org.openpixi.pixi.ui.util.*;
 import java.io.IOException;
@@ -49,6 +50,7 @@ public class MainBatch {
 		s = new Simulation(stt);
 		
 		stt.getParticleDiagnostics().add(new KineticEnergy());
+		stt.getGridDiagnostics().add(new Potential(s.grid));
 		localDiagnostics = new LocalDiagnostics(s.grid, s.particles, stt);
 		
 		if (args.length == 0) {
@@ -57,7 +59,7 @@ public class MainBatch {
 		} else {
 			try {
 				pdo = new ParticleDataOutput(args[0], runid);
-				gdo = new GridDataOutput(args[0], runid);
+				gdo = new GridDataOutput(args[0], runid, s.grid);
 			} catch (IOException e) {
 				System.err.print("Something went wrong when creating output files for diagnostics! \n" +
 						"Please specify an output directory with write access rights!\n" +
@@ -68,6 +70,7 @@ public class MainBatch {
 		
 		for (int i = 0; i < steps; i++) {
 			s.step();
+			gdo.startIteration(i);
 			localDiagnostics.perform(i);
 			localDiagnostics.output(pdo, gdo);
 		}
