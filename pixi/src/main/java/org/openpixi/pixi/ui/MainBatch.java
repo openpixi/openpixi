@@ -94,13 +94,13 @@ public class MainBatch {
 				pdo.startIteration(i);
 				diagnostics.particles();
 				diagnostics.outputParticles(pdo);
-				particleDiagnosticsIntervall *= 2;
+				particleDiagnosticsIntervall += particleDiagnosticsIntervall;
 			}
 			if ( i == gridDiagnosticsIntervall) {
 				gdo.startIteration(i);
 				diagnostics.grid();
 				diagnostics.outputGrid(gdo);
-				gridDiagnosticsIntervall *= 2;
+				gridDiagnosticsIntervall += gridDiagnosticsIntervall;
 			}
 		}
 		
