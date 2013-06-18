@@ -41,7 +41,7 @@ public class Parser extends DefaultHandler {
 		} catch (SAXException e) {
 			System.out.println("Parsing aborted!\n" +
 					"Probably the xml file is not formated correctly!\n" +
-					"Not all üarameters were processed!");
+					"Not all parameters were processed!");
 		} catch (IOException e) {
 			System.out.println("IO error! Settings file was not parsed!\n" +
 					"Probably the settings file is missing or is in the wrong path!\n" +
@@ -197,7 +197,7 @@ public class Parser extends DefaultHandler {
 				alg = new LeapFrog();
 			} else 	if (algname.equalsIgnoreCase("Leap Frog Damped")) {
 				alg = new LeapFrogDamped();
-			} else if (algname.equalsIgnoreCase("Leap Frog Half Strep")) {
+			} else if (algname.equalsIgnoreCase("Leap Frog Half Step")) {
 				alg = new LeapFrogHalfStep();
 			} else if (algname.equalsIgnoreCase("SemiImplicit Euler")) {
 				alg = new SemiImplicitEuler();

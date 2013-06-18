@@ -37,13 +37,13 @@ public class MainBatch {
 	public static void main(String[] args) {
 		Debug.checkAssertsEnabled();
 		
-		Settings stt = new Settings();
+		Settings settings = new Settings();
 		if (args.length != 0){
-			Parser parser = new Parser(stt);
+			Parser parser = new Parser(settings);
 			parser.parse(args[0]);
 		}
 		
-		s = new Simulation(stt);
+		s = new Simulation(settings);
 
 		System.out.println("-------- INITIAL CONDITIONS--------");
 
@@ -53,7 +53,7 @@ public class MainBatch {
 
 		System.out.println("\n-------- SIMULATION RESULTS --------");
 
-		for (int i = 0; i < stt.getIterations(); i++) {
+		for (int i = 0; i < settings.getIterations(); i++) {
 			s.step();
 		}
 
