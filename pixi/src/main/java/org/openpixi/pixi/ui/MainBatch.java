@@ -51,20 +51,24 @@ public class MainBatch {
 		Settings stt = new Settings();
 		s = new Simulation(stt);
 		
-		stt.getParticleDiagnostics().add(new KineticEnergy());
-		stt.getGridDiagnostics().add(new Potential(s.grid));
+//		stt.getParticleDiagnostics().add(new KineticEnergy());
+//		stt.getGridDiagnostics().add(new Potential(s.grid));
 		diagnostics = new Diagnostics(s.grid, s.particles, stt);
 		
 		if (args.length == 0) {
 			pdo = new EmptyParticleDataOutput();
 			gdo = new EmptyGridDataOutput();
 		} else {
+			if (args[0].substring(args[0].length() -1) != System.getProperty("file.separator")) {
+				args[0] = args[0] + System.getProperty("file.separator");
+			}
 			try {
 				pdo = new ParticleDataOutput(args[0], runid);
 				gdo = new GridDataOutput(args[0], runid, s.grid);
 			} catch (IOException e) {
 				System.err.print("Something went wrong when creating output files for diagnostics! \n" +
-						"Please specify an output directory with write access rights!\n" +
+						"Please specify an output directory with write access rights!\n" + 
+						"The directory that you specified was " + args[0] + "\n" +
 						"Aborting...");
 						return;
 			}
