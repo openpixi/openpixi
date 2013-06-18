@@ -36,6 +36,8 @@ public class MainBatch {
 	public static final double particle_radius = 0.1;
 	/**Total number of timesteps*/
 	public static final int steps = 100;
+	public static int particleDiagnosticsIntervall = 10;
+	public static int gridDiagnosticsIntervall = 20;
 	private static String runid = "test";
 
 	private static Simulation s;
@@ -68,11 +70,27 @@ public class MainBatch {
 			}
 		}
 		
+		pdo.startIteration(0);
+		localDiagnostics.particles();
+		localDiagnostics.outputParticles(pdo);
+		gdo.startIteration(0);
+		localDiagnostics.grid();
+		localDiagnostics.outputGrid(gdo);
+		
 		for (int i = 0; i < steps; i++) {
 			s.step();
-			gdo.startIteration(i);
-			localDiagnostics.perform(i);
-			localDiagnostics.output(pdo, gdo);
+			if ( i == particleDiagnosticsIntervall) {
+				pdo.startIteration(i);
+				localDiagnostics.particles();
+				localDiagnostics.outputParticles(pdo);
+				particleDiagnosticsIntervall *= 2;
+			}
+			if ( i == gridDiagnosticsIntervall) {
+				gdo.startIteration(i);
+				localDiagnostics.grid();
+				localDiagnostics.outputGrid(gdo);
+				gridDiagnosticsIntervall *= 2;
+			}
 		}
 		
 		pdo.closeStreams();

@@ -23,6 +23,14 @@ public class ParticleDataOutput extends EmptyParticleDataOutput{
 		}
 	}
 	
+	public void startIteration(int iteration) {
+		try {
+			totalKineticEnergy.write("Iteration: " + iteration + "\n");			
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
 	public void closeStreams() {
 		try {
 			

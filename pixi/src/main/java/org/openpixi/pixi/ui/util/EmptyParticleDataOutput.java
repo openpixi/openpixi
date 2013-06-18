@@ -8,6 +8,10 @@ public class EmptyParticleDataOutput implements ParticleDataOutput {
 		//DO NOTHING
 	}
 	
+	public void startIteration(int iteration) {
+		//DO NOTHING
+	}
+	
 	public void closeStreams() {
 		//DO NOTHING
 	}

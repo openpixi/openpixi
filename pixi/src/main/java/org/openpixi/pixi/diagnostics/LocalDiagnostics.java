@@ -25,19 +25,25 @@ public class LocalDiagnostics {
 		gridDiagnostics = stt.getGridDiagnostics();		
 	}
 	
-	public void perform(int step) {
+	public void particles() {
 		for(ParticleMethod m : particleDiagnostics){
 			m.calculate(particles);
 		}
+	}
+	
+	public void grid() {
 		for(GridMethod m : gridDiagnostics) {
 			m.calculate(grid);
 		}
 	}
 	
-	public void output(ParticleDataOutput pout, GridDataOutput gout) {
+	public void outputParticles(ParticleDataOutput pout) {
 		for(ParticleMethod m : particleDiagnostics){
 			m.getData(pout);
 		}
+	}
+	
+	public void outputGrid(GridDataOutput gout) {
 		for(GridMethod m : gridDiagnostics) {
 			m.getData(gout);
 		}
