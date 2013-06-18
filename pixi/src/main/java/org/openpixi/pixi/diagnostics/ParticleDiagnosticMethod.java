@@ -5,13 +5,10 @@ import java.util.ArrayList;
 import org.openpixi.pixi.physics.Particle;
 import org.openpixi.pixi.physics.grid.Grid;
 
-public abstract class ParticleDiagnosticMethod {
+public interface ParticleDiagnosticMethod {
 	
-	int type;
+	public void calculate(ArrayList<Particle> particles);
 	
-	public void calculate(ArrayList<Particle> particles){
-		
-	}
-
+	public void getData(ParticleDataOutput out);
 
 }
