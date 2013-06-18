@@ -25,6 +25,9 @@ import org.openpixi.pixi.physics.Simulation;
 import org.openpixi.pixi.diagnostics.LocalDiagnostics;
 import org.openpixi.pixi.diagnostics.KineticEnergy;
 import org.openpixi.pixi.profile.ProfileInfo;
+import org.openpixi.pixi.ui.util.*;
+import java.io.IOException;
+
 
 public class MainBatch {
 
@@ -32,22 +35,42 @@ public class MainBatch {
 	public static final double particle_radius = 0.1;
 	/**Total number of timesteps*/
 	public static final int steps = 100;
+	private static String runid = "test";
 
-	public static Simulation s;
-	public static LocalDiagnostics localDiagnostics;
+	private static Simulation s;
+	private static LocalDiagnostics localDiagnostics;
+	private static EmptyParticleDiagnosticsOutput pdo;
 
 	public static void main(String[] args) {
 		Debug.checkAssertsEnabled();
 
 		Settings stt = new Settings();
 		s = new Simulation(stt);
+		
 		stt.getParticleDiagnostics().add(new KineticEnergy());
-		localDiagnostics = new LocalDiagnostics(s.grid, s.particles, stt);		
-
+		localDiagnostics = new LocalDiagnostics(s.grid, s.particles, stt);
+		
+		if (args.length == 0) {
+			pdo = new EmptyParticleDiagnosticsOutput();
+		} else {
+			try {
+				pdo = new ParticleDiagnosticsOutput(args[0], runid);
+			} catch (IOException e) {
+				System.err.print("Something went wrong when creating output files for diagnostics! \n" +
+						"Please specify an output directory with write access rights!\n" +
+						"Aborting...");
+						return;
+			}
+		}
+		
 		for (int i = 0; i < steps; i++) {
 			s.step();
 			localDiagnostics.perform(i);
+			localDiagnostics.output(pdo, null);
 		}
+		
+		pdo.closeStreams();
+		
 		ProfileInfo.printProfileInfo();
 	}
 
