@@ -39,7 +39,7 @@ public class MainBatch {
 
 	private static Simulation s;
 	private static LocalDiagnostics localDiagnostics;
-	private static EmptyParticleDiagnosticsOutput pdo;
+	private static EmptyParticleDataOutput pdo;
 
 	public static void main(String[] args) {
 		Debug.checkAssertsEnabled();
@@ -51,10 +51,10 @@ public class MainBatch {
 		localDiagnostics = new LocalDiagnostics(s.grid, s.particles, stt);
 		
 		if (args.length == 0) {
-			pdo = new EmptyParticleDiagnosticsOutput();
+			pdo = new EmptyParticleDataOutput();
 		} else {
 			try {
-				pdo = new ParticleDiagnosticsOutput(args[0], runid);
+				pdo = new ParticleDataOutput(args[0], runid);
 			} catch (IOException e) {
 				System.err.print("Something went wrong when creating output files for diagnostics! \n" +
 						"Please specify an output directory with write access rights!\n" +

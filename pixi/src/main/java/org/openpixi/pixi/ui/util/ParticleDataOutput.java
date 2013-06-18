@@ -5,12 +5,12 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 
-public class ParticleDiagnosticsOutput extends EmptyParticleDiagnosticsOutput{
+public class ParticleDataOutput extends EmptyParticleDataOutput{
 	
 	private BufferedWriter totalKineticEnergy;
 	
 	
-	public ParticleDiagnosticsOutput(String dir, String runid) throws IOException {
+	public ParticleDataOutput(String dir, String runid) throws IOException {
 		totalKineticEnergy = writerFactory(dir + "Energy" + runid);
 	}
 	
