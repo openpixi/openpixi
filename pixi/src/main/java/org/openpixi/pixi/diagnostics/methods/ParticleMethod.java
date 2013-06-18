@@ -1,9 +1,9 @@
-package org.openpixi.pixi.diagnostics;
+package org.openpixi.pixi.diagnostics.methods;
 
 import java.util.ArrayList;
 
+import org.openpixi.pixi.diagnostics.ParticleDataOutput;
 import org.openpixi.pixi.physics.Particle;
-import org.openpixi.pixi.physics.grid.Grid;
 
 public interface ParticleMethod {
 	

@@ -1,7 +1,7 @@
-package org.openpixi.pixi.diagnostics;
+package org.openpixi.pixi.diagnostics.methods;
 
+import org.openpixi.pixi.diagnostics.ParticleDataOutput;
 import org.openpixi.pixi.physics.Particle;
-import org.openpixi.pixi.physics.grid.Grid;
 import java.util.ArrayList;
 
 public class KineticEnergy implements ParticleMethod {

@@ -1,5 +1,7 @@
 package org.openpixi.pixi.diagnostics;
 
+import org.openpixi.pixi.diagnostics.methods.GridMethod;
+import org.openpixi.pixi.diagnostics.methods.ParticleMethod;
 import org.openpixi.pixi.physics.grid.Grid;
 import org.openpixi.pixi.physics.Particle;
 import org.openpixi.pixi.physics.Settings;

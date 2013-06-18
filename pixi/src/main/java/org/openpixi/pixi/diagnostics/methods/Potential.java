@@ -1,5 +1,6 @@
-package org.openpixi.pixi.diagnostics;
+package org.openpixi.pixi.diagnostics.methods;
 
+import org.openpixi.pixi.diagnostics.GridDataOutput;
 import org.openpixi.pixi.physics.grid.Grid;
 import edu.emory.mathcs.jtransforms.fft.*;
 

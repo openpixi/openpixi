@@ -1,7 +1,7 @@
 package org.openpixi.pixi.physics;
 
-import org.openpixi.pixi.diagnostics.GridMethod;
-import org.openpixi.pixi.diagnostics.ParticleMethod;
+import org.openpixi.pixi.diagnostics.methods.GridMethod;
+import org.openpixi.pixi.diagnostics.methods.ParticleMethod;
 import org.openpixi.pixi.parallel.cellaccess.CellIterator;
 import org.openpixi.pixi.parallel.cellaccess.ParallelCellIterator;
 import org.openpixi.pixi.parallel.cellaccess.SequentialCellIterator;
