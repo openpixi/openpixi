@@ -8,7 +8,7 @@ import org.openpixi.pixi.physics.Settings;
 import java.util.ArrayList;
 import java.util.List;
 
-public class LocalDiagnostics {
+public class Diagnostics {
 	
 	private Grid grid;
 	private ArrayList<Particle> particles;
@@ -17,7 +17,7 @@ public class LocalDiagnostics {
 	private List<GridMethod> gridDiagnostics;
 	
 	
-	public LocalDiagnostics(Grid grid, ArrayList<Particle> particles, Settings stt) {
+	public Diagnostics(Grid grid, ArrayList<Particle> particles, Settings stt) {
 		
 		this.grid = grid;
 		this.particles = particles;

@@ -22,7 +22,7 @@ package org.openpixi.pixi.ui;
 import org.openpixi.pixi.physics.Debug;
 import org.openpixi.pixi.physics.Settings;
 import org.openpixi.pixi.physics.Simulation;
-import org.openpixi.pixi.diagnostics.LocalDiagnostics;
+import org.openpixi.pixi.diagnostics.Diagnostics;
 import org.openpixi.pixi.diagnostics.methods.KineticEnergy;
 import org.openpixi.pixi.diagnostics.methods.Potential;
 import org.openpixi.pixi.profile.ProfileInfo;
@@ -41,7 +41,7 @@ public class MainBatch {
 	private static String runid = "test";
 
 	private static Simulation s;
-	private static LocalDiagnostics localDiagnostics;
+	private static Diagnostics localDiagnostics;
 	private static EmptyParticleDataOutput pdo;
 	private static EmptyGridDataOutput gdo;
 
@@ -53,7 +53,7 @@ public class MainBatch {
 		
 		stt.getParticleDiagnostics().add(new KineticEnergy());
 		stt.getGridDiagnostics().add(new Potential(s.grid));
-		localDiagnostics = new LocalDiagnostics(s.grid, s.particles, stt);
+		localDiagnostics = new Diagnostics(s.grid, s.particles, stt);
 		
 		if (args.length == 0) {
 			pdo = new EmptyParticleDataOutput();
