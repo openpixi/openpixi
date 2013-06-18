@@ -48,27 +48,31 @@ public class MainBatch {
 	public static void main(String[] args) {
 		Debug.checkAssertsEnabled();
 
-		Settings stt = new Settings();
-		s = new Simulation(stt);
+		Settings settings = new Settings();
+		if (args.length != 0){
+			Parser parser = new Parser(settings);
+			parser.parse(args[0]);
+		}
+		s = new Simulation(settings);
 		
-		stt.getParticleDiagnostics().add(new KineticEnergy());
-		stt.getGridDiagnostics().add(new Potential(s.grid));
-		diagnostics = new Diagnostics(s.grid, s.particles, stt);
+		settings.getParticleDiagnostics().add(new KineticEnergy());
+		settings.getGridDiagnostics().add(new Potential(s.grid));
+		diagnostics = new Diagnostics(s.grid, s.particles, settings);
 		
-		if (args.length == 0) {
+		if (args.length < 2) {
 			pdo = new EmptyParticleDataOutput();
 			gdo = new EmptyGridDataOutput();
 		} else {
-			if (args[0].substring(args[0].length() -1) != System.getProperty("file.separator")) {
-				args[0] = args[0] + System.getProperty("file.separator");
+			if (args[1].substring(args[1].length() -1) != System.getProperty("file.separator")) {
+				args[1] = args[1] + System.getProperty("file.separator");
 			}
 			try {
-				pdo = new ParticleDataOutput(args[0], runid);
-				gdo = new GridDataOutput(args[0], runid, s.grid);
+				pdo = new ParticleDataOutput(args[1], runid);
+				gdo = new GridDataOutput(args[1], runid, s.grid);
 			} catch (IOException e) {
 				System.err.print("Something went wrong when creating output files for diagnostics! \n" +
 						"Please specify an output directory with write access rights!\n" + 
-						"The directory that you specified was " + args[0] + "\n" +
+						"The directory that you specified was " + args[1] + "\n" +
 						"Aborting...");
 						return;
 			}
@@ -81,7 +85,7 @@ public class MainBatch {
 		diagnostics.grid();
 		diagnostics.outputGrid(gdo);
 		
-		for (int i = 0; i < steps; i++) {
+		for (int i = 0; i < settings.getIterations(); i++) {
 			s.step();
 			if ( i == particleDiagnosticsIntervall) {
 				pdo.startIteration(i);
