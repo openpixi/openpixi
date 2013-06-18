@@ -374,6 +374,14 @@ public class Settings {
 		this.runid = runid;
 	}
 	
+	public void setParticleDiagnosticsIntervall(int var) {
+		this.particleDiagnosticsIntervall = var;
+	}
+	
+	public void setGridDiagnosticsIntervall(int var) {
+		this.gridDiagnosticsIntervall = var;
+	}
+	
 	public void  setParticleDiagnostics(List<ParticleMethod> particleDiagnostics) {
 		this.particleDiagnostics = particleDiagnostics;
 	}

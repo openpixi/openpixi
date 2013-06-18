@@ -59,7 +59,6 @@ public class MainBatch {
 		
 		s = new Simulation(settings);
 		
-		settings.getParticleDiagnostics().add(new KineticEnergy());
 		settings.getGridDiagnostics().add(new Potential(s.grid));
 		diagnostics = new Diagnostics(s.grid, s.particles, settings);
 		

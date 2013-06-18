@@ -14,6 +14,7 @@ import org.openpixi.pixi.physics.Settings;
 
 import org.openpixi.pixi.physics.grid.*;
 import org.openpixi.pixi.physics.solver.*;
+import org.openpixi.pixi.diagnostics.methods.*;
 
 public class Parser extends DefaultHandler {
 
@@ -25,6 +26,12 @@ public class Parser extends DefaultHandler {
 	private boolean timeStep;
 	private boolean interpolator;
 	private boolean particleMover;
+	private boolean diagnostics;
+	private boolean particle;
+	private boolean grid;
+	private boolean particleIntervall;
+	private boolean gridIntervall;
+	private boolean iterations;
 	
 	public Parser(Settings settings){
 		
@@ -69,6 +76,18 @@ public class Parser extends DefaultHandler {
 				interpolator = true;
 			} else if (qName.equalsIgnoreCase("particleSolver")) {
 				particleMover = true;
+			} else if(qName.equalsIgnoreCase("diagnostics")) {
+				diagnostics = true;
+			} else if(qName.equalsIgnoreCase("particle")) {
+				particle = true;
+			} else if(qName.equalsIgnoreCase("grid")) {
+				grid = true;
+			} else if(qName.equalsIgnoreCase("particleIntervall")) {
+				particleIntervall = true;
+			} else if(qName.equalsIgnoreCase("gridIntervall")) {
+				gridIntervall = true;
+			} else if(qName.equalsIgnoreCase("iterations")) {
+				iterations = true;
 			} else if (qName.equalsIgnoreCase("settings")) {
 				//DO NOTHING
 			}
@@ -81,12 +100,18 @@ public class Parser extends DefaultHandler {
 	
 	@Override
 	public void endElement(String uri, String localName, String qName) throws SAXException {
-		
+		if (qName.equalsIgnoreCase("diagnostics")) {
+			diagnostics = false;
+		}  
 	}
 
 	@Override
 	public void characters(char ch[], int start, int length) throws SAXException {
 		
+		if (iterations) {
+			setIterations(ch, start, length);
+			iterations = false;
+		}
 		if (numberOfParticles) {
 			setNumberOfParticles(ch, start, length);
 			numberOfParticles = false;
@@ -111,7 +136,76 @@ public class Parser extends DefaultHandler {
 			setParticleSolver(ch, start, length);
 			particleMover = false;
 		}
-		
+		if (diagnostics && particle) {
+			addParticleDiagnostics(ch, start, length);
+			particle = false;
+		}
+		if (diagnostics && grid) {
+			//NOTHING HERE YET
+			grid = false;
+		}
+		if (diagnostics && particleIntervall) {
+			setParticleIntervall(ch, start, length);
+			particleIntervall = false;
+		}
+		if (diagnostics && gridIntervall) {
+			setGridIntervall(ch, start, length);
+			gridIntervall = false;
+		}
+	}
+	
+	private void setIterations(char ch[], int start, int length) {
+		int n;
+		try{
+			n = Integer.parseInt(new String(ch, start, length));
+			if ( n < 0) throw new NumberFormatException();
+		} catch (NumberFormatException e){
+			System.out.println("Error: the number of iterations is not a positive integer! " +
+					"Setting it to 100.");
+			n = 100;
+		}
+		settings.setNumOfParticles(n);
+	}
+	
+	private void setGridIntervall(char ch[], int start, int length) {
+		int n;
+		try{
+			n = Integer.parseInt(new String(ch, start, length));
+			if ( n < 0) throw new NumberFormatException();
+		} catch (NumberFormatException e){
+			System.err.println("Error: the grid diagnostics intervall is not a positive " +
+					"integer! Setting it to 20.");
+			n = 20;
+		}
+		settings.setGridDiagnosticsIntervall(n);
+	}
+	
+	private void setParticleIntervall(char ch[], int start, int length) {
+		int n;
+		try{
+			n = Integer.parseInt(new String(ch, start, length));
+			if ( n < 0) throw new NumberFormatException();
+		} catch (NumberFormatException e){
+			System.err.println("Error: the particle diagnostics intervall is not a positive " +
+					"integer! Setting it to 10.");
+			n = 10;
+		}
+		settings.setParticleDiagnosticsIntervall(n);
+	}
+	
+	private void addParticleDiagnostics(char ch[], int start, int length) {
+		ParticleMethod mtd;
+		String mtdname = new String(ch, start, length);
+		try{
+			if (mtdname.equalsIgnoreCase("Kinetic Energy")) {
+				mtd = new KineticEnergy();
+			} else throw new Exception();
+		} catch (Exception e){
+			System.out.println("Error: OpenPixi does not know about the " + mtdname + " diagnostic" +
+					" method. Skipping this setting!");
+			return;
+		}
+		settings.getParticleDiagnostics().add(mtd);
 	}
 	
 	private void setNumberOfParticles(char ch[], int start, int length) {
