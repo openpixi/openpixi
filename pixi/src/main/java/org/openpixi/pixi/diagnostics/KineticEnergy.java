@@ -4,7 +4,7 @@ import org.openpixi.pixi.physics.Particle;
 import org.openpixi.pixi.physics.grid.Grid;
 import java.util.ArrayList;
 
-public class KineticEnergy implements ParticleDiagnosticMethod {
+public class KineticEnergy implements ParticleMethod {
 	
 	private double totalKineticEnergy;
 	

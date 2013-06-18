@@ -1,7 +1,7 @@
 package org.openpixi.pixi.physics;
 
-import org.openpixi.pixi.diagnostics.GridDiagnosticMethod;
-import org.openpixi.pixi.diagnostics.ParticleDiagnosticMethod;
+import org.openpixi.pixi.diagnostics.GridMethod;
+import org.openpixi.pixi.diagnostics.ParticleMethod;
 import org.openpixi.pixi.parallel.cellaccess.CellIterator;
 import org.openpixi.pixi.parallel.cellaccess.ParallelCellIterator;
 import org.openpixi.pixi.parallel.cellaccess.SequentialCellIterator;
@@ -86,10 +86,10 @@ public class Settings {
 	
 	// Diagnostics related settings
 	
-	private List<ParticleDiagnosticMethod> particleDiagnostics = 
-			new ArrayList<ParticleDiagnosticMethod>();
-	private List<GridDiagnosticMethod> gridDiagnostics = 
-			new ArrayList<GridDiagnosticMethod>();
+	private List<ParticleMethod> particleDiagnostics = 
+			new ArrayList<ParticleMethod>();
+	private List<GridMethod> gridDiagnostics = 
+			new ArrayList<GridMethod>();
 
 	// Batch version settings
 
@@ -165,11 +165,11 @@ public class Settings {
 		return interpolator;
 	}
 	
-	public List<ParticleDiagnosticMethod> getParticleDiagnostics() {
+	public List<ParticleMethod> getParticleDiagnostics() {
 		return particleDiagnostics;
 	}
 	
-	public List<GridDiagnosticMethod> getGridDiagnostics() {
+	public List<GridMethod> getGridDiagnostics() {
 		return gridDiagnostics;
 	}
 
@@ -354,11 +354,11 @@ public class Settings {
 		this.interpolator = interpolator;
 	}
 	
-	public void  setParticleDiagnostics(List<ParticleDiagnosticMethod> particleDiagnostics) {
+	public void  setParticleDiagnostics(List<ParticleMethod> particleDiagnostics) {
 		this.particleDiagnostics = particleDiagnostics;
 	}
 	
-	public void setGridDiagnostics(List<GridDiagnosticMethod> gridDiagnostics) {
+	public void setGridDiagnostics(List<GridMethod> gridDiagnostics) {
 		this.gridDiagnostics = gridDiagnostics;
 	}
 

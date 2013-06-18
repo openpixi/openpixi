@@ -2,7 +2,7 @@ package org.openpixi.pixi.diagnostics;
 
 import org.openpixi.pixi.physics.grid.Grid;
 
-public interface GridDiagnosticMethod {
+public interface GridMethod {
 
 	public void calculate(Grid g);
 	

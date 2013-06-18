@@ -3,7 +3,7 @@ package org.openpixi.pixi.diagnostics;
 import org.openpixi.pixi.physics.grid.Grid;
 import edu.emory.mathcs.jtransforms.fft.*;
 
-public class Potential implements GridDiagnosticMethod {
+public class Potential implements GridMethod {
 
 	private Grid grid;
 	double[][] phi;

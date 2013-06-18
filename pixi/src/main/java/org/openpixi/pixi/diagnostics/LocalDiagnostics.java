@@ -11,8 +11,8 @@ public class LocalDiagnostics {
 	private Grid grid;
 	private ArrayList<Particle> particles;
 	
-	private List<ParticleDiagnosticMethod> particleDiagnostics;
-	private List<GridDiagnosticMethod> gridDiagnostics;
+	private List<ParticleMethod> particleDiagnostics;
+	private List<GridMethod> gridDiagnostics;
 	
 	
 	public LocalDiagnostics(Grid grid, ArrayList<Particle> particles, Settings stt) {
@@ -24,19 +24,19 @@ public class LocalDiagnostics {
 	}
 	
 	public void perform(int step) {
-		for(ParticleDiagnosticMethod m : particleDiagnostics){
+		for(ParticleMethod m : particleDiagnostics){
 			m.calculate(particles);
 		}
-		for(GridDiagnosticMethod m : gridDiagnostics) {
+		for(GridMethod m : gridDiagnostics) {
 			m.calculate(grid);
 		}
 	}
 	
 	public void output(ParticleDataOutput pout, GridDataOutput gout) {
-		for(ParticleDiagnosticMethod m : particleDiagnostics){
+		for(ParticleMethod m : particleDiagnostics){
 			m.getData(pout);
 		}
-		for(GridDiagnosticMethod m : gridDiagnostics) {
+		for(GridMethod m : gridDiagnostics) {
 			m.getData(gout);
 		}
 	}
