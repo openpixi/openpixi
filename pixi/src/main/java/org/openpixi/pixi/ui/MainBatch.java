@@ -22,6 +22,7 @@ package org.openpixi.pixi.ui;
 import org.openpixi.pixi.physics.Debug;
 import org.openpixi.pixi.physics.Settings;
 import org.openpixi.pixi.physics.Simulation;
+import org.openpixi.pixi.diagnostics.LocalDiagnostics;
 import org.openpixi.pixi.profile.ProfileInfo;
 
 public class MainBatch {
@@ -32,37 +33,19 @@ public class MainBatch {
 	public static final int steps = 100;
 
 	public static Simulation s;
+	public static LocalDiagnostics localDiagnostics;
 
 	public static void main(String[] args) {
 		Debug.checkAssertsEnabled();
 
-		s = new Simulation(new Settings());
-
-		System.out.println("-------- INITIAL CONDITIONS--------");
-
-		for (int i=0; i < 10; i++) {
-			System.out.println(s.particles.get(i).getX());
-		}
-
-		System.out.println("\n-------- SIMULATION RESULTS --------");
+		Settings stt = new Settings();
+		s = new Simulation(stt);
+		localDiagnostics = new LocalDiagnostics(s.grid, s.particles, stt);		
 
 		for (int i = 0; i < steps; i++) {
 			s.step();
+			localDiagnostics.perform(i);
 		}
-
-		for (int i=0; i < 10; i++) {
-			System.out.println(s.particles.get(i).getX());
-		}
-
-		System.out.println("\nCurrent: ");
-
-		for (int i = 0; i < s.grid.getNumCellsX(); i++) {
-				System.out.println(s.grid.getJx(i,2));
-		}
-
-		System.out.println(s.grid.getCellWidth());
-		System.out.println(s.grid.getCellHeight());
-
 		ProfileInfo.printProfileInfo();
 	}
 

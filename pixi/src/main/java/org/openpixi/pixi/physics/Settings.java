@@ -1,5 +1,7 @@
 package org.openpixi.pixi.physics;
 
+import org.openpixi.pixi.diagnostics.GridDiagnosticMethod;
+import org.openpixi.pixi.diagnostics.ParticleDiagnosticMethod;
 import org.openpixi.pixi.parallel.cellaccess.CellIterator;
 import org.openpixi.pixi.parallel.cellaccess.ParallelCellIterator;
 import org.openpixi.pixi.parallel.cellaccess.SequentialCellIterator;
@@ -81,6 +83,13 @@ public class Settings {
 	private CollisionAlgorithm collisionResolver = new CollisionAlgorithm();
 	private Solver particleSolver = new Euler();
 	private List<Force> forces = new ArrayList<Force>();
+	
+	// Diagnostics related settings
+	
+	private List<ParticleDiagnosticMethod> particleDiagnostics = 
+			new ArrayList<ParticleDiagnosticMethod>();
+	private List<GridDiagnosticMethod> gridDiagnostics = 
+			new ArrayList<GridDiagnosticMethod>();
 
 	// Batch version settings
 
@@ -154,6 +163,14 @@ public class Settings {
 
 	public InterpolatorAlgorithm getInterpolator() {
 		return interpolator;
+	}
+	
+	public List<ParticleDiagnosticMethod> getParticleDiagnostics() {
+		return particleDiagnostics;
+	}
+	
+	public List<GridDiagnosticMethod> getGridDiagnostics() {
+		return gridDiagnostics;
 	}
 
 	public int getNumOfNodes() {
@@ -335,6 +352,14 @@ public class Settings {
 
 	public void setInterpolator(InterpolatorAlgorithm interpolator) {
 		this.interpolator = interpolator;
+	}
+	
+	public void  setParticleDiagnostics(List<ParticleDiagnosticMethod> particleDiagnostics) {
+		this.particleDiagnostics = particleDiagnostics;
+	}
+	
+	public void setGridDiagnostics(List<GridDiagnosticMethod> gridDiagnostics) {
+		this.gridDiagnostics = gridDiagnostics;
 	}
 
 	public void setForces(List<Force> forces) {

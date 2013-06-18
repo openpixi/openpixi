@@ -19,6 +19,9 @@ public class LocalDiagnostics {
 		
 		this.grid = grid;
 		this.particles = particles;
+		particleDiagnostics = stt.getParticleDiagnostics();
+		gridDiagnostics = stt.getGridDiagnostics();
+		particleDiagnostics.add(new KineticEnergy());
 		
 	}
 	
@@ -28,6 +31,15 @@ public class LocalDiagnostics {
 		}
 		for(GridDiagnosticMethod m : gridDiagnostics) {
 			m.calculate(grid);
+		}
+	}
+	
+	public void output(ParticleDataOutput pout, GridDataOutput gout) {
+		for(ParticleDiagnosticMethod m : particleDiagnostics){
+			m.getData(pout);
+		}
+		for(GridDiagnosticMethod m : gridDiagnostics) {
+			m.getData(gout);
 		}
 	}
 }
