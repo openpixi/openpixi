@@ -51,8 +51,8 @@ public class MainBatch {
 		Settings stt = new Settings();
 		s = new Simulation(stt);
 		
-//		stt.getParticleDiagnostics().add(new KineticEnergy());
-//		stt.getGridDiagnostics().add(new Potential(s.grid));
+		stt.getParticleDiagnostics().add(new KineticEnergy());
+		stt.getGridDiagnostics().add(new Potential(s.grid));
 		diagnostics = new Diagnostics(s.grid, s.particles, stt);
 		
 		if (args.length == 0) {
