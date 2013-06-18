@@ -86,8 +86,17 @@ public class Settings {
 	
 	// Diagnostics related settings
 	
+	/** Used to mark output files */
 	private String runid = "default-run";
+	
+	/** Determines after how many iterations the diagnostics
+	 * on the particles should be performed.
+	 */
 	private int particleDiagnosticsIntervall = 10;
+	
+	/** Determines after how many iterations the diagnostics
+	 * on the grid should be performed.
+	 */
 	private int gridDiagnosticsIntervall = 20;
 	
 	private List<ParticleMethod> particleDiagnostics = 

@@ -33,10 +33,18 @@ public class MainBatch {
 
 	/**Total number of iterations*/
 	public static int iterations;
+	/** Determines after how many iterations the diagnostics
+	 * on the particles should be performed.
+	 */
 	public static int particleDiagnosticsIntervall;
 	public static int particleIntervall;
+	/** Determines after how many iterations the diagnostics
+	 * on the grid should be performed.
+	 */
 	public static int gridDiagnosticsIntervall;
 	public static int gridIntervall;
+	
+	/** Used to mark output files */
 	private static String runid;
 
 	private static Simulation s;
@@ -47,29 +55,49 @@ public class MainBatch {
 	public static void main(String[] args) {
 		Debug.checkAssertsEnabled();
 
+		// Creates a settings class with the default parameters
 		Settings settings = new Settings();
+		
+		// Checks if the user has specified at least one parameter.
+		// If so creates a parser and uses the parameter as the
+		// path to the settings file.
 		if (args.length != 0){
 			Parser parser = new Parser(settings);
 			parser.parse(args[0]);
 		}
 		
+		// Reads out the settings that are needed for this UI.
+		// This must be placed after the parsing process.
 		iterations = settings.getIterations();
 		particleDiagnosticsIntervall = settings.getParticleDiagnosticsIntervall();
 		gridDiagnosticsIntervall = settings.getGridDiagnosticsIntervall();
 		runid = settings.getRunid();
 		
+		// Creates the actual physics simulation that can be run iteratively.
 		s = new Simulation(settings);
 		
+		// Hardcoded specification of diagnostics
 		settings.getGridDiagnostics().add(new Potential(s.grid));
+		// Creates the diagnostics wrapper class that knows about all
+		// enabled diagnostic methods.
 		diagnostics = new Diagnostics(s.grid, s.particles, settings);
 		
+		// Checks if the user has specified at least two parameters
+		// If this is not the case, the diagnostics output is disabled
+		// the program will not output anything.
 		if (args.length < 2) {
 			pdo = new EmptyParticleDataOutput();
 			gdo = new EmptyGridDataOutput();
 		} else {
+			// The program expects a directory (to which the output files will be saved) as its
+			// second parameter. This checks if the directory is specified correctly. Tries to
+			// fix it if not.
 			if (args[1].substring(args[1].length() -1) != System.getProperty("file.separator")) {
 				args[1] = args[1] + System.getProperty("file.separator");
 			}
+			
+			// Tries to create the output objects. If something is wrong with the specified
+			// directory the program will give an error and terminate. 
 			try {
 				pdo = new ParticleDataOutput(args[1], runid);
 				gdo = new GridDataOutput(args[1], runid, s.grid);
@@ -82,6 +110,7 @@ public class MainBatch {
 			}
 		}
 		
+		//Performes diagnostics on the initial state of the simulation
 		pdo.startIteration(0);
 		diagnostics.particles();
 		diagnostics.outputParticles(pdo);
@@ -93,7 +122,9 @@ public class MainBatch {
 		gridIntervall = gridDiagnosticsIntervall;
 		
 		for (int i = 0; i < iterations; i++) {
+			// advance the simulation by one step
 			s.step();
+			
 			if ( i == particleIntervall) {
 				pdo.startIteration(i);
 				diagnostics.particles();
