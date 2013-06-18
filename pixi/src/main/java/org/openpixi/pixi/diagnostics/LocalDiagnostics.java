@@ -20,9 +20,7 @@ public class LocalDiagnostics {
 		this.grid = grid;
 		this.particles = particles;
 		particleDiagnostics = stt.getParticleDiagnostics();
-		gridDiagnostics = stt.getGridDiagnostics();
-		particleDiagnostics.add(new KineticEnergy());
-		
+		gridDiagnostics = stt.getGridDiagnostics();		
 	}
 	
 	public void perform(int step) {

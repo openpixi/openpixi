@@ -23,6 +23,7 @@ import org.openpixi.pixi.physics.Debug;
 import org.openpixi.pixi.physics.Settings;
 import org.openpixi.pixi.physics.Simulation;
 import org.openpixi.pixi.diagnostics.LocalDiagnostics;
+import org.openpixi.pixi.diagnostics.KineticEnergy;
 import org.openpixi.pixi.profile.ProfileInfo;
 
 public class MainBatch {
@@ -40,6 +41,7 @@ public class MainBatch {
 
 		Settings stt = new Settings();
 		s = new Simulation(stt);
+		stt.getParticleDiagnostics().add(new KineticEnergy());
 		localDiagnostics = new LocalDiagnostics(s.grid, s.particles, stt);		
 
 		for (int i = 0; i < steps; i++) {
