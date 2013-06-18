@@ -14,7 +14,7 @@ public class ParticleDiagnosticsOutput extends EmptyParticleDiagnosticsOutput{
 		totalKineticEnergy = writerFactory(dir + "Energy" + runid);
 	}
 	
-	public void setTotalKineticEnergy(double energy) {
+	public void kineticEnergy(double energy) {
 		try {
 			totalKineticEnergy.write("" + energy);
 			totalKineticEnergy.newLine();

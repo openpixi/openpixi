@@ -4,7 +4,7 @@ import org.openpixi.pixi.diagnostics.ParticleDataOutput;
 
 public class EmptyParticleDiagnosticsOutput implements ParticleDataOutput {
 
-	public void setTotalKineticEnergy(double var) {
+	public void kineticEnergy(double var) {
 		//DO NOTHING
 	}
 	

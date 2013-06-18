@@ -19,6 +19,6 @@ public class KineticEnergy implements ParticleDiagnosticMethod {
 	}
 	
 	public void getData(ParticleDataOutput out) {
-		out.setTotalKineticEnergy(totalKineticEnergy);
+		out.kineticEnergy(totalKineticEnergy);
 	}
 }
