@@ -23,6 +23,7 @@ import org.openpixi.pixi.physics.Debug;
 import org.openpixi.pixi.physics.Settings;
 import org.openpixi.pixi.physics.Simulation;
 import org.openpixi.pixi.profile.ProfileInfo;
+import org.openpixi.pixi.ui.util.Parser;
 
 public class MainBatch {
 
@@ -35,8 +36,14 @@ public class MainBatch {
 
 	public static void main(String[] args) {
 		Debug.checkAssertsEnabled();
-
-		s = new Simulation(new Settings());
+		
+		Settings settings = new Settings();
+		if (args.length != 0){
+			Parser parser = new Parser(settings);
+			parser.parse(args[0]);
+		}
+		
+		s = new Simulation(settings);
 
 		System.out.println("-------- INITIAL CONDITIONS--------");
 
@@ -46,7 +53,7 @@ public class MainBatch {
 
 		System.out.println("\n-------- SIMULATION RESULTS --------");
 
-		for (int i = 0; i < steps; i++) {
+		for (int i = 0; i < settings.getIterations(); i++) {
 			s.step();
 		}
 
