@@ -23,7 +23,6 @@ import org.openpixi.pixi.physics.Debug;
 import org.openpixi.pixi.physics.Settings;
 import org.openpixi.pixi.physics.Simulation;
 import org.openpixi.pixi.diagnostics.Diagnostics;
-import org.openpixi.pixi.diagnostics.methods.KineticEnergy;
 import org.openpixi.pixi.diagnostics.methods.Potential;
 import org.openpixi.pixi.profile.ProfileInfo;
 import org.openpixi.pixi.ui.util.*;
@@ -35,7 +34,9 @@ public class MainBatch {
 	/**Total number of iterations*/
 	public static int iterations;
 	public static int particleDiagnosticsIntervall;
+	public static int particleIntervall;
 	public static int gridDiagnosticsIntervall;
+	public static int gridIntervall;
 	private static String runid;
 
 	private static Simulation s;
@@ -88,19 +89,22 @@ public class MainBatch {
 		diagnostics.grid();
 		diagnostics.outputGrid(gdo);
 		
+		particleIntervall = particleDiagnosticsIntervall;
+		gridIntervall = gridDiagnosticsIntervall;
+		
 		for (int i = 0; i < iterations; i++) {
 			s.step();
-			if ( i == particleDiagnosticsIntervall) {
+			if ( i == particleIntervall) {
 				pdo.startIteration(i);
 				diagnostics.particles();
 				diagnostics.outputParticles(pdo);
-				particleDiagnosticsIntervall += particleDiagnosticsIntervall;
+				particleIntervall += particleDiagnosticsIntervall;
 			}
-			if ( i == gridDiagnosticsIntervall) {
+			if ( i == gridIntervall) {
 				gdo.startIteration(i);
 				diagnostics.grid();
 				diagnostics.outputGrid(gdo);
-				gridDiagnosticsIntervall += gridDiagnosticsIntervall;
+				gridIntervall += gridDiagnosticsIntervall;
 			}
 		}
 		
