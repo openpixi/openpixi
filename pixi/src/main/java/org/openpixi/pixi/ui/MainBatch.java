@@ -52,6 +52,13 @@ public class MainBatch {
 	private static EmptyParticleDataOutput pdo;
 	private static EmptyGridDataOutput gdo;
 
+	/**
+	 * Can be run with two input parameters. The first specifies the XML settings file.
+	 * The second specifies the directory where diagnostic output should be saved.
+	 * If one wants to use the default values its best to provide an empty settings file.
+	 * (dont forget to add the <settings> </settings> root element, the empty file should
+	 * still comply with the XML specification!)
+	 */
 	public static void main(String[] args) {
 		Debug.checkAssertsEnabled();
 
