@@ -32,13 +32,11 @@ import java.io.IOException;
 
 public class MainBatch {
 
-	public static final int num_particles = 100;
-	public static final double particle_radius = 0.1;
-	/**Total number of timesteps*/
-	public static final int steps = 100;
-	public static int particleDiagnosticsIntervall = 10;
-	public static int gridDiagnosticsIntervall = 20;
-	private static String runid = "test";
+	/**Total number of iterations*/
+	public static int iterations;
+	public static int particleDiagnosticsIntervall;
+	public static int gridDiagnosticsIntervall;
+	private static String runid;
 
 	private static Simulation s;
 	private static Diagnostics diagnostics;
@@ -53,6 +51,12 @@ public class MainBatch {
 			Parser parser = new Parser(settings);
 			parser.parse(args[0]);
 		}
+		
+		iterations = settings.getIterations();
+		particleDiagnosticsIntervall = settings.getParticleDiagnosticsIntervall();
+		gridDiagnosticsIntervall = settings.getGridDiagnosticsIntervall();
+		runid = settings.getRunid();
+		
 		s = new Simulation(settings);
 		
 		settings.getParticleDiagnostics().add(new KineticEnergy());
@@ -85,7 +89,7 @@ public class MainBatch {
 		diagnostics.grid();
 		diagnostics.outputGrid(gdo);
 		
-		for (int i = 0; i < settings.getIterations(); i++) {
+		for (int i = 0; i < iterations; i++) {
 			s.step();
 			if ( i == particleDiagnosticsIntervall) {
 				pdo.startIteration(i);

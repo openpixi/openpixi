@@ -86,6 +86,10 @@ public class Settings {
 	
 	// Diagnostics related settings
 	
+	private String runid = "default-run";
+	private int particleDiagnosticsIntervall = 10;
+	private int gridDiagnosticsIntervall = 20;
+	
 	private List<ParticleMethod> particleDiagnostics = 
 			new ArrayList<ParticleMethod>();
 	private List<GridMethod> gridDiagnostics = 
@@ -163,6 +167,18 @@ public class Settings {
 
 	public InterpolatorAlgorithm getInterpolator() {
 		return interpolator;
+	}
+	
+	public String getRunid() {
+		return runid;
+	}
+	
+	public int getParticleDiagnosticsIntervall() {
+		return particleDiagnosticsIntervall;
+	}
+	
+	public int getGridDiagnosticsIntervall() {
+		return gridDiagnosticsIntervall;
 	}
 	
 	public List<ParticleMethod> getParticleDiagnostics() {
@@ -352,6 +368,10 @@ public class Settings {
 
 	public void setInterpolator(InterpolatorAlgorithm interpolator) {
 		this.interpolator = interpolator;
+	}
+	
+	public void setRunid (String runid) {
+		this.runid = runid;
 	}
 	
 	public void  setParticleDiagnostics(List<ParticleMethod> particleDiagnostics) {
