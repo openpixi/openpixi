@@ -1,11 +1,11 @@
 package org.openpixi.pixi.physics.grid;
 
 import junit.framework.TestCase;
-import org.openpixi.pixi.physics.Particle;
 import org.openpixi.pixi.physics.Settings;
 import org.openpixi.pixi.physics.Simulation;
 import org.openpixi.pixi.physics.fields.SimpleSolver;
 import org.openpixi.pixi.physics.force.ConstantForce;
+import org.openpixi.pixi.physics.particles.Particle;
 
 /**
  * THIS TEST IS CURRENTLY DISABLED! (it does not test the right thing)

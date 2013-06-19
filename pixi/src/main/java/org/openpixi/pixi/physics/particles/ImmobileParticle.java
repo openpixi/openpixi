@@ -1,4 +1,5 @@
-package org.openpixi.pixi.physics;
+package org.openpixi.pixi.physics.particles;
+
 
 public class ImmobileParticle extends Particle {
 	

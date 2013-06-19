@@ -1,7 +1,7 @@
 package org.openpixi.pixi.physics.grid;
 
 import org.openpixi.pixi.physics.Debug;
-import org.openpixi.pixi.physics.Particle;
+import org.openpixi.pixi.physics.particles.Particle;
 
 /**
  *Interpolates current from the particles to the grid in a way s.t. the continuity equation 

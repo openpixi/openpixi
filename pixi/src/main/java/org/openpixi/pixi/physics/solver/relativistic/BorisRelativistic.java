@@ -21,6 +21,7 @@ package org.openpixi.pixi.physics.solver.relativistic;
 
 import org.openpixi.pixi.physics.*;
 import org.openpixi.pixi.physics.force.Force;
+import org.openpixi.pixi.physics.particles.Particle;
 import org.openpixi.pixi.physics.solver.Solver;
 
 /**The calculation is due to Boris and the equations((7) - (10)) can be found here:

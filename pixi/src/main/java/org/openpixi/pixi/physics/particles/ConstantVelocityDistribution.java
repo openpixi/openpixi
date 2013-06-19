@@ -1,6 +1,7 @@
-package org.openpixi.pixi.physics;
+package org.openpixi.pixi.physics.particles;
 
 import java.util.List;
+
 
 public class ConstantVelocityDistribution{
 

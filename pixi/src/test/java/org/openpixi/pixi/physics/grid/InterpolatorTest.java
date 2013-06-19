@@ -1,9 +1,10 @@
 package org.openpixi.pixi.physics.grid;
 
 import junit.framework.TestCase;
-import org.openpixi.pixi.physics.Particle;
 import org.openpixi.pixi.physics.Settings;
 import org.openpixi.pixi.physics.grid.CloudInCell;
+import org.openpixi.pixi.physics.particles.Particle;
+
 import java.util.Random;
 import java.util.ArrayList;
 

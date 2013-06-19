@@ -19,8 +19,8 @@
 
 package org.openpixi.pixi.physics.solver;
 
-import org.openpixi.pixi.physics.Particle;
 import org.openpixi.pixi.physics.force.Force;
+import org.openpixi.pixi.physics.particles.Particle;
 
 public interface Solver {
 	

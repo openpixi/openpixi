@@ -4,9 +4,9 @@ import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
 
-import org.openpixi.pixi.physics.Particle;
-import org.openpixi.pixi.physics.ParticleFull;
 import org.openpixi.pixi.physics.force.ConstantForce;
+import org.openpixi.pixi.physics.particles.Particle;
+import org.openpixi.pixi.physics.particles.ParticleFull;
 
 /**
  * Unit test for Solver.

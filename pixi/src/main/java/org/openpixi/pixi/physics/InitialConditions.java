@@ -21,6 +21,8 @@ package org.openpixi.pixi.physics;
 
 import org.openpixi.pixi.physics.force.ConstantForce;
 import org.openpixi.pixi.physics.force.SpringForce;
+import org.openpixi.pixi.physics.particles.Particle;
+import org.openpixi.pixi.physics.particles.ParticleFull;
 import org.openpixi.pixi.physics.solver.EulerRichardson;
 import org.openpixi.pixi.physics.solver.relativistic.BorisRelativistic;
 

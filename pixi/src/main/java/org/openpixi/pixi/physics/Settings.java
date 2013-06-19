@@ -19,6 +19,8 @@ import org.openpixi.pixi.physics.grid.CloudInCell;
 import org.openpixi.pixi.physics.grid.GridBoundaryType;
 import org.openpixi.pixi.physics.grid.InterpolatorAlgorithm;
 import org.openpixi.pixi.physics.movement.boundary.ParticleBoundaryType;
+import org.openpixi.pixi.physics.particles.Particle;
+import org.openpixi.pixi.physics.particles.ParticleFull;
 import org.openpixi.pixi.physics.solver.Euler;
 import org.openpixi.pixi.physics.solver.Solver;
 import org.openpixi.pixi.physics.util.ClassCopier;

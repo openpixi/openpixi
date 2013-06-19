@@ -17,39 +17,25 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-package org.openpixi.pixi.physics;
+package org.openpixi.pixi.physics.particles;
 
 import java.util.List;
 import java.util.Random;
 
-public class RandomVelocityDistribution {
+
+public class RandomPositionDistribution {
 
 	public static List<Particle> apply(List<Particle> particles, int startIndex, int endIndex,
-			double minVelocityX, double minVelocityY, double maxVelocity,
+			double startX, double endX, double startY, double endY,
 			long seed) {
 		
 		Random rand = new Random(seed);
 		
-		// Temporary variables used later
-		double rnd1;
-		double rnd2;
-		double rnd3;
-		
-		for(int i = startIndex; i < endIndex; i++) {
-			
-			do {
-				rnd1 = rand.nextDouble() * (maxVelocity - minVelocityX) + minVelocityX;
-				rnd2 = rand.nextDouble() * (maxVelocity - minVelocityY) + minVelocityY;
-				rnd3 = (rnd1*rnd1 + rnd2*rnd2);
-			} while (rnd3 > maxVelocity);
-			
-			rnd3 = 2 * Math.PI * rand.nextDouble();
-			
-			particles.get(i).setVx(rnd1 * Math.cos(rnd3));
-			particles.get(i).setVy(rnd2 * Math.sin(rnd3));				 
+		for(int i = startIndex; i < endIndex; i++) {			
+			 particles.get(i).setVx(rand.nextDouble() * (endX - startX) + startX);
+			 particles.get(i).setVy(rand.nextDouble() * (endY - startY) + startY);				 
 		 }
 		
 		return particles;
 	}
-	
 }

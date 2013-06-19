@@ -4,11 +4,11 @@ import java.util.ArrayList;
 import java.util.Random;
 
 import junit.framework.TestCase;
-import org.openpixi.pixi.physics.Particle;
 import org.openpixi.pixi.physics.Settings;
 import org.openpixi.pixi.physics.Simulation;
 import org.openpixi.pixi.physics.fields.SimpleSolver;
 import org.openpixi.pixi.physics.force.ConstantForce;
+import org.openpixi.pixi.physics.particles.Particle;
 
 /**
  * Unit test for Solver.
