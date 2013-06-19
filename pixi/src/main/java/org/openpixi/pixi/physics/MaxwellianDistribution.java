@@ -1,96 +1,94 @@
+/*
+ * OpenPixi - Open Particle-In-Cell (PIC) Simulator
+ * Copyright (C) 2012  OpenPixi.org
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License along
+ * with this program; if not, write to the Free Software Foundation, Inc.,
+ * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+ */
+
 package org.openpixi.pixi.physics;
 
 import java.util.List;
-import java.util.ArrayList;
 import java.util.Random;
 
-public class MaxwellianDistribution implements ParticleLoader {
-
-	private Random rand;
-	private boolean usecutoff;
-	
-	/**Velocity normalization in x direction, temperature dependent */
-	private double vnormX;
-	/**Velocity normalization in x direction, temperature dependent */
-	private double vnormY;
-	/**Cutoff velocity SQUARED*/
-	private double vcutoff;
-	
-	private double rnd1;
-	private double rnd2;
-	private double rnd3;
-	
-	/** Generates a thermal VELOCITY distribution
-	 * TODO make this loader relativistic
-	 * @param temperature
+public class MaxwellianDistribution {		
+	/** Generates thermal particles that have a maxwellian distribution in 
+	 *  momentum space.
+	 *  TODO make this compatible with relativistic momenta
 	 */
-	public MaxwellianDistribution (long seed, double vthermal) {
+	public static List<Particle> apply (List<Particle> particles, int startIndex, int endIndex,
+			double thermalVelocityX, double thermalVelocityY, long seed) {
 		
-		rand = new Random(seed);
-		usecutoff = false;
-		setNorms(vthermal, vthermal);
+		Random rand = new Random(seed);
 		
-	}
-	
-	public MaxwellianDistribution (long seed, double vthermalX,
-			double vthermalY) {
+		// Temporary variables used later
+		double rnd1;
+		double rnd2;
+		double rnd3;
 		
-		rand = new Random(seed);
-		usecutoff = false;
-		setNorms(vthermalX, vthermalY);
-		
-	}
-	
-	public MaxwellianDistribution (long seed, double vthermalX,
-			double vthermalY, double vcutoff) {
-		
-		rand = new Random(seed);
-		usecutoff = true;
-		this.vcutoff = vcutoff * vcutoff;
-		setNorms(vthermalX, vthermalY);
-		
-	}
-	
-	private void setNorms (double vthermalX, double vthermalY) {
 		//0.5 is the mass of the electron that is used later
 		//Factor of 2 comes from the denominator in the exponent of
 		//the Maxwellian distribution.
 		//NOTE: There are no further factors because we are inverting
 		//the cumulative distribution hence the factors cancel
-		vnormX = Math.sqrt(2) * vthermalX;
-		vnormY = Math.sqrt(2) * vthermalY;
-	}
-	
-	
-	@Override
-	public List<Particle> load (int numOfParticles, int numCellsX, int numCellsY,
-			double simulationWidth, double simulationHeight, double radius) {
 		
-		int numOfElectrons= (numOfParticles / 2);
-		int numOfIons = numOfParticles - (numOfParticles / 2);
+		/**Velocity normalization in x direction, temperature dependent */
+		double vnormX = Math.sqrt(2) * thermalVelocityX;
+		/**Velocity normalization in x direction, temperature dependent */
+		double vnormY = Math.sqrt(2) * thermalVelocityY;
 		
-		//WARNING: THIS CODE WILL VIOLATE THE ASSERT CONDITION IN MOST CASES
-		int nX = (int) Math.sqrt((simulationWidth / simulationHeight) * numOfIons);
-		int nY = (int) numOfParticles / nX;
-		
-		//2 added in the numerator because we do not want to place
-		//the ions on the boundaries
-		double deltaX = simulationWidth / (nX+2);
-		double deltaY = simulationHeight / (nY+2);
-		
-		if (Debug.asserts) {
-			assert nX*nY == numOfIons: nX*nY;
-		}
-		
-		List<Particle> particles = new ArrayList<Particle>();
-
 		//Generates thermal electrons that are randomly distributed
 		//across the simulation area
-		for (int i = 0; i < numOfElectrons; i++) {
-			Particle p = new Particle();
+		for (int i = startIndex; i < endIndex; i++) {			
+			do {
+				rnd1 = rand.nextDouble();
+				rnd2 = rand.nextDouble();
+				rnd3 = (rnd1*rnd1 + rnd2*rnd2);
+			} while (rnd3 > 1);
 			
-			p.setX( simulationWidth * rand.nextDouble());
-			p.setY( simulationHeight * rand.nextDouble());
+			rnd3 = Math.sqrt( - Math.log(rnd3) / rnd3 );
+			particles.get(i).setVx( vnormX * rnd1 * rnd3 );
+			particles.get(i).setVy( vnormY * rnd2 * rnd3 );
+		}			
+			
+		return particles;
+	}
+	
+	public static List<Particle> applyWithCutoff (List<Particle> particles, int startIndex, int endIndex,
+			double thermalVelocityX, double thermalVelocityY, long seed, double cutoffVelocity) {
+		
+		Random rand = new Random(seed);
+		
+		// Temporary variables used later
+		double rnd1;
+		double rnd2;
+		double rnd3;
+		
+		//0.5 is the mass of the electron that is used later
+		//Factor of 2 comes from the denominator in the exponent of
+		//the Maxwellian distribution.
+		//NOTE: There are no further factors because we are inverting
+		//the cumulative distribution hence the factors cancel
+		double vnormX = Math.sqrt(2) * thermalVelocityX;
+		double vnormY = Math.sqrt(2) * thermalVelocityY;
+		
+		/**Cutoff velocity SQUARED*/
+		cutoffVelocity *= cutoffVelocity;
+		
+		//Generates thermal electrons that are randomly distributed
+		//across the simulation area
+		for (int i = startIndex; i < endIndex; i++) {
 			
 			do {
 				rnd1 = rand.nextDouble();
@@ -98,45 +96,14 @@ public class MaxwellianDistribution implements ParticleLoader {
 				rnd3 = (rnd1*rnd1 + rnd2*rnd2);
 			} while (rnd3 > 1);
 			
-			if (usecutoff) {
-				rnd3 = Math.sqrt(
-						(vcutoff*vcutoff - Math.log(rnd3 + (1-rnd3) * Math.exp(vcutoff*vcutoff)))
-						/ rnd3);
-				p.setVx( vnormX * rnd1 * rnd3 );
-				p.setVy( vnormY * rnd2 * rnd3 );
-			} else {
-				rnd3 = Math.sqrt( - Math.log(rnd3) / rnd3 );
-				p.setVx( vnormX * rnd1 * rnd3 );
-				p.setVy( vnormY * rnd2 * rnd3 );
-			}
-			
-			p.setCharge(-1);
-			p.setMass(0.5);		
-			p.setRadius(radius);
-			
-			particles.add(p);
-		}
-		
-		//Generates a spatially uniform, cold and heavy ion background
-		for (int i = 0; i < nX; i++) {
-			for (int j = 0; j < nY; j++) {
-				Particle p = new Particle();
-				
-				p.setX( (i+1) * deltaX );
-				p.setY( (j+1) * deltaY );
-				
-				p.setVx(0);
-				p.setVy(0);
-				
-				p.setCharge(1);
-				p.setMass(2000);		
-				p.setRadius(radius);
-				
-				particles.add(p);
-			}
+			// !!! CHECK THIS FORMULA AGAIN !!!
+			rnd3 = Math.sqrt(
+					(cutoffVelocity - Math.log(rnd3 + (1-rnd3) * Math.exp(cutoffVelocity)))
+					/ rnd3);
+			particles.get(i).setVx( vnormX * rnd1 * rnd3 );
+			particles.get(i).setVy( vnormY * rnd2 * rnd3 );	
 		}
 		
 		return particles;
 	}
-
 }
