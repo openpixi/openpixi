@@ -22,7 +22,6 @@ import org.openpixi.pixi.physics.movement.boundary.ParticleBoundaryType;
 import org.openpixi.pixi.physics.particles.Particle;
 import org.openpixi.pixi.physics.particles.ParticleFactory.PositionDistribution;
 import org.openpixi.pixi.physics.particles.ParticleFactory.VelocityDistribution;
-import org.openpixi.pixi.physics.particles.ParticleFull;
 import org.openpixi.pixi.physics.solver.Euler;
 import org.openpixi.pixi.physics.solver.Solver;
 import org.openpixi.pixi.physics.util.ClassCopier;
@@ -79,21 +78,22 @@ public class Settings {
 
 	// Particle related settings
 
-	private int numOfParticles = 100;
+	private int numOfParticles = 128;
 	private double particleRadius = 1;
-	private double particleMaxSpeed = speedOfLight;
+	private double particleMaxSpeed = speedOfLight/3;
 
+	// Random seed
+	private long test = (long) Math.random();
 	// If asList() is used the resulting list will have a fixed size!
 	private List<ParticleFactory> particleFactories = Arrays.asList(
-			new ParticleFactory(numOfParticles/2, 1, 1, 1, PositionDistribution.RANDOM,
-					VelocityDistribution.CONSTANT, particleMaxSpeed/10, particleMaxSpeed/10,
-					particleMaxSpeed, false, 0, 0),
-			new ParticleFactory(0, 1, -1, 1, PositionDistribution.RANDOM,
-					VelocityDistribution.RANDOM, particleMaxSpeed/1, particleMaxSpeed/1,
-					particleMaxSpeed, false, 1, 1));
+			new ParticleFactory(numOfParticles/2, 1, 1, particleRadius, PositionDistribution.RANDOM,
+					VelocityDistribution.RANDOM, particleMaxSpeed/10, particleMaxSpeed/10,
+					particleMaxSpeed, false, test, test),
+			new ParticleFactory(numOfParticles/2, 1, -1, particleRadius, PositionDistribution.RANDOM,
+					VelocityDistribution.RANDOM, particleMaxSpeed/10, particleMaxSpeed/10,
+					particleMaxSpeed, false, test, test));
 	
-	private List<Particle> particles = (new ParticleLoader()).load(particleFactories, 
-			simulationWidth, simulationHeight, gridCellsX, gridCellsY);
+	private List<Particle> particles = new ArrayList<Particle>();
 
 	private Detector collisionDetector = new Detector();
 	private CollisionAlgorithm collisionResolver = new CollisionAlgorithm();
@@ -244,9 +244,8 @@ public class Settings {
 	 */
 	public List<Particle> getParticles() {
 		if (particles.size() == 0) {
-			this.particles = InitialConditions.createRandomParticles(
-					simulationWidth,  simulationHeight,
-					particleMaxSpeed, numOfParticles, particleRadius);
+			this.particles = (new ParticleLoader()).load(particleFactories, 
+					simulationWidth, simulationHeight, gridCellsX, gridCellsY);
 		}
 
 		return cloneParticles();
