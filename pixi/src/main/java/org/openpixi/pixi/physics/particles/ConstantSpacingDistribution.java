@@ -21,7 +21,14 @@ package org.openpixi.pixi.physics.particles;
 
 import java.util.List;
 
-
+/**
+ * Tries to place the particles on the simulation area s.t. the densities in x and y direction
+ * have the same ratio as the width and height of the simulation area.
+ * 
+ * MOST OF THE TIME IT WILL FAIL!
+ * 
+ * Best used with width/height ratio of 1 and a particle number that is a power of 2.
+ */
 public class ConstantSpacingDistribution {
 
 	public static List<Particle> apply(List<Particle> particles, int startIndex, int endIndex,
@@ -37,8 +44,8 @@ public class ConstantSpacingDistribution {
 		}
 		int numOfParticlesY = (int) numOfParticles / numOfParticlesX;
 		
-		//2 added in the numerator because we do not want to place
-		//the ions on the boundaries
+		// 2 added in the numerator because we do not want to place
+		// the particles on the boundaries
 		double deltaX = width / (numOfParticlesX + 2);
 		double deltaY = height / (numOfParticlesY + 2);
 
@@ -47,7 +54,6 @@ public class ConstantSpacingDistribution {
 		numOfParticles + " on an area with this width and height! Try other parameters.");
 		}
 		
-		//Generates a spatially uniform, cold and heavy ion background
 		for (int i = startIndex; i < endIndex; i++) {
 			
 			for (int n = 0; n < numOfParticlesX; n++) {

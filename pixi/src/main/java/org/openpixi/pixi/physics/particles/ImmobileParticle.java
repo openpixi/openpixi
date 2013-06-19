@@ -1,6 +1,8 @@
 package org.openpixi.pixi.physics.particles;
 
-
+/**
+ * A lightweight particle class. It does not move. Perfectly suited for a heavy ion lattice.
+ */
 public class ImmobileParticle extends Particle {
 	
 	/** x-coordinate */
