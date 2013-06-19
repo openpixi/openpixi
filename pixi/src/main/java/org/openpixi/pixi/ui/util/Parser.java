@@ -184,7 +184,7 @@ public class Parser extends DefaultHandler {
 	}
 	
 	private void addDiagnostics(char ch[], int start, int length) {
-		Diagnostics methodd;
+		Diagnostics method;
 		String mtdname = new String(ch, start, length);
 		
 		int n;
@@ -199,16 +199,16 @@ public class Parser extends DefaultHandler {
 		
 		try{
 			if (mtdname.equalsIgnoreCase("Kinetic Energy")) {
-				methodd = new KineticEnergy(n);
+				method = new KineticEnergy(n);
 			} else if (mtdname.equalsIgnoreCase("Potential")) {
-				methodd = new Potential(n);
+				method = new Potential(n);
 			} else throw new Exception();
 		} catch (Exception e){
 			System.err.println("OpenPixi does not know about the " + mtdname + " diagnostic" +
 					" method. Skipping this setting!");
 			return;
 		}
-		settings.getDiagnostics().add(methodd);
+		settings.getDiagnostics().add(method);
 	}
 	
 	private void setNumberOfParticles(char ch[], int start, int length) {
