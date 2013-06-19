@@ -68,7 +68,7 @@ public class SolverTest extends TestCase {
 		p.setMass(7.654);
 		p.setCharge(5.432);
 
-		Particle pcopy = new ParticleFull(p);
+		Particle pcopy = p.copy();
 
 		solver.prepare(p, f, step);
 		solver.complete(p, f, step);
@@ -114,8 +114,8 @@ public class SolverTest extends TestCase {
 		p.setMass(7.654);
 		p.setCharge(5.432);
 
-		Particle pcopy = new ParticleFull(p);
-		Particle p2 = new ParticleFull(p);
+		Particle pcopy = p.copy();
+		Particle p2 = p.copy();
 
 		solver.prepare(p, f, step);
 		solver2.prepare(p2, f, step);

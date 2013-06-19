@@ -32,8 +32,8 @@ public class RandomPositionDistribution {
 		Random rand = new Random(seed);
 		
 		for(int i = startIndex; i < endIndex; i++) {			
-			 particles.get(i).setVx(rand.nextDouble() * (endX - startX) + startX);
-			 particles.get(i).setVy(rand.nextDouble() * (endY - startY) + startY);				 
+			 particles.get(i).setX(rand.nextDouble() * (endX - startX) + startX);
+			 particles.get(i).setY(rand.nextDouble() * (endY - startY) + startY);				 
 		 }
 		
 		return particles;

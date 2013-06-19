@@ -48,8 +48,6 @@ public abstract class Particle implements Serializable {
 	
 	public double getCharge() {return 0;}
 	
-	public double getChargedensity() {return 0;}
-	
 	public double getEx() {return 0;}
 	
 	public double getEy() {return 0;}
@@ -106,8 +104,6 @@ public abstract class Particle implements Serializable {
 
 	public void setCharge(double charge) {}
 
-	public void setChargedensity(double chargedensity) {}
-
 	public void setEx(double Ex) {}
 
 	public void setEy(double Ey) {}
@@ -135,6 +131,11 @@ public abstract class Particle implements Serializable {
 	//----------------------------------------------------------------------------------------------
 
 	public void storePosition() {}
+	
+	public Particle copy() {
+		Particle p = new ParticleFull();
+		return p;
+	}
 
 	@Override
 	public String toString() {return null;}

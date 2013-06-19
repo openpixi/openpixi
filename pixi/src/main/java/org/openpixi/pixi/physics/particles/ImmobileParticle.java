@@ -78,12 +78,15 @@ public class ImmobileParticle extends Particle {
 	/** Epty constructor */
 	public ImmobileParticle() {}
 	
-	/** Copy constructor */
-	public ImmobileParticle(Particle p) {
-		this.x = p.getX();
-		this.y = p.getY();	
-		this.radius = p.getRadius();
-		this.charge = p.getCharge();
+	@Override
+	public Particle copy() {
+		Particle p = new ImmobileParticle();
+		p.setX(x);
+		p.setY(y);	
+		p.setRadius(radius);
+		p.setCharge(charge);
+		
+		return p;
 	}
 	
 	@Override

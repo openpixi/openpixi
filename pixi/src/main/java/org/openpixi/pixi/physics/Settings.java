@@ -20,12 +20,17 @@ import org.openpixi.pixi.physics.grid.GridBoundaryType;
 import org.openpixi.pixi.physics.grid.InterpolatorAlgorithm;
 import org.openpixi.pixi.physics.movement.boundary.ParticleBoundaryType;
 import org.openpixi.pixi.physics.particles.Particle;
+import org.openpixi.pixi.physics.particles.ParticleFactory.PositionDistribution;
+import org.openpixi.pixi.physics.particles.ParticleFactory.VelocityDistribution;
 import org.openpixi.pixi.physics.particles.ParticleFull;
 import org.openpixi.pixi.physics.solver.Euler;
 import org.openpixi.pixi.physics.solver.Solver;
 import org.openpixi.pixi.physics.util.ClassCopier;
+import org.openpixi.pixi.physics.particles.ParticleFactory;
+import org.openpixi.pixi.physics.particles.ParticleLoader;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -64,8 +69,8 @@ public class Settings {
 
 	// Grid related settings
 
-	private int gridCellsX = 100;
-	private int gridCellsY = 100;
+	private int gridCellsX = 10;
+	private int gridCellsY = 10;
 
 	private FieldSolver gridSolver = new SimpleSolver();
 	private PoissonSolver poissonSolver = new PoissonSolverFFTPeriodic();
@@ -78,7 +83,17 @@ public class Settings {
 	private double particleRadius = 1;
 	private double particleMaxSpeed = speedOfLight;
 
-	private List<Particle> particles = new ArrayList<Particle>();
+	// If asList() is used the resulting list will have a fixed size!
+	private List<ParticleFactory> particleFactories = Arrays.asList(
+			new ParticleFactory(numOfParticles/2, 1, 1, 1, PositionDistribution.RANDOM,
+					VelocityDistribution.RANDOM, particleMaxSpeed/10, particleMaxSpeed/10,
+					particleMaxSpeed/10, particleMaxSpeed/10, particleMaxSpeed, false),
+			new ParticleFactory(numOfParticles/2, 1, -1, 1, PositionDistribution.RANDOM,
+					VelocityDistribution.RANDOM, particleMaxSpeed/10, particleMaxSpeed/10,
+					particleMaxSpeed/10, particleMaxSpeed/10, particleMaxSpeed, false));
+	
+	private List<Particle> particles = (new ParticleLoader()).load(particleFactories, 
+			simulationWidth, simulationHeight, gridCellsX, gridCellsY);
 
 	private Detector collisionDetector = new Detector();
 	private CollisionAlgorithm collisionResolver = new CollisionAlgorithm();
@@ -241,7 +256,7 @@ public class Settings {
 	private List<Particle> cloneParticles() {
 		List<Particle> copy = new ArrayList<Particle>();
 		for (Particle p: particles) {
-			copy.add(new ParticleFull(p));
+			copy.add(p.copy());
 		}
 		return copy;
 	}

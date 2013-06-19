@@ -55,10 +55,7 @@ public class ParticleFull extends Particle {
 	private double prevX;
 	/**previous y position of particle*/
 	private double prevY;
-
-	/**charge density of particle for a specific form factor*/
-	private double chargedensity;
-
+	
 	private double Ex;
 	private double Ey;
 	private double Bz;
@@ -190,15 +187,7 @@ public class ParticleFull extends Particle {
 	public void addPrevY(double y) {
 		this.prevY += y;
 	}
-
-	public double getChargedensity() {
-		return chargedensity;
-	}
-
-	public void setChargedensity(double chargedensity) {
-		this.chargedensity = chargedensity;
-	}
-
+	
 	public double getEx() {
 		return Ex;
 	}
@@ -293,29 +282,31 @@ public class ParticleFull extends Particle {
 	public ParticleFull() {
 	}
 
-	/** Copy constructor */
-	public ParticleFull(Particle p) {
-		x = p.getX();
-		y = p.getY();
-		radius = p.getRadius();
-		vx = p.getVx();
-		vy = p.getVy();
-		ax = p.getAx();
-		ay = p.getAy();
-		mass = p.getMass();
-		charge = p.getCharge();
-		prevX = p.getPrevX();
-		prevY = p.getPrevY();
-		chargedensity = p.getChargedensity();
-		Ex = p.getEx();
-		Ey = p.getEy();
-		Bz = p.getBz();
-		prevpositionComponentForceX = p.getPrevPositionComponentForceX();
-		prevpositionComponentForceY = p.getPrevPositionComponentForceY();
-		prevtangentVelocityComponentOfForceX = p.getPrevTangentVelocityComponentOfForceX();
-		prevtangentVelocityComponentOfForceY = p.getPrevTangentVelocityComponentOfForceY();
-		prevBz = p.getPrevBz();
-		prevLinearDragCoefficient = p.getPrevLinearDragCoefficient();
+	@Override
+	public Particle copy() {
+		Particle p = new ParticleFull();
+		p.setX(x);
+		p.setY(y);
+		p.setRadius(radius);
+		p.setVx(vx);
+		p.setVy(vy);
+		p.setAx(ax);
+		p.setAy(ay);
+		p.setMass(mass);
+		p.setCharge(charge);
+		p.setPrevX(prevX);
+		p.setPrevY(prevY);
+		p.setEx(Ex);
+		p.setEy(Ey);
+		p.setBz(Bz);
+		p.setPrevPositionComponentForceX(prevpositionComponentForceX);
+		p.setPrevPositionComponentForceY(prevpositionComponentForceY);
+		p.setPrevTangentVelocityComponentOfForceX(prevtangentVelocityComponentOfForceX);
+		p.setPrevTangentVelocityComponentOfForceY(prevtangentVelocityComponentOfForceY);
+		p.setPrevBz(prevBz);
+		p.setPrevLinearDragCoefficient(prevLinearDragCoefficient);
+		
+		return p;
 	}
 
 

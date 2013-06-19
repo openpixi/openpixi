@@ -38,7 +38,10 @@ public class RandomVelocityDistribution {
 		
 		for(int i = startIndex; i < endIndex; i++) {
 			
-			do {
+			if ( minVelocityX >= maxVelocity && minVelocityY >= maxVelocity) {
+				rnd1 = maxVelocity;
+				rnd2 = maxVelocity;
+			} else do {
 				rnd1 = rand.nextDouble() * (maxVelocity - minVelocityX) + minVelocityX;
 				rnd2 = rand.nextDouble() * (maxVelocity - minVelocityY) + minVelocityY;
 				rnd3 = (rnd1*rnd1 + rnd2*rnd2);

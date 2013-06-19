@@ -66,7 +66,7 @@ public class ParticleLoader {
 			 	}
 			 	case RANDOM: {
 			 		RandomVelocityDistribution.apply(particles, index, index + f.getNumberOfInstances(), 
-			 				0, 0, f.getMaxVelocity(), 0);
+			 				f.getMaxVelocity(), f.getMaxVelocity(), f.getMaxVelocity(), 0);
 			 	}
 			 	case MAXWELLIAN: {
 			 		MaxwellianDistribution.apply(particles, index, index + f.getNumberOfInstances(),
