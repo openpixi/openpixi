@@ -80,10 +80,18 @@ public abstract class Particle implements Serializable {
 	public void setX(double x) {}
 
 	public void addX(double x) {}
+	
+	public void setPrevX(double prevX) {}
+
+	public void addPrevX(double x) {}
 
 	public void setY(double y) {}
 
 	public void addY(double y) {}
+	
+	public void setPrevY(double prevY) {}
+
+	public void addPrevY(double y) {}
 
 	public void setRadius(double radius) {}
 
@@ -98,14 +106,6 @@ public abstract class Particle implements Serializable {
 	public void setMass(double mass) {}
 
 	public void setCharge(double charge) {}
-
-	public void setPrevX(double prevX) {}
-
-	public void addPrevX(double x) {}
-
-	public void setPrevY(double prevY) {}
-
-	public void addPrevY(double y) {}
 
 	public void setChargedensity(double chargedensity) {}
 
