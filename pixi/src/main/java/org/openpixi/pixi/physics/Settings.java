@@ -1,5 +1,6 @@
 package org.openpixi.pixi.physics;
 
+import org.openpixi.pixi.diagnostics.methods.Diagnostics;
 import org.openpixi.pixi.parallel.cellaccess.CellIterator;
 import org.openpixi.pixi.parallel.cellaccess.ParallelCellIterator;
 import org.openpixi.pixi.parallel.cellaccess.SequentialCellIterator;
@@ -61,8 +62,8 @@ public class Settings {
 
 	// Grid related settings
 
-	private int gridCellsX = 10;
-	private int gridCellsY = 10;
+	private int gridCellsX = 100;
+	private int gridCellsY = 100;
 
 	private FieldSolver gridSolver = new SimpleSolver();
 	private PoissonSolver poissonSolver = new PoissonSolverFFTPeriodic();
@@ -81,7 +82,14 @@ public class Settings {
 	private CollisionAlgorithm collisionResolver = new CollisionAlgorithm();
 	private Solver particleSolver = new Euler();
 	private List<Force> forces = new ArrayList<Force>();
-
+	
+	// Diagnostics related settings
+	
+	/** Used to mark output files */
+	private String runid = "default-run";
+	
+	private List<Diagnostics> diagnostics = new ArrayList<Diagnostics>();
+	
 	// Batch version settings
 
 	private int iterations = 100;
@@ -154,6 +162,14 @@ public class Settings {
 
 	public InterpolatorAlgorithm getInterpolator() {
 		return interpolator;
+	}
+	
+	public String getRunid() {
+		return runid;
+	}
+	
+	public List<Diagnostics> getDiagnostics() {
+		return diagnostics;
 	}
 
 	public int getNumOfNodes() {
@@ -335,6 +351,14 @@ public class Settings {
 
 	public void setInterpolator(InterpolatorAlgorithm interpolator) {
 		this.interpolator = interpolator;
+	}
+	
+	public void setRunid (String runid) {
+		this.runid = runid;
+	}
+	
+	public void  setDiagnostics(List<Diagnostics> diagnostics) {
+		this.diagnostics = diagnostics;
 	}
 
 	public void setForces(List<Force> forces) {

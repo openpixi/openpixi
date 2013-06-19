@@ -18,18 +18,14 @@ public class Cell implements Serializable {
 	/**electrostatic potential*/
 	private double phi;
 
-	/**electric field in x direction at time t+dt*/
+	/**electric field in x direction at time t*/
 	private double Ex;
-	/**electric field in y direction at time t+dt*/
+	/**electric field in y direction at time t*/
 	private double Ey;
-	/**magnetic field in z direction at time t+dt*/
+	/**magnetic field in z direction at time t+dt/2*/
 	private double Bz;
 
-	/**electric field in x direction at time t*/
-	private double Exo;
-	/**electric field in y direction at time t*/
-	private double Eyo;
-	/**magnetic field in z direction at time t*/
+	/**magnetic field in z direction at time t-dt/2*/
 	private double Bzo;
 
 
@@ -105,22 +101,6 @@ public class Cell implements Serializable {
 		Bz = bz;
 	}
 
-	public double getExo() {
-		return Exo;
-	}
-
-	public void setExo(double exo) {
-		Exo = exo;
-	}
-
-	public double getEyo() {
-		return Eyo;
-	}
-
-	public void setEyo(double eyo) {
-		Eyo = eyo;
-	}
-
 	public double getBzo() {
 		return Bzo;
 	}
@@ -140,8 +120,6 @@ public class Cell implements Serializable {
 	}
 
 	public void storeFields() {
-		Exo = Ex;
-		Eyo = Ey;
 		Bzo = Bz;
 	}
 
@@ -160,8 +138,6 @@ public class Cell implements Serializable {
 		this.Ex = other.Ex;
 		this.Ey = other.Ey;
 		this.Bz = other.Bz;
-		this.Exo = other.Exo;
-		this.Eyo = other.Eyo;
 		this.Bzo = other.Bzo;
 	}
 

@@ -37,8 +37,10 @@ public class Grid {
 	 */
 	public static final int INTERPOLATION_RADIUS = 1;
 	public static final int HARDWALL_SAFETY_CELLS = 1;
+	//Check comment above, but due to the CIC to particle interpolator
+	//we actually need two cells at the beginning. But for an other reason than at the end.
 	public static final int EXTRA_CELLS_BEFORE_GRID =
-			INTERPOLATION_RADIUS + HARDWALL_SAFETY_CELLS - 1;
+			INTERPOLATION_RADIUS + HARDWALL_SAFETY_CELLS - 1 + 1;
 	public static final int EXTRA_CELLS_AFTER_GRID =
 			INTERPOLATION_RADIUS + HARDWALL_SAFETY_CELLS;
 
@@ -141,22 +143,6 @@ public class Grid {
 
 	public void addBz(int x, int y, double value) {
 		cells[index(x)][index(y)].setBz(cells[index(x)][index(y)].getBz() + value);
-	}
-
-	public double getExo(int x, int y) {
-		return cells[index(x)][index(y)].getExo();
-	}
-
-	public void setExo(int x, int y, double value) {
-		cells[index(x)][index(y)].setExo(value);
-	}
-
-	public double getEyo(int x, int y) {
-		return cells[index(x)][index(y)].getEyo();
-	}
-
-	public void setEyo(int x, int y, double value) {
-		cells[index(x)][index(y)].setEyo(value);
 	}
 
 	public double getBzo(int x, int y) {

@@ -18,7 +18,6 @@
  */
 package org.openpixi.pixi.physics;
 
-
 import java.io.Serializable;
 
 public abstract class Particle implements Serializable {
@@ -131,11 +130,10 @@ public abstract class Particle implements Serializable {
 
 	public void setPrevLinearDragCoefficient(double argument) {}
 
-
 	//----------------------------------------------------------------------------------------------
 	// UTILITY METHODS
 	//----------------------------------------------------------------------------------------------
-	
+
 	public void storePosition() {}
 
 	@Override

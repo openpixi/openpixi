@@ -1,5 +1,8 @@
 package org.openpixi.pixi.physics.grid;
 
+import java.util.ArrayList;
+import java.util.Random;
+
 import junit.framework.TestCase;
 import org.openpixi.pixi.physics.Particle;
 import org.openpixi.pixi.physics.Settings;
@@ -14,6 +17,7 @@ public class CloudInCellTest extends TestCase {
 
 	boolean VERBOSE = false;
 
+	Random random = new Random();
 	//double ACCURACY_LIMIT = 1.e-16;
 	double ACCURACY_LIMIT = 1.e-14;
 
@@ -35,6 +39,26 @@ public class CloudInCellTest extends TestCase {
 		super(testName);
 	}
 
+	public void testFourBoundaryMovesSimple() {
+		// Positive charge
+		for (int charge = -1; charge <=1; charge++){
+		//bottom up
+		testMoveSimple(4.8, 4.8, 4.8, 5.2, charge, "four boundary: x=const");
+		testMoveSimple(5.3, 5.2, 5.3, 4.8, charge, "four boundary: x=const");
+		//left to right
+		testMoveSimple(4.8, 5.3, 5.2, 5.3, charge, "four boundary: left - right y=const");
+		testMoveSimple(4.8, 4.8, 5.2, 4.8, charge, "four boundary: left - right y=const");
+		//from top left to down right
+		testMoveSimple(4.9, 5.4, 5.4, 4.6, charge, "four boundary: top left - down right ");
+		//from down left to top right
+		testMoveSimple(4.7, 4.6, 5.4, 5.3, charge, "four boundary: down left - top right ");
+
+		//special moves
+		testMoveSimple(4.6, 4.5, 5.4, 4.5, charge, "four boundary: middle of cell");
+		testMoveSimple(4.6, 5.0, 5.4, 5.0, charge, "four boundary: on teh edge" );
+		}
+	}
+	
 	public void testFourBoundaryMoves() {
 		// Positive charge
 		for (int charge = -1; charge <=1; charge++){
@@ -78,6 +102,41 @@ public class CloudInCellTest extends TestCase {
 		}
 	}
 
+	private void testMoveSimple(double x1, double y1, double x2, double y2, double charge, String text) {
+		Settings stt = GridTestCommon.getCommonSettings();
+		Grid grid = new Grid(stt);
+		
+		//We iterate over all the grid cells manually to avoid dependence of this
+		//test on the cellIterator implementation. But using the grid method
+		//grid.resetCharge() should also work!
+		for (int x = -grid.EXTRA_CELLS_BEFORE_GRID; x < 
+				(grid.getNumCellsX()+grid.EXTRA_CELLS_AFTER_GRID); x++) {
+			for (int y = -grid.EXTRA_CELLS_BEFORE_GRID; y < 
+					(grid.getNumCellsY()+grid.EXTRA_CELLS_AFTER_GRID); y++) {
+				grid.getCell(x, y).resetCurrent();
+			}
+		}
+
+		
+		Particle p = new Particle();
+		p.setX(x1);
+		p.setY(y1);
+		p.setVx((x2 - x1) / stt.getTimeStep());
+		p.setVy((y2 - y1) / stt.getTimeStep());
+		p.setCharge(charge);
+		
+		InterpolatorAlgorithm interpolation = new CloudInCell();
+
+		interpolation.interpolateToGrid(p, grid, stt.getTimeStep());
+
+		
+		double jx = GridTestCommon.getJxSum(grid);
+		double jy = GridTestCommon.getJySum(grid);
+
+		assertAlmostEquals(text + ", jx", charge * p.getVx(), jx, ACCURACY_LIMIT);
+		assertAlmostEquals(text + ", jy", charge * p.getVy(), jy, ACCURACY_LIMIT);
+	}
+	
 	private void testMove(double x1, double y1, double x2, double y2, double charge, String text) {
 		Settings stt = GridTestCommon.getCommonSettings();
 		stt.setInterpolator(new CloudInCell());
