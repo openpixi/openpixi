@@ -19,7 +19,7 @@
 
 package org.openpixi.pixi.ui.util;
 
-import org.openpixi.pixi.diagnostics.ParticleDataOutput;
+import org.openpixi.pixi.diagnostics.DataOutput;
 
 /**
  * This is an example DataOutput object as needed to extract data
@@ -27,17 +27,22 @@ import org.openpixi.pixi.diagnostics.ParticleDataOutput;
  * This class is used when the user does not want to have any diagnostic
  * output.
  */
-public class EmptyParticleDataOutput implements ParticleDataOutput {
-
+public class EmptyDataOutput implements DataOutput {
+	
 	public void kineticEnergy(double var) {
 		//DO NOTHING
 	}
 	
-	public void startIteration(int iteration) {
+	public void potential(double[][] phi) {
+		//DO NOTHING
+	}
+	
+	public void setIteration(int iteration) {
 		//DO NOTHING
 	}
 	
 	public void closeStreams() {
 		//DO NOTHING
 	}
+	
 }

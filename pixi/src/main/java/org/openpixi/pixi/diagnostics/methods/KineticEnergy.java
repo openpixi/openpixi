@@ -19,8 +19,9 @@
 
 package org.openpixi.pixi.diagnostics.methods;
 
-import org.openpixi.pixi.diagnostics.ParticleDataOutput;
+import org.openpixi.pixi.diagnostics.DataOutput;
 import org.openpixi.pixi.physics.Particle;
+import org.openpixi.pixi.physics.grid.Grid;
 import java.util.ArrayList;
 
 /**
@@ -28,11 +29,25 @@ import java.util.ArrayList;
  * particle list.
  * This is a local method! (it could be performed on individual particles)
  */
-public class KineticEnergy implements ParticleMethod {
+public class KineticEnergy implements Diagnostics {
 	
+	/** Storage */
 	private double totalKineticEnergy;
 	
-	public void calculate(ArrayList<Particle> particles) {
+	/** Period of calculation */
+	private int calculationPeriod;
+	/** The next iteration when this diagnostic should be performed */
+	private int nextIteration = 0;
+	/** Determines whether there is new data. I.e. whether calculate was called but the
+	 * new data not yet extracted with getData.
+	 */
+	private boolean newData = false;
+	
+	public KineticEnergy(int calculationPeriod) {
+		this.calculationPeriod = calculationPeriod;
+	}
+	
+	public void calculate(Grid grid, ArrayList<Particle> particles) {
 		totalKineticEnergy = 0;
 		
 		for(Particle p : particles) {
@@ -40,9 +55,22 @@ public class KineticEnergy implements ParticleMethod {
 		}
 		
 		totalKineticEnergy = totalKineticEnergy/2;
+		
+		// Bookkeeping
+		nextIteration += calculationPeriod;
+		newData = true;
 	}
 	
-	public void getData(ParticleDataOutput out) {
+	public int getNextIteration() {
+		return nextIteration;
+	}
+	
+	public boolean checkIfNewData() {
+		return newData;
+	}
+	
+	public void getData(DataOutput out) {
 		out.kineticEnergy(totalKineticEnergy);
+		newData = false;
 	}
 }

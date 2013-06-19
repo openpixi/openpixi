@@ -1,7 +1,6 @@
 package org.openpixi.pixi.physics;
 
-import org.openpixi.pixi.diagnostics.methods.GridMethod;
-import org.openpixi.pixi.diagnostics.methods.ParticleMethod;
+import org.openpixi.pixi.diagnostics.methods.Diagnostics;
 import org.openpixi.pixi.parallel.cellaccess.CellIterator;
 import org.openpixi.pixi.parallel.cellaccess.ParallelCellIterator;
 import org.openpixi.pixi.parallel.cellaccess.SequentialCellIterator;
@@ -89,21 +88,8 @@ public class Settings {
 	/** Used to mark output files */
 	private String runid = "default-run";
 	
-	/** Determines after how many iterations the diagnostics
-	 * on the particles should be performed.
-	 */
-	private int particleDiagnosticsIntervall = 10;
+	private List<Diagnostics> diagnostics = new ArrayList<Diagnostics>();
 	
-	/** Determines after how many iterations the diagnostics
-	 * on the grid should be performed.
-	 */
-	private int gridDiagnosticsIntervall = 20;
-	
-	private List<ParticleMethod> particleDiagnostics = 
-			new ArrayList<ParticleMethod>();
-	private List<GridMethod> gridDiagnostics = 
-			new ArrayList<GridMethod>();
-
 	// Batch version settings
 
 	private int iterations = 100;
@@ -182,20 +168,8 @@ public class Settings {
 		return runid;
 	}
 	
-	public int getParticleDiagnosticsIntervall() {
-		return particleDiagnosticsIntervall;
-	}
-	
-	public int getGridDiagnosticsIntervall() {
-		return gridDiagnosticsIntervall;
-	}
-	
-	public List<ParticleMethod> getParticleDiagnostics() {
-		return particleDiagnostics;
-	}
-	
-	public List<GridMethod> getGridDiagnostics() {
-		return gridDiagnostics;
+	public List<Diagnostics> getDiagnostics() {
+		return diagnostics;
 	}
 
 	public int getNumOfNodes() {
@@ -383,20 +357,8 @@ public class Settings {
 		this.runid = runid;
 	}
 	
-	public void setParticleDiagnosticsIntervall(int var) {
-		this.particleDiagnosticsIntervall = var;
-	}
-	
-	public void setGridDiagnosticsIntervall(int var) {
-		this.gridDiagnosticsIntervall = var;
-	}
-	
-	public void  setParticleDiagnostics(List<ParticleMethod> particleDiagnostics) {
-		this.particleDiagnostics = particleDiagnostics;
-	}
-	
-	public void setGridDiagnostics(List<GridMethod> gridDiagnostics) {
-		this.gridDiagnostics = gridDiagnostics;
+	public void  setDiagnostics(List<Diagnostics> diagnostics) {
+		this.diagnostics = diagnostics;
 	}
 
 	public void setForces(List<Force> forces) {

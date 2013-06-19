@@ -46,11 +46,10 @@ public class Parser extends DefaultHandler {
 	private boolean interpolator;
 	private boolean particleMover;
 	private boolean diagnostics;
-	private boolean particle;
-	private boolean grid;
-	private boolean particleIntervall;
-	private boolean gridIntervall;
 	private boolean iterations;
+	private boolean runid;
+	
+	private String attribute = null;
 	
 	public Parser(Settings settings){
 		
@@ -97,16 +96,20 @@ public class Parser extends DefaultHandler {
 				particleMover = true;
 			} else if(qName.equalsIgnoreCase("diagnostics")) {
 				diagnostics = true;
-			} else if(qName.equalsIgnoreCase("particle")) {
-				particle = true;
-			} else if(qName.equalsIgnoreCase("grid")) {
-				grid = true;
-			} else if(qName.equalsIgnoreCase("particleIntervall")) {
-				particleIntervall = true;
-			} else if(qName.equalsIgnoreCase("gridIntervall")) {
-				gridIntervall = true;
+				try {
+					attribute = attributes.getValue(0);
+				} catch (Exception e) {
+					System.err.println("You need to specify a diagnostics intervall (as an attribute)" +
+							" for each diagnostic method you specify! Choose 0 if you only want it" +
+							" to be performed at the beginning! Skipping those diagnostics where no" +
+							" attributes were found.");
+					diagnostics = false;
+				}
+				
 			} else if(qName.equalsIgnoreCase("iterations")) {
 				iterations = true;
+			} else if(qName.equalsIgnoreCase("runid")) {
+				runid = true;
 			} else if (qName.equalsIgnoreCase("settings")) {
 				//DO NOTHING
 			}
@@ -119,14 +122,15 @@ public class Parser extends DefaultHandler {
 	
 	@Override
 	public void endElement(String uri, String localName, String qName) throws SAXException {
-		if (qName.equalsIgnoreCase("diagnostics")) {
-			diagnostics = false;
-		}  
 	}
 
 	@Override
 	public void characters(char ch[], int start, int length) throws SAXException {
 		
+		if (runid) {
+			setRunid(ch, start, length);
+			runid = false;
+		}
 		if (iterations) {
 			setIterations(ch, start, length);
 			iterations = false;
@@ -155,22 +159,15 @@ public class Parser extends DefaultHandler {
 			setParticleSolver(ch, start, length);
 			particleMover = false;
 		}
-		if (diagnostics && particle) {
-			addParticleDiagnostics(ch, start, length);
-			particle = false;
+		if (diagnostics) {
+			addDiagnostics(ch, start, length);
+			diagnostics = false;
+			attribute = null;
 		}
-		if (diagnostics && grid) {
-			//NOTHING HERE YET
-			grid = false;
-		}
-		if (diagnostics && particleIntervall) {
-			setParticleIntervall(ch, start, length);
-			particleIntervall = false;
-		}
-		if (diagnostics && gridIntervall) {
-			setGridIntervall(ch, start, length);
-			gridIntervall = false;
-		}
+	}
+	
+	private void setRunid(char ch[], int start, int length) {
+		settings.setRunid(new String(ch, start, length));
 	}
 	
 	private void setIterations(char ch[], int start, int length) {
@@ -186,45 +183,32 @@ public class Parser extends DefaultHandler {
 		settings.setIterations(n);
 	}
 	
-	private void setGridIntervall(char ch[], int start, int length) {
-		int n;
-		try{
-			n = Integer.parseInt(new String(ch, start, length));
-			if ( n < 0) throw new NumberFormatException();
-		} catch (NumberFormatException e){
-			System.err.println("Error: the grid diagnostics intervall is not a positive " +
-					"integer! Setting it to 20.");
-			n = 20;
-		}
-		settings.setGridDiagnosticsIntervall(n);
-	}
-	
-	private void setParticleIntervall(char ch[], int start, int length) {
-		int n;
-		try{
-			n = Integer.parseInt(new String(ch, start, length));
-			if ( n < 0) throw new NumberFormatException();
-		} catch (NumberFormatException e){
-			System.err.println("Error: the particle diagnostics intervall is not a positive " +
-					"integer! Setting it to 10.");
-			n = 10;
-		}
-		settings.setParticleDiagnosticsIntervall(n);
-	}
-	
-	private void addParticleDiagnostics(char ch[], int start, int length) {
-		ParticleMethod mtd;
+	private void addDiagnostics(char ch[], int start, int length) {
+		Diagnostics mtd;
 		String mtdname = new String(ch, start, length);
+		
+		int n;
+		try{
+			n = Integer.parseInt(attribute);
+			if ( n < 0) throw new NumberFormatException();
+		} catch (NumberFormatException e){
+			System.err.println("Error: the intervall you specified is not a positive integer! " +
+					"Setting it to 0. The diagnostic will only be performed only at the beginning.");
+			n = 0;
+		}
+		
 		try{
 			if (mtdname.equalsIgnoreCase("Kinetic Energy")) {
-				mtd = new KineticEnergy();
+				mtd = new KineticEnergy(n);
+			} else if (mtdname.equalsIgnoreCase("Potential")) {
+				mtd = new Potential(n);
 			} else throw new Exception();
 		} catch (Exception e){
-			System.out.println("Error: OpenPixi does not know about the " + mtdname + " diagnostic" +
+			System.err.println("OpenPixi does not know about the " + mtdname + " diagnostic" +
 					" method. Skipping this setting!");
 			return;
 		}
-		settings.getParticleDiagnostics().add(mtd);
+		settings.getDiagnostics().add(mtd);
 	}
 	
 	private void setNumberOfParticles(char ch[], int start, int length) {

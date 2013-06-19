@@ -30,11 +30,15 @@ import java.io.IOException;
  * from the diagnostics package. Here we decided to write the data
  * to files.
  */
-public class GridDataOutput extends EmptyGridDataOutput{
+public class DataOutput extends EmptyDataOutput{
 
 	private BufferedWriter potential;
+	private BufferedWriter totalKineticEnergy;
+	
+	private int iteration;
 
-	public GridDataOutput(String dir, String runid, Grid g) throws IOException {
+
+	public DataOutput(String dir, String runid, Grid g) throws IOException {
 		
 		// Writes grid parameters to file s.t. the other methods do not have to do it
 		// in every time step.
@@ -50,30 +54,42 @@ public class GridDataOutput extends EmptyGridDataOutput{
 		gridProperties.close();		
 		
 		potential = writerFactory(dir + "potential-" + runid);
-
+		totalKineticEnergy = writerFactory(dir + "kinetic-energy-" + runid);
 	}
 	
-	public void potential(double phi) {
+	public void potential(double[][] phi) {
 		try {
-			potential.write(phi + "\n");
+			potential.write("Iteration: " + iteration + "\n");
+			for(double[] column : phi) {
+				for(double element : column) {
+					potential.write(element + "\n");
+				}
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public void kineticEnergy(double energy) {
+		try {
+			totalKineticEnergy.write("Iteration: " + iteration + "\n");
+			totalKineticEnergy.write("" + energy);
+			totalKineticEnergy.newLine();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
 
 	/** Should be called at the beginning of each iteration of the simulation */
-	public void startIteration(int iteration) {
-		try {
-			potential.write("Iteration: " + iteration + "\n");			
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+	public void setIteration(int iteration) {
+		this.iteration = iteration;
 	}
 	
 	/** Should be called when no data needs to be written anymore */
 	public void closeStreams() {
 		try {
 			potential.close();
+			totalKineticEnergy.close();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

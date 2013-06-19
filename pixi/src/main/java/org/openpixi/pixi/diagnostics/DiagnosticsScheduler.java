@@ -19,8 +19,7 @@
 
 package org.openpixi.pixi.diagnostics;
 
-import org.openpixi.pixi.diagnostics.methods.GridMethod;
-import org.openpixi.pixi.diagnostics.methods.ParticleMethod;
+import org.openpixi.pixi.diagnostics.methods.Diagnostics;
 import org.openpixi.pixi.physics.grid.Grid;
 import org.openpixi.pixi.physics.Particle;
 import org.openpixi.pixi.physics.Settings;
@@ -40,47 +39,38 @@ import java.util.List;
  * the global methods need data from the whole simulation.
  * TODO parallelize the diagnostics methods.
  */
-public class Diagnostics {
+public class DiagnosticsScheduler {
 	
 	private Grid grid;
 	private ArrayList<Particle> particles;
 	
-	/** List of all diagnostic classes that should be applied to the particles*/
-	private List<ParticleMethod> particleDiagnostics;
-	/** List of all diagnostic classes that should be applied to the grid*/
-	private List<GridMethod> gridDiagnostics;
+	/** List of all diagnostic classes that should be applied */
+	private List<Diagnostics> diagnostics;
 	
 	
-	public Diagnostics(Grid grid, ArrayList<Particle> particles, Settings stt) {
+	public DiagnosticsScheduler(Grid grid, ArrayList<Particle> particles, Settings stt) {
 		
 		this.grid = grid;
 		this.particles = particles;
-		particleDiagnostics = stt.getParticleDiagnostics();
-		gridDiagnostics = stt.getGridDiagnostics();		
+		diagnostics = stt.getDiagnostics();
+		
 	}
 	
-	/** Performs the specified diagnostics on the particle list*/
-	public void particles() {
-		for(ParticleMethod m : particleDiagnostics){
-			m.calculate(particles);
-		}
-	}
-	/** Performs the specified diagnostics on the grid*/
-	public void grid() {
-		for(GridMethod m : gridDiagnostics) {
-			m.calculate(grid);
+	/** SHOULD BE CALLED IN EVERY ITERATION! Checks the intervalls of each diagnostic
+	 * method itself. */
+	public void performDiagnostics(int iteration) {
+		for(Diagnostics m : diagnostics) {
+			if (iteration == m.getNextIteration()) {
+				m.calculate(grid, particles);
+			}
 		}
 	}
 	
-	public void outputParticles(ParticleDataOutput pout) {
-		for(ParticleMethod m : particleDiagnostics){
-			m.getData(pout);
-		}
-	}
-	
-	public void outputGrid(GridDataOutput gout) {
-		for(GridMethod m : gridDiagnostics) {
-			m.getData(gout);
+	public void output(DataOutput out) {
+		for(Diagnostics m : diagnostics) {
+			if (m.checkIfNewData()) {
+				m.getData(out);
+			}
 		}
 	}
 }

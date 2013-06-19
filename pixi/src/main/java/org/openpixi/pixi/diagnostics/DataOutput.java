@@ -17,22 +17,21 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-package org.openpixi.pixi.diagnostics.methods;
-
-import java.util.ArrayList;
-
-import org.openpixi.pixi.diagnostics.ParticleDataOutput;
-import org.openpixi.pixi.physics.Particle;
+package org.openpixi.pixi.diagnostics;
 
 /**
- * Every diagnostics method that needs the particles should implement this.
+ * Since every diagnostics class has its own kind of data, every class needs
+ * its own interface. This interface specifies what kind of data the diagnostics
+ * class wants to provide.
+ * Therefore if one adds a diagnostics class one should add a method here that is
+ * called from the getData method of the diagnostics class.
+ * This is split from the GridDataOutput s.t. the DataOutput objects do not get
+ * too crowded.
  */
-public interface ParticleMethod {
+public interface DataOutput {
 	
-	/** Performes the desired diagnostics*/
-	public void calculate(ArrayList<Particle> particles);
+	public void kineticEnergy(double var);
 	
-	/** Provides a way how other classes can access its information*/
-	public void getData(ParticleDataOutput out);
+	public void potential(double[][] var);
 
 }
