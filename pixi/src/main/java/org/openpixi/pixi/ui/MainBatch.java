@@ -23,7 +23,6 @@ import org.openpixi.pixi.physics.Debug;
 import org.openpixi.pixi.physics.Settings;
 import org.openpixi.pixi.physics.Simulation;
 import org.openpixi.pixi.diagnostics.DiagnosticsScheduler;
-import org.openpixi.pixi.diagnostics.methods.Potential;
 import org.openpixi.pixi.profile.ProfileInfo;
 import org.openpixi.pixi.ui.util.*;
 import java.io.IOException;
@@ -36,7 +35,7 @@ public class MainBatch {
 	/** Used to mark output files */
 	private static String runid;
 
-	private static Simulation s;
+	private static Simulation simulation;
 	private static DiagnosticsScheduler diagnostics;
 	private static EmptyDataOutput dataOutput;
 
@@ -67,11 +66,11 @@ public class MainBatch {
 		runid = settings.getRunid();
 		
 		// Creates the actual physics simulation that can be run iteratively.
-		s = new Simulation(settings);
+		simulation = new Simulation(settings);
 
 		// Creates the diagnostics wrapper class that knows about all
 		// enabled diagnostic methods.
-		diagnostics = new DiagnosticsScheduler(s.grid, s.particles, settings);
+		diagnostics = new DiagnosticsScheduler(simulation.grid, simulation.particles, settings);
 		
 		// Checks if the user has specified at least two parameters
 		// If this is not the case, the diagnostics output is disabled
@@ -89,7 +88,7 @@ public class MainBatch {
 			// Tries to create the output objects. If something is wrong with the specified
 			// directory the program will give an error and terminate. 
 			try {
-				dataOutput = new DataOutput(args[1], runid, s.grid);
+				dataOutput = new DataOutput(args[1], runid, simulation.grid);
 			} catch (IOException e) {
 				System.err.print("Something went wrong when creating output files for diagnostics! \n" +
 						"Please specify an output directory with write access rights!\n" + 
@@ -106,7 +105,7 @@ public class MainBatch {
 		
 		for (int i = 0; i < iterations;) {
 			// advance the simulation by one step
-			s.step();
+			simulation.step();
 			
 			i++;
 			

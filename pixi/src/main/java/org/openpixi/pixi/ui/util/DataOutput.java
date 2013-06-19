@@ -34,27 +34,25 @@ public class DataOutput extends EmptyDataOutput{
 
 	private BufferedWriter potential;
 	private BufferedWriter totalKineticEnergy;
-	
 	private int iteration;
 
-
-	public DataOutput(String dir, String runid, Grid g) throws IOException {
+	public DataOutput(String directory, String runid, Grid grid) throws IOException {
 		
 		// Writes grid parameters to file s.t. the other methods do not have to do it
 		// in every time step.
-		BufferedWriter gridProperties = writerFactory(dir + "gridproperties-" + runid);
-		gridProperties.write("Number of cells in x direction\t" + g.getNumCellsX() + "\n" +
-				"Number of cells in y direction\t" +  g.getNumCellsY() + "\n\n" +
-				"Cell width (x direction)\t" + g.getCellWidth() + "\n" +
-				"Cell height (y direction)\t" + g.getCellHeight() + "\n\n" +
+		BufferedWriter gridProperties = writerFactory(directory + "gridproperties-" + runid);
+		gridProperties.write("Number of cells in x direction\t" + grid.getNumCellsX() + "\n" +
+				"Number of cells in y direction\t" +  grid.getNumCellsY() + "\n\n" +
+				"Cell width (x direction)\t" + grid.getCellWidth() + "\n" +
+				"Cell height (y direction)\t" + grid.getCellHeight() + "\n\n" +
 				"The output in grid related files is structured in the following way:\n" +
-				"For scalar quantities the first " + g.getNumCellsY() + " entries represent" +
-						" the first column of the grid. The next " + g.getNumCellsY() + 
+				"For scalar quantities the first " + grid.getNumCellsY() + " entries represent" +
+						" the first column of the grid. The next " + grid.getNumCellsY() + 
 						" entries represent the second column, etc.\n");
 		gridProperties.close();		
 		
-		potential = writerFactory(dir + "potential-" + runid);
-		totalKineticEnergy = writerFactory(dir + "kinetic-energy-" + runid);
+		potential = writerFactory(directory + "potential-" + runid);
+		totalKineticEnergy = writerFactory(directory + "kinetic-energy-" + runid);
 	}
 	
 	public void potential(double[][] phi) {
