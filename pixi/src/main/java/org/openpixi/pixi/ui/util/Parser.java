@@ -1,3 +1,22 @@
+/*
+ * OpenPixi - Open Particle-In-Cell (PIC) Simulator
+ * Copyright (C) 2012  OpenPixi.org
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License along
+ * with this program; if not, write to the Free Software Foundation, Inc.,
+ * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+ */
+
 package org.openpixi.pixi.ui.util;
 
 import java.io.IOException;
@@ -14,6 +33,7 @@ import org.openpixi.pixi.physics.Settings;
 
 import org.openpixi.pixi.physics.grid.*;
 import org.openpixi.pixi.physics.solver.*;
+import org.openpixi.pixi.diagnostics.methods.*;
 
 public class Parser extends DefaultHandler {
 
@@ -25,6 +45,11 @@ public class Parser extends DefaultHandler {
 	private boolean timeStep;
 	private boolean interpolator;
 	private boolean particleMover;
+	private boolean diagnostics;
+	private boolean iterations;
+	private boolean runid;
+	
+	private String attribute = null;
 	
 	public Parser(Settings settings){
 		
@@ -69,6 +94,22 @@ public class Parser extends DefaultHandler {
 				interpolator = true;
 			} else if (qName.equalsIgnoreCase("particleSolver")) {
 				particleMover = true;
+			} else if(qName.equalsIgnoreCase("diagnostics")) {
+				diagnostics = true;
+				try {
+					attribute = attributes.getValue(0);
+				} catch (Exception e) {
+					System.err.println("You need to specify a diagnostics interval (as an attribute)" +
+							" for each diagnostic method you specify! Choose 0 if you only want it" +
+							" to be performed at the beginning! Skipping those diagnostics where no" +
+							" attributes were found.");
+					diagnostics = false;
+				}
+				
+			} else if(qName.equalsIgnoreCase("iterations")) {
+				iterations = true;
+			} else if(qName.equalsIgnoreCase("runid")) {
+				runid = true;
 			} else if (qName.equalsIgnoreCase("settings")) {
 				//DO NOTHING
 			}
@@ -81,12 +122,19 @@ public class Parser extends DefaultHandler {
 	
 	@Override
 	public void endElement(String uri, String localName, String qName) throws SAXException {
-		
 	}
 
 	@Override
 	public void characters(char ch[], int start, int length) throws SAXException {
 		
+		if (runid) {
+			setRunid(ch, start, length);
+			runid = false;
+		}
+		if (iterations) {
+			setIterations(ch, start, length);
+			iterations = false;
+		}
 		if (numberOfParticles) {
 			setNumberOfParticles(ch, start, length);
 			numberOfParticles = false;
@@ -111,7 +159,56 @@ public class Parser extends DefaultHandler {
 			setParticleSolver(ch, start, length);
 			particleMover = false;
 		}
+		if (diagnostics) {
+			addDiagnostics(ch, start, length);
+			diagnostics = false;
+			attribute = null;
+		}
+	}
+	
+	private void setRunid(char ch[], int start, int length) {
+		settings.setRunid(new String(ch, start, length));
+	}
+	
+	private void setIterations(char ch[], int start, int length) {
+		int n;
+		try{
+			n = Integer.parseInt(new String(ch, start, length));
+			if ( n < 0) throw new NumberFormatException();
+		} catch (NumberFormatException e){
+			System.out.println("Error: the number of iterations is not a positive integer! " +
+					"Setting it to 100.");
+			n = 100;
+		}
+		settings.setIterations(n);
+	}
+	
+	private void addDiagnostics(char ch[], int start, int length) {
+		Diagnostics method;
+		String mtdname = new String(ch, start, length);
 		
+		int n;
+		try{
+			n = Integer.parseInt(attribute);
+			if ( n < 0) throw new NumberFormatException();
+		} catch (NumberFormatException e){
+			System.err.println("Error: the interval you specified is not a positive integer! " +
+					"Setting it to 0. The diagnostic will only be performed only at the beginning.");
+			n = 0;
+		}
+		
+		try{
+			if (mtdname.equalsIgnoreCase("Kinetic Energy")) {
+				method = new KineticEnergy(n);
+			} else if (mtdname.equalsIgnoreCase("Potential")) {
+				method = new Potential(n);
+			} else throw new Exception();
+		} catch (Exception e){
+			System.err.println("OpenPixi does not know about the " + mtdname + " diagnostic" +
+					" method. Skipping this setting!");
+			return;
+		}
+		settings.getDiagnostics().add(method);
 	}
 	
 	private void setNumberOfParticles(char ch[], int start, int length) {
