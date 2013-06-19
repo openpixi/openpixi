@@ -98,7 +98,7 @@ public class MainBatch {
 			}
 		}
 		
-		//Performes diagnostics on the initial state of the simulation
+		//Performs diagnostics on the initial state of the simulation
 		dataOutput.setIteration(0);
 		diagnostics.performDiagnostics(0);
 		diagnostics.output(dataOutput);
