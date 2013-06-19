@@ -99,7 +99,7 @@ public class Parser extends DefaultHandler {
 				try {
 					attribute = attributes.getValue(0);
 				} catch (Exception e) {
-					System.err.println("You need to specify a diagnostics intervall (as an attribute)" +
+					System.err.println("You need to specify a diagnostics interval (as an attribute)" +
 							" for each diagnostic method you specify! Choose 0 if you only want it" +
 							" to be performed at the beginning! Skipping those diagnostics where no" +
 							" attributes were found.");
@@ -192,7 +192,7 @@ public class Parser extends DefaultHandler {
 			n = Integer.parseInt(attribute);
 			if ( n < 0) throw new NumberFormatException();
 		} catch (NumberFormatException e){
-			System.err.println("Error: the intervall you specified is not a positive integer! " +
+			System.err.println("Error: the interval you specified is not a positive integer! " +
 					"Setting it to 0. The diagnostic will only be performed only at the beginning.");
 			n = 0;
 		}
