@@ -223,7 +223,7 @@ public class Settings {
 	private List<Particle> cloneParticles() {
 		List<Particle> copy = new ArrayList<Particle>();
 		for (Particle p: particles) {
-			copy.add(new Particle(p));
+			copy.add(new ParticleFull(p));
 		}
 		return copy;
 	}

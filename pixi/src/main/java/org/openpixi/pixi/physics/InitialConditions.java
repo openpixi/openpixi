@@ -141,7 +141,7 @@ public class InitialConditions {
 		stt.setParticleSolver(new EulerRichardson());
 
 		for (int k = 0; k < count; k++) {
-			Particle par = new Particle();
+			Particle par = new ParticleFull();
 			par.setX(stt.getSimulationWidth() * Math.random());
 			par.setY(stt.getSimulationHeight() * Math.random());
 			par.setRadius(15);
@@ -170,7 +170,7 @@ public class InitialConditions {
 		ArrayList<Particle> particlelist = new ArrayList<Particle>(count);
 
 		for (int k = 0; k < count; k++) {
-			Particle p = new Particle();
+			Particle p = new ParticleFull();
 			p.setX(width * Math.random());
 			p.setY(height * Math.random());
 			p.setRadius(radius);
