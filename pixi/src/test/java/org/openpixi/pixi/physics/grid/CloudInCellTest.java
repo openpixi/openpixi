@@ -9,6 +9,7 @@ import org.openpixi.pixi.physics.Simulation;
 import org.openpixi.pixi.physics.fields.SimpleSolver;
 import org.openpixi.pixi.physics.force.ConstantForce;
 import org.openpixi.pixi.physics.particles.Particle;
+import org.openpixi.pixi.physics.particles.ParticleFull;
 
 /**
  * Unit test for Solver.
@@ -118,7 +119,7 @@ public class CloudInCellTest extends TestCase {
 		}
 
 		
-		Particle p = new Particle();
+		Particle p = new ParticleFull();
 		p.setX(x1);
 		p.setY(y1);
 		p.setVx((x2 - x1) / stt.getTimeStep());
@@ -143,7 +144,7 @@ public class CloudInCellTest extends TestCase {
 		stt.setGridSolver(new SimpleSolver());
 
 		// Add single particle
-		Particle p = new Particle();
+		Particle p = new ParticleFull();
 		p.setX(x1);
 		p.setY(y1);
 		p.setVx((x2 - x1) / stt.getTimeStep());
@@ -212,7 +213,7 @@ public class CloudInCellTest extends TestCase {
 		stt.setGridSolver(new SimpleSolver());
 
 		// Add single particle
-		Particle p = new Particle();
+		Particle p = new ParticleFull();
 		p.setX(x1);
 		p.setY(y1);
 		p.setVx(vx);

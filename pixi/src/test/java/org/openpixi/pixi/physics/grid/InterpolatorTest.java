@@ -3,6 +3,7 @@ package org.openpixi.pixi.physics.grid;
 import junit.framework.TestCase;
 import org.openpixi.pixi.physics.Settings;
 import org.openpixi.pixi.physics.grid.CloudInCell;
+import org.openpixi.pixi.physics.particles.ParticleFull;
 import org.openpixi.pixi.physics.particles.Particle;
 
 import java.util.Random;
@@ -46,7 +47,7 @@ public class InterpolatorTest extends TestCase {
 		ArrayList<Particle> particles = new ArrayList<Particle>(); 
 		
 		for (int i=0; i < 100; i++) {
-			Particle p = new Particle();
+			Particle p = new ParticleFull();
 			p.setX(random.nextDouble()*stt.getSimulationWidth());
 			p.setY(random.nextDouble()*stt.getSimulationHeight());
 			//Assign random integer charge in the range (-10,10)
