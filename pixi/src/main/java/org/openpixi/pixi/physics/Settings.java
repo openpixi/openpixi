@@ -86,11 +86,11 @@ public class Settings {
 	// If asList() is used the resulting list will have a fixed size!
 	private List<ParticleFactory> particleFactories = Arrays.asList(
 			new ParticleFactory(numOfParticles/2, 1, 1, 1, PositionDistribution.RANDOM,
-					VelocityDistribution.RANDOM, particleMaxSpeed/10, particleMaxSpeed/10,
-					particleMaxSpeed/10, particleMaxSpeed/10, particleMaxSpeed, false),
-			new ParticleFactory(numOfParticles/2, 1, -1, 1, PositionDistribution.RANDOM,
-					VelocityDistribution.RANDOM, particleMaxSpeed/10, particleMaxSpeed/10,
-					particleMaxSpeed/10, particleMaxSpeed/10, particleMaxSpeed, false));
+					VelocityDistribution.CONSTANT, particleMaxSpeed/10, particleMaxSpeed/10,
+					particleMaxSpeed, false, 0, 0),
+			new ParticleFactory(0, 1, -1, 1, PositionDistribution.RANDOM,
+					VelocityDistribution.RANDOM, particleMaxSpeed/1, particleMaxSpeed/1,
+					particleMaxSpeed, false, 1, 1));
 	
 	private List<Particle> particles = (new ParticleLoader()).load(particleFactories, 
 			simulationWidth, simulationHeight, gridCellsX, gridCellsY);
@@ -390,6 +390,11 @@ public class Settings {
 		this.numOfParticles = numOfParticles;
 	}
 
+	public void setParticleList(List<Particle> particles) {
+		this.numOfParticles = particles.size();
+		this.particles = particles;
+	}
+	
 	public void setParticleRadius(double particleRadius) {
 		this.particleRadius = particleRadius;
 	}

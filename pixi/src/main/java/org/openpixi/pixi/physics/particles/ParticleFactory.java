@@ -31,11 +31,13 @@ public class ParticleFactory {
 	private final int numberOfInstances;
 	private final PositionDistribution positionDistribution;
 	private final VelocityDistribution velocityDistribution;
-	private final double driftVelocityX;
-	private final double driftVelocityY;
-	private final double thermalVelocityX;
-	private final double thermalVelocityY;
-	private final double maxVelocity;
+	// The following parameters may have different interpretations depending on the
+	// velocity distribution used.
+	private final double velocityParameter1;
+	private final double velocityParameter2;
+	private final double velocityParameter3;
+	private final long seedForRandom1;
+	private final long seedForRandom2;
 	
 	// Parameters to be given to the Particles that this
 	// factory will create.
@@ -49,19 +51,19 @@ public class ParticleFactory {
 	
 	public ParticleFactory(int numberOfInstances, double mass, double charge, double radius,
 			PositionDistribution pdist, VelocityDistribution vdist,
-			double driftVelocityX, double driftVelocityY, 
-			double thermalVelocityX, double thermalVelocityY,
-			double cutoffVelocity, boolean immobile) {
+			double velocityParameter1, double velocityParameter2,
+			double velocityParameter3, boolean immobile,
+			long seedForRandom1, long seedForRandom2) {
 		
 		this.numberOfInstances = numberOfInstances;
 		this.mass = mass;
 		this.charge = charge;
 		this.radius = radius;
-		this.driftVelocityX = driftVelocityX;
-		this.driftVelocityY = driftVelocityY;
-		this.thermalVelocityX = thermalVelocityX;
-		this.thermalVelocityY = thermalVelocityY;
-		this.maxVelocity = cutoffVelocity;
+		this.velocityParameter1 = velocityParameter1;
+		this.velocityParameter2 = velocityParameter2;
+		this.velocityParameter3 = velocityParameter3;
+		this.seedForRandom1 = seedForRandom1;
+		this.seedForRandom2 = seedForRandom2;
 		this.immobile = immobile;
 		
 		this.velocityDistribution = vdist;
@@ -73,24 +75,25 @@ public class ParticleFactory {
 		return numberOfInstances;
 	}
 	
-	public double getDriftVelocityX() {
-		return driftVelocityX;
+	public double getVelocityParameter1() {
+		return velocityParameter1;
 	}
 	
-	public double getDriftVelocityY() {
-		return driftVelocityY;
+	public double getVelocityParameter2() {
+		return velocityParameter2;
 	}
 	
-	public double getThermalVelocityX() {
-		return thermalVelocityX;
+	public double getVelocityParameter3() {
+		return velocityParameter3;
 	}
 	
-	public double getThermalVelocityY() {
-		return thermalVelocityY;
+	
+	public long getSeedForRandom1() {
+		return seedForRandom1;
 	}
 	
-	public double getMaxVelocity() {
-		return maxVelocity;
+	public long getSeedForRandom2() {
+		return seedForRandom2;
 	}
 	
 	public VelocityDistribution getVelocityDistribution() {

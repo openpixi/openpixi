@@ -46,13 +46,13 @@ public class InitialConditions {
 		stt.setSimulationHeight(100);
 
 		stt.addForce(new ConstantForce());
-		stt.setNumOfParticles(count);
-		stt.setParticleRadius(radius);
-		stt.setParticleMaxSpeed(stt.getSpeedOfLight() / 3);
-
+		stt.setParticleList(
+				createRandomParticles(stt.getSimulationWidth(), stt.getSimulationHeight(),
+				stt.getSpeedOfLight() / 3, count, radius));
 		stt.setBoundary(GeneralBoundaryType.Hardwall);
 		//stt.setParticleSolver(new EulerRichardson());
 		stt.setParticleSolver(new BorisRelativistic(stt.getSpeedOfLight()));
+		
 
 		Simulation simulation = new Simulation(stt);
 		return simulation;
@@ -69,9 +69,9 @@ public class InitialConditions {
 		ConstantForce cf = new ConstantForce();
 		cf.gy = -1;
 		stt.addForce(cf);
-		stt.setNumOfParticles(count);
-		stt.setParticleRadius(radius);
-		stt.setParticleMaxSpeed(stt.getSpeedOfLight());
+		stt.setParticleList(
+				createRandomParticles(stt.getSimulationWidth(), stt.getSimulationHeight(),
+				stt.getSpeedOfLight(), count, radius));
 
 		stt.setBoundary(GeneralBoundaryType.Hardwall);
 		stt.setParticleSolver(new EulerRichardson());
@@ -91,9 +91,9 @@ public class InitialConditions {
 		ConstantForce cf = new ConstantForce();
 		cf.ey = -1;
 		stt.addForce(cf);
-		stt.setNumOfParticles(count);
-		stt.setParticleRadius(radius);
-		stt.setParticleMaxSpeed(stt.getSpeedOfLight());
+		stt.setParticleList(
+				createRandomParticles(stt.getSimulationWidth(), stt.getSimulationHeight(),
+				stt.getSpeedOfLight(), count, radius));
 
 		stt.setBoundary(GeneralBoundaryType.Hardwall);
 		stt.setParticleSolver(new EulerRichardson());
@@ -113,9 +113,9 @@ public class InitialConditions {
 		ConstantForce cf = new ConstantForce();
 		cf.bz = -1;
 		stt.addForce(cf);
-		stt.setNumOfParticles(count);
-		stt.setParticleRadius(radius);
-		stt.setParticleMaxSpeed(stt.getSpeedOfLight());
+		stt.setParticleList(
+				createRandomParticles(stt.getSimulationWidth(), stt.getSimulationHeight(),
+				stt.getSpeedOfLight(), count, radius));
 
 		stt.setBoundary(GeneralBoundaryType.Hardwall);
 		stt.setParticleSolver(new EulerRichardson());
@@ -135,9 +135,7 @@ public class InitialConditions {
 		stt.addForce(new ConstantForce());
 		stt.addForce(new SpringForce());
 
-		stt.setNumOfParticles(count);
-		stt.setParticleRadius(radius);
-		stt.setParticleMaxSpeed(stt.getSpeedOfLight());
+		stt.setParticleList(new ArrayList<Particle>());
 
 		stt.setBoundary(GeneralBoundaryType.Periodic);
 		stt.setParticleSolver(new EulerRichardson());

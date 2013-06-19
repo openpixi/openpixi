@@ -40,7 +40,7 @@ public class ParticleLoader {
 			 switch(f.getPositionDistribution()) {
 				case RANDOM: {
 			 		RandomPositionDistribution.apply(particles, index, index + f.getNumberOfInstances(), 
-			 				0, simulationHeight, 0, simulationWidth, 0);
+			 				0, simulationHeight, 0, simulationWidth, f.getSeedForRandom1());
 			 		break;
 			 	}
 			 	case CONSTANT_SPACING: {
@@ -61,22 +61,23 @@ public class ParticleLoader {
 			 	}
 			 	case CONSTANT: {
 			 		ConstantVelocityDistribution.apply(particles, index, index + f.getNumberOfInstances(), 
-			 				f.getDriftVelocityX(), f.getDriftVelocityY());
+			 				f.getVelocityParameter1(), f.getVelocityParameter2());
 			 		break;
 			 	}
 			 	case RANDOM: {
 			 		RandomVelocityDistribution.apply(particles, index, index + f.getNumberOfInstances(), 
-			 				f.getMaxVelocity(), f.getMaxVelocity(), f.getMaxVelocity(), 0);
+			 				f.getVelocityParameter1(), f.getVelocityParameter2(), f.getVelocityParameter3(), 
+			 				f.getSeedForRandom2());
 			 	}
 			 	case MAXWELLIAN: {
 			 		MaxwellianDistribution.apply(particles, index, index + f.getNumberOfInstances(),
-			 				f.getThermalVelocityX(), f.getThermalVelocityY(), 0);
+			 				f.getVelocityParameter1(), f.getVelocityParameter2(), f.getSeedForRandom2());
 			 		break;
 			 	}
 			 	case MAXWELLIAN_WITH_CUTOFF: {
 			 		MaxwellianDistribution.applyWithCutoff(particles, index, 
-			 				index + f.getNumberOfInstances(), f.getThermalVelocityX(), 
-			 				f.getThermalVelocityY(), 0, f.getMaxVelocity());
+			 				index + f.getNumberOfInstances(), f.getVelocityParameter1(), 
+			 				f.getVelocityParameter2(), f.getVelocityParameter3(), f.getSeedForRandom2());
 			 		break;
 			 	}
 				default: {

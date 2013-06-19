@@ -67,7 +67,7 @@ public class MaxwellianDistribution {
 	}
 	
 	public static List<Particle> applyWithCutoff (List<Particle> particles, int startIndex, int endIndex,
-			double thermalVelocityX, double thermalVelocityY, long seed, double cutoffVelocity) {
+			double thermalVelocityX, double thermalVelocityY, double cutoffVelocity,  long seed) {
 		
 		Random rand = new Random(seed);
 		
