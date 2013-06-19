@@ -21,6 +21,9 @@ package org.openpixi.pixi.physics.particles;
 
 
 /**
+ * Holds parameters that determine how particles are created. There should be such a
+ * Factory class for every type of particle that should appear in the simulation.
+ * 
  * This class should not have any SETTERS. It should be created with the constructor
  * and used by the particle loader where it gets deleted.
  */
@@ -48,7 +51,28 @@ public class ParticleFactory {
 	/** radius of particle */
 	private double radius;
 	
-	
+	/**
+	 * The constructor sets all the necessary parameters. There are no further setters.
+	 * 
+	 * @param numberOfInstances int 	Number of particles of this type to be created.
+	 * @param mass 				double 	Mass of this type of particle.
+	 * @param charge 			double 	Charge of this type of particle.
+	 * @param radius			double 	Radius of this type of particle.
+	 * @param pdist				enum	Determines how the particles are distributed in space.
+	 * @param vdist				enum	Determines how the particles are distributed in momentum space.
+	 * @param velocityParameter1 double	Has different meaning depending on the velocity distribution
+	 * 									you choose. Usually the lower cutoff or mean speed in
+	 * 									x direction.
+	 * @param velocityParameter2 double	Has different meaning depending on the velocity distribution
+	 * 									you choose. Usually the lower cutoff or mean speed in 
+	 * 									direction.
+	 * @param velocityParameter3 double	Has different meaning depending on the velocity distribution
+	 * 									you choose. Usually the maximal particle speed.
+	 * @param immobile			boolean	Determines whether the lightweight immobile particle class
+	 * 									should be used.
+	 * @param seedForRandom1	long	Usually seed for random positions distribution.
+	 * @param seedForRandom2	long	Usually seed for random velocity distribution.
+	 */
 	public ParticleFactory(int numberOfInstances, double mass, double charge, double radius,
 			PositionDistribution pdist, VelocityDistribution vdist,
 			double velocityParameter1, double velocityParameter2,
@@ -86,7 +110,6 @@ public class ParticleFactory {
 	public double getVelocityParameter3() {
 		return velocityParameter3;
 	}
-	
 	
 	public long getSeedForRandom1() {
 		return seedForRandom1;

@@ -22,7 +22,11 @@ package org.openpixi.pixi.physics.particles;
 import java.util.List;
 import java.util.ArrayList;
 
-
+/**
+ * Iterates through the particle factories creating the appropriate amount of particles of
+ * a specify type. Then modifies the positions and velocities of these particle groups according
+ * to the specified position and velocity distributions. 
+ */
 public class ParticleLoader {
 	
 	public List<Particle> load(List<ParticleFactory> particleFactories, double simulationWidth,
@@ -56,7 +60,7 @@ public class ParticleLoader {
 			 switch(f.getVelocityDistribution()) {
 			 	case NONE: {
 			 		// THIS IS FOR IMMOBILE PARTICLES!
-			 		// IF THE PARTICLE HAS A VELOCITY VARIABLE THIS SHOULDNT BE USED!
+			 		// If the particle has a velocity variable this SHOULD NOT BE USED!
 			 		break;
 			 	}
 			 	case CONSTANT: {
