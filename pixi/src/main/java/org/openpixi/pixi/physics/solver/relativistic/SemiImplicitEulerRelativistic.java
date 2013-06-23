@@ -20,6 +20,7 @@ package org.openpixi.pixi.physics.solver.relativistic;
 
 import org.openpixi.pixi.physics.*;
 import org.openpixi.pixi.physics.force.Force;
+import org.openpixi.pixi.physics.particles.Particle;
 import org.openpixi.pixi.physics.solver.Solver;
 
 /**This class represents the simple Semi Implicit Euler algorithm.

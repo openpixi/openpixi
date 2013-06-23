@@ -2,7 +2,7 @@ package org.openpixi.pixi.physics.grid;
 
 import org.openpixi.pixi.parallel.particleaccess.ParticleAction;
 import org.openpixi.pixi.parallel.particleaccess.ParticleIterator;
-import org.openpixi.pixi.physics.Particle;
+import org.openpixi.pixi.physics.particles.Particle;
 
 import java.util.List;
 

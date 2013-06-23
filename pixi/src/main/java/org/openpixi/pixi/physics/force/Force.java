@@ -19,7 +19,7 @@
 //First I would like to start with very simple class Force.java, so we could see the graphic result.
 package org.openpixi.pixi.physics.force;
 
-import org.openpixi.pixi.physics.Particle;
+import org.openpixi.pixi.physics.particles.Particle;
 
 public interface Force {
 
