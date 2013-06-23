@@ -81,18 +81,9 @@ public class Settings {
 	private int numOfParticles = 128;
 	private double particleRadius = 1;
 	private double particleMaxSpeed = speedOfLight/3;
-
-	// Random seed
-	private long test = (long) Math.random();
-	// If asList() is used the resulting list will have a fixed size!
-	private List<ParticleFactory> particleFactories = Arrays.asList(
-			new ParticleFactory(numOfParticles/2, 1, 1, particleRadius, PositionDistribution.RANDOM,
-					VelocityDistribution.RANDOM, particleMaxSpeed/10, particleMaxSpeed/10,
-					particleMaxSpeed, false, test, test),
-			new ParticleFactory(numOfParticles/2, 1, -1, particleRadius, PositionDistribution.RANDOM,
-					VelocityDistribution.RANDOM, particleMaxSpeed/10, particleMaxSpeed/10,
-					particleMaxSpeed, false, test, test));
 	
+	// Modify defaultParticleFactories() method to determine what kind of particles
+	// will be loaded by default.
 	private List<Particle> particles = new ArrayList<Particle>();
 
 	private Detector collisionDetector = new Detector();
@@ -236,6 +227,23 @@ public class Settings {
 		return combinedForce;
 	}
 
+	private List<ParticleFactory> defaultParticleFactories() {
+		// Random seed
+		long seed = (long) Math.random();
+		// If asList() is used the resulting list will have a fixed size!
+		List<ParticleFactory> particleFactories = Arrays.asList(
+				new ParticleFactory(numOfParticles/2, 1, 1, particleRadius, 
+						PositionDistribution.RANDOM, VelocityDistribution.RANDOM, 
+						particleMaxSpeed/10, particleMaxSpeed/10,particleMaxSpeed, 
+						false, seed, seed),
+				new ParticleFactory(numOfParticles/2, 1, -1, particleRadius, 
+						PositionDistribution.RANDOM, VelocityDistribution.RANDOM, 
+						particleMaxSpeed/10, particleMaxSpeed/10, particleMaxSpeed, 
+						false, seed, seed));
+		
+		return particleFactories;
+	}
+	
 	/**
 	 * If no particles are specified creates random particles.
 	 *
@@ -244,7 +252,7 @@ public class Settings {
 	 */
 	public List<Particle> getParticles() {
 		if (particles.size() == 0) {
-			this.particles = (new ParticleLoader()).load(particleFactories, 
+			this.particles = (new ParticleLoader()).load(defaultParticleFactories(), 
 					simulationWidth, simulationHeight, gridCellsX, gridCellsY);
 		}
 
@@ -437,7 +445,7 @@ public class Settings {
 	//----------------------------------------------------------------------------------------------
 	// VARIOUS
 	//----------------------------------------------------------------------------------------------
-
+	
 	public Settings() {
 	}
 
