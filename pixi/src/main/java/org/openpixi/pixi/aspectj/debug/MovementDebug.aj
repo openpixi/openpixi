@@ -1,8 +1,10 @@
 package org.openpixi.pixi.aspectj.debug;
 
 import org.aspectj.lang.annotation.AdviceName;
-import org.openpixi.pixi.physics.Particle;
+import org.openpixi.pixi.physics.particles.Particle;
 import org.openpixi.pixi.physics.Simulation;
+import org.openpixi.pixi.physics.solver.Solver;
+import org.openpixi.pixi.physics.force.Force;
 
 /**
  * Logs the following particle movement information:
@@ -15,8 +17,8 @@ import org.openpixi.pixi.physics.Simulation;
 public privileged aspect MovementDebug {
 
 	pointcut particleChecked(Particle p):
-			call(* *..ParticleBoundaries.applyOnParticleCenter(..)) && args(p)
-					&& withincode(* *..ParticleMover.push(..));
+			call(* *..ParticleBoundaries.applyOnParticleCenter(Solver, Force, Particle, ..)) 
+			&& args(Solver, Force, p, ..) && withincode(* *..Push.execute(..));
 
 	pointcut underSimulationStep(Simulation sim):
 			cflow(call(* *..step()) && target(sim));
@@ -42,7 +44,7 @@ public privileged aspect MovementDebug {
 				positionToStr(beforeBoundaryX, beforeBoundaryY),
 				positionToStr(afterBoundaryX, afterBoundaryY),
 				Math.sqrt(distanceX * distanceX + distanceY * distanceY)));
-
+		
 		if (distanceX > sim.grid.getCellWidth() || distanceY > sim.grid.getCellHeight()) {
 			System.out.println(
 					"WARNING: Particle " + p.id +
