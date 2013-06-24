@@ -16,6 +16,8 @@ import org.openpixi.pixi.physics.force.Force;
  */
 public privileged aspect MovementDebug {
 
+	final static boolean debug = false;
+
 	pointcut particleChecked(Particle p):
 			call(* *..ParticleBoundaries.applyOnParticleCenter(Solver, Force, Particle, ..)) 
 			&& args(Solver, Force, p, ..) && withincode(* *..Push.execute(..));
@@ -24,7 +26,7 @@ public privileged aspect MovementDebug {
 			cflow(call(* *..step()) && target(sim));
 
 	@AdviceName("logMovement")
-	Object around(Particle p, Simulation sim): particleChecked(p) && underSimulationStep(sim) {
+	Object around(Particle p, Simulation sim): if(debug) && particleChecked(p) && underSimulationStep(sim) {
 
 		double prevX = p.getPrevX();
 		double prevY = p.getPrevY();
