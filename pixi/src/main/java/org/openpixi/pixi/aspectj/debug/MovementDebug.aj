@@ -13,10 +13,15 @@ import org.openpixi.pixi.physics.force.Force;
  * - distance covered + warnings when the distance is larger than the size of cell
  *   or simulation area
  * - position after boundary check
+ *
+ * <p>Enable logging by setting the variable 'enabled' below to 'true'.</p>
  */
 public privileged aspect MovementDebug {
 
-	final static boolean debug = false;
+	/**
+	 * Enable logging by setting this variable to 'true'.
+	 */
+	final static boolean enabled = false;
 
 	pointcut particleChecked(Particle p):
 			call(* *..ParticleBoundaries.applyOnParticleCenter(Solver, Force, Particle, ..)) 
@@ -26,7 +31,7 @@ public privileged aspect MovementDebug {
 			cflow(call(* *..step()) && target(sim));
 
 	@AdviceName("logMovement")
-	Object around(Particle p, Simulation sim): if(debug) && particleChecked(p) && underSimulationStep(sim) {
+	Object around(Particle p, Simulation sim): if(enabled) && particleChecked(p) && underSimulationStep(sim) {
 
 		double prevX = p.getPrevX();
 		double prevY = p.getPrevY();
