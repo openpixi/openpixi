@@ -2,6 +2,7 @@ package org.openpixi.pixi.physics.collision.detectors;
 
 import org.openpixi.pixi.physics.*;
 import org.openpixi.pixi.physics.collision.util.*;
+import org.openpixi.pixi.physics.particles.Particle;
 
 import java.util.ArrayList;
 import java.util.HashMap;

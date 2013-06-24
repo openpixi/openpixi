@@ -1,5 +1,7 @@
 package org.openpixi.pixi.physics;
 
+import org.openpixi.pixi.physics.particles.Particle;
+
 public class RelativisticVelocity {
 	
 	private double c;

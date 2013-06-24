@@ -1,6 +1,6 @@
 package org.openpixi.pixi.parallel.particleaccess;
 
-import org.openpixi.pixi.physics.Particle;
+import org.openpixi.pixi.physics.particles.Particle;
 
 /**
  * Required in particle iterator, so that we are able to use the particle iterator

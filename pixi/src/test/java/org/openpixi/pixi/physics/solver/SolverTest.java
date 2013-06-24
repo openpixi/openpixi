@@ -4,8 +4,9 @@ import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
 
-import org.openpixi.pixi.physics.Particle;
 import org.openpixi.pixi.physics.force.ConstantForce;
+import org.openpixi.pixi.physics.particles.Particle;
+import org.openpixi.pixi.physics.particles.ParticleFull;
 
 /**
  * Unit test for Solver.
@@ -48,7 +49,7 @@ public class SolverTest extends TestCase {
 	 * Test if prepare and complete return to the same initial conditions
 	 */
 	public void testPrepareComplete() {
-		Particle p = new Particle();
+		Particle p = new ParticleFull();
 		ConstantForce f = new ConstantForce();
 		double step = 1.0;
 
@@ -67,7 +68,7 @@ public class SolverTest extends TestCase {
 		p.setMass(7.654);
 		p.setCharge(5.432);
 
-		Particle pcopy = new Particle(p);
+		Particle pcopy = p.copy();
 
 		solver.prepare(p, f, step);
 		solver.complete(p, f, step);
@@ -93,7 +94,7 @@ public class SolverTest extends TestCase {
 	 * Test if solver solves similar to Euler
 	 */
 	public void testCompareWithEuler() {
-		Particle p = new Particle();
+		Particle p = new ParticleFull();
 		ConstantForce f = new ConstantForce();
 		double step = 0.00001d;
 		Solver solver2 = new Euler();
@@ -113,8 +114,8 @@ public class SolverTest extends TestCase {
 		p.setMass(7.654);
 		p.setCharge(5.432);
 
-		Particle pcopy = new Particle(p);
-		Particle p2 = new Particle(p);
+		Particle pcopy = p.copy();
+		Particle p2 = p.copy();
 
 		solver.prepare(p, f, step);
 		solver2.prepare(p2, f, step);

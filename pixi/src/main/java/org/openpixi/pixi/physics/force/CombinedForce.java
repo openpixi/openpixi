@@ -1,7 +1,7 @@
 package org.openpixi.pixi.physics.force;
 
 
-import org.openpixi.pixi.physics.Particle;
+import org.openpixi.pixi.physics.particles.Particle;
 
 import java.util.ArrayList;
 

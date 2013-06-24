@@ -20,6 +20,7 @@ package org.openpixi.pixi.physics.solver.relativistic;
 
 import org.openpixi.pixi.physics.*;
 import org.openpixi.pixi.physics.force.Force;
+import org.openpixi.pixi.physics.particles.Particle;
 import org.openpixi.pixi.physics.solver.Solver;
 
 /**This class represents the LeapFrog algorithm and the equations that are used one can be find here:

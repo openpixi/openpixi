@@ -39,6 +39,10 @@ public class FieldSolver {
 		this.cellIterator.setNormalMode(numCellsX, numCellsY);
 	}
 
+	public void changeSize(int numCellsX, int numCellsY) {
+		this.cellIterator.setNormalMode(numCellsX, numCellsY);
+	}
+
 	public void step(Grid g, double timeStep) {
 
 	}

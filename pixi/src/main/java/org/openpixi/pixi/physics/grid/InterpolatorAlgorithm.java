@@ -1,6 +1,6 @@
 package org.openpixi.pixi.physics.grid;
 
-import org.openpixi.pixi.physics.Particle;
+import org.openpixi.pixi.physics.particles.Particle;
 
 public interface InterpolatorAlgorithm {
 

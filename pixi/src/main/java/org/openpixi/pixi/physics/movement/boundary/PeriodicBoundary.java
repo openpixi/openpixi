@@ -1,7 +1,7 @@
 package org.openpixi.pixi.physics.movement.boundary;
 
-import org.openpixi.pixi.physics.Particle;
 import org.openpixi.pixi.physics.force.Force;
+import org.openpixi.pixi.physics.particles.Particle;
 import org.openpixi.pixi.physics.solver.Solver;
 
 /**

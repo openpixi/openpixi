@@ -1,8 +1,8 @@
 package org.openpixi.pixi.physics.force.relativistic;
 
-import org.openpixi.pixi.physics.Particle;
 import org.openpixi.pixi.physics.RelativisticVelocity;
 import org.openpixi.pixi.physics.force.ConstantForce;
+import org.openpixi.pixi.physics.particles.Particle;
 
 public class ConstantForceRelativistic extends ConstantForce {
 	
