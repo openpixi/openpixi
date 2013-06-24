@@ -16,23 +16,26 @@
  * with this program; if not, write to the Free Software Foundation, Inc.,
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
-package org.openpixi.pixi.physics.solver;
 
-import org.openpixi.pixi.physics.force.Force;
-import org.openpixi.pixi.physics.particles.Particle;
+package org.openpixi.pixi.physics.particles;
 
-/**This class is empty and does not solve the equations
- *of motion. It implements the Solver interface.
- */
-public class EmptySolver implements Solver {
-	
-	public void step(Particle p, Force f, double step) {
-	}
-	
-	public void prepare(Particle p, Force f, double step) {		
-	}
-	
-	public void complete(Particle p, Force f, double step) {
-	}
+import java.util.List;
+import java.util.Random;
 
+
+public class RandomPositionDistribution {
+
+	public static List<Particle> apply(List<Particle> particles, int startIndex, int endIndex,
+			double startX, double endX, double startY, double endY,
+			long seed) {
+		
+		Random rand = new Random(seed);
+		
+		for(int i = startIndex; i < endIndex; i++) {			
+			 particles.get(i).setX(rand.nextDouble() * (endX - startX) + startX);
+			 particles.get(i).setY(rand.nextDouble() * (endY - startY) + startY);				 
+		 }
+		
+		return particles;
+	}
 }

@@ -1,6 +1,7 @@
 package org.openpixi.pixi.physics.collision.util;
 
 import org.openpixi.pixi.physics.*;
+import org.openpixi.pixi.physics.particles.Particle;
 
 public class BoundingBox {
 	

@@ -1,6 +1,6 @@
 package org.openpixi.pixi.parallel.particleaccess;
 
-import org.openpixi.pixi.physics.Particle;
+import org.openpixi.pixi.physics.particles.Particle;
 
 import java.util.ArrayList;
 import java.util.List;
