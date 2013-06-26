@@ -10,6 +10,15 @@ public class SimpleSolver extends FieldSolver {
 	private SolveForE solveForE = new SolveForE();
 	private SolveForB solveForB = new SolveForB();
 
+	@Override
+	public FieldSolver clone() {
+		SimpleSolver clone = new SimpleSolver();
+		clone.copyBaseClassFields(this);
+		clone.solveForE = solveForE;
+		clone.solveForB = solveForB;
+		return clone;
+	}
+
 	/**A simple LeapFrog algorithm
 	 * @param grid before the update: E(t), B(t+dt/2);
 	 * 						after the update: E(t+dt), B(t+3dt/2)
