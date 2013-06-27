@@ -3,7 +3,7 @@ package org.openpixi.pixi.distributed.grid;
 import org.openpixi.pixi.distributed.SharedDataManager;
 import org.openpixi.pixi.parallel.particleaccess.ParticleAction;
 import org.openpixi.pixi.parallel.particleaccess.ParticleIterator;
-import org.openpixi.pixi.physics.Particle;
+import org.openpixi.pixi.physics.particles.Particle;
 import org.openpixi.pixi.physics.grid.Grid;
 import org.openpixi.pixi.physics.grid.Interpolation;
 import org.openpixi.pixi.physics.grid.InterpolatorAlgorithm;
