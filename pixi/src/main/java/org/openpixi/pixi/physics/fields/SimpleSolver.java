@@ -14,6 +14,7 @@ public class SimpleSolver extends FieldSolver {
 	public FieldSolver clone() {
 		SimpleSolver clone = new SimpleSolver();
 		clone.copyBaseClassFields(this);
+		clone.timeStep = timeStep;
 		clone.solveForE = solveForE;
 		clone.solveForB = solveForB;
 		return clone;
