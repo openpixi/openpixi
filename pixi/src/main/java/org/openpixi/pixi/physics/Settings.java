@@ -157,7 +157,7 @@ public class Settings {
 		 * For the distributed tests to pass we need to create new grid solver so that the two
 		 * simulation instances do not share the cell iterator!
 		 */
-		return ClassCopier.copy(gridSolver);
+		return gridSolver.clone();
 	}
 
 	public PoissonSolver getPoissonSolver() {
