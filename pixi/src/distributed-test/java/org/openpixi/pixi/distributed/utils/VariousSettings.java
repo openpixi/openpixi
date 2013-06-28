@@ -75,10 +75,6 @@ public class VariousSettings {
 		settings.setInterpolator(new CloudInCell());
 		variousTestSettings.put("CloudInCell", settings);
 
-		// Fails because YeeSolver calculates the fields at the borders of the simulation area
-		// differently then in the center, One needs to remake the YeeSolver in the same style
-		// as SimpleFieldSolver.
-		// TODO find solution
 		settings = ClassCopier.copy(defaultSettings);
 		settings.setGridSolver(new SimpleSolver());
 		variousTestSettings.put("SimpleSolver", settings);
