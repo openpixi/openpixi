@@ -3,7 +3,7 @@ package org.openpixi.pixi.distributed;
 import org.openpixi.pixi.distributed.ibis.IbisRegistry;
 import org.openpixi.pixi.distributed.ibis.WorkerToWorker;
 import org.openpixi.pixi.physics.GeneralBoundaryType;
-import org.openpixi.pixi.physics.Particle;
+import org.openpixi.pixi.physics.particles.Particle;
 import org.openpixi.pixi.physics.grid.Grid;
 import org.openpixi.pixi.physics.movement.boundary.ParticleBoundaries;
 import org.openpixi.pixi.physics.util.IntBox;
