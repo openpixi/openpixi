@@ -4,7 +4,7 @@ import org.aspectj.lang.annotation.AdviceName;
 import org.openpixi.pixi.distributed.SharedData;
 import org.openpixi.pixi.distributed.SharedDataManager;
 import org.openpixi.pixi.distributed.Worker;
-import org.openpixi.pixi.physics.Particle;
+import org.openpixi.pixi.physics.particles.Particle;
 import org.openpixi.pixi.physics.util.IntBox;
 
 import java.util.ArrayList;
