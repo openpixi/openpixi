@@ -1,8 +1,10 @@
 package org.openpixi.pixi.aspectj.debug;
 
 import org.aspectj.lang.annotation.AdviceName;
-import org.openpixi.pixi.physics.Particle;
+import org.openpixi.pixi.physics.particles.Particle;
 import org.openpixi.pixi.physics.Simulation;
+import org.openpixi.pixi.physics.solver.Solver;
+import org.openpixi.pixi.physics.force.Force;
 
 /**
  * Logs the following particle movement information:
@@ -11,18 +13,25 @@ import org.openpixi.pixi.physics.Simulation;
  * - distance covered + warnings when the distance is larger than the size of cell
  *   or simulation area
  * - position after boundary check
+ *
+ * <p>Enable logging by setting the variable 'enabled' below to 'true'.</p>
  */
 public privileged aspect MovementDebug {
 
+	/**
+	 * Enable logging by setting this variable to 'true'.
+	 */
+	final static boolean enabled = false;
+
 	pointcut particleChecked(Particle p):
-			call(* *..ParticleBoundaries.applyOnParticleCenter(..)) && args(p)
-					&& withincode(* *..ParticleMover.push(..));
+			call(* *..ParticleBoundaries.applyOnParticleCenter(Solver, Force, Particle, ..)) 
+			&& args(Solver, Force, p, ..) && withincode(* *..Push.execute(..));
 
 	pointcut underSimulationStep(Simulation sim):
 			cflow(call(* *..step()) && target(sim));
 
 	@AdviceName("logMovement")
-	Object around(Particle p, Simulation sim): particleChecked(p) && underSimulationStep(sim) {
+	Object around(Particle p, Simulation sim): if(enabled) && particleChecked(p) && underSimulationStep(sim) {
 
 		double prevX = p.getPrevX();
 		double prevY = p.getPrevY();
@@ -42,7 +51,7 @@ public privileged aspect MovementDebug {
 				positionToStr(beforeBoundaryX, beforeBoundaryY),
 				positionToStr(afterBoundaryX, afterBoundaryY),
 				Math.sqrt(distanceX * distanceX + distanceY * distanceY)));
-
+		
 		if (distanceX > sim.grid.getCellWidth() || distanceY > sim.grid.getCellHeight()) {
 			System.out.println(
 					"WARNING: Particle " + p.id +

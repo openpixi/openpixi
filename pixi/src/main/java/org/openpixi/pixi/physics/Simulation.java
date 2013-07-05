@@ -30,6 +30,7 @@ import org.openpixi.pixi.physics.grid.LocalInterpolation;
 import org.openpixi.pixi.physics.movement.ParticleMover;
 import org.openpixi.pixi.physics.movement.boundary.ParticleBoundaries;
 import org.openpixi.pixi.physics.movement.boundary.SimpleParticleBoundaries;
+import org.openpixi.pixi.physics.particles.Particle;
 import org.openpixi.pixi.physics.util.DoubleBox;
 
 import java.util.ArrayList;

@@ -215,13 +215,25 @@ public class Grid {
 		this.cellIterator.setExtraCellsMode(this.numCellsX, this.numCellsY);
 	}
 
+	/**
+	 * Change the size of the field.
+	 * TODO make sure the method can not be called in distributed version
+	 * E.g. throw an exception if this is distributed version
+	 */
+	public void changeSize(int numCellsX, int numCellsY,
+			double simWidth, double simHeight) {
+		set(numCellsX, numCellsY, simWidth, simHeight);
+
+		fsolver.changeSize(numCellsX, numCellsY);
+		cellIterator.setExtraCellsMode(this.numCellsX, this.numCellsY);
+	}
 
 	/**
 	 * This method is dangerous as it would not work in distributed version.
 	 * TODO make sure the method can not be called in distributed version
 	 * E.g. throw an exception if this is distributed version
 	 */
-	public void set(int numCellsX, int numCellsY,
+	private void set(int numCellsX, int numCellsY,
 			double simWidth, double simHeight) {
 
 		this.numCellsX = numCellsX;

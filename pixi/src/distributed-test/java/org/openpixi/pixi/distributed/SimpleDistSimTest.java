@@ -2,7 +2,8 @@ package org.openpixi.pixi.distributed;
 
 import org.openpixi.pixi.distributed.utils.EmulatedDistributedEnvironment;
 import org.openpixi.pixi.distributed.utils.IplServer;
-import org.openpixi.pixi.physics.Particle;
+import org.openpixi.pixi.physics.particles.Particle;
+import org.openpixi.pixi.physics.particles.ParticleFull;
 import org.openpixi.pixi.physics.Settings;
 
 /**
@@ -36,7 +37,7 @@ public class SimpleDistSimTest {
 	 * Used for debugging purposes when there is a need of a specific particle(s).
 	 */
 	public static void createParticles(Settings settings) {
-		Particle p1 = new Particle();
+		Particle p1 = new ParticleFull();
 		p1.setX(75);
 		p1.setY(35);
 		p1.setVx(2);

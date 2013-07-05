@@ -22,8 +22,9 @@ package org.openpixi.pixi.diagnostics.methods;
 import java.util.ArrayList;
 
 import org.openpixi.pixi.diagnostics.DataOutput;
-import org.openpixi.pixi.physics.Particle;
 import org.openpixi.pixi.physics.grid.Grid;
+import org.openpixi.pixi.physics.particles.Particle;
+
 import edu.emory.mathcs.jtransforms.fft.*;
 
 /**

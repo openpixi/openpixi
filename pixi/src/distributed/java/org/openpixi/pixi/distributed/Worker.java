@@ -7,7 +7,7 @@ import org.openpixi.pixi.distributed.ibis.WorkerToMaster;
 import org.openpixi.pixi.distributed.movement.boundary.DistributedParticleBoundaries;
 import org.openpixi.pixi.distributed.util.BooleanLock;
 import org.openpixi.pixi.distributed.util.IncomingProblemHandler;
-import org.openpixi.pixi.physics.Particle;
+import org.openpixi.pixi.physics.particles.Particle;
 import org.openpixi.pixi.physics.Settings;
 import org.openpixi.pixi.physics.Simulation;
 import org.openpixi.pixi.physics.grid.Cell;

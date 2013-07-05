@@ -1,7 +1,7 @@
 package org.openpixi.pixi.aspectj.debug;
 
 import org.aspectj.lang.annotation.AdviceName;
-import org.openpixi.pixi.physics.Particle;
+import org.openpixi.pixi.physics.particles.Particle;
 
 import java.util.List;
 

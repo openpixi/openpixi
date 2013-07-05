@@ -1,10 +1,10 @@
 package org.openpixi.pixi.distributed.utils;
 
 import org.openpixi.pixi.physics.Settings;
-import org.openpixi.pixi.physics.fields.YeeSolver;
+import org.openpixi.pixi.physics.fields.SimpleSolver;
 import org.openpixi.pixi.physics.force.ConstantForce;
-import org.openpixi.pixi.physics.grid.ChargeConservingAreaWeighting;
-import org.openpixi.pixi.physics.grid.InterpolatorAlgorithm;
+import org.openpixi.pixi.physics.grid.ChargeConservingCIC;
+import org.openpixi.pixi.physics.grid.CloudInCell;
 import org.openpixi.pixi.physics.solver.Boris;
 import org.openpixi.pixi.physics.solver.Euler;
 import org.openpixi.pixi.physics.solver.LeapFrogDamped;
@@ -68,20 +68,16 @@ public class VariousSettings {
 
 		// TODO find solution
 		settings = ClassCopier.copy(defaultSettings);
-		settings.setInterpolator(new ChargeConservingAreaWeighting());
-		variousTestSettings.put("ChargeConservingAreaWeighting", settings);
+		settings.setInterpolator(new ChargeConservingCIC());
+		variousTestSettings.put("ChargeConservingCIC", settings);
 
 		settings = ClassCopier.copy(defaultSettings);
-		settings.setInterpolator(new InterpolatorAlgorithm());
-		variousTestSettings.put("BaseInterpolator", settings);
+		settings.setInterpolator(new CloudInCell());
+		variousTestSettings.put("CloudInCell", settings);
 
-		// Fails because YeeSolver calculates the fields at the borders of the simulation area
-		// differently then in the center, One needs to remake the YeeSolver in the same style
-		// as SimpleFieldSolver.
-		// TODO find solution
 		settings = ClassCopier.copy(defaultSettings);
-		settings.setGridSolver(new YeeSolver());
-		variousTestSettings.put("YeeSolver", settings);
+		settings.setGridSolver(new SimpleSolver());
+		variousTestSettings.put("SimpleSolver", settings);
 
 		// Fails because SpringForce uses particle's absolute y position to calculate the force.
 		// Since the y position in local and distributed simulation differs,

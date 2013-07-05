@@ -34,8 +34,29 @@ public class FieldSolver {
 
 	}
 
+	/**
+	 * Creates a shallow copy of FieldSolver or its derived class.
+	 *
+	 * TODO: Create a test (using reflection) that ensures that all fields
+	 * are properly copied.
+	 */
+	@Override
+	public FieldSolver clone() {
+		FieldSolver clone = new FieldSolver();
+		clone.copyBaseClassFields(this);
+		return clone;
+	}
+
+	protected void copyBaseClassFields(FieldSolver origin) {
+		this.cellIterator = origin.cellIterator;
+	}
+
 	public void initializeIterator(CellIterator cellIterator, int numCellsX, int numCellsY) {
 		this.cellIterator = cellIterator;
+		this.cellIterator.setNormalMode(numCellsX, numCellsY);
+	}
+
+	public void changeSize(int numCellsX, int numCellsY) {
 		this.cellIterator.setNormalMode(numCellsX, numCellsY);
 	}
 

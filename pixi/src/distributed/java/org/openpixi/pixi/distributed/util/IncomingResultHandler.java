@@ -1,6 +1,6 @@
 package org.openpixi.pixi.distributed.util;
 
-import org.openpixi.pixi.physics.Particle;
+import org.openpixi.pixi.physics.particles.Particle;
 import org.openpixi.pixi.physics.grid.Cell;
 
 import java.util.List;

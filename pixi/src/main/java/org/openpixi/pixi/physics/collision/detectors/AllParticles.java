@@ -3,6 +3,7 @@ package org.openpixi.pixi.physics.collision.detectors;
 import java.util.ArrayList;
 import org.openpixi.pixi.physics.*;
 import org.openpixi.pixi.physics.collision.util.Pair;
+import org.openpixi.pixi.physics.particles.Particle;
 
 public class AllParticles extends Detector{
 	

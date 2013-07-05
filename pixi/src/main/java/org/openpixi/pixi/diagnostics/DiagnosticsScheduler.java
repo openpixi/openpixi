@@ -21,7 +21,7 @@ package org.openpixi.pixi.diagnostics;
 
 import org.openpixi.pixi.diagnostics.methods.Diagnostics;
 import org.openpixi.pixi.physics.grid.Grid;
-import org.openpixi.pixi.physics.Particle;
+import org.openpixi.pixi.physics.particles.Particle;
 import org.openpixi.pixi.physics.Settings;
 import java.util.ArrayList;
 import java.util.List;

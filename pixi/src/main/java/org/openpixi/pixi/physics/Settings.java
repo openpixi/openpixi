@@ -19,11 +19,17 @@ import org.openpixi.pixi.physics.grid.CloudInCell;
 import org.openpixi.pixi.physics.grid.GridBoundaryType;
 import org.openpixi.pixi.physics.grid.InterpolatorAlgorithm;
 import org.openpixi.pixi.physics.movement.boundary.ParticleBoundaryType;
+import org.openpixi.pixi.physics.particles.Particle;
+import org.openpixi.pixi.physics.particles.ParticleFactory.PositionDistribution;
+import org.openpixi.pixi.physics.particles.ParticleFactory.VelocityDistribution;
 import org.openpixi.pixi.physics.solver.Euler;
 import org.openpixi.pixi.physics.solver.Solver;
 import org.openpixi.pixi.physics.util.ClassCopier;
+import org.openpixi.pixi.physics.particles.ParticleFactory;
+import org.openpixi.pixi.physics.particles.ParticleLoader;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -62,8 +68,8 @@ public class Settings {
 
 	// Grid related settings
 
-	private int gridCellsX = 100;
-	private int gridCellsY = 100;
+	private int gridCellsX = 10;
+	private int gridCellsY = 10;
 
 	private FieldSolver gridSolver = new SimpleSolver();
 	private PoissonSolver poissonSolver = new PoissonSolverFFTPeriodic();
@@ -72,10 +78,12 @@ public class Settings {
 
 	// Particle related settings
 
-	private int numOfParticles = 100;
+	private int numOfParticles = 128;
 	private double particleRadius = 1;
-	private double particleMaxSpeed = speedOfLight;
-
+	private double particleMaxSpeed = speedOfLight/3;
+	
+	// Modify defaultParticleFactories() method to determine what kind of particles
+	// will be loaded by default.
 	private List<Particle> particles = new ArrayList<Particle>();
 
 	private Detector collisionDetector = new Detector();
@@ -149,7 +157,7 @@ public class Settings {
 		 * For the distributed tests to pass we need to create new grid solver so that the two
 		 * simulation instances do not share the cell iterator!
 		 */
-		return ClassCopier.copy(gridSolver);
+		return gridSolver.clone();
 	}
 
 	public PoissonSolver getPoissonSolver() {
@@ -219,6 +227,23 @@ public class Settings {
 		return combinedForce;
 	}
 
+	private List<ParticleFactory> defaultParticleFactories() {
+		// Random seed
+		long seed = (long) Math.random();
+		// If asList() is used the resulting list will have a fixed size!
+		List<ParticleFactory> particleFactories = Arrays.asList(
+				new ParticleFactory(numOfParticles/2, 1, 1, particleRadius, 
+						PositionDistribution.RANDOM, VelocityDistribution.RANDOM, 
+						particleMaxSpeed/10, particleMaxSpeed/10,particleMaxSpeed, 
+						false, seed, seed),
+				new ParticleFactory(numOfParticles/2, 1, -1, particleRadius, 
+						PositionDistribution.RANDOM, VelocityDistribution.RANDOM, 
+						particleMaxSpeed/10, particleMaxSpeed/10, particleMaxSpeed, 
+						false, seed, seed));
+		
+		return particleFactories;
+	}
+	
 	/**
 	 * If no particles are specified creates random particles.
 	 *
@@ -227,9 +252,8 @@ public class Settings {
 	 */
 	public List<Particle> getParticles() {
 		if (particles.size() == 0) {
-			this.particles = InitialConditions.createRandomParticles(
-					simulationWidth,  simulationHeight,
-					particleMaxSpeed, numOfParticles, particleRadius);
+			this.particles = (new ParticleLoader()).load(defaultParticleFactories(), 
+					simulationWidth, simulationHeight, gridCellsX, gridCellsY);
 		}
 
 		return cloneParticles();
@@ -239,7 +263,7 @@ public class Settings {
 	private List<Particle> cloneParticles() {
 		List<Particle> copy = new ArrayList<Particle>();
 		for (Particle p: particles) {
-			copy.add(new Particle(p));
+			copy.add(p.copy());
 		}
 		return copy;
 	}
@@ -373,6 +397,11 @@ public class Settings {
 		this.numOfParticles = numOfParticles;
 	}
 
+	public void setParticleList(List<Particle> particles) {
+		this.numOfParticles = particles.size();
+		this.particles = particles;
+	}
+	
 	public void setParticleRadius(double particleRadius) {
 		this.particleRadius = particleRadius;
 	}
@@ -416,7 +445,7 @@ public class Settings {
 	//----------------------------------------------------------------------------------------------
 	// VARIOUS
 	//----------------------------------------------------------------------------------------------
-
+	
 	public Settings() {
 	}
 

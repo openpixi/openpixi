@@ -5,7 +5,7 @@ import org.openpixi.pixi.distributed.util.BooleanLock;
 import org.openpixi.pixi.distributed.util.IncomingCellsHandler;
 import org.openpixi.pixi.distributed.util.IncomingParticlesHandler;
 import org.openpixi.pixi.distributed.util.IncomingPointsHandler;
-import org.openpixi.pixi.physics.Particle;
+import org.openpixi.pixi.physics.particles.Particle;
 import org.openpixi.pixi.physics.grid.Cell;
 import org.openpixi.pixi.physics.grid.Grid;
 import org.openpixi.pixi.physics.movement.boundary.ParticleBoundaries;

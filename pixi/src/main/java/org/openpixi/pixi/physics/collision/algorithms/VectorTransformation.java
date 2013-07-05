@@ -2,9 +2,9 @@ package org.openpixi.pixi.physics.collision.algorithms;
 
 import java.util.ArrayList;
 
-import org.openpixi.pixi.physics.Particle;
 import org.openpixi.pixi.physics.collision.util.Pair;
 import org.openpixi.pixi.physics.force.Force;
+import org.openpixi.pixi.physics.particles.Particle;
 import org.openpixi.pixi.physics.solver.Solver;
 
 public class VectorTransformation extends CollisionAlgorithm{
