@@ -50,6 +50,8 @@
 #define EXTRA_CELLS_AFTER_GRID 2
 
 //Cell attributes indexes
+#define C_SIZE 8
+
 #define Cjx 0
 #define Cjy 1
 #define Crho 2
@@ -84,17 +86,25 @@ int get_region(double xmin, double xmax, double ymin, double ymax, double width,
 }
 
 void fourBoundaryMove(int lx, int ly, double x, double y, double deltaX, 
-                      double deltaY, double pCharge, double tstep, double *JxJy) {
+                      double deltaY, double pCharge, double tstep, double *cells, int numCellsY) {
 
+    cells[(C_SIZE * ((lx * numCellsY) + ly - 1)) + Cjx] += pCharge * deltaX * ((1 - deltaY) / 2 - y));
+    cells[(C_SIZE * ((lx * numCellsY) + ly)) + Cjx] += pCharge * deltaX * ((1 - deltaY) / 2 - y));
+
+    cells[(C_SIZE * (((lx - 1) * numCellsY) + ly)) + Cjy] += pCharge * deltaX * ((1 - deltaY) / 2 - y));
+    cells[(C_SIZE * ((lx * numCellsY) + ly)) + Cjy] += pCharge * deltaX * ((1 - deltaY) / 2 - y));
+
+/*
     JxJy[0] = JxJy[0] + (lx, ly - 1, pCharge() * deltaX * ((1 - deltaY) / 2 - y));
     JxJy[0] = JxJy[0] + (lx, ly, p.getCharge() * deltaX * ((1 + deltaY) / 2 + y));
     JxJy[1] = JxJy[1] + (lx - 1, ly, p.getCharge() * deltaY * ((1 - deltaX) / 2 - x));
     JxJy[1] = JxJy[1] + (lx, ly, p.getCharge() * deltaY * ((1 + deltaX) / 2 + x));
+*/
 
 }
 
-private void sevenBoundaryMove(double x, double y, int xStart, int yStart, int xEnd, int yEnd,
-                               double deltaX, double deltaY, double p, double tstep, double *JxJy) {
+void sevenBoundaryMove(double x, double y, int xStart, int yStart, int xEnd, int yEnd,
+                               double deltaX, double deltaY, double p, double tstep, double *cells, int numCellsY) {
     //7-boundary move with equal y?
     if (yStart == yEnd) {
             //particle moves right?
@@ -102,12 +112,12 @@ private void sevenBoundaryMove(double x, double y, int xStart, int yStart, int x
 
                     double deltaX1 = 0.5 - x;
                     double deltaY1 = (deltaY / deltaX) * deltaX1;
-                    fourBoundaryMove(xStart, yStart, x, y, deltaX1, deltaY1, p, tstep, JxJy);
+                    fourBoundaryMove(xStart, yStart, x, y, deltaX1, deltaY1, p, tstep, cells, numCellsY);
 
                     deltaX -= deltaX1;
                     deltaY -= deltaY1;
                     y += deltaY1;
-                    fourBoundaryMove(xEnd, yEnd, - 0.5, y, deltaX, deltaY, p, tstep, JxJy);
+                    fourBoundaryMove(xEnd, yEnd, - 0.5, y, deltaX, deltaY, p, tstep, cells, numCellsY);
 
             }
             //particle moves left
@@ -115,12 +125,12 @@ private void sevenBoundaryMove(double x, double y, int xStart, int yStart, int x
 
                     double deltaX1 = -(0.5 + x);
                     double deltaY1 = (deltaY / deltaX) * deltaX1;
-                    fourBoundaryMove(xStart, yStart, x, y, deltaX1, deltaY1, p, tstep, JxJy);
+                    fourBoundaryMove(xStart, yStart, x, y, deltaX1, deltaY1, p, tstep, cells, numCellsY);
 
                     deltaX -= deltaX1;
                     deltaY -= deltaY1;
                     y += deltaY1;
-                    fourBoundaryMove(xEnd, yEnd, 0.5, y, deltaX, deltaY, p, tstep, JxJy);
+                    fourBoundaryMove(xEnd, yEnd, 0.5, y, deltaX, deltaY, p, tstep, cells, numCellsY);
 
             }
     }
@@ -131,12 +141,12 @@ private void sevenBoundaryMove(double x, double y, int xStart, int yStart, int x
 
                     double deltaY1 = 0.5 - y;
                     double deltaX1 = deltaX  * (deltaY1 / deltaY);
-                    fourBoundaryMove(xStart, yStart, x, y, deltaX1, deltaY1, p, tstep, JxJy);
+                    fourBoundaryMove(xStart, yStart, x, y, deltaX1, deltaY1, p, tstep, cells, numCellsY);
 
                     deltaX -= deltaX1;
                     deltaY -= deltaY1;
                     y += deltaY1;
-                    fourBoundaryMove(xEnd, yEnd, x, -0.5, deltaX, deltaY, p, tstep, JxJy);
+                    fourBoundaryMove(xEnd, yEnd, x, -0.5, deltaX, deltaY, p, tstep, cells, numCellsY);
 
             }
             //particle moves down
@@ -144,20 +154,20 @@ private void sevenBoundaryMove(double x, double y, int xStart, int yStart, int x
 
                     double deltaY1 = -(0.5 + y);
                     double deltaX1 = (deltaX / deltaY) * deltaY1;
-                    fourBoundaryMove(xStart, yStart, x, y, deltaX1, deltaY1, p, tstep, JxJy);
+                    fourBoundaryMove(xStart, yStart, x, y, deltaX1, deltaY1, p, tstep, cells, numCellsY);
 
                     deltaX -= deltaX1;
                     deltaY -= deltaY1;
                     y += deltaY1;
-                    fourBoundaryMove(xEnd, yEnd, x, 0.5, deltaX, deltaY, p, tstep, JxJy);
+                    fourBoundaryMove(xEnd, yEnd, x, 0.5, deltaX, deltaY, p, tstep, cells, numCellsY);
 
             }
     }
 
 }
 
-private void tenBoundaryMove(double x, double y, int xStart, int yStart, int xEnd, int yEnd,
-			     double deltaX, double deltaY, double p, double tstep, double *JxJy) {
+void tenBoundaryMove(double x, double y, int xStart, int yStart, int xEnd, int yEnd,
+			     double deltaX, double deltaY, double p, double tstep, double *cells, int numCellsY) {
     //moved right?
     if (xEnd == (xStart+1)) {
             //moved up?
@@ -169,17 +179,17 @@ private void tenBoundaryMove(double x, double y, int xStart, int yStart, int xEn
                     if(((deltaY / deltaX) * deltaX1 + y) < 0.5) {
 
                             double deltaY1 = (deltaY / deltaX) * deltaX1;
-                            fourBoundaryMove(xStart, yStart, x, y, deltaX1, deltaY1, p, tstep, JxJy);
+                            fourBoundaryMove(xStart, yStart, x, y, deltaX1, deltaY1, p, tstep, cells, numCellsY);
 
                             double deltaY2 = 0.5 - y - deltaY1;
                             double deltaX2 = (deltaX1 / deltaY1) * deltaY2;
                             y += deltaY1;
-                            fourBoundaryMove(xStart+1, yStart, -0.5, y, deltaX2, deltaY2, p, tstep, JxJy);
+                            fourBoundaryMove(xStart+1, yStart, -0.5, y, deltaX2, deltaY2, p, tstep, cells, numCellsY);
 
                             deltaX -= (deltaX1 + deltaX2);
                             deltaY -= (deltaY1 + deltaY2);
                             x = deltaX2 - 0.5;
-                            fourBoundaryMove(xEnd, yEnd, x, -0.5, deltaX, deltaY, p, tstep, JxJy);
+                            fourBoundaryMove(xEnd, yEnd, x, -0.5, deltaX, deltaY, p, tstep, cells, numCellsY);
 
                     }
                     //upper local origin
@@ -187,17 +197,17 @@ private void tenBoundaryMove(double x, double y, int xStart, int yStart, int xEn
 
                             double deltaY1 = 0.5 - y;
                             deltaX1 = (deltaX / deltaY) * deltaY1;
-                            fourBoundaryMove(xStart, yStart, x, y, deltaX1, deltaY1, p, tstep, JxJy);
+                            fourBoundaryMove(xStart, yStart, x, y, deltaX1, deltaY1, p, tstep, cells, numCellsY);
 
                             double deltaX2 = 0.5 - x - deltaX1;
                             double deltaY2 = (deltaY1 / deltaX1) * deltaX2;
                             x += deltaX1;
-                            fourBoundaryMove(xStart, yStart+1, x, -0.5, deltaX2, deltaY2, p, tstep, JxJy);
+                            fourBoundaryMove(xStart, yStart+1, x, -0.5, deltaX2, deltaY2, p, tstep, cells, numCellsY);
 
                             deltaX -= (deltaX1 + deltaX2);
                             deltaY -= (deltaY1 + deltaY2);
                             y = deltaY2 - 0.5;
-                            fourBoundaryMove(xEnd, yEnd, -0.5, y, deltaX, deltaY, p, tstep, JxJy);
+                            fourBoundaryMove(xEnd, yEnd, -0.5, y, deltaX, deltaY, p, tstep, cells, numCellsY);
 
                     }
             }
@@ -210,17 +220,17 @@ private void tenBoundaryMove(double x, double y, int xStart, int yStart, int xEn
                     if(((deltaX / deltaY) * deltaY1 + x) < 0.5) {
 
                             double deltaX1 = (deltaX / deltaY) * deltaY1;
-                            fourBoundaryMove(xStart, yStart, x, y, deltaX1, deltaY1, p, tstep, JxJy);
+                            fourBoundaryMove(xStart, yStart, x, y, deltaX1, deltaY1, p, tstep, cells, numCellsY);
 
                             double deltaX2 = 0.5 - x - deltaX1;
                             double deltaY2 = (deltaY / deltaX) * deltaX2;
                             x += deltaX1;
-                            fourBoundaryMove(xStart, yStart-1, x, 0.5, deltaX2, deltaY2, p, tstep, JxJy);
+                            fourBoundaryMove(xStart, yStart-1, x, 0.5, deltaX2, deltaY2, p, tstep, cells, numCellsY);
 
                             deltaX -= (deltaX1 + deltaX2);
                             deltaY -= (deltaY1 + deltaY2);
                             y = 0.5 + deltaY2;
-                            fourBoundaryMove(xEnd, yEnd, -0.5, y, deltaX, deltaY, p, tstep, JxJy);
+                            fourBoundaryMove(xEnd, yEnd, -0.5, y, deltaX, deltaY, p, tstep, cells, numCellsY);
 
                     }
                     //upper local origin
@@ -228,17 +238,17 @@ private void tenBoundaryMove(double x, double y, int xStart, int yStart, int xEn
 
                             double deltaX1 = 0.5 - x;
                             deltaY1 = (deltaY / deltaX) * deltaX1;
-                            fourBoundaryMove(xStart, yStart, x, y, deltaX1, deltaY1, p, tstep, JxJy);
+                            fourBoundaryMove(xStart, yStart, x, y, deltaX1, deltaY1, p, tstep, cells, numCellsY);
 
                             double deltaY2 = -(0.5 + y + deltaY1);
                             double deltaX2 = (deltaX1 / deltaY1) * deltaY2;
                             y += deltaY1;
-                            fourBoundaryMove(xStart+1, yStart, -0.5, y, deltaX2, deltaY2, p, tstep, JxJy);
+                            fourBoundaryMove(xStart+1, yStart, -0.5, y, deltaX2, deltaY2, p, tstep, cells, numCellsY);
 
                             deltaX -= (deltaX1 + deltaX2);
                             deltaY -= (deltaY1 + deltaY2);
                             x = deltaX2 - 0.5;
-                            fourBoundaryMove(xEnd, yEnd, x, 0.5, deltaX, deltaY, p, tstep, JxJy);
+                            fourBoundaryMove(xEnd, yEnd, x, 0.5, deltaX, deltaY, p, tstep, cells, numCellsY);
 
                     }
             }
@@ -254,17 +264,17 @@ private void tenBoundaryMove(double x, double y, int xStart, int yStart, int xEn
                     if(((deltaY / deltaX) * deltaX1 + y) < 0.5) {
 
                             double deltaY1 = (deltaY / deltaX) * deltaX1;
-                            fourBoundaryMove(xStart, yStart, x, y, deltaX1, deltaY1, p, tstep, JxJy);
+                            fourBoundaryMove(xStart, yStart, x, y, deltaX1, deltaY1, p, tstep, cells, numCellsY);
 
                             double deltaY2 = 0.5 - y - deltaY1;
                             double deltaX2 = (deltaX1 / deltaY1) * deltaY2;
                             y += deltaY1;
-                            fourBoundaryMove(xStart-1, yStart, 0.5, y, deltaX2, deltaY2, p, tstep, JxJy);
+                            fourBoundaryMove(xStart-1, yStart, 0.5, y, deltaX2, deltaY2, p, tstep, cells, numCellsY);
 
                             deltaX -= (deltaX1 + deltaX2);
                             deltaY -= (deltaY1 + deltaY2);
                             x = 0.5 + deltaX2;
-                            fourBoundaryMove(xEnd, yEnd, x, -0.5, deltaX, deltaY, p, tstep, JxJy);
+                            fourBoundaryMove(xEnd, yEnd, x, -0.5, deltaX, deltaY, p, tstep, cells, numCellsY);
 
                     }
                     //upper local origin
@@ -272,17 +282,17 @@ private void tenBoundaryMove(double x, double y, int xStart, int yStart, int xEn
 
                             double deltaY1 = 0.5 - y;
                             deltaX1 = (deltaX / deltaY) * deltaY1;
-                            fourBoundaryMove(xStart, yStart, x, y, deltaX1, deltaY1, p, tstep, JxJy);
+                            fourBoundaryMove(xStart, yStart, x, y, deltaX1, deltaY1, p, tstep, cells, numCellsY);
 
                             double deltaX2 = -(0.5 + x + deltaX1);
                             double deltaY2 = (deltaY1 / deltaX1) * deltaX2;
                             x += deltaX1;
-                            fourBoundaryMove(xStart, yStart+1, x, -0.5, deltaX2, deltaY2, p, tstep, JxJy);
+                            fourBoundaryMove(xStart, yStart+1, x, -0.5, deltaX2, deltaY2, p, tstep, cells, numCellsY);
 
                             deltaX -= (deltaX1 + deltaX2);
                             deltaY -= (deltaY1 + deltaY2);
                             y = deltaY2 - 0.5;
-                            fourBoundaryMove(xEnd, yEnd, 0.5, y, deltaX, deltaY,p, tstep, JxJy);
+                            fourBoundaryMove(xEnd, yEnd, 0.5, y, deltaX, deltaY,p, tstep, cells, numCellsY);
                   
                     }
             }
@@ -294,17 +304,17 @@ private void tenBoundaryMove(double x, double y, int xStart, int yStart, int xEn
                     if((-(deltaX / deltaY) * deltaY1 - x) < 0.5) {
 
                             double deltaX1 = (deltaX / deltaY) * deltaY1;
-                            fourBoundaryMove(xStart, yStart, x, y, deltaX1, deltaY1,p, tstep, JxJy);
+                            fourBoundaryMove(xStart, yStart, x, y, deltaX1, deltaY1,p, tstep, cells, numCellsY);
 
                             double deltaX2 = -(0.5 + x + deltaX1);
                             double deltaY2 = (deltaY / deltaX) * deltaX2;
                             x += deltaX1;
-                            fourBoundaryMove(xStart, yStart-1, x, 0.5, deltaX2, deltaY2, p, tstep, JxJy);
+                            fourBoundaryMove(xStart, yStart-1, x, 0.5, deltaX2, deltaY2, p, tstep, cells, numCellsY);
 
                             deltaX -= (deltaX1 + deltaX2);
                             deltaY -= (deltaY1 + deltaY2);
                             y = 0.5 + deltaY2;
-                            fourBoundaryMove(xEnd, yEnd, 0.5, y, deltaX, deltaY, p, tstep, JxJy);
+                            fourBoundaryMove(xEnd, yEnd, 0.5, y, deltaX, deltaY, p, tstep, cells, numCellsY);
 
                     }
                     //upper local origin
@@ -312,24 +322,24 @@ private void tenBoundaryMove(double x, double y, int xStart, int yStart, int xEn
 
                             double deltaX1 = -(0.5 + x);
                             deltaY1 = (deltaY / deltaX) * deltaX1;
-                            fourBoundaryMove(xStart, yStart, x, y, deltaX1, deltaY1, p, tstep, JxJy);
+                            fourBoundaryMove(xStart, yStart, x, y, deltaX1, deltaY1, p, tstep, cells, numCellsY);
 
                             double deltaY2 = -(0.5 + y + deltaY1);
                             double deltaX2 = (deltaX1 / deltaY1) * deltaY2;
                             y += deltaY1;
-                            fourBoundaryMove(xStart+1, yStart, 0.5, y, deltaX2, deltaY2, p, tstep, JxJy);
+                            fourBoundaryMove(xStart+1, yStart, 0.5, y, deltaX2, deltaY2, p, tstep, cells, numCellsY);
 
                             deltaX -= (deltaX1 + deltaX2);
                             deltaY -= (deltaY1 + deltaY2);
                             x = 0.5 + deltaX2;
-                            fourBoundaryMove(xEnd, yEnd, x, 0.5, deltaX, deltaY, p, tstep, JxJy);
+                            fourBoundaryMove(xEnd, yEnd, x, 0.5, deltaX, deltaY, p, tstep, cells, numCellsY);
                            
                     }
             }
     }
 }
 
-
+//##################################################################################################################/
 __kernel void run_simulation(__global double* particles,
                              __global const double* force, 
                              __global double* cells,
@@ -484,6 +494,7 @@ __kernel void run_simulation(__global double* particles,
    /*--------------------------------------------------------------------------/
    /---Step 4: interpolation.interpolateToGrid(particles, grid, tstep)---------/
    /--------------------------------------------------------------------------*/
+
         double JxJy[2]; JxJy[0]=0; JxJy[1]=0; 
         /**X index of local origin i.e. nearest grid point BEFORE particle push*/
         int xStart;
@@ -502,18 +513,17 @@ __kernel void run_simulation(__global double* particles,
         /**Normalized distance covered in X direction*/
         double deltaY;
 
-        //x = particles[i + 
-        /*x = p.getPrevX() / g.getCellWidth();
-        y = p.getPrevY() / g.getCellHeight();
+        x = particles[i + PrevX]/cellWidth;
+        y = particles[i + PrevY]/cellHeight;
 
-        xStart = (int) Math.floor(x + 0.5);
-        yStart = (int) Math.floor(y + 0.5);
+        xStart = (int) floor(x + 0.5);
+        yStart = (int) floor(y + 0.5);
 
-        deltaX = p.getX() / g.getCellWidth();
-        deltaY = p.getY() / g.getCellHeight();
+        deltaX = particles[i + X]/cellWidth;
+        deltaY = particles[i + Y]/cellHeight;
 
-        xEnd = (int) Math.floor(deltaX + 0.5);
-        yEnd = (int) Math.floor(deltaY + 0.5);
+        xEnd = (int) floor(deltaX + 0.5);
+        yEnd = (int) floor(deltaY + 0.5);
 
         deltaX -= x;
         deltaY -= y;
@@ -524,15 +534,17 @@ __kernel void run_simulation(__global double* particles,
       
         //4-boundary move?
         if (xStart == xEnd && yStart == yEnd) {
-                fourBoundaryMove(xStart, yStart, x, y, deltaX, deltaY, p, g, tstep);
+                fourBoundaryMove(xStart, yStart, x, y, deltaX, deltaY, p, tstep, cells, numCellsY);
                 }
         //7-boundary move?
         else if (xStart == xEnd || yStart == yEnd) {
-                        sevenBoundaryMove(x, y, xStart, yStart, xEnd, yEnd, deltaX, deltaY, p, g, tstep);
+                        sevenBoundaryMove(x, y, xStart, yStart, xEnd, yEnd, deltaX, deltaY, p, tstep, cells, numCellsY);
                 }
                 // 10-boundary move
                         else {
-                                tenBoundaryMove(x, y, xStart, yStart, xEnd, yEnd, deltaX, deltaY, p, g, tstep);
+                                tenBoundaryMove(x, y, xStart, yStart, xEnd, yEnd, deltaX, deltaY, p, tstep, cells, numCellsY);
                         }
-                        */
+
+        
+                  
 }
