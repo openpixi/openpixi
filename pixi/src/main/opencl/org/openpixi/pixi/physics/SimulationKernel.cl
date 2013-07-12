@@ -85,14 +85,82 @@ int get_region(double xmin, double xmax, double ymin, double ymax, double width,
     return xidx + yidx;
 }
 
+void resetCurrent(__global double *cells, int numCellsX, int numCellsY){
+    int i;
+    for(i = 0; i < numCellsX * numCellsY; i += C_SIZE){
+        cells[i + Cjx] = 0;
+        cells[i + Cjy] = 0;
+    }
+}
+
+void createBoundaryCell(int x, int y, int numCellsX, int numCellsY, __global double *cells) {
+    int xmin = EXTRA_CELLS_BEFORE_GRID;
+    int xmax = numCellsX + EXTRA_CELLS_BEFORE_GRID - 1;
+    int ymin = EXTRA_CELLS_BEFORE_GRID;
+    int ymax = numCellsY + EXTRA_CELLS_BEFORE_GRID - 1;
+
+    int refX = x;
+    int refY = y;
+    if (x < xmin) {
+            refX += numCellsX;
+    } else if (x > xmax) {
+            refX -= numCellsX;
+    }
+    if (y < ymin) {
+            refY += numCellsY;
+    } else if (y > ymax) {
+            refY -= numCellsY;
+    }
+    
+    cells[(C_SIZE * ((x * numCellsY) + y)) + Cjx] = cells[(C_SIZE * ((x * numCellsY) + y)) + Cjx] + 
+                                                    cells[(C_SIZE * ((refX * numCellsY) + refY)) + Cjx];
+    cells[(C_SIZE * ((refX * numCellsY) + refY)) + Cjx] = cells[(C_SIZE * ((x * numCellsY) + y)) + Cjx];
+    
+    cells[(C_SIZE * ((x * numCellsY) + y)) + Cjy] = cells[(C_SIZE * ((x * numCellsY) + y)) + Cjy] + 
+                                                    cells[(C_SIZE * ((refX * numCellsY) + refY)) + Cjy];
+    cells[(C_SIZE * ((refX * numCellsY) + refY)) + Cjy] = cells[(C_SIZE * ((x * numCellsY) + y)) + Cjy];
+    
+}
+
+void createBoundaryCells(int numCellsX, int numCellsY, __global double *cells) {
+    // left boundary (with corner cells)
+    int x, y;
+    int numCellsXTotal = numCellsX + EXTRA_CELLS_BEFORE_GRID + EXTRA_CELLS_AFTER_GRID;
+    int numCellsYTotal = numCellsY + EXTRA_CELLS_BEFORE_GRID + EXTRA_CELLS_AFTER_GRID;
+    
+    for (x = 0; x < EXTRA_CELLS_BEFORE_GRID; x++) {
+            for (y = 0; y < numCellsXTotal; y++) {
+                    createBoundaryCell(x, y, numCellsX, numCellsY, cells);
+            }
+    }
+    // right boundary (with corner cells)
+    for (x = EXTRA_CELLS_BEFORE_GRID + numCellsX; x < numCellsXTotal; x++) {
+            for (y = 0; y < numCellsYTotal; y++) {
+                    createBoundaryCell(x, y, numCellsX, numCellsY, cells);
+            }
+    }
+    // top boundary (without corner cells)
+    for (x = EXTRA_CELLS_BEFORE_GRID; x < EXTRA_CELLS_BEFORE_GRID + numCellsX; x++) {
+            for (y = 0; y < EXTRA_CELLS_BEFORE_GRID; y++) {
+                    createBoundaryCell(x, y, numCellsX, numCellsY, cells);
+            }
+    }
+    // bottom boundary (without corner cells)
+    for (x = EXTRA_CELLS_BEFORE_GRID; x < EXTRA_CELLS_BEFORE_GRID + numCellsX; x++) {
+            for (y = EXTRA_CELLS_BEFORE_GRID + numCellsY; y < numCellsYTotal; y++) {
+                    createBoundaryCell(x, y, numCellsX, numCellsY, cells);
+            }
+    }
+}
+
 void fourBoundaryMove(int lx, int ly, double x, double y, double deltaX, 
-                      double deltaY, double pCharge, double tstep, double *cells, int numCellsY) {
+                      double deltaY, double pCharge, double tstep, __global double *cells, int numCellsY) {
 
-    cells[(C_SIZE * ((lx * numCellsY) + ly - 1)) + Cjx] += pCharge * deltaX * ((1 - deltaY) / 2 - y));
-    cells[(C_SIZE * ((lx * numCellsY) + ly)) + Cjx] += pCharge * deltaX * ((1 - deltaY) / 2 - y));
+    cells[(C_SIZE * (((lx + 2) * numCellsY) + ly - 1 + 2)) + Cjx] += pCharge * deltaX * ((1 - deltaY) / 2 - y);
+    cells[(C_SIZE * (((lx + 2) * numCellsY) + ly + 2)) + Cjx] += pCharge * deltaX * ((1 - deltaY) / 2 - y);
 
-    cells[(C_SIZE * (((lx - 1) * numCellsY) + ly)) + Cjy] += pCharge * deltaX * ((1 - deltaY) / 2 - y));
-    cells[(C_SIZE * ((lx * numCellsY) + ly)) + Cjy] += pCharge * deltaX * ((1 - deltaY) / 2 - y));
+    cells[(C_SIZE * (((lx - 1 + 2) * numCellsY) + ly + 2)) + Cjy] += pCharge * deltaX * ((1 - deltaY) / 2 - y);
+    cells[(C_SIZE * (((lx + 2) * numCellsY) + ly + 2)) + Cjy] += pCharge * deltaX * ((1 - deltaY) / 2 - y);
 
 /*
     JxJy[0] = JxJy[0] + (lx, ly - 1, pCharge() * deltaX * ((1 - deltaY) / 2 - y));
@@ -104,7 +172,7 @@ void fourBoundaryMove(int lx, int ly, double x, double y, double deltaX,
 }
 
 void sevenBoundaryMove(double x, double y, int xStart, int yStart, int xEnd, int yEnd,
-                               double deltaX, double deltaY, double p, double tstep, double *cells, int numCellsY) {
+                               double deltaX, double deltaY, double p, double tstep,__global double *cells, int numCellsY) {
     //7-boundary move with equal y?
     if (yStart == yEnd) {
             //particle moves right?
@@ -167,7 +235,7 @@ void sevenBoundaryMove(double x, double y, int xStart, int yStart, int xEnd, int
 }
 
 void tenBoundaryMove(double x, double y, int xStart, int yStart, int xEnd, int yEnd,
-			     double deltaX, double deltaY, double p, double tstep, double *cells, int numCellsY) {
+			     double deltaX, double deltaY, double p, double tstep, __global double *cells, int numCellsY) {
     //moved right?
     if (xEnd == (xStart+1)) {
             //moved up?
@@ -343,7 +411,7 @@ void tenBoundaryMove(double x, double y, int xStart, int yStart, int xEnd, int y
 __kernel void run_simulation(__global double* particles,
                              __global const double* force, 
                              __global double* cells,
-                             __global double* outParticles,
+                             __global int* wait,
                                   double timeStep,
                                   int n,
                                   double width,
@@ -352,12 +420,13 @@ __kernel void run_simulation(__global double* particles,
                                   int numCellsY,
                                   double cellWidth,
                                   double cellHeight) 
+//################################################################################################################
 {
    int i = get_global_id(0);
-   if((i >= n) || (i % P_SIZE != 0))
+   if((i >= n) || (i % P_SIZE != 0)){
         return;
-
-
+   }
+   
    /*--------------------------------------------------------------------------/
    /---------------- Step 1: particlePush()------------------------------------/
    /--------------------------------------------------------------------------*/
@@ -400,11 +469,6 @@ __kernel void run_simulation(__global double* particles,
         particles[i + X] = particles[i + X] + particles[i + Vx] * timeStep;
         particles[i + Y] = particles[i + Y] + particles[i + Vy] * timeStep;
 
-       /* outParticles[i + Vx] = particles[i + Vx];
-        outParticles[i + Vy] = particles[i + Vy];
-        outParticles[i + X]  = particles[i + X];
-        outParticles[i + Y]  = particles[i + Y];*/
-
    //c) boundaries.applyOnParticleCenter(solver, force, particle, timeStep)
         double regionBoundaryMapX[9];
         double regionBoundaryMapY[9];
@@ -445,8 +509,7 @@ __kernel void run_simulation(__global double* particles,
         particles[i + Y]     = particles[i + Y] - regionBoundaryMapY[regi];
         particles[i + PrevY] = particles[i + PrevY] - regionBoundaryMapY[regi];
 
-        outParticles[i + X] = particles[i + X];
-
+        wait[0]++;
        
    /*--------------------------------------------------------------------------/
    /---------------- Step 2: detector.run()------------------------------------/
@@ -494,8 +557,9 @@ __kernel void run_simulation(__global double* particles,
    /*--------------------------------------------------------------------------/
    /---Step 4: interpolation.interpolateToGrid(particles, grid, tstep)---------/
    /--------------------------------------------------------------------------*/
+        while(wait[0] < 2){}
+        resetCurrent(cells, numCellsX, numCellsY);
 
-        double JxJy[2]; JxJy[0]=0; JxJy[1]=0; 
         /**X index of local origin i.e. nearest grid point BEFORE particle push*/
         int xStart;
         /**Y index of local origin i.e. nearest grid point BEFORE particle push*/
@@ -531,20 +595,22 @@ __kernel void run_simulation(__global double* particles,
         x -= xStart;
         y -= yStart;
 
-      
+        double pCharge = particles[i + Charge];
+        
         //4-boundary move?
         if (xStart == xEnd && yStart == yEnd) {
-                fourBoundaryMove(xStart, yStart, x, y, deltaX, deltaY, p, tstep, cells, numCellsY);
+                fourBoundaryMove(xStart, yStart, x, y, deltaX, deltaY, pCharge, timeStep, cells, numCellsX);
                 }
         //7-boundary move?
         else if (xStart == xEnd || yStart == yEnd) {
-                        sevenBoundaryMove(x, y, xStart, yStart, xEnd, yEnd, deltaX, deltaY, p, tstep, cells, numCellsY);
+                        sevenBoundaryMove(x, y, xStart, yStart, xEnd, yEnd, deltaX, deltaY, pCharge, timeStep, cells, numCellsX);
                 }
                 // 10-boundary move
                         else {
-                                tenBoundaryMove(x, y, xStart, yStart, xEnd, yEnd, deltaX, deltaY, p, tstep, cells, numCellsY);
+                                tenBoundaryMove(x, y, xStart, yStart, xEnd, yEnd, deltaX, deltaY, pCharge, timeStep, cells, numCellsX);
                         }
-
+                      
+        createBoundaryCells(numCellsX, numCellsY, cells);
         
                   
 }
