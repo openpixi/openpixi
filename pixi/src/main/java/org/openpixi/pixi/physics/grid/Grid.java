@@ -54,7 +54,7 @@ public class Grid {
 	private ResetCurrentAction resetCurrent = new ResetCurrentAction();
 	private StoreFieldsAction storeFields = new StoreFieldsAction();
 
-	private Cell[][] cells;
+	public Cell[][] cells;
 
 	/**number of cells in x direction*/
 	private int numCellsX;
@@ -172,8 +172,7 @@ public class Grid {
 	public Cell getCell(int x, int y) {
 		return cells[index(x)][index(y)];
 	}
-
-
+        
 	public Grid(Settings settings) {
 		this.boundaryType = settings.getGridBoundary();
 
@@ -343,12 +342,12 @@ public class Grid {
 	}
 
 	/** Includes the extra cells. */
-	private int getNumCellsXTotal() {
+	public int getNumCellsXTotal() {
 		return numCellsX + EXTRA_CELLS_BEFORE_GRID + EXTRA_CELLS_AFTER_GRID;
 	}
 
 	/** Includes the extra cells. */
-	private int getNumCellsYTotal() {
+	public int getNumCellsYTotal() {
 		return numCellsY + EXTRA_CELLS_BEFORE_GRID + EXTRA_CELLS_AFTER_GRID;
 	}
 

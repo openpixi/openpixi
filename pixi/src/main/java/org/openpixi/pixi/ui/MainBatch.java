@@ -26,6 +26,7 @@ import org.openpixi.pixi.diagnostics.DiagnosticsScheduler;
 import org.openpixi.pixi.profile.ProfileInfo;
 import org.openpixi.pixi.ui.util.*;
 import java.io.IOException;
+import org.openpixi.pixi.physics.ParallelSimulationCL;
 
 
 public class MainBatch {
@@ -36,6 +37,7 @@ public class MainBatch {
 	private static String runid;
 
 	private static Simulation simulation;
+        private static ParallelSimulationCL clSimulation;
 	private static DiagnosticsScheduler diagnostics;
 	private static EmptyDataOutput dataOutput;
 
@@ -46,7 +48,7 @@ public class MainBatch {
 	 * (dont forget to add the <settings> </settings> root element, the empty file should
 	 * still comply with the XML specification!)
 	 */
-	public static void main(String[] args) {
+	public static void main(String[] args) throws IOException {
 		Debug.checkAssertsEnabled();
 
 		// Creates a settings class with the default parameters
@@ -67,7 +69,8 @@ public class MainBatch {
 		
 		// Creates the actual physics simulation that can be run iteratively.
 		simulation = new Simulation(settings);
-
+                clSimulation = new ParallelSimulationCL(settings);
+                
 		// Creates the diagnostics wrapper class that knows about all
 		// enabled diagnostic methods.
 		diagnostics = new DiagnosticsScheduler(simulation.grid, simulation.particles, settings);
@@ -99,23 +102,32 @@ public class MainBatch {
 		}
 		
 		//Performs diagnostics on the initial state of the simulation
-		dataOutput.setIteration(0);
-		diagnostics.performDiagnostics(0);
-		diagnostics.output(dataOutput);
+//		dataOutput.setIteration(0);
+//		diagnostics.performDiagnostics(0);
+//		diagnostics.output(dataOutput);
 		
-		for (int i = 0; i < iterations;) {
-			// advance the simulation by one step
-			simulation.step();
-			
-			i++;
-			
-			dataOutput.setIteration(i);
-			diagnostics.performDiagnostics(i);
-			diagnostics.output(dataOutput);
-		}
-		
-		dataOutput.closeStreams();
-		
+//		for (int i = 0; i < iterations;) {
+//			// advance the simulation by one step
+//			simulation.step();
+//			
+//			i++;
+//			
+//			dataOutput.setIteration(i);
+//			diagnostics.performDiagnostics(i);
+//			diagnostics.output(dataOutput);
+//		}
+		long t1, t2;
+//		dataOutput.closeStreams();
+                t1 = System.currentTimeMillis();
+		simulation.run();
+                t2 = System.currentTimeMillis();
+                System.out.println("sequential: " + (t2-t1) + "ms");
+                
+                t1 = System.currentTimeMillis();
+                clSimulation.runParallelSimulation();
+                t2 = System.currentTimeMillis();
+                System.out.println("parallel: " + (t2-t1) + "ms");
+                
 		ProfileInfo.printProfileInfo();
 	}
 
