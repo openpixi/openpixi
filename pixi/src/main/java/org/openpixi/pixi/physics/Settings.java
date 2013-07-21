@@ -100,7 +100,7 @@ public class Settings {
 	
 	// Batch version settings
 
-	private int iterations = 100;
+	private int iterations = 1;
 
 	// Parallel (threaded) version settings
 
