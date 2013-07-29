@@ -78,7 +78,12 @@ public class ParallelSimulationCL{
          
          /**Grid cells passed to the kernel*/
          private Pointer<Double> inCells;
-         private Pointer<Integer> inWait;
+         
+         /**Mutex passed to the kernel*/
+         private Pointer<Integer> semaphor;
+         
+         /**Boundaries passed to the kernel*/
+         private Pointer<Integer> inBoundaries;
          
          /**Number of Particle attributes */
          private int P_SIZE = 22;
@@ -195,12 +200,13 @@ public class ParallelSimulationCL{
           * Converts arrays of Objects objects into arrays
           * of Doubles so they can be passed to the OpenCL kernel
           */
-         public void hostToKernelConversion(int particlesSize, int forceSize, int cellsSize, ByteOrder byteOrder){
+         public void hostToKernelConversion(int particlesSize, int forceSize, int cellsSize, int boundSize, ByteOrder byteOrder){
              int k = 0;
 
              inParticles = allocateDoubles(particlesSize).order(byteOrder);
              inForce     = allocateDoubles(forceSize).order(byteOrder);
              inCells     = allocateDoubles(cellsSize).order(byteOrder);
+             inBoundaries= allocateInts(boundSize).order(byteOrder);
              
              for(int i = 0; i < particlesSize; i += P_SIZE){
                  inParticles.set(i + 0, particles.get(k).getX());
@@ -269,6 +275,13 @@ public class ParallelSimulationCL{
                      c += C_SIZE;
                  }
              }
+             
+             k = 0;
+             for(int i = 0; i < numCellsX; i++){
+                 for (int j = 0; j < numCellsY; j++) {
+                     inBoundaries.set(k++, grid.parallelBoundaries[i][j]);
+                 }
+             }
          }
          
          void writeToFile() throws FileNotFoundException{
@@ -322,94 +335,107 @@ public class ParallelSimulationCL{
                 int particlesSize = particles.size() * P_SIZE;
                 int forceSize     = particles.size() * F_SIZE;
                 int cellsSize     = grid.getNumCellsXTotal() * grid.getNumCellsYTotal() * C_SIZE;
+                int boundSize     = grid.getNumCellsXTotal() * grid.getNumCellsYTotal();
                 
                 long t1, t2;
                 
                 CLContext context = JavaCL.createBestContext();
                 CLQueue queue = context.createDefaultQueue();
                 ByteOrder byteOrder = context.getByteOrder();
-
-                inWait = allocateInts(1).order(byteOrder);
+                
 //                particlePush();
-                hostToKernelConversion(particlesSize, forceSize, cellsSize, byteOrder);
-
+                hostToKernelConversion(particlesSize, forceSize, cellsSize, boundSize, byteOrder);
+                semaphor = allocateInts(1).order(byteOrder);
+                semaphor.set(0, 0);
                 // Create an OpenCL input buffer :
                 CLBuffer<Double> inPar = context.createDoubleBuffer(Usage.InputOutput, inParticles);
                 CLBuffer<Double> inFor = context.createDoubleBuffer(Usage.Input, inForce);
                 CLBuffer<Double> inCel = context.createDoubleBuffer(Usage.InputOutput, inCells);
+                CLBuffer<Integer> inSemaphor = context.createIntBuffer(Usage.InputOutput, semaphor);
+                CLBuffer<Integer> inBound = context.createIntBuffer(Usage.InputOutput, inBoundaries);
                 
-//                System.out.println(context.getDevices()[0].getMaxComputeUnits() + "!!!!!!!!!!!!!!!!!!!!!");
+                
                 //call the kernel
                 SimulationKernel kernels = new SimulationKernel(context);
                 int n = particles.size();
                 int[] globalSizes = new int[] { n };
+                int[] localSizes = new int[] { n };
 //                globalSizes[0] = n/2;
 //                globalSizes[1] = n/2;
-                CLEvent pushEvt = kernels.particle_push(queue, inPar, inFor, inCel, tstep, n, 
-                                                        width, height, grid.getNumCellsXTotal(), grid.getNumCellsYTotal(),
-                                                        grid.getCellWidth(), grid.getCellHeight(), iterations, globalSizes, null);
+                CLEvent pushEvt;
+                CLEvent resetEvt;
+                CLEvent interpEvt;
+                CLEvent storeEvt;
+                CLEvent solveEEvt;
+                CLEvent solveBEvt;
+                CLEvent partInterpEvt = null;
+                
+                for (int i = 0; i < iterations; i++) {
+             
+                    pushEvt = kernels.particle_push(queue, inPar, inFor, inCel, tstep, n, 
+                                                            width, height, grid.getNumCellsXTotal(), grid.getNumCellsYTotal(),
+                                                            grid.getCellWidth(), grid.getCellHeight(), iterations, globalSizes, localSizes);
 
+                    resetEvt = kernels.reset_current(queue, inPar, inFor, inCel, tstep, n, 
+                                                                   width, height, grid.getNumCellsXTotal(), grid.getNumCellsYTotal(),
+                                                                   grid.getCellWidth(), grid.getCellHeight(), iterations, globalSizes, localSizes, pushEvt);
+
+                    interpEvt = kernels.grid_interpolation(queue, inPar, inCel, inFor, inSemaphor, inBound, tstep, n, 
+                                                                   width, height, grid.getNumCellsXTotal(), grid.getNumCellsYTotal(),
+                                                                   grid.getCellWidth(), grid.getCellHeight(), iterations, globalSizes, localSizes, resetEvt);
+
+    //                CLEvent boundEvt = kernels.create_boundary_cells(queue, inPar, inFor, inCel, inBound, tstep, n, 
+    //                                                               width, height, grid.getNumCellsX(), grid.getNumCellsY(),
+    //                                                               grid.getCellWidth(), grid.getCellHeight(), iterations, globalSizes, localSizes, interpEvt);
+
+                    storeEvt = kernels.store_fields(queue, inPar, inFor, inCel, inBound, tstep, n, 
+                                                                   width, height, grid.getNumCellsX(), grid.getNumCellsY(),
+                                                                   grid.getCellWidth(), grid.getCellHeight(), iterations, globalSizes, localSizes, interpEvt);
+
+                    solveEEvt = kernels.solve_for_e(queue, inPar, inFor, inCel, inBound, 0, n, 
+                                                                   width, height, grid.getNumCellsXTotal(), grid.getNumCellsYTotal(),
+                                                                   grid.getCellWidth(), grid.getCellHeight(), iterations, globalSizes, localSizes, storeEvt);
+
+
+                    solveBEvt = kernels.solve_for_b(queue, inPar, inFor, inCel, inBound, 0, n, 
+                                                                   width, height, grid.getNumCellsXTotal(), grid.getNumCellsYTotal(),
+                                                                   grid.getCellWidth(), grid.getCellHeight(), iterations, globalSizes, localSizes, solveEEvt);
+
+                    partInterpEvt = kernels.particle_interpolation(queue, inPar, inFor, inCel, tstep, n, 
+                                                                   width, height, grid.getNumCellsXTotal(), grid.getNumCellsYTotal(),
+                                                                   grid.getCellWidth(), grid.getCellHeight(), iterations, globalSizes, localSizes, solveBEvt);
+                }
                 
-                CLEvent resetEvt = kernels.reset_current(queue, inPar, inFor, inCel, tstep, n, 
-                                                               width, height, grid.getNumCellsXTotal(), grid.getNumCellsYTotal(),
-                                                               grid.getCellWidth(), grid.getCellHeight(), iterations, globalSizes, null, pushEvt);
-                
-                CLEvent interpEvt = kernels.grid_interpolation(queue, inPar, inFor, inCel, tstep, n, 
-                                                               width, height, grid.getNumCellsX(), grid.getNumCellsY(),
-                                                               grid.getCellWidth(), grid.getCellHeight(), iterations, globalSizes, null, resetEvt);
-                
-                CLEvent boundEvt = kernels.create_boundary_cells(queue, inPar, inFor, inCel, tstep, n, 
-                                                               width, height, grid.getNumCellsX(), grid.getNumCellsY(),
-                                                               grid.getCellWidth(), grid.getCellHeight(), iterations, globalSizes, null, interpEvt);
-                
-                CLEvent storeEvt = kernels.store_fields(queue, inPar, inFor, inCel, tstep, n, 
-                                                               width, height, grid.getNumCellsX(), grid.getNumCellsY(),
-                                                               grid.getCellWidth(), grid.getCellHeight(), iterations, globalSizes, null, boundEvt);
-              
-                CLEvent solveEEvt = kernels.solve_for_e(queue, inPar, inFor, inCel, tstep, n, 
-                                                               width, height, grid.getNumCellsX(), grid.getNumCellsY(),
-                                                               grid.getCellWidth(), grid.getCellHeight(), iterations, globalSizes, null, storeEvt);
-                
-                CLEvent solveBEvt = kernels.solve_for_b(queue, inPar, inFor, inCel, tstep, n, 
-                                                               width, height, grid.getNumCellsX(), grid.getNumCellsY(),
-                                                               grid.getCellWidth(), grid.getCellHeight(), iterations, globalSizes, null, solveEEvt);
-                
-                CLEvent partInterpEvt = kernels.particle_interpolation(queue, inPar, inFor, inCel, tstep, n, 
-                                                               width, height, grid.getNumCellsX(), grid.getNumCellsY(),
-                                                               grid.getCellWidth(), grid.getCellHeight(), iterations, globalSizes, null, solveBEvt);
-                 
-//                get output
-//                Pointer<Double> outCel = inCel.read(queue, boundEvt);
-//                Pointer<Double> outPar = inPar.read(queue, partInterpEvt);
-//                Pointer<Double>outPar2 = out.read(queue, interpEvt);
+                //get output
+                Pointer<Double> outPar = inPar.read(queue, partInterpEvt);
                 
                 //print results
-//                PrintWriter pw = new PrintWriter(new File("ccl.txt"));
-//                for (int i = 0; i < particlesSize; i+=P_SIZE) {
-//                    pw.write(outPar.get(i + 0) + "\n");
-//                    pw.write(outPar.get(i + 1) + "\n");
-//                    pw.write(outPar.get(i + 2) + "\n");
-//                    pw.write(outPar.get(i + 3) + "\n");
-//                    pw.write(outPar.get(i + 4) + "\n");
-//                    pw.write(outPar.get(i + 5) + "\n");
-//                    pw.write(outPar.get(i + 6) + "\n");
-//                    pw.write(outPar.get(i + 7) + "\n");
-//                    pw.write(outPar.get(i + 8) + "\n");
-//                    pw.write(outPar.get(i + 9) + "\n");
-//                    pw.write(outPar.get(i + 10) + "\n");
-//                    pw.write(outPar.get(i + 11) + "\n");
-//                    pw.write(outPar.get(i + 12) + "\n");
-//                    pw.write(outPar.get(i + 13) + "\n");
-//                    pw.write(outPar.get(i + 14) + "\n");
-//                    pw.write(outPar.get(i + 15) + "\n");
-//                    pw.write(outPar.get(i + 16) + "\n");
-//                    pw.write(outPar.get(i + 17) + "\n");
-//                    pw.write(outPar.get(i + 18) + "\n");
-//                    pw.write(outPar.get(i + 19) + "\n");
-//                    pw.write(outPar.get(i + 20) + "\n");
-//                    pw.write(outPar.get(i + 21) + "\n");
-//                }                    
-//                pw.close();
+                PrintWriter pw = new PrintWriter(new File("pcl.txt"));
+                for (int i = 0; i < particlesSize; i+=P_SIZE) {
+                    pw.write(outPar.get(i + 0) + "\n");
+                    pw.write(outPar.get(i + 1) + "\n");
+                    pw.write(outPar.get(i + 2) + "\n");
+                    pw.write(outPar.get(i + 3) + "\n");
+                    pw.write(outPar.get(i + 4) + "\n");
+                    pw.write(outPar.get(i + 5) + "\n");
+                    pw.write(outPar.get(i + 6) + "\n");
+                    pw.write(outPar.get(i + 7) + "\n");
+                    pw.write(outPar.get(i + 8) + "\n");
+                    pw.write(outPar.get(i + 9) + "\n");
+                    pw.write(outPar.get(i + 10) + "\n");
+                    pw.write(outPar.get(i + 11) + "\n");
+                    pw.write(outPar.get(i + 12) + "\n");
+                    pw.write(outPar.get(i + 13) + "\n");
+                    pw.write(outPar.get(i + 14) + "\n");
+                    pw.write(outPar.get(i + 15) + "\n");
+                    pw.write(outPar.get(i + 16) + "\n");
+                    pw.write(outPar.get(i + 17) + "\n");
+                    pw.write(outPar.get(i + 18) + "\n");
+                    pw.write(outPar.get(i + 19) + "\n");
+                    pw.write(outPar.get(i + 20) + "\n");
+                    pw.write(outPar.get(i + 21) + "\n");
+                }                    
+                pw.close();
          }
 
      }
