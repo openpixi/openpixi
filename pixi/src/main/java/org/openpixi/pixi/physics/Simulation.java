@@ -208,40 +208,11 @@ public class Simulation {
 	public void step() throws FileNotFoundException {
                 
 		particlePush();
-		detector.run();
-		collisionalgorithm.collide(detector.getOverlappedPairs(), f, mover.getSolver(), tstep);
-
+//		detector.run();
+//		collisionalgorithm.collide(detector.getOverlappedPairs(), f, mover.getSolver(), tstep);
 		interpolation.interpolateToGrid(particles, grid, tstep);
-                grid.updateGrid(tstep);
+                grid.updateGrid(tstep);                
 		interpolation.interpolateToParticle(particles, grid);
-                
-//                PrintWriter pw = new PrintWriter(new File("p.txt"));
-                
-//                for(int i = 0; i < particles.size(); i++){
-//                    pw.write(particles.get(i).getX() + "\n");
-//                    pw.write(particles.get(i).getY() + "\n");
-//                    pw.write(particles.get(i).getRadius()+ "\n");
-//                    pw.write(particles.get(i).getVx() + "\n");
-//                    pw.write(particles.get(i).getVy() + "\n");
-//                    pw.write(particles.get(i).getAx() + "\n");
-//                    pw.write(particles.get(i).getAy() + "\n");
-//                    pw.write(particles.get(i).getMass() + "\n");
-//                    pw.write(particles.get(i).getCharge() + "\n");
-//                    pw.write(particles.get(i).getPrevX() + "\n");
-//                    pw.write(particles.get(i).getPrevY() + "\n");
-//                    pw.write(particles.get(i).getEx() + "\n");
-//                    pw.write(particles.get(i).getEy() + "\n");
-//                    pw.write(particles.get(i).getBz() + "\n");
-//                    pw.write(particles.get(i).getPrevPositionComponentForceX() + "\n");
-//                    pw.write(particles.get(i).getPrevPositionComponentForceY() + "\n");
-//                    pw.write(particles.get(i).getPrevTangentVelocityComponentOfForceX() + "\n");
-//                    pw.write(particles.get(i).getPrevTangentVelocityComponentOfForceY() + "\n");
-//                    pw.write(particles.get(i).getPrevNormalVelocityComponentOfForceX() + "\n");
-//                    pw.write(particles.get(i).getPrevNormalVelocityComponentOfForceY() + "\n");
-//                    pw.write(particles.get(i).getPrevBz() + "\n");
-//                    pw.write(particles.get(i).getPrevLinearDragCoefficient() + "\n");
-//                }
-//                pw.close();
                 
 	}
 
@@ -251,9 +222,36 @@ public class Simulation {
 	 * (for non-interactive simulations)
 	 */
 	public void run() throws FileNotFoundException {
-		for (int i = 0; i < iterations; ++i) {
+                for (int i = 0; i < iterations; ++i) {
 			step();
 		}
+                PrintWriter pw = new PrintWriter(new File("p.txt"));
+                
+                for(int i = 0; i < particles.size(); i++){
+                    pw.write(particles.get(i).getX() + "\n");
+                    pw.write(particles.get(i).getY() + "\n");
+                    pw.write(particles.get(i).getRadius()+ "\n");
+                    pw.write(particles.get(i).getVx() + "\n");
+                    pw.write(particles.get(i).getVy() + "\n");
+                    pw.write(particles.get(i).getAx() + "\n");
+                    pw.write(particles.get(i).getAy() + "\n");
+                    pw.write(particles.get(i).getMass() + "\n");
+                    pw.write(particles.get(i).getCharge() + "\n");
+                    pw.write(particles.get(i).getPrevX() + "\n");
+                    pw.write(particles.get(i).getPrevY() + "\n");
+                    pw.write(particles.get(i).getEx() + "\n");
+                    pw.write(particles.get(i).getEy() + "\n");
+                    pw.write(particles.get(i).getBz() + "\n");
+                    pw.write(particles.get(i).getPrevPositionComponentForceX() + "\n");
+                    pw.write(particles.get(i).getPrevPositionComponentForceY() + "\n");
+                    pw.write(particles.get(i).getPrevTangentVelocityComponentOfForceX() + "\n");
+                    pw.write(particles.get(i).getPrevTangentVelocityComponentOfForceY() + "\n");
+                    pw.write(particles.get(i).getPrevNormalVelocityComponentOfForceX() + "\n");
+                    pw.write(particles.get(i).getPrevNormalVelocityComponentOfForceY() + "\n");
+                    pw.write(particles.get(i).getPrevBz() + "\n");
+                    pw.write(particles.get(i).getPrevLinearDragCoefficient() + "\n");
+                }
+                pw.close();
 	}
 
 
