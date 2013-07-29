@@ -73,33 +73,33 @@ public class MainBatch {
                 
 		// Creates the diagnostics wrapper class that knows about all
 		// enabled diagnostic methods.
-		diagnostics = new DiagnosticsScheduler(simulation.grid, simulation.particles, settings);
+//		diagnostics = new DiagnosticsScheduler(simulation.grid, simulation.particles, settings);
 		
 		// Checks if the user has specified at least two parameters
 		// If this is not the case, the diagnostics output is disabled
 		// the program will not output anything.
-		if (args.length < 2) {
-			dataOutput = new EmptyDataOutput();
-		} else {
-			// The program expects a directory (to which the output files will be saved) as its
-			// second parameter. This checks if the directory is specified correctly. Tries to
-			// fix it if not.
-			if (args[1].substring(args[1].length() -1) != System.getProperty("file.separator")) {
-				args[1] = args[1] + System.getProperty("file.separator");
-			}
-			
-			// Tries to create the output objects. If something is wrong with the specified
-			// directory the program will give an error and terminate. 
-			try {
-				dataOutput = new DataOutput(args[1], runid, simulation.grid);
-			} catch (IOException e) {
-				System.err.print("Something went wrong when creating output files for diagnostics! \n" +
-						"Please specify an output directory with write access rights!\n" + 
-						"The directory that you specified was " + args[1] + "\n" +
-						"Aborting...");
-						return;
-			}
-		}
+//		if (args.length < 2) {
+//			dataOutput = new EmptyDataOutput();
+//		} else {
+//			// The program expects a directory (to which the output files will be saved) as its
+//			// second parameter. This checks if the directory is specified correctly. Tries to
+//			// fix it if not.
+//			if (args[1].substring(args[1].length() -1) != System.getProperty("file.separator")) {
+//				args[1] = args[1] + System.getProperty("file.separator");
+//			}
+//			
+//			// Tries to create the output objects. If something is wrong with the specified
+//			// directory the program will give an error and terminate. 
+//			try {
+//				dataOutput = new DataOutput(args[1], runid, simulation.grid);
+//			} catch (IOException e) {
+//				System.err.print("Something went wrong when creating output files for diagnostics! \n" +
+//						"Please specify an output directory with write access rights!\n" + 
+//						"The directory that you specified was " + args[1] + "\n" +
+//						"Aborting...");
+//						return;
+//			}
+//		}
 		
 		//Performs diagnostics on the initial state of the simulation
 //		dataOutput.setIteration(0);
