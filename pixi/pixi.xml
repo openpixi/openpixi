@@ -1,0 +1,57 @@
+<?xml version="1.0"?>
+<!-- 	Each XML file must have a root element. In our case its <settings>.
+	But you can choose anyone you like. You will get an error, but the
+	XML will still be parsed.
+
+	The following tags are available:
+	
+	Should be set only once (if set multiple times the last value is used):
+	runid				can be any string
+	iterations			must be a positive integer
+	numberOfParticles		must be a positive integer
+	simulationWidth			must be a positive number
+	simulationHeight		must be a positive number
+	timeStep			must be a positive number
+
+	interpolatorAlgorithm		must be either "Cloud In Cell" or 
+					"Charge Conserving CIC" (not case sensitive)
+
+	particleSolver			"Euler", "Leap Frog", "Boris" or any other 
+					supported algorithm. (not case sensitive)
+
+	Can be set multiple times:
+	diagnostics			can be either "Potential" or "Kinetic Energy".
+					NOTE: You MUST specify an attribute which is a
+					positive integer! Name it "i" for interval.
+					It determines the interval in which the diagnostic
+					method should be run. Choose 0 if you want it to run
+					in the beginning only. Choose it equal to the number
+					of iteration if you want it to run at the beginning
+					AND in the end.
+	
+	The tags are NOT case sensitive!
+
+	If the contents of a tag are not set properly, the program informs you about
+	that and overrides your setting with the default one. The program also informs
+	you about what the default setting is.
+
+	If you want to use this XML file you must specify the path to it as the FIRST argument
+	to MainBatch. If you want to have diagnostics output you must specify a writable directory
+	as the second argument to MainBatch.
+
+	You can use an empty XML file by specifying only the root element. Then the program will run
+	with defaults.
+-->
+
+<settings>
+	<runid>test</runid>
+	<iterations>1</iterations>
+	<numberOfParticles>128</numberOfParticles>
+	<simulationWidth>100</simulationWidth>
+	<simulationHeight>100</simulationHeight>
+	<timeStep>0.5</timeStep>
+	<interpolatorAlgorithm>Charge Conserving CIC</interpolatorAlgorithm>
+	<particleSolver>Boris</particleSolver>
+	<diagnostics i="3">Kinetic Energy</diagnostics>
+	<diagnostics i="0">Potential</diagnostics>
+</settings>
