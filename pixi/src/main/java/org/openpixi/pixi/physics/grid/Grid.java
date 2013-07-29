@@ -55,7 +55,8 @@ public class Grid {
 	private StoreFieldsAction storeFields = new StoreFieldsAction();
 
 	public Cell[][] cells;
-
+        public int[][] parallelBoundaries;
+        private int mark = 1;
 	/**number of cells in x direction*/
 	private int numCellsX;
 	/**number of cells in x direction*/
@@ -222,7 +223,6 @@ public class Grid {
 	public void changeSize(int numCellsX, int numCellsY,
 			double simWidth, double simHeight) {
 		set(numCellsX, numCellsY, simWidth, simHeight);
-
 		fsolver.changeSize(numCellsX, numCellsY);
 		cellIterator.setExtraCellsMode(this.numCellsX, this.numCellsY);
 	}
@@ -245,15 +245,23 @@ public class Grid {
 
 	private void createGridWithBoundaries() {
 		cells = new Cell[getNumCellsXTotal()][getNumCellsYTotal()];
-
+                parallelBoundaries = new int[getNumCellsXTotal()][getNumCellsYTotal()];
+                
 		// Create inner cells
 		for (int x = 0; x < getNumCellsX(); x++) {
 			for (int y = 0; y < getNumCellsY(); y++) {
 				cells[index(x)][index(y)] = new Cell();
+                                
 			}
 		}
+                for (int x = 0; x < getNumCellsXTotal(); x++) {
+			for (int y = 0; y < getNumCellsYTotal(); y++) {
+                            parallelBoundaries[x][y] = 0;
+                        }
+                }
 
 		createBoundaryCells();
+                createParallelBoundary();
 	}
 
 	private void createBoundaryCells() {
@@ -312,7 +320,24 @@ public class Grid {
 			cells[x][y] = cells[refX][refY];
 		}
 	}
-
+        
+        public void createParallelBoundary(){
+            int mark = 1;
+             
+            for(int i = 0; i < getNumCellsXTotal(); i++){
+                 for(int j = 0; j < getNumCellsYTotal(); j++){
+                     mark++;
+                     for (int l = 0; l < getNumCellsXTotal(); l++) {
+                         for (int m = 0; m < getNumCellsYTotal(); m++) {
+                             if(cells[i][j] == cells[l][m] && parallelBoundaries[l][m] == 0){
+                                 parallelBoundaries[l][m] = mark;
+                             }
+                         }
+                     }
+                 }
+             }
+        }
+        
 	public void updateGrid(double tstep) {
 		storeFields();
 		getFsolver().step(this, tstep);
