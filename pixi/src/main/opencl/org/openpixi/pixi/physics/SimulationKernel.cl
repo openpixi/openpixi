@@ -645,15 +645,15 @@ __kernel void particle_push( __global double* particles,
          particles[i + PrevY] = particles[i + Y];
 
     //b)solver.step(particle, force, timeStep)/----Boris solver-----/
-         int j = (int)(i/P_SIZE);
+         int j = i;//(int)(i/P_SIZE);
 
-         double getPositionComponentofForceX        = force[j + PositionComponentofForceX];
-         double getPositionComponentofForceY        = force[j + PositionComponentofForceY];
-         double getBz                               = force[j + Bz];
-         double getTangentVelocityComponentOfForceX = force[j + TangentVelocityComponentOfForceX];
-         double getTangentVelocityComponentOfForceY = force[j + TangentVelocityComponentOfForceY];
+         double getPositionComponentofForceX        = particles[i + Charge] * particles[i + Ex];//force[j + PositionComponentofForceX];
+         double getPositionComponentofForceY        = particles[i + Charge] * particles[i + Ey];//force[j + PositionComponentofForceY];
+         double getBz                               = particles[i + PBz];//force[j + Bz];
+         double getTangentVelocityComponentOfForceX = 0;//force[j + TangentVelocityComponentOfForceX];
+         double getTangentVelocityComponentOfForceY = 0;//force[j + TangentVelocityComponentOfForceY];
          double getMass                             = particles[i + Mass];
-
+        
          particles[i + PrevPositionComponentForceX]          = getPositionComponentofForceX;
          particles[i + PrevPositionComponentForceY]          = getPositionComponentofForceY;
          particles[i + PrevBz]                               = getBz;
