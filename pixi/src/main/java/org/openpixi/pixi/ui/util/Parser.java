@@ -48,6 +48,7 @@ public class Parser extends DefaultHandler {
 	private boolean diagnostics;
 	private boolean iterations;
 	private boolean runid;
+        private boolean simulationType;
 	
 	private String attribute = null;
 	
@@ -110,6 +111,8 @@ public class Parser extends DefaultHandler {
 				iterations = true;
 			} else if(qName.equalsIgnoreCase("runid")) {
 				runid = true;
+                        } else if(qName.equalsIgnoreCase("simulationType")) {
+				simulationType = true;
 			} else if (qName.equalsIgnoreCase("settings")) {
 				//DO NOTHING
 			}
@@ -134,6 +137,10 @@ public class Parser extends DefaultHandler {
 		if (iterations) {
 			setIterations(ch, start, length);
 			iterations = false;
+		}
+                if (simulationType) {
+			setSimulationType(ch, start, length);
+			simulationType = false;
 		}
 		if (numberOfParticles) {
 			setNumberOfParticles(ch, start, length);
@@ -183,6 +190,23 @@ public class Parser extends DefaultHandler {
 		settings.setIterations(n);
 	}
 	
+        private void setSimulationType(char ch[], int start, int length) {
+		int simType;
+		String simtype = new String(ch, start, length);
+		try{
+			if (simtype.equalsIgnoreCase("Sequential")) {
+				simType = 0;
+			} else if (simtype.equalsIgnoreCase("Parallel")) {
+				simType = 1;
+			} else throw new Exception();
+		} catch (Exception e){
+			System.out.println("Error: OpenPixi does not know about the " + simtype + " simulation type" +
+					" . Setting it to Sequential.");
+			simType = 0;
+		}
+		settings.setSimulationType(simType);
+	}
+        
 	private void addDiagnostics(char ch[], int start, int length) {
 		Diagnostics method;
 		String mtdname = new String(ch, start, length);
