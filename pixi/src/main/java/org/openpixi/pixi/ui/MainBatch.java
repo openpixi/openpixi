@@ -19,6 +19,7 @@
 
 package org.openpixi.pixi.ui;
 
+import java.io.FileNotFoundException;
 import org.openpixi.pixi.physics.Debug;
 import org.openpixi.pixi.physics.Settings;
 import org.openpixi.pixi.physics.Simulation;
@@ -27,6 +28,7 @@ import org.openpixi.pixi.profile.ProfileInfo;
 import org.openpixi.pixi.ui.util.*;
 import java.io.IOException;
 import org.openpixi.pixi.physics.ParallelSimulationCL;
+import static org.openpixi.pixi.ui.MainBatch.iterations;
 
 
 public class MainBatch {
@@ -37,7 +39,6 @@ public class MainBatch {
 	private static String runid;
 
 	private static Simulation simulation;
-        private static ParallelSimulationCL clSimulation;
 	private static DiagnosticsScheduler diagnostics;
 	private static EmptyDataOutput dataOutput;
 
@@ -48,7 +49,7 @@ public class MainBatch {
 	 * (dont forget to add the <settings> </settings> root element, the empty file should
 	 * still comply with the XML specification!)
 	 */
-	public static void main(String[] args) throws IOException {
+	public static void main(String[] args) throws FileNotFoundException, IOException {
 		Debug.checkAssertsEnabled();
 
 		// Creates a settings class with the default parameters
@@ -67,68 +68,64 @@ public class MainBatch {
 		iterations = settings.getIterations();
 		runid = settings.getRunid();
 		
-		// Creates the actual physics simulation that can be run iteratively.
-		simulation = new Simulation(settings);
-                clSimulation = new ParallelSimulationCL(settings);
-                
-		// Creates the diagnostics wrapper class that knows about all
-		// enabled diagnostic methods.
-//		diagnostics = new DiagnosticsScheduler(simulation.grid, simulation.particles, settings);
-		
-		// Checks if the user has specified at least two parameters
-		// If this is not the case, the diagnostics output is disabled
-		// the program will not output anything.
-//		if (args.length < 2) {
-//			dataOutput = new EmptyDataOutput();
-//		} else {
-//			// The program expects a directory (to which the output files will be saved) as its
-//			// second parameter. This checks if the directory is specified correctly. Tries to
-//			// fix it if not.
-//			if (args[1].substring(args[1].length() -1) != System.getProperty("file.separator")) {
-//				args[1] = args[1] + System.getProperty("file.separator");
-//			}
-//			
-//			// Tries to create the output objects. If something is wrong with the specified
-//			// directory the program will give an error and terminate. 
-//			try {
-//				dataOutput = new DataOutput(args[1], runid, simulation.grid);
-//			} catch (IOException e) {
-//				System.err.print("Something went wrong when creating output files for diagnostics! \n" +
-//						"Please specify an output directory with write access rights!\n" + 
-//						"The directory that you specified was " + args[1] + "\n" +
-//						"Aborting...");
-//						return;
-//			}
-//		}
-		
-		//Performs diagnostics on the initial state of the simulation
-//		dataOutput.setIteration(0);
-//		diagnostics.performDiagnostics(0);
-//		diagnostics.output(dataOutput);
-		
-//		for (int i = 0; i < iterations;) {
-//			// advance the simulation by one step
-//			simulation.step();
-//			
-//			i++;
-//			
-//			dataOutput.setIteration(i);
-//			diagnostics.performDiagnostics(i);
-//			diagnostics.output(dataOutput);
-//		}
-		long t1, t2;
-//		dataOutput.closeStreams();
-                t1 = System.currentTimeMillis();
-		simulation.run();
-                t2 = System.currentTimeMillis();
-                System.out.println("sequential: " + (t2-t1) + "ms");
-                
-                t1 = System.currentTimeMillis();
-                clSimulation.runParallelSimulation();
-                t2 = System.currentTimeMillis();
-                System.out.println("parallel: " + (t2-t1) + "ms");
-                
-		ProfileInfo.printProfileInfo();
+                if(settings.getSimulationType() == 0){
+                    // Creates the actual physics simulation that can be run iteratively.
+                    simulation = new Simulation(settings);
+                    System.out.println("########## " + settings.getSimulationType());
+                    // Creates the diagnostics wrapper class that knows about all
+                    // enabled diagnostic methods.
+                    diagnostics = new DiagnosticsScheduler(simulation.grid, simulation.particles, settings);
+
+                    // Checks if the user has specified at least two parameters
+                    // If this is not the case, the diagnostics output is disabled
+                    // the program will not output anything.
+                    if (args.length < 2) {
+                            dataOutput = new EmptyDataOutput();
+                    } else {
+                            // The program expects a directory (to which the output files will be saved) as its
+                            // second parameter. This checks if the directory is specified correctly. Tries to
+                            // fix it if not.
+                            if (args[1].substring(args[1].length() -1) != System.getProperty("file.separator")) {
+                                    args[1] = args[1] + System.getProperty("file.separator");
+                            }
+
+                            // Tries to create the output objects. If something is wrong with the specified
+                            // directory the program will give an error and terminate. 
+                            try {
+                                    dataOutput = new DataOutput(args[1], runid, simulation.grid);
+                            } catch (IOException e) {
+                                    System.err.print("Something went wrong when creating output files for diagnostics! \n" +
+                                                    "Please specify an output directory with write access rights!\n" + 
+                                                    "The directory that you specified was " + args[1] + "\n" +
+                                                    "Aborting...");
+                                                    return;
+                            }
+                    }
+
+                    //Performs diagnostics on the initial state of the simulation
+                    dataOutput.setIteration(0);
+                    diagnostics.performDiagnostics(0);
+                    diagnostics.output(dataOutput);
+
+                    for (int i = 0; i < iterations;) {
+                            // advance the simulation by one step
+                            simulation.step();
+
+                            i++;
+
+                            dataOutput.setIteration(i);
+                            diagnostics.performDiagnostics(i);
+                            diagnostics.output(dataOutput);
+                    }
+
+                    dataOutput.closeStreams();
+
+                    ProfileInfo.printProfileInfo();
+                }
+                else{
+                    ParallelSimulationCL simulationCL = new ParallelSimulationCL(settings);
+                    simulationCL.runParallelSimulation();
+                }
 	}
 
 }
