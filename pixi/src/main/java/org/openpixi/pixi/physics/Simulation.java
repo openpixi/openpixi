@@ -208,8 +208,8 @@ public class Simulation {
 	public void step() throws FileNotFoundException {
                 
 		particlePush();
-//		detector.run();
-//		collisionalgorithm.collide(detector.getOverlappedPairs(), f, mover.getSolver(), tstep);
+		detector.run();
+		collisionalgorithm.collide(detector.getOverlappedPairs(), f, mover.getSolver(), tstep);
 		interpolation.interpolateToGrid(particles, grid, tstep);
                 grid.updateGrid(tstep);                
 		interpolation.interpolateToParticle(particles, grid);
