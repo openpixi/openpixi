@@ -18,6 +18,9 @@
 
 	particleSolver			"Euler", "Leap Frog", "Boris" or any other 
 					supported algorithm. (not case sensitive)
+	
+	simulationType			"Sequential" or "Parallel", parallel means 
+					using OpenCL. (not case sensitive)
 
 	Can be set multiple times:
 	diagnostics			can be either "Potential" or "Kinetic Energy".
@@ -50,6 +53,7 @@
 	<simulationWidth>100</simulationWidth>
 	<simulationHeight>100</simulationHeight>
 	<timeStep>0.5</timeStep>
+	<simulationType>Sequential</simulationType>
 	<interpolatorAlgorithm>Charge Conserving CIC</interpolatorAlgorithm>
 	<particleSolver>Boris</particleSolver>
 	<diagnostics i="3">Kinetic Energy</diagnostics>
