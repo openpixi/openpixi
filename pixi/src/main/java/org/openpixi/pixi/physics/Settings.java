@@ -81,7 +81,8 @@ public class Settings {
 	private int numOfParticles = 128;
 	private double particleRadius = 1;
 	private double particleMaxSpeed = speedOfLight/3;
-	
+	private int simulationType = 0;
+        
 	// Modify defaultParticleFactories() method to determine what kind of particles
 	// will be loaded by default.
 	private List<Particle> particles = new ArrayList<Particle>();
@@ -119,7 +120,10 @@ public class Settings {
 	//----------------------------------------------------------------------------------------------
 	// SIMPLE GETTERS
 	//----------------------------------------------------------------------------------------------
-
+        public int getSimulationType(){
+            return this.simulationType;
+        }
+        
 	public double getSimulationWidth() {
 		return simulationWidth;
 	}
@@ -328,7 +332,10 @@ public class Settings {
 	//----------------------------------------------------------------------------------------------
 	// SETTERS (Overwrite default values programatically)
 	//----------------------------------------------------------------------------------------------
-
+        public void setSimulationType(int simulationType){
+            this.simulationType = simulationType;
+        }
+        
 	public void setSimulationWidth(double simulationWidth) {
 		this.simulationWidth = simulationWidth;
 	}
