@@ -132,8 +132,8 @@ int get_region(double xmin, double xmax, double ymin, double ymax, double width,
 double formFactor(double A, double B, double C, double D,
 			double a, double b, double c, double d){
     
-                double f = A*b*d + B*b*c + C*a*c + D*a*d;
-		return f;
+                return A*b*d + B*b*c + C*a*c + D*a*d;
+//		return f;
 }
 
 
@@ -639,7 +639,7 @@ __kernel void particle_push( __global double* particles,
    if(i >= n)
         return;
    i = i * P_SIZE;
-
+    
     //a) particle.storePosition() 
          particles[i + PrevX] = particles[i + X];
          particles[i + PrevY] = particles[i + Y];
@@ -797,7 +797,7 @@ __kernel void reset_current( __global double* particles,
 
 
 //##################################################################################################################/
-__kernel void grid_interpolation(__global double* particles,                                 
+__kernel void charge_conserving_CIC(__global double* particles,                                 
                                  __global double* cells,
                                  __global double* force,
                                  __global int* semaphor,
@@ -876,64 +876,193 @@ __kernel void grid_interpolation(__global double* particles,
 
 
 //##################################################################################################################/
-__kernel void create_boundary_cells( __global double* particles,
-                                     __global const double* force, 
-                                     __global double* cells,  
-                                     __global int* boundaries,
-                                        double timeStep,
-                                        int n,
-                                        double width,
-                                        double height,
-                                        int numCellsX,
-                                        int numCellsY,
-                                        double cellWidth,
-                                        double cellHeight,
-                                        int iterations) 
+__kernel void cloud_in_cell(__global double* particles,                                 
+                            __global double* cells,
+                            __global double* force,
+                            __global int* semaphor,
+                            __global int* boundaries,
+                             double timeStep,
+                             int n,
+                             double width,
+                             double height,
+                             int numCellsX,
+                             int numCellsY,
+                             double cellWidth,
+                             double cellHeight,
+                             int iterations) 
 {
         int i = get_global_id(0);
-        if(i > 0)
-             return;
+        if(i >= n)
+            return;
         i = i * P_SIZE;
-
-        int x, y;
-        int numCellsXTotal = numCellsX + EXTRA_CELLS_BEFORE_GRID + EXTRA_CELLS_AFTER_GRID;
-        int numCellsYTotal = numCellsY + EXTRA_CELLS_BEFORE_GRID + EXTRA_CELLS_AFTER_GRID;
-     
-        int k, h, mark;
-        double sumJx, sumJy, sumRho, sumPhi, sumEx, sumEy, sumBz, sumBzo;
-        for(k = 0; k < numCellsXTotal * numCellsYTotal; k++){
-            mark = boundaries[k];
-            sumJx = 0; sumJy = 0; sumRho = 0; sumPhi = 0;
-            sumEx = 0; sumEy = 0; sumBz = 0; sumBzo = 0;
-            if (mark != 0){
-                for(h = 0; h < numCellsXTotal * numCellsYTotal; h++){
-                    if(boundaries[h] == mark){
-                        sumJx  += cells[C_SIZE * h + Cjx]; 
-                        sumJy  += cells[C_SIZE * h + Cjy];
-                        sumRho += cells[C_SIZE * h + Crho]; 
-                        sumPhi += cells[C_SIZE * h + Cphi];
-                        sumEx  += cells[C_SIZE * h + Cex]; 
-                        sumEy  += cells[C_SIZE * h + Cey];
-                        sumBz  += cells[C_SIZE * h + Cbz]; 
-                        sumBzo += cells[C_SIZE * h + Cbzo];
-                    }
-                }
-                for(h = 0; h < numCellsXTotal * numCellsYTotal; h++){
-                    if(boundaries[h] == mark){
-                        cells[C_SIZE * h + Cjx]  = sumJx;
-                        cells[C_SIZE * h + Cjy]  = sumJy;
-                        cells[C_SIZE * h + Crho] = sumRho;
-                        cells[C_SIZE * h + Cphi] = sumPhi;
-                        cells[C_SIZE * h + Cex]  = sumEx;
-                        cells[C_SIZE * h + Cey]  = sumEy;
-                        cells[C_SIZE * h + Cbz]  = sumBz;
-                        cells[C_SIZE * h + Cbzo] = sumBzo;
-                        boundaries[h] = 0;
-                    }
-                }
-            }
-        }
         
+        /**X index of the grid point that is left from or at the x position of the particle*/
+        int ii;
+        /**Y index of the grid point that is below or at the y position of the particle*/
+        int jj;		
+        /**Normalized distance to the left cell boundary*/
+        double a;
+        /**Normalized distance to the right cell boundary*/
+        double b;
+        /**Normalized distance to the lower cell boundary*/
+        double c;
+        /**Normalized distance to the upper cell boundary*/
+        double d;
+
+        int mark;
+        int k;
+        double pCharge = particles[i + Charge];
+        double pVx     = particles[i + Vx];
+        double pVy     = particles[i + Vy];
+        
+        a = particles[i + X]/cellWidth;
+        ii = (int) floor(a);
+        a -= ii;
+        b = 1 - a;
+
+        c = particles[i + Y]/cellHeight;
+        jj = (int)floor(c);
+        c -= jj;
+        d = 1 - c;
+       
+        if( c < 0.5 ){
+                jj -= 1;
+                c += 0.5;
+                d -= 0.5;
+
+                mark = boundaries[((ii + 2) * numCellsY) + jj + 2];
+                for(k = 0; k < numCellsY*numCellsY; k++){
+                        if(boundaries[k] == mark){
+                            cells[(C_SIZE * k) + Cjx] += pCharge * pVx * b * d;
+                    }
+                }
+                
+                mark = boundaries[((ii + 2) * numCellsY) + jj + 1 + 2];
+                for(k = 0; k < numCellsY*numCellsY; k++){
+                        if(boundaries[k] == mark){
+                            cells[(C_SIZE * k) + Cjx] += pCharge * pVx * b * c;
+                    }
+                }
+                
+                mark = boundaries[((ii + 1 + 2) * numCellsY) + jj + 1 + 2];
+                for(k = 0; k < numCellsY*numCellsY; k++){
+                        if(boundaries[k] == mark){
+                            cells[(C_SIZE * k) + Cjx] += pCharge * pVx * a * c;
+                    }
+                }
+                
+                mark = boundaries[((ii + 1 + 2) * numCellsY) + jj + 2];
+                for(k = 0; k < numCellsY*numCellsY; k++){
+                        if(boundaries[k] == mark){
+                            cells[(C_SIZE * k) + Cjx] += pCharge * pVx * a * d;
+                    }
+                }
+
+                c -= 0.5;
+                d += 0.5;
+                jj += 1;
+        } else {
+                c -= 0.5;
+                d += 0.5;
+
+                mark = boundaries[((ii + 2) * numCellsY) + jj + 2];
+                for(k = 0; k < numCellsY*numCellsY; k++){
+                        if(boundaries[k] == mark){
+                            cells[(C_SIZE * k) + Cjx] += pCharge * pVx * b * d;
+                    }
+                }
+                
+                mark = boundaries[((ii + 2) * numCellsY) + jj + 1 + 2];
+                for(k = 0; k < numCellsY*numCellsY; k++){
+                        if(boundaries[k] == mark){
+                            cells[(C_SIZE * k) + Cjx] += pCharge * pVx * b * c;
+                    }
+                }
+                
+                mark = boundaries[((ii + 1 + 2) * numCellsY) + jj + 1 + 2];
+                for(k = 0; k < numCellsY*numCellsY; k++){
+                        if(boundaries[k] == mark){
+                            cells[(C_SIZE * k) + Cjx] += pCharge * pVx * a * c;
+                    }
+                }
+                
+                mark = boundaries[((ii + 1 + 2) * numCellsY) + jj + 2];
+                for(k = 0; k < numCellsY*numCellsY; k++){
+                        if(boundaries[k] == mark){
+                            cells[(C_SIZE * k) + Cjx] += pCharge * pVx * a * d;
+                    }
+                }
+
+                c += 0.5;
+                d -= 0.5;
+        }
+     
+        if( a < 0.5 ){
+                ii -= 1;
+                a += 0.5;
+                b -= 0.5;
+
+                mark = boundaries[((ii + 2) * numCellsY) + jj + 2];
+                for(k = 0; k < numCellsY*numCellsY; k++){
+                        if(boundaries[k] == mark){
+                            cells[(C_SIZE * k) + Cjy] += pCharge * pVy * b * d;
+                    }
+                }
+                
+                mark = boundaries[((ii + 2) * numCellsY) + jj + 1 + 2];
+                for(k = 0; k < numCellsY*numCellsY; k++){
+                        if(boundaries[k] == mark){
+                            cells[(C_SIZE * k) + Cjy] += pCharge * pVy * b * c;
+                    }
+                }
+                
+                mark = boundaries[((ii + 1 + 2) * numCellsY) + jj + 1 + 2];
+                for(k = 0; k < numCellsY*numCellsY; k++){
+                        if(boundaries[k] == mark){
+                            cells[(C_SIZE * k) + Cjy] += pCharge * pVy * a * c;
+                    }
+                }
+                
+                mark = boundaries[((ii + 1 + 2) * numCellsY) + jj + 2];
+                for(k = 0; k < numCellsY*numCellsY; k++){
+                        if(boundaries[k] == mark){
+                            cells[(C_SIZE * k) + Cjy] += pCharge * pVy * a * d;
+                    }
+                }
+
+        } else {
+                a -= 0.5;
+                b += 0.5;
+
+                mark = boundaries[((ii + 2) * numCellsY) + jj + 2];
+                for(k = 0; k < numCellsY*numCellsY; k++){
+                        if(boundaries[k] == mark){
+                            cells[(C_SIZE * k) + Cjy] += pCharge * pVy * b * d;
+                    }
+                }
+                
+                mark = boundaries[((ii + 2) * numCellsY) + jj + 1 + 2];
+                for(k = 0; k < numCellsY*numCellsY; k++){
+                        if(boundaries[k] == mark){
+                            cells[(C_SIZE * k) + Cjy] += pCharge * pVy * b * c;
+                    }
+                }
+                
+                mark = boundaries[((ii + 1 + 2) * numCellsY) + jj + 1 + 2];
+                for(k = 0; k < numCellsY*numCellsY; k++){
+                        if(boundaries[k] == mark){
+                            cells[(C_SIZE * k) + Cjy] += pCharge * pVy * a * c;
+                    }
+                }
+                
+                mark = boundaries[((ii + 1 + 2) * numCellsY) + jj + 2];
+                for(k = 0; k < numCellsY*numCellsY; k++){
+                        if(boundaries[k] == mark){
+                            cells[(C_SIZE * k) + Cjy] += pCharge * pVy * a * d;
+                    }
+                }
+           	
+        }
 }
 
 
