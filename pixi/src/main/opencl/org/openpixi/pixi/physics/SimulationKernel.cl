@@ -386,11 +386,11 @@ void tenBoundaryMove(double x, double y, int xStart, int yStart, int xEnd, int y
 /------------------- Step 1: particlePush()------------------------------------/
 /-----------------------------------------------------------------------------*/
 //##################################################################################################################/
-__kernel void particle_push( __global double* particles,                      
-                                      double timeStep,
-                                      int n,
-                                      double width,
-                                      double height)
+__kernel void particle_push_boris( __global double* particles,                      
+                                            double timeStep,
+                                            int n,
+                                            double width,
+                                            double height)
 {
    int i = get_global_id(0);
    if(i >= n)
@@ -521,6 +521,106 @@ __kernel void particle_push( __global double* particles,
      */
 
    
+}
+
+__kernel void particle_push_boris_damped( __global double* particles,                      
+                                                   double timeStep,
+                                                   int n,
+                                                   double width,
+                                                   double height)
+{
+   int i = get_global_id(0);
+   if(i >= n)
+        return;
+   i = i * P_SIZE;
+    
+    //a) particle.storePosition() 
+         particles[i + PrevX] = particles[i + X];
+         particles[i + PrevY] = particles[i + Y];
+
+    //b)solver.step(particle, force, timeStep)/----Boris solver-----/
+         int j = i;//(int)(i/P_SIZE);
+
+         double getPositionComponentofForceX        = particles[i + Charge] * particles[i + Ex];
+         double getPositionComponentofForceY        = particles[i + Charge] * particles[i + Ey];
+         double getBz                               = particles[i + PBz];
+         double getLinearDragCoefficient            = 0;
+         double getMass                             = particles[i + Mass];
+
+         // remember for complete()
+         particles[i + PrevPositionComponentForceX]          = getPositionComponentofForceX;
+         particles[i + PrevPositionComponentForceY]          = getPositionComponentofForceY;
+         particles[i + PrevBz]                               = getBz;
+         particles[i + PrevLinearDragCoefficient]            = getLinearDragCoefficient;
+
+         //help coefficients for the dragging
+         double help1_coef = 1 - getLinearDragCoefficient * timeStep / (2 * getMass);
+         double help2_coef = 1 + getLinearDragCoefficient * timeStep / (2 * getMass);
+
+         double vxminus = help1_coef * particles[i + Vx] / help2_coef + getPositionComponentofForceX * timeStep / (2.0 * getMass * help2_coef);
+         double vyminus = help1_coef * particles[i + Vy] / help2_coef + getPositionComponentofForceY * timeStep / (2.0 * getMass * help2_coef);
+
+         double t_z = particles[i + Charge] * getBz * timeStep / (2.0 * getMass * help2_coef);   //t vector
+
+         double s_z = 2 * t_z / (1 + t_z * t_z);               //s vector
+
+         double kappa = - 4 * getMass * getLinearDragCoefficient * timeStep / (4 * getMass * getMass - 
+                        getLinearDragCoefficient * getLinearDragCoefficient * timeStep * timeStep);
+
+         double vxprime = vxminus + help2_coef * vyminus * t_z / help1_coef + kappa * timeStep * getPositionComponentofForceY * t_z / (2.0 * getMass);
+         double vyprime = vyminus - help2_coef * vxminus * t_z / help1_coef - kappa * timeStep * getPositionComponentofForceX * t_z / (2.0 * getMass);
+
+         double vxplus = vxminus + vyprime * s_z + (help2_coef / help1_coef - 1) * (vyminus * t_z + vxminus * t_z * t_z) / (1 + t_z * t_z) +
+                         kappa * timeStep * (getPositionComponentofForceY + getPositionComponentofForceX * t_z) * s_z / (4.0 * getMass);
+ 
+         double vyplus = vyminus - vxprime * s_z + (help2_coef / help1_coef - 1) * (- vxminus * t_z + vyminus * t_z * t_z) / (1 + t_z * t_z) -
+                         kappa * timeStep * (getPositionComponentofForceX - getPositionComponentofForceY * t_z) * s_z / (4.0 * getMass);
+
+         particles[i + Vx] = vxplus + getPositionComponentofForceX * timeStep / (2.0 * getMass * help2_coef);
+         particles[i + Vy] = vyplus + getPositionComponentofForceY * timeStep / (2.0 * getMass * help2_coef);
+
+         particles[i + X] = particles[i + X] + particles[i + Vx] * timeStep;
+         particles[i + Y] = particles[i + Y] + particles[i + Vy] * timeStep;
+        
+    //c) boundaries.applyOnParticleCenter(solver, force, particle, timeStep)
+         double regionBoundaryMapX[9];
+         double regionBoundaryMapY[9];
+
+         regionBoundaryMapX[X_MIN + Y_MIN] = -width;
+         regionBoundaryMapY[X_MIN + Y_MIN] = -height;
+
+         regionBoundaryMapX[X_CENTER + Y_MIN] = 0;
+         regionBoundaryMapY[X_CENTER + Y_MIN] = -height;
+
+         regionBoundaryMapX[X_MAX + Y_MIN] = width;
+         regionBoundaryMapY[X_MAX + Y_MIN] = -height;
+
+         regionBoundaryMapX[X_MIN + Y_CENTER] = -width;
+         regionBoundaryMapY[X_MIN + Y_CENTER] = 0;
+
+         regionBoundaryMapX[X_CENTER + Y_CENTER] = 0;
+         regionBoundaryMapY[X_CENTER + Y_CENTER] = 0;
+
+         regionBoundaryMapX[X_MAX + Y_CENTER] = width;
+         regionBoundaryMapY[X_MAX + Y_CENTER] = 0;
+
+         regionBoundaryMapX[X_MIN + Y_MAX] = -width;
+         regionBoundaryMapY[X_MIN + Y_MAX] = height;
+
+         regionBoundaryMapX[X_CENTER + Y_MAX] = 0;
+         regionBoundaryMapY[X_CENTER + Y_MAX] = height;
+
+         regionBoundaryMapX[X_MAX + Y_MAX] = width;
+         regionBoundaryMapY[X_MAX + Y_MAX] = height;
+
+         int regi; 
+         regi = get_region(particles[i + X], particles[i + X], particles[i + Y], particles[i + Y], width, height);
+
+         particles[i + X]     = particles[i + X] - regionBoundaryMapX[regi];
+         particles[i + PrevX] = particles[i + PrevX] - regionBoundaryMapX[regi];
+
+         particles[i + Y]     = particles[i + Y] - regionBoundaryMapY[regi];
+         particles[i + PrevY] = particles[i + PrevY] - regionBoundaryMapY[regi];
 }
 
  /*-----------------------------------------------------------------------------/

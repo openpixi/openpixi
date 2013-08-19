@@ -354,7 +354,6 @@ public class ParallelSimulationCL{
                 CLBuffer<Integer> inSemaphor = context.createIntBuffer(Usage.InputOutput, semaphor);
                 CLBuffer<Integer> inBound = context.createIntBuffer(Usage.InputOutput, inBoundaries);
                 
-                
                 //call the kernel
                 SimulationKernel kernels = new SimulationKernel(context);
                 int n = particles.size();
@@ -362,48 +361,51 @@ public class ParallelSimulationCL{
                 int[] localSizes = new int[] { n };
 //                globalSizes[0] = n/2;
 //                globalSizes[1] = n/2;
-                CLEvent pushEvt;
-                CLEvent resetEvt;
-                CLEvent interpEvt;
-                CLEvent storeEvt;
-                CLEvent solveEEvt;
-                CLEvent solveBEvt;
+                CLEvent pushEvt = null;
+                CLEvent resetEvt = null;
+                CLEvent interpEvt = null;
+                CLEvent storeEvt = null;
+                CLEvent solveEEvt = null;
+                CLEvent solveBEvt = null;
                 CLEvent partInterpEvt = null;
                 
                 for (int i = 0; i < iterations; i++) {
              
-                    pushEvt = kernels.particle_push(queue, inPar, inFor, inCel, tstep, n, 
-                                                            width, height, grid.getNumCellsXTotal(), grid.getNumCellsYTotal(),
-                                                            grid.getCellWidth(), grid.getCellHeight(), iterations, globalSizes, localSizes);
+                    pushEvt = kernels.particle_push_boris(queue, inPar, tstep, n, 
+                                                          width, height, globalSizes, localSizes);
+                    
+//                    pushEvt = kernels.particle_push_boris_damped(queue, inPar, tstep, n, 
+//                                                                 width, height, globalSizes, localSizes);
 
-                    resetEvt = kernels.reset_current(queue, inPar, inFor, inCel, tstep, n, 
-                                                                   width, height, grid.getNumCellsXTotal(), grid.getNumCellsYTotal(),
-                                                                   grid.getCellWidth(), grid.getCellHeight(), iterations, globalSizes, localSizes, pushEvt);
+                    resetEvt = kernels.reset_current(queue, inCel,  n, 
+                                                     grid.getNumCellsXTotal(), grid.getNumCellsYTotal(),
+                                                     globalSizes, localSizes, pushEvt);
 
-                    interpEvt = kernels.grid_interpolation(queue, inPar, inCel, inFor, inSemaphor, inBound, tstep, n, 
-                                                                   width, height, grid.getNumCellsXTotal(), grid.getNumCellsYTotal(),
-                                                                   grid.getCellWidth(), grid.getCellHeight(), iterations, globalSizes, localSizes, resetEvt);
+                    interpEvt = kernels.charge_conserving_CIC(queue, inPar, inCel, inBound, tstep, n, 
+                                                              grid.getNumCellsXTotal(), grid.getNumCellsYTotal(),
+                                                              grid.getCellWidth(), grid.getCellHeight(),  globalSizes, localSizes, resetEvt);
 
-    //                CLEvent boundEvt = kernels.create_boundary_cells(queue, inPar, inFor, inCel, inBound, tstep, n, 
-    //                                                               width, height, grid.getNumCellsX(), grid.getNumCellsY(),
-    //                                                               grid.getCellWidth(), grid.getCellHeight(), iterations, globalSizes, localSizes, interpEvt);
+//                    interpEvt = kernels.cloud_in_cell(queue, inPar, inCel, inBound, tstep, n, 
+//                                                      grid.getNumCellsXTotal(), grid.getNumCellsYTotal(),
+//                                                      grid.getCellWidth(), grid.getCellHeight(),  globalSizes, localSizes, resetEvt);
 
-                    storeEvt = kernels.store_fields(queue, inPar, inFor, inCel, inBound, tstep, n, 
-                                                                   width, height, grid.getNumCellsX(), grid.getNumCellsY(),
-                                                                   grid.getCellWidth(), grid.getCellHeight(), iterations, globalSizes, localSizes, interpEvt);
+                    storeEvt = kernels.store_fields(queue, inCel, n, 
+                                                    grid.getNumCellsXTotal(), grid.getNumCellsYTotal(),
+                                                    globalSizes, localSizes, interpEvt);
 
-                    solveEEvt = kernels.solve_for_e(queue, inPar, inFor, inCel, inBound, 0, n, 
-                                                                   width, height, grid.getNumCellsXTotal(), grid.getNumCellsYTotal(),
-                                                                   grid.getCellWidth(), grid.getCellHeight(), iterations, globalSizes, localSizes, storeEvt);
+                    solveEEvt = kernels.solve_for_e(queue, inCel, inBound, 0, n, 
+                                                    grid.getNumCellsXTotal(), grid.getNumCellsYTotal(),
+                                                    grid.getCellWidth(), grid.getCellHeight(), globalSizes, localSizes, storeEvt);
 
 
-                    solveBEvt = kernels.solve_for_b(queue, inPar, inFor, inCel, inBound, 0, n, 
-                                                                   width, height, grid.getNumCellsXTotal(), grid.getNumCellsYTotal(),
-                                                                   grid.getCellWidth(), grid.getCellHeight(), iterations, globalSizes, localSizes, solveEEvt);
+                    solveBEvt = kernels.solve_for_b(queue, inCel, inBound, 0, n, 
+                                                    grid.getNumCellsXTotal(), grid.getNumCellsYTotal(),
+                                                    grid.getCellWidth(), grid.getCellHeight(), globalSizes, localSizes, solveEEvt);
 
-                    partInterpEvt = kernels.particle_interpolation(queue, inPar, inFor, inCel, tstep, n, 
-                                                                   width, height, grid.getNumCellsXTotal(), grid.getNumCellsYTotal(),
-                                                                   grid.getCellWidth(), grid.getCellHeight(), iterations, globalSizes, localSizes, solveBEvt);
+                    partInterpEvt = kernels.particle_interpolation(queue, inPar, inCel, tstep, n, 
+                                                                   grid.getNumCellsXTotal(), grid.getNumCellsYTotal(),
+                                                                   grid.getCellWidth(), grid.getCellHeight(), globalSizes, localSizes, solveBEvt);
+                
                 }
                 
                 //get output
