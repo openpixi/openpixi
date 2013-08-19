@@ -377,6 +377,9 @@ public class ParallelSimulationCL{
 //                    pushEvt = kernels.particle_push_boris_damped(queue, inPar, tstep, n, 
 //                                                                 width, height, globalSizes, localSizes);
 
+//                    pushEvt = kernels.particle_push_euler(queue, inPar, tstep, n, 
+//                                                          width, height, globalSizes, localSizes);
+                    
                     resetEvt = kernels.reset_current(queue, inCel,  n, 
                                                      grid.getNumCellsXTotal(), grid.getNumCellsYTotal(),
                                                      globalSizes, localSizes, pushEvt);
