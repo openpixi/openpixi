@@ -694,6 +694,99 @@ __kernel void particle_push_euler( __global double* particles,
          particles[i + PrevY] = particles[i + PrevY] - regionBoundaryMapY[regi];
 }
 
+//##################################################################################################################/
+__kernel void particle_push_euler_richardson( __global double* particles,                      
+                                                   double timeStep,
+                                                   int n,
+                                                   double width,
+                                                   double height)
+{
+   int i = get_global_id(0);
+   if(i >= n)
+        return;
+   i = i * P_SIZE;
+    
+    //a) particle.storePosition() 
+         particles[i + PrevX] = particles[i + X];
+         particles[i + PrevY] = particles[i + Y];
+
+    //b)solver.step(particle, force, timeStep)/----Boris solver-----/
+         //saving the starting value of the position & velocity
+         double xstart  = particles[i + X];
+         double ystart  = particles[i + Y];
+         double vxstart = particles[i + Vx];
+         double vystart = particles[i + Vy];
+
+         //a(t) = F(v(t), x(t)) / m
+         particles[i + Ax] = (particles[i + Charge] * (particles[i + Ex] + particles[i + Vy] * particles[i + PBz]))/particles[i + Mass];
+         particles[i + Ay] = (particles[i + Charge] * (particles[i + Ey] + particles[i + Vx] * particles[i + PBz]))/particles[i + Mass];
+
+
+         //starting the Euler-Richardson algorithm (the equations correspond with the ones on the above mentioned website)
+         //v(t + dt / 2) = v(t) + a(t) * dt / 2
+         particles[i + Vx] = particles[i + Vx] + particles[i + Ax] * timeStep/2;
+         particles[i + Vy] = particles[i + Vy] + particles[i + Ay] * timeStep/2;
+
+         //x(t + dt / 2) = x(t) + v(t) * dt / 2
+         particles[i + X] = particles[i + X] + particles[i + Vx] * timeStep/2;
+         particles[i + Y] = particles[i + Y] + particles[i + Vy] * timeStep/2;
+
+         //a(t + dt / 2) = F(v(t + dt / 2), x(t + dt / 2)) / m
+         particles[i + Ax] = (particles[i + Charge] * (particles[i + Ex] + particles[i + Vy] * particles[i + PBz]))/particles[i + Mass];
+         particles[i + Ay] = (particles[i + Charge] * (particles[i + Ey] + particles[i + Vx] * particles[i + PBz]))/particles[i + Mass];
+
+         //x(t + dt) = x(t) + v(t + dt / 2) * dt
+         particles[i + X] = xstart + particles[i + Vx] * timeStep;
+         particles[i + Y] = ystart + particles[i + Vy] * timeStep;
+        
+         //v(t + dt) = v(t) + a(t + dt / 2) * dt
+         particles[i + Vx] = vxstart + particles[i + Ax] * timeStep;
+         particles[i + Vy] = vystart + particles[i + Ay] * timeStep;
+        
+    //c) boundaries.applyOnParticleCenter(solver, force, particle, timeStep)
+         double regionBoundaryMapX[9];
+         double regionBoundaryMapY[9];
+
+         regionBoundaryMapX[X_MIN + Y_MIN] = -width;
+         regionBoundaryMapY[X_MIN + Y_MIN] = -height;
+
+         regionBoundaryMapX[X_CENTER + Y_MIN] = 0;
+         regionBoundaryMapY[X_CENTER + Y_MIN] = -height;
+
+         regionBoundaryMapX[X_MAX + Y_MIN] = width;
+         regionBoundaryMapY[X_MAX + Y_MIN] = -height;
+
+         regionBoundaryMapX[X_MIN + Y_CENTER] = -width;
+         regionBoundaryMapY[X_MIN + Y_CENTER] = 0;
+
+         regionBoundaryMapX[X_CENTER + Y_CENTER] = 0;
+         regionBoundaryMapY[X_CENTER + Y_CENTER] = 0;
+
+         regionBoundaryMapX[X_MAX + Y_CENTER] = width;
+         regionBoundaryMapY[X_MAX + Y_CENTER] = 0;
+
+         regionBoundaryMapX[X_MIN + Y_MAX] = -width;
+         regionBoundaryMapY[X_MIN + Y_MAX] = height;
+
+         regionBoundaryMapX[X_CENTER + Y_MAX] = 0;
+         regionBoundaryMapY[X_CENTER + Y_MAX] = height;
+
+         regionBoundaryMapX[X_MAX + Y_MAX] = width;
+         regionBoundaryMapY[X_MAX + Y_MAX] = height;
+
+         int regi; 
+         regi = get_region(particles[i + X], particles[i + X], particles[i + Y], particles[i + Y], width, height);
+
+         particles[i + X]     = particles[i + X] - regionBoundaryMapX[regi];
+         particles[i + PrevX] = particles[i + PrevX] - regionBoundaryMapX[regi];
+
+         particles[i + Y]     = particles[i + Y] - regionBoundaryMapY[regi];
+         particles[i + PrevY] = particles[i + PrevY] - regionBoundaryMapY[regi];
+}
+
+
+
+
  /*-----------------------------------------------------------------------------/
  /------Step 4: interpolation.interpolateToGrid(particles, grid, tstep)---------/
  /-----------------------------------------------------------------------------*/
