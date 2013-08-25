@@ -386,6 +386,9 @@ public class ParallelSimulationCL{
 //                    pushEvt = kernels.particle_push_semiimplicit_euler(queue, inPar, tstep, n, 
 //                                                                       width, height, globalSizes, localSizes);
                     
+//                    pushEvt = kernels.particle_push_leap_frog(queue, inPar, tstep, n, 
+//                                                              width, height, globalSizes, localSizes);
+                    
                     resetEvt = kernels.reset_current(queue, inCel,  n, 
                                                      grid.getNumCellsXTotal(), grid.getNumCellsYTotal(),
                                                      globalSizes, localSizes, pushEvt);

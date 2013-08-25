@@ -854,6 +854,73 @@ __kernel void particle_push_semiimplicit_euler( __global double* particles,
          particles[i + PrevY] = particles[i + PrevY] - regionBoundaryMapY[regi];
 }
 
+//##################################################################################################################/
+__kernel void particle_push_leap_frog( __global double* particles,                      
+                                                   double timeStep,
+                                                   int n,
+                                                   double width,
+                                                   double height)
+{
+   int i = get_global_id(0);
+   if(i >= n)
+        return;
+   i = i * P_SIZE;
+    
+    //a) particle.storePosition() 
+         particles[i + PrevX] = particles[i + X];
+         particles[i + PrevY] = particles[i + Y];
+
+    //b)solver.step(particle, force, timeStep)/----Boris solver-----/
+         particles[i + X] = particles[i + X] + particles[i + Vx] * timeStep;
+         particles[i + Y] = particles[i + Y] + particles[i + Vy] * timeStep; 
+        
+         particles[i + Ax] = (particles[i + Charge] * (particles[i + Ex] + particles[i + Vy] * particles[i + PBz]))/particles[i + Mass];
+         particles[i + Ay] = (particles[i + Charge] * (particles[i + Ey] + particles[i + Vx] * particles[i + PBz]))/particles[i + Mass];
+
+         particles[i + Vx] = particles[i + Vx] + particles[i + Ax] * timeStep;
+         particles[i + Vy] = particles[i + Vy] + particles[i + Ay] * timeStep;
+        
+    //c) boundaries.applyOnParticleCenter(solver, force, particle, timeStep)
+         double regionBoundaryMapX[9];
+         double regionBoundaryMapY[9];
+
+         regionBoundaryMapX[X_MIN + Y_MIN] = -width;
+         regionBoundaryMapY[X_MIN + Y_MIN] = -height;
+
+         regionBoundaryMapX[X_CENTER + Y_MIN] = 0;
+         regionBoundaryMapY[X_CENTER + Y_MIN] = -height;
+
+         regionBoundaryMapX[X_MAX + Y_MIN] = width;
+         regionBoundaryMapY[X_MAX + Y_MIN] = -height;
+
+         regionBoundaryMapX[X_MIN + Y_CENTER] = -width;
+         regionBoundaryMapY[X_MIN + Y_CENTER] = 0;
+
+         regionBoundaryMapX[X_CENTER + Y_CENTER] = 0;
+         regionBoundaryMapY[X_CENTER + Y_CENTER] = 0;
+
+         regionBoundaryMapX[X_MAX + Y_CENTER] = width;
+         regionBoundaryMapY[X_MAX + Y_CENTER] = 0;
+
+         regionBoundaryMapX[X_MIN + Y_MAX] = -width;
+         regionBoundaryMapY[X_MIN + Y_MAX] = height;
+
+         regionBoundaryMapX[X_CENTER + Y_MAX] = 0;
+         regionBoundaryMapY[X_CENTER + Y_MAX] = height;
+
+         regionBoundaryMapX[X_MAX + Y_MAX] = width;
+         regionBoundaryMapY[X_MAX + Y_MAX] = height;
+
+         int regi; 
+         regi = get_region(particles[i + X], particles[i + X], particles[i + Y], particles[i + Y], width, height);
+
+         particles[i + X]     = particles[i + X] - regionBoundaryMapX[regi];
+         particles[i + PrevX] = particles[i + PrevX] - regionBoundaryMapX[regi];
+
+         particles[i + Y]     = particles[i + Y] - regionBoundaryMapY[regi];
+         particles[i + PrevY] = particles[i + PrevY] - regionBoundaryMapY[regi];
+}
+
 
  /*-----------------------------------------------------------------------------/
  /------Step 4: interpolation.interpolateToGrid(particles, grid, tstep)---------/
