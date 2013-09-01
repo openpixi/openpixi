@@ -14,7 +14,7 @@
 //
 //#endif
 
-
+//#pragma OPENCL EXTENSION cl_khr_fp64 : enable
 //Particle attributes indexes
 #define P_SIZE 22
 
@@ -376,7 +376,6 @@ void tenBoundaryMove(double x, double y, int xStart, int yStart, int xEnd, int y
                             deltaY -= (deltaY1 + deltaY2);
                             x = 0.5 + deltaX2;
                             fourBoundaryMove(xEnd, yEnd, x, 0.5, deltaX, deltaY, p, tstep, cells, numCellsX, numCellsY, boundaries);
-
                     }
             }
     }
@@ -389,14 +388,19 @@ void tenBoundaryMove(double x, double y, int xStart, int yStart, int xEnd, int y
 __kernel void particle_push_boris( __global double* particles,                      
                                             double timeStep,
                                             int n,
+                                            int particlesSize,
+                                            int start,
                                             double width,
                                             double height)
 {
    int i = get_global_id(0);
    if(i >= n)
         return;
-   i = i * P_SIZE;
-    
+   i = i * P_SIZE + start * P_SIZE;
+   if(i > particlesSize * P_SIZE)
+        return;
+        
+   
     //a) particle.storePosition() 
          particles[i + PrevX] = particles[i + X];
          particles[i + PrevY] = particles[i + Y];
@@ -949,7 +953,9 @@ __kernel void charge_conserving_CIC(__global double* particles,
                                     __global double* cells,                                                                  
                                     __global int* boundaries,
                                              double timeStep,
-                                             int n,                                  
+                                             int n,  
+                                             int particlesSize,
+                                             int start,
                                              int numCellsX,
                                              int numCellsY,
                                              double cellWidth,
@@ -958,7 +964,9 @@ __kernel void charge_conserving_CIC(__global double* particles,
          int i = get_global_id(0);
          if(i >= n)
              return;
-         i = i * P_SIZE;
+         i = i * P_SIZE + start * P_SIZE;
+         if(i >= particlesSize * P_SIZE)
+             return;
         
          /**X index of local origin i.e. nearest grid point BEFORE particle push*/
          int xStart;
@@ -994,21 +1002,21 @@ __kernel void charge_conserving_CIC(__global double* particles,
 
          x -= xStart;
          y -= yStart;
-         
          double pCharge = particles[i + Charge];
+         int h, k, mark;
+        
          //4-boundary move?
          if (xStart == xEnd && yStart == yEnd) {
-                    fourBoundaryMove(xStart, yStart, x, y, deltaX, deltaY, pCharge, timeStep, cells, numCellsX, numCellsY, boundaries);                                        
+                    fourBoundaryMove(xStart, yStart, x, y, deltaX, deltaY, pCharge, timeStep, cells, numCellsX, numCellsY, boundaries); 
                  }
          //7-boundary move?
          else if (xStart == xEnd || yStart == yEnd) {                       
-                    sevenBoundaryMove(x, y, xStart, yStart, xEnd, yEnd, deltaX, deltaY, pCharge, timeStep, cells, numCellsX, numCellsY, boundaries);
+                    sevenBoundaryMove(x, y, xStart, yStart, xEnd, yEnd, deltaX, deltaY, pCharge, timeStep, cells, numCellsX, numCellsY, boundaries);                       
                  }
                  // 10-boundary move
-                else {                              
-                            tenBoundaryMove(x, y, xStart, yStart, xEnd, yEnd, deltaX, deltaY, pCharge, timeStep, cells, numCellsX, numCellsY, boundaries);                             
-                }
-
+                else {                       
+                            tenBoundaryMove(x, y, xStart, yStart, xEnd, yEnd, deltaX, deltaY, pCharge, timeStep, cells, numCellsX, numCellsY, boundaries);
+                    }
 }
 
 
@@ -1225,6 +1233,8 @@ __kernel void solve_for_e(__global double* cells,
                                    int n,
                                    int numCellsX,
                                    int numCellsY,
+                                   int numCellsXTotal,
+                                   int numCellsYTotal,
                                    double cellWidth,
                                    double cellHeight)
 {
@@ -1234,29 +1244,28 @@ __kernel void solve_for_e(__global double* cells,
               return;
 
          int h, k, l, m;
-         int mark;
+         int mark = 0;
          double cx, cy;
          double a, b; 
-        
          
          for(h = 0; h <= numCellsX - 1; h++){
              for(k = 0; k <= numCellsY - 1; k++){
-                 cx = (cells[( C_SIZE * (((h + 2) * numCellsY) + k + 1 + 2)) + Cbz] - 
-                       cells[(C_SIZE * (((h + 2) * numCellsY) + k + 2)) + Cbz])/cellHeight;
-                 cy = -(cells[(C_SIZE * (((h + 1 + 2) * numCellsY) + k + 2)) + Cbz] - 
-                        cells[(C_SIZE * (((h + 2) * numCellsY) + k + 2)) + Cbz])/cellWidth;
-                 a = timeStep * (cx - cells[(C_SIZE * (((h + 2) * numCellsY) + k + 2)) + Cjx]);
-                 b = timeStep * (cy - cells[(C_SIZE * (((h + 2) * numCellsY) + k + 2)) + Cjy]);
-                
-                 mark = boundaries[((h + 2) * numCellsY) + k + 2];
-                 for(l = 0; l < numCellsX*numCellsY; l++){
+                 cx = (cells[( C_SIZE * (((h + 2) * numCellsYTotal) + k + 1 + 2)) + Cbz] - 
+                       cells[(C_SIZE * (((h + 2) * numCellsYTotal) + k + 2)) + Cbz])/cellHeight;
+                 cy = -(cells[(C_SIZE * (((h + 1 + 2) * numCellsYTotal) + k + 2)) + Cbz] - 
+                        cells[(C_SIZE * (((h + 2) * numCellsYTotal) + k + 2)) + Cbz])/cellWidth;
+                 a = timeStep * (cx - cells[(C_SIZE * (((h + 2) * numCellsYTotal) + k + 2)) + Cjx]);
+                 b = timeStep * (cy - cells[(C_SIZE * (((h + 2) * numCellsYTotal) + k + 2)) + Cjy]);
+                 
+                 mark = boundaries[((h + 2) * numCellsYTotal) + k + 2];
+                 for(l = 0; l < numCellsXTotal*numCellsYTotal; l++){
                         if(boundaries[l] == mark){
                             cells[(C_SIZE * l) + Cex] += a;
                         }
                  }
-                
-                 mark = boundaries[((h + 2) * numCellsY) + k + 2];
-                 for(l = 0; l < numCellsX*numCellsY; l++){
+                 
+                 mark = boundaries[((h + 2) * numCellsYTotal) + k + 2];
+                 for(l = 0; l < numCellsXTotal*numCellsYTotal; l++){
                         if(boundaries[l] == mark){
                             cells[(C_SIZE * l) + Cey] += b;
                         }
@@ -1273,6 +1282,8 @@ __kernel void solve_for_b(__global double* cells,
                                    int n,
                                    int numCellsX,
                                    int numCellsY,
+                                   int numCellsXTotal, 
+                                   int numCellsYTotal,
                                    double cellWidth,
                                    double cellHeight)
 {
@@ -1287,13 +1298,13 @@ __kernel void solve_for_b(__global double* cells,
 
          for(h = 0; h <= numCellsX - 1; h++){
              for(k = 0; k <= numCellsY - 1; k++){
-                cz = (cells[(C_SIZE * (((h + 2) * numCellsY) + k + 2)) + Cey] - 
-                      cells[(C_SIZE * (((h - 1 + 2) * numCellsY) + k + 2)) + Cey])/cellWidth -
-                     (cells[(C_SIZE * (((h + 2) * numCellsY) + k + 2)) + Cex] - 
-                      cells[(C_SIZE * (((h + 2) * numCellsY) + k - 1 + 2)) + Cex])/cellHeight;
+                cz = (cells[(C_SIZE * (((h + 2) * numCellsYTotal) + k + 2)) + Cey] - 
+                      cells[(C_SIZE * (((h - 1 + 2) * numCellsYTotal) + k + 2)) + Cey])/cellWidth -
+                     (cells[(C_SIZE * (((h + 2) * numCellsYTotal) + k + 2)) + Cex] - 
+                      cells[(C_SIZE * (((h + 2) * numCellsYTotal) + k - 1 + 2)) + Cex])/cellHeight;
 
-                 mark = boundaries[((h + 2) * numCellsY) + k + 2];
-                 for(l = 0; l < numCellsX*numCellsY; l++){
+                 mark = boundaries[((h + 2) * numCellsYTotal) + k + 2];
+                 for(l = 0; l < numCellsXTotal*numCellsYTotal; l++){
                         if(boundaries[l] == mark){
                             cells[(C_SIZE * l) + Cbz] += (-timeStep * cz);
                         }
@@ -1311,6 +1322,8 @@ __kernel void particle_interpolation(__global double* particles,
                                      __global double* cells,   
                                               double timeStep,
                                               int n,
+                                              int particlesSize,
+                                              int start,
                                               int numCellsX,
                                               int numCellsY,
                                               double cellWidth,
@@ -1319,7 +1332,9 @@ __kernel void particle_interpolation(__global double* particles,
          int i = get_global_id(0); 
          if(i >= n)
              return;
-         i = i * P_SIZE;
+         i = i * P_SIZE + start * P_SIZE;
+         if(i > particlesSize * P_SIZE)
+             return;
 
          /**X index of the grid point that is left from or at the x position of the particle*/
          int ii;
