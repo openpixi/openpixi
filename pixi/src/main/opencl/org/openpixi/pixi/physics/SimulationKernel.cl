@@ -112,36 +112,119 @@ double formFactor(double A, double B, double C, double D,
 
 void fourBoundaryMove(int lx, int ly, double x, double y, double deltaX, double deltaY, double pCharge, 
                       double tstep, __global double *cells, int numCellsX, int numCellsY, __global int* boundaries) {
-    int mark;
+    int mark, nextIndex;
     int i, j;
-    mark = boundaries[((lx + 2) * numCellsY) + ly - 1 + 2];
-    for(i = 0; i < numCellsX*numCellsY; i++){
-            if(boundaries[i] == mark){
-                cells[(C_SIZE * i) + Cjx] += pCharge * deltaX * ((1 - deltaY) / 2 - y);
+//    mark = boundaries[((lx + 2) * numCellsY) + ly - 1 + 2];
+//    for(i = 0; i < numCellsX*numCellsY; i++){
+//            if(boundaries[i] == mark){
+//                cells[(C_SIZE * i) + Cjx] += pCharge * deltaX * ((1 - deltaY) / 2 - y);
+//            }
+//    }
+    
+    nextIndex = boundaries[((lx + 2) * numCellsY) + ly - 1 + 2];
+    if(nextIndex < 0){
+        nextIndex = -nextIndex;
+        cells[(C_SIZE * nextIndex) + Cjx] += pCharge * deltaX * ((1 - deltaY) / 2 - y);
+        nextIndex = -1;
+    }
+    else{
+        cells[(C_SIZE * nextIndex) + Cjx] += pCharge * deltaX * ((1 - deltaY) / 2 - y);
+    }
+    while(nextIndex >= 0){
+        nextIndex = boundaries[nextIndex];
+        if(nextIndex < 0){
+            nextIndex = -nextIndex;
+            cells[(C_SIZE * nextIndex) + Cjx] += pCharge * deltaX * ((1 - deltaY) / 2 - y);
+            nextIndex = -1;
+        }
+        else{
+            cells[(C_SIZE * nextIndex) + Cjx] += pCharge * deltaX * ((1 - deltaY) / 2 - y);
         }
     }
+    
+//    mark = boundaries[((lx + 2) * numCellsY) + ly + 2];
+//    for(i = 0; i < numCellsX*numCellsY; i++){
+//           if(boundaries[i] == mark){
+//               cells[(C_SIZE * i) + Cjx] += pCharge * deltaX * ((1 + deltaY) / 2 + y);
+//           }
+//    }
 
-    mark = boundaries[((lx + 2) * numCellsY) + ly + 2];
-    for(i = 0; i < numCellsX*numCellsY; i++){
-           if(boundaries[i] == mark){
-               cells[(C_SIZE * i) + Cjx] += pCharge * deltaX * ((1 + deltaY) / 2 + y);
-           }
+    nextIndex = boundaries[((lx + 2) * numCellsY) + ly + 2];
+    if(nextIndex < 0){
+        nextIndex = -nextIndex;
+        cells[(C_SIZE * nextIndex) + Cjx] += pCharge * deltaX * ((1 + deltaY) / 2 + y);
+        nextIndex = -1;
     }
-
-    mark = boundaries[((lx - 1 + 2) * numCellsY) + ly + 2];
-    for(i = 0; i < numCellsX*numCellsY; i++){
-           if(boundaries[i] == mark){
-               cells[(C_SIZE * i) + Cjy] += pCharge * deltaY * ((1 - deltaX) / 2 - x);
-           }
+    else{
+        cells[(C_SIZE * nextIndex) + Cjx] += pCharge * deltaX * ((1 + deltaY) / 2 + y);
     }
-
-    mark = boundaries[((lx + 2) * numCellsY) + ly + 2];
-    for(i = 0; i < numCellsX*numCellsY; i++){
-           if(boundaries[i] == mark){
-               cells[(C_SIZE * i) + Cjy] += pCharge * deltaY * ((1 + deltaX) / 2 + x);
-           }
+    while(nextIndex >= 0){
+        nextIndex = boundaries[nextIndex];
+        if(nextIndex < 0){
+            nextIndex = -nextIndex;
+            cells[(C_SIZE * nextIndex) + Cjx] += pCharge * deltaX * ((1 + deltaY) / 2 + y);
+            nextIndex = -1;
+        }
+        else{
+            cells[(C_SIZE * nextIndex) + Cjx] += pCharge * deltaX * ((1 + deltaY) / 2 + y);
+        }
     }
+    
+//    mark = boundaries[((lx - 1 + 2) * numCellsY) + ly + 2];
+//    for(i = 0; i < numCellsX*numCellsY; i++){
+//           if(boundaries[i] == mark){
+//               cells[(C_SIZE * i) + Cjy] += pCharge * deltaY * ((1 - deltaX) / 2 - x);
+//           }
+//    }
 
+    nextIndex = boundaries[((lx - 1 + 2) * numCellsY) + ly + 2];
+    if(nextIndex < 0){
+        nextIndex = -nextIndex;
+        cells[(C_SIZE * nextIndex) + Cjy] += pCharge * deltaY * ((1 - deltaX) / 2 - x);
+        nextIndex = -1;
+    }
+    else{
+        cells[(C_SIZE * nextIndex) + Cjy] += pCharge * deltaY * ((1 - deltaX) / 2 - x);
+    }
+    while(nextIndex >= 0){
+        nextIndex = boundaries[nextIndex];
+        if(nextIndex < 0){
+            nextIndex = -nextIndex;
+            cells[(C_SIZE * nextIndex) + Cjy] += pCharge * deltaY * ((1 - deltaX) / 2 - x);
+            nextIndex = -1;
+        }
+        else{
+            cells[(C_SIZE * nextIndex) + Cjy] += pCharge * deltaY * ((1 - deltaX) / 2 - x);
+        }
+    }
+    
+//    mark = boundaries[((lx + 2) * numCellsY) + ly + 2];
+//    for(i = 0; i < numCellsX*numCellsY; i++){
+//           if(boundaries[i] == mark){
+//               cells[(C_SIZE * i) + Cjy] += pCharge * deltaY * ((1 + deltaX) / 2 + x);
+//           }
+//    }
+
+    nextIndex = boundaries[((lx + 2) * numCellsY) + ly + 2];
+    if(nextIndex < 0){
+        nextIndex = -nextIndex;
+        cells[(C_SIZE * nextIndex) + Cjy] += pCharge * deltaY * ((1 + deltaX) / 2 + x);
+        nextIndex = -1;
+    }
+    else{
+        cells[(C_SIZE * nextIndex) + Cjy] += pCharge * deltaY * ((1 + deltaX) / 2 + x);
+    }
+    while(nextIndex >= 0){
+        nextIndex = boundaries[nextIndex];
+        if(nextIndex < 0){
+            nextIndex = -nextIndex;
+            cells[(C_SIZE * nextIndex) + Cjy] += pCharge * deltaY * ((1 + deltaX) / 2 + x);
+            nextIndex = -1;
+        }
+        else{
+            cells[(C_SIZE * nextIndex) + Cjy] += pCharge * deltaY * ((1 + deltaX) / 2 + x);
+        }
+    }
 }
 
 void sevenBoundaryMove(double x, double y, int xStart, int yStart, int xEnd, int yEnd,double deltaX,
@@ -407,7 +490,7 @@ __kernel void particle_push_boris( __global double* particles,
 
     //b)solver.step(particle, force, timeStep)/----Boris solver-----/
          int j = i;//(int)(i/P_SIZE);
-
+        
          double getPositionComponentofForceX        = particles[i + Charge] * particles[i + Ex];
          double getPositionComponentofForceY        = particles[i + Charge] * particles[i + Ey];
          double getBz                               = particles[i + PBz];
@@ -531,13 +614,17 @@ __kernel void particle_push_boris( __global double* particles,
 __kernel void particle_push_boris_damped( __global double* particles,                      
                                                    double timeStep,
                                                    int n,
+                                                   int particlesSize,
+                                                   int start,
                                                    double width,
                                                    double height)
 {
    int i = get_global_id(0);
    if(i >= n)
         return;
-   i = i * P_SIZE;
+   i = i * P_SIZE + start * P_SIZE;
+   if(i > particlesSize * P_SIZE)
+        return;
     
     //a) particle.storePosition() 
          particles[i + PrevX] = particles[i + X];
@@ -632,13 +719,17 @@ __kernel void particle_push_boris_damped( __global double* particles,
 __kernel void particle_push_euler( __global double* particles,                      
                                                    double timeStep,
                                                    int n,
+                                                   int particlesSize,
+                                                   int start,
                                                    double width,
                                                    double height)
 {
    int i = get_global_id(0);
    if(i >= n)
         return;
-   i = i * P_SIZE;
+   i = i * P_SIZE + start * P_SIZE;
+   if(i > particlesSize * P_SIZE)
+        return;
     
     //a) particle.storePosition() 
          particles[i + PrevX] = particles[i + X];
@@ -702,13 +793,17 @@ __kernel void particle_push_euler( __global double* particles,
 __kernel void particle_push_euler_richardson( __global double* particles,                      
                                                    double timeStep,
                                                    int n,
+                                                   int particlesSize,
+                                                   int start,
                                                    double width,
                                                    double height)
 {
    int i = get_global_id(0);
    if(i >= n)
         return;
-   i = i * P_SIZE;
+   i = i * P_SIZE + start * P_SIZE;
+   if(i > particlesSize * P_SIZE)
+        return;
     
     //a) particle.storePosition() 
          particles[i + PrevX] = particles[i + X];
@@ -792,13 +887,17 @@ __kernel void particle_push_euler_richardson( __global double* particles,
 __kernel void particle_push_semiimplicit_euler( __global double* particles,                      
                                                    double timeStep,
                                                    int n,
+                                                   int particlesSize,
+                                                   int start,
                                                    double width,
                                                    double height)
 {
    int i = get_global_id(0);
    if(i >= n)
         return;
-   i = i * P_SIZE;
+   i = i * P_SIZE + start * P_SIZE;
+   if(i > particlesSize * P_SIZE)
+        return;
     
     //a) particle.storePosition() 
          particles[i + PrevX] = particles[i + X];
@@ -862,13 +961,17 @@ __kernel void particle_push_semiimplicit_euler( __global double* particles,
 __kernel void particle_push_leap_frog( __global double* particles,                      
                                                    double timeStep,
                                                    int n,
+                                                   int particlesSize,
+                                                   int start,
                                                    double width,
                                                    double height)
 {
    int i = get_global_id(0);
    if(i >= n)
         return;
-   i = i * P_SIZE;
+   i = i * P_SIZE + start * P_SIZE;
+   if(i > particlesSize * P_SIZE)
+        return;
     
     //a) particle.storePosition() 
          particles[i + PrevX] = particles[i + X];
@@ -883,6 +986,173 @@ __kernel void particle_push_leap_frog( __global double* particles,
 
          particles[i + Vx] = particles[i + Vx] + particles[i + Ax] * timeStep;
          particles[i + Vy] = particles[i + Vy] + particles[i + Ay] * timeStep;
+        
+    //c) boundaries.applyOnParticleCenter(solver, force, particle, timeStep)
+         double regionBoundaryMapX[9];
+         double regionBoundaryMapY[9];
+
+         regionBoundaryMapX[X_MIN + Y_MIN] = -width;
+         regionBoundaryMapY[X_MIN + Y_MIN] = -height;
+
+         regionBoundaryMapX[X_CENTER + Y_MIN] = 0;
+         regionBoundaryMapY[X_CENTER + Y_MIN] = -height;
+
+         regionBoundaryMapX[X_MAX + Y_MIN] = width;
+         regionBoundaryMapY[X_MAX + Y_MIN] = -height;
+
+         regionBoundaryMapX[X_MIN + Y_CENTER] = -width;
+         regionBoundaryMapY[X_MIN + Y_CENTER] = 0;
+
+         regionBoundaryMapX[X_CENTER + Y_CENTER] = 0;
+         regionBoundaryMapY[X_CENTER + Y_CENTER] = 0;
+
+         regionBoundaryMapX[X_MAX + Y_CENTER] = width;
+         regionBoundaryMapY[X_MAX + Y_CENTER] = 0;
+
+         regionBoundaryMapX[X_MIN + Y_MAX] = -width;
+         regionBoundaryMapY[X_MIN + Y_MAX] = height;
+
+         regionBoundaryMapX[X_CENTER + Y_MAX] = 0;
+         regionBoundaryMapY[X_CENTER + Y_MAX] = height;
+
+         regionBoundaryMapX[X_MAX + Y_MAX] = width;
+         regionBoundaryMapY[X_MAX + Y_MAX] = height;
+
+         int regi; 
+         regi = get_region(particles[i + X], particles[i + X], particles[i + Y], particles[i + Y], width, height);
+
+         particles[i + X]     = particles[i + X] - regionBoundaryMapX[regi];
+         particles[i + PrevX] = particles[i + PrevX] - regionBoundaryMapX[regi];
+
+         particles[i + Y]     = particles[i + Y] - regionBoundaryMapY[regi];
+         particles[i + PrevY] = particles[i + PrevY] - regionBoundaryMapY[regi];
+}
+
+//##################################################################################################################/
+__kernel void particle_push_leap_frog_damped( __global double* particles,                      
+                                                   double timeStep,
+                                                   int n,
+                                                   int particlesSize,
+                                                   int start,
+                                                   double width,
+                                                   double height)
+{
+   int i = get_global_id(0);
+   if(i >= n)
+        return;
+   i = i * P_SIZE + start * P_SIZE;
+   if(i > particlesSize * P_SIZE)
+        return;
+    
+    //a) particle.storePosition() 
+         particles[i + PrevX] = particles[i + X];
+         particles[i + PrevY] = particles[i + Y];
+
+    //b)solver.step(particle, force, timeStep)/----Boris solver-----/
+         double getPositionComponentofForceX        = particles[i + Charge] * particles[i + Ex];
+         double getPositionComponentofForceY        = particles[i + Charge] * particles[i + Ey];
+         double getNormalVelocityComponentofForceX  = particles[i + Charge] * particles[i + Vy] * particles[i+ PBz];
+         double getNormalVelocityComponentofForceY  = -particles[i + Charge] * particles[i + Vx] * particles[i+ PBz];
+         double getLinearDragCoefficient            = 0;
+         double getMass = particles[i + Mass];
+
+         // remember for complete()
+         particles[i + PrevPositionComponentForceX]          = getPositionComponentofForceX;
+         particles[i + PrevPositionComponentForceY]          = getPositionComponentofForceY;
+         particles[i + PrevNormalVelocityComponentOfForceX]  = getNormalVelocityComponentofForceX;
+         particles[i + PrevNormalVelocityComponentOfForceY]  = getNormalVelocityComponentofForceY;
+        
+         //help coefficients for the dragging
+         double help1_coef = 1 - getLinearDragCoefficient * timeStep / (2 * getMass);
+         double help2_coef = 1 + getLinearDragCoefficient * timeStep / (2 * getMass);
+
+         // v(t+dt/2) = v(t-dt/2) + a(t)*dt
+         particles[i + Vx] = (particles[i + Vx] * help1_coef + particles[i + Ax] * timeStep) / help2_coef;
+         particles[i + Vy] = (particles[i + Vy] * help1_coef + particles[i + Ay] * timeStep) / help2_coef;
+
+
+         // x(t+dt) = x(t) + v(t+dt/2)*dt
+         particles[i + X] = particles[i + X] + particles[i + Vx] * timeStep;
+         particles[i + Y] = particles[i + Y] + particles[i + Vy] * timeStep; 
+
+         // a(t+dt) = F(v(t+dt/2), x(t+dt)) / m
+         // WARNING: Force is evaluated at two different times t+dt/2 and t+dt!
+         particles[i + Ax] = (getPositionComponentofForceX + getNormalVelocityComponentofForceX) / getMass;
+         particles[i + Ay] = (getPositionComponentofForceY + getNormalVelocityComponentofForceY) / getMass;
+        
+    //c) boundaries.applyOnParticleCenter(solver, force, particle, timeStep)
+         double regionBoundaryMapX[9];
+         double regionBoundaryMapY[9];
+
+         regionBoundaryMapX[X_MIN + Y_MIN] = -width;
+         regionBoundaryMapY[X_MIN + Y_MIN] = -height;
+
+         regionBoundaryMapX[X_CENTER + Y_MIN] = 0;
+         regionBoundaryMapY[X_CENTER + Y_MIN] = -height;
+
+         regionBoundaryMapX[X_MAX + Y_MIN] = width;
+         regionBoundaryMapY[X_MAX + Y_MIN] = -height;
+
+         regionBoundaryMapX[X_MIN + Y_CENTER] = -width;
+         regionBoundaryMapY[X_MIN + Y_CENTER] = 0;
+
+         regionBoundaryMapX[X_CENTER + Y_CENTER] = 0;
+         regionBoundaryMapY[X_CENTER + Y_CENTER] = 0;
+
+         regionBoundaryMapX[X_MAX + Y_CENTER] = width;
+         regionBoundaryMapY[X_MAX + Y_CENTER] = 0;
+
+         regionBoundaryMapX[X_MIN + Y_MAX] = -width;
+         regionBoundaryMapY[X_MIN + Y_MAX] = height;
+
+         regionBoundaryMapX[X_CENTER + Y_MAX] = 0;
+         regionBoundaryMapY[X_CENTER + Y_MAX] = height;
+
+         regionBoundaryMapX[X_MAX + Y_MAX] = width;
+         regionBoundaryMapY[X_MAX + Y_MAX] = height;
+
+         int regi; 
+         regi = get_region(particles[i + X], particles[i + X], particles[i + Y], particles[i + Y], width, height);
+
+         particles[i + X]     = particles[i + X] - regionBoundaryMapX[regi];
+         particles[i + PrevX] = particles[i + PrevX] - regionBoundaryMapX[regi];
+
+         particles[i + Y]     = particles[i + Y] - regionBoundaryMapY[regi];
+         particles[i + PrevY] = particles[i + PrevY] - regionBoundaryMapY[regi];
+}
+
+//##################################################################################################################/
+__kernel void particle_push_leap_frog_half_step( __global double* particles,                      
+                                                   double timeStep,
+                                                   int n,
+                                                   int particlesSize,
+                                                   int start,
+                                                   double width,
+                                                   double height)
+{
+   int i = get_global_id(0);
+   if(i >= n)
+        return;
+   i = i * P_SIZE + start * P_SIZE;
+   if(i > particlesSize * P_SIZE)
+        return;
+    
+    //a) particle.storePosition() 
+         particles[i + PrevX] = particles[i + X];
+         particles[i + PrevY] = particles[i + Y];
+
+    //b)solver.step(particle, force, timeStep)/----Boris solver-----/
+         particles[i + Vx] = particles[i + Vx] + particles[i + Ax] * timeStep / 2.0;
+         particles[i + Vy] = particles[i + Vy] + particles[i + Ay] * timeStep / 2.0;
+    
+         particles[i + X] = particles[i + X] + particles[i + Vx] * timeStep;
+         particles[i + Y] = particles[i + Y] + particles[i + Vy] * timeStep; 
+        
+         particles[i + Ax] = (particles[i + Charge] * (particles[i + Ex] + particles[i + Vy] * particles[i + PBz]))/particles[i + Mass];
+         particles[i + Ay] = (particles[i + Charge] * (particles[i + Ey] + particles[i + Vx] * particles[i + PBz]))/particles[i + Mass];
+
+         particles[i + Vx] = particles[i + Vx] + particles[i + Ax] * timeStep / 2.0;
+         particles[i + Vy] = particles[i + Vy] + particles[i + Ay] * timeStep / 2.0;
         
     //c) boundaries.applyOnParticleCenter(solver, force, particle, timeStep)
          double regionBoundaryMapX[9];
@@ -1025,7 +1295,9 @@ __kernel void cloud_in_cell(__global double* particles,
                             __global double* cells,                                                                  
                             __global int* boundaries,
                                      double timeStep,
-                                     int n,                                  
+                                     int n,     
+                                     int particlesSize,
+                                     int start,
                                      int numCellsX,
                                      int numCellsY,
                                      double cellWidth,
@@ -1034,7 +1306,9 @@ __kernel void cloud_in_cell(__global double* particles,
         int i = get_global_id(0);
         if(i >= n)
             return;
-        i = i * P_SIZE;
+        i = i * P_SIZE + start * P_SIZE;
+        if(i >= particlesSize * P_SIZE)
+             return;
         
         /**X index of the grid point that is left from or at the x position of the particle*/
         int ii;
