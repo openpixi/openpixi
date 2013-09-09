@@ -49,7 +49,7 @@ public class MainBatch {
 	 * (dont forget to add the <settings> </settings> root element, the empty file should
 	 * still comply with the XML specification!)
 	 */
-	public static void main(String[] args) throws FileNotFoundException, IOException {
+	public static void main(String[] args) throws FileNotFoundException, IOException, InterruptedException {
 		Debug.checkAssertsEnabled();
 
 		// Creates a settings class with the default parameters
@@ -71,7 +71,6 @@ public class MainBatch {
                 if(settings.getSimulationType() == 0){
                     // Creates the actual physics simulation that can be run iteratively.
                     simulation = new Simulation(settings);
-                    System.out.println("########## " + settings.getSimulationType());
                     // Creates the diagnostics wrapper class that knows about all
                     // enabled diagnostic methods.
                     diagnostics = new DiagnosticsScheduler(simulation.grid, simulation.particles, settings);
