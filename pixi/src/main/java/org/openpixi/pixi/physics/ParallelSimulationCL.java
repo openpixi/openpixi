@@ -78,10 +78,7 @@ public class ParallelSimulationCL{
          
          /**Grid cells passed to the kernel*/
          private Pointer<Double> inCells;
-         
-         /**Mutex passed to the kernel*/
-         private Pointer<Integer> semaphor;
-         
+       
          /**Boundaries passed to the kernel*/
          private Pointer<Integer> inBoundaries;
          
@@ -264,67 +261,22 @@ public class ParallelSimulationCL{
              
              for(int i = 0; i < numCellsX; i++){
                  for(int j = 0; j < numCellsY; j++){
-                     inCells.set(c + 0, grid.cells[i][j].getJx());
-                     inCells.set(c + 1, grid.cells[i][j].getJy());
-                     inCells.set(c + 2, grid.cells[i][j].getRho());
-                     inCells.set(c + 3, grid.cells[i][j].getPhi());
-                     inCells.set(c + 4, grid.cells[i][j].getEx());
-                     inCells.set(c + 5, grid.cells[i][j].getEy());
-                     inCells.set(c + 6, grid.cells[i][j].getBz());
-                     inCells.set(c + 7, grid.cells[i][j].getBzo());                     
+                     inCells.set(c + 0, grid.getCells()[i][j].getJx());
+                     inCells.set(c + 1, grid.getCells()[i][j].getJy());
+                     inCells.set(c + 2, grid.getCells()[i][j].getRho());
+                     inCells.set(c + 3, grid.getCells()[i][j].getPhi());
+                     inCells.set(c + 4, grid.getCells()[i][j].getEx());
+                     inCells.set(c + 5, grid.getCells()[i][j].getEy());
+                     inCells.set(c + 6, grid.getCells()[i][j].getBz());
+                     inCells.set(c + 7, grid.getCells()[i][j].getBzo());                     
                      c += C_SIZE;
                  }
              }
              
              k = 0;
-             for(int i = 0; i < numCellsX; i++){
-                 for (int j = 0; j < numCellsY; j++) {
-                     inBoundaries.set(k++, grid.parallelBoundaries[i][j]);
-                 }
+             for(int i = 0; i < numCellsX * numCellsY; i++){
+                inBoundaries.set(k++, grid.parallelBoundariesArray[i]);
              }
-         }
-         
-         void writeToFile() throws FileNotFoundException{
-             PrintWriter pw = new PrintWriter(new File("pcl.txt"));
-             for (int i = 0; i < particles.size(); i++) {
-                 pw.write(particles.get(i).getX() + "\n");
-                 pw.write(particles.get(i).getY() + "\n");
-                 pw.write(particles.get(i).getRadius() + "\n");
-                 pw.write(particles.get(i).getVx() + "\n");
-                 pw.write(particles.get(i).getVy() + "\n");
-                 pw.write(particles.get(i).getAx() + "\n");
-                 pw.write(particles.get(i).getAy() + "\n");
-                 pw.write(particles.get(i).getMass() + "\n");
-                 pw.write(particles.get(i).getCharge() + "\n");
-                 pw.write(particles.get(i).getPrevX() + "\n");
-                 pw.write(particles.get(i).getPrevY() + "\n");
-                 pw.write(particles.get(i).getEx() + "\n");
-                 pw.write(particles.get(i).getEy() + "\n");
-                 pw.write(particles.get(i).getBz() + "\n");
-                 pw.write(particles.get(i).getPrevPositionComponentForceX() + "\n");
-                 pw.write(particles.get(i).getPrevPositionComponentForceY() + "\n");
-                 pw.write(particles.get(i).getPrevTangentVelocityComponentOfForceX() + "\n");
-                 pw.write(particles.get(i).getPrevTangentVelocityComponentOfForceY() + "\n");
-                 pw.write(particles.get(i).getPrevNormalVelocityComponentOfForceX() + "\n");
-                 pw.write(particles.get(i).getPrevNormalVelocityComponentOfForceY() + "\n");
-                 pw.write(particles.get(i).getPrevBz() + "\n");
-                 pw.write(particles.get(i).getPrevLinearDragCoefficient() + "\n");
-             }
-             pw.close();
-             pw = new PrintWriter(new File("cells.txt"));
-             for (int i = 0; i < grid.getNumCellsXTotal(); i++) {
-                 for (int j = 0; j < grid.getNumCellsYTotal(); j++) {
-                     pw.write(grid.cells[i][j].getJx() + "\n");
-                     pw.write(grid.cells[i][j].getJy() + "\n");
-                     pw.write(grid.cells[i][j].getRho() + "\n");
-                     pw.write(grid.cells[i][j].getPhi() + "\n");
-                     pw.write(grid.cells[i][j].getEx() + "\n");
-                     pw.write(grid.cells[i][j].getEy() + "\n");
-                     pw.write(grid.cells[i][j].getBz() + "\n");
-                     pw.write(grid.cells[i][j].getBzo() + "\n");
-                 }
-             }
-             pw.close();
          }
          
          
@@ -337,21 +289,17 @@ public class ParallelSimulationCL{
                 int cellsSize     = grid.getNumCellsXTotal() * grid.getNumCellsYTotal() * C_SIZE;
                 int boundSize     = grid.getNumCellsXTotal() * grid.getNumCellsYTotal();
                 
-                long t1, t2;
-                
                 CLContext context = JavaCL.createBestContext();
                 CLQueue queue = context.createDefaultQueue();
                 ByteOrder byteOrder = context.getByteOrder();
-                
+               
                 long workGroupSize = context.getDevices()[0].getMaxWorkGroupSize() - 1;
                 hostToKernelConversion(particlesSize, forceSize, cellsSize, boundSize, byteOrder);
-                semaphor = allocateInts(1).order(byteOrder);
-                semaphor.set(0, 0);
+              
                 // Create an OpenCL input buffer :
                 CLBuffer<Double> inPar = context.createDoubleBuffer(Usage.InputOutput, inParticles);
                 CLBuffer<Double> inFor = context.createDoubleBuffer(Usage.Input, inForce);
                 CLBuffer<Double> inCel = context.createDoubleBuffer(Usage.InputOutput, inCells);
-                CLBuffer<Integer> inSemaphor = context.createIntBuffer(Usage.InputOutput, semaphor);
                 CLBuffer<Integer> inBound = context.createIntBuffer(Usage.InputOutput, inBoundaries);
                 
                 //call the kernel
@@ -359,8 +307,7 @@ public class ParallelSimulationCL{
                 int n = (int) workGroupSize;
                 int[] globalSizes = new int[] { n };
                 int[] localSizes = new int[] { n };
-//                globalSizes[0] = n/2;
-//                globalSizes[1] = n/2;
+
                 CLEvent pushEvt = null;
                 CLEvent resetEvt = null;
                 CLEvent interpEvt = null;
@@ -368,31 +315,41 @@ public class ParallelSimulationCL{
                 CLEvent solveEEvt = null;
                 CLEvent solveBEvt = null;
                 CLEvent partInterpEvt = null;
-                
+             
                 int processedParticles = 0;
                 for (int i = 0; i < iterations; i++) {
                     while(processedParticles < particles.size()){
                         pushEvt = kernels.particle_push_boris(queue, inPar, tstep, n, particles.size(), processedParticles,
                                                               width, height, globalSizes, localSizes);
-                        processedParticles += workGroupSize;
-                    }
-                    processedParticles = 0;
-                    
-//                    pushEvt = kernels.particle_push_boris_damped(queue, inPar, tstep, n, 
-//                                                                 width, height, globalSizes, localSizes);
-
-//                    pushEvt = kernels.particle_push_euler(queue, inPar, tstep, n, 
-//                                                          width, height, globalSizes, localSizes);
-                    
-//                    pushEvt = kernels.particle_push_euler_richardson(queue, inPar, tstep, n, 
+                        
+//                        pushEvt = kernels.particle_push_boris_damped(queue, inPar, tstep, n, particles.size(), processedParticles,
 //                                                                     width, height, globalSizes, localSizes);
-                    
-//                    pushEvt = kernels.particle_push_semiimplicit_euler(queue, inPar, tstep, n, 
-//                                                                       width, height, globalSizes, localSizes);
-                    
-//                    pushEvt = kernels.particle_push_leap_frog(queue, inPar, tstep, n, 
+
+//                        pushEvt = kernels.particle_push_euler(queue, inPar, tstep, n, particles.size(), processedParticles,
 //                                                              width, height, globalSizes, localSizes);
                     
+//                        pushEvt = kernels.particle_push_euler_richardson(queue, inPar, tstep, n, particles.size(), processedParticles,
+//                                                                         width, height, globalSizes, localSizes);
+                    
+//                        pushEvt = kernels.particle_push_semiimplicit_euler(queue, inPar, tstep, n, particles.size(), processedParticles,
+//                                                                           width, height, globalSizes, localSizes);
+                    
+//                        pushEvt = kernels.particle_push_leap_frog(queue, inPar, tstep, n, particles.size(), processedParticles,
+//                                                                  width, height, globalSizes, localSizes);
+                        
+//                        pushEvt = kernels.particle_push_leap_frog_damped(queue, inPar, tstep, n, particles.size(), processedParticles,
+//                                                                         width, height, globalSizes, localSizes);
+                        
+//                        pushEvt = kernels.particle_push_leap_frog_half_step(queue, inPar, tstep, n, particles.size(), processedParticles,
+//                                                                            width, height, globalSizes, localSizes);
+                        processedParticles += workGroupSize;
+                    }
+
+                    processedParticles = 0;
+                    
+
+                    
+//                    t1 = System.currentTimeMillis();
                     resetEvt = kernels.reset_current(queue, inCel,  n, 
                                                      grid.getNumCellsXTotal(), grid.getNumCellsYTotal(),
                                                      globalSizes, localSizes, pushEvt);
@@ -401,14 +358,16 @@ public class ParallelSimulationCL{
                         interpEvt = kernels.charge_conserving_CIC(queue, inPar, inCel, inBound, tstep, n, particles.size(), processedParticles, 
                                                                   grid.getNumCellsXTotal(), grid.getNumCellsYTotal(),
                                                                   grid.getCellWidth(), grid.getCellHeight(),  globalSizes, localSizes, resetEvt);
-//                    interpEvt = kernels.cloud_in_cell(queue, inPar, inCel, inBound, tstep, n, 
-//                                                      grid.getNumCellsXTotal(), grid.getNumCellsYTotal(),
-//                                                      grid.getCellWidth(), grid.getCellHeight(),  globalSizes, localSizes, resetEvt);
+//                        interpEvt = kernels.cloud_in_cell(queue, inPar, inCel, inBound, tstep, n, particles.size(), processedParticles, 
+//                                                          grid.getNumCellsXTotal(), grid.getNumCellsYTotal(),
+//                                                          grid.getCellWidth(), grid.getCellHeight(),  globalSizes, localSizes, resetEvt);
                         
                         processedParticles += workGroupSize;
                     }
+                    
                     processedParticles = 0;
                     
+//                    t1 = System.currentTimeMillis();
                     storeEvt = kernels.store_fields(queue, inCel, n, 
                                                     grid.getNumCellsXTotal(), grid.getNumCellsYTotal(),
                                                     globalSizes, localSizes, interpEvt);
@@ -420,15 +379,18 @@ public class ParallelSimulationCL{
                                                     grid.getNumCellsXTotal(), grid.getNumCellsYTotal(),
                                                     grid.getCellWidth(), grid.getCellHeight(), globalSizes, localSizes, solveEEvt);
                   
+                    
+//                    t1 = System.currentTimeMillis();
                     while(processedParticles < particles.size()){
                         partInterpEvt = kernels.particle_interpolation(queue, inPar, inCel, tstep, n, particles.size(), processedParticles, 
                                                                        grid.getNumCellsXTotal(), grid.getNumCellsYTotal(),
                                                                        grid.getCellWidth(), grid.getCellHeight(), globalSizes, localSizes, solveBEvt);
                         processedParticles += workGroupSize;
                     }
+                    
                     processedParticles = 0;
                 }
-                
+
                 //get output
                 Pointer<Double> outPar = inPar.read(queue, 0, particlesSize, partInterpEvt);// inPar.read(queue, partInterpEvt);
                 
