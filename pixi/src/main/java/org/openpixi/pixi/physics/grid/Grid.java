@@ -1,5 +1,9 @@
 package org.openpixi.pixi.physics.grid;
 
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Vector;
 import org.openpixi.pixi.parallel.cellaccess.CellAction;
 import org.openpixi.pixi.parallel.cellaccess.CellIterator;
 import org.openpixi.pixi.physics.Settings;
@@ -55,7 +59,9 @@ public class Grid {
 	private StoreFieldsAction storeFields = new StoreFieldsAction();
 
 	private Cell[][] cells;
-
+        public int[][] parallelBoundaries;
+        public int[] parallelBoundariesArray;
+        private int mark = 1;
 	/**number of cells in x direction*/
 	private int numCellsX;
 	/**number of cells in x direction*/
@@ -172,8 +178,11 @@ public class Grid {
 	public Cell getCell(int x, int y) {
 		return cells[index(x)][index(y)];
 	}
-
-
+        
+        public Cell[][] getCells(){
+                return cells;
+        }
+        
 	public Grid(Settings settings) {
 		this.boundaryType = settings.getGridBoundary();
 
@@ -223,7 +232,6 @@ public class Grid {
 	public void changeSize(int numCellsX, int numCellsY,
 			double simWidth, double simHeight) {
 		set(numCellsX, numCellsY, simWidth, simHeight);
-
 		fsolver.changeSize(numCellsX, numCellsY);
 		cellIterator.setExtraCellsMode(this.numCellsX, this.numCellsY);
 	}
@@ -246,15 +254,23 @@ public class Grid {
 
 	private void createGridWithBoundaries() {
 		cells = new Cell[getNumCellsXTotal()][getNumCellsYTotal()];
-
+                parallelBoundaries = new int[getNumCellsXTotal()][getNumCellsYTotal()];
+                parallelBoundariesArray = new int[getNumCellsXTotal() * getNumCellsYTotal()];
 		// Create inner cells
 		for (int x = 0; x < getNumCellsX(); x++) {
 			for (int y = 0; y < getNumCellsY(); y++) {
 				cells[index(x)][index(y)] = new Cell();
+                                
 			}
 		}
+                for (int x = 0; x < getNumCellsXTotal(); x++) {
+			for (int y = 0; y < getNumCellsYTotal(); y++) {
+                            parallelBoundaries[x][y] = 0;
+                        }
+                }
 
 		createBoundaryCells();
+                createParallelBoundary();
 	}
 
 	private void createBoundaryCells() {
@@ -313,7 +329,66 @@ public class Grid {
 			cells[x][y] = cells[refX][refY];
 		}
 	}
-
+        
+        public void createParallelBoundary(){
+            int mark = 1;
+             
+            for(int i = 0; i < getNumCellsXTotal(); i++){
+                 for(int j = 0; j < getNumCellsYTotal(); j++){
+                     mark++;
+                     for (int l = 0; l < getNumCellsXTotal(); l++) {
+                         for (int m = 0; m < getNumCellsYTotal(); m++) {
+                             if(cells[i][j] == cells[l][m] && parallelBoundaries[l][m] == 0){
+                                 parallelBoundaries[l][m] = mark;
+                             }
+                         }
+                     }
+                 }
+             }
+            
+            int k = 0;
+            for(int i = 0; i < getNumCellsXTotal(); i++){
+                 for(int j = 0; j < getNumCellsYTotal(); j++){
+                     parallelBoundariesArray[k++] = parallelBoundaries[i][j];
+                 }
+            }
+            
+            HashMap<Integer, Vector<Integer>> marks = new HashMap<Integer, Vector<Integer>>();
+            Vector<Integer> indexes;
+            for(int i = 0; i < getNumCellsXTotal() * getNumCellsYTotal(); i++){
+                mark = parallelBoundariesArray[i];
+                if(!marks.containsKey(mark)){
+                    indexes = new Vector<Integer>();
+                    indexes.add(i);
+                    marks.put(mark, indexes);
+                }
+                else{
+                    indexes = marks.get(mark);
+                    indexes.add(i);
+                    marks.put(mark, indexes);
+                }
+            }
+            
+            int index1, index2;
+            for(int i = 0; i < getNumCellsXTotal(); i++){
+                 for(int j = 0; j < getNumCellsYTotal(); j++){
+                     mark = parallelBoundaries[i][j];
+                     indexes = marks.get(mark);
+                     for (int l = 0; l < indexes.size(); l++) {
+                         index1 = indexes.elementAt(l);
+                         if(l == indexes.size() - 1){
+                             parallelBoundariesArray[index1] = -index1;
+                         }
+                         else{
+                             index2 = indexes.elementAt(l + 1);
+                             parallelBoundariesArray[index1] = index2;
+                         }
+                     }
+                 }
+            }
+            
+        }
+        
 	public void updateGrid(double tstep) {
 		storeFields();
 		getFsolver().step(this, tstep);
@@ -343,12 +418,12 @@ public class Grid {
 	}
 
 	/** Includes the extra cells. */
-	private int getNumCellsXTotal() {
+	public int getNumCellsXTotal() {
 		return numCellsX + EXTRA_CELLS_BEFORE_GRID + EXTRA_CELLS_AFTER_GRID;
 	}
 
 	/** Includes the extra cells. */
-	private int getNumCellsYTotal() {
+	public int getNumCellsYTotal() {
 		return numCellsY + EXTRA_CELLS_BEFORE_GRID + EXTRA_CELLS_AFTER_GRID;
 	}
 
