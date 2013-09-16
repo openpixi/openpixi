@@ -91,6 +91,12 @@ public class ParallelSimulationCL{
          /**Number of Cell attributes*/
          private int C_SIZE = 8;
          
+         /**Grid interpolator algorithm name*/
+         private String OCLGridInterpolator;
+         
+         /**Particle solver algorithm name*/
+         private String OCLParticleSolver;
+         
          /**
          * We can turn on or off the effect of the grid on particles by
          * adding or removing this force from the total force.
@@ -164,6 +170,9 @@ public class ParallelSimulationCL{
                 detector = settings.getCollisionDetector();
                 collisionalgorithm = settings.getCollisionAlgorithm();
 
+                OCLParticleSolver = settings.getOCLParticleSolver();
+                OCLGridInterpolator = settings.getOCLGridInterpolator();
+                
                 prepareAllParticles();
         }
         public void turnGridForceOn() {
@@ -307,120 +316,1673 @@ public class ParallelSimulationCL{
                 int n = (int) workGroupSize;
                 int[] globalSizes = new int[] { n };
                 int[] localSizes = new int[] { n };
+ 
+                if (OCLParticleSolver.equalsIgnoreCase("Boris") && OCLGridInterpolator.equalsIgnoreCase("Cloud In Cell")) {
+                    borisCloudInCell(kernels, queue, inPar, inCel, inBound, n, globalSizes, localSizes, workGroupSize);
 
-                CLEvent pushEvt = null;
-                CLEvent resetEvt = null;
-                CLEvent interpEvt = null;
-                CLEvent storeEvt = null;
-                CLEvent solveEEvt = null;
-                CLEvent solveBEvt = null;
-                CLEvent partInterpEvt = null;
-             
-                int processedParticles = 0;
-                for (int i = 0; i < iterations; i++) {
-                    while(processedParticles < particles.size()){
-                        pushEvt = kernels.particle_push_boris(queue, inPar, tstep, n, particles.size(), processedParticles,
-                                                              width, height, globalSizes, localSizes);
-                        
-//                        pushEvt = kernels.particle_push_boris_damped(queue, inPar, tstep, n, particles.size(), processedParticles,
-//                                                                     width, height, globalSizes, localSizes);
+                } else if (OCLParticleSolver.equalsIgnoreCase("Boris Damped") && OCLGridInterpolator.equalsIgnoreCase("Cloud In Cell")) {
+                    borisDampedCloudInCell(kernels, queue, inPar, inCel, inBound, n, globalSizes, localSizes, workGroupSize);
 
-//                        pushEvt = kernels.particle_push_euler(queue, inPar, tstep, n, particles.size(), processedParticles,
-//                                                              width, height, globalSizes, localSizes);
-                    
-//                        pushEvt = kernels.particle_push_euler_richardson(queue, inPar, tstep, n, particles.size(), processedParticles,
-//                                                                         width, height, globalSizes, localSizes);
-                    
-//                        pushEvt = kernels.particle_push_semiimplicit_euler(queue, inPar, tstep, n, particles.size(), processedParticles,
-//                                                                           width, height, globalSizes, localSizes);
-                    
-//                        pushEvt = kernels.particle_push_leap_frog(queue, inPar, tstep, n, particles.size(), processedParticles,
-//                                                                  width, height, globalSizes, localSizes);
-                        
-//                        pushEvt = kernels.particle_push_leap_frog_damped(queue, inPar, tstep, n, particles.size(), processedParticles,
-//                                                                         width, height, globalSizes, localSizes);
-                        
-//                        pushEvt = kernels.particle_push_leap_frog_half_step(queue, inPar, tstep, n, particles.size(), processedParticles,
-//                                                                            width, height, globalSizes, localSizes);
-                        processedParticles += workGroupSize;
-                    }
+                } else 	if (OCLParticleSolver.equalsIgnoreCase("Empty Solver") && OCLGridInterpolator.equalsIgnoreCase("Cloud In Cell")) {
+                    emptySolverCloudInCell(kernels, queue, inPar, inCel, inBound, n, globalSizes, localSizes, workGroupSize);
 
-                    processedParticles = 0;
-                    
+                } else if (OCLParticleSolver.equalsIgnoreCase("Euler") && OCLGridInterpolator.equalsIgnoreCase("Cloud In Cell")) {
+                    eulerCloudInCell(kernels, queue, inPar, inCel, inBound, n, globalSizes, localSizes, workGroupSize);
 
-                    
-//                    t1 = System.currentTimeMillis();
-                    resetEvt = kernels.reset_current(queue, inCel,  n, 
-                                                     grid.getNumCellsXTotal(), grid.getNumCellsYTotal(),
-                                                     globalSizes, localSizes, pushEvt);
-                    
-                    while(processedParticles < particles.size()){
-                        interpEvt = kernels.charge_conserving_CIC(queue, inPar, inCel, inBound, tstep, n, particles.size(), processedParticles, 
-                                                                  grid.getNumCellsXTotal(), grid.getNumCellsYTotal(),
-                                                                  grid.getCellWidth(), grid.getCellHeight(),  globalSizes, localSizes, resetEvt);
-//                        interpEvt = kernels.cloud_in_cell(queue, inPar, inCel, inBound, tstep, n, particles.size(), processedParticles, 
-//                                                          grid.getNumCellsXTotal(), grid.getNumCellsYTotal(),
-//                                                          grid.getCellWidth(), grid.getCellHeight(),  globalSizes, localSizes, resetEvt);
-                        
-                        processedParticles += workGroupSize;
-                    }
-                    
-                    processedParticles = 0;
-                    
-//                    t1 = System.currentTimeMillis();
-                    storeEvt = kernels.store_fields(queue, inCel, n, 
-                                                    grid.getNumCellsXTotal(), grid.getNumCellsYTotal(),
-                                                    globalSizes, localSizes, interpEvt);
-                    solveEEvt = kernels.solve_for_e(queue, inCel, inBound, 0, n, grid.getNumCellsX(), grid.getNumCellsY(),
-                                                    grid.getNumCellsXTotal(), grid.getNumCellsYTotal(),
-                                                    grid.getCellWidth(), grid.getCellHeight(), globalSizes, localSizes, storeEvt);
+                } else if (OCLParticleSolver.equalsIgnoreCase("Euler Richardson") && OCLGridInterpolator.equalsIgnoreCase("Cloud In Cell")) {
+                    eulerRichardsonCloudInCell(kernels, queue, inPar, inCel, inBound, n, globalSizes, localSizes, workGroupSize);
 
-                    solveBEvt = kernels.solve_for_b(queue, inCel, inBound, 0, n, grid.getNumCellsX(), grid.getNumCellsY(),
-                                                    grid.getNumCellsXTotal(), grid.getNumCellsYTotal(),
-                                                    grid.getCellWidth(), grid.getCellHeight(), globalSizes, localSizes, solveEEvt);
-                  
-                    
-//                    t1 = System.currentTimeMillis();
-                    while(processedParticles < particles.size()){
-                        partInterpEvt = kernels.particle_interpolation(queue, inPar, inCel, tstep, n, particles.size(), processedParticles, 
-                                                                       grid.getNumCellsXTotal(), grid.getNumCellsYTotal(),
-                                                                       grid.getCellWidth(), grid.getCellHeight(), globalSizes, localSizes, solveBEvt);
-                        processedParticles += workGroupSize;
-                    }
-                    
-                    processedParticles = 0;
+                } else if (OCLParticleSolver.equalsIgnoreCase("Leap Frog") && OCLGridInterpolator.equalsIgnoreCase("Cloud In Cell")) {
+                    leapFrogCloudInCell(kernels, queue, inPar, inCel, inBound, n, globalSizes, localSizes, workGroupSize);
+
+                } else if (OCLParticleSolver.equalsIgnoreCase("Leap Frog Damped") && OCLGridInterpolator.equalsIgnoreCase("Cloud In Cell")) {
+                    leapFrogDampedCloudInCell(kernels, queue, inPar, inCel, inBound, n, globalSizes, localSizes, workGroupSize);
+
+                } else if (OCLParticleSolver.equalsIgnoreCase("Leap Frog Half Step") && OCLGridInterpolator.equalsIgnoreCase("Cloud In Cell")) {
+                    leapFrogHalfStepCloudInCell(kernels, queue, inPar, inCel, inBound, n, globalSizes, localSizes, workGroupSize);
+
+                } else if (OCLParticleSolver.equalsIgnoreCase("SemiImplicit Euler") && OCLGridInterpolator.equalsIgnoreCase("Cloud In Cell")) {
+                    semiImplicitEulerCloudInCell(kernels, queue, inPar, inCel, inBound, n, globalSizes, localSizes, workGroupSize);
+                } else if (OCLParticleSolver.equalsIgnoreCase("Boris") && OCLGridInterpolator.equalsIgnoreCase("Charge Conserving CIC")) {
+                    borisCIC(kernels, queue, inPar, inCel, inBound, n, globalSizes, localSizes, workGroupSize);
+
+                } else if (OCLParticleSolver.equalsIgnoreCase("Boris Damped") && OCLGridInterpolator.equalsIgnoreCase("Charge Conserving CIC")) {
+                    borisDampedCIC(kernels, queue, inPar, inCel, inBound, n, globalSizes, localSizes, workGroupSize);
+
+                } else 	if (OCLParticleSolver.equalsIgnoreCase("Empty Solver") && OCLGridInterpolator.equalsIgnoreCase("Charge Conserving CIC")) {
+                    emptySolverCIC(kernels, queue, inPar, inCel, inBound, n, globalSizes, localSizes, workGroupSize);
+
+                } else if (OCLParticleSolver.equalsIgnoreCase("Euler") && OCLGridInterpolator.equalsIgnoreCase("Charge Conserving CIC")) {
+                    eulerCIC(kernels, queue, inPar, inCel, inBound, n, globalSizes, localSizes, workGroupSize);
+
+                } else if (OCLParticleSolver.equalsIgnoreCase("Euler Richardson") && OCLGridInterpolator.equalsIgnoreCase("Charge Conserving CIC")) {
+                    eulerRichardsonCIC(kernels, queue, inPar, inCel, inBound, n, globalSizes, localSizes, workGroupSize);
+
+                } else if (OCLParticleSolver.equalsIgnoreCase("Leap Frog") && OCLGridInterpolator.equalsIgnoreCase("Charge Conserving CIC")) {
+                    leapFrogCIC(kernels, queue, inPar, inCel, inBound, n, globalSizes, localSizes, workGroupSize);
+
+                } else if (OCLParticleSolver.equalsIgnoreCase("Leap Frog Damped") && OCLGridInterpolator.equalsIgnoreCase("Charge Conserving CIC")) {
+                    leapFrogDampedCIC(kernels, queue, inPar, inCel, inBound, n, globalSizes, localSizes, workGroupSize);
+
+                } else if (OCLParticleSolver.equalsIgnoreCase("Leap Frog Half Step") && OCLGridInterpolator.equalsIgnoreCase("Charge Conserving CIC")) {
+                    leapFrogHalfStepCIC(kernels, queue, inPar, inCel, inBound, n, globalSizes, localSizes, workGroupSize);
+
+                } else if (OCLParticleSolver.equalsIgnoreCase("SemiImplicit Euler") && OCLGridInterpolator.equalsIgnoreCase("Charge Conserving CIC")) {
+                    semiImplicitEulerCIC(kernels, queue, inPar, inCel, inBound, n, globalSizes, localSizes, workGroupSize);
+                } 
+                
+                PrintWriter pw = new PrintWriter(new File("pcl.txt"));
+                
+                for(int i = 0; i < particles.size(); i++){
+                    pw.write(particles.get(i).getX() + "\n");
+                    pw.write(particles.get(i).getY() + "\n");
+                    pw.write(particles.get(i).getRadius()+ "\n");
+                    pw.write(particles.get(i).getVx() + "\n");
+                    pw.write(particles.get(i).getVy() + "\n");
+                    pw.write(particles.get(i).getAx() + "\n");
+                    pw.write(particles.get(i).getAy() + "\n");
+                    pw.write(particles.get(i).getMass() + "\n");
+                    pw.write(particles.get(i).getCharge() + "\n");
+                    pw.write(particles.get(i).getPrevX() + "\n");
+                    pw.write(particles.get(i).getPrevY() + "\n");
+                    pw.write(particles.get(i).getEx() + "\n");
+                    pw.write(particles.get(i).getEy() + "\n");
+                    pw.write(particles.get(i).getBz() + "\n");
+                    pw.write(particles.get(i).getPrevPositionComponentForceX() + "\n");
+                    pw.write(particles.get(i).getPrevPositionComponentForceY() + "\n");
+                    pw.write(particles.get(i).getPrevTangentVelocityComponentOfForceX() + "\n");
+                    pw.write(particles.get(i).getPrevTangentVelocityComponentOfForceY() + "\n");
+                    pw.write(particles.get(i).getPrevNormalVelocityComponentOfForceX() + "\n");
+                    pw.write(particles.get(i).getPrevNormalVelocityComponentOfForceY() + "\n");
+                    pw.write(particles.get(i).getPrevBz() + "\n");
+                    pw.write(particles.get(i).getPrevLinearDragCoefficient() + "\n");
+                }
+                pw.close();
+
+         }
+         
+         void borisCIC(SimulationKernel kernels, CLQueue queue, CLBuffer<Double> inPar, CLBuffer<Double> inCel, 
+                       CLBuffer<Integer> inBound, int n, int[] globalSizes, int[] localSizes, long workGroupSize){
+            
+            CLEvent pushEvt = null;
+            CLEvent resetEvt = null;
+            CLEvent interpEvt = null;
+            CLEvent storeEvt = null;
+            CLEvent solveEEvt = null;
+            CLEvent solveBEvt = null;
+            CLEvent partInterpEvt = null;
+
+            int processedParticles = 0;
+            for (int i = 0; i < iterations; i++) {
+                //particlePush 
+                while(processedParticles < particles.size()){
+                    pushEvt = kernels.particle_push_boris(queue, inPar, tstep, n, particles.size(), processedParticles,
+                                                          width, height, globalSizes, localSizes);
+                    processedParticles += workGroupSize;
+                }
+                processedParticles = 0;
+
+
+                //interpolate to grid
+                resetEvt = kernels.reset_current(queue, inCel,  n, 
+                                                 grid.getNumCellsXTotal(), grid.getNumCellsYTotal(),
+                                                 globalSizes, localSizes, pushEvt);
+
+
+                while(processedParticles < particles.size()){
+                    interpEvt = kernels.charge_conserving_CIC(queue, inPar, inCel, inBound, tstep, n, particles.size(), processedParticles, 
+                                                              grid.getNumCellsXTotal(), grid.getNumCellsYTotal(),
+                                                              grid.getCellWidth(), grid.getCellHeight(),  globalSizes, localSizes, resetEvt);
+                    processedParticles += workGroupSize;
+                }
+                processedParticles = 0;
+
+                //update grid
+                storeEvt = kernels.store_fields(queue, inCel, n, 
+                                                grid.getNumCellsXTotal(), grid.getNumCellsYTotal(),
+                                                globalSizes, localSizes, interpEvt);
+                solveEEvt = kernels.solve_for_e(queue, inCel, inBound, 0, n, grid.getNumCellsX(), grid.getNumCellsY(),
+                                                grid.getNumCellsXTotal(), grid.getNumCellsYTotal(),
+                                                grid.getCellWidth(), grid.getCellHeight(), globalSizes, localSizes, storeEvt);
+
+                solveBEvt = kernels.solve_for_b(queue, inCel, inBound, 0, n, grid.getNumCellsX(), grid.getNumCellsY(),
+                                                grid.getNumCellsXTotal(), grid.getNumCellsYTotal(),
+                                                grid.getCellWidth(), grid.getCellHeight(), globalSizes, localSizes, solveEEvt);
+
+                //interpolate to particle
+                while(processedParticles < particles.size()){
+                    partInterpEvt = kernels.particle_interpolation(queue, inPar, inCel, tstep, n, particles.size(), processedParticles, 
+                                                                   grid.getNumCellsXTotal(), grid.getNumCellsYTotal(),
+                                                                   grid.getCellWidth(), grid.getCellHeight(), globalSizes, localSizes, solveBEvt);
+                    processedParticles += workGroupSize;
                 }
 
-                //get output
-                Pointer<Double> outPar = inPar.read(queue, 0, particlesSize, partInterpEvt);// inPar.read(queue, partInterpEvt);
+                processedParticles = 0;
+            }
+
+            //get output
+            Pointer<Double> outPar = inPar.read(queue, partInterpEvt);
+            
+            for (int i = 0; i < particles.size() * P_SIZE; i+=P_SIZE) {
+                particles.get(i/P_SIZE).setX(outPar.get(i + 0));
+                particles.get(i/P_SIZE).setY(outPar.get(i + 1));
+                particles.get(i/P_SIZE).setRadius(outPar.get(i + 2));
+                particles.get(i/P_SIZE).setVx(outPar.get(i + 3));
+                particles.get(i/P_SIZE).setVy(outPar.get(i + 4));
+                particles.get(i/P_SIZE).setAx(outPar.get(i + 5));
+                particles.get(i/P_SIZE).setAy(outPar.get(i + 6));
+                particles.get(i/P_SIZE).setMass(outPar.get(i + 7));
+                particles.get(i/P_SIZE).setCharge(outPar.get(i + 8));
+                particles.get(i/P_SIZE).setPrevX(outPar.get(i + 9));
+                particles.get(i/P_SIZE).setPrevY(outPar.get(i + 10));
+                particles.get(i/P_SIZE).setEx(outPar.get(i + 11));
+                particles.get(i/P_SIZE).setEy(outPar.get(i + 12));
+                particles.get(i/P_SIZE).setBz(outPar.get(i + 13));
+                particles.get(i/P_SIZE).setPrevPositionComponentForceX(outPar.get(i + 14));
+                particles.get(i/P_SIZE).setPrevPositionComponentForceY(outPar.get(i + 15));
+                particles.get(i/P_SIZE).setPrevTangentVelocityComponentOfForceX(outPar.get(i + 16));
+                particles.get(i/P_SIZE).setPrevTangentVelocityComponentOfForceY(outPar.get(i + 17));
+                particles.get(i/P_SIZE).setPrevNormalVelocityComponentOfForceX(outPar.get(i + 18));
+                particles.get(i/P_SIZE).setPrevNormalVelocityComponentOfForceY(outPar.get(i + 19));
+                particles.get(i/P_SIZE).setPrevBz(outPar.get(i + 20));
+                particles.get(i/P_SIZE).setPrevLinearDragCoefficient(outPar.get(i + 21));
+            }                
                 
-                //print results
-                PrintWriter pw = new PrintWriter(new File("pcl.txt"));
-                for (int i = 0; i < particlesSize; i+=P_SIZE) {
-                    pw.write(outPar.get(i + 0) + "\n");
-                    pw.write(outPar.get(i + 1) + "\n");
-                    pw.write(outPar.get(i + 2) + "\n");
-                    pw.write(outPar.get(i + 3) + "\n");
-                    pw.write(outPar.get(i + 4) + "\n");
-                    pw.write(outPar.get(i + 5) + "\n");
-                    pw.write(outPar.get(i + 6) + "\n");
-                    pw.write(outPar.get(i + 7) + "\n");
-                    pw.write(outPar.get(i + 8) + "\n");
-                    pw.write(outPar.get(i + 9) + "\n");
-                    pw.write(outPar.get(i + 10) + "\n");
-                    pw.write(outPar.get(i + 11) + "\n");
-                    pw.write(outPar.get(i + 12) + "\n");
-                    pw.write(outPar.get(i + 13) + "\n");
-                    pw.write(outPar.get(i + 14) + "\n");
-                    pw.write(outPar.get(i + 15) + "\n");
-                    pw.write(outPar.get(i + 16) + "\n");
-                    pw.write(outPar.get(i + 17) + "\n");
-                    pw.write(outPar.get(i + 18) + "\n");
-                    pw.write(outPar.get(i + 19) + "\n");
-                    pw.write(outPar.get(i + 20) + "\n");
-                    pw.write(outPar.get(i + 21) + "\n");
-                }                    
-                pw.close();
          }
 
+         void borisDampedCIC(SimulationKernel kernels, CLQueue queue, CLBuffer<Double> inPar, CLBuffer<Double> inCel, 
+                             CLBuffer<Integer> inBound, int n, int[] globalSizes, int[] localSizes, long workGroupSize){
+            CLEvent pushEvt = null;
+            CLEvent resetEvt = null;
+            CLEvent interpEvt = null;
+            CLEvent storeEvt = null;
+            CLEvent solveEEvt = null;
+            CLEvent solveBEvt = null;
+            CLEvent partInterpEvt = null;
+
+            int processedParticles = 0;
+            for (int i = 0; i < iterations; i++) {
+                //particlePush 
+                while(processedParticles < particles.size()){
+                    pushEvt = kernels.particle_push_boris_damped(queue, inPar, tstep, n, particles.size(), processedParticles,
+                                                                 width, height, globalSizes, localSizes);
+                    processedParticles += workGroupSize;
+                }
+                processedParticles = 0;
+
+
+                //interpolate to grid
+                resetEvt = kernels.reset_current(queue, inCel,  n, 
+                                                 grid.getNumCellsXTotal(), grid.getNumCellsYTotal(),
+                                                 globalSizes, localSizes, pushEvt);
+
+
+                while(processedParticles < particles.size()){
+                    interpEvt = kernels.charge_conserving_CIC(queue, inPar, inCel, inBound, tstep, n, particles.size(), processedParticles, 
+                                                              grid.getNumCellsXTotal(), grid.getNumCellsYTotal(),
+                                                              grid.getCellWidth(), grid.getCellHeight(),  globalSizes, localSizes, resetEvt);
+                    processedParticles += workGroupSize;
+                }
+                processedParticles = 0;
+
+                //update grid
+                storeEvt = kernels.store_fields(queue, inCel, n, 
+                                                grid.getNumCellsXTotal(), grid.getNumCellsYTotal(),
+                                                globalSizes, localSizes, interpEvt);
+                solveEEvt = kernels.solve_for_e(queue, inCel, inBound, 0, n, grid.getNumCellsX(), grid.getNumCellsY(),
+                                                grid.getNumCellsXTotal(), grid.getNumCellsYTotal(),
+                                                grid.getCellWidth(), grid.getCellHeight(), globalSizes, localSizes, storeEvt);
+
+                solveBEvt = kernels.solve_for_b(queue, inCel, inBound, 0, n, grid.getNumCellsX(), grid.getNumCellsY(),
+                                                grid.getNumCellsXTotal(), grid.getNumCellsYTotal(),
+                                                grid.getCellWidth(), grid.getCellHeight(), globalSizes, localSizes, solveEEvt);
+
+                //interpolate to particle
+                while(processedParticles < particles.size()){
+                    partInterpEvt = kernels.particle_interpolation(queue, inPar, inCel, tstep, n, particles.size(), processedParticles, 
+                                                                   grid.getNumCellsXTotal(), grid.getNumCellsYTotal(),
+                                                                   grid.getCellWidth(), grid.getCellHeight(), globalSizes, localSizes, solveBEvt);
+                    processedParticles += workGroupSize;
+                }
+
+                processedParticles = 0;
+            }
+
+            //get output
+            Pointer<Double> outPar = inPar.read(queue, partInterpEvt);
+            
+            for (int i = 0; i < particles.size() * P_SIZE; i+=P_SIZE) {
+                particles.get(i/P_SIZE).setX(outPar.get(i + 0));
+                particles.get(i/P_SIZE).setY(outPar.get(i + 1));
+                particles.get(i/P_SIZE).setRadius(outPar.get(i + 2));
+                particles.get(i/P_SIZE).setVx(outPar.get(i + 3));
+                particles.get(i/P_SIZE).setVy(outPar.get(i + 4));
+                particles.get(i/P_SIZE).setAx(outPar.get(i + 5));
+                particles.get(i/P_SIZE).setAy(outPar.get(i + 6));
+                particles.get(i/P_SIZE).setMass(outPar.get(i + 7));
+                particles.get(i/P_SIZE).setCharge(outPar.get(i + 8));
+                particles.get(i/P_SIZE).setPrevX(outPar.get(i + 9));
+                particles.get(i/P_SIZE).setPrevY(outPar.get(i + 10));
+                particles.get(i/P_SIZE).setEx(outPar.get(i + 11));
+                particles.get(i/P_SIZE).setEy(outPar.get(i + 12));
+                particles.get(i/P_SIZE).setBz(outPar.get(i + 13));
+                particles.get(i/P_SIZE).setPrevPositionComponentForceX(outPar.get(i + 14));
+                particles.get(i/P_SIZE).setPrevPositionComponentForceY(outPar.get(i + 15));
+                particles.get(i/P_SIZE).setPrevTangentVelocityComponentOfForceX(outPar.get(i + 16));
+                particles.get(i/P_SIZE).setPrevTangentVelocityComponentOfForceY(outPar.get(i + 17));
+                particles.get(i/P_SIZE).setPrevNormalVelocityComponentOfForceX(outPar.get(i + 18));
+                particles.get(i/P_SIZE).setPrevNormalVelocityComponentOfForceY(outPar.get(i + 19));
+                particles.get(i/P_SIZE).setPrevBz(outPar.get(i + 20));
+                particles.get(i/P_SIZE).setPrevLinearDragCoefficient(outPar.get(i + 21));
+            }                
+            
+         }
+         
+         void emptySolverCIC(SimulationKernel kernels, CLQueue queue, CLBuffer<Double> inPar, CLBuffer<Double> inCel, 
+                             CLBuffer<Integer> inBound, int n, int[] globalSizes, int[] localSizes, long workGroupSize){
+            CLEvent pushEvt = null;
+            CLEvent resetEvt = null;
+            CLEvent interpEvt = null;
+            CLEvent storeEvt = null;
+            CLEvent solveEEvt = null;
+            CLEvent solveBEvt = null;
+            CLEvent partInterpEvt = null;
+
+            int processedParticles = 0;
+            for (int i = 0; i < iterations; i++) {
+                //particlePush 
+//                while(processedParticles < particles.size()){
+//                    pushEvt = kernels.particle_push_boris(queue, inPar, tstep, n, particles.size(), processedParticles,
+//                                                          width, height, globalSizes, localSizes);
+//                    processedParticles += workGroupSize;
+//                }
+//                processedParticles = 0;
+
+
+                //interpolate to grid
+                resetEvt = kernels.reset_current(queue, inCel,  n, 
+                                                 grid.getNumCellsXTotal(), grid.getNumCellsYTotal(),
+                                                 globalSizes, localSizes, pushEvt);
+
+
+                while(processedParticles < particles.size()){
+                    interpEvt = kernels.charge_conserving_CIC(queue, inPar, inCel, inBound, tstep, n, particles.size(), processedParticles, 
+                                                              grid.getNumCellsXTotal(), grid.getNumCellsYTotal(),
+                                                              grid.getCellWidth(), grid.getCellHeight(),  globalSizes, localSizes, resetEvt);
+                    processedParticles += workGroupSize;
+                }
+                processedParticles = 0;
+
+                //update grid
+                storeEvt = kernels.store_fields(queue, inCel, n, 
+                                                grid.getNumCellsXTotal(), grid.getNumCellsYTotal(),
+                                                globalSizes, localSizes, interpEvt);
+                solveEEvt = kernels.solve_for_e(queue, inCel, inBound, 0, n, grid.getNumCellsX(), grid.getNumCellsY(),
+                                                grid.getNumCellsXTotal(), grid.getNumCellsYTotal(),
+                                                grid.getCellWidth(), grid.getCellHeight(), globalSizes, localSizes, storeEvt);
+
+                solveBEvt = kernels.solve_for_b(queue, inCel, inBound, 0, n, grid.getNumCellsX(), grid.getNumCellsY(),
+                                                grid.getNumCellsXTotal(), grid.getNumCellsYTotal(),
+                                                grid.getCellWidth(), grid.getCellHeight(), globalSizes, localSizes, solveEEvt);
+
+                //interpolate to particle
+                while(processedParticles < particles.size()){
+                    partInterpEvt = kernels.particle_interpolation(queue, inPar, inCel, tstep, n, particles.size(), processedParticles, 
+                                                                   grid.getNumCellsXTotal(), grid.getNumCellsYTotal(),
+                                                                   grid.getCellWidth(), grid.getCellHeight(), globalSizes, localSizes, solveBEvt);
+                    processedParticles += workGroupSize;
+                }
+
+                processedParticles = 0;
+            }
+
+            //get output
+            Pointer<Double> outPar = inPar.read(queue, partInterpEvt);
+            
+            for (int i = 0; i < particles.size() * P_SIZE; i+=P_SIZE) {
+                particles.get(i/P_SIZE).setX(outPar.get(i + 0));
+                particles.get(i/P_SIZE).setY(outPar.get(i + 1));
+                particles.get(i/P_SIZE).setRadius(outPar.get(i + 2));
+                particles.get(i/P_SIZE).setVx(outPar.get(i + 3));
+                particles.get(i/P_SIZE).setVy(outPar.get(i + 4));
+                particles.get(i/P_SIZE).setAx(outPar.get(i + 5));
+                particles.get(i/P_SIZE).setAy(outPar.get(i + 6));
+                particles.get(i/P_SIZE).setMass(outPar.get(i + 7));
+                particles.get(i/P_SIZE).setCharge(outPar.get(i + 8));
+                particles.get(i/P_SIZE).setPrevX(outPar.get(i + 9));
+                particles.get(i/P_SIZE).setPrevY(outPar.get(i + 10));
+                particles.get(i/P_SIZE).setEx(outPar.get(i + 11));
+                particles.get(i/P_SIZE).setEy(outPar.get(i + 12));
+                particles.get(i/P_SIZE).setBz(outPar.get(i + 13));
+                particles.get(i/P_SIZE).setPrevPositionComponentForceX(outPar.get(i + 14));
+                particles.get(i/P_SIZE).setPrevPositionComponentForceY(outPar.get(i + 15));
+                particles.get(i/P_SIZE).setPrevTangentVelocityComponentOfForceX(outPar.get(i + 16));
+                particles.get(i/P_SIZE).setPrevTangentVelocityComponentOfForceY(outPar.get(i + 17));
+                particles.get(i/P_SIZE).setPrevNormalVelocityComponentOfForceX(outPar.get(i + 18));
+                particles.get(i/P_SIZE).setPrevNormalVelocityComponentOfForceY(outPar.get(i + 19));
+                particles.get(i/P_SIZE).setPrevBz(outPar.get(i + 20));
+                particles.get(i/P_SIZE).setPrevLinearDragCoefficient(outPar.get(i + 21));
+            }                
+             
+         }
+         
+         void eulerCIC(SimulationKernel kernels, CLQueue queue, CLBuffer<Double> inPar, CLBuffer<Double> inCel, 
+                       CLBuffer<Integer> inBound, int n, int[] globalSizes, int[] localSizes, long workGroupSize){
+            CLEvent pushEvt = null;
+            CLEvent resetEvt = null;
+            CLEvent interpEvt = null;
+            CLEvent storeEvt = null;
+            CLEvent solveEEvt = null;
+            CLEvent solveBEvt = null;
+            CLEvent partInterpEvt = null;
+
+            int processedParticles = 0;
+            for (int i = 0; i < iterations; i++) {
+                //particlePush 
+                while(processedParticles < particles.size()){
+                    pushEvt = kernels.particle_push_euler(queue, inPar, tstep, n, particles.size(), processedParticles,
+                                                          width, height, globalSizes, localSizes);
+                    processedParticles += workGroupSize;
+                }
+                processedParticles = 0;
+
+
+                //interpolate to grid
+                resetEvt = kernels.reset_current(queue, inCel,  n, 
+                                                 grid.getNumCellsXTotal(), grid.getNumCellsYTotal(),
+                                                 globalSizes, localSizes, pushEvt);
+
+
+                while(processedParticles < particles.size()){
+                    interpEvt = kernels.charge_conserving_CIC(queue, inPar, inCel, inBound, tstep, n, particles.size(), processedParticles, 
+                                                              grid.getNumCellsXTotal(), grid.getNumCellsYTotal(),
+                                                              grid.getCellWidth(), grid.getCellHeight(),  globalSizes, localSizes, resetEvt);
+                    processedParticles += workGroupSize;
+                }
+                processedParticles = 0;
+
+                //update grid
+                storeEvt = kernels.store_fields(queue, inCel, n, 
+                                                grid.getNumCellsXTotal(), grid.getNumCellsYTotal(),
+                                                globalSizes, localSizes, interpEvt);
+                solveEEvt = kernels.solve_for_e(queue, inCel, inBound, 0, n, grid.getNumCellsX(), grid.getNumCellsY(),
+                                                grid.getNumCellsXTotal(), grid.getNumCellsYTotal(),
+                                                grid.getCellWidth(), grid.getCellHeight(), globalSizes, localSizes, storeEvt);
+
+                solveBEvt = kernels.solve_for_b(queue, inCel, inBound, 0, n, grid.getNumCellsX(), grid.getNumCellsY(),
+                                                grid.getNumCellsXTotal(), grid.getNumCellsYTotal(),
+                                                grid.getCellWidth(), grid.getCellHeight(), globalSizes, localSizes, solveEEvt);
+
+                //interpolate to particle
+                while(processedParticles < particles.size()){
+                    partInterpEvt = kernels.particle_interpolation(queue, inPar, inCel, tstep, n, particles.size(), processedParticles, 
+                                                                   grid.getNumCellsXTotal(), grid.getNumCellsYTotal(),
+                                                                   grid.getCellWidth(), grid.getCellHeight(), globalSizes, localSizes, solveBEvt);
+                    processedParticles += workGroupSize;
+                }
+
+                processedParticles = 0;
+            }
+
+            //get output
+            Pointer<Double> outPar = inPar.read(queue, partInterpEvt);
+            
+            for (int i = 0; i < particles.size() * P_SIZE; i+=P_SIZE) {
+                particles.get(i/P_SIZE).setX(outPar.get(i + 0));
+                particles.get(i/P_SIZE).setY(outPar.get(i + 1));
+                particles.get(i/P_SIZE).setRadius(outPar.get(i + 2));
+                particles.get(i/P_SIZE).setVx(outPar.get(i + 3));
+                particles.get(i/P_SIZE).setVy(outPar.get(i + 4));
+                particles.get(i/P_SIZE).setAx(outPar.get(i + 5));
+                particles.get(i/P_SIZE).setAy(outPar.get(i + 6));
+                particles.get(i/P_SIZE).setMass(outPar.get(i + 7));
+                particles.get(i/P_SIZE).setCharge(outPar.get(i + 8));
+                particles.get(i/P_SIZE).setPrevX(outPar.get(i + 9));
+                particles.get(i/P_SIZE).setPrevY(outPar.get(i + 10));
+                particles.get(i/P_SIZE).setEx(outPar.get(i + 11));
+                particles.get(i/P_SIZE).setEy(outPar.get(i + 12));
+                particles.get(i/P_SIZE).setBz(outPar.get(i + 13));
+                particles.get(i/P_SIZE).setPrevPositionComponentForceX(outPar.get(i + 14));
+                particles.get(i/P_SIZE).setPrevPositionComponentForceY(outPar.get(i + 15));
+                particles.get(i/P_SIZE).setPrevTangentVelocityComponentOfForceX(outPar.get(i + 16));
+                particles.get(i/P_SIZE).setPrevTangentVelocityComponentOfForceY(outPar.get(i + 17));
+                particles.get(i/P_SIZE).setPrevNormalVelocityComponentOfForceX(outPar.get(i + 18));
+                particles.get(i/P_SIZE).setPrevNormalVelocityComponentOfForceY(outPar.get(i + 19));
+                particles.get(i/P_SIZE).setPrevBz(outPar.get(i + 20));
+                particles.get(i/P_SIZE).setPrevLinearDragCoefficient(outPar.get(i + 21));
+            }                
+             
+         }
+         
+         void eulerRichardsonCIC(SimulationKernel kernels, CLQueue queue, CLBuffer<Double> inPar, CLBuffer<Double> inCel, 
+                                 CLBuffer<Integer> inBound, int n, int[] globalSizes, int[] localSizes, long workGroupSize){
+            CLEvent pushEvt = null;
+            CLEvent resetEvt = null;
+            CLEvent interpEvt = null;
+            CLEvent storeEvt = null;
+            CLEvent solveEEvt = null;
+            CLEvent solveBEvt = null;
+            CLEvent partInterpEvt = null;
+
+            int processedParticles = 0;
+            for (int i = 0; i < iterations; i++) {
+                //particlePush 
+                while(processedParticles < particles.size()){
+                    pushEvt = kernels.particle_push_euler_richardson(queue, inPar, tstep, n, particles.size(), processedParticles,
+                                                                     width, height, globalSizes, localSizes);
+                    processedParticles += workGroupSize;
+                }
+                processedParticles = 0;
+
+
+                //interpolate to grid
+                resetEvt = kernels.reset_current(queue, inCel,  n, 
+                                                 grid.getNumCellsXTotal(), grid.getNumCellsYTotal(),
+                                                 globalSizes, localSizes, pushEvt);
+
+
+                while(processedParticles < particles.size()){
+                    interpEvt = kernels.charge_conserving_CIC(queue, inPar, inCel, inBound, tstep, n, particles.size(), processedParticles, 
+                                                              grid.getNumCellsXTotal(), grid.getNumCellsYTotal(),
+                                                              grid.getCellWidth(), grid.getCellHeight(),  globalSizes, localSizes, resetEvt);
+                    processedParticles += workGroupSize;
+                }
+                processedParticles = 0;
+
+                //update grid
+                storeEvt = kernels.store_fields(queue, inCel, n, 
+                                                grid.getNumCellsXTotal(), grid.getNumCellsYTotal(),
+                                                globalSizes, localSizes, interpEvt);
+                solveEEvt = kernels.solve_for_e(queue, inCel, inBound, 0, n, grid.getNumCellsX(), grid.getNumCellsY(),
+                                                grid.getNumCellsXTotal(), grid.getNumCellsYTotal(),
+                                                grid.getCellWidth(), grid.getCellHeight(), globalSizes, localSizes, storeEvt);
+
+                solveBEvt = kernels.solve_for_b(queue, inCel, inBound, 0, n, grid.getNumCellsX(), grid.getNumCellsY(),
+                                                grid.getNumCellsXTotal(), grid.getNumCellsYTotal(),
+                                                grid.getCellWidth(), grid.getCellHeight(), globalSizes, localSizes, solveEEvt);
+
+                //interpolate to particle
+                while(processedParticles < particles.size()){
+                    partInterpEvt = kernels.particle_interpolation(queue, inPar, inCel, tstep, n, particles.size(), processedParticles, 
+                                                                   grid.getNumCellsXTotal(), grid.getNumCellsYTotal(),
+                                                                   grid.getCellWidth(), grid.getCellHeight(), globalSizes, localSizes, solveBEvt);
+                    processedParticles += workGroupSize;
+                }
+
+                processedParticles = 0;
+            }
+
+            //get output
+            Pointer<Double> outPar = inPar.read(queue, partInterpEvt);
+            
+            for (int i = 0; i < particles.size() * P_SIZE; i+=P_SIZE) {
+                particles.get(i/P_SIZE).setX(outPar.get(i + 0));
+                particles.get(i/P_SIZE).setY(outPar.get(i + 1));
+                particles.get(i/P_SIZE).setRadius(outPar.get(i + 2));
+                particles.get(i/P_SIZE).setVx(outPar.get(i + 3));
+                particles.get(i/P_SIZE).setVy(outPar.get(i + 4));
+                particles.get(i/P_SIZE).setAx(outPar.get(i + 5));
+                particles.get(i/P_SIZE).setAy(outPar.get(i + 6));
+                particles.get(i/P_SIZE).setMass(outPar.get(i + 7));
+                particles.get(i/P_SIZE).setCharge(outPar.get(i + 8));
+                particles.get(i/P_SIZE).setPrevX(outPar.get(i + 9));
+                particles.get(i/P_SIZE).setPrevY(outPar.get(i + 10));
+                particles.get(i/P_SIZE).setEx(outPar.get(i + 11));
+                particles.get(i/P_SIZE).setEy(outPar.get(i + 12));
+                particles.get(i/P_SIZE).setBz(outPar.get(i + 13));
+                particles.get(i/P_SIZE).setPrevPositionComponentForceX(outPar.get(i + 14));
+                particles.get(i/P_SIZE).setPrevPositionComponentForceY(outPar.get(i + 15));
+                particles.get(i/P_SIZE).setPrevTangentVelocityComponentOfForceX(outPar.get(i + 16));
+                particles.get(i/P_SIZE).setPrevTangentVelocityComponentOfForceY(outPar.get(i + 17));
+                particles.get(i/P_SIZE).setPrevNormalVelocityComponentOfForceX(outPar.get(i + 18));
+                particles.get(i/P_SIZE).setPrevNormalVelocityComponentOfForceY(outPar.get(i + 19));
+                particles.get(i/P_SIZE).setPrevBz(outPar.get(i + 20));
+                particles.get(i/P_SIZE).setPrevLinearDragCoefficient(outPar.get(i + 21));
+            }                
+             
+         }
+         
+         void leapFrogCIC(SimulationKernel kernels, CLQueue queue, CLBuffer<Double> inPar, CLBuffer<Double> inCel, 
+                          CLBuffer<Integer> inBound, int n, int[] globalSizes, int[] localSizes, long workGroupSize){
+            CLEvent pushEvt = null;
+            CLEvent resetEvt = null;
+            CLEvent interpEvt = null;
+            CLEvent storeEvt = null;
+            CLEvent solveEEvt = null;
+            CLEvent solveBEvt = null;
+            CLEvent partInterpEvt = null;
+
+            int processedParticles = 0;
+            for (int i = 0; i < iterations; i++) {
+                //particlePush 
+                while(processedParticles < particles.size()){
+                    pushEvt = kernels.particle_push_leap_frog(queue, inPar, tstep, n, particles.size(), processedParticles,
+                                                              width, height, globalSizes, localSizes);
+                    processedParticles += workGroupSize;
+                }
+                processedParticles = 0;
+
+
+                //interpolate to grid
+                resetEvt = kernels.reset_current(queue, inCel,  n, 
+                                                 grid.getNumCellsXTotal(), grid.getNumCellsYTotal(),
+                                                 globalSizes, localSizes, pushEvt);
+
+
+                while(processedParticles < particles.size()){
+                    interpEvt = kernels.charge_conserving_CIC(queue, inPar, inCel, inBound, tstep, n, particles.size(), processedParticles, 
+                                                              grid.getNumCellsXTotal(), grid.getNumCellsYTotal(),
+                                                              grid.getCellWidth(), grid.getCellHeight(),  globalSizes, localSizes, resetEvt);
+                    processedParticles += workGroupSize;
+                }
+                processedParticles = 0;
+
+                //update grid
+                storeEvt = kernels.store_fields(queue, inCel, n, 
+                                                grid.getNumCellsXTotal(), grid.getNumCellsYTotal(),
+                                                globalSizes, localSizes, interpEvt);
+                solveEEvt = kernels.solve_for_e(queue, inCel, inBound, 0, n, grid.getNumCellsX(), grid.getNumCellsY(),
+                                                grid.getNumCellsXTotal(), grid.getNumCellsYTotal(),
+                                                grid.getCellWidth(), grid.getCellHeight(), globalSizes, localSizes, storeEvt);
+
+                solveBEvt = kernels.solve_for_b(queue, inCel, inBound, 0, n, grid.getNumCellsX(), grid.getNumCellsY(),
+                                                grid.getNumCellsXTotal(), grid.getNumCellsYTotal(),
+                                                grid.getCellWidth(), grid.getCellHeight(), globalSizes, localSizes, solveEEvt);
+
+                //interpolate to particle
+                while(processedParticles < particles.size()){
+                    partInterpEvt = kernels.particle_interpolation(queue, inPar, inCel, tstep, n, particles.size(), processedParticles, 
+                                                                   grid.getNumCellsXTotal(), grid.getNumCellsYTotal(),
+                                                                   grid.getCellWidth(), grid.getCellHeight(), globalSizes, localSizes, solveBEvt);
+                    processedParticles += workGroupSize;
+                }
+
+                processedParticles = 0;
+            }
+
+            //get output
+            Pointer<Double> outPar = inPar.read(queue, partInterpEvt);
+            
+            for (int i = 0; i < particles.size() * P_SIZE; i+=P_SIZE) {
+                particles.get(i/P_SIZE).setX(outPar.get(i + 0));
+                particles.get(i/P_SIZE).setY(outPar.get(i + 1));
+                particles.get(i/P_SIZE).setRadius(outPar.get(i + 2));
+                particles.get(i/P_SIZE).setVx(outPar.get(i + 3));
+                particles.get(i/P_SIZE).setVy(outPar.get(i + 4));
+                particles.get(i/P_SIZE).setAx(outPar.get(i + 5));
+                particles.get(i/P_SIZE).setAy(outPar.get(i + 6));
+                particles.get(i/P_SIZE).setMass(outPar.get(i + 7));
+                particles.get(i/P_SIZE).setCharge(outPar.get(i + 8));
+                particles.get(i/P_SIZE).setPrevX(outPar.get(i + 9));
+                particles.get(i/P_SIZE).setPrevY(outPar.get(i + 10));
+                particles.get(i/P_SIZE).setEx(outPar.get(i + 11));
+                particles.get(i/P_SIZE).setEy(outPar.get(i + 12));
+                particles.get(i/P_SIZE).setBz(outPar.get(i + 13));
+                particles.get(i/P_SIZE).setPrevPositionComponentForceX(outPar.get(i + 14));
+                particles.get(i/P_SIZE).setPrevPositionComponentForceY(outPar.get(i + 15));
+                particles.get(i/P_SIZE).setPrevTangentVelocityComponentOfForceX(outPar.get(i + 16));
+                particles.get(i/P_SIZE).setPrevTangentVelocityComponentOfForceY(outPar.get(i + 17));
+                particles.get(i/P_SIZE).setPrevNormalVelocityComponentOfForceX(outPar.get(i + 18));
+                particles.get(i/P_SIZE).setPrevNormalVelocityComponentOfForceY(outPar.get(i + 19));
+                particles.get(i/P_SIZE).setPrevBz(outPar.get(i + 20));
+                particles.get(i/P_SIZE).setPrevLinearDragCoefficient(outPar.get(i + 21));
+            }                
+             
+         }
+         
+         void leapFrogDampedCIC(SimulationKernel kernels, CLQueue queue, CLBuffer<Double> inPar, CLBuffer<Double> inCel, 
+                                CLBuffer<Integer> inBound, int n, int[] globalSizes, int[] localSizes, long workGroupSize){
+            CLEvent pushEvt = null;
+            CLEvent resetEvt = null;
+            CLEvent interpEvt = null;
+            CLEvent storeEvt = null;
+            CLEvent solveEEvt = null;
+            CLEvent solveBEvt = null;
+            CLEvent partInterpEvt = null;
+
+            int processedParticles = 0;
+            for (int i = 0; i < iterations; i++) {
+                //particlePush 
+                while(processedParticles < particles.size()){
+                    pushEvt = kernels.particle_push_leap_frog_damped(queue, inPar, tstep, n, particles.size(), processedParticles,
+                                                                     width, height, globalSizes, localSizes);
+                    processedParticles += workGroupSize;
+                }
+                processedParticles = 0;
+
+
+                //interpolate to grid
+                resetEvt = kernels.reset_current(queue, inCel,  n, 
+                                                 grid.getNumCellsXTotal(), grid.getNumCellsYTotal(),
+                                                 globalSizes, localSizes, pushEvt);
+
+
+                while(processedParticles < particles.size()){
+                    interpEvt = kernels.charge_conserving_CIC(queue, inPar, inCel, inBound, tstep, n, particles.size(), processedParticles, 
+                                                              grid.getNumCellsXTotal(), grid.getNumCellsYTotal(),
+                                                              grid.getCellWidth(), grid.getCellHeight(),  globalSizes, localSizes, resetEvt);
+                    processedParticles += workGroupSize;
+                }
+                processedParticles = 0;
+
+                //update grid
+                storeEvt = kernels.store_fields(queue, inCel, n, 
+                                                grid.getNumCellsXTotal(), grid.getNumCellsYTotal(),
+                                                globalSizes, localSizes, interpEvt);
+                solveEEvt = kernels.solve_for_e(queue, inCel, inBound, 0, n, grid.getNumCellsX(), grid.getNumCellsY(),
+                                                grid.getNumCellsXTotal(), grid.getNumCellsYTotal(),
+                                                grid.getCellWidth(), grid.getCellHeight(), globalSizes, localSizes, storeEvt);
+
+                solveBEvt = kernels.solve_for_b(queue, inCel, inBound, 0, n, grid.getNumCellsX(), grid.getNumCellsY(),
+                                                grid.getNumCellsXTotal(), grid.getNumCellsYTotal(),
+                                                grid.getCellWidth(), grid.getCellHeight(), globalSizes, localSizes, solveEEvt);
+
+                //interpolate to particle
+                while(processedParticles < particles.size()){
+                    partInterpEvt = kernels.particle_interpolation(queue, inPar, inCel, tstep, n, particles.size(), processedParticles, 
+                                                                   grid.getNumCellsXTotal(), grid.getNumCellsYTotal(),
+                                                                   grid.getCellWidth(), grid.getCellHeight(), globalSizes, localSizes, solveBEvt);
+                    processedParticles += workGroupSize;
+                }
+
+                processedParticles = 0;
+            }
+
+            //get output
+            Pointer<Double> outPar = inPar.read(queue, partInterpEvt);
+            
+            for (int i = 0; i < particles.size() * P_SIZE; i+=P_SIZE) {
+                particles.get(i/P_SIZE).setX(outPar.get(i + 0));
+                particles.get(i/P_SIZE).setY(outPar.get(i + 1));
+                particles.get(i/P_SIZE).setRadius(outPar.get(i + 2));
+                particles.get(i/P_SIZE).setVx(outPar.get(i + 3));
+                particles.get(i/P_SIZE).setVy(outPar.get(i + 4));
+                particles.get(i/P_SIZE).setAx(outPar.get(i + 5));
+                particles.get(i/P_SIZE).setAy(outPar.get(i + 6));
+                particles.get(i/P_SIZE).setMass(outPar.get(i + 7));
+                particles.get(i/P_SIZE).setCharge(outPar.get(i + 8));
+                particles.get(i/P_SIZE).setPrevX(outPar.get(i + 9));
+                particles.get(i/P_SIZE).setPrevY(outPar.get(i + 10));
+                particles.get(i/P_SIZE).setEx(outPar.get(i + 11));
+                particles.get(i/P_SIZE).setEy(outPar.get(i + 12));
+                particles.get(i/P_SIZE).setBz(outPar.get(i + 13));
+                particles.get(i/P_SIZE).setPrevPositionComponentForceX(outPar.get(i + 14));
+                particles.get(i/P_SIZE).setPrevPositionComponentForceY(outPar.get(i + 15));
+                particles.get(i/P_SIZE).setPrevTangentVelocityComponentOfForceX(outPar.get(i + 16));
+                particles.get(i/P_SIZE).setPrevTangentVelocityComponentOfForceY(outPar.get(i + 17));
+                particles.get(i/P_SIZE).setPrevNormalVelocityComponentOfForceX(outPar.get(i + 18));
+                particles.get(i/P_SIZE).setPrevNormalVelocityComponentOfForceY(outPar.get(i + 19));
+                particles.get(i/P_SIZE).setPrevBz(outPar.get(i + 20));
+                particles.get(i/P_SIZE).setPrevLinearDragCoefficient(outPar.get(i + 21));
+            }                
+             
+         }
+         
+         void leapFrogHalfStepCIC(SimulationKernel kernels, CLQueue queue, CLBuffer<Double> inPar, CLBuffer<Double> inCel, 
+                                  CLBuffer<Integer> inBound, int n, int[] globalSizes, int[] localSizes, long workGroupSize){
+            CLEvent pushEvt = null;
+            CLEvent resetEvt = null;
+            CLEvent interpEvt = null;
+            CLEvent storeEvt = null;
+            CLEvent solveEEvt = null;
+            CLEvent solveBEvt = null;
+            CLEvent partInterpEvt = null;
+
+            int processedParticles = 0;
+            for (int i = 0; i < iterations; i++) {
+                //particlePush 
+                while(processedParticles < particles.size()){
+                    pushEvt = kernels.particle_push_leap_frog_half_step(queue, inPar, tstep, n, particles.size(), processedParticles,
+                                                                        width, height, globalSizes, localSizes);
+                    processedParticles += workGroupSize;
+                }
+                processedParticles = 0;
+
+
+                //interpolate to grid
+                resetEvt = kernels.reset_current(queue, inCel,  n, 
+                                                 grid.getNumCellsXTotal(), grid.getNumCellsYTotal(),
+                                                 globalSizes, localSizes, pushEvt);
+
+
+                while(processedParticles < particles.size()){
+                    interpEvt = kernels.charge_conserving_CIC(queue, inPar, inCel, inBound, tstep, n, particles.size(), processedParticles, 
+                                                              grid.getNumCellsXTotal(), grid.getNumCellsYTotal(),
+                                                              grid.getCellWidth(), grid.getCellHeight(),  globalSizes, localSizes, resetEvt);
+                    processedParticles += workGroupSize;
+                }
+                processedParticles = 0;
+
+                //update grid
+                storeEvt = kernels.store_fields(queue, inCel, n, 
+                                                grid.getNumCellsXTotal(), grid.getNumCellsYTotal(),
+                                                globalSizes, localSizes, interpEvt);
+                solveEEvt = kernels.solve_for_e(queue, inCel, inBound, 0, n, grid.getNumCellsX(), grid.getNumCellsY(),
+                                                grid.getNumCellsXTotal(), grid.getNumCellsYTotal(),
+                                                grid.getCellWidth(), grid.getCellHeight(), globalSizes, localSizes, storeEvt);
+
+                solveBEvt = kernels.solve_for_b(queue, inCel, inBound, 0, n, grid.getNumCellsX(), grid.getNumCellsY(),
+                                                grid.getNumCellsXTotal(), grid.getNumCellsYTotal(),
+                                                grid.getCellWidth(), grid.getCellHeight(), globalSizes, localSizes, solveEEvt);
+
+                //interpolate to particle
+                while(processedParticles < particles.size()){
+                    partInterpEvt = kernels.particle_interpolation(queue, inPar, inCel, tstep, n, particles.size(), processedParticles, 
+                                                                   grid.getNumCellsXTotal(), grid.getNumCellsYTotal(),
+                                                                   grid.getCellWidth(), grid.getCellHeight(), globalSizes, localSizes, solveBEvt);
+                    processedParticles += workGroupSize;
+                }
+
+                processedParticles = 0;
+            }
+
+            //get output
+            Pointer<Double> outPar = inPar.read(queue, partInterpEvt);
+            
+            for (int i = 0; i < particles.size() * P_SIZE; i+=P_SIZE) {
+                particles.get(i/P_SIZE).setX(outPar.get(i + 0));
+                particles.get(i/P_SIZE).setY(outPar.get(i + 1));
+                particles.get(i/P_SIZE).setRadius(outPar.get(i + 2));
+                particles.get(i/P_SIZE).setVx(outPar.get(i + 3));
+                particles.get(i/P_SIZE).setVy(outPar.get(i + 4));
+                particles.get(i/P_SIZE).setAx(outPar.get(i + 5));
+                particles.get(i/P_SIZE).setAy(outPar.get(i + 6));
+                particles.get(i/P_SIZE).setMass(outPar.get(i + 7));
+                particles.get(i/P_SIZE).setCharge(outPar.get(i + 8));
+                particles.get(i/P_SIZE).setPrevX(outPar.get(i + 9));
+                particles.get(i/P_SIZE).setPrevY(outPar.get(i + 10));
+                particles.get(i/P_SIZE).setEx(outPar.get(i + 11));
+                particles.get(i/P_SIZE).setEy(outPar.get(i + 12));
+                particles.get(i/P_SIZE).setBz(outPar.get(i + 13));
+                particles.get(i/P_SIZE).setPrevPositionComponentForceX(outPar.get(i + 14));
+                particles.get(i/P_SIZE).setPrevPositionComponentForceY(outPar.get(i + 15));
+                particles.get(i/P_SIZE).setPrevTangentVelocityComponentOfForceX(outPar.get(i + 16));
+                particles.get(i/P_SIZE).setPrevTangentVelocityComponentOfForceY(outPar.get(i + 17));
+                particles.get(i/P_SIZE).setPrevNormalVelocityComponentOfForceX(outPar.get(i + 18));
+                particles.get(i/P_SIZE).setPrevNormalVelocityComponentOfForceY(outPar.get(i + 19));
+                particles.get(i/P_SIZE).setPrevBz(outPar.get(i + 20));
+                particles.get(i/P_SIZE).setPrevLinearDragCoefficient(outPar.get(i + 21));
+            }                
+             
+         }
+         
+         void semiImplicitEulerCIC(SimulationKernel kernels, CLQueue queue, CLBuffer<Double> inPar, CLBuffer<Double> inCel, 
+                                   CLBuffer<Integer> inBound, int n, int[] globalSizes, int[] localSizes, long workGroupSize){
+            CLEvent pushEvt = null;
+            CLEvent resetEvt = null;
+            CLEvent interpEvt = null;
+            CLEvent storeEvt = null;
+            CLEvent solveEEvt = null;
+            CLEvent solveBEvt = null;
+            CLEvent partInterpEvt = null;
+
+            int processedParticles = 0;
+            for (int i = 0; i < iterations; i++) {
+                //particlePush 
+                while(processedParticles < particles.size()){
+                    pushEvt = kernels.particle_push_semiimplicit_euler(queue, inPar, tstep, n, particles.size(), processedParticles,
+                                                                       width, height, globalSizes, localSizes);
+                    processedParticles += workGroupSize;
+                }
+                processedParticles = 0;
+
+
+                //interpolate to grid
+                resetEvt = kernels.reset_current(queue, inCel,  n, 
+                                                 grid.getNumCellsXTotal(), grid.getNumCellsYTotal(),
+                                                 globalSizes, localSizes, pushEvt);
+
+
+                while(processedParticles < particles.size()){
+                    interpEvt = kernels.charge_conserving_CIC(queue, inPar, inCel, inBound, tstep, n, particles.size(), processedParticles, 
+                                                              grid.getNumCellsXTotal(), grid.getNumCellsYTotal(),
+                                                              grid.getCellWidth(), grid.getCellHeight(),  globalSizes, localSizes, resetEvt);
+                    processedParticles += workGroupSize;
+                }
+                processedParticles = 0;
+
+                //update grid
+                storeEvt = kernels.store_fields(queue, inCel, n, 
+                                                grid.getNumCellsXTotal(), grid.getNumCellsYTotal(),
+                                                globalSizes, localSizes, interpEvt);
+                solveEEvt = kernels.solve_for_e(queue, inCel, inBound, 0, n, grid.getNumCellsX(), grid.getNumCellsY(),
+                                                grid.getNumCellsXTotal(), grid.getNumCellsYTotal(),
+                                                grid.getCellWidth(), grid.getCellHeight(), globalSizes, localSizes, storeEvt);
+
+                solveBEvt = kernels.solve_for_b(queue, inCel, inBound, 0, n, grid.getNumCellsX(), grid.getNumCellsY(),
+                                                grid.getNumCellsXTotal(), grid.getNumCellsYTotal(),
+                                                grid.getCellWidth(), grid.getCellHeight(), globalSizes, localSizes, solveEEvt);
+
+                //interpolate to particle
+                while(processedParticles < particles.size()){
+                    partInterpEvt = kernels.particle_interpolation(queue, inPar, inCel, tstep, n, particles.size(), processedParticles, 
+                                                                   grid.getNumCellsXTotal(), grid.getNumCellsYTotal(),
+                                                                   grid.getCellWidth(), grid.getCellHeight(), globalSizes, localSizes, solveBEvt);
+                    processedParticles += workGroupSize;
+                }
+
+                processedParticles = 0;
+            }
+
+            //get output
+            Pointer<Double> outPar = inPar.read(queue, partInterpEvt);
+            
+            for (int i = 0; i < particles.size() * P_SIZE; i+=P_SIZE) {
+                particles.get(i/P_SIZE).setX(outPar.get(i + 0));
+                particles.get(i/P_SIZE).setY(outPar.get(i + 1));
+                particles.get(i/P_SIZE).setRadius(outPar.get(i + 2));
+                particles.get(i/P_SIZE).setVx(outPar.get(i + 3));
+                particles.get(i/P_SIZE).setVy(outPar.get(i + 4));
+                particles.get(i/P_SIZE).setAx(outPar.get(i + 5));
+                particles.get(i/P_SIZE).setAy(outPar.get(i + 6));
+                particles.get(i/P_SIZE).setMass(outPar.get(i + 7));
+                particles.get(i/P_SIZE).setCharge(outPar.get(i + 8));
+                particles.get(i/P_SIZE).setPrevX(outPar.get(i + 9));
+                particles.get(i/P_SIZE).setPrevY(outPar.get(i + 10));
+                particles.get(i/P_SIZE).setEx(outPar.get(i + 11));
+                particles.get(i/P_SIZE).setEy(outPar.get(i + 12));
+                particles.get(i/P_SIZE).setBz(outPar.get(i + 13));
+                particles.get(i/P_SIZE).setPrevPositionComponentForceX(outPar.get(i + 14));
+                particles.get(i/P_SIZE).setPrevPositionComponentForceY(outPar.get(i + 15));
+                particles.get(i/P_SIZE).setPrevTangentVelocityComponentOfForceX(outPar.get(i + 16));
+                particles.get(i/P_SIZE).setPrevTangentVelocityComponentOfForceY(outPar.get(i + 17));
+                particles.get(i/P_SIZE).setPrevNormalVelocityComponentOfForceX(outPar.get(i + 18));
+                particles.get(i/P_SIZE).setPrevNormalVelocityComponentOfForceY(outPar.get(i + 19));
+                particles.get(i/P_SIZE).setPrevBz(outPar.get(i + 20));
+                particles.get(i/P_SIZE).setPrevLinearDragCoefficient(outPar.get(i + 21));
+            }                
+             
+         }
+         
+          void borisCloudInCell(SimulationKernel kernels, CLQueue queue, CLBuffer<Double> inPar, CLBuffer<Double> inCel, 
+                                CLBuffer<Integer> inBound, int n, int[] globalSizes, int[] localSizes, long workGroupSize){
+            CLEvent pushEvt = null;
+            CLEvent resetEvt = null;
+            CLEvent interpEvt = null;
+            CLEvent storeEvt = null;
+            CLEvent solveEEvt = null;
+            CLEvent solveBEvt = null;
+            CLEvent partInterpEvt = null;
+
+            int processedParticles = 0;
+            for (int i = 0; i < iterations; i++) {
+                //particlePush 
+                while(processedParticles < particles.size()){
+                    pushEvt = kernels.particle_push_boris(queue, inPar, tstep, n, particles.size(), processedParticles,
+                                                          width, height, globalSizes, localSizes);
+                    processedParticles += workGroupSize;
+                }
+                processedParticles = 0;
+
+
+                //interpolate to grid
+                resetEvt = kernels.reset_current(queue, inCel,  n, 
+                                                 grid.getNumCellsXTotal(), grid.getNumCellsYTotal(),
+                                                 globalSizes, localSizes, pushEvt);
+
+
+                while(processedParticles < particles.size()){
+                    interpEvt = kernels.cloud_in_cell(queue, inPar, inCel, inBound, tstep, n, particles.size(), processedParticles, 
+                                                      grid.getNumCellsXTotal(), grid.getNumCellsYTotal(),
+                                                      grid.getCellWidth(), grid.getCellHeight(),  globalSizes, localSizes, resetEvt);
+                    processedParticles += workGroupSize;
+                }
+                processedParticles = 0;
+
+                //update grid
+                storeEvt = kernels.store_fields(queue, inCel, n, 
+                                                grid.getNumCellsXTotal(), grid.getNumCellsYTotal(),
+                                                globalSizes, localSizes, interpEvt);
+                solveEEvt = kernels.solve_for_e(queue, inCel, inBound, 0, n, grid.getNumCellsX(), grid.getNumCellsY(),
+                                                grid.getNumCellsXTotal(), grid.getNumCellsYTotal(),
+                                                grid.getCellWidth(), grid.getCellHeight(), globalSizes, localSizes, storeEvt);
+
+                solveBEvt = kernels.solve_for_b(queue, inCel, inBound, 0, n, grid.getNumCellsX(), grid.getNumCellsY(),
+                                                grid.getNumCellsXTotal(), grid.getNumCellsYTotal(),
+                                                grid.getCellWidth(), grid.getCellHeight(), globalSizes, localSizes, solveEEvt);
+
+                //interpolate to particle
+                while(processedParticles < particles.size()){
+                    partInterpEvt = kernels.particle_interpolation(queue, inPar, inCel, tstep, n, particles.size(), processedParticles, 
+                                                                   grid.getNumCellsXTotal(), grid.getNumCellsYTotal(),
+                                                                   grid.getCellWidth(), grid.getCellHeight(), globalSizes, localSizes, solveBEvt);
+                    processedParticles += workGroupSize;
+                }
+
+                processedParticles = 0;
+            }
+
+            //get output
+            Pointer<Double> outPar = inPar.read(queue, partInterpEvt);
+            
+            for (int i = 0; i < particles.size() * P_SIZE; i+=P_SIZE) {
+                particles.get(i/P_SIZE).setX(outPar.get(i + 0));
+                particles.get(i/P_SIZE).setY(outPar.get(i + 1));
+                particles.get(i/P_SIZE).setRadius(outPar.get(i + 2));
+                particles.get(i/P_SIZE).setVx(outPar.get(i + 3));
+                particles.get(i/P_SIZE).setVy(outPar.get(i + 4));
+                particles.get(i/P_SIZE).setAx(outPar.get(i + 5));
+                particles.get(i/P_SIZE).setAy(outPar.get(i + 6));
+                particles.get(i/P_SIZE).setMass(outPar.get(i + 7));
+                particles.get(i/P_SIZE).setCharge(outPar.get(i + 8));
+                particles.get(i/P_SIZE).setPrevX(outPar.get(i + 9));
+                particles.get(i/P_SIZE).setPrevY(outPar.get(i + 10));
+                particles.get(i/P_SIZE).setEx(outPar.get(i + 11));
+                particles.get(i/P_SIZE).setEy(outPar.get(i + 12));
+                particles.get(i/P_SIZE).setBz(outPar.get(i + 13));
+                particles.get(i/P_SIZE).setPrevPositionComponentForceX(outPar.get(i + 14));
+                particles.get(i/P_SIZE).setPrevPositionComponentForceY(outPar.get(i + 15));
+                particles.get(i/P_SIZE).setPrevTangentVelocityComponentOfForceX(outPar.get(i + 16));
+                particles.get(i/P_SIZE).setPrevTangentVelocityComponentOfForceY(outPar.get(i + 17));
+                particles.get(i/P_SIZE).setPrevNormalVelocityComponentOfForceX(outPar.get(i + 18));
+                particles.get(i/P_SIZE).setPrevNormalVelocityComponentOfForceY(outPar.get(i + 19));
+                particles.get(i/P_SIZE).setPrevBz(outPar.get(i + 20));
+                particles.get(i/P_SIZE).setPrevLinearDragCoefficient(outPar.get(i + 21));
+            }                
+             
+         }
+
+         void borisDampedCloudInCell(SimulationKernel kernels, CLQueue queue, CLBuffer<Double> inPar, CLBuffer<Double> inCel, 
+                                     CLBuffer<Integer> inBound, int n, int[] globalSizes, int[] localSizes, long workGroupSize){
+             CLEvent pushEvt = null;
+            CLEvent resetEvt = null;
+            CLEvent interpEvt = null;
+            CLEvent storeEvt = null;
+            CLEvent solveEEvt = null;
+            CLEvent solveBEvt = null;
+            CLEvent partInterpEvt = null;
+
+            int processedParticles = 0;
+            for (int i = 0; i < iterations; i++) {
+                //particlePush 
+                while(processedParticles < particles.size()){
+                    pushEvt = kernels.particle_push_boris_damped(queue, inPar, tstep, n, particles.size(), processedParticles,
+                                                                 width, height, globalSizes, localSizes);
+                    processedParticles += workGroupSize;
+                }
+                processedParticles = 0;
+
+
+                //interpolate to grid
+                resetEvt = kernels.reset_current(queue, inCel,  n, 
+                                                 grid.getNumCellsXTotal(), grid.getNumCellsYTotal(),
+                                                 globalSizes, localSizes, pushEvt);
+
+
+                while(processedParticles < particles.size()){
+                    interpEvt = kernels.cloud_in_cell(queue, inPar, inCel, inBound, tstep, n, particles.size(), processedParticles, 
+                                                      grid.getNumCellsXTotal(), grid.getNumCellsYTotal(),
+                                                      grid.getCellWidth(), grid.getCellHeight(),  globalSizes, localSizes, resetEvt);
+                    processedParticles += workGroupSize;
+                }
+                processedParticles = 0;
+
+                //update grid
+                storeEvt = kernels.store_fields(queue, inCel, n, 
+                                                grid.getNumCellsXTotal(), grid.getNumCellsYTotal(),
+                                                globalSizes, localSizes, interpEvt);
+                solveEEvt = kernels.solve_for_e(queue, inCel, inBound, 0, n, grid.getNumCellsX(), grid.getNumCellsY(),
+                                                grid.getNumCellsXTotal(), grid.getNumCellsYTotal(),
+                                                grid.getCellWidth(), grid.getCellHeight(), globalSizes, localSizes, storeEvt);
+
+                solveBEvt = kernels.solve_for_b(queue, inCel, inBound, 0, n, grid.getNumCellsX(), grid.getNumCellsY(),
+                                                grid.getNumCellsXTotal(), grid.getNumCellsYTotal(),
+                                                grid.getCellWidth(), grid.getCellHeight(), globalSizes, localSizes, solveEEvt);
+
+                //interpolate to particle
+                while(processedParticles < particles.size()){
+                    partInterpEvt = kernels.particle_interpolation(queue, inPar, inCel, tstep, n, particles.size(), processedParticles, 
+                                                                   grid.getNumCellsXTotal(), grid.getNumCellsYTotal(),
+                                                                   grid.getCellWidth(), grid.getCellHeight(), globalSizes, localSizes, solveBEvt);
+                    processedParticles += workGroupSize;
+                }
+
+                processedParticles = 0;
+            }
+
+            //get output
+            Pointer<Double> outPar = inPar.read(queue, partInterpEvt);
+            
+            for (int i = 0; i < particles.size() * P_SIZE; i+=P_SIZE) {
+                particles.get(i/P_SIZE).setX(outPar.get(i + 0));
+                particles.get(i/P_SIZE).setY(outPar.get(i + 1));
+                particles.get(i/P_SIZE).setRadius(outPar.get(i + 2));
+                particles.get(i/P_SIZE).setVx(outPar.get(i + 3));
+                particles.get(i/P_SIZE).setVy(outPar.get(i + 4));
+                particles.get(i/P_SIZE).setAx(outPar.get(i + 5));
+                particles.get(i/P_SIZE).setAy(outPar.get(i + 6));
+                particles.get(i/P_SIZE).setMass(outPar.get(i + 7));
+                particles.get(i/P_SIZE).setCharge(outPar.get(i + 8));
+                particles.get(i/P_SIZE).setPrevX(outPar.get(i + 9));
+                particles.get(i/P_SIZE).setPrevY(outPar.get(i + 10));
+                particles.get(i/P_SIZE).setEx(outPar.get(i + 11));
+                particles.get(i/P_SIZE).setEy(outPar.get(i + 12));
+                particles.get(i/P_SIZE).setBz(outPar.get(i + 13));
+                particles.get(i/P_SIZE).setPrevPositionComponentForceX(outPar.get(i + 14));
+                particles.get(i/P_SIZE).setPrevPositionComponentForceY(outPar.get(i + 15));
+                particles.get(i/P_SIZE).setPrevTangentVelocityComponentOfForceX(outPar.get(i + 16));
+                particles.get(i/P_SIZE).setPrevTangentVelocityComponentOfForceY(outPar.get(i + 17));
+                particles.get(i/P_SIZE).setPrevNormalVelocityComponentOfForceX(outPar.get(i + 18));
+                particles.get(i/P_SIZE).setPrevNormalVelocityComponentOfForceY(outPar.get(i + 19));
+                particles.get(i/P_SIZE).setPrevBz(outPar.get(i + 20));
+                particles.get(i/P_SIZE).setPrevLinearDragCoefficient(outPar.get(i + 21));
+            }                
+            
+         }
+         
+         void emptySolverCloudInCell(SimulationKernel kernels, CLQueue queue, CLBuffer<Double> inPar, CLBuffer<Double> inCel, 
+                                     CLBuffer<Integer> inBound, int n, int[] globalSizes, int[] localSizes, long workGroupSize){
+            CLEvent pushEvt = null;
+            CLEvent resetEvt = null;
+            CLEvent interpEvt = null;
+            CLEvent storeEvt = null;
+            CLEvent solveEEvt = null;
+            CLEvent solveBEvt = null;
+            CLEvent partInterpEvt = null;
+
+            int processedParticles = 0;
+            for (int i = 0; i < iterations; i++) {
+                //particlePush 
+//                while(processedParticles < particles.size()){
+//                    pushEvt = kernels.particle_push_boris(queue, inPar, tstep, n, particles.size(), processedParticles,
+//                                                          width, height, globalSizes, localSizes);
+//                    processedParticles += workGroupSize;
+//                }
+//                processedParticles = 0;
+
+
+                //interpolate to grid
+                resetEvt = kernels.reset_current(queue, inCel,  n, 
+                                                 grid.getNumCellsXTotal(), grid.getNumCellsYTotal(),
+                                                 globalSizes, localSizes, pushEvt);
+
+
+                while(processedParticles < particles.size()){
+                    interpEvt = kernels.cloud_in_cell(queue, inPar, inCel, inBound, tstep, n, particles.size(), processedParticles, 
+                                                      grid.getNumCellsXTotal(), grid.getNumCellsYTotal(),
+                                                      grid.getCellWidth(), grid.getCellHeight(),  globalSizes, localSizes, resetEvt);
+                    processedParticles += workGroupSize;
+                }
+                processedParticles = 0;
+
+                //update grid
+                storeEvt = kernels.store_fields(queue, inCel, n, 
+                                                grid.getNumCellsXTotal(), grid.getNumCellsYTotal(),
+                                                globalSizes, localSizes, interpEvt);
+                solveEEvt = kernels.solve_for_e(queue, inCel, inBound, 0, n, grid.getNumCellsX(), grid.getNumCellsY(),
+                                                grid.getNumCellsXTotal(), grid.getNumCellsYTotal(),
+                                                grid.getCellWidth(), grid.getCellHeight(), globalSizes, localSizes, storeEvt);
+
+                solveBEvt = kernels.solve_for_b(queue, inCel, inBound, 0, n, grid.getNumCellsX(), grid.getNumCellsY(),
+                                                grid.getNumCellsXTotal(), grid.getNumCellsYTotal(),
+                                                grid.getCellWidth(), grid.getCellHeight(), globalSizes, localSizes, solveEEvt);
+
+                //interpolate to particle
+                while(processedParticles < particles.size()){
+                    partInterpEvt = kernels.particle_interpolation(queue, inPar, inCel, tstep, n, particles.size(), processedParticles, 
+                                                                   grid.getNumCellsXTotal(), grid.getNumCellsYTotal(),
+                                                                   grid.getCellWidth(), grid.getCellHeight(), globalSizes, localSizes, solveBEvt);
+                    processedParticles += workGroupSize;
+                }
+
+                processedParticles = 0;
+            }
+
+            //get output
+            Pointer<Double> outPar = inPar.read(queue, partInterpEvt);
+            
+            for (int i = 0; i < particles.size() * P_SIZE; i+=P_SIZE) {
+                particles.get(i/P_SIZE).setX(outPar.get(i + 0));
+                particles.get(i/P_SIZE).setY(outPar.get(i + 1));
+                particles.get(i/P_SIZE).setRadius(outPar.get(i + 2));
+                particles.get(i/P_SIZE).setVx(outPar.get(i + 3));
+                particles.get(i/P_SIZE).setVy(outPar.get(i + 4));
+                particles.get(i/P_SIZE).setAx(outPar.get(i + 5));
+                particles.get(i/P_SIZE).setAy(outPar.get(i + 6));
+                particles.get(i/P_SIZE).setMass(outPar.get(i + 7));
+                particles.get(i/P_SIZE).setCharge(outPar.get(i + 8));
+                particles.get(i/P_SIZE).setPrevX(outPar.get(i + 9));
+                particles.get(i/P_SIZE).setPrevY(outPar.get(i + 10));
+                particles.get(i/P_SIZE).setEx(outPar.get(i + 11));
+                particles.get(i/P_SIZE).setEy(outPar.get(i + 12));
+                particles.get(i/P_SIZE).setBz(outPar.get(i + 13));
+                particles.get(i/P_SIZE).setPrevPositionComponentForceX(outPar.get(i + 14));
+                particles.get(i/P_SIZE).setPrevPositionComponentForceY(outPar.get(i + 15));
+                particles.get(i/P_SIZE).setPrevTangentVelocityComponentOfForceX(outPar.get(i + 16));
+                particles.get(i/P_SIZE).setPrevTangentVelocityComponentOfForceY(outPar.get(i + 17));
+                particles.get(i/P_SIZE).setPrevNormalVelocityComponentOfForceX(outPar.get(i + 18));
+                particles.get(i/P_SIZE).setPrevNormalVelocityComponentOfForceY(outPar.get(i + 19));
+                particles.get(i/P_SIZE).setPrevBz(outPar.get(i + 20));
+                particles.get(i/P_SIZE).setPrevLinearDragCoefficient(outPar.get(i + 21));
+            }                
+             
+         }
+         
+         void eulerCloudInCell(SimulationKernel kernels, CLQueue queue, CLBuffer<Double> inPar, CLBuffer<Double> inCel, 
+                               CLBuffer<Integer> inBound, int n, int[] globalSizes, int[] localSizes, long workGroupSize){
+            CLEvent pushEvt = null;
+            CLEvent resetEvt = null;
+            CLEvent interpEvt = null;
+            CLEvent storeEvt = null;
+            CLEvent solveEEvt = null;
+            CLEvent solveBEvt = null;
+            CLEvent partInterpEvt = null;
+
+            int processedParticles = 0;
+            for (int i = 0; i < iterations; i++) {
+                //particlePush 
+                while(processedParticles < particles.size()){
+                    pushEvt = kernels.particle_push_euler(queue, inPar, tstep, n, particles.size(), processedParticles,
+                                                          width, height, globalSizes, localSizes);
+                    processedParticles += workGroupSize;
+                }
+                processedParticles = 0;
+
+
+                //interpolate to grid
+                resetEvt = kernels.reset_current(queue, inCel,  n, 
+                                                 grid.getNumCellsXTotal(), grid.getNumCellsYTotal(),
+                                                 globalSizes, localSizes, pushEvt);
+
+
+                while(processedParticles < particles.size()){
+                    interpEvt = kernels.cloud_in_cell(queue, inPar, inCel, inBound, tstep, n, particles.size(), processedParticles, 
+                                                      grid.getNumCellsXTotal(), grid.getNumCellsYTotal(),
+                                                      grid.getCellWidth(), grid.getCellHeight(),  globalSizes, localSizes, resetEvt);
+                    processedParticles += workGroupSize;
+                }
+                processedParticles = 0;
+
+                //update grid
+                storeEvt = kernels.store_fields(queue, inCel, n, 
+                                                grid.getNumCellsXTotal(), grid.getNumCellsYTotal(),
+                                                globalSizes, localSizes, interpEvt);
+                solveEEvt = kernels.solve_for_e(queue, inCel, inBound, 0, n, grid.getNumCellsX(), grid.getNumCellsY(),
+                                                grid.getNumCellsXTotal(), grid.getNumCellsYTotal(),
+                                                grid.getCellWidth(), grid.getCellHeight(), globalSizes, localSizes, storeEvt);
+
+                solveBEvt = kernels.solve_for_b(queue, inCel, inBound, 0, n, grid.getNumCellsX(), grid.getNumCellsY(),
+                                                grid.getNumCellsXTotal(), grid.getNumCellsYTotal(),
+                                                grid.getCellWidth(), grid.getCellHeight(), globalSizes, localSizes, solveEEvt);
+
+                //interpolate to particle
+                while(processedParticles < particles.size()){
+                    partInterpEvt = kernels.particle_interpolation(queue, inPar, inCel, tstep, n, particles.size(), processedParticles, 
+                                                                   grid.getNumCellsXTotal(), grid.getNumCellsYTotal(),
+                                                                   grid.getCellWidth(), grid.getCellHeight(), globalSizes, localSizes, solveBEvt);
+                    processedParticles += workGroupSize;
+                }
+
+                processedParticles = 0;
+            }
+
+            //get output
+            Pointer<Double> outPar = inPar.read(queue, partInterpEvt);
+            
+            for (int i = 0; i < particles.size() * P_SIZE; i+=P_SIZE) {
+                particles.get(i/P_SIZE).setX(outPar.get(i + 0));
+                particles.get(i/P_SIZE).setY(outPar.get(i + 1));
+                particles.get(i/P_SIZE).setRadius(outPar.get(i + 2));
+                particles.get(i/P_SIZE).setVx(outPar.get(i + 3));
+                particles.get(i/P_SIZE).setVy(outPar.get(i + 4));
+                particles.get(i/P_SIZE).setAx(outPar.get(i + 5));
+                particles.get(i/P_SIZE).setAy(outPar.get(i + 6));
+                particles.get(i/P_SIZE).setMass(outPar.get(i + 7));
+                particles.get(i/P_SIZE).setCharge(outPar.get(i + 8));
+                particles.get(i/P_SIZE).setPrevX(outPar.get(i + 9));
+                particles.get(i/P_SIZE).setPrevY(outPar.get(i + 10));
+                particles.get(i/P_SIZE).setEx(outPar.get(i + 11));
+                particles.get(i/P_SIZE).setEy(outPar.get(i + 12));
+                particles.get(i/P_SIZE).setBz(outPar.get(i + 13));
+                particles.get(i/P_SIZE).setPrevPositionComponentForceX(outPar.get(i + 14));
+                particles.get(i/P_SIZE).setPrevPositionComponentForceY(outPar.get(i + 15));
+                particles.get(i/P_SIZE).setPrevTangentVelocityComponentOfForceX(outPar.get(i + 16));
+                particles.get(i/P_SIZE).setPrevTangentVelocityComponentOfForceY(outPar.get(i + 17));
+                particles.get(i/P_SIZE).setPrevNormalVelocityComponentOfForceX(outPar.get(i + 18));
+                particles.get(i/P_SIZE).setPrevNormalVelocityComponentOfForceY(outPar.get(i + 19));
+                particles.get(i/P_SIZE).setPrevBz(outPar.get(i + 20));
+                particles.get(i/P_SIZE).setPrevLinearDragCoefficient(outPar.get(i + 21));
+            }                
+             
+         }
+         
+         void eulerRichardsonCloudInCell(SimulationKernel kernels, CLQueue queue, CLBuffer<Double> inPar, CLBuffer<Double> inCel, 
+                                         CLBuffer<Integer> inBound, int n, int[] globalSizes, int[] localSizes, long workGroupSize){
+            CLEvent pushEvt = null;
+            CLEvent resetEvt = null;
+            CLEvent interpEvt = null;
+            CLEvent storeEvt = null;
+            CLEvent solveEEvt = null;
+            CLEvent solveBEvt = null;
+            CLEvent partInterpEvt = null;
+
+            int processedParticles = 0;
+            for (int i = 0; i < iterations; i++) {
+                //particlePush 
+                while(processedParticles < particles.size()){
+                    pushEvt = kernels.particle_push_euler_richardson(queue, inPar, tstep, n, particles.size(), processedParticles,
+                                                                     width, height, globalSizes, localSizes);
+                    processedParticles += workGroupSize;
+                }
+                processedParticles = 0;
+
+
+                //interpolate to grid
+                resetEvt = kernels.reset_current(queue, inCel,  n, 
+                                                 grid.getNumCellsXTotal(), grid.getNumCellsYTotal(),
+                                                 globalSizes, localSizes, pushEvt);
+
+
+                while(processedParticles < particles.size()){
+                    interpEvt = kernels.cloud_in_cell(queue, inPar, inCel, inBound, tstep, n, particles.size(), processedParticles, 
+                                                      grid.getNumCellsXTotal(), grid.getNumCellsYTotal(),
+                                                      grid.getCellWidth(), grid.getCellHeight(),  globalSizes, localSizes, resetEvt);
+                    processedParticles += workGroupSize;
+                }
+                processedParticles = 0;
+
+                //update grid
+                storeEvt = kernels.store_fields(queue, inCel, n, 
+                                                grid.getNumCellsXTotal(), grid.getNumCellsYTotal(),
+                                                globalSizes, localSizes, interpEvt);
+                solveEEvt = kernels.solve_for_e(queue, inCel, inBound, 0, n, grid.getNumCellsX(), grid.getNumCellsY(),
+                                                grid.getNumCellsXTotal(), grid.getNumCellsYTotal(),
+                                                grid.getCellWidth(), grid.getCellHeight(), globalSizes, localSizes, storeEvt);
+
+                solveBEvt = kernels.solve_for_b(queue, inCel, inBound, 0, n, grid.getNumCellsX(), grid.getNumCellsY(),
+                                                grid.getNumCellsXTotal(), grid.getNumCellsYTotal(),
+                                                grid.getCellWidth(), grid.getCellHeight(), globalSizes, localSizes, solveEEvt);
+
+                //interpolate to particle
+                while(processedParticles < particles.size()){
+                    partInterpEvt = kernels.particle_interpolation(queue, inPar, inCel, tstep, n, particles.size(), processedParticles, 
+                                                                   grid.getNumCellsXTotal(), grid.getNumCellsYTotal(),
+                                                                   grid.getCellWidth(), grid.getCellHeight(), globalSizes, localSizes, solveBEvt);
+                    processedParticles += workGroupSize;
+                }
+
+                processedParticles = 0;
+            }
+
+            //get output
+            Pointer<Double> outPar = inPar.read(queue, partInterpEvt);
+            
+            for (int i = 0; i < particles.size() * P_SIZE; i+=P_SIZE) {
+                particles.get(i/P_SIZE).setX(outPar.get(i + 0));
+                particles.get(i/P_SIZE).setY(outPar.get(i + 1));
+                particles.get(i/P_SIZE).setRadius(outPar.get(i + 2));
+                particles.get(i/P_SIZE).setVx(outPar.get(i + 3));
+                particles.get(i/P_SIZE).setVy(outPar.get(i + 4));
+                particles.get(i/P_SIZE).setAx(outPar.get(i + 5));
+                particles.get(i/P_SIZE).setAy(outPar.get(i + 6));
+                particles.get(i/P_SIZE).setMass(outPar.get(i + 7));
+                particles.get(i/P_SIZE).setCharge(outPar.get(i + 8));
+                particles.get(i/P_SIZE).setPrevX(outPar.get(i + 9));
+                particles.get(i/P_SIZE).setPrevY(outPar.get(i + 10));
+                particles.get(i/P_SIZE).setEx(outPar.get(i + 11));
+                particles.get(i/P_SIZE).setEy(outPar.get(i + 12));
+                particles.get(i/P_SIZE).setBz(outPar.get(i + 13));
+                particles.get(i/P_SIZE).setPrevPositionComponentForceX(outPar.get(i + 14));
+                particles.get(i/P_SIZE).setPrevPositionComponentForceY(outPar.get(i + 15));
+                particles.get(i/P_SIZE).setPrevTangentVelocityComponentOfForceX(outPar.get(i + 16));
+                particles.get(i/P_SIZE).setPrevTangentVelocityComponentOfForceY(outPar.get(i + 17));
+                particles.get(i/P_SIZE).setPrevNormalVelocityComponentOfForceX(outPar.get(i + 18));
+                particles.get(i/P_SIZE).setPrevNormalVelocityComponentOfForceY(outPar.get(i + 19));
+                particles.get(i/P_SIZE).setPrevBz(outPar.get(i + 20));
+                particles.get(i/P_SIZE).setPrevLinearDragCoefficient(outPar.get(i + 21));
+            }                
+             
+         }
+         
+         void leapFrogCloudInCell(SimulationKernel kernels, CLQueue queue, CLBuffer<Double> inPar, CLBuffer<Double> inCel, 
+                                  CLBuffer<Integer> inBound, int n, int[] globalSizes, int[] localSizes, long workGroupSize){
+            CLEvent pushEvt = null;
+            CLEvent resetEvt = null;
+            CLEvent interpEvt = null;
+            CLEvent storeEvt = null;
+            CLEvent solveEEvt = null;
+            CLEvent solveBEvt = null;
+            CLEvent partInterpEvt = null;
+
+            int processedParticles = 0;
+            for (int i = 0; i < iterations; i++) {
+                //particlePush 
+                while(processedParticles < particles.size()){
+                    pushEvt = kernels.particle_push_leap_frog(queue, inPar, tstep, n, particles.size(), processedParticles,
+                                                              width, height, globalSizes, localSizes);
+                    processedParticles += workGroupSize;
+                }
+                processedParticles = 0;
+
+
+                //interpolate to grid
+                resetEvt = kernels.reset_current(queue, inCel,  n, 
+                                                 grid.getNumCellsXTotal(), grid.getNumCellsYTotal(),
+                                                 globalSizes, localSizes, pushEvt);
+
+
+                while(processedParticles < particles.size()){
+                    interpEvt = kernels.cloud_in_cell(queue, inPar, inCel, inBound, tstep, n, particles.size(), processedParticles, 
+                                                      grid.getNumCellsXTotal(), grid.getNumCellsYTotal(),
+                                                      grid.getCellWidth(), grid.getCellHeight(),  globalSizes, localSizes, resetEvt);
+                    processedParticles += workGroupSize;
+                }
+                processedParticles = 0;
+
+                //update grid
+                storeEvt = kernels.store_fields(queue, inCel, n, 
+                                                grid.getNumCellsXTotal(), grid.getNumCellsYTotal(),
+                                                globalSizes, localSizes, interpEvt);
+                solveEEvt = kernels.solve_for_e(queue, inCel, inBound, 0, n, grid.getNumCellsX(), grid.getNumCellsY(),
+                                                grid.getNumCellsXTotal(), grid.getNumCellsYTotal(),
+                                                grid.getCellWidth(), grid.getCellHeight(), globalSizes, localSizes, storeEvt);
+
+                solveBEvt = kernels.solve_for_b(queue, inCel, inBound, 0, n, grid.getNumCellsX(), grid.getNumCellsY(),
+                                                grid.getNumCellsXTotal(), grid.getNumCellsYTotal(),
+                                                grid.getCellWidth(), grid.getCellHeight(), globalSizes, localSizes, solveEEvt);
+
+                //interpolate to particle
+                while(processedParticles < particles.size()){
+                    partInterpEvt = kernels.particle_interpolation(queue, inPar, inCel, tstep, n, particles.size(), processedParticles, 
+                                                                   grid.getNumCellsXTotal(), grid.getNumCellsYTotal(),
+                                                                   grid.getCellWidth(), grid.getCellHeight(), globalSizes, localSizes, solveBEvt);
+                    processedParticles += workGroupSize;
+                }
+
+                processedParticles = 0;
+            }
+
+            //get output
+            Pointer<Double> outPar = inPar.read(queue, partInterpEvt);
+            
+            for (int i = 0; i < particles.size() * P_SIZE; i+=P_SIZE) {
+                particles.get(i/P_SIZE).setX(outPar.get(i + 0));
+                particles.get(i/P_SIZE).setY(outPar.get(i + 1));
+                particles.get(i/P_SIZE).setRadius(outPar.get(i + 2));
+                particles.get(i/P_SIZE).setVx(outPar.get(i + 3));
+                particles.get(i/P_SIZE).setVy(outPar.get(i + 4));
+                particles.get(i/P_SIZE).setAx(outPar.get(i + 5));
+                particles.get(i/P_SIZE).setAy(outPar.get(i + 6));
+                particles.get(i/P_SIZE).setMass(outPar.get(i + 7));
+                particles.get(i/P_SIZE).setCharge(outPar.get(i + 8));
+                particles.get(i/P_SIZE).setPrevX(outPar.get(i + 9));
+                particles.get(i/P_SIZE).setPrevY(outPar.get(i + 10));
+                particles.get(i/P_SIZE).setEx(outPar.get(i + 11));
+                particles.get(i/P_SIZE).setEy(outPar.get(i + 12));
+                particles.get(i/P_SIZE).setBz(outPar.get(i + 13));
+                particles.get(i/P_SIZE).setPrevPositionComponentForceX(outPar.get(i + 14));
+                particles.get(i/P_SIZE).setPrevPositionComponentForceY(outPar.get(i + 15));
+                particles.get(i/P_SIZE).setPrevTangentVelocityComponentOfForceX(outPar.get(i + 16));
+                particles.get(i/P_SIZE).setPrevTangentVelocityComponentOfForceY(outPar.get(i + 17));
+                particles.get(i/P_SIZE).setPrevNormalVelocityComponentOfForceX(outPar.get(i + 18));
+                particles.get(i/P_SIZE).setPrevNormalVelocityComponentOfForceY(outPar.get(i + 19));
+                particles.get(i/P_SIZE).setPrevBz(outPar.get(i + 20));
+                particles.get(i/P_SIZE).setPrevLinearDragCoefficient(outPar.get(i + 21));
+            }                
+             
+         }
+         
+         void leapFrogDampedCloudInCell(SimulationKernel kernels, CLQueue queue, CLBuffer<Double> inPar, CLBuffer<Double> inCel, 
+                                        CLBuffer<Integer> inBound, int n, int[] globalSizes, int[] localSizes, long workGroupSize){
+            CLEvent pushEvt = null;
+            CLEvent resetEvt = null;
+            CLEvent interpEvt = null;
+            CLEvent storeEvt = null;
+            CLEvent solveEEvt = null;
+            CLEvent solveBEvt = null;
+            CLEvent partInterpEvt = null;
+
+            int processedParticles = 0;
+            for (int i = 0; i < iterations; i++) {
+                //particlePush 
+                while(processedParticles < particles.size()){
+                    pushEvt = kernels.particle_push_leap_frog_damped(queue, inPar, tstep, n, particles.size(), processedParticles,
+                                                                     width, height, globalSizes, localSizes);
+                    processedParticles += workGroupSize;
+                }
+                processedParticles = 0;
+
+
+                //interpolate to grid
+                resetEvt = kernels.reset_current(queue, inCel,  n, 
+                                                 grid.getNumCellsXTotal(), grid.getNumCellsYTotal(),
+                                                 globalSizes, localSizes, pushEvt);
+
+
+                while(processedParticles < particles.size()){
+                    interpEvt = kernels.cloud_in_cell(queue, inPar, inCel, inBound, tstep, n, particles.size(), processedParticles, 
+                                                      grid.getNumCellsXTotal(), grid.getNumCellsYTotal(),
+                                                      grid.getCellWidth(), grid.getCellHeight(),  globalSizes, localSizes, resetEvt);
+                    processedParticles += workGroupSize;
+                }
+                processedParticles = 0;
+
+                //update grid
+                storeEvt = kernels.store_fields(queue, inCel, n, 
+                                                grid.getNumCellsXTotal(), grid.getNumCellsYTotal(),
+                                                globalSizes, localSizes, interpEvt);
+                solveEEvt = kernels.solve_for_e(queue, inCel, inBound, 0, n, grid.getNumCellsX(), grid.getNumCellsY(),
+                                                grid.getNumCellsXTotal(), grid.getNumCellsYTotal(),
+                                                grid.getCellWidth(), grid.getCellHeight(), globalSizes, localSizes, storeEvt);
+
+                solveBEvt = kernels.solve_for_b(queue, inCel, inBound, 0, n, grid.getNumCellsX(), grid.getNumCellsY(),
+                                                grid.getNumCellsXTotal(), grid.getNumCellsYTotal(),
+                                                grid.getCellWidth(), grid.getCellHeight(), globalSizes, localSizes, solveEEvt);
+
+                //interpolate to particle
+                while(processedParticles < particles.size()){
+                    partInterpEvt = kernels.particle_interpolation(queue, inPar, inCel, tstep, n, particles.size(), processedParticles, 
+                                                                   grid.getNumCellsXTotal(), grid.getNumCellsYTotal(),
+                                                                   grid.getCellWidth(), grid.getCellHeight(), globalSizes, localSizes, solveBEvt);
+                    processedParticles += workGroupSize;
+                }
+
+                processedParticles = 0;
+            }
+
+            //get output
+            Pointer<Double> outPar = inPar.read(queue, partInterpEvt);
+            
+            for (int i = 0; i < particles.size() * P_SIZE; i+=P_SIZE) {
+                particles.get(i/P_SIZE).setX(outPar.get(i + 0));
+                particles.get(i/P_SIZE).setY(outPar.get(i + 1));
+                particles.get(i/P_SIZE).setRadius(outPar.get(i + 2));
+                particles.get(i/P_SIZE).setVx(outPar.get(i + 3));
+                particles.get(i/P_SIZE).setVy(outPar.get(i + 4));
+                particles.get(i/P_SIZE).setAx(outPar.get(i + 5));
+                particles.get(i/P_SIZE).setAy(outPar.get(i + 6));
+                particles.get(i/P_SIZE).setMass(outPar.get(i + 7));
+                particles.get(i/P_SIZE).setCharge(outPar.get(i + 8));
+                particles.get(i/P_SIZE).setPrevX(outPar.get(i + 9));
+                particles.get(i/P_SIZE).setPrevY(outPar.get(i + 10));
+                particles.get(i/P_SIZE).setEx(outPar.get(i + 11));
+                particles.get(i/P_SIZE).setEy(outPar.get(i + 12));
+                particles.get(i/P_SIZE).setBz(outPar.get(i + 13));
+                particles.get(i/P_SIZE).setPrevPositionComponentForceX(outPar.get(i + 14));
+                particles.get(i/P_SIZE).setPrevPositionComponentForceY(outPar.get(i + 15));
+                particles.get(i/P_SIZE).setPrevTangentVelocityComponentOfForceX(outPar.get(i + 16));
+                particles.get(i/P_SIZE).setPrevTangentVelocityComponentOfForceY(outPar.get(i + 17));
+                particles.get(i/P_SIZE).setPrevNormalVelocityComponentOfForceX(outPar.get(i + 18));
+                particles.get(i/P_SIZE).setPrevNormalVelocityComponentOfForceY(outPar.get(i + 19));
+                particles.get(i/P_SIZE).setPrevBz(outPar.get(i + 20));
+                particles.get(i/P_SIZE).setPrevLinearDragCoefficient(outPar.get(i + 21));
+            }                
+             
+         }
+         
+         void leapFrogHalfStepCloudInCell(SimulationKernel kernels, CLQueue queue, CLBuffer<Double> inPar, CLBuffer<Double> inCel, 
+                                          CLBuffer<Integer> inBound, int n, int[] globalSizes, int[] localSizes, long workGroupSize){
+            CLEvent pushEvt = null;
+            CLEvent resetEvt = null;
+            CLEvent interpEvt = null;
+            CLEvent storeEvt = null;
+            CLEvent solveEEvt = null;
+            CLEvent solveBEvt = null;
+            CLEvent partInterpEvt = null;
+
+            int processedParticles = 0;
+            for (int i = 0; i < iterations; i++) {
+                //particlePush 
+                while(processedParticles < particles.size()){
+                    pushEvt = kernels.particle_push_leap_frog_half_step(queue, inPar, tstep, n, particles.size(), processedParticles,
+                                                                        width, height, globalSizes, localSizes);
+                    processedParticles += workGroupSize;
+                }
+                processedParticles = 0;
+
+
+                //interpolate to grid
+                resetEvt = kernels.reset_current(queue, inCel,  n, 
+                                                 grid.getNumCellsXTotal(), grid.getNumCellsYTotal(),
+                                                 globalSizes, localSizes, pushEvt);
+
+
+                while(processedParticles < particles.size()){
+                    interpEvt = kernels.cloud_in_cell(queue, inPar, inCel, inBound, tstep, n, particles.size(), processedParticles, 
+                                                      grid.getNumCellsXTotal(), grid.getNumCellsYTotal(),
+                                                      grid.getCellWidth(), grid.getCellHeight(),  globalSizes, localSizes, resetEvt);
+                    processedParticles += workGroupSize;
+                }
+                processedParticles = 0;
+
+                //update grid
+                storeEvt = kernels.store_fields(queue, inCel, n, 
+                                                grid.getNumCellsXTotal(), grid.getNumCellsYTotal(),
+                                                globalSizes, localSizes, interpEvt);
+                solveEEvt = kernels.solve_for_e(queue, inCel, inBound, 0, n, grid.getNumCellsX(), grid.getNumCellsY(),
+                                                grid.getNumCellsXTotal(), grid.getNumCellsYTotal(),
+                                                grid.getCellWidth(), grid.getCellHeight(), globalSizes, localSizes, storeEvt);
+
+                solveBEvt = kernels.solve_for_b(queue, inCel, inBound, 0, n, grid.getNumCellsX(), grid.getNumCellsY(),
+                                                grid.getNumCellsXTotal(), grid.getNumCellsYTotal(),
+                                                grid.getCellWidth(), grid.getCellHeight(), globalSizes, localSizes, solveEEvt);
+
+                //interpolate to particle
+                while(processedParticles < particles.size()){
+                    partInterpEvt = kernels.particle_interpolation(queue, inPar, inCel, tstep, n, particles.size(), processedParticles, 
+                                                                   grid.getNumCellsXTotal(), grid.getNumCellsYTotal(),
+                                                                   grid.getCellWidth(), grid.getCellHeight(), globalSizes, localSizes, solveBEvt);
+                    processedParticles += workGroupSize;
+                }
+
+                processedParticles = 0;
+            }
+
+            //get output
+            Pointer<Double> outPar = inPar.read(queue, partInterpEvt);
+            
+            for (int i = 0; i < particles.size() * P_SIZE; i+=P_SIZE) {
+                particles.get(i/P_SIZE).setX(outPar.get(i + 0));
+                particles.get(i/P_SIZE).setY(outPar.get(i + 1));
+                particles.get(i/P_SIZE).setRadius(outPar.get(i + 2));
+                particles.get(i/P_SIZE).setVx(outPar.get(i + 3));
+                particles.get(i/P_SIZE).setVy(outPar.get(i + 4));
+                particles.get(i/P_SIZE).setAx(outPar.get(i + 5));
+                particles.get(i/P_SIZE).setAy(outPar.get(i + 6));
+                particles.get(i/P_SIZE).setMass(outPar.get(i + 7));
+                particles.get(i/P_SIZE).setCharge(outPar.get(i + 8));
+                particles.get(i/P_SIZE).setPrevX(outPar.get(i + 9));
+                particles.get(i/P_SIZE).setPrevY(outPar.get(i + 10));
+                particles.get(i/P_SIZE).setEx(outPar.get(i + 11));
+                particles.get(i/P_SIZE).setEy(outPar.get(i + 12));
+                particles.get(i/P_SIZE).setBz(outPar.get(i + 13));
+                particles.get(i/P_SIZE).setPrevPositionComponentForceX(outPar.get(i + 14));
+                particles.get(i/P_SIZE).setPrevPositionComponentForceY(outPar.get(i + 15));
+                particles.get(i/P_SIZE).setPrevTangentVelocityComponentOfForceX(outPar.get(i + 16));
+                particles.get(i/P_SIZE).setPrevTangentVelocityComponentOfForceY(outPar.get(i + 17));
+                particles.get(i/P_SIZE).setPrevNormalVelocityComponentOfForceX(outPar.get(i + 18));
+                particles.get(i/P_SIZE).setPrevNormalVelocityComponentOfForceY(outPar.get(i + 19));
+                particles.get(i/P_SIZE).setPrevBz(outPar.get(i + 20));
+                particles.get(i/P_SIZE).setPrevLinearDragCoefficient(outPar.get(i + 21));
+            }                
+             
+         }
+         
+         void semiImplicitEulerCloudInCell(SimulationKernel kernels, CLQueue queue, CLBuffer<Double> inPar, CLBuffer<Double> inCel, 
+                                           CLBuffer<Integer> inBound, int n, int[] globalSizes, int[] localSizes, long workGroupSize){
+            CLEvent pushEvt = null;
+            CLEvent resetEvt = null;
+            CLEvent interpEvt = null;
+            CLEvent storeEvt = null;
+            CLEvent solveEEvt = null;
+            CLEvent solveBEvt = null;
+            CLEvent partInterpEvt = null;
+
+            int processedParticles = 0;
+            for (int i = 0; i < iterations; i++) {
+                //particlePush 
+                while(processedParticles < particles.size()){
+                    pushEvt = kernels.particle_push_semiimplicit_euler(queue, inPar, tstep, n, particles.size(), processedParticles,
+                                                                       width, height, globalSizes, localSizes);
+                    processedParticles += workGroupSize;
+                }
+                processedParticles = 0;
+
+
+                //interpolate to grid
+                resetEvt = kernels.reset_current(queue, inCel,  n, 
+                                                 grid.getNumCellsXTotal(), grid.getNumCellsYTotal(),
+                                                 globalSizes, localSizes, pushEvt);
+
+
+                while(processedParticles < particles.size()){
+                    interpEvt = kernels.cloud_in_cell(queue, inPar, inCel, inBound, tstep, n, particles.size(), processedParticles, 
+                                                      grid.getNumCellsXTotal(), grid.getNumCellsYTotal(),
+                                                      grid.getCellWidth(), grid.getCellHeight(),  globalSizes, localSizes, resetEvt);
+                    processedParticles += workGroupSize;
+                }
+                processedParticles = 0;
+
+                //update grid
+                storeEvt = kernels.store_fields(queue, inCel, n, 
+                                                grid.getNumCellsXTotal(), grid.getNumCellsYTotal(),
+                                                globalSizes, localSizes, interpEvt);
+                solveEEvt = kernels.solve_for_e(queue, inCel, inBound, 0, n, grid.getNumCellsX(), grid.getNumCellsY(),
+                                                grid.getNumCellsXTotal(), grid.getNumCellsYTotal(),
+                                                grid.getCellWidth(), grid.getCellHeight(), globalSizes, localSizes, storeEvt);
+
+                solveBEvt = kernels.solve_for_b(queue, inCel, inBound, 0, n, grid.getNumCellsX(), grid.getNumCellsY(),
+                                                grid.getNumCellsXTotal(), grid.getNumCellsYTotal(),
+                                                grid.getCellWidth(), grid.getCellHeight(), globalSizes, localSizes, solveEEvt);
+
+                //interpolate to particle
+                while(processedParticles < particles.size()){
+                    partInterpEvt = kernels.particle_interpolation(queue, inPar, inCel, tstep, n, particles.size(), processedParticles, 
+                                                                   grid.getNumCellsXTotal(), grid.getNumCellsYTotal(),
+                                                                   grid.getCellWidth(), grid.getCellHeight(), globalSizes, localSizes, solveBEvt);
+                    processedParticles += workGroupSize;
+                }
+
+                processedParticles = 0;
+            }
+
+            //get output
+            Pointer<Double> outPar = inPar.read(queue, partInterpEvt);
+            
+            for (int i = 0; i < particles.size() * P_SIZE; i+=P_SIZE) {
+                particles.get(i/P_SIZE).setX(outPar.get(i + 0));
+                particles.get(i/P_SIZE).setY(outPar.get(i + 1));
+                particles.get(i/P_SIZE).setRadius(outPar.get(i + 2));
+                particles.get(i/P_SIZE).setVx(outPar.get(i + 3));
+                particles.get(i/P_SIZE).setVy(outPar.get(i + 4));
+                particles.get(i/P_SIZE).setAx(outPar.get(i + 5));
+                particles.get(i/P_SIZE).setAy(outPar.get(i + 6));
+                particles.get(i/P_SIZE).setMass(outPar.get(i + 7));
+                particles.get(i/P_SIZE).setCharge(outPar.get(i + 8));
+                particles.get(i/P_SIZE).setPrevX(outPar.get(i + 9));
+                particles.get(i/P_SIZE).setPrevY(outPar.get(i + 10));
+                particles.get(i/P_SIZE).setEx(outPar.get(i + 11));
+                particles.get(i/P_SIZE).setEy(outPar.get(i + 12));
+                particles.get(i/P_SIZE).setBz(outPar.get(i + 13));
+                particles.get(i/P_SIZE).setPrevPositionComponentForceX(outPar.get(i + 14));
+                particles.get(i/P_SIZE).setPrevPositionComponentForceY(outPar.get(i + 15));
+                particles.get(i/P_SIZE).setPrevTangentVelocityComponentOfForceX(outPar.get(i + 16));
+                particles.get(i/P_SIZE).setPrevTangentVelocityComponentOfForceY(outPar.get(i + 17));
+                particles.get(i/P_SIZE).setPrevNormalVelocityComponentOfForceX(outPar.get(i + 18));
+                particles.get(i/P_SIZE).setPrevNormalVelocityComponentOfForceY(outPar.get(i + 19));
+                particles.get(i/P_SIZE).setPrevBz(outPar.get(i + 20));
+                particles.get(i/P_SIZE).setPrevLinearDragCoefficient(outPar.get(i + 21));
+            }                
+             
+         }
      }
