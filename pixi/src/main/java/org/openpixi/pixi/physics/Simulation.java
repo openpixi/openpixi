@@ -225,8 +225,14 @@ public class Simulation {
                 for (int i = 0; i < iterations; ++i) {
 			step();
 		}
-                PrintWriter pw = new PrintWriter(new File("p.txt"));
-                
+	}
+
+        /**
+         * Write the results to a txt file
+         */
+       public void writeToFile() throws FileNotFoundException{
+                PrintWriter pw = new PrintWriter(new File("particles_seq.txt"));
+
                 for(int i = 0; i < particles.size(); i++){
                     pw.write(particles.get(i).getX() + "\n");
                     pw.write(particles.get(i).getY() + "\n");
@@ -251,9 +257,8 @@ public class Simulation {
                     pw.write(particles.get(i).getPrevBz() + "\n");
                     pw.write(particles.get(i).getPrevLinearDragCoefficient() + "\n");
                 }
-                pw.close();
-	}
-
+                  pw.close();
+        }
 
 	public void particlePush() {
 		mover.push(particles, f, tstep);

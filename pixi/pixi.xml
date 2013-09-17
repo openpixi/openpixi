@@ -56,6 +56,7 @@
 	<simulationType>Sequential</simulationType>
 	<interpolatorAlgorithm>Charge Conserving CIC</interpolatorAlgorithm>
 	<particleSolver>Boris</particleSolver>
+	<writeToFile>Yes</writeToFile>
 	<diagnostics i="3">Kinetic Energy</diagnostics>
 	<diagnostics i="0">Potential</diagnostics>
 </settings>

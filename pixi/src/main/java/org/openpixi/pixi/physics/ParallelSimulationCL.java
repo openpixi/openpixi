@@ -288,9 +288,41 @@ public class ParallelSimulationCL{
              }
          }
          
+         /**
+          * Write the results to a txt file
+          */
+         public void writeToFile() throws FileNotFoundException{
+            PrintWriter pw = new PrintWriter(new File("particles_ocl.txt"));
+                
+            for(int i = 0; i < particles.size(); i++){
+                pw.write(particles.get(i).getX() + "\n");
+                pw.write(particles.get(i).getY() + "\n");
+                pw.write(particles.get(i).getRadius()+ "\n");
+                pw.write(particles.get(i).getVx() + "\n");
+                pw.write(particles.get(i).getVy() + "\n");
+                pw.write(particles.get(i).getAx() + "\n");
+                pw.write(particles.get(i).getAy() + "\n");
+                pw.write(particles.get(i).getMass() + "\n");
+                pw.write(particles.get(i).getCharge() + "\n");
+                pw.write(particles.get(i).getPrevX() + "\n");
+                pw.write(particles.get(i).getPrevY() + "\n");
+                pw.write(particles.get(i).getEx() + "\n");
+                pw.write(particles.get(i).getEy() + "\n");
+                pw.write(particles.get(i).getBz() + "\n");
+                pw.write(particles.get(i).getPrevPositionComponentForceX() + "\n");
+                pw.write(particles.get(i).getPrevPositionComponentForceY() + "\n");
+                pw.write(particles.get(i).getPrevTangentVelocityComponentOfForceX() + "\n");
+                pw.write(particles.get(i).getPrevTangentVelocityComponentOfForceY() + "\n");
+                pw.write(particles.get(i).getPrevNormalVelocityComponentOfForceX() + "\n");
+                pw.write(particles.get(i).getPrevNormalVelocityComponentOfForceY() + "\n");
+                pw.write(particles.get(i).getPrevBz() + "\n");
+                pw.write(particles.get(i).getPrevLinearDragCoefficient() + "\n");
+            }
+            pw.close();
+         }
          
          /**
-          * Runs the entire simulation in one kernel
+          * Runs the entire simulation 
           */
          public void runParallelSimulation() throws IOException, InterruptedException{
                 int particlesSize = particles.size() * P_SIZE;
@@ -371,33 +403,6 @@ public class ParallelSimulationCL{
                     semiImplicitEulerCIC(kernels, queue, inPar, inCel, inBound, n, globalSizes, localSizes, workGroupSize);
                 } 
                 
-                PrintWriter pw = new PrintWriter(new File("pcl.txt"));
-                
-                for(int i = 0; i < particles.size(); i++){
-                    pw.write(particles.get(i).getX() + "\n");
-                    pw.write(particles.get(i).getY() + "\n");
-                    pw.write(particles.get(i).getRadius()+ "\n");
-                    pw.write(particles.get(i).getVx() + "\n");
-                    pw.write(particles.get(i).getVy() + "\n");
-                    pw.write(particles.get(i).getAx() + "\n");
-                    pw.write(particles.get(i).getAy() + "\n");
-                    pw.write(particles.get(i).getMass() + "\n");
-                    pw.write(particles.get(i).getCharge() + "\n");
-                    pw.write(particles.get(i).getPrevX() + "\n");
-                    pw.write(particles.get(i).getPrevY() + "\n");
-                    pw.write(particles.get(i).getEx() + "\n");
-                    pw.write(particles.get(i).getEy() + "\n");
-                    pw.write(particles.get(i).getBz() + "\n");
-                    pw.write(particles.get(i).getPrevPositionComponentForceX() + "\n");
-                    pw.write(particles.get(i).getPrevPositionComponentForceY() + "\n");
-                    pw.write(particles.get(i).getPrevTangentVelocityComponentOfForceX() + "\n");
-                    pw.write(particles.get(i).getPrevTangentVelocityComponentOfForceY() + "\n");
-                    pw.write(particles.get(i).getPrevNormalVelocityComponentOfForceX() + "\n");
-                    pw.write(particles.get(i).getPrevNormalVelocityComponentOfForceY() + "\n");
-                    pw.write(particles.get(i).getPrevBz() + "\n");
-                    pw.write(particles.get(i).getPrevLinearDragCoefficient() + "\n");
-                }
-                pw.close();
 
          }
          
