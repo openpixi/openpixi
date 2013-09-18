@@ -27,6 +27,8 @@ public class SimpleSolver extends FieldSolver {
 	@Override
 	public void step(Grid grid, double timeStep) {
 		this.timeStep = timeStep;
+		solveForE.timeStep = timeStep;
+		solveForB.timeStep = timeStep;
 		cellIterator.execute(grid, solveForE);
 		cellIterator.execute(grid, solveForB);
 	}
@@ -34,6 +36,7 @@ public class SimpleSolver extends FieldSolver {
 
 	private class SolveForE implements CellAction {
 
+		private double timeStep;
 		public void execute(Cell cell) {
 			throw new UnsupportedOperationException();
 		}
@@ -53,6 +56,7 @@ public class SimpleSolver extends FieldSolver {
 
 	private class SolveForB implements CellAction {
 
+		private double timeStep;
 		public void execute(Cell cell) {
 			throw new UnsupportedOperationException();
 		}

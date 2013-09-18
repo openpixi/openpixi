@@ -147,7 +147,7 @@ public class ParallelSimulationCL{
                 f = settings.getForce();
 
                 ParticleBoundaries particleBoundaries = new SimpleParticleBoundaries(
-                                new DoubleBox(0, width, 0, height),
+                                new DoubleBox(tstep, width, tstep, height),
                                 settings.getParticleBoundary());
                 mover = new ParticleMover(
                                 settings.getParticleSolver(),
@@ -402,6 +402,9 @@ public class ParallelSimulationCL{
                 } else if (OCLParticleSolver.equalsIgnoreCase("SemiImplicit Euler") && OCLGridInterpolator.equalsIgnoreCase("Charge Conserving CIC")) {
                     semiImplicitEulerCIC(kernels, queue, inPar, inCel, inBound, n, globalSizes, localSizes, workGroupSize);
                 } 
+                else{ //default: boris solver, charge conserving cic interpolator
+                    borisCIC(kernels, queue, inPar, inCel, inBound, n, globalSizes, localSizes, workGroupSize);
+                }
                 
 
          }
@@ -446,14 +449,15 @@ public class ParallelSimulationCL{
                 storeEvt = kernels.store_fields(queue, inCel, n, 
                                                 grid.getNumCellsXTotal(), grid.getNumCellsYTotal(),
                                                 globalSizes, localSizes, interpEvt);
-                solveEEvt = kernels.solve_for_e(queue, inCel, inBound, 0, n, grid.getNumCellsX(), grid.getNumCellsY(),
+                
+                solveEEvt = kernels.solve_for_e(queue, inCel, inBound, tstep, n, grid.getNumCellsX(), grid.getNumCellsY(),
                                                 grid.getNumCellsXTotal(), grid.getNumCellsYTotal(),
                                                 grid.getCellWidth(), grid.getCellHeight(), globalSizes, localSizes, storeEvt);
 
-                solveBEvt = kernels.solve_for_b(queue, inCel, inBound, 0, n, grid.getNumCellsX(), grid.getNumCellsY(),
+                solveBEvt = kernels.solve_for_b(queue, inCel, inBound, tstep, n, grid.getNumCellsX(), grid.getNumCellsY(),
                                                 grid.getNumCellsXTotal(), grid.getNumCellsYTotal(),
                                                 grid.getCellWidth(), grid.getCellHeight(), globalSizes, localSizes, solveEEvt);
-
+               
                 //interpolate to particle
                 while(processedParticles < particles.size()){
                     partInterpEvt = kernels.particle_interpolation(queue, inPar, inCel, tstep, n, particles.size(), processedParticles, 
@@ -534,11 +538,11 @@ public class ParallelSimulationCL{
                 storeEvt = kernels.store_fields(queue, inCel, n, 
                                                 grid.getNumCellsXTotal(), grid.getNumCellsYTotal(),
                                                 globalSizes, localSizes, interpEvt);
-                solveEEvt = kernels.solve_for_e(queue, inCel, inBound, 0, n, grid.getNumCellsX(), grid.getNumCellsY(),
+                solveEEvt = kernels.solve_for_e(queue, inCel, inBound, tstep, n, grid.getNumCellsX(), grid.getNumCellsY(),
                                                 grid.getNumCellsXTotal(), grid.getNumCellsYTotal(),
                                                 grid.getCellWidth(), grid.getCellHeight(), globalSizes, localSizes, storeEvt);
 
-                solveBEvt = kernels.solve_for_b(queue, inCel, inBound, 0, n, grid.getNumCellsX(), grid.getNumCellsY(),
+                solveBEvt = kernels.solve_for_b(queue, inCel, inBound, tstep, n, grid.getNumCellsX(), grid.getNumCellsY(),
                                                 grid.getNumCellsXTotal(), grid.getNumCellsYTotal(),
                                                 grid.getCellWidth(), grid.getCellHeight(), globalSizes, localSizes, solveEEvt);
 
@@ -622,11 +626,11 @@ public class ParallelSimulationCL{
                 storeEvt = kernels.store_fields(queue, inCel, n, 
                                                 grid.getNumCellsXTotal(), grid.getNumCellsYTotal(),
                                                 globalSizes, localSizes, interpEvt);
-                solveEEvt = kernels.solve_for_e(queue, inCel, inBound, 0, n, grid.getNumCellsX(), grid.getNumCellsY(),
+                solveEEvt = kernels.solve_for_e(queue, inCel, inBound, tstep, n, grid.getNumCellsX(), grid.getNumCellsY(),
                                                 grid.getNumCellsXTotal(), grid.getNumCellsYTotal(),
                                                 grid.getCellWidth(), grid.getCellHeight(), globalSizes, localSizes, storeEvt);
 
-                solveBEvt = kernels.solve_for_b(queue, inCel, inBound, 0, n, grid.getNumCellsX(), grid.getNumCellsY(),
+                solveBEvt = kernels.solve_for_b(queue, inCel, inBound, tstep, n, grid.getNumCellsX(), grid.getNumCellsY(),
                                                 grid.getNumCellsXTotal(), grid.getNumCellsYTotal(),
                                                 grid.getCellWidth(), grid.getCellHeight(), globalSizes, localSizes, solveEEvt);
 
@@ -710,11 +714,11 @@ public class ParallelSimulationCL{
                 storeEvt = kernels.store_fields(queue, inCel, n, 
                                                 grid.getNumCellsXTotal(), grid.getNumCellsYTotal(),
                                                 globalSizes, localSizes, interpEvt);
-                solveEEvt = kernels.solve_for_e(queue, inCel, inBound, 0, n, grid.getNumCellsX(), grid.getNumCellsY(),
+                solveEEvt = kernels.solve_for_e(queue, inCel, inBound, tstep, n, grid.getNumCellsX(), grid.getNumCellsY(),
                                                 grid.getNumCellsXTotal(), grid.getNumCellsYTotal(),
                                                 grid.getCellWidth(), grid.getCellHeight(), globalSizes, localSizes, storeEvt);
 
-                solveBEvt = kernels.solve_for_b(queue, inCel, inBound, 0, n, grid.getNumCellsX(), grid.getNumCellsY(),
+                solveBEvt = kernels.solve_for_b(queue, inCel, inBound, tstep, n, grid.getNumCellsX(), grid.getNumCellsY(),
                                                 grid.getNumCellsXTotal(), grid.getNumCellsYTotal(),
                                                 grid.getCellWidth(), grid.getCellHeight(), globalSizes, localSizes, solveEEvt);
 
@@ -798,11 +802,11 @@ public class ParallelSimulationCL{
                 storeEvt = kernels.store_fields(queue, inCel, n, 
                                                 grid.getNumCellsXTotal(), grid.getNumCellsYTotal(),
                                                 globalSizes, localSizes, interpEvt);
-                solveEEvt = kernels.solve_for_e(queue, inCel, inBound, 0, n, grid.getNumCellsX(), grid.getNumCellsY(),
+                solveEEvt = kernels.solve_for_e(queue, inCel, inBound, tstep, n, grid.getNumCellsX(), grid.getNumCellsY(),
                                                 grid.getNumCellsXTotal(), grid.getNumCellsYTotal(),
                                                 grid.getCellWidth(), grid.getCellHeight(), globalSizes, localSizes, storeEvt);
 
-                solveBEvt = kernels.solve_for_b(queue, inCel, inBound, 0, n, grid.getNumCellsX(), grid.getNumCellsY(),
+                solveBEvt = kernels.solve_for_b(queue, inCel, inBound, tstep, n, grid.getNumCellsX(), grid.getNumCellsY(),
                                                 grid.getNumCellsXTotal(), grid.getNumCellsYTotal(),
                                                 grid.getCellWidth(), grid.getCellHeight(), globalSizes, localSizes, solveEEvt);
 
@@ -886,11 +890,11 @@ public class ParallelSimulationCL{
                 storeEvt = kernels.store_fields(queue, inCel, n, 
                                                 grid.getNumCellsXTotal(), grid.getNumCellsYTotal(),
                                                 globalSizes, localSizes, interpEvt);
-                solveEEvt = kernels.solve_for_e(queue, inCel, inBound, 0, n, grid.getNumCellsX(), grid.getNumCellsY(),
+                solveEEvt = kernels.solve_for_e(queue, inCel, inBound, tstep, n, grid.getNumCellsX(), grid.getNumCellsY(),
                                                 grid.getNumCellsXTotal(), grid.getNumCellsYTotal(),
                                                 grid.getCellWidth(), grid.getCellHeight(), globalSizes, localSizes, storeEvt);
 
-                solveBEvt = kernels.solve_for_b(queue, inCel, inBound, 0, n, grid.getNumCellsX(), grid.getNumCellsY(),
+                solveBEvt = kernels.solve_for_b(queue, inCel, inBound, tstep, n, grid.getNumCellsX(), grid.getNumCellsY(),
                                                 grid.getNumCellsXTotal(), grid.getNumCellsYTotal(),
                                                 grid.getCellWidth(), grid.getCellHeight(), globalSizes, localSizes, solveEEvt);
 
@@ -974,11 +978,11 @@ public class ParallelSimulationCL{
                 storeEvt = kernels.store_fields(queue, inCel, n, 
                                                 grid.getNumCellsXTotal(), grid.getNumCellsYTotal(),
                                                 globalSizes, localSizes, interpEvt);
-                solveEEvt = kernels.solve_for_e(queue, inCel, inBound, 0, n, grid.getNumCellsX(), grid.getNumCellsY(),
+                solveEEvt = kernels.solve_for_e(queue, inCel, inBound, tstep, n, grid.getNumCellsX(), grid.getNumCellsY(),
                                                 grid.getNumCellsXTotal(), grid.getNumCellsYTotal(),
                                                 grid.getCellWidth(), grid.getCellHeight(), globalSizes, localSizes, storeEvt);
 
-                solveBEvt = kernels.solve_for_b(queue, inCel, inBound, 0, n, grid.getNumCellsX(), grid.getNumCellsY(),
+                solveBEvt = kernels.solve_for_b(queue, inCel, inBound, tstep, n, grid.getNumCellsX(), grid.getNumCellsY(),
                                                 grid.getNumCellsXTotal(), grid.getNumCellsYTotal(),
                                                 grid.getCellWidth(), grid.getCellHeight(), globalSizes, localSizes, solveEEvt);
 
@@ -1062,11 +1066,11 @@ public class ParallelSimulationCL{
                 storeEvt = kernels.store_fields(queue, inCel, n, 
                                                 grid.getNumCellsXTotal(), grid.getNumCellsYTotal(),
                                                 globalSizes, localSizes, interpEvt);
-                solveEEvt = kernels.solve_for_e(queue, inCel, inBound, 0, n, grid.getNumCellsX(), grid.getNumCellsY(),
+                solveEEvt = kernels.solve_for_e(queue, inCel, inBound, tstep, n, grid.getNumCellsX(), grid.getNumCellsY(),
                                                 grid.getNumCellsXTotal(), grid.getNumCellsYTotal(),
                                                 grid.getCellWidth(), grid.getCellHeight(), globalSizes, localSizes, storeEvt);
 
-                solveBEvt = kernels.solve_for_b(queue, inCel, inBound, 0, n, grid.getNumCellsX(), grid.getNumCellsY(),
+                solveBEvt = kernels.solve_for_b(queue, inCel, inBound, tstep, n, grid.getNumCellsX(), grid.getNumCellsY(),
                                                 grid.getNumCellsXTotal(), grid.getNumCellsYTotal(),
                                                 grid.getCellWidth(), grid.getCellHeight(), globalSizes, localSizes, solveEEvt);
 
@@ -1150,11 +1154,11 @@ public class ParallelSimulationCL{
                 storeEvt = kernels.store_fields(queue, inCel, n, 
                                                 grid.getNumCellsXTotal(), grid.getNumCellsYTotal(),
                                                 globalSizes, localSizes, interpEvt);
-                solveEEvt = kernels.solve_for_e(queue, inCel, inBound, 0, n, grid.getNumCellsX(), grid.getNumCellsY(),
+                solveEEvt = kernels.solve_for_e(queue, inCel, inBound, tstep, n, grid.getNumCellsX(), grid.getNumCellsY(),
                                                 grid.getNumCellsXTotal(), grid.getNumCellsYTotal(),
                                                 grid.getCellWidth(), grid.getCellHeight(), globalSizes, localSizes, storeEvt);
 
-                solveBEvt = kernels.solve_for_b(queue, inCel, inBound, 0, n, grid.getNumCellsX(), grid.getNumCellsY(),
+                solveBEvt = kernels.solve_for_b(queue, inCel, inBound, tstep, n, grid.getNumCellsX(), grid.getNumCellsY(),
                                                 grid.getNumCellsXTotal(), grid.getNumCellsYTotal(),
                                                 grid.getCellWidth(), grid.getCellHeight(), globalSizes, localSizes, solveEEvt);
 
@@ -1238,11 +1242,11 @@ public class ParallelSimulationCL{
                 storeEvt = kernels.store_fields(queue, inCel, n, 
                                                 grid.getNumCellsXTotal(), grid.getNumCellsYTotal(),
                                                 globalSizes, localSizes, interpEvt);
-                solveEEvt = kernels.solve_for_e(queue, inCel, inBound, 0, n, grid.getNumCellsX(), grid.getNumCellsY(),
+                solveEEvt = kernels.solve_for_e(queue, inCel, inBound, tstep, n, grid.getNumCellsX(), grid.getNumCellsY(),
                                                 grid.getNumCellsXTotal(), grid.getNumCellsYTotal(),
                                                 grid.getCellWidth(), grid.getCellHeight(), globalSizes, localSizes, storeEvt);
 
-                solveBEvt = kernels.solve_for_b(queue, inCel, inBound, 0, n, grid.getNumCellsX(), grid.getNumCellsY(),
+                solveBEvt = kernels.solve_for_b(queue, inCel, inBound, tstep, n, grid.getNumCellsX(), grid.getNumCellsY(),
                                                 grid.getNumCellsXTotal(), grid.getNumCellsYTotal(),
                                                 grid.getCellWidth(), grid.getCellHeight(), globalSizes, localSizes, solveEEvt);
 
@@ -1326,11 +1330,11 @@ public class ParallelSimulationCL{
                 storeEvt = kernels.store_fields(queue, inCel, n, 
                                                 grid.getNumCellsXTotal(), grid.getNumCellsYTotal(),
                                                 globalSizes, localSizes, interpEvt);
-                solveEEvt = kernels.solve_for_e(queue, inCel, inBound, 0, n, grid.getNumCellsX(), grid.getNumCellsY(),
+                solveEEvt = kernels.solve_for_e(queue, inCel, inBound, tstep, n, grid.getNumCellsX(), grid.getNumCellsY(),
                                                 grid.getNumCellsXTotal(), grid.getNumCellsYTotal(),
                                                 grid.getCellWidth(), grid.getCellHeight(), globalSizes, localSizes, storeEvt);
 
-                solveBEvt = kernels.solve_for_b(queue, inCel, inBound, 0, n, grid.getNumCellsX(), grid.getNumCellsY(),
+                solveBEvt = kernels.solve_for_b(queue, inCel, inBound, tstep, n, grid.getNumCellsX(), grid.getNumCellsY(),
                                                 grid.getNumCellsXTotal(), grid.getNumCellsYTotal(),
                                                 grid.getCellWidth(), grid.getCellHeight(), globalSizes, localSizes, solveEEvt);
 
@@ -1414,11 +1418,11 @@ public class ParallelSimulationCL{
                 storeEvt = kernels.store_fields(queue, inCel, n, 
                                                 grid.getNumCellsXTotal(), grid.getNumCellsYTotal(),
                                                 globalSizes, localSizes, interpEvt);
-                solveEEvt = kernels.solve_for_e(queue, inCel, inBound, 0, n, grid.getNumCellsX(), grid.getNumCellsY(),
+                solveEEvt = kernels.solve_for_e(queue, inCel, inBound, tstep, n, grid.getNumCellsX(), grid.getNumCellsY(),
                                                 grid.getNumCellsXTotal(), grid.getNumCellsYTotal(),
                                                 grid.getCellWidth(), grid.getCellHeight(), globalSizes, localSizes, storeEvt);
 
-                solveBEvt = kernels.solve_for_b(queue, inCel, inBound, 0, n, grid.getNumCellsX(), grid.getNumCellsY(),
+                solveBEvt = kernels.solve_for_b(queue, inCel, inBound, tstep, n, grid.getNumCellsX(), grid.getNumCellsY(),
                                                 grid.getNumCellsXTotal(), grid.getNumCellsYTotal(),
                                                 grid.getCellWidth(), grid.getCellHeight(), globalSizes, localSizes, solveEEvt);
 
@@ -1502,11 +1506,11 @@ public class ParallelSimulationCL{
                 storeEvt = kernels.store_fields(queue, inCel, n, 
                                                 grid.getNumCellsXTotal(), grid.getNumCellsYTotal(),
                                                 globalSizes, localSizes, interpEvt);
-                solveEEvt = kernels.solve_for_e(queue, inCel, inBound, 0, n, grid.getNumCellsX(), grid.getNumCellsY(),
+                solveEEvt = kernels.solve_for_e(queue, inCel, inBound, tstep, n, grid.getNumCellsX(), grid.getNumCellsY(),
                                                 grid.getNumCellsXTotal(), grid.getNumCellsYTotal(),
                                                 grid.getCellWidth(), grid.getCellHeight(), globalSizes, localSizes, storeEvt);
 
-                solveBEvt = kernels.solve_for_b(queue, inCel, inBound, 0, n, grid.getNumCellsX(), grid.getNumCellsY(),
+                solveBEvt = kernels.solve_for_b(queue, inCel, inBound, tstep, n, grid.getNumCellsX(), grid.getNumCellsY(),
                                                 grid.getNumCellsXTotal(), grid.getNumCellsYTotal(),
                                                 grid.getCellWidth(), grid.getCellHeight(), globalSizes, localSizes, solveEEvt);
 
@@ -1590,11 +1594,11 @@ public class ParallelSimulationCL{
                 storeEvt = kernels.store_fields(queue, inCel, n, 
                                                 grid.getNumCellsXTotal(), grid.getNumCellsYTotal(),
                                                 globalSizes, localSizes, interpEvt);
-                solveEEvt = kernels.solve_for_e(queue, inCel, inBound, 0, n, grid.getNumCellsX(), grid.getNumCellsY(),
+                solveEEvt = kernels.solve_for_e(queue, inCel, inBound, tstep, n, grid.getNumCellsX(), grid.getNumCellsY(),
                                                 grid.getNumCellsXTotal(), grid.getNumCellsYTotal(),
                                                 grid.getCellWidth(), grid.getCellHeight(), globalSizes, localSizes, storeEvt);
 
-                solveBEvt = kernels.solve_for_b(queue, inCel, inBound, 0, n, grid.getNumCellsX(), grid.getNumCellsY(),
+                solveBEvt = kernels.solve_for_b(queue, inCel, inBound, tstep, n, grid.getNumCellsX(), grid.getNumCellsY(),
                                                 grid.getNumCellsXTotal(), grid.getNumCellsYTotal(),
                                                 grid.getCellWidth(), grid.getCellHeight(), globalSizes, localSizes, solveEEvt);
 
@@ -1678,11 +1682,11 @@ public class ParallelSimulationCL{
                 storeEvt = kernels.store_fields(queue, inCel, n, 
                                                 grid.getNumCellsXTotal(), grid.getNumCellsYTotal(),
                                                 globalSizes, localSizes, interpEvt);
-                solveEEvt = kernels.solve_for_e(queue, inCel, inBound, 0, n, grid.getNumCellsX(), grid.getNumCellsY(),
+                solveEEvt = kernels.solve_for_e(queue, inCel, inBound, tstep, n, grid.getNumCellsX(), grid.getNumCellsY(),
                                                 grid.getNumCellsXTotal(), grid.getNumCellsYTotal(),
                                                 grid.getCellWidth(), grid.getCellHeight(), globalSizes, localSizes, storeEvt);
 
-                solveBEvt = kernels.solve_for_b(queue, inCel, inBound, 0, n, grid.getNumCellsX(), grid.getNumCellsY(),
+                solveBEvt = kernels.solve_for_b(queue, inCel, inBound, tstep, n, grid.getNumCellsX(), grid.getNumCellsY(),
                                                 grid.getNumCellsXTotal(), grid.getNumCellsYTotal(),
                                                 grid.getCellWidth(), grid.getCellHeight(), globalSizes, localSizes, solveEEvt);
 
@@ -1766,11 +1770,11 @@ public class ParallelSimulationCL{
                 storeEvt = kernels.store_fields(queue, inCel, n, 
                                                 grid.getNumCellsXTotal(), grid.getNumCellsYTotal(),
                                                 globalSizes, localSizes, interpEvt);
-                solveEEvt = kernels.solve_for_e(queue, inCel, inBound, 0, n, grid.getNumCellsX(), grid.getNumCellsY(),
+                solveEEvt = kernels.solve_for_e(queue, inCel, inBound, tstep, n, grid.getNumCellsX(), grid.getNumCellsY(),
                                                 grid.getNumCellsXTotal(), grid.getNumCellsYTotal(),
                                                 grid.getCellWidth(), grid.getCellHeight(), globalSizes, localSizes, storeEvt);
 
-                solveBEvt = kernels.solve_for_b(queue, inCel, inBound, 0, n, grid.getNumCellsX(), grid.getNumCellsY(),
+                solveBEvt = kernels.solve_for_b(queue, inCel, inBound, tstep, n, grid.getNumCellsX(), grid.getNumCellsY(),
                                                 grid.getNumCellsXTotal(), grid.getNumCellsYTotal(),
                                                 grid.getCellWidth(), grid.getCellHeight(), globalSizes, localSizes, solveEEvt);
 
@@ -1854,11 +1858,11 @@ public class ParallelSimulationCL{
                 storeEvt = kernels.store_fields(queue, inCel, n, 
                                                 grid.getNumCellsXTotal(), grid.getNumCellsYTotal(),
                                                 globalSizes, localSizes, interpEvt);
-                solveEEvt = kernels.solve_for_e(queue, inCel, inBound, 0, n, grid.getNumCellsX(), grid.getNumCellsY(),
+                solveEEvt = kernels.solve_for_e(queue, inCel, inBound, tstep, n, grid.getNumCellsX(), grid.getNumCellsY(),
                                                 grid.getNumCellsXTotal(), grid.getNumCellsYTotal(),
                                                 grid.getCellWidth(), grid.getCellHeight(), globalSizes, localSizes, storeEvt);
 
-                solveBEvt = kernels.solve_for_b(queue, inCel, inBound, 0, n, grid.getNumCellsX(), grid.getNumCellsY(),
+                solveBEvt = kernels.solve_for_b(queue, inCel, inBound, tstep, n, grid.getNumCellsX(), grid.getNumCellsY(),
                                                 grid.getNumCellsXTotal(), grid.getNumCellsYTotal(),
                                                 grid.getCellWidth(), grid.getCellHeight(), globalSizes, localSizes, solveEEvt);
 
@@ -1942,11 +1946,11 @@ public class ParallelSimulationCL{
                 storeEvt = kernels.store_fields(queue, inCel, n, 
                                                 grid.getNumCellsXTotal(), grid.getNumCellsYTotal(),
                                                 globalSizes, localSizes, interpEvt);
-                solveEEvt = kernels.solve_for_e(queue, inCel, inBound, 0, n, grid.getNumCellsX(), grid.getNumCellsY(),
+                solveEEvt = kernels.solve_for_e(queue, inCel, inBound, tstep, n, grid.getNumCellsX(), grid.getNumCellsY(),
                                                 grid.getNumCellsXTotal(), grid.getNumCellsYTotal(),
                                                 grid.getCellWidth(), grid.getCellHeight(), globalSizes, localSizes, storeEvt);
 
-                solveBEvt = kernels.solve_for_b(queue, inCel, inBound, 0, n, grid.getNumCellsX(), grid.getNumCellsY(),
+                solveBEvt = kernels.solve_for_b(queue, inCel, inBound, tstep, n, grid.getNumCellsX(), grid.getNumCellsY(),
                                                 grid.getNumCellsXTotal(), grid.getNumCellsYTotal(),
                                                 grid.getCellWidth(), grid.getCellHeight(), globalSizes, localSizes, solveEEvt);
 
