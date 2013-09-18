@@ -21,6 +21,12 @@
 	
 	simulationType			"Sequential" or "Parallel", parallel means 
 					using OpenCL. (not case sensitive)
+	
+	writeToFile			"Yes" or "No". It determines if the result(the
+					list of particles) will be written to a file.
+					"particles_seq.txt" - for the sequential version;
+					"particles_ocl.txt" - for the OpenCL version.
+					(not case sensitive)
 
 	Can be set multiple times:
 	diagnostics			can be either "Potential" or "Kinetic Energy".
@@ -48,15 +54,15 @@
 
 <settings>
 	<runid>test</runid>
-	<iterations>1</iterations>
-	<numberOfParticles>128</numberOfParticles>
+	<iterations>100</iterations>
+	<numberOfParticles>10000</numberOfParticles>
 	<simulationWidth>100</simulationWidth>
 	<simulationHeight>100</simulationHeight>
 	<timeStep>0.5</timeStep>
-	<simulationType>Sequential</simulationType>
-	<interpolatorAlgorithm>Charge Conserving CIC</interpolatorAlgorithm>
+	<simulationType>sequential</simulationType>
+	<interpolatorAlgorithm>charge conserving cic</interpolatorAlgorithm>
 	<particleSolver>Boris</particleSolver>
-	<writeToFile>Yes</writeToFile>
+	<writeToFile>No</writeToFile>
 	<diagnostics i="3">Kinetic Energy</diagnostics>
 	<diagnostics i="0">Potential</diagnostics>
 </settings>
