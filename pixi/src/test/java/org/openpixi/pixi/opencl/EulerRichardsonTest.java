@@ -5,6 +5,7 @@ import java.io.FileNotFoundException;
 import junit.framework.TestCase;
 import org.openpixi.pixi.physics.Settings;
 import org.openpixi.pixi.physics.Simulation;
+import org.openpixi.pixi.physics.grid.ChargeConservingCIC;
 import org.openpixi.pixi.physics.solver.EulerRichardson;
 import org.openpixi.pixi.physics.util.ClassCopier;
 import org.openpixi.pixi.physics.util.ParticleComparator;
@@ -18,12 +19,15 @@ public class EulerRichardsonTest extends TestCase {
 	public void testParallelSimulation() throws FileNotFoundException {
 		Settings defaultSettings = new Settings();
 		//defaultSettings.setTimeStep(0.1);
-		defaultSettings.setGridCellsX(100);
-		defaultSettings.setGridCellsY(100);
+		defaultSettings.setGridCellsX(10);
+		defaultSettings.setGridCellsY(10);
 		defaultSettings.setNumOfParticles(100);
 		defaultSettings.setIterations(100);
 		defaultSettings.setParticleSolver(new EulerRichardson());
-
+                defaultSettings.setInterpolator(new ChargeConservingCIC());
+                defaultSettings.setOCLParticleSolver("euler richardson");
+                defaultSettings.setOCLGridInterpolator("charge conserving CIC");
+                
 		Simulation sequentialSimulation = new Simulation(defaultSettings);
 
 		Settings openCLSettings = ClassCopier.copy(defaultSettings);

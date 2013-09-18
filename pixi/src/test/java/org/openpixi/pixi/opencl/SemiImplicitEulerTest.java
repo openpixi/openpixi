@@ -19,11 +19,14 @@ public class SemiImplicitEulerTest extends TestCase {
 	public void testParallelSimulation() throws FileNotFoundException {
 		Settings defaultSettings = new Settings();
 		//defaultSettings.setTimeStep(0.1);
-		defaultSettings.setGridCellsX(100);
-		defaultSettings.setGridCellsY(100);
+		defaultSettings.setGridCellsX(10);
+		defaultSettings.setGridCellsY(10);
 		defaultSettings.setNumOfParticles(100);
 		defaultSettings.setIterations(100);
 		defaultSettings.setParticleSolver(new SemiImplicitEuler());
+                defaultSettings.setInterpolator(new ChargeConservingCIC());
+                defaultSettings.setOCLParticleSolver("semiimplicit euler");
+                defaultSettings.setOCLGridInterpolator("charge conserving CIC");
                 
 		Simulation sequentialSimulation = new Simulation(defaultSettings);
 
