@@ -45,8 +45,9 @@ public class ClassCopier {
 
 				destinationField.set(destination, sourceField.get(source));
 			} catch (Exception e) {
-				e.printStackTrace();
-				throw new RuntimeException(e);
+			//	e.printStackTrace();
+			//	throw new RuntimeException(e);
+				System.out.println("Skipping field " + sourceField.getName());
 			}
 		}
 	}
