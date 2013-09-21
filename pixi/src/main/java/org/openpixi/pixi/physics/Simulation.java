@@ -211,7 +211,7 @@ public class Simulation {
 		detector.run();
 		collisionalgorithm.collide(detector.getOverlappedPairs(), f, mover.getSolver(), tstep);
 		interpolation.interpolateToGrid(particles, grid, tstep);
-                grid.updateGrid(tstep);                
+                grid.updateGrid(tstep);      
 		interpolation.interpolateToParticle(particles, grid);
                 
 	}
@@ -257,7 +257,22 @@ public class Simulation {
                     pw.write(particles.get(i).getPrevBz() + "\n");
                     pw.write(particles.get(i).getPrevLinearDragCoefficient() + "\n");
                 }
-                  pw.close();
+                pw.close();
+                
+                pw = new PrintWriter(new File("cells_seq.txt"));
+                for (int i = 0; i < grid.getNumCellsXTotal(); i++) {
+                    for (int j = 0; j < grid.getNumCellsYTotal(); j++) {
+                        pw.write(grid.getCells()[i][j].getJx() + "\n");
+                        pw.write(grid.getCells()[i][j].getJy() + "\n");
+                        pw.write(grid.getCells()[i][j].getRho() + "\n");
+                        pw.write(grid.getCells()[i][j].getPhi() + "\n");
+                        pw.write(grid.getCells()[i][j].getEx() + "\n");
+                        pw.write(grid.getCells()[i][j].getEy() + "\n");
+                        pw.write(grid.getCells()[i][j].getBz() + "\n");
+                        pw.write(grid.getCells()[i][j].getBzo() + "\n");
+                    }
+                }
+                pw.close();
         }
 
 	public void particlePush() {

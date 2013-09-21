@@ -23,9 +23,9 @@
 					using OpenCL. (not case sensitive)
 	
 	writeToFile			"Yes" or "No". It determines if the result(the
-					list of particles) will be written to a file.
-					"particles_seq.txt" - for the sequential version;
-					"particles_ocl.txt" - for the OpenCL version.
+					list of particles and cells) will be written to a file.
+					"particles_seq.txt" and "cells_seq.txt" - for the sequential version;
+					"particles_ocl.txt" and "cells_ocl.txt"- for the OpenCL version.
 					(not case sensitive)
 
 	Can be set multiple times:
@@ -54,7 +54,7 @@
 
 <settings>
 	<runid>test</runid>
-	<iterations>100</iterations>
+	<iterations>10</iterations>
 	<numberOfParticles>10000</numberOfParticles>
 	<simulationWidth>100</simulationWidth>
 	<simulationHeight>100</simulationHeight>
@@ -62,7 +62,7 @@
 	<simulationType>sequential</simulationType>
 	<interpolatorAlgorithm>charge conserving cic</interpolatorAlgorithm>
 	<particleSolver>Boris</particleSolver>
-	<writeToFile>No</writeToFile>
+	<writeToFile>Yes</writeToFile>
 	<diagnostics i="3">Kinetic Energy</diagnostics>
 	<diagnostics i="0">Potential</diagnostics>
 </settings>

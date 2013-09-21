@@ -97,6 +97,7 @@ public class ParallelSimulationCL{
          /**Particle solver algorithm name*/
          private String OCLParticleSolver;
          
+         private int writeCells = 0;
          /**
          * We can turn on or off the effect of the grid on particles by
          * adding or removing this force from the total force.
@@ -172,6 +173,7 @@ public class ParallelSimulationCL{
 
                 OCLParticleSolver = settings.getOCLParticleSolver();
                 OCLGridInterpolator = settings.getOCLGridInterpolator();
+                writeCells = settings.getWriteToFile();
                 
                 prepareAllParticles();
         }
@@ -406,7 +408,23 @@ public class ParallelSimulationCL{
                     borisCIC(kernels, queue, inPar, inCel, inBound, n, globalSizes, localSizes, workGroupSize);
                 }
                 
+                //get cells
+                if(writeCells == 1){
+                    Pointer<Double> outCel = inCel.read(queue, null);
+                    PrintWriter pw = new PrintWriter(new File("cells_ocl.txt"));
 
+                    for (int i = 0; i < grid.getNumCellsXTotal() * grid.getNumCellsYTotal() * C_SIZE; i += C_SIZE) {
+                        pw.write(outCel.get(i + 0) + "\n");
+                        pw.write(outCel.get(i + 1) + "\n");
+                        pw.write(outCel.get(i + 2) + "\n");
+                        pw.write(outCel.get(i + 3) + "\n");
+                        pw.write(outCel.get(i + 4) + "\n");
+                        pw.write(outCel.get(i + 5) + "\n");
+                        pw.write(outCel.get(i + 6) + "\n");
+                        pw.write(outCel.get(i + 7) + "\n");
+                    }
+                    pw.close();
+                }
          }
          
          void borisCIC(SimulationKernel kernels, CLQueue queue, CLBuffer<Double> inPar, CLBuffer<Double> inCel, 
