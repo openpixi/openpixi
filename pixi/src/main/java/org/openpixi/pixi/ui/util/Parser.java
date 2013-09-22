@@ -348,6 +348,8 @@ public class Parser extends DefaultHandler {
 				alg = new LeapFrogHalfStep();
 			} else if (algname.equalsIgnoreCase("SemiImplicit Euler")) {
 				alg = new SemiImplicitEuler();
+			} else if (algname.equalsIgnoreCase("Boris Profile")) {
+				alg = new Boris();
 			} 
 			else throw new Exception();
 		} catch (Exception e){
