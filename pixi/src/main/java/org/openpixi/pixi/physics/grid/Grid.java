@@ -377,7 +377,7 @@ public class Grid {
                      for (int l = 0; l < indexes.size(); l++) {
                          index1 = indexes.elementAt(l);
                          if(l == indexes.size() - 1){
-                             parallelBoundariesArray[index1] = -index1;
+                             parallelBoundariesArray[index1] = indexes.elementAt(0);
                          }
                          else{
                              index2 = indexes.elementAt(l + 1);
@@ -386,7 +386,6 @@ public class Grid {
                      }
                  }
             }
-            
         }
         
 	public void updateGrid(double tstep) {
