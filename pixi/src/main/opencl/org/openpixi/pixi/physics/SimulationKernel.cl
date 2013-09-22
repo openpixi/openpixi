@@ -1427,18 +1427,20 @@ __kernel void cloud_in_cell(__global double* particles,
 //##################################################################################################################/
 __kernel void store_fields(__global double* cells,   
                                     int n,
-                                    int numCellsX,
-                                    int numCellsY)
+                                    int numCellsXTotal,
+                                    int numCellsYTotal)
 {
         
          int i = get_global_id(0);
          if(i > 0)
               return;
-
-         int  k;
-         for(k = 0; k < numCellsX * numCellsY * C_SIZE; k+=C_SIZE){
-             cells[k + Cbzo] = cells[k + Cbz];
-         }
+         
+        int h, k;
+        for(h = -2; h < numCellsXTotal - 2; h++){
+             for(k = -2; k < numCellsYTotal - 2; k++){
+                cells[( C_SIZE * (((h + 2) * numCellsYTotal) + k + 2)) + Cbzo] =  cells[( C_SIZE * (((h + 2) * numCellsYTotal) + k + 2)) + Cbz];
+             }   
+        }
 }
 
 //##################################################################################################################/
@@ -1552,7 +1554,7 @@ __kernel void particle_interpolation(__global double* particles,
          if(i >= n)
              return;
          i = i * P_SIZE + start * P_SIZE;
-         if(i > particlesSize * P_SIZE)
+         if(i >= particlesSize * P_SIZE)
              return;
 
          /**X index of the grid point that is left from or at the x position of the particle*/
