@@ -118,12 +118,21 @@ public class MainBatch {
                     }
 
                     dataOutput.closeStreams();
-
+                    
+                    if(settings.getWriteToFile() == 1){
+                        simulation.writeToFile();
+                    }
+                    
                     ProfileInfo.printProfileInfo();
+                    
                 }
                 else{
                     ParallelSimulationCL simulationCL = new ParallelSimulationCL(settings);
                     simulationCL.runParallelSimulation();
+                    
+                    if(settings.getWriteToFile() == 1){
+                        simulationCL.writeToFile();
+                    }
                 }
 	}
 

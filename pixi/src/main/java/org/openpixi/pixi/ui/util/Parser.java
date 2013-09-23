@@ -49,6 +49,7 @@ public class Parser extends DefaultHandler {
 	private boolean iterations;
 	private boolean runid;
         private boolean simulationType;
+        private boolean writeToFile;
 	
 	private String attribute = null;
 	
@@ -113,6 +114,8 @@ public class Parser extends DefaultHandler {
 				runid = true;
                         } else if(qName.equalsIgnoreCase("simulationType")) {
 				simulationType = true;
+                        } else if(qName.equalsIgnoreCase("writeToFile")) {
+				writeToFile = true;
 			} else if (qName.equalsIgnoreCase("settings")) {
 				//DO NOTHING
 			}
@@ -141,6 +144,10 @@ public class Parser extends DefaultHandler {
                 if (simulationType) {
 			setSimulationType(ch, start, length);
 			simulationType = false;
+		}
+                if (writeToFile) {
+			setWriteToFile(ch, start, length);
+			writeToFile = false;
 		}
 		if (numberOfParticles) {
 			setNumberOfParticles(ch, start, length);
@@ -205,6 +212,23 @@ public class Parser extends DefaultHandler {
 			simType = 0;
 		}
 		settings.setSimulationType(simType);
+	}
+        
+        private void setWriteToFile(char ch[], int start, int length) {
+		int writeTo;
+		String writeToFiles = new String(ch, start, length);
+		try{
+			if (writeToFiles.equalsIgnoreCase("No")) {
+				writeTo = 0;
+			} else if (writeToFiles.equalsIgnoreCase("Yes")) {
+				writeTo = 1;
+			} else throw new Exception();
+		} catch (Exception e){
+			System.out.println("Error: OpenPixi does not know about the " + writeToFiles + " write to file option" +
+					" . Setting it to No.");
+			writeTo = 0;
+		}
+		settings.setWriteToFile(writeTo);
 	}
         
 	private void addDiagnostics(char ch[], int start, int length) {
@@ -296,8 +320,10 @@ public class Parser extends DefaultHandler {
 			System.out.println("Error: OpenPixi does not know about the " + algname + " interpolation" +
 					" algorithm. Setting it to CloudInCell.");
 			alg = new CloudInCell();
+                        algname = "Cloud In Cell";
 		}
 		settings.setInterpolator(alg);
+                settings.setOCLGridInterpolator(algname);
 	}
 	
 	private void setParticleSolver(char ch[], int start, int length) {
@@ -322,13 +348,17 @@ public class Parser extends DefaultHandler {
 				alg = new LeapFrogHalfStep();
 			} else if (algname.equalsIgnoreCase("SemiImplicit Euler")) {
 				alg = new SemiImplicitEuler();
+			} else if (algname.equalsIgnoreCase("Boris Profile")) {
+				alg = new Boris();
 			} 
 			else throw new Exception();
 		} catch (Exception e){
 			System.out.println("Error: OpenPixi does not know about the " + algname + " solver" +
 					" mover. Setting it to Boris.");
 			alg = new Boris();
+                        algname = "Boris";
 		}
 		settings.setParticleSolver(alg);
+                settings.setOCLParticleSolver(algname);
 	}
 }
