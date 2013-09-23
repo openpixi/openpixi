@@ -33,6 +33,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import static org.openpixi.pixi.physics.GeneralBoundaryType.Hardwall;
+import static org.openpixi.pixi.physics.GeneralBoundaryType.Periodic;
 
 /**
  * Specifies default values of simulation parameters.
@@ -82,6 +84,9 @@ public class Settings {
 	private double particleRadius = 1;
 	private double particleMaxSpeed = speedOfLight/3;
 	private int simulationType = 0;
+        private int writeToFile = 0;
+        private String OCLParticleSolver;
+        private String OCLGridInterpolator;
         
 	// Modify defaultParticleFactories() method to determine what kind of particles
 	// will be loaded by default.
@@ -121,7 +126,11 @@ public class Settings {
 	// SIMPLE GETTERS
 	//----------------------------------------------------------------------------------------------
         public int getSimulationType(){
-            return this.simulationType;
+                return this.simulationType;
+        }
+        
+        public int getWriteToFile(){
+                return this.writeToFile;
         }
         
 	public double getSimulationWidth() {
@@ -172,9 +181,17 @@ public class Settings {
 		return particleSolver;
 	}
 
+        public String getOCLParticleSolver(){
+            return this.OCLParticleSolver;
+        }
+        
 	public InterpolatorAlgorithm getInterpolator() {
 		return interpolator;
 	}
+        
+        public String getOCLGridInterpolator(){
+            return this.OCLGridInterpolator;
+        }
 	
 	public String getRunid() {
 		return runid;
@@ -333,7 +350,11 @@ public class Settings {
 	// SETTERS (Overwrite default values programatically)
 	//----------------------------------------------------------------------------------------------
         public void setSimulationType(int simulationType){
-            this.simulationType = simulationType;
+                this.simulationType = simulationType;
+        }
+        
+        public void setWriteToFile(int writeTo){
+                this.writeToFile = writeTo;
         }
         
 	public void setSimulationWidth(double simulationWidth) {
@@ -380,10 +401,18 @@ public class Settings {
 		this.particleSolver = particleSolver;
 	}
 
+        public void setOCLParticleSolver(String OCLParticleSolver){
+                this.OCLParticleSolver = OCLParticleSolver;
+        }
+        
 	public void setInterpolator(InterpolatorAlgorithm interpolator) {
 		this.interpolator = interpolator;
 	}
 	
+        public void setOCLGridInterpolator(String OCLGridInterpolator){
+                this.OCLGridInterpolator = OCLGridInterpolator;
+        }
+        
 	public void setRunid (String runid) {
 		this.runid = runid;
 	}
