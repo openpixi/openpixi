@@ -36,6 +36,14 @@ public class ClassCopier {
 
 	public static <T> void copy(T source, T destination) {
 		for (Field sourceField: source.getClass().getDeclaredFields()) {
+			if (sourceField.getName().equals("serialVersionUID")
+				|| sourceField.getName().equals("$VRc"))
+			{
+				// The fields '$VRc' and 'serialVersionUID'
+				// are added by the EMMA instrumentation framework
+				// and are therefore ignored.
+				break;
+			};
 			try {
 				Field destinationField = destination.getClass().getDeclaredField(sourceField.getName());
 
@@ -45,6 +53,7 @@ public class ClassCopier {
 
 				destinationField.set(destination, sourceField.get(source));
 			} catch (Exception e) {
+				System.out.println("Exception for field: " + sourceField.getName());
 				e.printStackTrace();
 				throw new RuntimeException(e);
 			}
