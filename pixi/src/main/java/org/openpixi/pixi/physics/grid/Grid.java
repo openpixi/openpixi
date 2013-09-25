@@ -333,6 +333,10 @@ public class Grid {
         public void createParallelBoundary(){
             int mark = 1;
              
+            /*
+             * Find the cells that share the same reference and mark them.
+             * If cells[i][j]==cells[a][b] then mark[i][j]==mark[a][b]
+             */
             for(int i = 0; i < getNumCellsXTotal(); i++){
                  for(int j = 0; j < getNumCellsYTotal(); j++){
                      mark++;
@@ -346,6 +350,9 @@ public class Grid {
                  }
              }
             
+            /*
+             * Convert the matrix to an array 
+             */
             int k = 0;
             for(int i = 0; i < getNumCellsXTotal(); i++){
                  for(int j = 0; j < getNumCellsYTotal(); j++){
@@ -353,6 +360,10 @@ public class Grid {
                  }
             }
             
+            /*
+             * Create a HashMap where the key is the mark and the value is
+             * a list containing indexes of all the cells that have that mark.
+             */
             HashMap<Integer, Vector<Integer>> marks = new HashMap<Integer, Vector<Integer>>();
             Vector<Integer> indexes;
             for(int i = 0; i < getNumCellsXTotal() * getNumCellsYTotal(); i++){
@@ -369,17 +380,21 @@ public class Grid {
                 }
             }
             
+            /*
+             * Create circular lists so a cell will point to the next cell
+             * that has the same mark
+             */
             int index1, index2;
             for(int i = 0; i < getNumCellsXTotal(); i++){
                  for(int j = 0; j < getNumCellsYTotal(); j++){
-                     mark = parallelBoundaries[i][j];
-                     indexes = marks.get(mark);
+                     mark = parallelBoundaries[i][j]; //get a mark
+                     indexes = marks.get(mark);       //get the indexes of all the cells that share the mark
                      for (int l = 0; l < indexes.size(); l++) {
                          index1 = indexes.elementAt(l);
-                         if(l == indexes.size() - 1){
+                         if(l == indexes.size() - 1){ //the last cell will point to the first one
                              parallelBoundariesArray[index1] = indexes.elementAt(0);
                          }
-                         else{
+                         else{  //every other cell will point to the next cell in the list
                              index2 = indexes.elementAt(l + 1);
                              parallelBoundariesArray[index1] = index2;
                          }
