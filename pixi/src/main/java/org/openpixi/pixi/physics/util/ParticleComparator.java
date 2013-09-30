@@ -7,33 +7,29 @@ import org.openpixi.pixi.physics.particles.Particle;
 import java.util.List;
 
 /**
- * Compares the results of two simulations.
- * In case of failure throws ComparisonFailedException.
+ * Compares the results of two simulations. In case of failure throws
+ * ComparisonFailedException.
  */
 public class ParticleComparator {
 
 	private static final Double TOLERANCE = 1e-10;
-
 	private static final int NO_STEP_TRACKING = -1;
-   	private int stepNo = NO_STEP_TRACKING;
-
+	private int stepNo = NO_STEP_TRACKING;
 
 	public ParticleComparator() {
-
 	}
 
 	/**
-	 * In case of failure outputs also the step number in which the failure occurred.
+	 * In case of failure outputs also the step number in which the failure
+	 * occurred.
 	 */
 	public ParticleComparator(int stepNo) {
 		this.stepNo = stepNo;
 	}
 
-
-	public void compare(List<Particle> expectedParticles, List<Particle> actualParticles){
+	public void compare(List<Particle> expectedParticles, List<Particle> actualParticles) {
 		compareParticleLists(expectedParticles, actualParticles, TOLERANCE);
 	}
-
 
 	private void compareParticleLists(
 			List<Particle> expectedParticles, List<Particle> actualParticles, double tolerance) {
@@ -45,25 +41,23 @@ public class ParticleComparator {
 			fail("There are less actual particles than expected!");
 		}
 
-		for (Particle p: expectedParticles) {
+		for (Particle p : expectedParticles) {
 			if (!findParticle(p, actualParticles, tolerance)) {
 				fail("Could not find particle " + p + " in the list of actual particles!");
 			}
 		}
 	}
 
-
 	private boolean findParticle(
 			Particle p, List<Particle> particles, Double tolerance) {
 		boolean retval = false;
-		for (Particle p2: particles) {
+		for (Particle p2 : particles) {
 			if (compareParticles(p, p2, tolerance)) {
 				return true;
 			}
 		}
 		return retval;
 	}
-
 
 	/**
 	 * Compares just the position.
