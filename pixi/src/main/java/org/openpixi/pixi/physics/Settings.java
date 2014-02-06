@@ -37,87 +37,68 @@ import static org.openpixi.pixi.physics.GeneralBoundaryType.Hardwall;
 import static org.openpixi.pixi.physics.GeneralBoundaryType.Periodic;
 
 /**
- * Specifies default values of simulation parameters.
- * The default values can be overridden with a settings file input.
- * The default values can be overridden with a command line input.
- * The default values can be overridden programatically.
+ * Specifies default values of simulation parameters. The default values can be
+ * overridden with a settings file input. The default values can be overridden
+ * with a command line input. The default values can be overridden
+ * programatically.
  *
- * NOTICE ON USAGE:
- * To assure that the class is used in the intended way
- * THE SETTERS SHOULD BE CALLED RIGHT AFTER A PARAMETERLESS CONSTRUCTOR
- * AND BEFORE ANY OF THE MORE COMPLEX GETTERS IS CALLED !!!
+ * NOTICE ON USAGE: To assure that the class is used in the intended way THE
+ * SETTERS SHOULD BE CALLED RIGHT AFTER A PARAMETERLESS CONSTRUCTOR AND BEFORE
+ * ANY OF THE MORE COMPLEX GETTERS IS CALLED !!!
  *
- * In the tests of the distributed version we pass the same settings class to all the different
- * threads which simulate the distributed behaviour.
- * Consequently, the different simultaneously running simulations do have the same particle solver,
- * interpolator etc. and this is very dangerous.
- * TODO ensure that all the getters retrieve new objects
+ * In the tests of the distributed version we pass the same settings class to
+ * all the different threads which simulate the distributed behaviour.
+ * Consequently, the different simultaneously running simulations do have the
+ * same particle solver, interpolator etc. and this is very dangerous. TODO
+ * ensure that all the getters retrieve new objects
  */
 public class Settings {
 
 	//----------------------------------------------------------------------------------------------
 	// DEFAULT VALUES
 	//----------------------------------------------------------------------------------------------
-
 	private double simulationWidth = 100;
 	private double simulationHeight = 100;
 	private double speedOfLight = 1;
 	private double timeStep = 1;
-
 	private GeneralBoundaryType boundaryType = GeneralBoundaryType.Periodic;
-
 	private InterpolatorAlgorithm interpolator = new CloudInCell();
-
 	// Grid related settings
-
 	private int gridCellsX = 10;
 	private int gridCellsY = 10;
-
 	private FieldSolver gridSolver = new SimpleSolver();
 	private PoissonSolver poissonSolver = new PoissonSolverFFTPeriodic();
-
 	private boolean useGrid = true;
-
 	// Particle related settings
-
 	private int numOfParticles = 128;
 	private double particleRadius = 1;
-	private double particleMaxSpeed = speedOfLight/3;
+	private double particleMaxSpeed = speedOfLight / 3;
 	private int simulationType = 0;
-        private int writeToFile = 0;
-        private String OCLParticleSolver;
-        private String OCLGridInterpolator;
-        
+	private int writeToFile = 0;
+	private String OCLParticleSolver;
+	private String OCLGridInterpolator;
 	// Modify defaultParticleFactories() method to determine what kind of particles
 	// will be loaded by default.
 	private List<Particle> particles = new ArrayList<Particle>();
-
 	private Detector collisionDetector = new Detector();
 	private CollisionAlgorithm collisionResolver = new CollisionAlgorithm();
 	private Solver particleSolver = new Euler();
 	private List<Force> forces = new ArrayList<Force>();
-	
 	// Diagnostics related settings
-	
-	/** Used to mark output files */
+	/**
+	 * Used to mark output files
+	 */
 	private String runid = "default-run";
-	
 	private List<Diagnostics> diagnostics = new ArrayList<Diagnostics>();
-	
 	// Batch version settings
-
 	private int iterations = 1;
-
 	// Parallel (threaded) version settings
-
 	private int numOfThreads = 1;
 	/* The creation and start of the new threads is expensive. Therefore, in the parallel
 	 * simulation we use ExecutorService which is maintaining a fixed number of threads running
 	 * all the time and assigns work to the threads on the fly according to demand. */
 	private ExecutorService threadsExecutor;
-
 	// Distributed version settings
-
 	private int numOfNodes = 1;
 	private String iplServer = "localhost";
 	private String iplPool = "openpixi";
@@ -125,14 +106,14 @@ public class Settings {
 	//----------------------------------------------------------------------------------------------
 	// SIMPLE GETTERS
 	//----------------------------------------------------------------------------------------------
-        public int getSimulationType(){
-                return this.simulationType;
-        }
-        
-        public int getWriteToFile(){
-                return this.writeToFile;
-        }
-        
+	public int getSimulationType() {
+		return this.simulationType;
+	}
+
+	public int getWriteToFile() {
+		return this.writeToFile;
+	}
+
 	public double getSimulationWidth() {
 		return simulationWidth;
 	}
@@ -181,22 +162,22 @@ public class Settings {
 		return particleSolver;
 	}
 
-        public String getOCLParticleSolver(){
-            return this.OCLParticleSolver;
-        }
-        
+	public String getOCLParticleSolver() {
+		return this.OCLParticleSolver;
+	}
+
 	public InterpolatorAlgorithm getInterpolator() {
 		return interpolator;
 	}
-        
-        public String getOCLGridInterpolator(){
-            return this.OCLGridInterpolator;
-        }
-	
+
+	public String getOCLGridInterpolator() {
+		return this.OCLGridInterpolator;
+	}
+
 	public String getRunid() {
 		return runid;
 	}
-	
+
 	public List<Diagnostics> getDiagnostics() {
 		return diagnostics;
 	}
@@ -228,7 +209,6 @@ public class Settings {
 	//----------------------------------------------------------------------------------------------
 	// MORE COMPLEX GETTERS / BUILDERS
 	//----------------------------------------------------------------------------------------------
-
 	public double getCellWidth() {
 		return simulationWidth / gridCellsX;
 	}
@@ -242,7 +222,7 @@ public class Settings {
 	 */
 	public CombinedForce getForce() {
 		CombinedForce combinedForce = new CombinedForce();
-		for (Force f: forces) {
+		for (Force f : forces) {
 			combinedForce.add(f);
 		}
 		return combinedForce;
@@ -253,42 +233,39 @@ public class Settings {
 		long seed = (long) Math.random();
 		// If asList() is used the resulting list will have a fixed size!
 		List<ParticleFactory> particleFactories = Arrays.asList(
-				new ParticleFactory(numOfParticles/2, 1, 1, particleRadius, 
-						PositionDistribution.RANDOM, VelocityDistribution.RANDOM, 
-						particleMaxSpeed/10, particleMaxSpeed/10,particleMaxSpeed, 
-						false, seed, seed),
-				new ParticleFactory(numOfParticles/2, 1, -1, particleRadius, 
-						PositionDistribution.RANDOM, VelocityDistribution.RANDOM, 
-						particleMaxSpeed/10, particleMaxSpeed/10, particleMaxSpeed, 
-						false, seed, seed));
-		
+				new ParticleFactory(numOfParticles / 2, 1, 1, particleRadius,
+				PositionDistribution.RANDOM, VelocityDistribution.RANDOM,
+				particleMaxSpeed / 10, particleMaxSpeed / 10, particleMaxSpeed,
+				false, seed, seed),
+				new ParticleFactory(numOfParticles / 2, 1, -1, particleRadius,
+				PositionDistribution.RANDOM, VelocityDistribution.RANDOM,
+				particleMaxSpeed / 10, particleMaxSpeed / 10, particleMaxSpeed,
+				false, seed, seed));
+
 		return particleFactories;
 	}
-	
+
 	/**
 	 * If no particles are specified creates random particles.
 	 *
-	 * !!! IMPORTANT !!!
-	 * Always returns deep copy of the actual particle list!
+	 * !!! IMPORTANT !!! Always returns deep copy of the actual particle list!
 	 */
 	public List<Particle> getParticles() {
 		if (particles.size() == 0) {
-			this.particles = (new ParticleLoader()).load(defaultParticleFactories(), 
+			this.particles = (new ParticleLoader()).load(defaultParticleFactories(),
 					simulationWidth, simulationHeight, gridCellsX, gridCellsY);
 		}
 
 		return cloneParticles();
 	}
 
-
 	private List<Particle> cloneParticles() {
 		List<Particle> copy = new ArrayList<Particle>();
-		for (Particle p: particles) {
+		for (Particle p : particles) {
 			copy.add(p.copy());
 		}
 		return copy;
 	}
-
 
 	public GridBoundaryType getGridBoundary() {
 		switch (boundaryType) {
@@ -315,11 +292,9 @@ public class Settings {
 	public ParticleIterator getParticleIterator() {
 		if (numOfThreads == 1) {
 			return new SequentialParticleIterator();
-		}
-		else if (numOfThreads > 1) {
-			return  new ParallelParticleIterator(numOfThreads, getThreadsExecutor());
-		}
-		else {
+		} else if (numOfThreads > 1) {
+			return new ParallelParticleIterator(numOfThreads, getThreadsExecutor());
+		} else {
 			throw new RuntimeException("Invalid number of threads: " + numOfThreads);
 		}
 	}
@@ -327,11 +302,9 @@ public class Settings {
 	public CellIterator getCellIterator() {
 		if (numOfThreads == 1) {
 			return new SequentialCellIterator();
-		}
-		else if (numOfThreads > 1) {
-			return  new ParallelCellIterator(numOfThreads, getThreadsExecutor());
-		}
-		else {
+		} else if (numOfThreads > 1) {
+			return new ParallelCellIterator(numOfThreads, getThreadsExecutor());
+		} else {
 			throw new RuntimeException("Invalid number of threads: " + numOfThreads);
 		}
 	}
@@ -349,14 +322,14 @@ public class Settings {
 	//----------------------------------------------------------------------------------------------
 	// SETTERS (Overwrite default values programatically)
 	//----------------------------------------------------------------------------------------------
-        public void setSimulationType(int simulationType){
-                this.simulationType = simulationType;
-        }
-        
-        public void setWriteToFile(int writeTo){
-                this.writeToFile = writeTo;
-        }
-        
+	public void setSimulationType(int simulationType) {
+		this.simulationType = simulationType;
+	}
+
+	public void setWriteToFile(int writeTo) {
+		this.writeToFile = writeTo;
+	}
+
 	public void setSimulationWidth(double simulationWidth) {
 		this.simulationWidth = simulationWidth;
 	}
@@ -401,23 +374,23 @@ public class Settings {
 		this.particleSolver = particleSolver;
 	}
 
-        public void setOCLParticleSolver(String OCLParticleSolver){
-                this.OCLParticleSolver = OCLParticleSolver;
-        }
-        
+	public void setOCLParticleSolver(String OCLParticleSolver) {
+		this.OCLParticleSolver = OCLParticleSolver;
+	}
+
 	public void setInterpolator(InterpolatorAlgorithm interpolator) {
 		this.interpolator = interpolator;
 	}
-	
-        public void setOCLGridInterpolator(String OCLGridInterpolator){
-                this.OCLGridInterpolator = OCLGridInterpolator;
-        }
-        
-	public void setRunid (String runid) {
+
+	public void setOCLGridInterpolator(String OCLGridInterpolator) {
+		this.OCLGridInterpolator = OCLGridInterpolator;
+	}
+
+	public void setRunid(String runid) {
 		this.runid = runid;
 	}
-	
-	public void  setDiagnostics(List<Diagnostics> diagnostics) {
+
+	public void setDiagnostics(List<Diagnostics> diagnostics) {
 		this.diagnostics = diagnostics;
 	}
 
@@ -437,7 +410,7 @@ public class Settings {
 		this.numOfParticles = particles.size();
 		this.particles = particles;
 	}
-	
+
 	public void setParticleRadius(double particleRadius) {
 		this.particleRadius = particleRadius;
 	}
@@ -481,7 +454,6 @@ public class Settings {
 	//----------------------------------------------------------------------------------------------
 	// VARIOUS
 	//----------------------------------------------------------------------------------------------
-	
 	public Settings() {
 	}
 
@@ -501,11 +473,10 @@ public class Settings {
 		throw new UnsupportedOperationException();
 	}
 
-
 	/**
 	 * Has to be called every time numOfThreads is set to a value higher than 1!
-	 * Terminates the threads used by executor service.
-	 * Is idempotent (can be called multiple times without side-effects).
+	 * Terminates the threads used by executor service. Is idempotent (can be
+	 * called multiple times without side-effects).
 	 */
 	public void terminateThreads() {
 		if (threadsExecutor != null) {
