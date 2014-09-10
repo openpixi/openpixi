@@ -26,7 +26,7 @@ import org.openpixi.pixi.diagnostics.DiagnosticsScheduler;
 import org.openpixi.pixi.profile.ProfileInfo;
 import org.openpixi.pixi.ui.util.*;
 import java.io.IOException;
-import org.openpixi.pixi.physics.ParallelSimulationCL;
+//import org.openpixi.pixi.physics.ParallelSimulationCL;
 import static org.openpixi.pixi.ui.MainBatch.iterations;
 
 public class MainBatch {
@@ -128,12 +128,12 @@ public class MainBatch {
 			ProfileInfo.printProfileInfo();
 
 		} else {
-			ParallelSimulationCL simulationCL = new ParallelSimulationCL(settings);
-			simulationCL.runParallelSimulation();
+			//ParallelSimulationCL simulationCL = new ParallelSimulationCL(settings);
+			//simulationCL.runParallelSimulation();
 
-			if (settings.getWriteToFile() == 1) {
-				simulationCL.writeToFile();
-			}
+			//if (settings.getWriteToFile() == 1) {
+			//	simulationCL.writeToFile();
+			//}
 		}
 	}
 }

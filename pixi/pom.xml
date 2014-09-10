@@ -14,7 +14,7 @@
 		<repository>
 			<id>sonatype</id>
 			<name>Sonatype OSS Snapshots Repository</name>
-			<url>http://oss.sonatype.org/content/groups/public</url>
+			<url>https://oss.sonatype.org/content/groups/public</url>
 		</repository>
 	</repositories>
 	
@@ -22,7 +22,7 @@
 		<pluginRepository>
 			<id>sonatype</id>
 			<name>Sonatype OSS Snapshots Repository</name>
-			<url>http://oss.sonatype.org/content/groups/public</url>
+			<url>https://oss.sonatype.org/content/groups/public</url>
 		</pluginRepository>
 	</pluginRepositories>
         
@@ -56,12 +56,6 @@
 			<groupId>org.codehaus.mojo</groupId>
 			<artifactId>exec-maven-plugin</artifactId>
 			<version>1.2.1</version>
-		</dependency>
-                
-                <dependency>
-			<groupId>com.nativelibs4java</groupId>
-			<artifactId>javacl</artifactId>
-			<version>1.0.0-RC3</version>
 		</dependency>
 	</dependencies>
 
@@ -203,24 +197,6 @@
 
 	<build>
 		<plugins>
-                        <plugin>
-                                <!--
-                                This plugin will take all the .cl files in src/main/opencl and :
-                                - copy them to target/generated-resources (keeping the correct sub-path)
-                                - parse them and generate corresponding JavaCL program wrappers
-                                -->
-                                <groupId>com.nativelibs4java</groupId>
-                                <artifactId>maven-javacl-plugin</artifactId>
-                                <version>1.0.0-RC3</version>
-                                <executions>
-                                    <execution>
-                                        <goals>
-                                            <goal>compile</goal>
-                                        </goals>
-                                    </execution>
-                                </executions>
-                        </plugin>
-                        
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
