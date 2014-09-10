@@ -20,3 +20,6 @@
 
 target/
 lib/
+
+# Maven generated files
+dependency-reduced-pom.xml
