@@ -7,7 +7,13 @@ public class ChargeConservingAreaWeighting extends InterpolatorAlgorithm {
 
 	@Override
 	public void interpolateToGrid(Particle p, Grid g, double tstep) {
-
+                //we start by shifting the particle by (-0.5, -0.5)
+                //since the grid for the current is shifted by (0.5,0.5)
+                p.addPrevX(-0.5);
+                p.addPrevY(-0.5);
+                p.addX(-0.5);
+                p.addY(-0.5);
+            
 		//local origin i.e. nearest grid point BEFORE particle push
 		int xStart = (int) Math.floor(p.getPrevX() / g.getCellWidth() + 0.5);
 		int yStart = (int) Math.floor(p.getPrevY() / g.getCellHeight() + 0.5);
@@ -46,6 +52,10 @@ public class ChargeConservingAreaWeighting extends InterpolatorAlgorithm {
 					tenBoundaryMove(xStart, yStart, xEnd, yEnd, deltaX, deltaY, p, g, tstep);
 
 				}
+                p.addPrevX(0.5);
+                p.addX(0.5);
+                p.addPrevY(0.5);
+                p.addY(0.5);
 	}
 
 	/**
@@ -77,11 +87,12 @@ public class ChargeConservingAreaWeighting extends InterpolatorAlgorithm {
 //		g.jx[lx][ly] += p.pd.cd * deltaX * ((g.cellHeight + deltaY) / 2 + y) / g.simulation.tstep;
 //		g.jy[lxm][ly] += p.pd.cd * deltaY * ((g.cellWidth - deltaX) / 2 - x) / g.simulation.tstep;
 //		g.jy[lx][ly] += p.pd.cd * deltaY * ((g.cellWidth + deltaX) / 2 + x) / g.simulation.tstep;
-
-		g.addJx(lx, lym, p.getChargedensity() * g.getCellWidth() * deltaX * ((g.getCellHeight() - deltaY) / 2 - y) / tstep);
-		g.addJx(lx, ly, p.getChargedensity()  * g.getCellWidth() * deltaX * ((g.getCellHeight() + deltaY) / 2 + y) / tstep);
-		g.addJy(lxm, ly, p.getChargedensity() * g.getCellHeight() * deltaY * ((g.getCellWidth() - deltaX) / 2 - x) / tstep);
-		g.addJy(lx, ly, p.getChargedensity()  * g.getCellHeight() * deltaY * ((g.getCellWidth() + deltaX) / 2 + x) / tstep);
+                //adoption since we shifted the particle by (-0.5,-0.5) and the current is stored in the
+                //edges of the grid (+1's)
+		g.addJx(lx, lym+1, p.getChargedensity() * g.getCellWidth() * deltaX * ((g.getCellHeight() - deltaY) / 2 - y) / tstep);
+		g.addJx(lx, ly+1, p.getChargedensity()  * g.getCellWidth() * deltaX * ((g.getCellHeight() + deltaY) / 2 + y) / tstep);
+		g.addJy(lxm+1, ly, p.getChargedensity() * g.getCellHeight() * deltaY * ((g.getCellWidth() - deltaX) / 2 - x) / tstep);
+		g.addJy(lx+1, ly, p.getChargedensity()  * g.getCellHeight() * deltaY * ((g.getCellWidth() + deltaX) / 2 + x) / tstep);
 
 //		g.jx[lx][lym] += p.pd.cd * g.cellWidth * deltaX * (g.cellHeight * (1 - deltaY) / 2 - y) / g.simulation.tstep;
 //		g.jx[lx][ly] += p.pd.cd  * g.cellWidth * deltaX * (g.cellHeight * (1 + deltaY) / 2 + y) / g.simulation.tstep;
