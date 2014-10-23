@@ -105,15 +105,17 @@ public class CloudInCell implements InterpolatorAlgorithm {
 		double c;
 		/**Normalized distance to the upper cell boundary*/
 		double d;
-		
+		//DELETED THE SHIFT
 		//The -0.5 is there to shift the grid
-		a = p.getX() / g.getCellWidth() - 0.5;
-		i = (int) Math.floor(a);
+		//a = p.getX() / g.getCellWidth() - 0.5;
+		a = p.getX() /g.getCellWidth();
+                i = (int) Math.floor(a);
 		a -= i;
 		b = 1 - a;
 
 		//The -0.5 is there to shift the grid
-		c = p.getY() / g.getCellHeight() - 0.5;
+                //c = p.getY() / g.getCellHeight() - 0.5;
+		c = p.getY() / g.getCellHeight();
 		j = (int) Math.floor(c);
 		c -= j;
 		d = 1 - c;	

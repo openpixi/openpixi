@@ -96,16 +96,15 @@ public class ChargeConservingCIC extends CloudInCell {
 		//calculated the area that swept over a cell boundary for a normalized grid (i.e. unit square cells).
 		//and unit square charges. This area needs to be denormalized and then multiplied with the charge
 		//density. But these operations cancel and no further calculations need to be done.
-		g.addJx(lx, 	ly - 1, p.getCharge() * deltaX * ((1 - deltaY) / 2 - y));
-		g.addJx(lx, 	ly, 	p.getCharge() * deltaX * ((1 + deltaY) / 2 + y));
-		g.addJy(lx - 1, ly, 	p.getCharge() * deltaY * ((1 - deltaX) / 2 - x));
-		g.addJy(lx, 	ly, 	p.getCharge() * deltaY * ((1 + deltaX) / 2 + x));
-		/**
+		//g.addJx(lx, 	ly - 1, p.getCharge() * deltaX * ((1 - deltaY) / 2 - y));
+		//g.addJx(lx, 	ly, 	p.getCharge() * deltaX * ((1 + deltaY) / 2 + y));
+		//g.addJy(lx - 1, ly, 	p.getCharge() * deltaY * ((1 - deltaX) / 2 - x));
+		//g.addJy(lx, 	ly, 	p.getCharge() * deltaY * ((1 + deltaX) / 2 + x));
 		g.addJx(lx, 	ly, p.getCharge() * deltaX * ((1 - deltaY) / 2 - y));
 		g.addJx(lx, 	ly + 1, 	p.getCharge() * deltaX * ((1 + deltaY) / 2 + y));
 		g.addJy(lx, ly, 	p.getCharge() * deltaY * ((1 - deltaX) / 2 - x));
 		g.addJy(lx + 1, 	ly, 	p.getCharge() * deltaY * ((1 + deltaX) / 2 + x));
-		*/
+		
 
 	}
 
