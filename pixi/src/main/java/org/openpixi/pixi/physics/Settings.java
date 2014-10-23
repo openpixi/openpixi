@@ -35,6 +35,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import static org.openpixi.pixi.physics.GeneralBoundaryType.Hardwall;
 import static org.openpixi.pixi.physics.GeneralBoundaryType.Periodic;
+import org.openpixi.pixi.physics.grid.ChargeConservingCIC;
 
 /**
  * Specifies default values of simulation parameters. The default values can be
@@ -62,7 +63,8 @@ public class Settings {
 	private double speedOfLight = 1;
 	private double timeStep = 1;
 	private GeneralBoundaryType boundaryType = GeneralBoundaryType.Periodic;
-	private InterpolatorAlgorithm interpolator = new CloudInCell();
+	private InterpolatorAlgorithm interpolator = new ChargeConservingCIC();
+	//private InterpolatorAlgorithm interpolator = new CloudInCell();
 	// Grid related settings
 	private int gridCellsX = 10;
 	private int gridCellsY = 10;

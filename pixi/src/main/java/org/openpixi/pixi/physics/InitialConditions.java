@@ -25,6 +25,9 @@ import org.openpixi.pixi.physics.particles.Particle;
 import org.openpixi.pixi.physics.particles.ParticleFull;
 import org.openpixi.pixi.physics.solver.EulerRichardson;
 import org.openpixi.pixi.physics.solver.relativistic.BorisRelativistic;
+import org.openpixi.pixi.physics.fields.PoissonSolverFFTPeriodic;
+import org.openpixi.pixi.physics.fields.SimpleSolver;
+import org.openpixi.pixi.physics.grid.ChargeConservingCIC;
 
 import java.util.ArrayList;
 
@@ -178,15 +181,48 @@ public class InitialConditions {
 			p.setVx(maxspeed * Math.cos(phi));
 			p.setVy(maxspeed * Math.sin(phi));
 			p.setMass(1);
-			if (Math.random() > 0.5) {
-				p.setCharge(.1);
+            //overall charge is 0:
+			if (k<count/2) {
+				p.setCharge(.01);
 			} else {
-				p.setCharge(-.1);
+				p.setCharge(-.01);
 			}
 			particlelist.add(p);
 		}
 
 		return particlelist;
 	}
+	   
+    public static Simulation initPair(double charge, double radius) {
+	Settings stt = new Settings();
+
+	stt.setTimeStep(1);
+	stt.setSpeedOfLight(3);
+	stt.setSimulationWidth(100);
+	stt.setSimulationHeight(100);
+            stt.setNumOfParticles(2);
+
+	stt.setBoundary(GeneralBoundaryType.Periodic);
+            stt.setGridSolver(new SimpleSolver());
+
+	for (int k = 0; k < 2; k++) {
+		Particle par = new ParticleFull();
+		par.setX(stt.getSimulationWidth() * 1/9.0*(k+4));
+		par.setY(stt.getSimulationHeight() * 1/2);
+		par.setRadius(radius);
+		par.setVx(0);
+		par.setVy(0);
+		par.setMass(1);
+		par.setCharge(charge*(1-2*k));
+		stt.addParticle(par);
+	}
+            
+            stt.setPoissonSolver(new PoissonSolverFFTPeriodic());
+            stt.useGrid(true);
+            stt.setInterpolator(new ChargeConservingCIC());
+            //set to charge conserving CIC; already preset in settings
+	Simulation simulation = new Simulation(stt);
+	return simulation;
+}
 
 }

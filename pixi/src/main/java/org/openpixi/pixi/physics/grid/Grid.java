@@ -126,6 +126,14 @@ public class Grid {
 		cells[index(x)][index(y)].setEx(value);
 	}
 
+	public double getExo(int x, int y) {
+		return cells[index(x)][index(y)].getExo();
+	}
+
+	public void setExo(int x, int y, double value) {
+		cells[index(x)][index(y)].setExo(value);
+	}
+	
 	public void addEx(int x, int y, double value) {
 		cells[index(x)][index(y)].setEx(cells[index(x)][index(y)].getEx() + value);
 	}
@@ -138,6 +146,14 @@ public class Grid {
 		cells[index(x)][index(y)].setEy(value);
 	}
 
+	public double getEyo(int x, int y) {
+		return cells[index(x)][index(y)].getEyo();
+	}
+
+	public void setEyo(int x, int y, double value) {
+		cells[index(x)][index(y)].setEyo(value);
+	}
+	
 	public void addEy(int x, int y, double value) {
 		cells[index(x)][index(y)].setEy(cells[index(x)][index(y)].getEy() + value);
 	}

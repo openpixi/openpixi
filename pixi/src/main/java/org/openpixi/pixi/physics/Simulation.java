@@ -53,6 +53,9 @@ public class Simulation {
 	 */
 	private double height;
 	private double speedOfLight;
+	
+    private double mue0 = 0.05;
+    private double eps0 = 10.0;
 	/**
 	 * Number of iterations in the non-interactive simulation.
 	 */
@@ -189,6 +192,9 @@ public class Simulation {
 			f.add(gridForce);
 			usingGridForce = true;
 		}
+        if(!f.forces.contains(gridForce)){
+            f.add(gridForce);
+        }
 	}
 
 	public void turnGridForceOff() {

@@ -32,6 +32,13 @@ public class ChargeConservingCIC extends CloudInCell {
 		/**Normalized distance covered in X direction*/
 		double deltaY;
 		
+        //we start by shifting the particle by (-0.5, -0.5)
+        //since the grid for the current is shifted by (0.5,0.5)
+        p.addPrevX(-0.5*g.getCellWidth());
+        p.addPrevY(-0.5*g.getCellHeight());
+        p.addX(-0.5*g.getCellWidth());
+        p.addY(-0.5*g.getCellHeight());
+		
 		x = p.getPrevX() / g.getCellWidth();
 		y = p.getPrevY() / g.getCellHeight();
 		
@@ -67,6 +74,10 @@ public class ChargeConservingCIC extends CloudInCell {
 				else {
 					tenBoundaryMove(x, y, xStart, yStart, xEnd, yEnd, deltaX, deltaY, p, g, tstep);
 				}
+        p.addPrevX(0.5*g.getCellWidth());
+        p.addX(0.5*g.getCellWidth());
+        p.addPrevY(0.5*g.getCellHeight());
+        p.addY(0.5*g.getCellHeight());
 	}
 
 	/**
@@ -85,10 +96,15 @@ public class ChargeConservingCIC extends CloudInCell {
 		//calculated the area that swept over a cell boundary for a normalized grid (i.e. unit square cells).
 		//and unit square charges. This area needs to be denormalized and then multiplied with the charge
 		//density. But these operations cancel and no further calculations need to be done.
-		g.addJx(lx, 	ly - 1, p.getCharge() * deltaX * ((1 - deltaY) / 2 - y));
-		g.addJx(lx, 	ly, 	p.getCharge() * deltaX * ((1 + deltaY) / 2 + y));
-		g.addJy(lx - 1, ly, 	p.getCharge() * deltaY * ((1 - deltaX) / 2 - x));
-		g.addJy(lx, 	ly, 	p.getCharge() * deltaY * ((1 + deltaX) / 2 + x));
+		//g.addJx(lx, 	ly - 1, p.getCharge() * deltaX * ((1 - deltaY) / 2 - y));
+		//g.addJx(lx, 	ly, 	p.getCharge() * deltaX * ((1 + deltaY) / 2 + y));
+		//g.addJy(lx - 1, ly, 	p.getCharge() * deltaY * ((1 - deltaX) / 2 - x));
+		//g.addJy(lx, 	ly, 	p.getCharge() * deltaY * ((1 + deltaX) / 2 + x));
+		g.addJx(lx, 	ly, p.getCharge() * deltaX * ((1 - deltaY) / 2 - y));
+		g.addJx(lx, 	ly + 1, 	p.getCharge() * deltaX * ((1 + deltaY) / 2 + y));
+		g.addJy(lx, ly, 	p.getCharge() * deltaY * ((1 - deltaX) / 2 - x));
+		g.addJy(lx + 1, 	ly, 	p.getCharge() * deltaY * ((1 + deltaX) / 2 + x));
+		
 
 	}
 

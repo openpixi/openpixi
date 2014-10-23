@@ -169,11 +169,12 @@ public class Particle2DPanel extends JPanel {
 			s = InitialConditions.initMagnetic(3, 2);
 			break;
 		case 7:
-			s = InitialConditions.initSpring(1, 2);
+			s = InitialConditions.initPair(0.01,1);//s = InitialConditions.initSpring(1, 2);
 			break;
 		}
 		updateFieldForce();
 		s.prepareAllParticles();
+		s.turnGridForceOn();
 		timer.start();
 	}
 
@@ -369,6 +370,7 @@ public class Particle2DPanel extends JPanel {
 		setBackground(Color.white);
 		graph.translate(0, this.getHeight());
 		graph.scale(1, -1);
+		double scale = 10;
 
 		if(!paint_trace)
 		{
@@ -405,8 +407,12 @@ public class Particle2DPanel extends JPanel {
 				for(int k = 0; k < s.grid.getNumCellsY(); k++)
 				{
 					int xstart = (int) (s.grid.getCellWidth() * (i + 0.5) * sx);
+					int xstart2 = (int)(s.grid.getCellWidth() * i * sx);
 					int ystart = (int) (s.grid.getCellHeight() * (k + 0.5) * sy);
-					drawArrow(graph, xstart, ystart, (int) Math.round(s.grid.getJx(i,k)*sx + xstart), (int) Math.round(s.grid.getJy(i,k)*sy + ystart));
+					int ystart2 = (int) (s.grid.getCellHeight() * k * sy);
+					//drawArrow(graph, xstart, ystart, (int) Math.round(s.grid.getJx(i,k)*sx + xstart), (int) Math.round(s.grid.getJy(i,k)*sy + ystart));
+                                        drawArrow(graph, xstart, ystart2, (int) Math.round(s.grid.getJx(i,k)*sx+xstart), ystart2, Color.BLACK);
+                                        drawArrow(graph, xstart2, ystart, xstart2, (int) Math.round(s.grid.getJy(i,k)*sy+ystart),Color.BLACK);
 				}
 			//return;
 		}
@@ -418,8 +424,13 @@ public class Particle2DPanel extends JPanel {
 				for(int k = 0; k < s.grid.getNumCellsY(); k++)
 				{
 					int xstart = (int) (s.grid.getCellWidth() * (i + 0.5) * sx);
-					int ystart = (int) (s.grid.getCellHeight() * (k + 0.5) * sy);
-					drawArrow(graph, xstart, ystart, (int) Math.round(s.grid.getEx(i,k)*sx + xstart), (int) Math.round(s.grid.getEy(i,k)*sy + ystart));
+                    int xstart2 = (int)(s.grid.getCellWidth() * i * sx);
+int ystart = (int) (s.grid.getCellHeight() * (k + 0.5) * sy);
+                    int ystart2 = (int) (s.grid.getCellHeight() * k * sy);
+//drawArrow(graph, xstart, ystart, (int) Math.round(scale * s.grid.getEx(i,k)*sx + xstart), (int) Math.round(scale* s.grid.getEy(i,k)*sy + ystart));
+                    drawArrow(graph, xstart, ystart2, (int) Math.round(scale*s.grid.getEx(i,k)*sx+xstart),ystart2, Color.BLACK);
+                    drawArrow(graph, xstart2, ystart, xstart2, (int) Math.round(scale*s.grid.getEy(i,k)*sy+ystart), Color.BLACK);
+                    drawArrow(graph, xstart, ystart, (int) Math.round(scale*s.grid.getBz(i, k)*sx + xstart), (int) Math.round(scale*s.grid.getBz(i,k)*sy+ystart), Color.RED);
 				}
 			//return;
 		}
@@ -446,7 +457,7 @@ public class Particle2DPanel extends JPanel {
 	}
 
 
-	private void drawArrow(Graphics2D g, int x1, int y1, int x2, int y2) {
+	private void drawArrow(Graphics2D g, int x1, int y1, int x2, int y2, Color col) {
 
 		int ARR_SIZE = 5;
 
@@ -461,10 +472,13 @@ public class Particle2DPanel extends JPanel {
         //g.setTransform(at);
 
         // Draw horizontal arrow starting in (0, 0)
+        Color colold = g.getColor();
+        g.setColor(col);
         g.drawLine(0, 0, (int) len, 0);
         if(Math.abs(x2 - x1) > 0 || Math.abs(y2 - y1) > 0)
         	g.fillPolygon(new int[] {len, len-ARR_SIZE, len-ARR_SIZE, len},
         				  new int[] {0, -ARR_SIZE, ARR_SIZE, 0}, 4);
+        g.setColor(colold);
 
         // reset transformationmatrix
         g.setTransform(old);

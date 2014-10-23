@@ -19,6 +19,9 @@ public class PoissonSolverFFTPeriodic implements PoissonSolver {
 	 */
 	public void solve(Grid g) {
 		
+                //double eps0 = 1.0/(4*Math.PI);
+                double eps0 = 1;
+            
 		//size of the array to be transformed
 		int columns = g.getNumCellsX();
 		int rows = g.getNumCellsY();
@@ -41,70 +44,55 @@ public class PoissonSolverFFTPeriodic implements PoissonSolver {
 		//perform Fourier transformation
 		fft.complexForward(trho);
 		
-		//Solve Poisson equation in Fourier space
-		//We omit the term with i,j=0 where d would become 0. This term only contributes a constant term
-		//to the potential and can therefore be chosen arbitrarily.
-		for(int i = 1; i < columns; i++) {
+                for(int i = 1; i < columns; i++) {
 			for(int j = 0; j < rows; j++) {
 				double d = (4 - 2 * Math.cos((2 * Math.PI * i) / g.getNumCellsX()) - 2 * Math.cos((2 * Math.PI * j) / g.getNumCellsY()));
-				phi[i][2*j] = (cellArea * trho[i][2*j]) / d;
-				phi[i][2*j+1] = (cellArea * trho[i][2*j+1]) / d;
+				phi[i][2*j] = (cellArea * trho[i][2*j]) / (d*eps0);
+				phi[i][2*j+1] = (cellArea * trho[i][2*j+1]) / (d*eps0);
 			}
 		}
 		//i=0 but j!=0
 		for(int j = 1; j < rows; j++) {
 			double d = (2 - 2 * Math.cos((2 * Math.PI * j) / g.getNumCellsY()));
-			phi[0][2*j] = (cellArea * trho[0][2*j]) / d;
-			phi[0][2*j+1] = (cellArea * trho[0][2*j+1]) / d;		
+			phi[0][2*j] = (cellArea * trho[0][2*j]) / (d * eps0);
+			phi[0][2*j+1] = (cellArea * trho[0][2*j+1]) / (d * eps0);		
 		}
+                phi[0][0] = 0;
+                phi[0][1] = 0;
 		
 		//perform inverse Fourier transform
 		fft.complexInverse(phi, true);
-		
-		//calculate and save electric fields
-		//simulation area without boundaries
-		for(int i = 1; i < columns-1; i++) {
-			for(int j = 1; j < rows-1; j++) {
+                
+                
+		//Solve Poisson equation in Fourier space
+		//We omit the term with i,j=0 where d would become 0. This term only contributes a constant term
+		//to the potential and can therefore be chosen arbitrarily.
+		for(int i = 0; i < columns-1; i++) {
+			for(int j = 0; j < rows-1; j++) {
 				//the electric field in x direction is equal to the negative derivative of the 
 				//potential in x direction, analogous for y direction
-				//using central difference, omitting imaginary part since it should be 0 anyway
-				g.setEx(i, j, -(phi[i+1][2*j] - phi[i-1][2*j]) / (2 * g.getCellWidth()));
-				g.setEy(i, j, -(phi[i][2*(j+1)] - phi[i][2*(j-1)]) / (2 * g.getCellHeight()));
+				//using forward difference, since phi is located in the corner of the grid
+                                //and the electric field in the edges of the grid
+				g.setEx(i, j, -(phi[i+1][2*j] - phi[i][2*j]) / (g.getCellWidth()));
+				g.setEy(i, j, -(phi[i][2*(j+1)] - phi[i][2*j]) / (g.getCellHeight()));
 			}
 		}
 		
-		//lower and upper boundaries
-		for(int i = 1; i < columns-1; i++) {
-			g.setEx(i, 0, -(phi[i+1][0] - phi[i-1][0]) / (2 * g.getCellWidth()));
-			//forward difference
-			g.setEy(i, 0, -(phi[i][2] - phi[i][2*(rows-2)]) / (2 * g.getCellHeight()));
-			g.setEx(i, rows-1, -(phi[i+1][2*(rows-1)] - phi[i-1][2*(rows-1)]) / (2 * g.getCellWidth()));
-			//backward difference
-			g.setEy(i, rows-1, -(phi[i][0] - phi[i][2*(rows-2)]) / (2 * g.getCellHeight()));
+		//upper boundary
+		for(int i = 0; i < columns-1; i++) {
+			g.setEx(i, rows-1, -(phi[i+1][2*(rows-1)] - phi[i][2*(rows-1)]) / (g.getCellWidth()));
+			g.setEy(i, rows-1, -(phi[i][0] - phi[i][2*(rows-1)]) / (g.getCellHeight()));
 		}
 		
-		//left and right boundaries
-		for(int j = 1; j < rows-1; j++) {
-			//forward difference
-			g.setEx(0, j, -(phi[1][2*j] - phi[columns-1][2*j]) / (2 * g.getCellWidth()));
-			g.setEy(0, j, -(phi[0][2*(j+1)] - phi[0][2*(j-1)]) / (2 * g.getCellHeight()));
-			//backward difference
-			g.setEx(columns-1, j, -(phi[0][2*j] - phi[columns-2][2*j]) / (2 * g.getCellWidth()));
-			g.setEy(columns-1, j, -(phi[columns-1][2*(j+1)] - phi[columns-1][2*(j-1)]) / (2 * g.getCellHeight()));
+		//right boundary
+		for(int j = 0; j < rows-1; j++) {
+			g.setEx(columns-1, j, -(phi[0][2*j] - phi[columns-1][2*j]) / (g.getCellWidth()));
+			g.setEy(columns-1, j, -(phi[columns-1][2*(j+1)] - phi[columns-1][2*j]) / (g.getCellHeight()));
 		}
 		
-		//4 boundary points
-		g.setEx(0, 0, -(phi[1][0] - phi[0][0]) / (2 * g.getCellWidth()));
-		g.setEy(0, 0, -(phi[0][2] - phi[0][0]) / (2 * g.getCellHeight()));
-		
-		g.setEx(0, rows-1, -(phi[1][2*(rows-1)] - phi[0][2*(rows-1)]) / (2 * g.getCellWidth()));
-		g.setEy(0, rows-1, -(phi[0][2*(rows-1)] - phi[0][2*(rows-2)]) / (2 * g.getCellHeight()));
-		
-		g.setEx(columns-1, rows-1, -(phi[columns-1][2*(rows-1)] - phi[columns-2][2*(rows-1)]) / (2 * g.getCellWidth()));
-		g.setEy(columns-1, rows-1, -(phi[columns-1][2*(rows-1)] - phi[columns-1][2*(rows-2)]) / (2 * g.getCellHeight()));		
-		
-		g.setEx(columns-1, 0, -(phi[columns-1][0] - phi[columns-2][0]) / (2 * g.getCellWidth()));
-		g.setEy(columns-1, 0, -(phi[columns-1][2] - phi[columns-1][0]) / (2 * g.getCellHeight()));
+		//upper right corner
+		g.setEx(columns-1, rows-1, -(phi[0][2*(rows-1)] - phi[columns-1][2*(rows-1)]) / (g.getCellWidth()));
+		g.setEy(columns-1, rows-1, -(phi[columns-1][0] - phi[columns-1][2*(rows-1)]) / (g.getCellHeight()));		
 		
 		//prepare output
 		for(int i = 0; i < columns; i++) {
