@@ -53,9 +53,6 @@ public class Simulation {
 	 */
 	private double height;
 	private double speedOfLight;
-	
-    private double mue0 = 0.05;
-    private double eps0 = 10.0;
 	/**
 	 * Number of iterations in the non-interactive simulation.
 	 */
@@ -209,6 +206,7 @@ public class Simulation {
 	 */
 	public void step() throws FileNotFoundException {
 
+		writeToFile();//System.out.println("Test");
 		particlePush();
 		detector.run();
 		collisionalgorithm.collide(detector.getOverlappedPairs(), f, mover.getSolver(), tstep);

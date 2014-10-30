@@ -198,8 +198,11 @@ public class InitialConditions {
 
 	stt.setTimeStep(1);
 	stt.setSpeedOfLight(3);
-	stt.setSimulationWidth(100);
-	stt.setSimulationHeight(100);
+	/*stt.setSimulationWidth(100);
+	stt.setSimulationHeight(100);*/
+	stt.setGridStep(10);
+	stt.setGridCellsX(10);
+	stt.setGridCellsY(10);
             stt.setNumOfParticles(2);
 
 	stt.setBoundary(GeneralBoundaryType.Periodic);
@@ -207,8 +210,8 @@ public class InitialConditions {
 
 	for (int k = 0; k < 2; k++) {
 		Particle par = new ParticleFull();
-		par.setX(stt.getSimulationWidth() * 1/9.0*(k+4));
-		par.setY(stt.getSimulationHeight() * 1/2);
+		par.setX(stt.getSimulationWidth() * 1/9.0*(k+4));//par.setX(stt.getSimulationWidth() * 1/9.0*(k+4));
+		par.setY(stt.getSimulationHeight() * 1/9.0*(k+4));//par.setY(stt.getSimulationHeight() * 1/2);
 		par.setRadius(radius);
 		par.setVx(0);
 		par.setVy(0);

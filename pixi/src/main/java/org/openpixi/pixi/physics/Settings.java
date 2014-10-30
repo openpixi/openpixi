@@ -58,16 +58,18 @@ public class Settings {
 	//----------------------------------------------------------------------------------------------
 	// DEFAULT VALUES
 	//----------------------------------------------------------------------------------------------
-	private double simulationWidth = 100;
-	private double simulationHeight = 100;
 	private double speedOfLight = 1;
 	private double timeStep = 1;
+	private double gridStep = 1;
+	private double tMax = 100;
 	private GeneralBoundaryType boundaryType = GeneralBoundaryType.Periodic;
 	private InterpolatorAlgorithm interpolator = new ChargeConservingCIC();
 	//private InterpolatorAlgorithm interpolator = new CloudInCell();
 	// Grid related settings
 	private int gridCellsX = 10;
 	private int gridCellsY = 10;
+	private double simulationWidth = gridCellsX*gridStep;
+	private double simulationHeight = gridCellsY*gridStep;
 	private FieldSolver gridSolver = new SimpleSolver();
 	private PoissonSolver poissonSolver = new PoissonSolverFFTPeriodic();
 	private boolean useGrid = true;
@@ -93,7 +95,7 @@ public class Settings {
 	private String runid = "default-run";
 	private List<Diagnostics> diagnostics = new ArrayList<Diagnostics>();
 	// Batch version settings
-	private int iterations = 1;
+	private int iterations = (int) Math.ceil(tMax/timeStep);
 	// Parallel (threaded) version settings
 	private int numOfThreads = 1;
 	/* The creation and start of the new threads is expensive. Therefore, in the parallel
@@ -130,6 +132,10 @@ public class Settings {
 
 	public int getGridCellsY() {
 		return gridCellsY;
+	}
+	
+	public double getGridStep() {
+		return gridStep;
 	}
 
 	public double getSpeedOfLight() {
@@ -342,10 +348,12 @@ public class Settings {
 
 	public void setGridCellsX(int gridCellsX) {
 		this.gridCellsX = gridCellsX;
+		this.simulationWidth = this.gridStep*gridCellsX;
 	}
 
 	public void setGridCellsY(int gridCellsY) {
 		this.gridCellsY = gridCellsY;
+		this.simulationHeight = this.gridStep*gridCellsY;
 	}
 
 	public void setSpeedOfLight(double speedOfLight) {
@@ -354,6 +362,10 @@ public class Settings {
 
 	public void setTimeStep(double timeStep) {
 		this.timeStep = timeStep;
+	}
+	
+	public void setGridStep(double gridstep) {
+		this.gridStep = gridstep;
 	}
 
 	public void setCollisionDetector(Detector collisionDetector) {
