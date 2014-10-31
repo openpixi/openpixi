@@ -20,7 +20,9 @@ package org.openpixi.pixi.physics;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.PrintWriter;
+import java.io.FileWriter;
 import org.openpixi.pixi.physics.collision.algorithms.CollisionAlgorithm;
 import org.openpixi.pixi.physics.collision.detectors.Detector;
 import org.openpixi.pixi.physics.fields.PoissonSolver;
@@ -57,6 +59,10 @@ public class Simulation {
 	 * Number of iterations in the non-interactive simulation.
 	 */
 	private int iterations;
+	/**
+	 * Total number of steps simulated so far.
+	 */
+	public int tottime;
 	/**
 	 * Contains all Particle2D objects
 	 */
@@ -111,6 +117,7 @@ public class Simulation {
 		height = settings.getSimulationHeight();
 		speedOfLight = settings.getSpeedOfLight();
 		iterations = settings.getIterations();
+		tottime = 0;
 
 		// TODO make particles a generic list
 		particles = (ArrayList<Particle>) settings.getParticles();
@@ -140,6 +147,8 @@ public class Simulation {
 		collisionalgorithm = settings.getCollisionAlgorithm();
 
 		prepareAllParticles();
+		
+		clearFile();
 	}
 
 	/**
@@ -160,6 +169,7 @@ public class Simulation {
 		this.height = settings.getSimulationHeight();
 		this.speedOfLight = settings.getSpeedOfLight();
 		this.iterations = settings.getIterations();
+		this.tottime = 0;
 
 		this.particles = (ArrayList<Particle>) particles;
 		f = settings.getForce();
@@ -204,9 +214,10 @@ public class Simulation {
 	/**
 	 * Runs the simulation in steps. (for interactive simulations)
 	 */
-	public void step() throws FileNotFoundException {
+	public void step(int i) throws FileNotFoundException,IOException {
 
-		writeToFile();//System.out.println("Test");
+		tottime++;
+		writeToFile(tstep*i);//System.out.println("Test");
 		particlePush();
 		detector.run();
 		collisionalgorithm.collide(detector.getOverlappedPairs(), f, mover.getSolver(), tstep);
@@ -219,25 +230,43 @@ public class Simulation {
 	/**
 	 * Runs the entire simulation at once. (for non-interactive simulations)
 	 */
-	public void run() throws FileNotFoundException {
-		for (int i = 0; i < iterations; ++i) {
-			step();
+	public void run() throws FileNotFoundException,IOException {
+		for (int i = 0; i <= iterations; ++i) {
+			step(i);
 		}
 	}
-
+	/**
+	 * Checks if the files are already existent and deletes them.
+	 */
+	public void clearFile() {
+		File particlesfile = new File("particles_seq.txt");
+		boolean fileExists1 = particlesfile.exists();
+		if(fileExists1 == true) {
+			particlesfile.delete();
+		}
+		
+		File gridfile = new File("cells_seq.txt");
+		boolean fileExists2 = gridfile.exists();
+		if(fileExists2 == true) {
+			gridfile.delete();
+		}
+	}
 	/**
 	 * Write the results to a txt file
 	 */
-	public void writeToFile() throws FileNotFoundException {
-		PrintWriter pw = new PrintWriter(new File("particles_seq.txt"));
+	public void writeToFile(double time) throws IOException {
+		//PrintWriter pw = new PrintWriter(new File("particles_seq.txt"));
+		FileWriter pw = new FileWriter("particles_seq.txt", true);
 
+		pw.write(time + "\t");
+		
 		for (int i = 0; i < particles.size(); i++) {
-			pw.write(particles.get(i).getX() + "\n");
-			pw.write(particles.get(i).getY() + "\n");
-			pw.write(particles.get(i).getRadius() + "\n");
-			pw.write(particles.get(i).getVx() + "\n");
-			pw.write(particles.get(i).getVy() + "\n");
-			pw.write(particles.get(i).getAx() + "\n");
+			pw.write(particles.get(i).getX() + "\t");
+			pw.write(particles.get(i).getY() + "\t");
+			//pw.write(particles.get(i).getRadius() + "\n");
+			pw.write(particles.get(i).getVx() + "\t");
+			pw.write(particles.get(i).getVy() + "\t");
+			/*pw.write(particles.get(i).getAx() + "\n");
 			pw.write(particles.get(i).getAy() + "\n");
 			pw.write(particles.get(i).getMass() + "\n");
 			pw.write(particles.get(i).getCharge() + "\n");
@@ -253,10 +282,12 @@ public class Simulation {
 			pw.write(particles.get(i).getPrevNormalVelocityComponentOfForceX() + "\n");
 			pw.write(particles.get(i).getPrevNormalVelocityComponentOfForceY() + "\n");
 			pw.write(particles.get(i).getPrevBz() + "\n");
-			pw.write(particles.get(i).getPrevLinearDragCoefficient() + "\n");
+			pw.write(particles.get(i).getPrevLinearDragCoefficient() + "\n");*/
 		}
+		pw.write("\n");
+		
 		pw.close();
-
+/*
 		pw = new PrintWriter(new File("cells_seq.txt"));
 		for (int i = 0; i < grid.getNumCellsXTotal(); i++) {
 			for (int j = 0; j < grid.getNumCellsYTotal(); j++) {
@@ -270,7 +301,7 @@ public class Simulation {
 				pw.write(grid.getCells()[i][j].getBzo() + "\n");
 			}
 		}
-		pw.close();
+		pw.close();*/
 	}
 
 	public void particlePush() {

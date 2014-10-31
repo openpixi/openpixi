@@ -76,13 +76,15 @@ public class MainBatch {
 			simulation = InitialConditions.initPair(0.01,1);
 
 
-			for (int i = 0; i < iterations;) {
+			for (int i = 0; i <= iterations;) {
 				// advance the simulation by one step
-				simulation.step();
+				simulation.step(i);
 
 				i++;
 
 			}
+			
+			//simulation.close();
 
 		} else {}
 	}

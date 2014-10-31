@@ -52,6 +52,7 @@ import java.util.ArrayList;
 import static java.awt.geom.AffineTransform.getRotateInstance;
 import static java.awt.geom.AffineTransform.getTranslateInstance;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -105,9 +106,12 @@ public class Particle2DPanel extends JPanel {
 
 		public void actionPerformed(ActionEvent eve) {
                     try {
-                        s.step();
+                        int NStepsDone = s.tottime;
+                        s.step(NStepsDone+1);
                     } catch (FileNotFoundException ex) {
                         Logger.getLogger(Particle2DPanel.class.getName()).log(Level.SEVERE, null, ex);
+                    } catch (IOException ex2) {
+                        Logger.getLogger(Particle2DPanel.class.getName()).log(Level.SEVERE, null, ex2);
                     }
 			frameratedetector.update();
 			sx = getWidth() / s.getWidth();
