@@ -181,7 +181,6 @@ public class MainControlApplet extends JApplet {
 			JComboBox cb = (JComboBox) e.getSource();
 			int id  = cb.getSelectedIndex();
 			particlePanel.resetAnimation(id);
-			particlePanel.resetAnimation(initComboBox.getSelectedIndex());
 			linkConstantForce();
 			setSlidersValue();
 		}
