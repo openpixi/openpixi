@@ -278,6 +278,7 @@ public class Particle2DPanel extends JPanel {
 		relativistic =! relativistic;
 
 		if(relativistic == false) {
+			s.relativistic = false;
 			if (s.f instanceof CombinedForce) {
 				ArrayList<Force> forces = ((CombinedForce) s.f).forces;
 				for (int j = 0; j < forces.size(); j++) {
@@ -302,6 +303,7 @@ public class Particle2DPanel extends JPanel {
 		}
 
 		if(relativistic == true) {
+			s.relativistic = true;
 			//System.out.println("relativistic version on");
 			if (s.f instanceof CombinedForce) {
 				ArrayList<Force> forces = ((CombinedForce) s.f).forces;

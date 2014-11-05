@@ -81,6 +81,7 @@ public class Simulation {
 	 */
 	private SimpleGridForce gridForce = new SimpleGridForce();
 	private boolean usingGridForce = false;
+	public boolean relativistic = false;
 	private ParticleGridInitializer particleGridInitializer = new ParticleGridInitializer();
 	private Interpolation interpolation;
 	/**
@@ -118,6 +119,7 @@ public class Simulation {
 		speedOfLight = settings.getSpeedOfLight();
 		iterations = settings.getIterations();
 		tottime = 0;
+		relativistic = settings.getRelativistic();
 
 		// TODO make particles a generic list
 		particles = (ArrayList<Particle>) settings.getParticles();
@@ -170,6 +172,7 @@ public class Simulation {
 		this.speedOfLight = settings.getSpeedOfLight();
 		this.iterations = settings.getIterations();
 		this.tottime = 0;
+		this.relativistic = settings.getRelativistic();
 
 		this.particles = (ArrayList<Particle>) particles;
 		f = settings.getForce();
@@ -257,6 +260,8 @@ public class Simulation {
 	public void writeToFile(double time) throws IOException {
 		//PrintWriter pw = new PrintWriter(new File("particles_seq.txt"));
 		FileWriter pw = new FileWriter("particles_seq.txt", true);
+		double kinetic = 0;
+		double kineticTotal = 0;
 
 		pw.write(time + "\t");
 		
@@ -266,6 +271,10 @@ public class Simulation {
 			//pw.write(particles.get(i).getRadius() + "\n");
 			pw.write(particles.get(i).getVx() + "\t");
 			pw.write(particles.get(i).getVy() + "\t");
+			if(relativistic == false) {kinetic = particles.get(i).getMass()*(particles.get(i).getVx() * particles.get(i).getVx() + particles.get(i).getVy()*particles.get(i).getVy())/2;}
+			else {kinetic = Math.sqrt(particles.get(i).getMass()*particles.get(i).getMass()*( particles.get(i).getVx() * particles.get(i).getVx() + particles.get(i).getVy()*particles.get(i).getVy() + 1) ); }
+			pw.write(kinetic + "\t");
+			kineticTotal += kinetic;
 			/*pw.write(particles.get(i).getAx() + "\n");
 			pw.write(particles.get(i).getAy() + "\n");
 			pw.write(particles.get(i).getMass() + "\n");
@@ -287,21 +296,44 @@ public class Simulation {
 		pw.write("\n");
 		
 		pw.close();
-/*
-		pw = new PrintWriter(new File("cells_seq.txt"));
+
+		//pw = new PrintWriter(new File("cells_seq.txt"));
+		pw = new FileWriter("cells_seq.txt", true);
+		
+		pw.write(time + "\t");
+		
+		double SumRho = 0;
+		double SumJx = 0;
+		double SumJy = 0;
+		double fieldEnergy = 0;
+		
 		for (int i = 0; i < grid.getNumCellsXTotal(); i++) {
 			for (int j = 0; j < grid.getNumCellsYTotal(); j++) {
-				pw.write(grid.getCells()[i][j].getJx() + "\n");
+				
+				SumRho += grid.getCells()[i][j].getRho();
+				SumJx += grid.getCells()[i][j].getJx();
+				SumJy += grid.getCells()[i][j].getJy();
+				fieldEnergy += ( grid.getCells()[i][j].getBz()*grid.getCells()[i][j].getBz() + grid.getCells()[i][j].getEx()*grid.getCells()[i][j].getEx() + grid.getCells()[i][j].getEy()*grid.getCells()[i][j].getEy())/2;
+
+				/*pw.write(grid.getCells()[i][j].getJx() + "\n");
 				pw.write(grid.getCells()[i][j].getJy() + "\n");
 				pw.write(grid.getCells()[i][j].getRho() + "\n");
 				pw.write(grid.getCells()[i][j].getPhi() + "\n");
 				pw.write(grid.getCells()[i][j].getEx() + "\n");
 				pw.write(grid.getCells()[i][j].getEy() + "\n");
 				pw.write(grid.getCells()[i][j].getBz() + "\n");
-				pw.write(grid.getCells()[i][j].getBzo() + "\n");
+				pw.write(grid.getCells()[i][j].getBzo() + "\n");*/
 			}
 		}
-		pw.close();*/
+		pw.write(kineticTotal + "\t");
+		pw.write(fieldEnergy + "\t");
+		pw.write(SumRho + "\t");
+		pw.write(SumJx + "\t");
+		pw.write(SumJy + "\t");
+		
+		pw.write("\n");
+		
+		pw.close();
 	}
 
 	public void particlePush() {

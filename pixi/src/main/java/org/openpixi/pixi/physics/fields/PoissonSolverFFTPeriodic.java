@@ -104,3 +104,4 @@ public class PoissonSolverFFTPeriodic implements PoissonSolver {
 	}
 	
 }
+

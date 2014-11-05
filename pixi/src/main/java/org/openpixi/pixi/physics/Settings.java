@@ -73,6 +73,7 @@ public class Settings {
 	private FieldSolver gridSolver = new SimpleSolver();
 	private PoissonSolver poissonSolver = new PoissonSolverFFTPeriodic();
 	private boolean useGrid = true;
+	private boolean relativistic = false;
 	// Particle related settings
 	private int numOfParticles = 128;
 	private double particleRadius = 1;
@@ -136,6 +137,10 @@ public class Settings {
 	
 	public double getGridStep() {
 		return gridStep;
+	}
+	
+	public boolean getRelativistic() {
+		return relativistic;
 	}
 
 	public double getSpeedOfLight() {
@@ -366,6 +371,10 @@ public class Settings {
 	
 	public void setGridStep(double gridstep) {
 		this.gridStep = gridstep;
+	}
+	
+	public void setRelativistic(boolean rel) {
+		this.relativistic = rel;
 	}
 
 	public void setCollisionDetector(Detector collisionDetector) {
