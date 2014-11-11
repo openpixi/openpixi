@@ -485,7 +485,7 @@ public class MainControlApplet extends JApplet {
 		stepSlider.addChangeListener(new StepListener());
 		stepSlider.setMinimum(1);
 		stepSlider.setMaximum(100);
-		stepSlider.setValue((int) (100 * (particlePanel.s.tstep = 0.5)));
+		stepSlider.setValue((int)(particlePanel.s.tstep / stepSliderScaling));
 		stepSlider.setMajorTickSpacing(10);
 		stepSlider.setMinorTickSpacing(2);
 		stepSlider.setPaintTicks(true);
@@ -774,8 +774,7 @@ public class MainControlApplet extends JApplet {
 
 	public void setSlidersValue()
 	{
-		particlePanel.s.tstep = 0.5;
-		stepSlider.setValue(50);
+		stepSlider.setValue((int)(particlePanel.s.tstep / stepSliderScaling));
 		efieldXSlider.setValue((int) (force.ex / exSliderScaling));
 		efieldYSlider.setValue((int) (force.ey / eySliderScaling));
 		bfieldZSlider.setValue((int) (force.bz / bzSliderScaling));
