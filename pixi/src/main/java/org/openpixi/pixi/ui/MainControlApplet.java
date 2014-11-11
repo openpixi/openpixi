@@ -790,7 +790,6 @@ public class MainControlApplet extends JApplet {
 		yboxentry.setText("10");
 		double width = particlePanel.s.getWidth();
 		double height = particlePanel.s.getHeight();
-		particlePanel.s.grid.changeSize(10, 10, width, height);
 		writePositionCheck.setSelected(false);
 		filename.setEditable(false);
 		filename.setEnabled(false);

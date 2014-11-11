@@ -202,6 +202,8 @@ public class InitialConditions {
 	stt.setSimulationHeight(100);
             stt.setNumOfParticles(2);
 
+	stt.addForce(new ConstantForce());
+
 	stt.setBoundary(GeneralBoundaryType.Periodic);
             stt.setGridSolver(new SimpleSolver());
 
