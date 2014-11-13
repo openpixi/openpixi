@@ -23,3 +23,6 @@ lib/
 
 # Maven generated files
 dependency-reduced-pom.xml
+
+# Generated output files
+output/

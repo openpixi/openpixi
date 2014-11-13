@@ -270,7 +270,11 @@ public class Simulation {
 	 */
 	public void writeToFile(double time) throws IOException {
 		//PrintWriter pw = new PrintWriter(new File("particles_seq.txt"));
-		FileWriter pw = new FileWriter("particles_seq.txt", true);
+		
+		File file = new File("output/");
+		if(!file.exists()) file.mkdir();
+		
+		FileWriter pw = new FileWriter("output/particles_seq.txt", true);
 		double kinetic = 0;
 		double kineticTotal = 0;
 		
@@ -314,7 +318,7 @@ public class Simulation {
 		pw.close();
 
 		//pw = new PrintWriter(new File("cells_seq.txt"));
-		pw = new FileWriter("cells_seq.txt", true);
+		pw = new FileWriter("output/cells_seq.txt", true);
 		
 		pw.write(time + "\t");
 		
@@ -354,9 +358,10 @@ public class Simulation {
 
 	public void writeSpecFile(int time) throws FileNotFoundException {
 		
-		//new File("/specs/").mkdir();
+		File file = new File("output/");
+		if(!file.exists()) file.mkdir();
 			
-		PrintWriter sw = new PrintWriter(new File("spec" + time + ".txt"));
+		PrintWriter sw = new PrintWriter(new File("output/spec" + time + ".txt"));
 		
 		for (int i = 0; i < particles.size(); i++) {
 			sw.write(i + "\t");
