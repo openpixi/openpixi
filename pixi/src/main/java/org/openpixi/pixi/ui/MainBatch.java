@@ -65,21 +65,21 @@ public class MainBatch {
 			parser.parse(args[0]);
 		}
 
-		// Reads out the settings that are needed for this UI.
-		// This must be placed after the parsing process.
-		iterations = settings.getIterations();
-		runid = settings.getRunid();
-
 		if (settings.getSimulationType() == 0) {
 			// Creates the actual physics simulation that can be run iteratively.
 			simulation = new Simulation(settings);
-			simulation = InitialConditions.initPair(0.01,1);
+			simulation = InitialConditions.initTwoStream(0.01,1,50);
+			
+			// Reads out the settings that are needed for this UI.
+			// This must be placed after the parsing process.
+			iterations = simulation.getIterations();
+			runid = settings.getRunid();
 
 
 			for (int i = 0; i <= iterations;) {
 				// advance the simulation by one step
 				simulation.step(i);
-
+				System.out.println(i);
 				i++;
 
 			}

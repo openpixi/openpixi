@@ -212,7 +212,7 @@ public class InitialConditions {
 	for (int k = 0; k < 2; k++) {
 		Particle par = new ParticleFull();
 		par.setX(stt.getSimulationWidth() * 1/9.0*(k+4));
-		par.setY(stt.getSimulationHeight() * 1/2);
+		par.setY(stt.getSimulationHeight() * 1/2 + stt.getGridStep()*0/4);
 		par.setRadius(radius);
 		par.setVx(0);
 		par.setVy(0);
@@ -224,9 +224,49 @@ public class InitialConditions {
             stt.setPoissonSolver(new PoissonSolverFFTPeriodic());
             stt.useGrid(true);
             stt.setInterpolator(new ChargeConservingCIC());
+            //stt.setIterations(1);//Testing purposes!!!
             //set to charge conserving CIC; already preset in settings
 	Simulation simulation = new Simulation(stt);
 	return simulation;
 }
 
+    public static Simulation initTwoStream(double charge, double radius, int numpart) {
+	Settings stt = new Settings();
+	double dnumpart = numpart;
+
+	stt.setTimeStep(1);
+	stt.setSpeedOfLight(1);
+	stt.setRelativistic(true);
+	/*stt.setSimulationWidth(100);
+	stt.setSimulationHeight(100);*/
+	stt.setGridStep(10);
+	stt.setGridCellsX(10);
+	stt.setGridCellsY(10);
+            stt.setNumOfParticles(2*numpart);
+
+	stt.setBoundary(GeneralBoundaryType.Periodic);
+            stt.setGridSolver(new SimpleSolver());
+
+	for (int k = 0; k < 2*numpart; k++) {
+		Particle par = new ParticleFull();
+		if(k < numpart) {par.setX(stt.getSimulationWidth() * 1/dnumpart*k);
+		par.setVx(0.1);
+		}
+		else {par.setX(stt.getSimulationWidth() * 1/dnumpart*(k-numpart));
+		par.setVx(-0.1);
+		}
+		par.setY(stt.getSimulationHeight() * 1/2 );
+		par.setRadius(radius);
+		par.setVy(0);
+		par.setMass(1);
+		par.setCharge(-charge);
+		stt.addParticle(par);
+	}
+            
+            stt.useGrid(true);
+	Simulation simulation = new Simulation(stt);
+	return simulation;
+}
+
+    
 }

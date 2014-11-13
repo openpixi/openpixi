@@ -175,6 +175,9 @@ public class Particle2DPanel extends JPanel {
 		case 7:
 			s = InitialConditions.initPair(0.01,1);//s = InitialConditions.initSpring(1, 2);
 			break;
+		case 8:
+			s = InitialConditions.initTwoStream(0.01,1,50);
+			break;
 		}
 		updateFieldForce();
 		s.prepareAllParticles();
@@ -435,7 +438,7 @@ int ystart = (int) (s.grid.getCellHeight() * (k + 0.5) * sy);
                     int ystart2 = (int) (s.grid.getCellHeight() * k * sy);
 //drawArrow(graph, xstart, ystart, (int) Math.round(scale * s.grid.getEx(i,k)*sx + xstart), (int) Math.round(scale* s.grid.getEy(i,k)*sy + ystart));
                     drawArrow(graph, xstart, ystart2, (int) Math.round(scale*s.grid.getEx(i,k)*sx+xstart),ystart2, Color.BLACK);
-                    drawArrow(graph, xstart2, ystart, xstart2, (int) Math.round(scale*s.grid.getEy(i,k)*sy+ystart), Color.BLACK);
+                    drawArrow(graph, xstart2, ystart, xstart2, (int) Math.round(scale*s.grid.getEy(i,k)*sy+ystart), Color.GREEN);
                     drawArrow(graph, xstart, ystart, (int) Math.round(scale*s.grid.getBz(i, k)*sx + xstart), (int) Math.round(scale*s.grid.getBz(i,k)*sy+ystart), Color.RED);
 				}
 			//return;
@@ -447,6 +450,7 @@ int ystart = (int) (s.grid.getCellHeight() * (k + 0.5) * sy);
 			graph.setColor(darkGreen);
 			graph.drawString("Frame rate: " + frameratedetector.getRateString() + " fps", 30, 30);
 			graph.drawString("Time step: " + (float) s.tstep, 30, 50);
+			graph.drawString("Total time: " + (float) s.tottime, 30, 70);
 
 			Runtime runtime = Runtime.getRuntime();
 			long maxMemory = runtime.maxMemory();
