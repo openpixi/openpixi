@@ -20,7 +20,9 @@ package org.openpixi.pixi.physics;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.PrintWriter;
+import java.io.FileWriter;
 import org.openpixi.pixi.physics.collision.algorithms.CollisionAlgorithm;
 import org.openpixi.pixi.physics.collision.detectors.Detector;
 import org.openpixi.pixi.physics.fields.PoissonSolver;
@@ -53,13 +55,18 @@ public class Simulation {
 	 */
 	private double height;
 	private double speedOfLight;
-	
-    private double mue0 = 0.05;
-    private double eps0 = 10.0;
 	/**
 	 * Number of iterations in the non-interactive simulation.
 	 */
 	private int iterations;
+	/**
+	 * Total number of steps simulated so far.
+	 */
+	public int tottime;
+	/**
+	 * Total number of steps between spectral measurements.
+	 */
+	public int specstep;
 	/**
 	 * Contains all Particle2D objects
 	 */
@@ -78,6 +85,7 @@ public class Simulation {
 	 */
 	private SimpleGridForce gridForce = new SimpleGridForce();
 	private boolean usingGridForce = false;
+	public boolean relativistic = false;
 	private ParticleGridInitializer particleGridInitializer = new ParticleGridInitializer();
 	private Interpolation interpolation;
 	/**
@@ -87,6 +95,10 @@ public class Simulation {
 
 	public Interpolation getInterpolation() {
 		return interpolation;
+	}
+	
+	public int getIterations() {
+		return iterations;
 	}
 
 	public double getWidth() {
@@ -114,6 +126,9 @@ public class Simulation {
 		height = settings.getSimulationHeight();
 		speedOfLight = settings.getSpeedOfLight();
 		iterations = settings.getIterations();
+		tottime = 0;
+		specstep = settings.getSpectrumStep();
+		relativistic = settings.getRelativistic();
 
 		// TODO make particles a generic list
 		particles = (ArrayList<Particle>) settings.getParticles();
@@ -143,6 +158,8 @@ public class Simulation {
 		collisionalgorithm = settings.getCollisionAlgorithm();
 
 		prepareAllParticles();
+		
+		clearFile();
 	}
 
 	/**
@@ -163,6 +180,9 @@ public class Simulation {
 		this.height = settings.getSimulationHeight();
 		this.speedOfLight = settings.getSpeedOfLight();
 		this.iterations = settings.getIterations();
+		this.tottime = 0;
+		this.specstep = settings.getSpectrumStep();
+		this.relativistic = settings.getRelativistic();
 
 		this.particles = (ArrayList<Particle>) particles;
 		f = settings.getForce();
@@ -207,8 +227,11 @@ public class Simulation {
 	/**
 	 * Runs the simulation in steps. (for interactive simulations)
 	 */
-	public void step() throws FileNotFoundException {
+	public void step(int i) throws FileNotFoundException,IOException {
 
+		tottime++;
+		writeToFile(tstep*i);
+		if( (i % specstep) == 0) writeSpecFile(i);
 		particlePush();
 		detector.run();
 		collisionalgorithm.collide(detector.getOverlappedPairs(), f, mover.getSolver(), tstep);
@@ -221,33 +244,66 @@ public class Simulation {
 	/**
 	 * Runs the entire simulation at once. (for non-interactive simulations)
 	 */
-	public void run() throws FileNotFoundException {
-		for (int i = 0; i < iterations; ++i) {
-			step();
+	public void run() throws FileNotFoundException,IOException {
+		for (int i = 0; i <= iterations; ++i) {
+			step(i);
 		}
 	}
-
+	/**
+	 * Checks if the files are already existent and deletes them.
+	 */
+	public void clearFile() {
+		File particlesfile = new File("particles_seq.txt");
+		boolean fileExists1 = particlesfile.exists();
+		if(fileExists1 == true) {
+			particlesfile.delete();
+		}
+		
+		File gridfile = new File("cells_seq.txt");
+		boolean fileExists2 = gridfile.exists();
+		if(fileExists2 == true) {
+			gridfile.delete();
+		}
+	}
 	/**
 	 * Write the results to a txt file
 	 */
-	public void writeToFile() throws FileNotFoundException {
-		PrintWriter pw = new PrintWriter(new File("particles_seq.txt"));
-
+	public void writeToFile(double time) throws IOException {
+		//PrintWriter pw = new PrintWriter(new File("particles_seq.txt"));
+		
+		File file = new File("output/");
+		if(!file.exists()) file.mkdir();
+		
+		FileWriter pw = new FileWriter("output/particles_seq.txt", true);
+		double kinetic = 0;
+		double kineticTotal = 0;
+		
+		if(time == 0) {
+			pw.write("#time \t x \t y \t vx \t vy \t kinetic \t Ex \t Ey \t Bz");
+			pw.write("\n");
+		} else {}
+		
+		pw.write(time + "\t");
+		
 		for (int i = 0; i < particles.size(); i++) {
-			pw.write(particles.get(i).getX() + "\n");
-			pw.write(particles.get(i).getY() + "\n");
-			pw.write(particles.get(i).getRadius() + "\n");
-			pw.write(particles.get(i).getVx() + "\n");
-			pw.write(particles.get(i).getVy() + "\n");
-			pw.write(particles.get(i).getAx() + "\n");
+			pw.write(particles.get(i).getX() + "\t");
+			pw.write(particles.get(i).getY() + "\t");
+			//pw.write(particles.get(i).getRadius() + "\n");
+			pw.write(particles.get(i).getVx() + "\t");
+			pw.write(particles.get(i).getVy() + "\t");
+			if(relativistic == false) {kinetic = particles.get(i).getMass()*(particles.get(i).getVx() * particles.get(i).getVx() + particles.get(i).getVy()*particles.get(i).getVy())/2;}
+			else {kinetic = Math.sqrt(particles.get(i).getMass()*particles.get(i).getMass()*( particles.get(i).getVx() * particles.get(i).getVx() + particles.get(i).getVy()*particles.get(i).getVy() + 1) ); }
+			pw.write(kinetic + "\t");
+			kineticTotal += kinetic;
+			pw.write(particles.get(i).getEx() + "\t");
+			pw.write(particles.get(i).getEy() + "\t");
+			pw.write(particles.get(i).getBz() + "\t");
+			/*pw.write(particles.get(i).getAx() + "\n");
 			pw.write(particles.get(i).getAy() + "\n");
 			pw.write(particles.get(i).getMass() + "\n");
 			pw.write(particles.get(i).getCharge() + "\n");
 			pw.write(particles.get(i).getPrevX() + "\n");
 			pw.write(particles.get(i).getPrevY() + "\n");
-			pw.write(particles.get(i).getEx() + "\n");
-			pw.write(particles.get(i).getEy() + "\n");
-			pw.write(particles.get(i).getBz() + "\n");
 			pw.write(particles.get(i).getPrevPositionComponentForceX() + "\n");
 			pw.write(particles.get(i).getPrevPositionComponentForceY() + "\n");
 			pw.write(particles.get(i).getPrevTangentVelocityComponentOfForceX() + "\n");
@@ -255,26 +311,71 @@ public class Simulation {
 			pw.write(particles.get(i).getPrevNormalVelocityComponentOfForceX() + "\n");
 			pw.write(particles.get(i).getPrevNormalVelocityComponentOfForceY() + "\n");
 			pw.write(particles.get(i).getPrevBz() + "\n");
-			pw.write(particles.get(i).getPrevLinearDragCoefficient() + "\n");
+			pw.write(particles.get(i).getPrevLinearDragCoefficient() + "\n");*/
 		}
+		pw.write("\n");
+		
 		pw.close();
 
-		pw = new PrintWriter(new File("cells_seq.txt"));
+		//pw = new PrintWriter(new File("cells_seq.txt"));
+		pw = new FileWriter("output/cells_seq.txt", true);
+		
+		pw.write(time + "\t");
+		
+		double SumRho = 0;
+		double SumJx = 0;
+		double SumJy = 0;
+		double fieldEnergy = 0;
+		
 		for (int i = 0; i < grid.getNumCellsXTotal(); i++) {
 			for (int j = 0; j < grid.getNumCellsYTotal(); j++) {
-				pw.write(grid.getCells()[i][j].getJx() + "\n");
+				
+				SumRho += grid.getCells()[i][j].getRho();
+				SumJx += grid.getCells()[i][j].getJx();
+				SumJy += grid.getCells()[i][j].getJy();
+				fieldEnergy += ( grid.getCells()[i][j].getBz()*grid.getCells()[i][j].getBz() + grid.getCells()[i][j].getEx()*grid.getCells()[i][j].getEx() + grid.getCells()[i][j].getEy()*grid.getCells()[i][j].getEy())/2;
+
+				/*pw.write(grid.getCells()[i][j].getJx() + "\n");
 				pw.write(grid.getCells()[i][j].getJy() + "\n");
 				pw.write(grid.getCells()[i][j].getRho() + "\n");
 				pw.write(grid.getCells()[i][j].getPhi() + "\n");
 				pw.write(grid.getCells()[i][j].getEx() + "\n");
 				pw.write(grid.getCells()[i][j].getEy() + "\n");
 				pw.write(grid.getCells()[i][j].getBz() + "\n");
-				pw.write(grid.getCells()[i][j].getBzo() + "\n");
+				pw.write(grid.getCells()[i][j].getBzo() + "\n");*/
 			}
 		}
+		pw.write(kineticTotal + "\t");
+		pw.write(fieldEnergy + "\t");
+		pw.write(SumRho + "\t");
+		pw.write(SumJx + "\t");
+		pw.write(SumJy + "\t");
+		
+		pw.write("\n");
+		
 		pw.close();
 	}
 
+	public void writeSpecFile(int time) throws FileNotFoundException {
+		
+		File file = new File("output/");
+		if(!file.exists()) file.mkdir();
+			
+		PrintWriter sw = new PrintWriter(new File("output/spec" + time + ".txt"));
+		
+		for (int i = 0; i < particles.size(); i++) {
+			sw.write(i + "\t");
+			sw.write(particles.get(i).getX() + "\t");
+			sw.write(particles.get(i).getY() + "\t");
+			sw.write(particles.get(i).getVx() + "\t");
+			sw.write(particles.get(i).getVy() + "\t");
+			sw.write("\n");
+		}
+		
+		sw.close();
+
+	}
+	
 	public void particlePush() {
 		mover.push(particles, f, tstep);
 	}

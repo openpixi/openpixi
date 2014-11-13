@@ -26,7 +26,7 @@ import org.openpixi.pixi.diagnostics.DiagnosticsScheduler;
 import org.openpixi.pixi.profile.ProfileInfo;
 import org.openpixi.pixi.ui.util.*;
 import java.io.IOException;
-//import org.openpixi.pixi.physics.ParallelSimulationCL;
+import org.openpixi.pixi.physics.InitialConditions;
 import static org.openpixi.pixi.ui.MainBatch.iterations;
 
 public class MainBatch {
@@ -65,75 +65,27 @@ public class MainBatch {
 			parser.parse(args[0]);
 		}
 
-		// Reads out the settings that are needed for this UI.
-		// This must be placed after the parsing process.
-		iterations = settings.getIterations();
-		runid = settings.getRunid();
-
 		if (settings.getSimulationType() == 0) {
 			// Creates the actual physics simulation that can be run iteratively.
 			simulation = new Simulation(settings);
-			// Creates the diagnostics wrapper class that knows about all
-			// enabled diagnostic methods.
-			diagnostics = new DiagnosticsScheduler(simulation.grid, simulation.particles, settings);
+			simulation = InitialConditions.initTwoStream(0.01,1,50);
+			
+			// Reads out the settings that are needed for this UI.
+			// This must be placed after the parsing process.
+			iterations = simulation.getIterations();
+			runid = settings.getRunid();
 
-			// Checks if the user has specified at least two parameters
-			// If this is not the case, the diagnostics output is disabled
-			// the program will not output anything.
-			if (args.length < 2) {
-				dataOutput = new EmptyDataOutput();
-			} else {
-				// The program expects a directory (to which the output files will be saved) as its
-				// second parameter. This checks if the directory is specified correctly. Tries to
-				// fix it if not.
-				if (args[1].substring(args[1].length() - 1) != System.getProperty("file.separator")) {
-					args[1] = args[1] + System.getProperty("file.separator");
-				}
 
-				// Tries to create the output objects. If something is wrong with the specified
-				// directory the program will give an error and terminate. 
-				try {
-					dataOutput = new DataOutput(args[1], runid, simulation.grid);
-				} catch (IOException e) {
-					System.err.print("Something went wrong when creating output files for diagnostics! \n"
-							+ "Please specify an output directory with write access rights!\n"
-							+ "The directory that you specified was " + args[1] + "\n"
-							+ "Aborting...");
-					return;
-				}
-			}
-
-			//Performs diagnostics on the initial state of the simulation
-			dataOutput.setIteration(0);
-			diagnostics.performDiagnostics(0);
-			diagnostics.output(dataOutput);
-
-			for (int i = 0; i < iterations;) {
+			for (int i = 0; i <= iterations;) {
 				// advance the simulation by one step
-				simulation.step();
-
+				simulation.step(i);
+				System.out.println(i);
 				i++;
 
-				dataOutput.setIteration(i);
-				diagnostics.performDiagnostics(i);
-				diagnostics.output(dataOutput);
 			}
+			
+			//simulation.close();
 
-			dataOutput.closeStreams();
-
-			if (settings.getWriteToFile() == 1) {
-				simulation.writeToFile();
-			}
-
-			ProfileInfo.printProfileInfo();
-
-		} else {
-			//ParallelSimulationCL simulationCL = new ParallelSimulationCL(settings);
-			//simulationCL.runParallelSimulation();
-
-			//if (settings.getWriteToFile() == 1) {
-			//	simulationCL.writeToFile();
-			//}
-		}
+		} else {}
 	}
 }

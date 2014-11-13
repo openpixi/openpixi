@@ -19,8 +19,8 @@ public class PoissonSolverFFTPeriodic implements PoissonSolver {
 	 */
 	public void solve(Grid g) {
 		
-                //double eps0 = 1.0/(4*Math.PI);
-                double eps0 = 1;
+                double eps0 = 1.0/(4*Math.PI);
+                //double eps0 = 1;
             
 		//size of the array to be transformed
 		int columns = g.getNumCellsX();
@@ -104,3 +104,4 @@ public class PoissonSolverFFTPeriodic implements PoissonSolver {
 	}
 	
 }
+

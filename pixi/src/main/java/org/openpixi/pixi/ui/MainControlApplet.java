@@ -110,7 +110,8 @@ public class MainControlApplet extends JApplet {
 			"Single particle in gravity",
 			"Single particle in el. Field",
 			"3 part. in magnetic field",
-            "Pair of particles"};
+            "Pair of particles",
+            "Two stream instability"};
 
 	String[] solverString = {
 			"Euler Richardson",
@@ -138,6 +139,10 @@ public class MainControlApplet extends JApplet {
 
 	private void linkConstantForce() {
 		force = getFirstConstantForce(particlePanel.s.f);
+		if(force == null) {
+			force = new ConstantForce();
+			particlePanel.s.f.add(force);
+		}
 		assert force != null : "no force found";
 	}
 

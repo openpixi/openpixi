@@ -2,6 +2,8 @@
 package org.openpixi.pixi.opencl;
 
 import java.io.FileNotFoundException;
+import java.io.IOException;
+
 import junit.framework.TestCase;
 import org.openpixi.pixi.physics.Settings;
 import org.openpixi.pixi.physics.Simulation;
@@ -16,7 +18,7 @@ import org.openpixi.pixi.physics.util.ParticleComparator;
  */
 public class EulerTest extends TestCase {
 
-	public void testParallelSimulation() throws FileNotFoundException {
+	public void testParallelSimulation() throws FileNotFoundException,IOException {
 		Settings defaultSettings = new Settings();
 		//defaultSettings.setTimeStep(0.1);
 		defaultSettings.setGridCellsX(10);

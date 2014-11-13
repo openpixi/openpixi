@@ -193,7 +193,12 @@ public class CloudInCell implements InterpolatorAlgorithm {
                                 (p.getX() - (xCellPosition2 - 1) * g.getCellWidth()) *
                                 (p.getY() - (yCellPosition2 - 0.5) * g.getCellHeight())) /
                                 (g.getCellWidth() * g.getCellHeight()));
-
+                /*System.out.println("position:");System.out.println(p.getX());System.out.println(p.getY());
+                System.out.println(xCellPosition);System.out.println(yCellPosition);System.out.println(":");System.out.println(g.getEy(xCellPosition, yCellPosition));
+                System.out.println(xCellPosition+1);System.out.println(yCellPosition);System.out.println(":");System.out.println(g.getEy(xCellPosition+1, yCellPosition));
+                System.out.println(xCellPosition);System.out.println(yCellPosition+1);System.out.println(":");System.out.println(g.getEy(xCellPosition, yCellPosition+1));
+                System.out.println(xCellPosition+1);System.out.println(yCellPosition+1);System.out.println(":");System.out.println(g.getEy(xCellPosition+1, yCellPosition+1));
+                */
                 //adapt the values of x/y CellPosition (2) since the B-field is located in the middle of the grid
                 if(p.getX()/g.getCellWidth()-xCellPosition<0.5)
                 {
