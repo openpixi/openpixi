@@ -35,21 +35,6 @@ import org.openpixi.pixi.physics.solver.relativistic.*;
  */
 public class MainControlApplet extends JApplet {
 
-	/**
-	 * Whether to show a button and edit boxes
-	 * for writing particle data in real-time to
-	 * a file.
-	 *
-	 * Currently, this feature is not very user friendly,
-	 * so it is turned off by default.
-	 *
-	 * Problems:
-	 * 1) default file path is "null/null.dat"
-	 * 2) widgets don't fit on screen unless one resizes
-	 *    the window to larger size.
-	 */
-	private static boolean enableWriteFile = false;
-
 	private JButton startButton;
 	private JButton stopButton;
 	private JButton resetButton;
@@ -69,14 +54,10 @@ public class MainControlApplet extends JApplet {
 	private JCheckBox currentgridCheck;
 	private JCheckBox drawFieldsCheck;
 	private JCheckBox calculateFieldsCheck;
-	private JCheckBox writePositionCheck;
 	private JCheckBox relativisticCheck;
 
 	private JTextField xboxentry;
 	private JTextField yboxentry;
-
-	private JTextField filename;
-	private JTextField filedirectory;
 
 	private JComboBox initComboBox;
 	private JComboBox algorithmComboBox;
@@ -271,37 +252,6 @@ public class MainControlApplet extends JApplet {
 	class CheckListener implements ItemListener {
 		public void itemStateChanged(ItemEvent eve){
 				particlePanel.checkTrace();
-		}
-	}
-
-	class WritePosition implements ItemListener {
-		public void itemStateChanged(ItemEvent eve){
-			if(eve.getStateChange() == ItemEvent.SELECTED)
-				filename.setEnabled(true);
-				filename.setEditable(true);
-				filedirectory.setEnabled(true);
-				filedirectory.setEditable(true);
-			if(eve.getStateChange() == ItemEvent.DESELECTED)
-			{
-				filename.setEditable(false);
-				particlePanel.writePosition();
-			}
-		}
-	}
-
-	class WriteFilename implements ActionListener {
-		public void actionPerformed(ActionEvent eve) {
-			if(writePositionCheck.isSelected())
-			{
-				particlePanel.fileName = filename.getText();
-				particlePanel.fileDirectory = filedirectory.getText();
-				particlePanel.writePosition();
-				linkConstantForce();
-				filename.setEditable(false);
-				filename.setEnabled(false);
-				filedirectory.setEditable(false);
-				filedirectory.setEnabled(false);
-			}
 		}
 	}
 
@@ -622,9 +572,6 @@ public class MainControlApplet extends JApplet {
 		framerateCheck = new JCheckBox("Info");
 		framerateCheck.addItemListener(new FrameListener());
 
-		writePositionCheck = new JCheckBox("Write Position");
-		writePositionCheck.addItemListener(new WritePosition());
-
 		xboxentry = new JTextField(2);
 		xboxentry.setText("10");
 		xboxentry.addActionListener(new BoxDimension());
@@ -632,18 +579,6 @@ public class MainControlApplet extends JApplet {
 		yboxentry = new JTextField(2);
 		yboxentry.setText("10");
 		yboxentry.addActionListener(new BoxDimension());
-
-		filename = new JTextField(10);
-		filename.setText("Filename");
-		filename.setEnabled(false);
-		filename.setEditable(false);
-
-		filedirectory = new JTextField(10);
-		filedirectory.setText("Dir., ex. C:\\Pixi");
-		filedirectory.setEnabled(false);
-		filedirectory.setEditable(false);
-		filedirectory.addActionListener(new WriteFilename());
-		filedirectory.setToolTipText("Please enter an existing directory");
 
 		hardBoundaries = new JRadioButton("Hardwall");
 		periodicBoundaries = new JRadioButton("Periodic");
@@ -672,11 +607,6 @@ public class MainControlApplet extends JApplet {
 		controlPanelUp.add(Box.createHorizontalStrut(25));
 		controlPanelUp.add(initBox);
 		controlPanelUp.add(Box.createHorizontalStrut(25));
-		if (enableWriteFile) {
-			controlPanelUp.add(writePositionCheck);
-			controlPanelUp.add(filename);
-			controlPanelUp.add(filedirectory);
-		}
 		Box settingControls = Box.createVerticalBox();
 		JPanel controlPanelDown = new JPanel();
 		controlPanelDown.setLayout(new FlowLayout());
@@ -792,15 +722,6 @@ public class MainControlApplet extends JApplet {
 		particlePanel.timer.setDelay((int) (1000 * Math.exp(-50 * speedSliderScaling)));
 		xboxentry.setText("10");
 		yboxentry.setText("10");
-		double width = particlePanel.s.getWidth();
-		double height = particlePanel.s.getHeight();
-		writePositionCheck.setSelected(false);
-		filename.setEditable(false);
-		filename.setEnabled(false);
-		filename.setText("Filename");
-		filedirectory.setEditable(false);
-		filedirectory.setEnabled(false);
-		filedirectory.setText("direc., ex. C:\\Pixi");
 		if(particlePanel.s.getParticleMover().getBoundaryType() == ParticleBoundaryType.Hardwall) {
 			hardBoundaries.setSelected(true);
 			periodicBoundaries.setSelected(false);

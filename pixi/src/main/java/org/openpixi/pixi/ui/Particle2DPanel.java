@@ -40,7 +40,6 @@ import org.openpixi.pixi.physics.solver.relativistic.BorisRelativistic;
 import org.openpixi.pixi.physics.solver.relativistic.LeapFrogRelativistic;
 import org.openpixi.pixi.physics.solver.relativistic.SemiImplicitEulerRelativistic;
 import org.openpixi.pixi.ui.util.FrameRateDetector;
-import org.openpixi.pixi.ui.util.WriteFile;
 
 import javax.swing.*;
 import java.awt.*;
@@ -64,12 +63,6 @@ public class Particle2DPanel extends JPanel {
 
 	public Simulation s;
 
-	public String fileName;
-
-	public String fileDirectory;
-
-	private WriteFile file = new WriteFile();
-
 	private boolean relativistic = false;
 
 	private boolean reset_trace;
@@ -79,8 +72,6 @@ public class Particle2DPanel extends JPanel {
 	private boolean drawFields = false;
 
 	private boolean calculateFields = false;
-
-	private boolean writePosition = false;
 
 	/** Scaling factor for the displayed panel in x-direction*/
 	double sx;
@@ -117,12 +108,6 @@ public class Particle2DPanel extends JPanel {
 			sx = getWidth() / s.getWidth();
 			sy = getHeight() / s.getHeight();
 			repaint();
-			if(writePosition)
-			{
-				Particle par = (Particle) s.particles.get(0);
-				System.out.println(par.getX() + " " + par.getY());
-				file.writeFile(fileName, fileDirectory, par.getX() + " " + par.getY());
-			}
 		}
 	}
 
@@ -212,36 +197,6 @@ public class Particle2DPanel extends JPanel {
 			s.turnGridForceOff();
 		}
 	}
-
-	public void writePosition() {
-		writePosition =! writePosition;
-		if(writePosition)
-		{
-			s.f.clear();
-			ConstantForce force = new ConstantForce();
-			force.bz = - 0.23; // -ConstantsSI.g;
-			//force.gy = -1;
-			//force.drag = 0.08;
-			s.f.add(force);
-			s.particles = InitialConditions.createRandomParticles(s.getWidth(), s.getHeight(), s.getSpeedOfLight(), 1, 1);
-			Particle par = (Particle) s.particles.get(0);
-			par.setX(s.getWidth() * 0.5);
-			par.setY(s.getHeight() * 0.5);
-			//System.out.println(this.getWidth() * 0.5 + " x0");
-			//System.out.println(this.getHeight() * 0.5 + " y0");
-			par.setVx(10);
-			par.setVy(10);
-			par.setMass(1);
-			par.setCharge(1);
-		}
-		else {
-			resetAnimation(0);
-		}
-		s.prepareAllParticles();
-/*		ConstantForce force = new ConstantForce();
-		force.bz = - 0.23;
-		s.f.add(force);
-*/	}
 
 	public void algorithmChange(int id)
 	{
