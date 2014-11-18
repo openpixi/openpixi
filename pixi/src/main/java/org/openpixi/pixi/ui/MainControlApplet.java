@@ -70,6 +70,7 @@ public class MainControlApplet extends JApplet {
 	private JRadioButton periodicBoundaries;
 
 	private JTabbedPane tabs;
+	private JSplitPane splitPane;
 
 	private SimulationAnimation simulationAnimation;
 
@@ -700,14 +701,18 @@ public class MainControlApplet extends JApplet {
 		tabs.addTab("Collisions", collisionBox);
 		tabs.addTab("Cell", cellSettings);
 
-		phaseSpacePanel.setPreferredSize(new Dimension(100,100));
+		splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT,
+				particlePanel, phaseSpacePanel);
+		splitPane.setOneTouchExpandable(true);
 
 		this.setLayout(new BorderLayout());
 		this.add(panelBox, BorderLayout.SOUTH);
-		this.add(particlePanel, BorderLayout.CENTER);
-		this.add(phaseSpacePanel, BorderLayout.WEST);
+		this.add(splitPane, BorderLayout.CENTER);
 		this.add(tabs, BorderLayout.EAST);
 
+		// start JSplitPane in collapsed state:
+		phaseSpacePanel.setSize(new Dimension());
+		splitPane.setResizeWeight(1.0);
 	}
 
 	public void setText(JTextArea text, String str, boolean onoff)
