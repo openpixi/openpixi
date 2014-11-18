@@ -704,6 +704,7 @@ public class MainControlApplet extends JApplet {
 		splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT,
 				particlePanel, phaseSpacePanel);
 		splitPane.setOneTouchExpandable(true);
+		splitPane.setContinuousLayout(true);
 
 		this.setLayout(new BorderLayout());
 		this.add(panelBox, BorderLayout.SOUTH);
