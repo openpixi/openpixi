@@ -74,6 +74,7 @@ public class MainControlApplet extends JApplet {
 	private SimulationAnimation simulationAnimation;
 
 	private Particle2DPanel particlePanel;
+	private PhaseSpacePanel phaseSpacePanel;
 
 	private static final double speedSliderScaling = 0.07;
 	private static final double stepSliderScaling = 0.01;
@@ -188,8 +189,6 @@ public class MainControlApplet extends JApplet {
 			else {
 				relativisticCheck.setEnabled(false);
 			}
-			//one can use this instead of the method, just need to change algorithm_change to public
-			//particlePanel.algorithm_change = id;
 		}
 	}
 	class Collisions implements ActionListener {
@@ -416,6 +415,7 @@ public class MainControlApplet extends JApplet {
 
 		simulationAnimation = new SimulationAnimation();
 		particlePanel = new Particle2DPanel(simulationAnimation);
+		phaseSpacePanel = new PhaseSpacePanel(simulationAnimation);
 		Simulation s = simulationAnimation.getSimulation();
 		linkConstantForce();
 
@@ -700,10 +700,12 @@ public class MainControlApplet extends JApplet {
 		tabs.addTab("Collisions", collisionBox);
 		tabs.addTab("Cell", cellSettings);
 
+		phaseSpacePanel.setPreferredSize(new Dimension(100,100));
+
 		this.setLayout(new BorderLayout());
 		this.add(panelBox, BorderLayout.SOUTH);
 		this.add(particlePanel, BorderLayout.CENTER);
-		//this.add(fieldsBox, BorderLayout.EAST);
+		this.add(phaseSpacePanel, BorderLayout.WEST);
 		this.add(tabs, BorderLayout.EAST);
 
 	}
