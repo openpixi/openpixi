@@ -25,6 +25,7 @@ import java.awt.event.*;
 import javax.swing.event.*;
 
 import org.openpixi.pixi.physics.Debug;
+import org.openpixi.pixi.physics.Simulation;
 import org.openpixi.pixi.physics.force.*;
 import org.openpixi.pixi.physics.movement.boundary.ParticleBoundaryType;
 import org.openpixi.pixi.physics.solver.*;
@@ -69,6 +70,8 @@ public class MainControlApplet extends JApplet {
 	private JRadioButton periodicBoundaries;
 
 	private JTabbedPane tabs;
+
+	private SimulationAnimation simulationAnimation;
 
 	private Particle2DPanel particlePanel;
 
@@ -119,10 +122,11 @@ public class MainControlApplet extends JApplet {
 
 
 	private void linkConstantForce() {
-		force = getFirstConstantForce(particlePanel.s.f);
+		Simulation s = simulationAnimation.getSimulation();
+		force = getFirstConstantForce(s.f);
 		if(force == null) {
 			force = new ConstantForce();
-			particlePanel.s.f.add(force);
+			s.f.add(force);
 		}
 		assert force != null : "no force found";
 	}
@@ -153,11 +157,12 @@ public class MainControlApplet extends JApplet {
 	 */
 	class SliderListener implements ChangeListener {
 		public void stateChanged(ChangeEvent eve) {
+			Timer timer = simulationAnimation.getTimer();
 			JSlider source = (JSlider) eve.getSource();
 			if(source.getValueIsAdjusting())
 			{
 				int delay = (int) (1000 * Math.exp(-source.getValue() * speedSliderScaling));
-				particlePanel.timer.setDelay(delay);
+				timer.setDelay(delay);
 			}
 		}
 	}
@@ -166,7 +171,7 @@ public class MainControlApplet extends JApplet {
 		public void actionPerformed(ActionEvent e) {
 			JComboBox cb = (JComboBox) e.getSource();
 			int id  = cb.getSelectedIndex();
-			particlePanel.resetAnimation(id);
+			simulationAnimation.resetAnimation(id);
 			linkConstantForce();
 			setSlidersValue();
 		}
@@ -176,7 +181,7 @@ public class MainControlApplet extends JApplet {
 		public void actionPerformed(ActionEvent eve) {
 			JComboBox cbox = (JComboBox) eve.getSource();
 			int id = cbox.getSelectedIndex();
-			particlePanel.algorithmChange(id);
+			simulationAnimation.algorithmChange(id);
 			if ((id == 1) || (id == 4) || (id == 6)) {
 				relativisticCheck.setEnabled(true);
 			}
@@ -191,7 +196,7 @@ public class MainControlApplet extends JApplet {
 		public void actionPerformed(ActionEvent eve) {
 			JComboBox cbox = (JComboBox) eve.getSource();
 			int i = cbox.getSelectedIndex();
-			particlePanel.collisionChange(i);
+			simulationAnimation.collisionChange(i);
 			if(i == 0) {
 				collisionAlgorithm.setEnabled(false);
 				collisionAlgorithm.addItem("Enable collisions first");
@@ -214,7 +219,7 @@ public class MainControlApplet extends JApplet {
 			if (j == 0) {
 				collisionAlgorithm.setSelectedItem("Enable collisions first");
 			} else {
-				particlePanel.algorithmCollisionChange(i);
+				simulationAnimation.algorithmCollisionChange(i);
 			}
 		}
 	}
@@ -225,7 +230,7 @@ public class MainControlApplet extends JApplet {
 	 */
 	class StartListener implements ActionListener {
 		public void actionPerformed(ActionEvent eve) {
-			particlePanel.startAnimation();
+			simulationAnimation.startAnimation();
 		}
 	}
 
@@ -234,7 +239,7 @@ public class MainControlApplet extends JApplet {
 	 */
 	class StopListener implements ActionListener {
 		public void actionPerformed(ActionEvent eve) {
-			particlePanel.stopAnimation();
+			simulationAnimation.stopAnimation();
 		}
 	}
 
@@ -243,7 +248,7 @@ public class MainControlApplet extends JApplet {
 	 */
 	class ResetListener implements ActionListener {
 		public void actionPerformed(ActionEvent eve) {
-			particlePanel.resetAnimation(initComboBox.getSelectedIndex());
+			simulationAnimation.resetAnimation(initComboBox.getSelectedIndex());
 			linkConstantForce();
 			setSlidersValue();
 		}
@@ -259,10 +264,10 @@ public class MainControlApplet extends JApplet {
 		public void actionPerformed(ActionEvent eve) {
 			AbstractButton abut = (AbstractButton) eve.getSource();
 			if(abut.equals(hardBoundaries)) {
-				particlePanel.boundariesChange(0);
+				simulationAnimation.boundariesChange(0);
 			}
 			else if(abut.equals(periodicBoundaries)) {
-				particlePanel.boundariesChange(1);
+				simulationAnimation.boundariesChange(1);
 			}
 		}
 	}
@@ -270,7 +275,7 @@ public class MainControlApplet extends JApplet {
 	class RelativisticEffects implements ItemListener {
 		public void itemStateChanged(ItemEvent eve){
 			int i = (int)algorithmComboBox.getSelectedIndex();
-			particlePanel.relativisticEffects(i);
+			simulationAnimation.relativisticEffects(i);
 			linkConstantForce();
 		}
 	}
@@ -289,7 +294,7 @@ public class MainControlApplet extends JApplet {
 
 	class CalculateFieldsListener implements ItemListener {
 		public void itemStateChanged(ItemEvent eve){
-				particlePanel.calculateFields();
+				simulationAnimation.calculateFields();
 				if(eve.getStateChange() == ItemEvent.SELECTED) {
 					currentgridCheck.setEnabled(true);
 					drawFieldsCheck.setEnabled(true);
@@ -381,22 +386,24 @@ public class MainControlApplet extends JApplet {
 
 	class StepListener implements ChangeListener{
 		public void stateChanged(ChangeEvent eve) {
+			Simulation s = simulationAnimation.getSimulation();
 			JSlider source = (JSlider) eve.getSource();
 			if(source.getValueIsAdjusting())
 			{
 				double value = source.getValue() * stepSliderScaling;
-				particlePanel.s.tstep = value;
+				s.tstep = value;
 			}
 		}
 	}
 
 	class BoxDimension implements ActionListener{
 		public void actionPerformed(ActionEvent eve) {
+			Simulation s = simulationAnimation.getSimulation();
 			int xbox = Integer.parseInt(xboxentry.getText());
 			int ybox = Integer.parseInt(yboxentry.getText());
-			double width = particlePanel.s.getWidth();
-			double height = particlePanel.s.getHeight();
-			particlePanel.s.grid.changeSize(xbox, ybox, width, height);
+			double width = s.getWidth();
+			double height = s.getHeight();
+			s.grid.changeSize(xbox, ybox, width, height);
 		}
 	}
 
@@ -407,7 +414,9 @@ public class MainControlApplet extends JApplet {
 	public MainControlApplet() {
 		Debug.checkAssertsEnabled();
 
-		particlePanel = new Particle2DPanel();
+		simulationAnimation = new SimulationAnimation();
+		particlePanel = new Particle2DPanel(simulationAnimation);
+		Simulation s = simulationAnimation.getSimulation();
 		linkConstantForce();
 
 		startButton = new JButton("start");
@@ -440,7 +449,7 @@ public class MainControlApplet extends JApplet {
 		stepSlider.addChangeListener(new StepListener());
 		stepSlider.setMinimum(1);
 		stepSlider.setMaximum(100);
-		stepSlider.setValue((int)(particlePanel.s.tstep / stepSliderScaling));
+		stepSlider.setValue((int)(s.tstep / stepSliderScaling));
 		stepSlider.setMajorTickSpacing(10);
 		stepSlider.setMinorTickSpacing(2);
 		stepSlider.setPaintTicks(true);
@@ -709,7 +718,10 @@ public class MainControlApplet extends JApplet {
 
 	public void setSlidersValue()
 	{
-		stepSlider.setValue((int)(particlePanel.s.tstep / stepSliderScaling));
+		Simulation s = simulationAnimation.getSimulation();
+		Timer timer = simulationAnimation.getTimer();
+
+		stepSlider.setValue((int)(s.tstep / stepSliderScaling));
 		efieldXSlider.setValue((int) (force.ex / exSliderScaling));
 		efieldYSlider.setValue((int) (force.ey / eySliderScaling));
 		bfieldZSlider.setValue((int) (force.bz / bzSliderScaling));
@@ -719,14 +731,14 @@ public class MainControlApplet extends JApplet {
 		//int delay = particlePanel.timer.getDelay();
 		//speedSlider.setValue((int) (-Math.log(delay / 1000.) / speedSliderScaling));
 		speedSlider.setValue(50);
-		particlePanel.timer.setDelay((int) (1000 * Math.exp(-50 * speedSliderScaling)));
+		timer.setDelay((int) (1000 * Math.exp(-50 * speedSliderScaling)));
 		xboxentry.setText("10");
 		yboxentry.setText("10");
-		if(particlePanel.s.getParticleMover().getBoundaryType() == ParticleBoundaryType.Hardwall) {
+		if(s.getParticleMover().getBoundaryType() == ParticleBoundaryType.Hardwall) {
 			hardBoundaries.setSelected(true);
 			periodicBoundaries.setSelected(false);
 		}
-		else if(particlePanel.s.getParticleMover().getBoundaryType() == ParticleBoundaryType.Periodic) {
+		else if(s.getParticleMover().getBoundaryType() == ParticleBoundaryType.Periodic) {
 			hardBoundaries.setSelected(false);
 			periodicBoundaries.setSelected(true);
 		}
@@ -736,7 +748,7 @@ public class MainControlApplet extends JApplet {
 		collisionAlgorithm.setSelectedIndex(0);
 
 		// Set algorithm UI according to current setting
-		Solver solver = particlePanel.s.getParticleMover().getSolver();
+		Solver solver = s.getParticleMover().getSolver();
 		if (solver instanceof Boris) {
 			algorithmComboBox.setSelectedIndex(4);
 			relativisticCheck.setSelected(false);
@@ -757,7 +769,8 @@ public class MainControlApplet extends JApplet {
 	public void init() {
 		super.init();
 
-		particlePanel.timer.start();
+		Timer timer = simulationAnimation.getTimer();
+		timer.start();
 		setSlidersValue();
 	}
 
