@@ -52,8 +52,8 @@ public class SimpleSolver extends FieldSolver {
 			 * (same for y). Therefore this is something like a center difference.*/
 			//double cx = (grid.getBz(x, y+1) - grid.getBz(x, y)) / grid.getCellHeight();
 			//double cy = -(grid.getBz(x+1, y) - grid.getBz(x, y)) / grid.getCellWidth();
-                        double cx = (grid.getBz(x, y) - grid.getBz(x, y-1)) / grid.getCellHeight();
-			double cy = -(grid.getBz(x, y) - grid.getBz(x-1, y)) / grid.getCellWidth();
+                        double cx = (grid.getBz(x, y) - grid.getBz(x, (y+grid.getNumCellsY()- 1)%grid.getNumCellsY())) / grid.getCellHeight();
+			double cy = -(grid.getBz(x, y) - grid.getBz((x+grid.getNumCellsX()-1)%grid.getNumCellsX(), y)) / grid.getCellWidth();
 			/**Maxwell equations*/
 			grid.addEx(x, y, timeStep * (1/(mue0*eps0)*cx - 1/eps0*grid.getJx(x, y)));
 			grid.addEy(x, y, timeStep * (1/(mue0*eps0)*cy - 1/eps0*grid.getJy(x, y)));
@@ -73,8 +73,8 @@ public class SimpleSolver extends FieldSolver {
 			 * (same for y). Therefore this is something like a center difference.*/
 			//double cz = (grid.getEy(x, y) - grid.getEy(x-1, y)) / grid.getCellWidth() -
 			//		(grid.getEx(x, y) - grid.getEx(x, y-1)) / grid.getCellHeight();
-                        double cz = (grid.getEy(x+1, y) - grid.getEy(x, y)) / grid.getCellWidth() -
-					(grid.getEx(x, y+1) - grid.getEx(x, y)) / grid.getCellHeight();
+                        double cz = (grid.getEy((x+1)%grid.getNumCellsX(), y) - grid.getEy(x, y)) / grid.getCellWidth() -
+					(grid.getEx(x, (y+1)%grid.getNumCellsY()) - grid.getEx(x, y)) / grid.getCellHeight();
 
 			/**Maxwell equation*/
 			grid.addBz(x, y, -timeStep * cz);
