@@ -1,4 +1,4 @@
-package org.openpixi.pixi.ui;
+package org.openpixi.pixi.ui.panel;
 
 import java.awt.Color;
 import java.awt.Graphics;
@@ -8,6 +8,8 @@ import javax.swing.JPanel;
 
 import org.openpixi.pixi.physics.Simulation;
 import org.openpixi.pixi.physics.particles.Particle;
+import org.openpixi.pixi.ui.SimulationAnimation;
+import org.openpixi.pixi.ui.SimulationAnimationListener;
 
 /**
  * This panel shows the one-dimensional phase space (x vs. vx).

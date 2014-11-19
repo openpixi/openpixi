@@ -30,6 +30,8 @@ import org.openpixi.pixi.physics.force.*;
 import org.openpixi.pixi.physics.movement.boundary.ParticleBoundaryType;
 import org.openpixi.pixi.physics.solver.*;
 import org.openpixi.pixi.physics.solver.relativistic.*;
+import org.openpixi.pixi.ui.panel.Particle2DPanel;
+import org.openpixi.pixi.ui.panel.PhaseSpacePanel;
 
 /**
  * Displays the animation of particles.

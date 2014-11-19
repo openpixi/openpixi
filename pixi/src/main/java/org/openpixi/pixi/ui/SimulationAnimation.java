@@ -37,6 +37,7 @@ import org.openpixi.pixi.physics.solver.SemiImplicitEuler;
 import org.openpixi.pixi.physics.solver.relativistic.BorisRelativistic;
 import org.openpixi.pixi.physics.solver.relativistic.LeapFrogRelativistic;
 import org.openpixi.pixi.physics.solver.relativistic.SemiImplicitEulerRelativistic;
+import org.openpixi.pixi.ui.panel.Particle2DPanel;
 import org.openpixi.pixi.ui.util.FrameRateDetector;
 
 /**
