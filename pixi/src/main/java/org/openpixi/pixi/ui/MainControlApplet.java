@@ -21,6 +21,7 @@ package org.openpixi.pixi.ui;
 import java.awt.*;
 import javax.swing.*;
 import java.awt.event.*;
+import java.io.File;
 
 import javax.swing.event.*;
 
@@ -72,6 +73,10 @@ public class MainControlApplet extends JApplet {
 	private JRadioButton hardBoundaries;
 	private JRadioButton periodicBoundaries;
 
+	JFileChooser fc;
+	private JButton openButton;
+	private JButton saveButton;
+	private JButton applyButton;
 	private JTextArea fileTextArea;
 
 	private JTabbedPane tabs;
@@ -413,6 +418,41 @@ public class MainControlApplet extends JApplet {
 		}
 	}
 
+	class OpenButtonListener implements ActionListener {
+		public void actionPerformed(ActionEvent event) {
+
+			int returnVal = fc.showOpenDialog(MainControlApplet.this);
+
+			if (returnVal == JFileChooser.APPROVE_OPTION) {
+				File file = fc.getSelectedFile();
+				// This is where a real application would open the file.
+				// log.append("Opening: " + file.getName() + "." + newline);
+			} else {
+				// log.append("Open command cancelled by user." + newline);
+			}
+		}
+	}
+
+	class SaveButtonListener implements ActionListener {
+		public void actionPerformed(ActionEvent event) {
+
+			int returnVal = fc.showSaveDialog(MainControlApplet.this);
+
+			if (returnVal == JFileChooser.APPROVE_OPTION) {
+				File file = fc.getSelectedFile();
+				// This is where a real application would open the file.
+				// log.append("Opening: " + file.getName() + "." + newline);
+			} else {
+				// log.append("Open command cancelled by user." + newline);
+			}
+		}
+	}
+
+	class ApplyButtonListener implements ActionListener {
+		public void actionPerformed(ActionEvent event) {
+
+		}
+	}
 
 	/**
 	 * Constructor.
@@ -699,10 +739,24 @@ public class MainControlApplet extends JApplet {
 		cellSettings.add(ybox);
 		cellSettings.add(Box.createVerticalStrut(200));
 
+		fc = new JFileChooser();
+
+		openButton = new JButton("Open...");
+		openButton.addActionListener(new OpenButtonListener());
+		saveButton = new JButton("Save...");
+		saveButton.addActionListener(new SaveButtonListener());
+		applyButton = new JButton("Apply");
+		applyButton.addActionListener(new ApplyButtonListener());
 		fileTextArea = new JTextArea();
 		JScrollPane scrollpane = new JScrollPane(fileTextArea);
 
+		Box buttonBox = Box.createHorizontalBox();
+		buttonBox.add(openButton);
+		buttonBox.add(saveButton);
+		buttonBox.add(applyButton);
+
 		Box fileTab = Box.createVerticalBox();
+		fileTab.add(buttonBox);
 		fileTab.add(scrollpane);
 
 		fieldsBox.setPreferredSize(new Dimension(300, 100));
