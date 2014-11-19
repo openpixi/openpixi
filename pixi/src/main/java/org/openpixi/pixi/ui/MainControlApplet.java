@@ -32,6 +32,7 @@ import org.openpixi.pixi.physics.solver.*;
 import org.openpixi.pixi.physics.solver.relativistic.*;
 import org.openpixi.pixi.ui.panel.Particle2DPanel;
 import org.openpixi.pixi.ui.panel.PhaseSpacePanel;
+import org.openpixi.pixi.ui.panel.ElectricFieldPanel;
 
 /**
  * Displays the animation of particles.
@@ -78,6 +79,7 @@ public class MainControlApplet extends JApplet {
 
 	private Particle2DPanel particlePanel;
 	private PhaseSpacePanel phaseSpacePanel;
+	private ElectricFieldPanel electricFieldPanel;
 
 	private static final double speedSliderScaling = 0.07;
 	private static final double stepSliderScaling = 0.01;
@@ -419,6 +421,7 @@ public class MainControlApplet extends JApplet {
 		simulationAnimation = new SimulationAnimation();
 		particlePanel = new Particle2DPanel(simulationAnimation);
 		phaseSpacePanel = new PhaseSpacePanel(simulationAnimation);
+		electricFieldPanel = new ElectricFieldPanel(simulationAnimation);
 		Simulation s = simulationAnimation.getSimulation();
 		linkConstantForce();
 
@@ -704,7 +707,7 @@ public class MainControlApplet extends JApplet {
 		tabs.addTab("Cell", cellSettings);
 
 		splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT,
-				particlePanel, phaseSpacePanel);
+				particlePanel, electricFieldPanel);
 		splitPane.setOneTouchExpandable(true);
 		splitPane.setContinuousLayout(true);
 
