@@ -72,6 +72,8 @@ public class MainControlApplet extends JApplet {
 	private JRadioButton hardBoundaries;
 	private JRadioButton periodicBoundaries;
 
+	private JTextArea fileTextArea;
+
 	private JTabbedPane tabs;
 	private JSplitPane splitPane;
 
@@ -697,14 +699,21 @@ public class MainControlApplet extends JApplet {
 		cellSettings.add(ybox);
 		cellSettings.add(Box.createVerticalStrut(200));
 
+		fileTextArea = new JTextArea();
+		JScrollPane scrollpane = new JScrollPane(fileTextArea);
+
+		Box fileTab = Box.createVerticalBox();
+		fileTab.add(scrollpane);
+
 		fieldsBox.setPreferredSize(new Dimension(300, 100));
 		settingControls.setPreferredSize(new Dimension (300, 100));
 		collisionBox.setPreferredSize(new Dimension (300, 100));
 
 		tabs.addTab("Fields", fieldsBox);
 		tabs.addTab("Settings", settingControls);
-		tabs.addTab("Collisions", collisionBox);
+		tabs.addTab("Coll.", collisionBox);
 		tabs.addTab("Cell", cellSettings);
+		tabs.addTab("File", fileTab);
 
 		leftComponent = particlePanel;
 		rightComponent = electricFieldPanel;
