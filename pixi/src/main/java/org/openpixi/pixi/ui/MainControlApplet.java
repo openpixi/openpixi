@@ -39,6 +39,7 @@ import org.openpixi.pixi.ui.panel.Particle2DPanel;
 import org.openpixi.pixi.ui.panel.PhaseSpacePanel;
 import org.openpixi.pixi.ui.panel.ElectricFieldPanel;
 import org.openpixi.pixi.ui.util.Parser;
+import org.openpixi.pixi.ui.util.yaml.YamlParser;
 
 /**
  * Displays the animation of particles.
@@ -462,7 +463,7 @@ public class MainControlApplet extends JApplet {
 			// Apply the settings from the text area and restart the simulation.
 			String string = fileTextArea.getText();
 			Settings settings = new Settings();
-			Parser parser = new Parser(settings);
+			YamlParser parser = new YamlParser(settings);
 			parser.parseString(string);
 			simulationAnimation.resetAnimation(settings);
 		}
