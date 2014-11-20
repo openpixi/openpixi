@@ -21,7 +21,10 @@ package org.openpixi.pixi.ui;
 import java.awt.*;
 import javax.swing.*;
 import java.awt.event.*;
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
 
 import javax.swing.event.*;
 
@@ -425,10 +428,14 @@ public class MainControlApplet extends JApplet {
 
 			if (returnVal == JFileChooser.APPROVE_OPTION) {
 				File file = fc.getSelectedFile();
-				// This is where a real application would open the file.
-				// log.append("Opening: " + file.getName() + "." + newline);
+				try {
+					String content = readFile(file);
+					fileTextArea.setText(content);
+				} catch (IOException e) {
+					// TODO Error message
+				}
 			} else {
-				// log.append("Open command cancelled by user." + newline);
+				// Open command cancelled by user
 			}
 		}
 	}
@@ -452,6 +459,20 @@ public class MainControlApplet extends JApplet {
 		public void actionPerformed(ActionEvent event) {
 
 		}
+	}
+
+	private String readFile(File file) throws IOException {
+		BufferedReader reader = new BufferedReader(new FileReader(file));
+		String line = null;
+		StringBuilder stringBuilder = new StringBuilder();
+		String ls = System.getProperty("line.separator");
+
+		while ((line = reader.readLine()) != null) {
+			stringBuilder.append(line);
+			stringBuilder.append(ls);
+		}
+
+		return stringBuilder.toString();
 	}
 
 	/**
@@ -740,6 +761,8 @@ public class MainControlApplet extends JApplet {
 		cellSettings.add(Box.createVerticalStrut(200));
 
 		fc = new JFileChooser();
+		File workingDirectory = new File(System.getProperty("user.dir"));
+		fc.setCurrentDirectory(workingDirectory);
 
 		openButton = new JButton("Open...");
 		openButton.addActionListener(new OpenButtonListener());
