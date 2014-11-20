@@ -29,6 +29,7 @@ import java.io.IOException;
 import javax.swing.event.*;
 
 import org.openpixi.pixi.physics.Debug;
+import org.openpixi.pixi.physics.Settings;
 import org.openpixi.pixi.physics.Simulation;
 import org.openpixi.pixi.physics.force.*;
 import org.openpixi.pixi.physics.movement.boundary.ParticleBoundaryType;
@@ -37,6 +38,7 @@ import org.openpixi.pixi.physics.solver.relativistic.*;
 import org.openpixi.pixi.ui.panel.Particle2DPanel;
 import org.openpixi.pixi.ui.panel.PhaseSpacePanel;
 import org.openpixi.pixi.ui.panel.ElectricFieldPanel;
+import org.openpixi.pixi.ui.util.Parser;
 
 /**
  * Displays the animation of particles.
@@ -457,7 +459,12 @@ public class MainControlApplet extends JApplet {
 
 	class ApplyButtonListener implements ActionListener {
 		public void actionPerformed(ActionEvent event) {
-
+			// Apply the settings from the text area and restart the simulation.
+			String string = fileTextArea.getText();
+			Settings settings = new Settings();
+			Parser parser = new Parser(settings);
+			parser.parseString(string);
+			simulationAnimation.resetAnimation(settings);
 		}
 	}
 
