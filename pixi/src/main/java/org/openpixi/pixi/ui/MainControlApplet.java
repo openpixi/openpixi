@@ -451,6 +451,21 @@ public class MainControlApplet extends JApplet {
 
 			if (returnVal == JFileChooser.APPROVE_OPTION) {
 				File file = fc.getSelectedFile();
+				if (file.exists()) {
+					// Show confirmation dialog
+					int response = JOptionPane.showConfirmDialog(
+							MainControlApplet.this,
+							"Are you sure you want to override existing file?",
+							"Confirm", JOptionPane.YES_NO_OPTION,
+							JOptionPane.QUESTION_MESSAGE);
+					if (response == JOptionPane.YES_OPTION) {
+						// Ok, proceed
+					} else if (response == JOptionPane.NO_OPTION) {
+						return;
+					} else if (response == JOptionPane.CLOSED_OPTION) {
+						return;
+					}
+				}
 				String string = fileTextArea.getText();
 				try {
 					writeFile(file, string);
