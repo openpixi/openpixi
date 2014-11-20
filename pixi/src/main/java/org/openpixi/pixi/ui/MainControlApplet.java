@@ -23,6 +23,7 @@ import javax.swing.*;
 import java.awt.event.*;
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
 
@@ -450,10 +451,14 @@ public class MainControlApplet extends JApplet {
 
 			if (returnVal == JFileChooser.APPROVE_OPTION) {
 				File file = fc.getSelectedFile();
-				// This is where a real application would open the file.
-				// log.append("Opening: " + file.getName() + "." + newline);
+				String string = fileTextArea.getText();
+				try {
+					writeFile(file, string);
+				} catch (IOException e) {
+					// TODO Error message
+				}
 			} else {
-				// log.append("Open command cancelled by user." + newline);
+				// Save command cancelled by user
 			}
 		}
 	}
@@ -481,6 +486,13 @@ public class MainControlApplet extends JApplet {
 		}
 
 		return stringBuilder.toString();
+	}
+
+	private void writeFile(File file, String string) throws IOException {
+		FileOutputStream out = new FileOutputStream(file);
+		byte[] contentInBytes = string.getBytes();
+		out.write(contentInBytes);
+		out.close();
 	}
 
 	/**
