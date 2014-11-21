@@ -18,43 +18,19 @@
  */
 package org.openpixi.pixi.ui;
 
-import org.openpixi.pixi.physics.InitialConditions;
-import org.openpixi.pixi.physics.Simulation;
-import org.openpixi.pixi.physics.collision.algorithms.CollisionAlgorithm;
-import org.openpixi.pixi.physics.collision.algorithms.MatrixTransformation;
-import org.openpixi.pixi.physics.collision.algorithms.SimpleCollision;
-import org.openpixi.pixi.physics.collision.algorithms.VectorTransformation;
-import org.openpixi.pixi.physics.collision.detectors.AllParticles;
-import org.openpixi.pixi.physics.collision.detectors.Detector;
-import org.openpixi.pixi.physics.collision.detectors.SweepAndPrune;
-import org.openpixi.pixi.physics.force.CombinedForce;
-import org.openpixi.pixi.physics.force.ConstantForce;
-import org.openpixi.pixi.physics.force.Force;
-import org.openpixi.pixi.physics.force.SimpleGridForce;
-import org.openpixi.pixi.physics.force.relativistic.ConstantForceRelativistic;
-import org.openpixi.pixi.physics.force.relativistic.SimpleGridForceRelativistic;
-import org.openpixi.pixi.physics.movement.boundary.ParticleBoundaryType;
-import org.openpixi.pixi.physics.particles.Particle;
-import org.openpixi.pixi.physics.solver.*;
-import org.openpixi.pixi.physics.solver.relativistic.BorisRelativistic;
-import org.openpixi.pixi.physics.solver.relativistic.LeapFrogRelativistic;
-import org.openpixi.pixi.physics.solver.relativistic.SemiImplicitEulerRelativistic;
-import org.openpixi.pixi.ui.util.FrameRateDetector;
-import org.openpixi.pixi.ui.util.WriteFile;
-
-import javax.swing.*;
-import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.geom.AffineTransform;
-import java.util.ArrayList;
-
 import static java.awt.geom.AffineTransform.getRotateInstance;
 import static java.awt.geom.AffineTransform.getTranslateInstance;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
+import java.awt.Color;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.geom.AffineTransform;
+
+import javax.swing.JPanel;
+
+import org.openpixi.pixi.physics.Simulation;
+import org.openpixi.pixi.physics.particles.Particle;
+import org.openpixi.pixi.ui.util.FrameRateDetector;
 
 
 /**
@@ -62,132 +38,51 @@ import java.util.logging.Logger;
  */
 public class Particle2DPanel extends JPanel {
 
-	public Simulation s;
-
-	public String fileName;
-
-	public String fileDirectory;
-
-	private WriteFile file = new WriteFile();
-
-	private boolean relativistic = false;
-
-	private boolean reset_trace;
+	private SimulationAnimation simulationAnimation;
 
 	private boolean drawCurrentGrid = false;
 
 	private boolean drawFields = false;
-
-	private boolean calculateFields = false;
-
-	private boolean writePosition = false;
 
 	/** Scaling factor for the displayed panel in x-direction*/
 	double sx;
 	/** Scaling factor for the displayed panel in y-direction*/
 	double sy;
 
-	/** Milliseconds between updates */
-	private int interval = 30;
-
-	/** Timer for animation */
-	public Timer timer;
-
 	public boolean showinfo = false;
-	private FrameRateDetector frameratedetector;
 
 	/** A state for the trace */
 	public boolean paint_trace = false;
 
+	private boolean reset_trace;
+
 	Color darkGreen = new Color(0x00, 0x80, 0x00);
 
-	/** Listener for timer */
-	public class TimerListener implements ActionListener {
+	/** Constructor */
+	public Particle2DPanel(SimulationAnimation simulationAnimation) {
+		this.simulationAnimation = simulationAnimation;
+		this.simulationAnimation.addListener(new MyAnimationListener());
+		this.setVisible(true);
+	}
 
-		public void actionPerformed(ActionEvent eve) {
-                    try {
-                        int NStepsDone = s.tottime;
-                        s.step(NStepsDone+1);
-                    } catch (FileNotFoundException ex) {
-                        Logger.getLogger(Particle2DPanel.class.getName()).log(Level.SEVERE, null, ex);
-                    } catch (IOException ex2) {
-                        Logger.getLogger(Particle2DPanel.class.getName()).log(Level.SEVERE, null, ex2);
-                    }
-			frameratedetector.update();
+	/** Listener for timer */
+	public class MyAnimationListener implements SimulationAnimationListener {
+
+		public void repaint() {
+			Simulation s = simulationAnimation.getSimulation();
 			sx = getWidth() / s.getWidth();
 			sy = getHeight() / s.getHeight();
-			repaint();
-			if(writePosition)
-			{
-				Particle par = (Particle) s.particles.get(0);
-				System.out.println(par.getX() + " " + par.getY());
-				file.writeFile(fileName, fileDirectory, par.getX() + " " + par.getY());
-			}
+			Particle2DPanel.this.repaint();
 		}
-	}
 
-	/** Constructor */
-	public Particle2DPanel() {
-
-		timer = new Timer(interval, new TimerListener());
-		this.setVisible(true);
-		frameratedetector = new FrameRateDetector(500);
-
-		s = InitialConditions.initRandomParticles(10, 2);
-
-	}
-
-	public void startAnimation() {
-		timer.start();
-	}
-
-	public void stopAnimation() {
-		timer.stop();
-		//test = false;
-	}
-
-	public void resetAnimation(int id) {
-		// timer.restart();
-		timer.stop();
-		reset_trace = true;
-		switch(id) {
-		case 0:
-			s = InitialConditions.initRandomParticles(10, 2);
-			break;
-		case 1:
-			s = InitialConditions.initRandomParticles(100, 1);
-			break;
-		case 2:
-			s = InitialConditions.initRandomParticles(1000, 0.5);
-			break;
-		case 3:
-			s = InitialConditions.initRandomParticles(10000, 0.01);
-			break;
-		case 4:
-			s = InitialConditions.initGravity(1, 2);
-			break;
-		case 5:
-			s = InitialConditions.initElectric(1, 2);
-			break;
-		case 6:
-			s = InitialConditions.initMagnetic(3, 2);
-			break;
-		case 7:
-			s = InitialConditions.initPair(0.01,1);//s = InitialConditions.initSpring(1, 2);
-			break;
-		case 8:
-			s = InitialConditions.initTwoStream(0.01,1,50);
-			break;
+		public void clear() {
+			reset_trace = true;
 		}
-		updateFieldForce();
-		s.prepareAllParticles();
-		s.turnGridForceOn();
-		timer.start();
 	}
 
 	public void checkTrace() {
 		paint_trace =! paint_trace;
-		startAnimation();
+		//startAnimation();
 	}
 
 	public void drawCurrentGrid() {
@@ -196,181 +91,6 @@ public class Particle2DPanel extends JPanel {
 
 	public void drawFields() {
 		drawFields =! drawFields;
-	}
-
-	public void calculateFields() {
-		calculateFields =! calculateFields;
-		updateFieldForce();
-	}
-
-	private void updateFieldForce() {
-
-		if(calculateFields) {
-			s.turnGridForceOn();
-		}
-		else {
-			s.turnGridForceOff();
-		}
-	}
-
-	public void writePosition() {
-		writePosition =! writePosition;
-		if(writePosition)
-		{
-			s.f.clear();
-			ConstantForce force = new ConstantForce();
-			force.bz = - 0.23; // -ConstantsSI.g;
-			//force.gy = -1;
-			//force.drag = 0.08;
-			s.f.add(force);
-			s.particles = InitialConditions.createRandomParticles(s.getWidth(), s.getHeight(), s.getSpeedOfLight(), 1, 1);
-			Particle par = (Particle) s.particles.get(0);
-			par.setX(s.getWidth() * 0.5);
-			par.setY(s.getHeight() * 0.5);
-			//System.out.println(this.getWidth() * 0.5 + " x0");
-			//System.out.println(this.getHeight() * 0.5 + " y0");
-			par.setVx(10);
-			par.setVy(10);
-			par.setMass(1);
-			par.setCharge(1);
-		}
-		else {
-			resetAnimation(0);
-		}
-		s.prepareAllParticles();
-/*		ConstantForce force = new ConstantForce();
-		force.bz = - 0.23;
-		s.f.add(force);
-*/	}
-
-	public void algorithmChange(int id)
-	{
-		s.completeAllParticles();
-
-		switch(id) {
-		case 0:
-			s.getParticleMover().setSolver(new EulerRichardson());
-			break;
-		case 1:
-			s.getParticleMover().setSolver(new LeapFrog());
-			break;
-		case 2:
-			s.getParticleMover().setSolver(new LeapFrogDamped());
-			break;
-		case 3:
-			s.getParticleMover().setSolver(new LeapFrogHalfStep());
-			break;
-		case 4:
-			s.getParticleMover().setSolver(new Boris());
-			break;
-		case 5:
-			s.getParticleMover().setSolver(new BorisDamped());
-			break;
-		case 6:
-			s.getParticleMover().setSolver(new SemiImplicitEuler());
-			break;
-		case 7:
-			s.getParticleMover().setSolver(new Euler());
-			break;
-			}
-
-		s.prepareAllParticles();
-	}
-
-	public void relativisticEffects(int i) {
-		relativistic =! relativistic;
-
-		if(relativistic == false) {
-			s.relativistic = false;
-			if (s.f instanceof CombinedForce) {
-				ArrayList<Force> forces = ((CombinedForce) s.f).forces;
-				for (int j = 0; j < forces.size(); j++) {
-					if (forces.get(j) instanceof ConstantForceRelativistic){
-						forces.set(j, new ConstantForce());
-					}
-					if (forces.get(j) instanceof SimpleGridForceRelativistic){
-						forces.set(j, new SimpleGridForce());
-					}
-				}
-			}
-			switch(i) {
-			case 1:
-				s.getParticleMover().setSolver(new LeapFrog());
-			case 4:
-				s.getParticleMover().setSolver(new Boris());
-				break;
-			case 6:
-				s.getParticleMover().setSolver(new SemiImplicitEuler());
-				break;
-			}
-		}
-
-		if(relativistic == true) {
-			s.relativistic = true;
-			//System.out.println("relativistic version on");
-			if (s.f instanceof CombinedForce) {
-				ArrayList<Force> forces = ((CombinedForce) s.f).forces;
-				for (int j = 0; j < forces.size(); j++) {
-					if (forces.get(j) instanceof ConstantForce){
-						forces.set(j, new ConstantForceRelativistic(s.getSpeedOfLight()));
-					}
-					if (forces.get(j) instanceof SimpleGridForce){
-						forces.set(j, new SimpleGridForceRelativistic(s));
-					}
-				}
-			}
-			switch(i) {
-			case 1:
-				s.getParticleMover().setSolver(new LeapFrogRelativistic(s.getSpeedOfLight()));
-			case 4:
-				s.getParticleMover().setSolver(new BorisRelativistic(s.getSpeedOfLight()));
-				break;
-			case 6:
-				s.getParticleMover().setSolver(new SemiImplicitEulerRelativistic(s.getSpeedOfLight()));
-				break;
-			}
-		}
-
-	}
-
-	public void collisionChange(int i) {
-		switch(i) {
-		case 0:
-			s.detector = new Detector();
-			s.collisionalgorithm = new CollisionAlgorithm();
-			break;
-		case 1:
-			s.detector = new AllParticles(s.particles);
-			break;
-		case 2:
-			s.detector = new SweepAndPrune(s.particles);
-			break;
-		}
-	}
-
-	public void algorithmCollisionChange(int i) {
-		switch(i) {
-		case 0:
-			s.collisionalgorithm = new SimpleCollision();
-			break;
-		case 1:
-			s.collisionalgorithm = new VectorTransformation();
-			break;
-		case 2:
-			s.collisionalgorithm = new MatrixTransformation();
-			break;
-		}
-	}
-
-	public void boundariesChange(int i) {
-		switch(i) {
-		case 0:
-			s.getParticleMover().changeBoundaryType(ParticleBoundaryType.Hardwall);
-			break;
-		case 1:
-			s.getParticleMover().changeBoundaryType(ParticleBoundaryType.Periodic);
-		}
-
 	}
 
 	/** Display the particles */
@@ -390,6 +110,8 @@ public class Particle2DPanel extends JPanel {
 			super.paintComponent(graph1);
 			reset_trace = false;
 		}
+
+		Simulation s = simulationAnimation.getSimulation();
 
 		for (int i = 0; i < s.particles.size(); i++) {
 			Particle par = (Particle) s.particles.get(i);
@@ -443,6 +165,8 @@ int ystart = (int) (s.grid.getCellHeight() * (k + 0.5) * sy);
 				}
 			//return;
 		}
+
+		FrameRateDetector frameratedetector = simulationAnimation.getFrameRateDetector();
 
 		if (showinfo) {
 			graph.translate(0.0, this.getHeight());
