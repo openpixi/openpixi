@@ -41,9 +41,9 @@ public class YamlParticleStream {
 
 			for (int i = 0; i < number; i++) {
 				p = particle.getParticle();
-				settings.addParticle(p);
 				p.setX(x + i * dx);
 				p.setY(y + i * dy);
+				settings.addParticle(p);
 			}
 		}
 	}

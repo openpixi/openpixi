@@ -39,7 +39,6 @@ import org.openpixi.pixi.physics.solver.relativistic.*;
 import org.openpixi.pixi.ui.panel.Particle2DPanel;
 import org.openpixi.pixi.ui.panel.PhaseSpacePanel;
 import org.openpixi.pixi.ui.panel.ElectricFieldPanel;
-import org.openpixi.pixi.ui.util.Parser;
 import org.openpixi.pixi.ui.util.yaml.YamlParser;
 
 /**
