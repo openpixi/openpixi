@@ -435,6 +435,7 @@ public class MainControlApplet extends JApplet {
 				try {
 					String content = readFile(file);
 					fileTextArea.setText(content);
+					applyTextAreaSettings();
 				} catch (IOException e) {
 					// TODO Error message
 				}
@@ -480,13 +481,19 @@ public class MainControlApplet extends JApplet {
 
 	class ApplyButtonListener implements ActionListener {
 		public void actionPerformed(ActionEvent event) {
-			// Apply the settings from the text area and restart the simulation.
-			String string = fileTextArea.getText();
-			Settings settings = new Settings();
-			YamlParser parser = new YamlParser(settings);
-			parser.parseString(string);
-			simulationAnimation.resetAnimation(settings);
+			applyTextAreaSettings();
 		}
+	}
+
+	/**
+	 * Apply the settings from the text area and restart the simulation.
+	 */
+	private void applyTextAreaSettings() {
+		String string = fileTextArea.getText();
+		Settings settings = new Settings();
+		YamlParser parser = new YamlParser(settings);
+		parser.parseString(string);
+		simulationAnimation.resetAnimation(settings);
 	}
 
 	private String readFile(File file) throws IOException {
