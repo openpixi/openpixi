@@ -173,7 +173,7 @@ public class Particle2DPanel extends JPanel {
 			s = InitialConditions.initMagnetic(3, 2);
 			break;
 		case 7:
-			s = InitialConditions.initPair(0.01,1);//s = InitialConditions.initSpring(1, 2);
+			s = InitialConditions.initPair(0.1,1);//s = InitialConditions.initSpring(1, 2);
 			break;
 		case 8:
 			s = InitialConditions.initTwoStream(0.01,1,50);

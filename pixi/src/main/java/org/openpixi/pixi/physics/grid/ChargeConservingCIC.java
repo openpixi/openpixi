@@ -92,6 +92,8 @@ public class ChargeConservingCIC extends CloudInCell {
 	 */
 	private void fourBoundaryMove(int lx, int ly, double x, double y,
 								  double deltaX, double deltaY, Particle p, Grid g, double tstep) {
+		/**Area of the unit cell*/
+		double cellArea = g.getCellWidth() * g.getCellHeight();
 		//A few cancellations were made to reduce computation time. Till this point the algorithm has
 		//calculated the area that swept over a cell boundary for a normalized grid (i.e. unit square cells).
 		//and unit square charges. This area needs to be denormalized and then multiplied with the charge
