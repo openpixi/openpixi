@@ -26,6 +26,7 @@ import org.openpixi.pixi.physics.particles.ParticleFull;
 import org.openpixi.pixi.physics.solver.EulerRichardson;
 import org.openpixi.pixi.physics.solver.relativistic.BorisRelativistic;
 import org.openpixi.pixi.physics.fields.PoissonSolverFFTPeriodic;
+import org.openpixi.pixi.physics.fields.EmptyPoissonSolver;
 import org.openpixi.pixi.physics.fields.SimpleSolver;
 import org.openpixi.pixi.physics.grid.ChargeConservingCIC;
 
@@ -196,14 +197,14 @@ public class InitialConditions {
     public static Simulation initPair(double charge, double radius) {
 	Settings stt = new Settings();
 
-	stt.setTimeStep(1);
+	stt.setTimeStep(0.1);
 	stt.setSpeedOfLight(1);
 	stt.setRelativistic(true);
 	/*stt.setSimulationWidth(100);
 	stt.setSimulationHeight(100);*/
-	stt.setGridStep(10);
-	stt.setGridCellsX(10);
-	stt.setGridCellsY(10);
+	stt.setGridStep(0.5);
+	stt.setGridCellsX(200);
+	stt.setGridCellsY(200);
             stt.setNumOfParticles(2);
 
 	stt.addForce(new ConstantForce());
@@ -214,7 +215,7 @@ public class InitialConditions {
 	for (int k = 0; k < 2; k++) {
 		Particle par = new ParticleFull();
 		par.setX(stt.getSimulationWidth() * 1/9.0*(k+4));
-		par.setY(stt.getSimulationHeight() * 1/2 + stt.getGridStep()*0/4);
+		par.setY(stt.getSimulationHeight() * 1/2 + stt.getGridStep()*2/4);
 		par.setRadius(radius);
 		par.setVx(0);
 		par.setVy(0);
