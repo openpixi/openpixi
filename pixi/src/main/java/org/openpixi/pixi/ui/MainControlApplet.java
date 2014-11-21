@@ -797,7 +797,12 @@ public class MainControlApplet extends JApplet {
 
 		fc = new JFileChooser();
 		File workingDirectory = new File(System.getProperty("user.dir"));
-		fc.setCurrentDirectory(workingDirectory);
+		File inputDirectory = new File(workingDirectory, "input");
+		if (inputDirectory.exists()) {
+			fc.setCurrentDirectory(inputDirectory);
+		} else {
+			fc.setCurrentDirectory(workingDirectory);
+		}
 
 		openButton = new JButton("Open...");
 		openButton.addActionListener(new OpenButtonListener());
