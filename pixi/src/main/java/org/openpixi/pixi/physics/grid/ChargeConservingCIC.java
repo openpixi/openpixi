@@ -92,8 +92,6 @@ public class ChargeConservingCIC extends CloudInCell {
 	 */
 	private void fourBoundaryMove(int lx, int ly, double x, double y,
 								  double deltaX, double deltaY, Particle p, Grid g, double tstep) {
-		/**Area of the unit cell*/
-		double cellArea = g.getCellWidth() * g.getCellHeight();
 		//A few cancellations were made to reduce computation time. Till this point the algorithm has
 		//calculated the area that swept over a cell boundary for a normalized grid (i.e. unit square cells).
 		//and unit square charges. This area needs to be denormalized and then multiplied with the charge
@@ -102,10 +100,10 @@ public class ChargeConservingCIC extends CloudInCell {
 		//g.addJx(lx, 	ly, 	p.getCharge() * deltaX * ((1 + deltaY) / 2 + y));
 		//g.addJy(lx - 1, ly, 	p.getCharge() * deltaY * ((1 - deltaX) / 2 - x));
 		//g.addJy(lx, 	ly, 	p.getCharge() * deltaY * ((1 + deltaX) / 2 + x));
-		g.addJx(lx, 	ly, p.getCharge() * deltaX * ((1 - deltaY) / 2 - y));
-		g.addJx(lx, 	ly + 1, 	p.getCharge() * deltaX * ((1 + deltaY) / 2 + y));
-		g.addJy(lx, ly, 	p.getCharge() * deltaY * ((1 - deltaX) / 2 - x));
-		g.addJy(lx + 1, 	ly, 	p.getCharge() * deltaY * ((1 + deltaX) / 2 + x));
+		g.addJx((lx + g.getNumCellsX())%g.getNumCellsX(), (ly + g.getNumCellsY())%g.getNumCellsY(), p.getCharge() * deltaX * ((1 - deltaY) / 2 - y));
+		g.addJx((lx + g.getNumCellsX())%g.getNumCellsX(), (ly + 1 + g.getNumCellsY())%g.getNumCellsY(), 	p.getCharge()* deltaX * ((1 + deltaY) / 2 + y));
+		g.addJy((lx + g.getNumCellsX())%g.getNumCellsX(), (ly + g.getNumCellsY())%g.getNumCellsY(), 	p.getCharge() * deltaY * ((1 - deltaX) / 2 - x));
+		g.addJy((lx +1 + g.getNumCellsX())%g.getNumCellsX(), (ly + g.getNumCellsY())%g.getNumCellsY(), 	p.getCharge() * deltaY * ((1 + deltaX) / 2 + x));
 		
 
 	}
