@@ -14,6 +14,17 @@ public class YamlParticle {
 
 	public void applyTo(Settings settings) {
 
+		ParticleFull p = getParticle();
+
+		settings.addParticle(p);
+	}
+
+	/**
+	 * Creates a new particle and applies the settings from the
+	 * YAML document to it.
+	 * @return new particle
+	 */
+	public ParticleFull getParticle() {
 		ParticleFull p = new ParticleFull();
 
 		if (x != null) {
@@ -43,8 +54,7 @@ public class YamlParticle {
 		if (q != null) {
 			p.setCharge(q);
 		}
-
-		settings.addParticle(p);
+		return p;
 	}
 
 }
