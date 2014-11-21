@@ -16,7 +16,7 @@
  * with this program; if not, write to the Free Software Foundation, Inc.,
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
-package org.openpixi.pixi.ui;
+package org.openpixi.pixi.ui.panel;
 
 import static java.awt.geom.AffineTransform.getRotateInstance;
 import static java.awt.geom.AffineTransform.getTranslateInstance;
@@ -30,6 +30,8 @@ import javax.swing.JPanel;
 
 import org.openpixi.pixi.physics.Simulation;
 import org.openpixi.pixi.physics.particles.Particle;
+import org.openpixi.pixi.ui.SimulationAnimation;
+import org.openpixi.pixi.ui.SimulationAnimationListener;
 import org.openpixi.pixi.ui.util.FrameRateDetector;
 
 

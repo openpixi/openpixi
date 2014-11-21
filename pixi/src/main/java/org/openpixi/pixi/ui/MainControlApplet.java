@@ -30,6 +30,9 @@ import org.openpixi.pixi.physics.force.*;
 import org.openpixi.pixi.physics.movement.boundary.ParticleBoundaryType;
 import org.openpixi.pixi.physics.solver.*;
 import org.openpixi.pixi.physics.solver.relativistic.*;
+import org.openpixi.pixi.ui.panel.Particle2DPanel;
+import org.openpixi.pixi.ui.panel.PhaseSpacePanel;
+import org.openpixi.pixi.ui.panel.ElectricFieldPanel;
 
 /**
  * Displays the animation of particles.
@@ -76,6 +79,7 @@ public class MainControlApplet extends JApplet {
 
 	private Particle2DPanel particlePanel;
 	private PhaseSpacePanel phaseSpacePanel;
+	private ElectricFieldPanel electricFieldPanel;
 
 	private static final double speedSliderScaling = 0.07;
 	private static final double stepSliderScaling = 0.01;
@@ -417,6 +421,7 @@ public class MainControlApplet extends JApplet {
 		simulationAnimation = new SimulationAnimation();
 		particlePanel = new Particle2DPanel(simulationAnimation);
 		phaseSpacePanel = new PhaseSpacePanel(simulationAnimation);
+		electricFieldPanel = new ElectricFieldPanel(simulationAnimation);
 		Simulation s = simulationAnimation.getSimulation();
 		linkConstantForce();
 
@@ -701,8 +706,10 @@ public class MainControlApplet extends JApplet {
 		tabs.addTab("Collisions", collisionBox);
 		tabs.addTab("Cell", cellSettings);
 
+		leftComponent = particlePanel;
+		rightComponent = electricFieldPanel;
 		splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT,
-				particlePanel, phaseSpacePanel);
+				leftComponent, rightComponent);
 		splitPane.setOneTouchExpandable(true);
 		splitPane.setContinuousLayout(true);
 
@@ -712,8 +719,95 @@ public class MainControlApplet extends JApplet {
 		this.add(tabs, BorderLayout.EAST);
 
 		// start JSplitPane in collapsed state:
-		phaseSpacePanel.setSize(new Dimension());
+		electricFieldPanel.setSize(new Dimension());
 		splitPane.setResizeWeight(1.0);
+
+		particlePanel.addMouseListener(new PopupClickListener());
+		phaseSpacePanel.addMouseListener(new PopupClickListener());
+		electricFieldPanel.addMouseListener(new PopupClickListener());
+	}
+
+	Component leftComponent;
+	Component rightComponent;
+
+	JMenuItem itemParticle2DPanel;
+	JMenuItem itemPhaseSpacePanel;
+	JMenuItem itemElectricFieldPanel;
+
+	class PopupMenu extends JPopupMenu {
+
+		public PopupMenu() {
+			itemParticle2DPanel = new JMenuItem("Particles");
+			itemParticle2DPanel.addActionListener(new MenuSelected());
+			add(itemParticle2DPanel);
+
+			itemPhaseSpacePanel = new JMenuItem("Phase space");
+			itemPhaseSpacePanel.addActionListener(new MenuSelected());
+			add(itemPhaseSpacePanel);
+
+			itemElectricFieldPanel = new JMenuItem("Electric field");
+			itemElectricFieldPanel.addActionListener(new MenuSelected());
+			add(itemElectricFieldPanel);
+		}
+	}
+
+	Component clickComponent;
+
+	class PopupClickListener extends MouseAdapter {
+		public void mousePressed(MouseEvent e) {
+			if (e.isPopupTrigger())
+				doPop(e);
+		}
+
+		public void mouseReleased(MouseEvent e) {
+			if (e.isPopupTrigger())
+				doPop(e);
+		}
+
+		private void doPop(MouseEvent e) {
+			clickComponent = e.getComponent();
+			PopupMenu menu = new PopupMenu();
+			menu.show(e.getComponent(), e.getX(), e.getY());
+		}
+	}
+
+	class MenuSelected implements ActionListener {
+
+		@Override
+		public void actionPerformed(ActionEvent event) {
+			// TODO: This method creates new instances of the panels
+			// (which is nice so there can be two identical panels next
+			// to each other), but it does not delete previous panels.
+			// They should be unregistered in simulationAnimation if not
+			// in use anymore.
+
+			Component component = null;
+			if (event.getSource() == itemParticle2DPanel) {
+				particlePanel = new Particle2DPanel(simulationAnimation);
+				particlePanel.addMouseListener(new PopupClickListener());
+				component = particlePanel;
+			} else if (event.getSource() == itemPhaseSpacePanel) {
+				phaseSpacePanel = new PhaseSpacePanel(simulationAnimation);
+				phaseSpacePanel.addMouseListener(new PopupClickListener());
+				component = phaseSpacePanel;
+			} else if (event.getSource() == itemElectricFieldPanel) {
+				electricFieldPanel = new ElectricFieldPanel(simulationAnimation);
+				electricFieldPanel.addMouseListener(new PopupClickListener());
+				component = electricFieldPanel;
+			}
+			if (component != null) {
+				int dividerLocation = splitPane.getDividerLocation();
+				if (clickComponent == leftComponent) {
+					splitPane.setLeftComponent(component);
+					leftComponent = component;
+				} else if (clickComponent == rightComponent) {
+					splitPane.setRightComponent(component);
+					rightComponent = component;
+				}
+				splitPane.setDividerLocation(dividerLocation);
+			}
+		}
+
 	}
 
 	public void setText(JTextArea text, String str, boolean onoff)
