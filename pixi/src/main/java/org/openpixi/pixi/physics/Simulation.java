@@ -205,8 +205,6 @@ public class Simulation {
 		collisionalgorithm = settings.getCollisionAlgorithm();
 
 		prepareAllParticles();
-		
-		clearFile();
 	}
 
 	public void turnGridForceOn() {
@@ -255,13 +253,13 @@ public class Simulation {
 	 * Checks if the files are already existent and deletes them.
 	 */
 	public void clearFile() {
-		File particlesfile = new File("output/particles_seq.txt");
+		File particlesfile = new File("particles_seq.txt");
 		boolean fileExists1 = particlesfile.exists();
 		if(fileExists1 == true) {
 			particlesfile.delete();
 		}
 		
-		File gridfile = new File("output/cells_seq.txt");
+		File gridfile = new File("cells_seq.txt");
 		boolean fileExists2 = gridfile.exists();
 		if(fileExists2 == true) {
 			gridfile.delete();
@@ -328,10 +326,9 @@ public class Simulation {
 		double SumJx = 0;
 		double SumJy = 0;
 		double fieldEnergy = 0;
-		//int NumPoints = grid.getNumCellsX()*grid.getNumCellsY();
 		
-		for (int i = 0; i < grid.getNumCellsX(); i++) {
-			for (int j = 0; j < grid.getNumCellsY(); j++) {
+		for (int i = 0; i < grid.getNumCellsXTotal(); i++) {
+			for (int j = 0; j < grid.getNumCellsYTotal(); j++) {
 				
 				SumRho += grid.getCells()[i][j].getRho();
 				SumJx += grid.getCells()[i][j].getJx();
@@ -357,7 +354,6 @@ public class Simulation {
 		pw.write("\n");
 		
 		pw.close();
-		
 	}
 
 	public void writeSpecFile(int time) throws FileNotFoundException {
@@ -377,23 +373,7 @@ public class Simulation {
 		}
 		
 		sw.close();
-		
-		PrintWriter snap = new PrintWriter(new File("output/snapshot" + time + ".txt"));
 
-		for (int i = 0; i < grid.getNumCellsXTotal(); i++) {
-			for (int j = 0; j < grid.getNumCellsYTotal(); j++) {
-				
-				snap.write(i + "\t");
-				snap.write(j + "\t");
-				snap.write(grid.getCells()[i][j].getEx() + "\t");
-				//snap.write(grid.getCells()[i][j].getPhi() + "\t");
-				snap.write("\n");
-				
-			}
-		}
-		
-		snap.close();
-		
 	}
 	
 	public void particlePush() {
