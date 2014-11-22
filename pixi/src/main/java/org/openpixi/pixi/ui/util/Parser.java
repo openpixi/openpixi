@@ -307,7 +307,7 @@ public class Parser extends DefaultHandler {
 			System.out.println("Error: simulation width is not a positive value! Setting it to 100.");
 			w = 100;
 		}
-		settings.setTimeStep(w);
+		settings.setSimulationWidth(w);
 	}
 
 	private void setSimulationHeight(char ch[], int start, int length) {
@@ -321,7 +321,7 @@ public class Parser extends DefaultHandler {
 			System.out.println("Error: simulation height is not a positive value! Setting it to 100.");
 			h = 100;
 		}
-		settings.setTimeStep(h);
+		settings.setSimulationHeight(h);
 	}
 
 	private void setInterpolator(char ch[], int start, int length) {
