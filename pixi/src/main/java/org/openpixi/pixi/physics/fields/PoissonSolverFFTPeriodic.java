@@ -36,7 +36,7 @@ public class PoissonSolverFFTPeriodic implements PoissonSolver {
 		//prepare input for fft
 		for(int i = 0; i < columns; i++) {
 			for(int j = 0; j < rows; j++) {
-				trho[i][2*j] = g.getRho(i,j)/cellArea;
+				trho[i][2*j] = g.getRho(i,j);
 				trho[i][2*j+1] = 0;
 			}
 		}
@@ -59,7 +59,7 @@ public class PoissonSolverFFTPeriodic implements PoissonSolver {
 		}
                 phi[0][0] = 0;
                 phi[0][1] = 0;
-
+		
 		//perform inverse Fourier transform
 		fft.complexInverse(phi, true);
                 
