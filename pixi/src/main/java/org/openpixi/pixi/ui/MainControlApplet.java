@@ -738,7 +738,7 @@ public class MainControlApplet extends JApplet {
 			itemSplitVertically.addActionListener(new MenuSelected());
 			add(itemSplitVertically);
 
-			if (clickComponent.getParent() instanceof JSplitPane) {
+			if (clickComponent != null && clickComponent.getParent() instanceof JSplitPane) {
 				itemClosePanel = new JMenuItem("Close panel");
 				itemClosePanel.addActionListener(new MenuSelected());
 				add(itemClosePanel);
@@ -824,6 +824,12 @@ public class MainControlApplet extends JApplet {
 							parentsplitpane.setRightComponent(component);
 						}
 						parentsplitpane.setDividerLocation(dividerLocation);
+					} else if (parent instanceof JPanel) {
+						// top level
+
+						MainControlApplet.this.remove(clickComponent);
+						MainControlApplet.this.add(component, BorderLayout.CENTER);
+						MainControlApplet.this.validate();
 					}
 				}
 			}
@@ -863,6 +869,7 @@ public class MainControlApplet extends JApplet {
 					}
 					parentsplitpane.setDividerLocation(dividerLocation);
 				} else if (parent instanceof JPanel) {
+					// top level
 					JSplitPane s = new JSplitPane(orientation,
 							clickComponent, newcomponent);
 					s.setOneTouchExpandable(true);
