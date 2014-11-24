@@ -19,6 +19,9 @@
 package org.openpixi.pixi.ui.util;
 
 import java.io.IOException;
+import java.io.StringReader;
+
+import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import javax.xml.parsers.ParserConfigurationException;
 import java.lang.NumberFormatException;
@@ -57,10 +60,38 @@ public class Parser extends DefaultHandler {
 		this.settings = settings;
 	}
 
+	/**
+	 * Parse a file.
+	 * @param path File path.
+	 */
 	public void parse(String path) {
 		try {
 			SAXParser parser = factory.newSAXParser();
 			parser.parse(path, this);
+		} catch (ParserConfigurationException e) {
+			System.out.println("ParserConfig error");
+		} catch (SAXException e) {
+			System.out.println("Parsing aborted!\n"
+					+ "Probably the xml file is not formated correctly!\n"
+					+ "Not all parameters were processed!");
+		} catch (IOException e) {
+			System.out.println("IO error! Settings file was not parsed!\n"
+					+ "Probably the settings file is missing or is in the wrong path!\n"
+					+ "Reverting to defaults...");
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	/**
+	 * Parse a string directly.
+	 * @param string String to be parsed.
+	 */
+	public void parseString(String string) {
+		InputSource is = new InputSource(new StringReader(string));
+		try {
+			SAXParser parser = factory.newSAXParser();
+			parser.parse(is, this);
 		} catch (ParserConfigurationException e) {
 			System.out.println("ParserConfig error");
 		} catch (SAXException e) {
@@ -307,7 +338,7 @@ public class Parser extends DefaultHandler {
 			System.out.println("Error: simulation width is not a positive value! Setting it to 100.");
 			w = 100;
 		}
-		settings.setTimeStep(w);
+		settings.setSimulationWidth(w);
 	}
 
 	private void setSimulationHeight(char ch[], int start, int length) {
@@ -321,7 +352,7 @@ public class Parser extends DefaultHandler {
 			System.out.println("Error: simulation height is not a positive value! Setting it to 100.");
 			h = 100;
 		}
-		settings.setTimeStep(h);
+		settings.setSimulationHeight(h);
 	}
 
 	private void setInterpolator(char ch[], int start, int length) {
