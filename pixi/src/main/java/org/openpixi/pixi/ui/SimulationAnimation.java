@@ -11,6 +11,7 @@ import java.util.logging.Logger;
 import javax.swing.Timer;
 
 import org.openpixi.pixi.physics.InitialConditions;
+import org.openpixi.pixi.physics.Settings;
 import org.openpixi.pixi.physics.Simulation;
 import org.openpixi.pixi.physics.collision.algorithms.CollisionAlgorithm;
 import org.openpixi.pixi.physics.collision.algorithms.MatrixTransformation;
@@ -167,6 +168,22 @@ public class SimulationAnimation {
 		updateFieldForce();
 		s.prepareAllParticles();
 		s.turnGridForceOn();
+		timer.start();
+	}
+
+	/**
+	 * Reset animation according to settings
+	 *
+	 * @param settings New settings for animation.
+	 */
+	public void resetAnimation(Settings settings) {
+		// timer.restart();
+		timer.stop();
+		clear();
+		s = new Simulation(settings);
+		//updateFieldForce();
+		s.prepareAllParticles();
+		//s.turnGridForceOn();
 		timer.start();
 	}
 

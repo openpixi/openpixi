@@ -1,0 +1,33 @@
+# Two stream instability
+
+gridStep: 10
+gridCellsX: 10
+gridCellsY: 10
+speedOfLight: 1
+timeStep: 1
+
+streams:
+  # first stream:
+  - particle:
+      x: 0
+      y: 50
+      vx: .1
+      vy: 0
+      r: 1
+      m: 1
+      q: .01
+    dx: 2
+    dy: 0
+    number: 50
+  # second stream:
+  - particle:
+      x: 0
+      y: 50
+      vx: -.1
+      vy: 0
+      r: 1
+      m: 1
+      q: .01
+    dx: 2
+    dy: 0
+    number: 50
