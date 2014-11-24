@@ -854,18 +854,18 @@ public class MainControlApplet extends JApplet {
 			panel.addMouseListener(new PopupClickListener());
 			Component newcomponent = panel;
 
-			JSplitPane s = new JSplitPane(orientation,
-						clickComponent, newcomponent);
-			s.setOneTouchExpandable(true);
-			s.setContinuousLayout(true);
-			s.setResizeWeight(0.5);
-
 			if (parent == null) {
 			} else if (parent instanceof JSplitPane) {
 				JSplitPane parentsplitpane = (JSplitPane) parent;
 				Component parentleft = parentsplitpane.getLeftComponent();
 
 				int dividerLocation = parentsplitpane.getDividerLocation();
+
+				JSplitPane s = new JSplitPane(orientation,
+							clickComponent, newcomponent);
+				s.setOneTouchExpandable(true);
+				s.setContinuousLayout(true);
+				s.setResizeWeight(0.5);
 
 				if (parentleft == clickComponent) {
 					parentsplitpane.setLeftComponent(s);
@@ -874,6 +874,12 @@ public class MainControlApplet extends JApplet {
 				}
 				parentsplitpane.setDividerLocation(dividerLocation);
 			} else if (parent instanceof JPanel) {
+				JSplitPane s = new JSplitPane(orientation,
+						clickComponent, newcomponent);
+				s.setOneTouchExpandable(true);
+				s.setContinuousLayout(true);
+				s.setResizeWeight(0.5);
+
 				MainControlApplet.this.remove(clickComponent);
 				MainControlApplet.this.add(s, BorderLayout.CENTER);
 				MainControlApplet.this.validate();
