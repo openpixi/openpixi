@@ -734,6 +734,9 @@ public class MainControlApplet extends JApplet {
 	Component leftComponent;
 	Component rightComponent;
 
+	JMenuItem itemSplitHorizontally;
+	JMenuItem itemSplitVertically;
+	JMenuItem itemClosePanel;
 	JMenuItem itemParticle2DPanel;
 	JMenuItem itemPhaseSpacePanel;
 	JMenuItem itemElectricFieldPanel;
@@ -741,6 +744,20 @@ public class MainControlApplet extends JApplet {
 	class PopupMenu extends JPopupMenu {
 
 		public PopupMenu() {
+			itemSplitHorizontally = new JMenuItem("Split horizontally");
+			itemSplitHorizontally.addActionListener(new MenuSelected());
+			add(itemSplitHorizontally);
+
+			itemSplitVertically = new JMenuItem("Split vertically");
+			itemSplitVertically.addActionListener(new MenuSelected());
+			add(itemSplitVertically);
+
+			itemClosePanel = new JMenuItem("Close panel");
+			itemClosePanel.addActionListener(new MenuSelected());
+			add(itemClosePanel);
+
+			add(new JSeparator());
+
 			itemParticle2DPanel = new JMenuItem("Particles");
 			itemParticle2DPanel.addActionListener(new MenuSelected());
 			add(itemParticle2DPanel);
@@ -786,7 +803,17 @@ public class MainControlApplet extends JApplet {
 			// in use anymore.
 
 			Component component = null;
-			if (event.getSource() == itemParticle2DPanel) {
+
+			if (event.getSource() == itemSplitHorizontally) {
+				splitPanel(JSplitPane.HORIZONTAL_SPLIT);
+			} else if (event.getSource() == itemSplitVertically) {
+				splitPanel(JSplitPane.VERTICAL_SPLIT);
+			} else if (event.getSource() == itemClosePanel) {
+			} else if (event.getSource() == itemParticle2DPanel) {
+				particlePanel = new Particle2DPanel(simulationAnimation);
+				particlePanel.addMouseListener(new PopupClickListener());
+				component = particlePanel;
+			} else if (event.getSource() == itemParticle2DPanel) {
 				particlePanel = new Particle2DPanel(simulationAnimation);
 				particlePanel.addMouseListener(new PopupClickListener());
 				component = particlePanel;
@@ -809,6 +836,34 @@ public class MainControlApplet extends JApplet {
 					rightComponent = component;
 				}
 				splitPane.setDividerLocation(dividerLocation);
+			}
+		}
+
+		private void splitPanel(int orientation) {
+			Component parent = clickComponent.getParent();
+			if (parent != null && parent instanceof JSplitPane) {
+				JSplitPane parentsplitpane = (JSplitPane) parent;
+				Component parentleft = parentsplitpane.getLeftComponent();
+				Component parentright = parentsplitpane.getRightComponent();
+				Component newtest = clickComponent;
+
+				int dividerLocation = parentsplitpane.getDividerLocation();
+				ElectricFieldPanel panel = new ElectricFieldPanel(simulationAnimation);
+				panel.addMouseListener(new PopupClickListener());
+				Component newcomponent = panel;
+
+				JSplitPane s = new JSplitPane(orientation,
+							clickComponent, newcomponent);
+				s.setOneTouchExpandable(true);
+				s.setContinuousLayout(true);
+				s.setResizeWeight(0.5);
+
+				if (parentleft == clickComponent) {
+					parentsplitpane.setLeftComponent(s);
+				} else {
+					parentsplitpane.setRightComponent(s);
+				}
+				parentsplitpane.setDividerLocation(dividerLocation);
 			}
 		}
 
