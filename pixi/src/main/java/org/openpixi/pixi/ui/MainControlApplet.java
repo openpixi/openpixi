@@ -738,9 +738,11 @@ public class MainControlApplet extends JApplet {
 			itemSplitVertically.addActionListener(new MenuSelected());
 			add(itemSplitVertically);
 
-			itemClosePanel = new JMenuItem("Close panel");
-			itemClosePanel.addActionListener(new MenuSelected());
-			add(itemClosePanel);
+			if (clickComponent.getParent() instanceof JSplitPane) {
+				itemClosePanel = new JMenuItem("Close panel");
+				itemClosePanel.addActionListener(new MenuSelected());
+				add(itemClosePanel);
+			}
 
 			add(new JSeparator());
 
