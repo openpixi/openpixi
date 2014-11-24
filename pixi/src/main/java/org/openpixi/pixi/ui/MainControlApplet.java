@@ -809,28 +809,30 @@ public class MainControlApplet extends JApplet {
 				component = electricFieldPanel;
 			}
 			if (component != null) {
-				component.addMouseListener(popupClickListener);
-				Component parent = clickComponent.getParent();
-				if (parent != null) {
-					if (parent instanceof JSplitPane) {
-						JSplitPane parentsplitpane = (JSplitPane) parent;
-						Component parentleft = parentsplitpane.getLeftComponent();
+				replacePanel(component);
+			}
+		}
 
-						int dividerLocation = parentsplitpane.getDividerLocation();
+		private void replacePanel(Component component) {
+			component.addMouseListener(popupClickListener);
+			Component parent = clickComponent.getParent();
+			if (parent != null) {
+				if (parent instanceof JSplitPane) {
+					JSplitPane parentsplitpane = (JSplitPane) parent;
+					Component parentleft = parentsplitpane.getLeftComponent();
 
-						if (parentleft == clickComponent) {
-							parentsplitpane.setLeftComponent(component);
-						} else {
-							parentsplitpane.setRightComponent(component);
-						}
-						parentsplitpane.setDividerLocation(dividerLocation);
-					} else if (parent instanceof JPanel) {
-						// top level
-
-						MainControlApplet.this.remove(clickComponent);
-						MainControlApplet.this.add(component, BorderLayout.CENTER);
-						MainControlApplet.this.validate();
+					int dividerLocation = parentsplitpane.getDividerLocation();
+					if (parentleft == clickComponent) {
+						parentsplitpane.setLeftComponent(component);
+					} else {
+						parentsplitpane.setRightComponent(component);
 					}
+					parentsplitpane.setDividerLocation(dividerLocation);
+				} else if (parent instanceof JPanel) {
+					// top level
+					MainControlApplet.this.remove(clickComponent);
+					MainControlApplet.this.add(component, BorderLayout.CENTER);
+					MainControlApplet.this.validate();
 				}
 			}
 		}
