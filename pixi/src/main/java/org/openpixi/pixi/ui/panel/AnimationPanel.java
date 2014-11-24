@@ -8,11 +8,13 @@ import org.openpixi.pixi.ui.SimulationAnimationListener;
 public class AnimationPanel extends JPanel {
 
 	private SimulationAnimation simulationAnimation;
+	private MyAnimationListener listener;
 
 	/** Constructor */
 	public AnimationPanel(SimulationAnimation simulationAnimation) {
 		this.simulationAnimation = simulationAnimation;
-		this.simulationAnimation.addListener(new MyAnimationListener());
+		listener = new MyAnimationListener();
+		this.simulationAnimation.addListener(listener);
 		this.setVisible(true);
 	}
 
@@ -35,5 +37,10 @@ public class AnimationPanel extends JPanel {
 	/** Clear screen.
 	 * (Overwrite for custom behavior.) */
 	public void clear() {
+	}
+
+	/** Unregister this panel */
+	public void destruct() {
+		simulationAnimation.removeListener(listener);
 	}
 }

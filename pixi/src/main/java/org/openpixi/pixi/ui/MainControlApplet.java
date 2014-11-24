@@ -30,6 +30,7 @@ import org.openpixi.pixi.physics.force.*;
 import org.openpixi.pixi.physics.movement.boundary.ParticleBoundaryType;
 import org.openpixi.pixi.physics.solver.*;
 import org.openpixi.pixi.physics.solver.relativistic.*;
+import org.openpixi.pixi.ui.panel.AnimationPanel;
 import org.openpixi.pixi.ui.panel.Particle2DPanel;
 import org.openpixi.pixi.ui.panel.PhaseSpacePanel;
 import org.openpixi.pixi.ui.panel.ElectricFieldPanel;
@@ -421,8 +422,6 @@ public class MainControlApplet extends JApplet {
 
 		simulationAnimation = new SimulationAnimation();
 		particlePanel = new Particle2DPanel(simulationAnimation);
-		phaseSpacePanel = new PhaseSpacePanel(simulationAnimation);
-		electricFieldPanel = new ElectricFieldPanel(simulationAnimation);
 		Simulation s = simulationAnimation.getSimulation();
 		linkConstantForce();
 
@@ -710,30 +709,16 @@ public class MainControlApplet extends JApplet {
 		tabs.addTab("Cell", cellSettings);
 		tabs.addTab("File", fileTab);
 
-		leftComponent = particlePanel;
-		rightComponent = electricFieldPanel;
-		splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT,
-				leftComponent, rightComponent);
-		splitPane.setOneTouchExpandable(true);
-		splitPane.setContinuousLayout(true);
-
 		this.setLayout(new BorderLayout());
 		this.add(panelBox, BorderLayout.SOUTH);
-		//this.add(splitPane, BorderLayout.CENTER);
 		this.add(particlePanel, BorderLayout.CENTER);
 		this.add(tabs, BorderLayout.EAST);
 
-		// start JSplitPane in collapsed state:
-		electricFieldPanel.setSize(new Dimension());
-		splitPane.setResizeWeight(1.0);
-
-		particlePanel.addMouseListener(new PopupClickListener());
-		phaseSpacePanel.addMouseListener(new PopupClickListener());
-		electricFieldPanel.addMouseListener(new PopupClickListener());
+		popupClickListener = new PopupClickListener();
+		particlePanel.addMouseListener(popupClickListener);
 	}
 
-	Component leftComponent;
-	Component rightComponent;
+	PopupClickListener popupClickListener;
 
 	JMenuItem itemSplitHorizontally;
 	JMenuItem itemSplitVertically;
@@ -813,31 +798,35 @@ public class MainControlApplet extends JApplet {
 				closePanel();
 			} else if (event.getSource() == itemParticle2DPanel) {
 				particlePanel = new Particle2DPanel(simulationAnimation);
-				particlePanel.addMouseListener(new PopupClickListener());
 				component = particlePanel;
 			} else if (event.getSource() == itemParticle2DPanel) {
 				particlePanel = new Particle2DPanel(simulationAnimation);
-				particlePanel.addMouseListener(new PopupClickListener());
 				component = particlePanel;
 			} else if (event.getSource() == itemPhaseSpacePanel) {
 				phaseSpacePanel = new PhaseSpacePanel(simulationAnimation);
-				phaseSpacePanel.addMouseListener(new PopupClickListener());
 				component = phaseSpacePanel;
 			} else if (event.getSource() == itemElectricFieldPanel) {
 				electricFieldPanel = new ElectricFieldPanel(simulationAnimation);
-				electricFieldPanel.addMouseListener(new PopupClickListener());
 				component = electricFieldPanel;
 			}
 			if (component != null) {
-				int dividerLocation = splitPane.getDividerLocation();
-				if (clickComponent == leftComponent) {
-					splitPane.setLeftComponent(component);
-					leftComponent = component;
-				} else if (clickComponent == rightComponent) {
-					splitPane.setRightComponent(component);
-					rightComponent = component;
+				component.addMouseListener(popupClickListener);
+				Component parent = clickComponent.getParent();
+				if (parent != null) {
+					if (parent instanceof JSplitPane) {
+						JSplitPane parentsplitpane = (JSplitPane) parent;
+						Component parentleft = parentsplitpane.getLeftComponent();
+
+						int dividerLocation = parentsplitpane.getDividerLocation();
+
+						if (parentleft == clickComponent) {
+							parentsplitpane.setLeftComponent(component);
+						} else {
+							parentsplitpane.setRightComponent(component);
+						}
+						parentsplitpane.setDividerLocation(dividerLocation);
+					}
 				}
-				splitPane.setDividerLocation(dividerLocation);
 			}
 		}
 
@@ -852,68 +841,76 @@ public class MainControlApplet extends JApplet {
 			Component parent = clickComponent.getParent();
 
 			ElectricFieldPanel panel = new ElectricFieldPanel(simulationAnimation);
-			panel.addMouseListener(new PopupClickListener());
+			panel.addMouseListener(popupClickListener);
 			Component newcomponent = panel;
 
-			if (parent == null) {
-			} else if (parent instanceof JSplitPane) {
-				JSplitPane parentsplitpane = (JSplitPane) parent;
-				Component parentleft = parentsplitpane.getLeftComponent();
+			if (parent != null) {
+				if (parent instanceof JSplitPane) {
+					JSplitPane parentsplitpane = (JSplitPane) parent;
+					Component parentleft = parentsplitpane.getLeftComponent();
 
-				int dividerLocation = parentsplitpane.getDividerLocation();
+					int dividerLocation = parentsplitpane.getDividerLocation();
 
-				JSplitPane s = new JSplitPane(orientation,
+					JSplitPane s = new JSplitPane(orientation,
+								clickComponent, newcomponent);
+					s.setOneTouchExpandable(true);
+					s.setContinuousLayout(true);
+					s.setResizeWeight(0.5);
+
+					if (parentleft == clickComponent) {
+						parentsplitpane.setLeftComponent(s);
+					} else {
+						parentsplitpane.setRightComponent(s);
+					}
+					parentsplitpane.setDividerLocation(dividerLocation);
+				} else if (parent instanceof JPanel) {
+					JSplitPane s = new JSplitPane(orientation,
 							clickComponent, newcomponent);
-				s.setOneTouchExpandable(true);
-				s.setContinuousLayout(true);
-				s.setResizeWeight(0.5);
+					s.setOneTouchExpandable(true);
+					s.setContinuousLayout(true);
+					s.setResizeWeight(0.5);
 
-				if (parentleft == clickComponent) {
-					parentsplitpane.setLeftComponent(s);
-				} else {
-					parentsplitpane.setRightComponent(s);
+					MainControlApplet.this.remove(clickComponent);
+					MainControlApplet.this.add(s, BorderLayout.CENTER);
+					MainControlApplet.this.validate();
 				}
-				parentsplitpane.setDividerLocation(dividerLocation);
-			} else if (parent instanceof JPanel) {
-				JSplitPane s = new JSplitPane(orientation,
-						clickComponent, newcomponent);
-				s.setOneTouchExpandable(true);
-				s.setContinuousLayout(true);
-				s.setResizeWeight(0.5);
-
-				MainControlApplet.this.remove(clickComponent);
-				MainControlApplet.this.add(s, BorderLayout.CENTER);
-				MainControlApplet.this.validate();
 			}
 		}
 
 		private void closePanel() {
 			Component parent = clickComponent.getParent();
-			if (parent == null) {
-			} else if (parent instanceof JSplitPane) {
-				JSplitPane parentsplitpane = (JSplitPane) parent;
-				Component parentleft = parentsplitpane.getLeftComponent();
-				Component parentright = parentsplitpane.getRightComponent();
-				Component grandparent = parent.getParent();
+			if (parent != null) {
+				if (parent instanceof JSplitPane) {
+					JSplitPane parentsplitpane = (JSplitPane) parent;
+					Component parentleft = parentsplitpane.getLeftComponent();
+					Component parentright = parentsplitpane.getRightComponent();
+					Component grandparent = parent.getParent();
 
-				Component othercomponent = parentleft;
-				if (parentleft == clickComponent) {
-					othercomponent = parentright;
-				}
-
-				if (grandparent == null) {
-				} else if (grandparent instanceof JSplitPane) {
-					JSplitPane grandparentsplitpane = (JSplitPane) grandparent;
-					Component left = grandparentsplitpane.getLeftComponent();
-					if (left == parentsplitpane) {
-						grandparentsplitpane.setLeftComponent(othercomponent);
-					} else {
-						grandparentsplitpane.setRightComponent(othercomponent);
+					Component othercomponent = parentleft;
+					if (parentleft == clickComponent) {
+						othercomponent = parentright;
 					}
-				} else if (grandparent instanceof JPanel) {
-					MainControlApplet.this.remove(clickComponent);
-					MainControlApplet.this.add(othercomponent, BorderLayout.CENTER);
-					MainControlApplet.this.validate();
+
+					if (grandparent != null) {
+						if (grandparent instanceof JSplitPane) {
+							JSplitPane grandparentsplitpane = (JSplitPane) grandparent;
+							Component left = grandparentsplitpane.getLeftComponent();
+							if (left == parentsplitpane) {
+								grandparentsplitpane.setLeftComponent(othercomponent);
+							} else {
+								grandparentsplitpane.setRightComponent(othercomponent);
+							}
+						} else if (grandparent instanceof JPanel) {
+							parentsplitpane.removeAll();
+							MainControlApplet.this.remove(parentsplitpane);
+							MainControlApplet.this.add(othercomponent, BorderLayout.CENTER);
+							MainControlApplet.this.validate();
+						}
+						clickComponent.removeMouseListener(popupClickListener);
+						if (clickComponent instanceof AnimationPanel) {
+							((AnimationPanel) clickComponent).destruct();
+						}
+					}
 				}
 			}
 		}
