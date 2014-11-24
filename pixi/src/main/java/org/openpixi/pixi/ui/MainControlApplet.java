@@ -21,16 +21,10 @@ package org.openpixi.pixi.ui;
 import java.awt.*;
 import javax.swing.*;
 import java.awt.event.*;
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.FileReader;
-import java.io.IOException;
 
 import javax.swing.event.*;
 
 import org.openpixi.pixi.physics.Debug;
-import org.openpixi.pixi.physics.Settings;
 import org.openpixi.pixi.physics.Simulation;
 import org.openpixi.pixi.physics.force.*;
 import org.openpixi.pixi.physics.movement.boundary.ParticleBoundaryType;
@@ -39,7 +33,7 @@ import org.openpixi.pixi.physics.solver.relativistic.*;
 import org.openpixi.pixi.ui.panel.Particle2DPanel;
 import org.openpixi.pixi.ui.panel.PhaseSpacePanel;
 import org.openpixi.pixi.ui.panel.ElectricFieldPanel;
-import org.openpixi.pixi.ui.util.yaml.YamlParser;
+import org.openpixi.pixi.ui.tab.FileTab;
 
 /**
  * Displays the animation of particles.
@@ -78,12 +72,6 @@ public class MainControlApplet extends JApplet {
 
 	private JRadioButton hardBoundaries;
 	private JRadioButton periodicBoundaries;
-
-	JFileChooser fc;
-	private JButton openButton;
-	private JButton saveButton;
-	private JButton applyButton;
-	private JTextArea fileTextArea;
 
 	private JTabbedPane tabs;
 	private JSplitPane splitPane;
@@ -425,98 +413,6 @@ public class MainControlApplet extends JApplet {
 		}
 	}
 
-	class OpenButtonListener implements ActionListener {
-		public void actionPerformed(ActionEvent event) {
-
-			int returnVal = fc.showOpenDialog(MainControlApplet.this);
-
-			if (returnVal == JFileChooser.APPROVE_OPTION) {
-				File file = fc.getSelectedFile();
-				try {
-					String content = readFile(file);
-					fileTextArea.setText(content);
-					applyTextAreaSettings();
-				} catch (IOException e) {
-					// TODO Error message
-				}
-			} else {
-				// Open command cancelled by user
-			}
-		}
-	}
-
-	class SaveButtonListener implements ActionListener {
-		public void actionPerformed(ActionEvent event) {
-
-			int returnVal = fc.showSaveDialog(MainControlApplet.this);
-
-			if (returnVal == JFileChooser.APPROVE_OPTION) {
-				File file = fc.getSelectedFile();
-				if (file.exists()) {
-					// Show confirmation dialog
-					int response = JOptionPane.showConfirmDialog(
-							MainControlApplet.this,
-							"Are you sure you want to override existing file?",
-							"Confirm", JOptionPane.YES_NO_OPTION,
-							JOptionPane.QUESTION_MESSAGE);
-					if (response == JOptionPane.YES_OPTION) {
-						// Ok, proceed
-					} else if (response == JOptionPane.NO_OPTION) {
-						return;
-					} else if (response == JOptionPane.CLOSED_OPTION) {
-						return;
-					}
-				}
-				String string = fileTextArea.getText();
-				try {
-					writeFile(file, string);
-				} catch (IOException e) {
-					// TODO Error message
-				}
-			} else {
-				// Save command cancelled by user
-			}
-		}
-	}
-
-	class ApplyButtonListener implements ActionListener {
-		public void actionPerformed(ActionEvent event) {
-			applyTextAreaSettings();
-		}
-	}
-
-	/**
-	 * Apply the settings from the text area and restart the simulation.
-	 */
-	private void applyTextAreaSettings() {
-		String string = fileTextArea.getText();
-		Settings settings = new Settings();
-		YamlParser parser = new YamlParser(settings);
-		parser.parseString(string);
-		simulationAnimation.resetAnimation(settings);
-	}
-
-	private String readFile(File file) throws IOException {
-		BufferedReader reader = new BufferedReader(new FileReader(file));
-		String line = null;
-		StringBuilder stringBuilder = new StringBuilder();
-		String ls = System.getProperty("line.separator");
-
-		while ((line = reader.readLine()) != null) {
-			stringBuilder.append(line);
-			stringBuilder.append(ls);
-		}
-
-		return stringBuilder.toString();
-	}
-
-	private void writeFile(File file, String string) throws IOException {
-		FileOutputStream out = new FileOutputStream(file);
-		byte[] contentInBytes = string.getBytes();
-		out.write(contentInBytes);
-		out.close();
-	}
-
 	/**
 	 * Constructor.
 	 */
@@ -802,32 +698,7 @@ public class MainControlApplet extends JApplet {
 		cellSettings.add(ybox);
 		cellSettings.add(Box.createVerticalStrut(200));
 
-		fc = new JFileChooser();
-		File workingDirectory = new File(System.getProperty("user.dir"));
-		File inputDirectory = new File(workingDirectory, "input");
-		if (inputDirectory.exists()) {
-			fc.setCurrentDirectory(inputDirectory);
-		} else {
-			fc.setCurrentDirectory(workingDirectory);
-		}
-
-		openButton = new JButton("Open...");
-		openButton.addActionListener(new OpenButtonListener());
-		saveButton = new JButton("Save...");
-		saveButton.addActionListener(new SaveButtonListener());
-		applyButton = new JButton("Apply");
-		applyButton.addActionListener(new ApplyButtonListener());
-		fileTextArea = new JTextArea();
-		JScrollPane scrollpane = new JScrollPane(fileTextArea);
-
-		Box buttonBox = Box.createHorizontalBox();
-		buttonBox.add(openButton);
-		buttonBox.add(saveButton);
-		buttonBox.add(applyButton);
-
-		Box fileTab = Box.createVerticalBox();
-		fileTab.add(buttonBox);
-		fileTab.add(scrollpane);
+		FileTab fileTab = new FileTab(MainControlApplet.this, simulationAnimation);
 
 		fieldsBox.setPreferredSize(new Dimension(300, 100));
 		settingControls.setPreferredSize(new Dimension (300, 100));
