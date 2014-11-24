@@ -799,9 +799,6 @@ public class MainControlApplet extends JApplet {
 			} else if (event.getSource() == itemParticle2DPanel) {
 				particlePanel = new Particle2DPanel(simulationAnimation);
 				component = particlePanel;
-			} else if (event.getSource() == itemParticle2DPanel) {
-				particlePanel = new Particle2DPanel(simulationAnimation);
-				component = particlePanel;
 			} else if (event.getSource() == itemPhaseSpacePanel) {
 				phaseSpacePanel = new PhaseSpacePanel(simulationAnimation);
 				component = phaseSpacePanel;
@@ -840,9 +837,9 @@ public class MainControlApplet extends JApplet {
 		private void splitPanel(int orientation) {
 			Component parent = clickComponent.getParent();
 
-			ElectricFieldPanel panel = new ElectricFieldPanel(simulationAnimation);
-			panel.addMouseListener(popupClickListener);
-			Component newcomponent = panel;
+			particlePanel = new Particle2DPanel(simulationAnimation);
+			Component newcomponent = particlePanel;
+			newcomponent.addMouseListener(popupClickListener);
 
 			if (parent != null) {
 				if (parent instanceof JSplitPane) {
