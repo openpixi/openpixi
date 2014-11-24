@@ -810,6 +810,7 @@ public class MainControlApplet extends JApplet {
 			} else if (event.getSource() == itemSplitVertically) {
 				splitPanel(JSplitPane.VERTICAL_SPLIT);
 			} else if (event.getSource() == itemClosePanel) {
+				closePanel();
 			} else if (event.getSource() == itemParticle2DPanel) {
 				particlePanel = new Particle2DPanel(simulationAnimation);
 				particlePanel.addMouseListener(new PopupClickListener());
@@ -912,6 +913,7 @@ public class MainControlApplet extends JApplet {
 				} else if (grandparent instanceof JPanel) {
 					MainControlApplet.this.remove(clickComponent);
 					MainControlApplet.this.add(othercomponent, BorderLayout.CENTER);
+					MainControlApplet.this.validate();
 				}
 			}
 		}
