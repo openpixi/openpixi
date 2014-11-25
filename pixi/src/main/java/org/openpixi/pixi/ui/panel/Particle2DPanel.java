@@ -38,18 +38,11 @@ import org.openpixi.pixi.ui.util.FrameRateDetector;
 /**
  * Displays 2D particles.
  */
-public class Particle2DPanel extends JPanel {
-
-	private SimulationAnimation simulationAnimation;
+public class Particle2DPanel extends AnimationPanel {
 
 	private boolean drawCurrentGrid = false;
 
 	private boolean drawFields = false;
-
-	/** Scaling factor for the displayed panel in x-direction*/
-	double sx;
-	/** Scaling factor for the displayed panel in y-direction*/
-	double sy;
 
 	public boolean showinfo = false;
 
@@ -62,24 +55,11 @@ public class Particle2DPanel extends JPanel {
 
 	/** Constructor */
 	public Particle2DPanel(SimulationAnimation simulationAnimation) {
-		this.simulationAnimation = simulationAnimation;
-		this.simulationAnimation.addListener(new MyAnimationListener());
-		this.setVisible(true);
+		super(simulationAnimation);
 	}
 
-	/** Listener for timer */
-	public class MyAnimationListener implements SimulationAnimationListener {
-
-		public void repaint() {
-			Simulation s = simulationAnimation.getSimulation();
-			sx = getWidth() / s.getWidth();
-			sy = getHeight() / s.getHeight();
-			Particle2DPanel.this.repaint();
-		}
-
-		public void clear() {
-			reset_trace = true;
-		}
+	public void clear() {
+		reset_trace = true;
 	}
 
 	public void checkTrace() {
@@ -113,7 +93,12 @@ public class Particle2DPanel extends JPanel {
 			reset_trace = false;
 		}
 
-		Simulation s = simulationAnimation.getSimulation();
+		Simulation s = getSimulationAnimation().getSimulation();
+
+		/** Scaling factor for the displayed panel in x-direction*/
+		double sx = getWidth() / s.getWidth();
+		/** Scaling factor for the displayed panel in y-direction*/
+		double sy = getHeight() / s.getHeight();
 
 		for (int i = 0; i < s.particles.size(); i++) {
 			Particle par = (Particle) s.particles.get(i);
@@ -168,7 +153,7 @@ int ystart = (int) (s.grid.getCellHeight() * (k + 0.5) * sy);
 			//return;
 		}
 
-		FrameRateDetector frameratedetector = simulationAnimation.getFrameRateDetector();
+		FrameRateDetector frameratedetector = getSimulationAnimation().getFrameRateDetector();
 
 		if (showinfo) {
 			graph.translate(0.0, this.getHeight());

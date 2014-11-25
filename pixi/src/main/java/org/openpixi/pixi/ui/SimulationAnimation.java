@@ -115,6 +115,14 @@ public class SimulationAnimation {
 		listeners.add(listener);
 	}
 
+	/**
+	 * Removes Listener for repaint() event.
+	 * @param listener
+	 */
+	public void removeListener(SimulationAnimationListener listener) {
+		listeners.remove(listener);
+	}
+
 	private void repaint() {
 		// Let all listeners know
 		for (SimulationAnimationListener l : listeners) {

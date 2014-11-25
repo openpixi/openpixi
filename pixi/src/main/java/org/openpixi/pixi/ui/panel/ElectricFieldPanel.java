@@ -4,38 +4,20 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 
-import javax.swing.JPanel;
-
 import org.openpixi.pixi.physics.Simulation;
 import org.openpixi.pixi.physics.particles.Particle;
 import org.openpixi.pixi.ui.SimulationAnimation;
-import org.openpixi.pixi.ui.SimulationAnimationListener;
 
 /**
  * This panel shows the one-dimensional electric field along the x-direction.
  * Several field lines for various grid positions along the y-direction are
  * superimposed.
  */
-public class ElectricFieldPanel extends JPanel {
-
-	private SimulationAnimation simulationAnimation;
+public class ElectricFieldPanel extends AnimationPanel {
 
 	/** Constructor */
 	public ElectricFieldPanel(SimulationAnimation simulationAnimation) {
-		this.simulationAnimation = simulationAnimation;
-		this.simulationAnimation.addListener(new MyAnimationListener());
-		this.setVisible(true);
-	}
-
-	/** Listener for timer */
-	public class MyAnimationListener implements SimulationAnimationListener {
-
-		public void repaint() {
-			ElectricFieldPanel.this.repaint();
-		}
-
-		public void clear() {
-		}
+		super(simulationAnimation);
 	}
 
 	/** Display the particles */
@@ -47,7 +29,7 @@ public class ElectricFieldPanel extends JPanel {
 
 		super.paintComponent(graph1);
 
-		Simulation s = simulationAnimation.getSimulation();
+		Simulation s = getSimulationAnimation().getSimulation();
 		/** Scaling factor for the displayed panel in x-direction*/
 		double sx = getWidth() / s.getWidth();
 		/** Scaling factor for the displayed panel in y-direction*/
