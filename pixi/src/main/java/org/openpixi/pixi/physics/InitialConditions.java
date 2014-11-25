@@ -274,12 +274,12 @@ public class InitialConditions {
     public static Simulation initOneTest(double charge, double radius) {
     	Settings stt = new Settings();
 
-    	stt.setTimeStep(1);
+    	stt.setTimeStep(0.1);
     	stt.setSpeedOfLight(1);
     	stt.setRelativistic(true);
-    	stt.setGridStep(10);
-    	stt.setGridCellsX(10);
-    	stt.setGridCellsY(10);
+    	stt.setGridStep(1);
+    	stt.setGridCellsX(100);
+    	stt.setGridCellsY(100);
                 stt.setNumOfParticles(1);
 
     	stt.setBoundary(GeneralBoundaryType.Periodic);
