@@ -14,7 +14,7 @@ import org.openpixi.pixi.physics.grid.ChargeConservingCIC;
 public class YamlSettings {
 	public Double timeStep;
 	public Double speedOfLight;
-	public Integer gridStep;
+	public Double gridStep;
 	public Integer gridCellsX;
 	public Integer gridCellsY;
 	public List<YamlParticle> particles;
