@@ -197,14 +197,15 @@ public class InitialConditions {
     public static Simulation initPair(double charge, double radius) {
 	Settings stt = new Settings();
 
-	stt.setTimeStep(0.1);
+	stt.setTimeStep(0.05);
+	stt.setTMax(1000);
 	stt.setSpeedOfLight(1);
 	stt.setRelativistic(true);
 	/*stt.setSimulationWidth(100);
 	stt.setSimulationHeight(100);*/
-	stt.setGridStep(10);
-	stt.setGridCellsX(10);
-	stt.setGridCellsY(10);
+	stt.setGridStep(0.5);
+	stt.setGridCellsX(200);
+	stt.setGridCellsY(200);
             stt.setNumOfParticles(2);
 
 	stt.addForce(new ConstantForce());
@@ -277,9 +278,9 @@ public class InitialConditions {
     	stt.setTimeStep(0.1);
     	stt.setSpeedOfLight(1);
     	stt.setRelativistic(true);
-    	stt.setGridStep(1);
-    	stt.setGridCellsX(100);
-    	stt.setGridCellsY(100);
+    	stt.setGridStep(0.5);
+    	stt.setGridCellsX(200);
+    	stt.setGridCellsY(200);
                 stt.setNumOfParticles(1);
 
     	stt.setBoundary(GeneralBoundaryType.Periodic);

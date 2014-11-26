@@ -375,6 +375,11 @@ public class Settings {
 		this.iterations = (int) Math.ceil(tMax/timeStep);
 	}
 	
+	public void setTMax(double TMax) {
+		this.tMax = TMax;
+		this.iterations = (int) Math.ceil(TMax/timeStep);
+	}
+	
 	public void setGridStep(double gridstep) {
 		this.gridStep = gridstep;
 	}
