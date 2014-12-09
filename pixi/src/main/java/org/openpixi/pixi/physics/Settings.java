@@ -61,7 +61,7 @@ public class Settings {
 	private double speedOfLight = 1;
 	private double timeStep = 1;
 	private double gridStep = 1;
-	private double tMax = 1000;
+	private double tMax = 3000;
 	private int spectrumStep = 300;
 	private GeneralBoundaryType boundaryType = GeneralBoundaryType.Periodic;
 	private InterpolatorAlgorithm interpolator = new ChargeConservingCIC();
@@ -373,6 +373,11 @@ public class Settings {
 	public void setTimeStep(double timeStep) {
 		this.timeStep = timeStep;
 		this.iterations = (int) Math.ceil(tMax/timeStep);
+	}
+	
+	public void setTMax(double TMax) {
+		this.tMax = TMax;
+		this.iterations = (int) Math.ceil(TMax/timeStep);
 	}
 	
 	public void setGridStep(double gridstep) {

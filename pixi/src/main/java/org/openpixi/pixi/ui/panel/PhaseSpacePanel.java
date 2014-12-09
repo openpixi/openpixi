@@ -40,7 +40,14 @@ public class PhaseSpacePanel extends AnimationPanel {
 
 		for (int i = 0; i < s.particles.size(); i++) {
 			Particle par = (Particle) s.particles.get(i);
+			/*
 			if (par.getCharge() > 0) {
+				graph.setColor(Color.red);
+			} else {
+				graph.setColor(Color.blue);
+			}
+			*/
+			if (i < s.particles.size()/2) {
 				graph.setColor(Color.red);
 			} else {
 				graph.setColor(Color.blue);
