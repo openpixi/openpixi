@@ -100,11 +100,24 @@ public class ChargeConservingCIC extends CloudInCell {
 		//g.addJx(lx, 	ly, 	p.getCharge() * deltaX * ((1 + deltaY) / 2 + y));
 		//g.addJy(lx - 1, ly, 	p.getCharge() * deltaY * ((1 - deltaX) / 2 - x));
 		//g.addJy(lx, 	ly, 	p.getCharge() * deltaY * ((1 + deltaX) / 2 + x));
+		/*
 		g.addJx((lx + g.getNumCellsX())%g.getNumCellsX(), (ly + g.getNumCellsY())%g.getNumCellsY(), p.getCharge() * deltaX * ((1 - deltaY) / 2 - y) * g.getCellWidth() / tstep);
 		g.addJx((lx + g.getNumCellsX())%g.getNumCellsX(), (ly + 1 + g.getNumCellsY())%g.getNumCellsY(), 	p.getCharge()* deltaX * ((1 + deltaY) / 2 + y) * g.getCellWidth() / tstep);
 		g.addJy((lx + g.getNumCellsX())%g.getNumCellsX(), (ly + g.getNumCellsY())%g.getNumCellsY(), 	p.getCharge() * deltaY * ((1 - deltaX) / 2 - x) * g.getCellHeight() / tstep);
 		g.addJy((lx +1 + g.getNumCellsX())%g.getNumCellsX(), (ly + g.getNumCellsY())%g.getNumCellsY(), 	p.getCharge() * deltaY * ((1 + deltaX) / 2 + x) * g.getCellHeight() / tstep);
+		*/
 		
+		g.addJx((lx + g.getNumCellsX())%g.getNumCellsX(), (ly + g.getNumCellsY())%g.getNumCellsY(), p.getCharge() * deltaX * ((1 - deltaY) / 2 - y) / g.getCellWidth() / tstep);
+		g.addJx((lx + g.getNumCellsX())%g.getNumCellsX(), (ly + 1 + g.getNumCellsY())%g.getNumCellsY(), 	p.getCharge()* deltaX * ((1 + deltaY) / 2 + y) / g.getCellWidth() / tstep);
+		g.addJy((lx + g.getNumCellsX())%g.getNumCellsX(), (ly + g.getNumCellsY())%g.getNumCellsY(), 	p.getCharge() * deltaY * ((1 - deltaX) / 2 - x) / g.getCellHeight() / tstep);
+		g.addJy((lx +1 + g.getNumCellsX())%g.getNumCellsX(), (ly + g.getNumCellsY())%g.getNumCellsY(), 	p.getCharge() * deltaY * ((1 + deltaX) / 2 + x) / g.getCellHeight() / tstep);
+		
+		/*
+		g.addJx((lx + g.getNumCellsX())%g.getNumCellsX(), (ly + g.getNumCellsY())%g.getNumCellsY(), p.getCharge() * deltaX * ((1 - deltaY) / 2 - y));
+		g.addJx((lx + g.getNumCellsX())%g.getNumCellsX(), (ly + 1 + g.getNumCellsY())%g.getNumCellsY(), 	p.getCharge()* deltaX * ((1 + deltaY) / 2 + y));
+		g.addJy((lx + g.getNumCellsX())%g.getNumCellsX(), (ly + g.getNumCellsY())%g.getNumCellsY(), 	p.getCharge() * deltaY * ((1 - deltaX) / 2 - x));
+		g.addJy((lx +1 + g.getNumCellsX())%g.getNumCellsX(), (ly + g.getNumCellsY())%g.getNumCellsY(), 	p.getCharge() * deltaY * ((1 + deltaX) / 2 + x));
+		*/
 
 	}
 
