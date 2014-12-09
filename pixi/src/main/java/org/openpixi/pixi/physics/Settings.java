@@ -63,6 +63,7 @@ public class Settings {
 	private double gridStep = 1;
 	private double tMax = 1000;
 	private int spectrumStep = 300;
+	private String filePath = "default";
 	private GeneralBoundaryType boundaryType = GeneralBoundaryType.Periodic;
 	private InterpolatorAlgorithm interpolator = new ChargeConservingCIC();
 	//private InterpolatorAlgorithm interpolator = new CloudInCell();
@@ -144,6 +145,10 @@ public class Settings {
 		return spectrumStep;
 	}
 	
+	public String getFilePath() {
+		return filePath;
+	}
+
 	public boolean getRelativistic() {
 		return relativistic;
 	}
@@ -379,6 +384,14 @@ public class Settings {
 		this.gridStep = gridstep;
 	}
 	
+	public void setSpectrumStep(int spectrumstep) {
+		this.spectrumStep = spectrumstep;
+	}
+
+	public void setFilePath(String filepath) {
+		this.filePath = filepath;
+	}
+
 	public void setRelativistic(boolean rel) {
 		this.relativistic = rel;
 	}

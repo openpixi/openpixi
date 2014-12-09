@@ -31,3 +31,8 @@ streams:
     dx: 2
     dy: 0
     number: 50
+
+output:
+  path: twostreaminstability
+  daniil: 1
+  daniilspectrum: 300

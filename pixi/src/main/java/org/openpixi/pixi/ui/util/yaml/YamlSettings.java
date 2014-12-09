@@ -19,7 +19,8 @@ public class YamlSettings {
 	public Integer gridCellsY;
 	public List<YamlParticle> particles;
 	public List<YamlParticleStream> streams;
-	
+	public YamlOutput output;
+
 	public void applyTo(Settings settings) {
 
 		// Default settings:
@@ -61,6 +62,10 @@ public class YamlSettings {
 			for (YamlParticleStream s : streams) {
 				s.applyTo(settings);
 			}
+		}
+
+		if (output != null) {
+			output.applyTo(settings);
 		}
 	}
 }
