@@ -197,15 +197,15 @@ public class InitialConditions {
     public static Simulation initPair(double charge, double radius) {
 	Settings stt = new Settings();
 
-	stt.setTimeStep(0.05);
+	stt.setTimeStep(0.1);
 	stt.setTMax(1000);
 	stt.setSpeedOfLight(1);
 	stt.setRelativistic(true);
 	/*stt.setSimulationWidth(100);
 	stt.setSimulationHeight(100);*/
-	stt.setGridStep(0.5);
-	stt.setGridCellsX(200);
-	stt.setGridCellsY(200);
+	stt.setGridStep(1);
+	stt.setGridCellsX(100);
+	stt.setGridCellsY(100);
             stt.setNumOfParticles(2);
 
 	stt.addForce(new ConstantForce());
@@ -218,7 +218,7 @@ public class InitialConditions {
 		par.setX(stt.getSimulationWidth() * 1/9.0*(k+4));
 		par.setY(stt.getSimulationHeight() * 1/2 + stt.getGridStep()*2/4);
 		par.setRadius(radius);
-		par.setVx(0);
+		par.setVx(0);//par.setVx(0.1*(1-2*k));
 		par.setVy(0);
 		par.setMass(1);
 		par.setCharge(charge*(1-2*k));
@@ -238,14 +238,14 @@ public class InitialConditions {
 	Settings stt = new Settings();
 	double dnumpart = numpart;
 
-	stt.setTimeStep(1);
+	stt.setTimeStep(0.1);
 	stt.setSpeedOfLight(1);
 	stt.setRelativistic(true);
 	/*stt.setSimulationWidth(100);
 	stt.setSimulationHeight(100);*/
-	stt.setGridStep(10);
-	stt.setGridCellsX(10);
-	stt.setGridCellsY(10);
+	stt.setGridStep(1);
+	stt.setGridCellsX(100);
+	stt.setGridCellsY(100);
             stt.setNumOfParticles(2*numpart);
 
 	stt.setBoundary(GeneralBoundaryType.Periodic);
@@ -266,7 +266,7 @@ public class InitialConditions {
 		par.setCharge(-charge);
 		stt.addParticle(par);
 	}
-            
+	stt.setPoissonSolver(new EmptyPoissonSolver());
             stt.useGrid(true);
 	Simulation simulation = new Simulation(stt);
 	return simulation;
@@ -278,9 +278,14 @@ public class InitialConditions {
     	stt.setTimeStep(0.1);
     	stt.setSpeedOfLight(1);
     	stt.setRelativistic(true);
-    	stt.setGridStep(0.5);
-    	stt.setGridCellsX(200);
-    	stt.setGridCellsY(200);
+    	stt.setGridStep(1);
+    	stt.setGridCellsX(100);
+    	stt.setGridCellsY(100);
+    	/*
+		ConstantForce cf = new ConstantForce();
+		cf.bz = -1;
+		stt.addForce(cf);
+		*/
                 stt.setNumOfParticles(1);
 
     	stt.setBoundary(GeneralBoundaryType.Periodic);

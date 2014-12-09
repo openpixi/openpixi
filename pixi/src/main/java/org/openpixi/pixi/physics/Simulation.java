@@ -328,6 +328,7 @@ public class Simulation {
 		double SumJx = 0;
 		double SumJy = 0;
 		double fieldEnergy = 0;
+		double GaussLaw = 0;
 		//int NumPoints = grid.getNumCellsX()*grid.getNumCellsY();
 		
 		for (int i = 0; i < grid.getNumCellsX(); i++) {
@@ -337,7 +338,8 @@ public class Simulation {
 				SumJx += grid.getCells()[i][j].getJx();
 				SumJy += grid.getCells()[i][j].getJy();
 				fieldEnergy += ( grid.getCells()[i][j].getBz()*grid.getCells()[i][j].getBz() + grid.getCells()[i][j].getEx()*grid.getCells()[i][j].getEx() + grid.getCells()[i][j].getEy()*grid.getCells()[i][j].getEy())/2;
-
+				GaussLaw += (grid.getEx((i+1)%grid.getNumCellsX(), j) - grid.getEx(i, j)) / grid.getCellWidth() +
+						(grid.getEy(i, (j+1)%grid.getNumCellsY()) - grid.getEy(i, j)) / grid.getCellHeight() - grid.getRho(i,j)*4*Math.PI;
 				/*pw.write(grid.getCells()[i][j].getJx() + "\n");
 				pw.write(grid.getCells()[i][j].getJy() + "\n");
 				pw.write(grid.getCells()[i][j].getRho() + "\n");
@@ -353,6 +355,7 @@ public class Simulation {
 		pw.write(SumRho + "\t");
 		pw.write(SumJx + "\t");
 		pw.write(SumJy + "\t");
+		pw.write(GaussLaw + "\t");
 		
 		pw.write("\n");
 		
@@ -385,7 +388,7 @@ public class Simulation {
 				
 				snap.write(i + "\t");
 				snap.write(j + "\t");
-				snap.write(grid.getCells()[i][j].getEx() + "\t");
+				snap.write(grid.getCells()[i][j].getJx() + "\t");
 				//snap.write(grid.getCells()[i][j].getPhi() + "\t");
 				snap.write("\n");
 				

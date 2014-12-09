@@ -61,7 +61,7 @@ public class Settings {
 	private double speedOfLight = 1;
 	private double timeStep = 1;
 	private double gridStep = 1;
-	private double tMax = 1000;
+	private double tMax = 3000;
 	private int spectrumStep = 300;
 	private GeneralBoundaryType boundaryType = GeneralBoundaryType.Periodic;
 	private InterpolatorAlgorithm interpolator = new ChargeConservingCIC();

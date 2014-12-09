@@ -159,10 +159,10 @@ public class SimulationAnimation {
 			s = InitialConditions.initPair(0.1,1);
 			break;
 		case 8:
-			s = InitialConditions.initTwoStream(0.1,1,50);
+			s = InitialConditions.initTwoStream(0.1,1,1000);
 			break;
 		case 9:
-			s = InitialConditions.initOneTest(0.1,1);
+			s = InitialConditions.initOneTest(0.01,1);
 			break;
 		}
 		updateFieldForce();
