@@ -68,27 +68,18 @@ public class MainBatch {
 			}
 		}
 
-		if (settings.getSimulationType() == 0) {
-			// Creates the actual physics simulation that can be run iteratively.
-			simulation = new Simulation(settings);
-			//simulation = InitialConditions.initTwoStream(0.01,1,50);
-			//simulation = InitialConditions.initPair(0.1,1);
-			simulation = InitialConditions.initOneTest(0.01,1);
-			
-			// Reads out the settings that are needed for this UI.
-			// This must be placed after the parsing process.
-			iterations = simulation.getIterations();
+		// Creates the actual physics simulation that can be run iteratively.
+		simulation = new Simulation(settings);
 
+		//simulation = InitialConditions.initTwoStream(0.01,1,50);
+		//simulation = InitialConditions.initPair(0.1,1);
+		//simulation = InitialConditions.initOneTest(0.01,1);
 
-			for (int i = 0; i <= iterations;) {
-				// advance the simulation by one step
-				simulation.step(i);
-				i++;
+		while (simulation.continues()) {
+			// advance the simulation by one step
+			simulation.step();
+		}
 
-			}
-			
-			//simulation.close();
-
-		} else {}
+		//simulation.close();
 	}
 }

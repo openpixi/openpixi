@@ -348,10 +348,18 @@ public class Settings {
 		this.writeToFile = writeTo;
 	}
 
+	/**
+	 * @deprecated Use setGridStep() and setGridCellsX() instead.
+	 */
+	@Deprecated
 	public void setSimulationWidth(double simulationWidth) {
 		this.simulationWidth = simulationWidth;
 	}
 
+	/**
+	 * @deprecated Use setGridStep() and setGridCellsY() instead.
+	 */
+	@Deprecated
 	public void setSimulationHeight(double simulationHeight) {
 		this.simulationHeight = simulationHeight;
 	}
@@ -457,6 +465,10 @@ public class Settings {
 		particles.add(p);
 	}
 
+	/**
+	 * @deprecated Use setTimeStep() and setTMax() instead.
+	 */
+	@Deprecated
 	public void setIterations(int iterations) {
 		this.iterations = iterations;
 	}

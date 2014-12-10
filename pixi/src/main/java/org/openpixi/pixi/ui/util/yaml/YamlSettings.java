@@ -15,6 +15,7 @@ public class YamlSettings {
 	public Double timeStep;
 	public Double speedOfLight;
 	public Double gridStep;
+	public Double duration;
 	public Integer gridCellsX;
 	public Integer gridCellsY;
 	public List<YamlParticle> particles;
@@ -33,6 +34,10 @@ public class YamlSettings {
 		// Custom settings:
 		if (timeStep != null) {
 			settings.setTimeStep(timeStep);
+		}
+
+		if (duration != null) {
+			settings.setTMax(duration);
 		}
 
 		if (speedOfLight != null) {
