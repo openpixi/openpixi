@@ -68,6 +68,10 @@ public class Simulation {
 	 */
 	public int specstep;
 	/**
+	 * File path to output files.
+	 */
+	private String filePath;
+	/**
 	 * Contains all Particle2D objects
 	 */
 	public ArrayList<Particle> particles;
@@ -128,6 +132,7 @@ public class Simulation {
 		iterations = settings.getIterations();
 		tottime = 0;
 		specstep = settings.getSpectrumStep();
+		filePath = settings.getFilePath();
 		relativistic = settings.getRelativistic();
 
 		// TODO make particles a generic list
@@ -182,6 +187,7 @@ public class Simulation {
 		this.iterations = settings.getIterations();
 		this.tottime = 0;
 		this.specstep = settings.getSpectrumStep();
+		this.filePath = settings.getFilePath();
 		this.relativistic = settings.getRelativistic();
 
 		this.particles = (ArrayList<Particle>) particles;
@@ -267,16 +273,33 @@ public class Simulation {
 			gridfile.delete();
 		}
 	}
+
+	/**
+	 * Get output file in correct subdirectory.
+	 * Create subdirectories if necessary.
+	 * @param filename
+	 * @return file
+	 */
+	public File getOutputFile(String filename) {
+		// Default output path is
+		// 'output/' + filePath + '/' + filename
+		File fullpath = new File("output");
+		if(!fullpath.exists()) fullpath.mkdir();
+
+		fullpath = new File(fullpath, filePath);
+		if(!fullpath.exists()) fullpath.mkdir();
+
+		return new File(fullpath, filename);
+	}
+
 	/**
 	 * Write the results to a txt file
 	 */
 	public void writeToFile(double time) throws IOException {
 		//PrintWriter pw = new PrintWriter(new File("particles_seq.txt"));
 		
-		File file = new File("output/");
-		if(!file.exists()) file.mkdir();
-		
-		FileWriter pw = new FileWriter("output/particles_seq.txt", true);
+		File file = getOutputFile("particles_seq.txt");
+		FileWriter pw = new FileWriter(file, true);
 		double kinetic = 0;
 		double kineticTotal = 0;
 		
@@ -319,8 +342,9 @@ public class Simulation {
 		
 		pw.close();
 
-		//pw = new PrintWriter(new File("cells_seq.txt"));
-		pw = new FileWriter("output/cells_seq.txt", true);
+		file = getOutputFile("cells_seq.txt");
+		//pw = new PrintWriter(file);
+		pw = new FileWriter(file, true);
 		
 		pw.write(time + "\t");
 		
@@ -364,11 +388,8 @@ public class Simulation {
 	}
 
 	public void writeSpecFile(int time) throws FileNotFoundException {
-		
-		File file = new File("output/");
-		if(!file.exists()) file.mkdir();
-			
-		PrintWriter sw = new PrintWriter(new File("output/spec" + time + ".txt"));
+		File file = getOutputFile("spec" + time + ".txt");
+		PrintWriter sw = new PrintWriter(file);
 		
 		for (int i = 0; i < particles.size(); i++) {
 			sw.write(i + "\t");
@@ -380,8 +401,9 @@ public class Simulation {
 		}
 		
 		sw.close();
-		
-		PrintWriter snap = new PrintWriter(new File("output/snapshot" + time + ".txt"));
+
+		file = getOutputFile("snapshot" + time + ".txt");
+		PrintWriter snap = new PrintWriter(file);
 
 		for (int i = 0; i < grid.getNumCellsXTotal(); i++) {
 			for (int j = 0; j < grid.getNumCellsYTotal(); j++) {
