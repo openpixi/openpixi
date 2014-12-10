@@ -18,16 +18,17 @@
  */
 package org.openpixi.pixi.ui;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import org.openpixi.pixi.physics.Debug;
 import org.openpixi.pixi.physics.Settings;
 import org.openpixi.pixi.physics.Simulation;
 import org.openpixi.pixi.diagnostics.DiagnosticsScheduler;
-import org.openpixi.pixi.profile.ProfileInfo;
 import org.openpixi.pixi.ui.util.*;
+import org.openpixi.pixi.ui.util.yaml.YamlParser;
+
 import java.io.IOException;
 import org.openpixi.pixi.physics.InitialConditions;
-import static org.openpixi.pixi.ui.MainBatch.iterations;
 
 public class MainBatch {
 
@@ -35,21 +36,15 @@ public class MainBatch {
 	 * Total number of iterations
 	 */
 	public static int iterations;
-	/**
-	 * Used to mark output files
-	 */
-	private static String runid;
 	private static Simulation simulation;
-	private static DiagnosticsScheduler diagnostics;
-	private static EmptyDataOutput dataOutput;
 
 	/**
-	 * Can be run with two input parameters. The first specifies the XML
-	 * settings file. The second specifies the directory where diagnostic output
-	 * should be saved. If one wants to use the default values its best to
-	 * provide an empty settings file. (dont forget to add the <settings>
-	 * </settings> root element, the empty file should still comply with the XML
-	 * specification!)
+	 * This class takes an input parameter which specifies the YAML file.
+	 *
+	 * Launch using:
+	 * <pre>
+	 * mvn exec:java -Dexec.mainClass=org.openpixi.pixi.ui.MainBatch -Dexec.args="One_particle_Test.yaml"
+	 * </pre>
 	 */
 	public static void main(String[] args) throws FileNotFoundException, IOException, InterruptedException {
 		Debug.checkAssertsEnabled();
@@ -61,32 +56,30 @@ public class MainBatch {
 		// If so creates a parser and uses the parameter as the
 		// path to the settings file.
 		if (args.length != 0) {
-			Parser parser = new Parser(settings);
-			parser.parse(args[0]);
+			File path = new File("input");
+			File file = new File(path, args[0]);
+			try {
+				String string = FileIO.readFile(file);
+				YamlParser parser = new YamlParser(settings);
+				parser.parseString(string);
+				System.out.println("Using " + args[0]);
+			} catch (IOException e) {
+				System.out.println("Error opening " + args[0]);
+			}
 		}
 
-		if (settings.getSimulationType() == 0) {
-			// Creates the actual physics simulation that can be run iteratively.
-			simulation = new Simulation(settings);
-			//simulation = InitialConditions.initTwoStream(0.01,1,50);
-			//simulation = InitialConditions.initPair(0.1,1);
-			simulation = InitialConditions.initOneTest(0.01,1);
-			
-			// Reads out the settings that are needed for this UI.
-			// This must be placed after the parsing process.
-			iterations = simulation.getIterations();
-			runid = settings.getRunid();
+		// Creates the actual physics simulation that can be run iteratively.
+		simulation = new Simulation(settings);
 
+		//simulation = InitialConditions.initTwoStream(0.01,1,50);
+		//simulation = InitialConditions.initPair(0.1,1);
+		//simulation = InitialConditions.initOneTest(0.01,1);
 
-			for (int i = 0; i <= iterations;) {
-				// advance the simulation by one step
-				simulation.step(i);
-				i++;
+		while (simulation.continues()) {
+			// advance the simulation by one step
+			simulation.step();
+		}
 
-			}
-			
-			//simulation.close();
-
-		} else {}
+		//simulation.close();
 	}
 }

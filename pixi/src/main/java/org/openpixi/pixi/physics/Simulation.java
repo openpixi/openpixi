@@ -235,11 +235,13 @@ public class Simulation {
 	/**
 	 * Runs the simulation in steps. (for interactive simulations)
 	 */
-	public void step(int i) throws FileNotFoundException,IOException {
+	public void step() throws FileNotFoundException,IOException {
 
-		tottime++;
-		writeToFile(tstep*i);
-		if( (i % specstep) == 0) writeSpecFile(i);
+		if (continues()) {
+			// Only write to file while simulation continues.
+			writeToFile(tstep*tottime);
+			if( (tottime % specstep) == 0) writeSpecFile(tottime);
+		}
 		particlePush();
 		detector.run();
 		collisionalgorithm.collide(detector.getOverlappedPairs(), f, mover.getSolver(), tstep);
@@ -247,14 +249,23 @@ public class Simulation {
 		grid.updateGrid(tstep);
 		interpolation.interpolateToParticle(particles, grid);
 
+		tottime++;
+	}
+
+	/**
+	 * Whether the simulation should continue.
+	 * @return
+	 */
+	public boolean continues() {
+		return tottime <= iterations;
 	}
 
 	/**
 	 * Runs the entire simulation at once. (for non-interactive simulations)
 	 */
 	public void run() throws FileNotFoundException,IOException {
-		for (int i = 0; i <= iterations; ++i) {
-			step(i);
+		while (continues()) {
+			step();
 		}
 	}
 

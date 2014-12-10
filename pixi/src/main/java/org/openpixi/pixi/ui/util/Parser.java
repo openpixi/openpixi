@@ -37,6 +37,8 @@ import org.openpixi.pixi.physics.grid.*;
 import org.openpixi.pixi.physics.solver.*;
 import org.openpixi.pixi.diagnostics.methods.*;
 
+/** @deprecated Use ui.util.YamlParser instead.*/
+@Deprecated
 public class Parser extends DefaultHandler {
 
 	SAXParserFactory factory;
