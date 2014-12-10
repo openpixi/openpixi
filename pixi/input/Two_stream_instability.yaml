@@ -5,6 +5,7 @@ gridCellsX: 10
 gridCellsY: 10
 speedOfLight: 1
 timeStep: 1
+duration: 1000
 
 streams:
   # first stream:
