@@ -3,10 +3,7 @@ package org.openpixi.pixi.ui.tab;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileOutputStream;
-import java.io.FileReader;
 import java.io.IOException;
 
 import javax.swing.Box;
@@ -19,6 +16,7 @@ import javax.swing.JTextArea;
 
 import org.openpixi.pixi.physics.Settings;
 import org.openpixi.pixi.ui.SimulationAnimation;
+import org.openpixi.pixi.ui.util.FileIO;
 import org.openpixi.pixi.ui.util.yaml.YamlParser;
 
 public class FileTab extends Box {
@@ -71,7 +69,7 @@ public class FileTab extends Box {
 			if (returnVal == JFileChooser.APPROVE_OPTION) {
 				File file = fc.getSelectedFile();
 				try {
-					String content = readFile(file);
+					String content = FileIO.readFile(file);
 					fileTextArea.setText(content);
 					applyTextAreaSettings();
 				} catch (IOException e) {
@@ -107,7 +105,7 @@ public class FileTab extends Box {
 				}
 				String string = fileTextArea.getText();
 				try {
-					writeFile(file, string);
+					FileIO.writeFile(file, string);
 				} catch (IOException e) {
 					// TODO Error message
 				}
@@ -132,27 +130,6 @@ public class FileTab extends Box {
 		YamlParser parser = new YamlParser(settings);
 		parser.parseString(string);
 		simulationAnimation.resetAnimation(settings);
-	}
-
-	private String readFile(File file) throws IOException {
-		BufferedReader reader = new BufferedReader(new FileReader(file));
-		String line = null;
-		StringBuilder stringBuilder = new StringBuilder();
-		String ls = System.getProperty("line.separator");
-
-		while ((line = reader.readLine()) != null) {
-			stringBuilder.append(line);
-			stringBuilder.append(ls);
-		}
-
-		return stringBuilder.toString();
-	}
-
-	private void writeFile(File file, String string) throws IOException {
-		FileOutputStream out = new FileOutputStream(file);
-		byte[] contentInBytes = string.getBytes();
-		out.write(contentInBytes);
-		out.close();
 	}
 
 }
