@@ -306,6 +306,58 @@ public class InitialConditions {
     	Simulation simulation = new Simulation(stt);
     	return simulation;
     }
+    
+    public static Simulation initWeibel(double charge, double radius, int numpart, int numstripes) {
+    	Settings stt = new Settings();
+    	double dnumpart = numpart;
+
+    	stt.setTimeStep(0.1);
+    	stt.setSpeedOfLight(1);
+    	stt.setRelativistic(true);
+    	/*stt.setSimulationWidth(100);
+    	stt.setSimulationHeight(100);*/
+    	stt.setGridStep(2);
+    	stt.setGridCellsX(50);
+    	stt.setGridCellsY(50);
+                stt.setNumOfParticles(numpart);
+
+    	stt.setBoundary(GeneralBoundaryType.Periodic);
+                stt.setGridSolver(new SimpleSolver());
+                
+        double stripeWidth = stt.getSimulationWidth() / numstripes;
+        
+        if ( (numpart % numstripes) != 0 ) {
+        	System.out.println( "Error!! Number of particles and number of stripes don't fit!!");
+        	Simulation simulation = new Simulation(stt);
+        	return simulation;
+        }
+
+    	for (int i = 0; i < numstripes; i++) {
+    		for (int k = 0; k < numpart/numstripes; k++) {
+    			
+    		Particle par = new ParticleFull();
+    		par.setY(stt.getSimulationHeight() * 1/dnumpart*numstripes*k);
+    		if ( ( (i+1) % 2 ) == 0 ) {
+    			par.setCharge(-charge);
+    		} else {
+    			par.setCharge(charge);
+    		}
+
+    		par.setX(stt.getSimulationWidth() / numstripes * i + stripeWidth/2 );
+    		par.setRadius(radius);
+    		par.setVx(0);
+    		par.setVy(0.1);
+    		par.setMass(1);
+    		stt.addParticle(par);
+    		
+    		}
+    	}
+    	
+    	stt.setPoissonSolver(new EmptyPoissonSolver());
+                stt.useGrid(true);
+    	Simulation simulation = new Simulation(stt);
+    	return simulation;
+    }
 
     
 }
