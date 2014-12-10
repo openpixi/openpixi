@@ -268,17 +268,18 @@ public class Simulation {
 			step();
 		}
 	}
+
 	/**
 	 * Checks if the files are already existent and deletes them.
 	 */
 	public void clearFile() {
-		File particlesfile = new File("output/particles_seq.txt");
+		File particlesfile = getOutputFile("particles_seq.txt");
 		boolean fileExists1 = particlesfile.exists();
 		if(fileExists1 == true) {
 			particlesfile.delete();
 		}
-		
-		File gridfile = new File("output/cells_seq.txt");
+
+		File gridfile = getOutputFile("cells_seq.txt");
 		boolean fileExists2 = gridfile.exists();
 		if(fileExists2 == true) {
 			gridfile.delete();

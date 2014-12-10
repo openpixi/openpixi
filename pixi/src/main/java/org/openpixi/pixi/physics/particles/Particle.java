@@ -18,6 +18,7 @@
  */
 package org.openpixi.pixi.physics.particles;
 
+import java.awt.Color;
 import java.io.Serializable;
 
 public abstract class Particle implements Serializable {
@@ -35,6 +36,8 @@ public abstract class Particle implements Serializable {
 	public double getPrevY() {return 0;}
 	
 	public double getRadius() {return 0;}
+
+	public Color getColor() {return Color.black;}
 	
 	public double getVx() {return 0;}
 	
@@ -91,6 +94,8 @@ public abstract class Particle implements Serializable {
 	public void addPrevY(double y) {}
 
 	public void setRadius(double radius) {}
+
+	public void setColor(Color color) {}
 
 	public void setVx(double vx) {}
 

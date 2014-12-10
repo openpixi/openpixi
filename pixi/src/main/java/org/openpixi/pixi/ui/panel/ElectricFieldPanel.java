@@ -40,11 +40,7 @@ public class ElectricFieldPanel extends AnimationPanel {
 		// Draw particles on a central line:
 		for (int i = 0; i < s.particles.size(); i++) {
 			Particle par = (Particle) s.particles.get(i);
-			if (par.getCharge() > 0) {
-				graph.setColor(Color.red);
-			} else {
-				graph.setColor(Color.blue);
-			}
+			graph.setColor(par.getColor());
 			double radius = par.getRadius();
 			int width = (int) (2*sx*radius);
 			int height = (int) (2*sy*radius);

@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.openpixi.pixi.physics.GeneralBoundaryType;
 import org.openpixi.pixi.physics.Settings;
+import org.openpixi.pixi.physics.fields.EmptyPoissonSolver;
 import org.openpixi.pixi.physics.fields.PoissonSolverFFTPeriodic;
 import org.openpixi.pixi.physics.fields.SimpleSolver;
 import org.openpixi.pixi.physics.grid.ChargeConservingCIC;
@@ -18,6 +19,7 @@ public class YamlSettings {
 	public Double duration;
 	public Integer gridCellsX;
 	public Integer gridCellsY;
+	public String poissonsolver;
 	public List<YamlParticle> particles;
 	public List<YamlParticleStream> streams;
 	public YamlOutput output;
@@ -28,7 +30,6 @@ public class YamlSettings {
 		settings.setRelativistic(true);
 		settings.setBoundary(GeneralBoundaryType.Periodic);
 		settings.setGridSolver(new SimpleSolver());
-		settings.setPoissonSolver(new PoissonSolverFFTPeriodic());
 		settings.useGrid(true);
 		settings.setInterpolator(new ChargeConservingCIC());
 
@@ -55,6 +56,16 @@ public class YamlSettings {
 
 		if (gridCellsY != null) {
 			settings.setGridCellsY(gridCellsY);
+		}
+
+		if (poissonsolver != null) {
+			if (poissonsolver.equals("fft")) {
+				settings.setPoissonSolver(new PoissonSolverFFTPeriodic());
+			} else if (poissonsolver.equals("empty")) {
+				settings.setPoissonSolver(new EmptyPoissonSolver());
+			} else {
+				throw new RuntimeException("Unkown Poisson solver specified in YAML file.");
+			}
 		}
 
 		if (particles != null) {
