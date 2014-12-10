@@ -5,6 +5,7 @@ gridCellsX: 10
 gridCellsY: 10
 speedOfLight: 1
 timeStep: 1
+poissonsolver: empty
 
 streams:
   # first stream:
