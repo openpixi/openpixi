@@ -19,6 +19,7 @@
 package org.openpixi.pixi.physics.particles;
 
 
+import java.awt.Color;
 import java.io.Serializable;
 
 
@@ -32,6 +33,9 @@ public class ParticleFull extends Particle {
 
 	/** radius of particle */
 	private double radius;
+
+	/** color of particle (for display only) */
+	private Color color;
 
 	/** velocity in x-direction */
 	private double vx;
@@ -114,6 +118,14 @@ public class ParticleFull extends Particle {
 
 	public void setRadius(double radius) {
 		this.radius = radius;
+	}
+
+	public Color getColor() {
+		return this.color;
+	}
+
+	public void setColor(Color color) {
+		this.color = color;
 	}
 
 	public double getVx() {
@@ -288,6 +300,7 @@ public class ParticleFull extends Particle {
 		p.setX(x);
 		p.setY(y);
 		p.setRadius(radius);
+		p.setColor(color);
 		p.setVx(vx);
 		p.setVy(vy);
 		p.setAx(ax);
