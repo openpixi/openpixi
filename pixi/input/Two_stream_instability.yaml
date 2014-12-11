@@ -4,7 +4,9 @@ gridStep: 10
 gridCellsX: 10
 gridCellsY: 10
 speedOfLight: 1
+poissonsolver: empty
 timeStep: 1
+duration: 1000
 
 streams:
   # first stream:
@@ -16,6 +18,7 @@ streams:
       r: 1
       m: 1
       q: .01
+      color: red
     dx: 2
     dy: 0
     number: 50
@@ -28,6 +31,12 @@ streams:
       r: 1
       m: 1
       q: .01
+      color: blue
     dx: 2
     dy: 0
     number: 50
+
+output:
+  path: twostreaminstability
+  daniil: 1
+  daniilspectrum: 300

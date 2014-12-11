@@ -4,7 +4,9 @@ gridStep: 10
 gridCellsX: 10
 gridCellsY: 10
 speedOfLight: 1
+poissonsolver: fft
 timeStep: 1
+duration: 1000
 
 particles:
   - x: 40
@@ -14,6 +16,7 @@ particles:
     r: 1
     m: 1
     q: .01
+    color: red
   - x: 60
     y: 50
     vx: 0
@@ -21,3 +24,9 @@ particles:
     r: 1
     m: 1
     q: -.01
+    color: blue
+
+output:
+  path: pairofparticles
+  daniil: 1
+  daniilspectrum: 300

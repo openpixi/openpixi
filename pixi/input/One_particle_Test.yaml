@@ -4,7 +4,9 @@ gridStep: 10
 gridCellsX: 10
 gridCellsY: 10
 speedOfLight: 1
+poissonsolver: empty
 timeStep: 0.1
+duration: 1000
 
 particles:
   - x: 50
@@ -14,3 +16,9 @@ particles:
     r: 1
     m: 1
     q: -.01
+    color: blue
+
+output:
+  path: oneparticletest
+  daniil: 1
+  daniilspectrum: 300

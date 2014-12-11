@@ -21,25 +21,20 @@ package org.openpixi.pixi.ui;
 import java.awt.*;
 import javax.swing.*;
 import java.awt.event.*;
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.FileReader;
-import java.io.IOException;
 
 import javax.swing.event.*;
 
 import org.openpixi.pixi.physics.Debug;
-import org.openpixi.pixi.physics.Settings;
 import org.openpixi.pixi.physics.Simulation;
 import org.openpixi.pixi.physics.force.*;
 import org.openpixi.pixi.physics.movement.boundary.ParticleBoundaryType;
 import org.openpixi.pixi.physics.solver.*;
 import org.openpixi.pixi.physics.solver.relativistic.*;
+import org.openpixi.pixi.ui.panel.AnimationPanel;
 import org.openpixi.pixi.ui.panel.Particle2DPanel;
 import org.openpixi.pixi.ui.panel.PhaseSpacePanel;
 import org.openpixi.pixi.ui.panel.ElectricFieldPanel;
-import org.openpixi.pixi.ui.util.yaml.YamlParser;
+import org.openpixi.pixi.ui.tab.FileTab;
 
 /**
  * Displays the animation of particles.
@@ -78,12 +73,6 @@ public class MainControlApplet extends JApplet {
 
 	private JRadioButton hardBoundaries;
 	private JRadioButton periodicBoundaries;
-
-	JFileChooser fc;
-	private JButton openButton;
-	private JButton saveButton;
-	private JButton applyButton;
-	private JTextArea fileTextArea;
 
 	private JTabbedPane tabs;
 	private JSplitPane splitPane;
@@ -426,98 +415,6 @@ public class MainControlApplet extends JApplet {
 		}
 	}
 
-	class OpenButtonListener implements ActionListener {
-		public void actionPerformed(ActionEvent event) {
-
-			int returnVal = fc.showOpenDialog(MainControlApplet.this);
-
-			if (returnVal == JFileChooser.APPROVE_OPTION) {
-				File file = fc.getSelectedFile();
-				try {
-					String content = readFile(file);
-					fileTextArea.setText(content);
-					applyTextAreaSettings();
-				} catch (IOException e) {
-					// TODO Error message
-				}
-			} else {
-				// Open command cancelled by user
-			}
-		}
-	}
-
-	class SaveButtonListener implements ActionListener {
-		public void actionPerformed(ActionEvent event) {
-
-			int returnVal = fc.showSaveDialog(MainControlApplet.this);
-
-			if (returnVal == JFileChooser.APPROVE_OPTION) {
-				File file = fc.getSelectedFile();
-				if (file.exists()) {
-					// Show confirmation dialog
-					int response = JOptionPane.showConfirmDialog(
-							MainControlApplet.this,
-							"Are you sure you want to override existing file?",
-							"Confirm", JOptionPane.YES_NO_OPTION,
-							JOptionPane.QUESTION_MESSAGE);
-					if (response == JOptionPane.YES_OPTION) {
-						// Ok, proceed
-					} else if (response == JOptionPane.NO_OPTION) {
-						return;
-					} else if (response == JOptionPane.CLOSED_OPTION) {
-						return;
-					}
-				}
-				String string = fileTextArea.getText();
-				try {
-					writeFile(file, string);
-				} catch (IOException e) {
-					// TODO Error message
-				}
-			} else {
-				// Save command cancelled by user
-			}
-		}
-	}
-
-	class ApplyButtonListener implements ActionListener {
-		public void actionPerformed(ActionEvent event) {
-			applyTextAreaSettings();
-		}
-	}
-
-	/**
-	 * Apply the settings from the text area and restart the simulation.
-	 */
-	private void applyTextAreaSettings() {
-		String string = fileTextArea.getText();
-		Settings settings = new Settings();
-		YamlParser parser = new YamlParser(settings);
-		parser.parseString(string);
-		simulationAnimation.resetAnimation(settings);
-	}
-
-	private String readFile(File file) throws IOException {
-		BufferedReader reader = new BufferedReader(new FileReader(file));
-		String line = null;
-		StringBuilder stringBuilder = new StringBuilder();
-		String ls = System.getProperty("line.separator");
-
-		while ((line = reader.readLine()) != null) {
-			stringBuilder.append(line);
-			stringBuilder.append(ls);
-		}
-
-		return stringBuilder.toString();
-	}
-
-	private void writeFile(File file, String string) throws IOException {
-		FileOutputStream out = new FileOutputStream(file);
-		byte[] contentInBytes = string.getBytes();
-		out.write(contentInBytes);
-		out.close();
-	}
-
 	/**
 	 * Constructor.
 	 */
@@ -526,8 +423,6 @@ public class MainControlApplet extends JApplet {
 
 		simulationAnimation = new SimulationAnimation();
 		particlePanel = new Particle2DPanel(simulationAnimation);
-		phaseSpacePanel = new PhaseSpacePanel(simulationAnimation);
-		electricFieldPanel = new ElectricFieldPanel(simulationAnimation);
 		Simulation s = simulationAnimation.getSimulation();
 		linkConstantForce();
 
@@ -803,32 +698,7 @@ public class MainControlApplet extends JApplet {
 		cellSettings.add(ybox);
 		cellSettings.add(Box.createVerticalStrut(200));
 
-		fc = new JFileChooser();
-		File workingDirectory = new File(System.getProperty("user.dir"));
-		File inputDirectory = new File(workingDirectory, "input");
-		if (inputDirectory.exists()) {
-			fc.setCurrentDirectory(inputDirectory);
-		} else {
-			fc.setCurrentDirectory(workingDirectory);
-		}
-
-		openButton = new JButton("Open...");
-		openButton.addActionListener(new OpenButtonListener());
-		saveButton = new JButton("Save...");
-		saveButton.addActionListener(new SaveButtonListener());
-		applyButton = new JButton("Apply");
-		applyButton.addActionListener(new ApplyButtonListener());
-		fileTextArea = new JTextArea();
-		JScrollPane scrollpane = new JScrollPane(fileTextArea);
-
-		Box buttonBox = Box.createHorizontalBox();
-		buttonBox.add(openButton);
-		buttonBox.add(saveButton);
-		buttonBox.add(applyButton);
-
-		Box fileTab = Box.createVerticalBox();
-		fileTab.add(buttonBox);
-		fileTab.add(scrollpane);
+		FileTab fileTab = new FileTab(MainControlApplet.this, simulationAnimation);
 
 		fieldsBox.setPreferredSize(new Dimension(300, 100));
 		settingControls.setPreferredSize(new Dimension (300, 100));
@@ -840,30 +710,20 @@ public class MainControlApplet extends JApplet {
 		tabs.addTab("Cell", cellSettings);
 		tabs.addTab("File", fileTab);
 
-		leftComponent = particlePanel;
-		rightComponent = electricFieldPanel;
-		splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT,
-				leftComponent, rightComponent);
-		splitPane.setOneTouchExpandable(true);
-		splitPane.setContinuousLayout(true);
-
 		this.setLayout(new BorderLayout());
 		this.add(panelBox, BorderLayout.SOUTH);
-		this.add(splitPane, BorderLayout.CENTER);
+		this.add(particlePanel, BorderLayout.CENTER);
 		this.add(tabs, BorderLayout.EAST);
 
-		// start JSplitPane in collapsed state:
-		electricFieldPanel.setSize(new Dimension());
-		splitPane.setResizeWeight(1.0);
-
-		particlePanel.addMouseListener(new PopupClickListener());
-		phaseSpacePanel.addMouseListener(new PopupClickListener());
-		electricFieldPanel.addMouseListener(new PopupClickListener());
+		popupClickListener = new PopupClickListener();
+		particlePanel.addMouseListener(popupClickListener);
 	}
 
-	Component leftComponent;
-	Component rightComponent;
+	PopupClickListener popupClickListener;
 
+	JMenuItem itemSplitHorizontally;
+	JMenuItem itemSplitVertically;
+	JMenuItem itemClosePanel;
 	JMenuItem itemParticle2DPanel;
 	JMenuItem itemPhaseSpacePanel;
 	JMenuItem itemElectricFieldPanel;
@@ -871,6 +731,22 @@ public class MainControlApplet extends JApplet {
 	class PopupMenu extends JPopupMenu {
 
 		public PopupMenu() {
+			itemSplitHorizontally = new JMenuItem("Split horizontally");
+			itemSplitHorizontally.addActionListener(new MenuSelected());
+			add(itemSplitHorizontally);
+
+			itemSplitVertically = new JMenuItem("Split vertically");
+			itemSplitVertically.addActionListener(new MenuSelected());
+			add(itemSplitVertically);
+
+			if (clickComponent != null && clickComponent.getParent() instanceof JSplitPane) {
+				itemClosePanel = new JMenuItem("Close panel");
+				itemClosePanel.addActionListener(new MenuSelected());
+				add(itemClosePanel);
+			}
+
+			add(new JSeparator());
+
 			itemParticle2DPanel = new JMenuItem("Particles");
 			itemParticle2DPanel.addActionListener(new MenuSelected());
 			add(itemParticle2DPanel);
@@ -916,32 +792,137 @@ public class MainControlApplet extends JApplet {
 			// in use anymore.
 
 			Component component = null;
-			if (event.getSource() == itemParticle2DPanel) {
+
+			if (event.getSource() == itemSplitHorizontally) {
+				splitPanel(JSplitPane.HORIZONTAL_SPLIT);
+			} else if (event.getSource() == itemSplitVertically) {
+				splitPanel(JSplitPane.VERTICAL_SPLIT);
+			} else if (event.getSource() == itemClosePanel) {
+				closePanel();
+			} else if (event.getSource() == itemParticle2DPanel) {
 				particlePanel = new Particle2DPanel(simulationAnimation);
-				particlePanel.addMouseListener(new PopupClickListener());
 				component = particlePanel;
 			} else if (event.getSource() == itemPhaseSpacePanel) {
 				phaseSpacePanel = new PhaseSpacePanel(simulationAnimation);
-				phaseSpacePanel.addMouseListener(new PopupClickListener());
 				component = phaseSpacePanel;
 			} else if (event.getSource() == itemElectricFieldPanel) {
 				electricFieldPanel = new ElectricFieldPanel(simulationAnimation);
-				electricFieldPanel.addMouseListener(new PopupClickListener());
 				component = electricFieldPanel;
 			}
 			if (component != null) {
-				int dividerLocation = splitPane.getDividerLocation();
-				if (clickComponent == leftComponent) {
-					splitPane.setLeftComponent(component);
-					leftComponent = component;
-				} else if (clickComponent == rightComponent) {
-					splitPane.setRightComponent(component);
-					rightComponent = component;
-				}
-				splitPane.setDividerLocation(dividerLocation);
+				replacePanel(component);
 			}
 		}
 
+		private void replacePanel(Component component) {
+			component.addMouseListener(popupClickListener);
+			Component parent = clickComponent.getParent();
+			if (parent != null) {
+				if (parent instanceof JSplitPane) {
+					JSplitPane parentsplitpane = (JSplitPane) parent;
+					Component parentleft = parentsplitpane.getLeftComponent();
+
+					int dividerLocation = parentsplitpane.getDividerLocation();
+					if (parentleft == clickComponent) {
+						parentsplitpane.setLeftComponent(component);
+					} else {
+						parentsplitpane.setRightComponent(component);
+					}
+					parentsplitpane.setDividerLocation(dividerLocation);
+				} else if (parent instanceof JPanel) {
+					// top level
+					MainControlApplet.this.remove(clickComponent);
+					MainControlApplet.this.add(component, BorderLayout.CENTER);
+					MainControlApplet.this.validate();
+				}
+			}
+		}
+
+		/**
+		 * Split current panel either horizontally or vertically
+		 *
+		 * @param orientation
+		 *            Either JSplitPane.HORIZONTAL_SPLIT or
+		 *            JSplitPane.VERTICAL_SPLIT.
+		 */
+		private void splitPanel(int orientation) {
+			Component parent = clickComponent.getParent();
+
+			particlePanel = new Particle2DPanel(simulationAnimation);
+			Component newcomponent = particlePanel;
+			newcomponent.addMouseListener(popupClickListener);
+
+			if (parent != null) {
+				if (parent instanceof JSplitPane) {
+					JSplitPane parentsplitpane = (JSplitPane) parent;
+					Component parentleft = parentsplitpane.getLeftComponent();
+
+					int dividerLocation = parentsplitpane.getDividerLocation();
+
+					JSplitPane s = new JSplitPane(orientation,
+								clickComponent, newcomponent);
+					s.setOneTouchExpandable(true);
+					s.setContinuousLayout(true);
+					s.setResizeWeight(0.5);
+
+					if (parentleft == clickComponent) {
+						parentsplitpane.setLeftComponent(s);
+					} else {
+						parentsplitpane.setRightComponent(s);
+					}
+					parentsplitpane.setDividerLocation(dividerLocation);
+				} else if (parent instanceof JPanel) {
+					// top level
+					JSplitPane s = new JSplitPane(orientation,
+							clickComponent, newcomponent);
+					s.setOneTouchExpandable(true);
+					s.setContinuousLayout(true);
+					s.setResizeWeight(0.5);
+
+					MainControlApplet.this.remove(clickComponent);
+					MainControlApplet.this.add(s, BorderLayout.CENTER);
+					MainControlApplet.this.validate();
+				}
+			}
+		}
+
+		private void closePanel() {
+			Component parent = clickComponent.getParent();
+			if (parent != null) {
+				if (parent instanceof JSplitPane) {
+					JSplitPane parentsplitpane = (JSplitPane) parent;
+					Component parentleft = parentsplitpane.getLeftComponent();
+					Component parentright = parentsplitpane.getRightComponent();
+					Component grandparent = parent.getParent();
+
+					Component othercomponent = parentleft;
+					if (parentleft == clickComponent) {
+						othercomponent = parentright;
+					}
+
+					if (grandparent != null) {
+						if (grandparent instanceof JSplitPane) {
+							JSplitPane grandparentsplitpane = (JSplitPane) grandparent;
+							Component left = grandparentsplitpane.getLeftComponent();
+							if (left == parentsplitpane) {
+								grandparentsplitpane.setLeftComponent(othercomponent);
+							} else {
+								grandparentsplitpane.setRightComponent(othercomponent);
+							}
+						} else if (grandparent instanceof JPanel) {
+							parentsplitpane.removeAll();
+							MainControlApplet.this.remove(parentsplitpane);
+							MainControlApplet.this.add(othercomponent, BorderLayout.CENTER);
+							MainControlApplet.this.validate();
+						}
+						clickComponent.removeMouseListener(popupClickListener);
+						if (clickComponent instanceof AnimationPanel) {
+							((AnimationPanel) clickComponent).destruct();
+						}
+					}
+				}
+			}
+		}
 	}
 
 	public void setText(JTextArea text, String str, boolean onoff)

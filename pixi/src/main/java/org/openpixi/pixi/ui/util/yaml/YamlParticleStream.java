@@ -7,7 +7,7 @@ public class YamlParticleStream {
 	public YamlParticle particle;
 	public Double dx;
 	public Double dy;
-	public Double number;
+	public Integer number;
 
 	/**
 	 * Creates a stream of particles. The particle is copied

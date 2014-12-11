@@ -30,6 +30,7 @@ import org.openpixi.pixi.physics.fields.EmptyPoissonSolver;
 import org.openpixi.pixi.physics.fields.SimpleSolver;
 import org.openpixi.pixi.physics.grid.ChargeConservingCIC;
 
+import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -186,8 +187,10 @@ public class InitialConditions {
             //overall charge is 0:
 			if (k<count/2) {
 				p.setCharge(.01);
+				p.setColor(Color.red);
 			} else {
 				p.setCharge(-.01);
+				p.setColor(Color.blue);
 			}
 			particlelist.add(p);
 		}
@@ -223,6 +226,11 @@ public class InitialConditions {
 		par.setVy(0);
 		par.setMass(1);
 		par.setCharge(charge*(1-2*k));
+		if (k == 0) {
+			par.setColor(Color.red);
+		} else {
+			par.setColor(Color.blue);
+		}
 		stt.addParticle(par);
 	}
             
@@ -256,9 +264,11 @@ public class InitialConditions {
 		Particle par = new ParticleFull();
 		if(k < numpart) {par.setX(stt.getSimulationWidth() * 1/dnumpart*k);
 		par.setVx(0.1);
+		par.setColor(Color.red);
 		}
 		else {par.setX(stt.getSimulationWidth() * 1/dnumpart*(k-numpart));
 		par.setVx(-0.1);
+		par.setColor(Color.blue);
 		}
 		par.setY(stt.getSimulationHeight() * 1/2 );
 		par.setRadius(radius);
@@ -300,6 +310,7 @@ public class InitialConditions {
     		par.setVy(0);
     		par.setMass(1);
     		par.setCharge(-charge);
+    		par.setColor(Color.red);
     		stt.addParticle(par);
 
     		stt.setPoissonSolver(new EmptyPoissonSolver());

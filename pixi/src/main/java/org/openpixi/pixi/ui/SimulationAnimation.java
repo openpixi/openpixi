@@ -74,8 +74,7 @@ public class SimulationAnimation {
 
 		public void actionPerformed(ActionEvent eve) {
 			try {
-				int NStepsDone = s.tottime;
-				s.step(NStepsDone+1);
+				s.step();
 			} catch (FileNotFoundException ex) {
 				Logger.getLogger(Particle2DPanel.class.getName()).log(Level.SEVERE, null, ex);
 			} catch (IOException ex2) {
@@ -113,6 +112,14 @@ public class SimulationAnimation {
 	 */
 	public void addListener(SimulationAnimationListener listener) {
 		listeners.add(listener);
+	}
+
+	/**
+	 * Removes Listener for repaint() event.
+	 * @param listener
+	 */
+	public void removeListener(SimulationAnimationListener listener) {
+		listeners.remove(listener);
 	}
 
 	private void repaint() {

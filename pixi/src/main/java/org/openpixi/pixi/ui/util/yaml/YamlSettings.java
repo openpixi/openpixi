@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.openpixi.pixi.physics.GeneralBoundaryType;
 import org.openpixi.pixi.physics.Settings;
+import org.openpixi.pixi.physics.fields.EmptyPoissonSolver;
 import org.openpixi.pixi.physics.fields.PoissonSolverFFTPeriodic;
 import org.openpixi.pixi.physics.fields.SimpleSolver;
 import org.openpixi.pixi.physics.grid.ChargeConservingCIC;
@@ -14,25 +15,31 @@ import org.openpixi.pixi.physics.grid.ChargeConservingCIC;
 public class YamlSettings {
 	public Double timeStep;
 	public Double speedOfLight;
-	public Integer gridStep;
+	public Double gridStep;
+	public Double duration;
 	public Integer gridCellsX;
 	public Integer gridCellsY;
+	public String poissonsolver;
 	public List<YamlParticle> particles;
 	public List<YamlParticleStream> streams;
-	
+	public YamlOutput output;
+
 	public void applyTo(Settings settings) {
 
 		// Default settings:
 		settings.setRelativistic(true);
 		settings.setBoundary(GeneralBoundaryType.Periodic);
 		settings.setGridSolver(new SimpleSolver());
-		settings.setPoissonSolver(new PoissonSolverFFTPeriodic());
 		settings.useGrid(true);
 		settings.setInterpolator(new ChargeConservingCIC());
 
 		// Custom settings:
 		if (timeStep != null) {
 			settings.setTimeStep(timeStep);
+		}
+
+		if (duration != null) {
+			settings.setTMax(duration);
 		}
 
 		if (speedOfLight != null) {
@@ -51,6 +58,16 @@ public class YamlSettings {
 			settings.setGridCellsY(gridCellsY);
 		}
 
+		if (poissonsolver != null) {
+			if (poissonsolver.equals("fft")) {
+				settings.setPoissonSolver(new PoissonSolverFFTPeriodic());
+			} else if (poissonsolver.equals("empty")) {
+				settings.setPoissonSolver(new EmptyPoissonSolver());
+			} else {
+				throw new RuntimeException("Unkown Poisson solver specified in YAML file.");
+			}
+		}
+
 		if (particles != null) {
 			for (YamlParticle p : particles) {
 				p.applyTo(settings);
@@ -61,6 +78,10 @@ public class YamlSettings {
 			for (YamlParticleStream s : streams) {
 				s.applyTo(settings);
 			}
+		}
+
+		if (output != null) {
+			output.applyTo(settings);
 		}
 	}
 }

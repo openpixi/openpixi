@@ -63,6 +63,7 @@ public class Settings {
 	private double gridStep = 1;
 	private double tMax = 3000;
 	private int spectrumStep = 300;
+	private String filePath = "default";
 	private GeneralBoundaryType boundaryType = GeneralBoundaryType.Periodic;
 	private InterpolatorAlgorithm interpolator = new ChargeConservingCIC();
 	//private InterpolatorAlgorithm interpolator = new CloudInCell();
@@ -144,6 +145,10 @@ public class Settings {
 		return spectrumStep;
 	}
 	
+	public String getFilePath() {
+		return filePath;
+	}
+
 	public boolean getRelativistic() {
 		return relativistic;
 	}
@@ -348,10 +353,18 @@ public class Settings {
 		this.writeToFile = writeTo;
 	}
 
+	/**
+	 * @deprecated Use setGridStep() and setGridCellsX() instead.
+	 */
+	@Deprecated
 	public void setSimulationWidth(double simulationWidth) {
 		this.simulationWidth = simulationWidth;
 	}
 
+	/**
+	 * @deprecated Use setGridStep() and setGridCellsY() instead.
+	 */
+	@Deprecated
 	public void setSimulationHeight(double simulationHeight) {
 		this.simulationHeight = simulationHeight;
 	}
@@ -384,6 +397,14 @@ public class Settings {
 		this.gridStep = gridstep;
 	}
 	
+	public void setSpectrumStep(int spectrumstep) {
+		this.spectrumStep = spectrumstep;
+	}
+
+	public void setFilePath(String filepath) {
+		this.filePath = filepath;
+	}
+
 	public void setRelativistic(boolean rel) {
 		this.relativistic = rel;
 	}
@@ -457,6 +478,10 @@ public class Settings {
 		particles.add(p);
 	}
 
+	/**
+	 * @deprecated Use setTimeStep() and setTMax() instead.
+	 */
+	@Deprecated
 	public void setIterations(int iterations) {
 		this.iterations = iterations;
 	}
