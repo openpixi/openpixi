@@ -162,7 +162,7 @@ public class SimulationAnimation {
 			s = InitialConditions.initTwoStream(0.1,1,1000);
 			break;
 		case 9:
-			s = InitialConditions.initWeibel(0.1,1,400,4);
+			s = InitialConditions.initWeibel(0.1,1,400,2);
 			break;
 		case 10:
 			s = InitialConditions.initOneTest(0.01,1);

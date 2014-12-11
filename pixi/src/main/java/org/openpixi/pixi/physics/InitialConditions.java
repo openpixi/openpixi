@@ -31,6 +31,7 @@ import org.openpixi.pixi.physics.fields.SimpleSolver;
 import org.openpixi.pixi.physics.grid.ChargeConservingCIC;
 
 import java.util.ArrayList;
+import java.util.Random;
 
 public class InitialConditions {
 
@@ -316,9 +317,9 @@ public class InitialConditions {
     	stt.setRelativistic(true);
     	/*stt.setSimulationWidth(100);
     	stt.setSimulationHeight(100);*/
-    	stt.setGridStep(2);
-    	stt.setGridCellsX(50);
-    	stt.setGridCellsY(50);
+    	stt.setGridStep(10);
+    	stt.setGridCellsX(10);
+    	stt.setGridCellsY(10);
                 stt.setNumOfParticles(numpart);
 
     	stt.setBoundary(GeneralBoundaryType.Periodic);
@@ -331,6 +332,8 @@ public class InitialConditions {
         	Simulation simulation = new Simulation(stt);
         	return simulation;
         }
+        
+        Random ranGen = new Random();
 
     	for (int i = 0; i < numstripes; i++) {
     		for (int k = 0; k < numpart/numstripes; k++) {
@@ -338,15 +341,16 @@ public class InitialConditions {
     		Particle par = new ParticleFull();
     		par.setY(stt.getSimulationHeight() * 1/dnumpart*numstripes*k);
     		if ( ( (i+1) % 2 ) == 0 ) {
-    			par.setCharge(-charge);
+    			par.setVy(0.3);
     		} else {
-    			par.setCharge(charge);
+    			par.setVy(-0.3);
     		}
 
-    		par.setX(stt.getSimulationWidth() / numstripes * i + stripeWidth/2 );
+    		//par.setX(stt.getSimulationWidth() / numstripes * i + stripeWidth/2 + (Math.random() - 0.5)*stripeWidth );
+    		par.setX(stt.getSimulationWidth() / numstripes * i + stripeWidth/2 + ranGen.nextGaussian()*stripeWidth*0.1 );
     		par.setRadius(radius);
     		par.setVx(0);
-    		par.setVy(0.1);
+    		par.setCharge(-charge);
     		par.setMass(1);
     		stt.addParticle(par);
     		
