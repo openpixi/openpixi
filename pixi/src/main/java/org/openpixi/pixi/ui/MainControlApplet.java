@@ -105,7 +105,8 @@ public class MainControlApplet extends JApplet {
             "Pair of particles",
             "Two stream instability",
             "Weibel instability",
-            "One particle test"};
+            "One particle test",
+            "Wave propagation test"};
 
 	String[] solverString = {
 			"Euler Richardson",

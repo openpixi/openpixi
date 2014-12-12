@@ -319,7 +319,7 @@ public class InitialConditions {
     	return simulation;
     }
     
-    public static Simulation initWeibel(double charge, double radius, int numpart, int numstripes) {
+    public static Simulation initWeibel(double charge, double radius, int numpart, int numstripes, double speed) {
     	Settings stt = new Settings();
     	double dnumpart = numpart;
 
@@ -352,13 +352,13 @@ public class InitialConditions {
     		Particle par = new ParticleFull();
     		par.setY(stt.getSimulationHeight() * 1/dnumpart*numstripes*k);
     		if ( ( (i+1) % 2 ) == 0 ) {
-    			par.setVy(0.3);
+    			par.setVy(speed);
     		} else {
-    			par.setVy(-0.3);
+    			par.setVy(-speed);
     		}
 
     		//par.setX(stt.getSimulationWidth() / numstripes * i + stripeWidth/2 + (Math.random() - 0.5)*stripeWidth );
-    		par.setX(stt.getSimulationWidth() / numstripes * i + stripeWidth/2 + ranGen.nextGaussian()*stripeWidth*0.1 );
+    		par.setX(stt.getSimulationWidth() / numstripes * i + stripeWidth/2 + ranGen.nextGaussian()*stripeWidth*0.15 );
     		par.setRadius(radius);
     		par.setVx(0);
     		par.setCharge(-charge);
@@ -371,6 +371,51 @@ public class InitialConditions {
     	stt.setPoissonSolver(new EmptyPoissonSolver());
                 stt.useGrid(true);
     	Simulation simulation = new Simulation(stt);
+    	/*
+    	for (int i = 0; i < stt.getGridCellsY(); i++) {
+    		for (int k = 0; k < stt.getGridCellsX(); k++) {
+
+    		simulation.grid.setBz(k, i, 0.3*Math.cos( Math.PI/stt.getSimulationWidth()*numstripes*stt.getGridStep()*(k+1/2)));
+    		
+    		}
+    	}
+    	*/
+    	return simulation;
+    }
+    
+    public static Simulation initWaveTest(double kx) {
+    	Settings stt = new Settings();
+
+    	stt.setTimeStep(0.1);
+    	stt.setTMax(1000);
+    	stt.setSpectrumStep(100);
+    	stt.setSpeedOfLight(1);
+    	stt.setRelativistic(true);
+    	/*stt.setSimulationWidth(100);
+    	stt.setSimulationHeight(100);*/
+    	stt.setGridStep(1);
+    	stt.setGridCellsX(100);
+    	stt.setGridCellsY(100);
+    	stt.setNumOfParticles(0);
+
+    	stt.setBoundary(GeneralBoundaryType.Periodic);
+                stt.setGridSolver(new SimpleSolver());
+    	
+    	stt.setPoissonSolver(new EmptyPoissonSolver());
+                stt.useGrid(true);
+    	Simulation simulation = new Simulation(stt); 	
+
+    	for (int i = 0; i < stt.getGridCellsY(); i++) {
+    		for (int k = 0; k < stt.getGridCellsX(); k++) {
+
+    		simulation.grid.setEy(k, i, Math.sin( kx*stt.getGridStep()*(k+1/2) ));
+    		simulation.grid.setBz(k, i, Math.sin( kx*stt.getGridStep()*(k+1/2) ));
+    		
+    		}
+    	}
+    	
+    	
+    	
     	return simulation;
     }
 

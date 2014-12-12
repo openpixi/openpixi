@@ -5,7 +5,7 @@ gridCellsX: 10
 gridCellsY: 10
 speedOfLight: 1
 poissonsolver: empty
-timeStep: 1
+timeStep: 0.1
 duration: 1000
 
 streams:
@@ -17,7 +17,7 @@ streams:
       vy: 0
       r: 1
       m: 1
-      q: .01
+      q: .1
       color: red
     dx: 2
     dy: 0
@@ -30,7 +30,7 @@ streams:
       vy: 0
       r: 1
       m: 1
-      q: .01
+      q: .1
       color: blue
     dx: 2
     dy: 0

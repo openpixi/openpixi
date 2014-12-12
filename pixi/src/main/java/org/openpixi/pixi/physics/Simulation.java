@@ -422,8 +422,8 @@ public class Simulation {
 				
 				snap.write(i + "\t");
 				snap.write(j + "\t");
-				snap.write(grid.getCells()[i][j].getJx() + "\t");
-				//snap.write(grid.getCells()[i][j].getPhi() + "\t");
+				snap.write(grid.getCells()[i][j].getEy() + "\t");
+				snap.write(grid.getCells()[i][j].getBz() + "\t");
 				snap.write("\n");
 				
 			}

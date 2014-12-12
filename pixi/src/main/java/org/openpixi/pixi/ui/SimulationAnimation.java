@@ -169,10 +169,13 @@ public class SimulationAnimation {
 			s = InitialConditions.initTwoStream(0.1,1,1000);
 			break;
 		case 9:
-			s = InitialConditions.initWeibel(0.1,1,400,2);
+			s = InitialConditions.initWeibel(0.01,1,2000,2,0.99);
 			break;
 		case 10:
 			s = InitialConditions.initOneTest(0.01,1);
+			break;
+		case 11:
+			s = InitialConditions.initWaveTest(0.2);
 			break;
 		}
 		updateFieldForce();
