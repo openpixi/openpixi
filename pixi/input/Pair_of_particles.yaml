@@ -3,7 +3,6 @@
 gridStep: 10
 gridCellsX: 10
 gridCellsY: 10
-speedOfLight: 1
 poissonsolver: fft
 timeStep: 1
 duration: 1000
