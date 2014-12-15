@@ -76,6 +76,8 @@ public class Settings {
 	private PoissonSolver poissonSolver = new PoissonSolverFFTPeriodic();
 	private boolean useGrid = true;
 	private boolean relativistic = false;
+	private double eps0 = 1.0/(4*Math.PI);
+	private double mu0 = 4*Math.PI;
 	// Particle related settings
 	private int numOfParticles = 128;
 	private double particleRadius = 1;
@@ -155,6 +157,14 @@ public class Settings {
 
 	public double getSpeedOfLight() {
 		return speedOfLight;
+	}
+	
+	public double getEps0() {
+		return eps0;
+	}
+	
+	public double getMu0() {
+		return mu0;
 	}
 
 	public double getTimeStep() {
@@ -380,7 +390,11 @@ public class Settings {
 	}
 
 	public void setSpeedOfLight(double speedOfLight) {
-		this.speedOfLight = speedOfLight;
+		if( (this.eps0 * this.mu0) == speedOfLight*speedOfLight ) {
+			this.speedOfLight = speedOfLight;
+		} else {
+			System.out.println("Your chosen speed of light is in contradiction to the values of eps_0 and mu_0 !! Default value of c is used instead!!");
+		}
 	}
 
 	public void setTimeStep(double timeStep) {

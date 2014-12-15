@@ -139,12 +139,12 @@ public class Particle2DPanel extends AnimationPanel {
 				{
 					int xstart = (int) (s.grid.getCellWidth() * (i + 0.5) * sx);
                     int xstart2 = (int)(s.grid.getCellWidth() * i * sx);
-int ystart = (int) (s.grid.getCellHeight() * (k + 0.5) * sy);
+                    int ystart = (int) (s.grid.getCellHeight() * (k + 0.5) * sy);
                     int ystart2 = (int) (s.grid.getCellHeight() * k * sy);
 //drawArrow(graph, xstart, ystart, (int) Math.round(scale * s.grid.getEx(i,k)*sx + xstart), (int) Math.round(scale* s.grid.getEy(i,k)*sy + ystart));
                     drawArrow(graph, xstart, ystart2, (int) Math.round(scale*s.grid.getEx(i,k)*sx+xstart),ystart2, Color.BLACK);
                     drawArrow(graph, xstart2, ystart, xstart2, (int) Math.round(scale*s.grid.getEy(i,k)*sy+ystart), Color.GREEN);
-                    drawArrow(graph, xstart, ystart, (int) Math.round(scale*s.grid.getBz(i, k)*sx + xstart), (int) Math.round(scale*s.grid.getBz(i,k)*sy+ystart), Color.RED);
+                    drawArrow(graph, xstart, ystart, xstart, (int) Math.round(scale*s.grid.getBz(i,k)*sy+ystart), Color.RED);
 				}
 			//return;
 		}
