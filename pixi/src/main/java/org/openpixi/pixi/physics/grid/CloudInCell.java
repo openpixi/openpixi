@@ -122,10 +122,10 @@ public class CloudInCell implements InterpolatorAlgorithm {
 
 		//Assign a portion of the charge to the four surrounding points depending on
 		//the distance.
-		g.addRho(i,		j,		p.getCharge() * b * d);
-		g.addRho(i,		j + 1,	p.getCharge() * b * c);
-		g.addRho(i + 1,	j + 1,	p.getCharge() * a * c);
-		g.addRho(i + 1,	j,		p.getCharge() * a * d);
+		g.addRho( (i + g.getNumCellsX())%g.getNumCellsX(),		(j + g.getNumCellsY())%g.getNumCellsY(),		p.getCharge() * b * d);
+		g.addRho( (i + g.getNumCellsX())%g.getNumCellsX(),		(j + 1 + g.getNumCellsY())%g.getNumCellsY(),	p.getCharge() * b * c);
+		g.addRho( (i + 1 + g.getNumCellsX())%g.getNumCellsX(),	(j + 1 + g.getNumCellsY())%g.getNumCellsY(),	p.getCharge() * a * c);
+		g.addRho( (i + 1 + g.getNumCellsX())%g.getNumCellsX(),	(j + g.getNumCellsY())%g.getNumCellsY(),		p.getCharge() * a * d);
 	}
 	
 	@Override
@@ -152,16 +152,16 @@ public class CloudInCell implements InterpolatorAlgorithm {
                     xCellPosition2--;
                 }
 
-                p.setEx((g.getEx(xCellPosition, yCellPosition) *
+                p.setEx((g.getEx( (xCellPosition + g.getNumCellsX())%g.getNumCellsX(), (yCellPosition + g.getNumCellsY())%g.getNumCellsY() ) *
                                 ((xCellPosition+1.5) * g.getCellWidth() - p.getX()) *
                                 (yCellPosition2 * g.getCellHeight() - p.getY()) +
-                                g.getEx(xCellPosition + 1, yCellPosition) *
+                                g.getEx( (xCellPosition + 1 + g.getNumCellsX())%g.getNumCellsX(), (yCellPosition + g.getNumCellsY())%g.getNumCellsY() ) *
                                 (p.getX() - (xCellPosition2 - 0.5) * g.getCellWidth()) *
                                 (yCellPosition2 * g.getCellHeight() - p.getY()) +
-                                g.getEx(xCellPosition, yCellPosition + 1) *
+                                g.getEx( (xCellPosition + g.getNumCellsX())%g.getNumCellsX(), (yCellPosition + 1 + g.getNumCellsY())%g.getNumCellsY() ) *
                                 ((xCellPosition+1.5) * g.getCellWidth() - p.getX()) *
                                 (p.getY() - (yCellPosition2 - 1) * g.getCellHeight()) +
-                                g.getEx(xCellPosition + 1, yCellPosition + 1) *
+                                g.getEx( (xCellPosition + 1 + g.getNumCellsX())%g.getNumCellsX(), (yCellPosition + 1 + g.getNumCellsY())%g.getNumCellsY() ) *
                                 (p.getX() - (xCellPosition2 - 0.5) * g.getCellWidth()) *
                                 (p.getY() - (yCellPosition2 - 1) * g.getCellHeight())) /
                                 (g.getCellWidth() * g.getCellHeight()));
@@ -180,16 +180,16 @@ public class CloudInCell implements InterpolatorAlgorithm {
                     yCellPosition2--;
                 }
                 
-                p.setEy((g.getEy(xCellPosition, yCellPosition) *
+                p.setEy((g.getEy( (xCellPosition + g.getNumCellsX())%g.getNumCellsX(), (yCellPosition + g.getNumCellsY())%g.getNumCellsY() ) *
                                 (xCellPosition2 * g.getCellWidth() - p.getX()) *
                                 ((yCellPosition2+0.5) * g.getCellHeight() - p.getY()) +
-                                g.getEy(xCellPosition + 1, yCellPosition) *
+                                g.getEy( (xCellPosition + 1 + g.getNumCellsX())%g.getNumCellsX(), (yCellPosition + g.getNumCellsY())%g.getNumCellsY() ) *
                                 (p.getX() - (xCellPosition2 - 1) * g.getCellWidth()) *
                                 ((yCellPosition2+0.5) * g.getCellHeight() - p.getY()) +
-                                g.getEy(xCellPosition, yCellPosition + 1) *
+                                g.getEy( (xCellPosition + g.getNumCellsX())%g.getNumCellsX(), (yCellPosition + 1 + g.getNumCellsY())%g.getNumCellsY() ) *
                                 (xCellPosition2 * g.getCellWidth() - p.getX()) *
                                 (p.getY() - (yCellPosition2 - 0.5) * g.getCellHeight()) +
-                                g.getEy(xCellPosition + 1, yCellPosition + 1) *
+                                g.getEy( (xCellPosition + 1 + g.getNumCellsX())%g.getNumCellsX(), (yCellPosition + 1 + g.getNumCellsY())%g.getNumCellsY() ) *
                                 (p.getX() - (xCellPosition2 - 1) * g.getCellWidth()) *
                                 (p.getY() - (yCellPosition2 - 0.5) * g.getCellHeight())) /
                                 (g.getCellWidth() * g.getCellHeight()));
@@ -206,16 +206,16 @@ public class CloudInCell implements InterpolatorAlgorithm {
                     xCellPosition2--;
                 }
                 
-                p.setBz((g.getBz(xCellPosition, yCellPosition) *
+                p.setBz((g.getBz( (xCellPosition + g.getNumCellsX())%g.getNumCellsX(), (yCellPosition + g.getNumCellsY())%g.getNumCellsY() ) *
                                 ((xCellPosition2+0.5) * g.getCellWidth() - p.getX()) *
                                 ((yCellPosition2+0.5) * g.getCellHeight() - p.getY()) +
-                                g.getBz(xCellPosition + 1, yCellPosition) *
+                                g.getBz( (xCellPosition + 1 + g.getNumCellsX())%g.getNumCellsX(), (yCellPosition + g.getNumCellsY())%g.getNumCellsY() ) *
                                 (p.getX() - (xCellPosition2 - 0.5) * g.getCellWidth()) *
                                 ((yCellPosition2+0.5) * g.getCellHeight() - p.getY()) +
-                                g.getBz(xCellPosition, yCellPosition + 1) *
+                                g.getBz( (xCellPosition + g.getNumCellsX())%g.getNumCellsX(), (yCellPosition + 1 + g.getNumCellsY())%g.getNumCellsY() ) *
                                 ((xCellPosition2+0.5) * g.getCellWidth() - p.getX()) *
                                 (p.getY() - (yCellPosition2 - 0.5) * g.getCellHeight()) +
-                                g.getBz(xCellPosition + 1, yCellPosition + 1) *
+                                g.getBz( (xCellPosition + 1 + g.getNumCellsX())%g.getNumCellsX(), (yCellPosition + 1 + g.getNumCellsY())%g.getNumCellsY() ) *
                                 (p.getX() - (xCellPosition2 -0.5) * g.getCellWidth()) *
                                 (p.getY() - (yCellPosition2 -0.5) * g.getCellHeight())) /
                                 (g.getCellWidth() * g.getCellHeight()));
