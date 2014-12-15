@@ -392,6 +392,8 @@ public class Settings {
 	public void setSpeedOfLight(double speedOfLight) {
 		if( (this.eps0 * this.mu0) == speedOfLight*speedOfLight ) {
 			this.speedOfLight = speedOfLight;
+		} else {
+			System.out.println("Your chosen speed of light is in contradiction to the values of eps_0 and mu_0 !! Default value of c is used instead!!");
 		}
 	}
 
