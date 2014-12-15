@@ -55,6 +55,8 @@ public class Simulation {
 	 */
 	private double height;
 	private double speedOfLight;
+	private double eps0;
+	private double mu0;
 	/**
 	 * Number of iterations in the non-interactive simulation.
 	 */
@@ -134,6 +136,8 @@ public class Simulation {
 		specstep = settings.getSpectrumStep();
 		filePath = settings.getFilePath();
 		relativistic = settings.getRelativistic();
+		eps0 = settings.getEps0();
+		mu0 = settings.getMu0();
 
 		// TODO make particles a generic list
 		particles = (ArrayList<Particle>) settings.getParticles();
@@ -189,6 +193,8 @@ public class Simulation {
 		this.specstep = settings.getSpectrumStep();
 		this.filePath = settings.getFilePath();
 		this.relativistic = settings.getRelativistic();
+		this.eps0 = settings.getEps0();
+		this.mu0 = settings.getMu0();
 
 		this.particles = (ArrayList<Particle>) particles;
 		f = settings.getForce();
@@ -392,6 +398,8 @@ public class Simulation {
 		pw.write(SumJx + "\t");
 		pw.write(SumJy + "\t");
 		pw.write(GaussLaw + "\t");
+		pw.write(grid.getEy(grid.getNumCellsX()/2, grid.getNumCellsY()/2) + "\t");
+		pw.write(grid.getBz(grid.getNumCellsX()/2, grid.getNumCellsY()/2) + "\t");
 		
 		pw.write("\n");
 		
