@@ -320,6 +320,7 @@ public class Simulation {
 		FileWriter pw = new FileWriter(file, true);
 		double kinetic = 0;
 		double kineticTotal = 0;
+		RelativisticVelocity relvelocity = new RelativisticVelocity(1);
 		
 		if(time == 0) {
 			pw.write("#time \t x \t y \t vx \t vy \t kinetic \t Ex \t Ey \t Bz");
@@ -334,6 +335,7 @@ public class Simulation {
 			//pw.write(particles.get(i).getRadius() + "\n");
 			pw.write(particles.get(i).getVx() + "\t");
 			pw.write(particles.get(i).getVy() + "\t");
+			pw.write(relvelocity.calculateGamma(particles.get(i)) + "\t");
 			if(relativistic == false) {kinetic = particles.get(i).getMass()*(particles.get(i).getVx() * particles.get(i).getVx() + particles.get(i).getVy()*particles.get(i).getVy())/2;}
 			else {kinetic = Math.sqrt(particles.get(i).getMass()*particles.get(i).getMass()*( particles.get(i).getVx() * particles.get(i).getVx() + particles.get(i).getVy()*particles.get(i).getVy() + 1) ); }
 			pw.write(kinetic + "\t");
