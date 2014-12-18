@@ -205,7 +205,7 @@ public class Grid {
 		this.fsolver.initializeIterator(settings.getCellIterator(), numCellsX, numCellsY);
 
 		this.cellIterator = settings.getCellIterator();
-		this.cellIterator.setExtraCellsMode(numCellsX, numCellsY);
+		this.cellIterator.setNormalMode(numCellsX, numCellsY);//this.cellIterator.setExtraCellsMode(numCellsX, numCellsY);
 	}
 
 	/**
@@ -214,8 +214,8 @@ public class Grid {
 	 * cells. The input cells have to contain also the boundary cells.
 	 */
 	public Grid(Settings settings, Cell[][] cells) {
-		this.numCellsX = cells.length - EXTRA_CELLS_BEFORE_GRID - EXTRA_CELLS_AFTER_GRID;
-		this.numCellsY = cells[0].length - EXTRA_CELLS_BEFORE_GRID - EXTRA_CELLS_AFTER_GRID;
+		this.numCellsX = cells.length;//this.numCellsX = cells.length - EXTRA_CELLS_BEFORE_GRID - EXTRA_CELLS_AFTER_GRID;
+		this.numCellsY = cells[0].length;//this.numCellsY = cells[0].length - EXTRA_CELLS_BEFORE_GRID - EXTRA_CELLS_AFTER_GRID;
 		this.cellWidth = settings.getSimulationWidth() / numCellsX;
 		this.cellHeight = settings.getSimulationHeight() / numCellsY;
 
@@ -231,7 +231,7 @@ public class Grid {
 		fsolver.initializeIterator(settings.getCellIterator(), numCellsX, numCellsY);
 
 		this.cellIterator = settings.getCellIterator();
-		this.cellIterator.setExtraCellsMode(this.numCellsX, this.numCellsY);
+		this.cellIterator.setNormalMode(this.numCellsX, this.numCellsY);//this.cellIterator.setExtraCellsMode(this.numCellsX, this.numCellsY);
 	}
 
 	/**
@@ -243,7 +243,7 @@ public class Grid {
 			double simWidth, double simHeight) {
 		set(numCellsX, numCellsY, simWidth, simHeight);
 		fsolver.changeSize(numCellsX, numCellsY);
-		cellIterator.setExtraCellsMode(this.numCellsX, this.numCellsY);
+		cellIterator.setNormalMode(this.numCellsX, this.numCellsY);//cellIterator.setExtraCellsMode(this.numCellsX, this.numCellsY);
 	}
 
 	/**

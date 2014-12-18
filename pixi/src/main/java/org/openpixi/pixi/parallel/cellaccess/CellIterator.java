@@ -26,6 +26,7 @@ public abstract class CellIterator {
 	/**
 	 * In this mode the iterator does also calculate the extra cells.
 	 */
+	/*
 	public void setExtraCellsMode(int numCellsX, int numCellsY) {
 		dimensions = new IntBox(
 				-Grid.EXTRA_CELLS_BEFORE_GRID,
@@ -33,5 +34,5 @@ public abstract class CellIterator {
 				-Grid.EXTRA_CELLS_BEFORE_GRID,
 				numCellsY + Grid.EXTRA_CELLS_AFTER_GRID - 1);
 	}
-
+	*/
 }

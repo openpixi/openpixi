@@ -49,13 +49,13 @@ public class ParallelCellIterator extends CellIterator {
 		numOfCells = dimensions.xsize() * dimensions.ysize();
 	}
 
-
+/*
 	@Override
 	public void setExtraCellsMode(int numCellsX, int numCellsY) {
 		super.setExtraCellsMode(numCellsX, numCellsY);
 		numOfCells = dimensions.xsize() * dimensions.ysize();
 	}
-
+*/
 
 	private class Task implements Callable<Object> {
 
