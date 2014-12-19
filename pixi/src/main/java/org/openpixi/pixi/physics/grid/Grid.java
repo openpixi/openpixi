@@ -216,8 +216,8 @@ public class Grid {
 	public Grid(Settings settings, Cell[][] cells) {
 		this.numCellsX = cells.length;//this.numCellsX = cells.length - EXTRA_CELLS_BEFORE_GRID - EXTRA_CELLS_AFTER_GRID;
 		this.numCellsY = cells[0].length;//this.numCellsY = cells[0].length - EXTRA_CELLS_BEFORE_GRID - EXTRA_CELLS_AFTER_GRID;
-		this.cellWidth = settings.getSimulationWidth() / numCellsX;
-		this.cellHeight = settings.getSimulationHeight() / numCellsY;
+		this.cellWidth = settings.getGridStep();//this.cellWidth = settings.getSimulationWidth() / numCellsX;
+		this.cellHeight = this.cellWidth;//this.cellHeight = settings.getSimulationHeight() / numCellsY;
 
 		this.cells = cells;
 
