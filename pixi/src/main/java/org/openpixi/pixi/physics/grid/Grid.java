@@ -170,6 +170,10 @@ public class Grid {
 	public void setBzo(int x, int y, double value) {
 		cells[index(x)][index(y)].setBzo(value);
 	}
+	
+	public void resetCharge(int x, int y) {
+		cells[index(x)][index(y)].resetCharge();
+	}
 
 	public int getNumCellsX() {
 		return numCellsX;
@@ -355,7 +359,8 @@ public class Grid {
 	 *
 	 */
 	private int index(int clientIdx) {
-		return EXTRA_CELLS_BEFORE_GRID + clientIdx;
+		//return EXTRA_CELLS_BEFORE_GRID + clientIdx;
+		return clientIdx;
 	}
 
 	/**
@@ -382,7 +387,7 @@ public class Grid {
 	private class ResetChargeAction implements CellAction {
 
 		public void execute(Grid grid, int x, int y) {
-			grid.getCell(x, y).resetCharge();
+			grid.resetCharge(x, y);
 		}
 	}
 

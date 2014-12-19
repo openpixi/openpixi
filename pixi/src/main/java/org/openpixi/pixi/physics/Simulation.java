@@ -378,10 +378,10 @@ public class Simulation {
 		for (int i = 0; i < grid.getNumCellsX(); i++) {
 			for (int j = 0; j < grid.getNumCellsY(); j++) {
 				
-				SumRho += grid.getCells()[i][j].getRho();
-				SumJx += grid.getCells()[i][j].getJx();
-				SumJy += grid.getCells()[i][j].getJy();
-				fieldEnergy += ( grid.getCells()[i][j].getBz()*grid.getCells()[i][j].getBz() + grid.getCells()[i][j].getEx()*grid.getCells()[i][j].getEx() + grid.getCells()[i][j].getEy()*grid.getCells()[i][j].getEy())/2;
+				SumRho += grid.getRho(i, j);
+				SumJx += grid.getJx(i, j);
+				SumJy += grid.getJy(i, j);
+				fieldEnergy += ( grid.getBz(i, j)*grid.getBz(i, j) + grid.getEx(i, j)*grid.getEx(i, j) + grid.getEy(i, j)*grid.getEy(i, j))/2;
 				GaussLaw += (grid.getEx((i+1)%grid.getNumCellsX(), j) - grid.getEx(i, j)) / grid.getCellWidth() +
 						(grid.getEy(i, (j+1)%grid.getNumCellsY()) - grid.getEy(i, j)) / grid.getCellHeight() - grid.getRho(i,j)*4*Math.PI;
 				/*pw.write(grid.getCells()[i][j].getJx() + "\n");
@@ -427,13 +427,13 @@ public class Simulation {
 		file = getOutputFile("snapshot" + time + ".txt");
 		PrintWriter snap = new PrintWriter(file);
 
-		for (int i = 0; i < grid.getNumCellsXTotal(); i++) {
-			for (int j = 0; j < grid.getNumCellsYTotal(); j++) {
+		for (int i = 0; i < grid.getNumCellsX(); i++) {
+			for (int j = 0; j < grid.getNumCellsY(); j++) {
 				
 				snap.write(i + "\t");
 				snap.write(j + "\t");
-				snap.write(grid.getCells()[i][j].getEy() + "\t");
-				snap.write(grid.getCells()[i][j].getBz() + "\t");
+				snap.write(grid.getEy(i, j) + "\t");
+				snap.write(grid.getBz(i, j) + "\t");
 				snap.write("\n");
 				
 			}
