@@ -204,7 +204,7 @@ public class Grid {
 
 		set(settings.getGridCellsX(), settings.getGridCellsY(),
 				settings.getSimulationWidth(), settings.getSimulationHeight());
-
+		
 		this.fsolver = settings.getGridSolver();
 		this.fsolver.initializeIterator(settings.getCellIterator(), numCellsX, numCellsY);
 
@@ -275,7 +275,7 @@ public class Grid {
 
 			}
 		}
-		createBoundaryCells();
+		//createBoundaryCells();
 	}
 
 	private void createBoundaryCells() {
