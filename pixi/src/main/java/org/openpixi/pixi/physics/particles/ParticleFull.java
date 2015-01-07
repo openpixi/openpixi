@@ -30,6 +30,9 @@ public class ParticleFull extends Particle {
 
 	/** y-coordinate */
 	private double y;
+	
+	/** z-coordinate */
+	private double z;
 
 	/** radius of particle */
 	private double radius;
@@ -42,12 +45,18 @@ public class ParticleFull extends Particle {
 
 	/** velocity in y-direction */
 	private double vy;
+	
+	/** velocity in z-direction */
+	private double vz;
 
 	/** acceleration in x-direction */
 	private double ax;
 
 	/** acceleration in y-direction */
 	private double ay;
+	
+	/** acceleration in z-direction */
+	private double az;
 
 	/** mass of the particle */
 	private double mass;
@@ -60,8 +69,14 @@ public class ParticleFull extends Particle {
 	/**previous y position of particle*/
 	private double prevY;
 	
+	/**previous z position of particle*/
+	private double prevZ;
+	
 	private double Ex;
 	private double Ey;
+	private double Ez;
+	private double Bx;
+	private double By;
 	private double Bz;
 	
 	/**previous position component of the force in x - direction used in Boris & BorisDamped*/
@@ -69,6 +84,9 @@ public class ParticleFull extends Particle {
 	
 	/**previous position component of the force in y - direction used in Boris & BorisDamped*/
 	private double prevpositionComponentForceY;
+	
+	/**previous position component of the force in z - direction used in Boris & BorisDamped*/
+	private double prevpositionComponentForceZ;
 
 	/**previous tangent velocity component of the force in x - direction used in Boris*/
 	private double prevtangentVelocityComponentOfForceX;
@@ -76,13 +94,25 @@ public class ParticleFull extends Particle {
 	/**previous tangent velocity component of the force in y - direction used in Boris*/
 	private double prevtangentVelocityComponentOfForceY;
 	
+	/**previous tangent velocity component of the force in z - direction used in Boris*/
+	private double prevtangentVelocityComponentOfForceZ;
+	
 	/**previous normal velocity component of the force in x - direction used in LeapFrogDamped*/
 	private double prevnormalVelocityComponentOfForceX;
 
 	/**previous normal velocity component of the force in y - direction used in LeapFrogDamped*/
-	private double prevnormalVelocityComponentOfForceY;	
+	private double prevnormalVelocityComponentOfForceY;
+	
+	/**previous normal velocity component of the force in z - direction used in LeapFrogDamped*/
+	private double prevnormalVelocityComponentOfForceZ;
+	
+	/**previous magnetic field in x - direction used in Boris & BorisDamped*/
+	private double prevBx;
+	
+	/**previous magnetic field in y - direction used in Boris & BorisDamped*/
+	private double prevBy;
 
-	/**previous magnetic field used in Boris & BorisDamped*/
+	/**previous magnetic field in z - direction used in Boris & BorisDamped*/
 	private double prevBz;
 	
 	/**previous linear drag coefficient used in BorisDamped*/
@@ -110,6 +140,18 @@ public class ParticleFull extends Particle {
 
 	public void addY(double y) {
 		this.y += y;
+	}
+	
+	public double getZ() {
+		return z;
+	}
+
+	public void setZ(double z) {
+		this.z = z;
+	}
+
+	public void addZ(double z) {
+		this.z += z;
 	}
 
 	public double getRadius() {
@@ -143,6 +185,14 @@ public class ParticleFull extends Particle {
 	public void setVy(double vy) {
 		this.vy = vy;
 	}
+	
+	public double getVz() {
+		return vz;
+	}
+
+	public void setVz(double vz) {
+		this.vz = vz;
+	}
 
 	public double getAx() {
 		return ax;
@@ -158,6 +208,14 @@ public class ParticleFull extends Particle {
 
 	public void setAy(double ay) {
 		this.ay = ay;
+	}
+	
+	public double getAz() {
+		return az;
+	}
+
+	public void setAz(double az) {
+		this.az = az;
 	}
 
 	public double getMass() {
@@ -200,6 +258,18 @@ public class ParticleFull extends Particle {
 		this.prevY += y;
 	}
 	
+	public double getPrevZ() {
+		return prevZ;
+	}
+
+	public void setPrevZ(double prevZ) {
+		this.prevZ = prevZ;
+	}
+
+	public void addPrevZ(double z) {
+		this.prevZ += z;
+	}
+	
 	public double getEx() {
 		return Ex;
 	}
@@ -214,6 +284,30 @@ public class ParticleFull extends Particle {
 
 	public void setEy(double Ey) {
 		this.Ey = Ey;
+	}
+	
+	public double getEz() {
+		return Ez;
+	}
+
+	public void setEz(double Ez) {
+		this.Ez = Ez;
+	}
+	
+	public double getBx() {
+		return Bx;
+	}
+
+	public void setBx(double Bx) {
+		this.Bx = Bx;
+	}
+	
+	public double getBy() {
+		return By;
+	}
+
+	public void setBy(double By) {
+		this.By = By;
 	}
 
 	public double getBz() {
@@ -240,6 +334,13 @@ public class ParticleFull extends Particle {
 		this.prevpositionComponentForceY = prevpositionComponentForceY;
 	}
 
+	public double getPrevPositionComponentForceZ() {
+		return prevpositionComponentForceZ;
+	}
+
+	public void setPrevPositionComponentForceZ(double prevpositionComponentForceZ) {
+		this.prevpositionComponentForceZ = prevpositionComponentForceZ;
+	}
 	
 	public double getPrevTangentVelocityComponentOfForceX() {
 		return prevtangentVelocityComponentOfForceX;
@@ -255,6 +356,14 @@ public class ParticleFull extends Particle {
 
 	public void setPrevTangentVelocityComponentOfForceY(double prevtangentVelocityComponentOfForceY) {
 		this.prevtangentVelocityComponentOfForceY = prevtangentVelocityComponentOfForceY;
+	}
+	
+	public double getPrevTangentVelocityComponentOfForceZ() {
+		return prevtangentVelocityComponentOfForceZ;
+	}
+
+	public void setPrevTangentVelocityComponentOfForceZ(double prevtangentVelocityComponentOfForceZ) {
+		this.prevtangentVelocityComponentOfForceZ = prevtangentVelocityComponentOfForceZ;
 	}
 	
 	public double getPrevNormalVelocityComponentOfForceX() {
@@ -273,12 +382,36 @@ public class ParticleFull extends Particle {
 		this.prevnormalVelocityComponentOfForceY = prevnormalVelocityComponentOfForceY;
 	}
 	
+	public double getPrevNormalVelocityComponentOfForceZ() {
+		return prevnormalVelocityComponentOfForceZ;
+	}
+
+	public void setPrevNormalVelocityComponentOfForceZ(double prevnormalVelocityComponentOfForceZ) {
+		this.prevnormalVelocityComponentOfForceZ = prevnormalVelocityComponentOfForceZ;
+	}
+	
 	public double getPrevBz() {
 		return prevBz;
 	}
 
 	public void setPrevBz(double prevBz) {
 		this.prevBz = prevBz;
+	}
+	
+	public double getPrevBx() {
+		return prevBx;
+	}
+
+	public void setPrevBx(double prevBx) {
+		this.prevBx = prevBx;
+	}
+	
+	public double getPrevBy() {
+		return prevBy;
+	}
+
+	public void setPrevBy(double prevBy) {
+		this.prevBy = prevBy;
 	}
 	
 	public double getPrevLinearDragCoefficient() {
@@ -299,23 +432,34 @@ public class ParticleFull extends Particle {
 		Particle p = new ParticleFull();
 		p.setX(x);
 		p.setY(y);
+		p.setZ(z);
 		p.setRadius(radius);
 		p.setColor(color);
 		p.setVx(vx);
 		p.setVy(vy);
+		p.setVz(vz);
 		p.setAx(ax);
 		p.setAy(ay);
+		p.setAz(az);
 		p.setMass(mass);
 		p.setCharge(charge);
 		p.setPrevX(prevX);
 		p.setPrevY(prevY);
+		p.setPrevZ(prevZ);
 		p.setEx(Ex);
 		p.setEy(Ey);
+		p.setEz(Ez);
+		p.setBx(Bx);
+		p.setBy(By);
 		p.setBz(Bz);
 		p.setPrevPositionComponentForceX(prevpositionComponentForceX);
 		p.setPrevPositionComponentForceY(prevpositionComponentForceY);
+		p.setPrevPositionComponentForceY(prevpositionComponentForceZ);
 		p.setPrevTangentVelocityComponentOfForceX(prevtangentVelocityComponentOfForceX);
 		p.setPrevTangentVelocityComponentOfForceY(prevtangentVelocityComponentOfForceY);
+		p.setPrevTangentVelocityComponentOfForceY(prevtangentVelocityComponentOfForceZ);
+		p.setPrevBz(prevBx);
+		p.setPrevBz(prevBy);
 		p.setPrevBz(prevBz);
 		p.setPrevLinearDragCoefficient(prevLinearDragCoefficient);
 		
@@ -326,11 +470,12 @@ public class ParticleFull extends Particle {
 	public void storePosition() {
 		prevX = x;
 		prevY = y;
+		prevZ = z;
 	}
 
 
 	@Override
 	public String toString() {
-		return String.format("[%.3f,%.3f]", x, y);
+		return String.format("[%.3f,%.3f]", x, y, z);
 	}
 }

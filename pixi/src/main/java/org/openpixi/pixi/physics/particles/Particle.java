@@ -31,9 +31,13 @@ public abstract class Particle implements Serializable {
 	
 	public double getY() {return 0;}
 	
+	public double getZ() {return 0;}
+	
 	public double getPrevX() {return 0;}
 	
 	public double getPrevY() {return 0;}
+	
+	public double getPrevZ() {return 0;}
 	
 	public double getRadius() {return 0;}
 
@@ -43,9 +47,13 @@ public abstract class Particle implements Serializable {
 	
 	public double getVy() {return 0;}
 	
+	public double getVz() {return 0;}
+	
 	public double getAx() {return 0;}
 	
 	public double getAy() {return 0;}
+	
+	public double getAz() {return 0;}
 	
 	public double getMass() {return 0;}
 	
@@ -55,7 +63,17 @@ public abstract class Particle implements Serializable {
 	
 	public double getEy() {return 0;}
 	
+	public double getEz() {return 0;}
+	
+	public double getBx() {return 0;}
+	
+	public double getBy() {return 0;}
+	
 	public double getBz() {return 0;}
+	
+	public double getPrevBx() {return 0;}
+	
+	public double getPrevBy() {return 0;}
 	
 	public double getPrevBz() {return 0;}
 	
@@ -63,13 +81,19 @@ public abstract class Particle implements Serializable {
 	
 	public double getPrevPositionComponentForceY() {return 0;}
 	
+	public double getPrevPositionComponentForceZ() {return 0;}
+	
 	public double getPrevTangentVelocityComponentOfForceX() {return 0;}
 	
 	public double getPrevTangentVelocityComponentOfForceY() {return 0;}
 	
+	public double getPrevTangentVelocityComponentOfForceZ() {return 0;}
+	
 	public double getPrevNormalVelocityComponentOfForceX() {return 0;}
 	
 	public double getPrevNormalVelocityComponentOfForceY() {return 0;}
+	
+	public double getPrevNormalVelocityComponentOfForceZ() {return 0;}
 	
 	public double getPrevLinearDragCoefficient() {return 0;}
 
@@ -93,6 +117,14 @@ public abstract class Particle implements Serializable {
 
 	public void addPrevY(double y) {}
 
+	public void setZ(double z) {}
+
+	public void addZ(double z) {}
+	
+	public void setPrevZ(double prevZ) {}
+
+	public void addPrevZ(double z) {}
+
 	public void setRadius(double radius) {}
 
 	public void setColor(Color color) {}
@@ -101,9 +133,13 @@ public abstract class Particle implements Serializable {
 
 	public void setVy(double vy) {}
 	
+	public void setVz(double vz) {}
+	
 	public void setAx(double ax) {}
 
 	public void setAy(double ay) {}
+	
+	public void setAz(double az) {}
 
 	public void setMass(double mass) {}
 
@@ -112,22 +148,38 @@ public abstract class Particle implements Serializable {
 	public void setEx(double Ex) {}
 
 	public void setEy(double Ey) {}
+	
+	public void setEz(double Ez) {}
+	
+	public void setBx(double Bx) {}
+	
+	public void setBy(double By) {}
 
 	public void setBz(double Bz) {}
+	
+	public void setPrevBx(double prevBx) {}
+	
+	public void setPrevBy(double prevBy) {}
 	
 	public void setPrevBz(double prevBz) {}
 
 	public void setPrevPositionComponentForceX(double argument) {}
 
 	public void setPrevPositionComponentForceY(double argument) {}
+	
+	public void setPrevPositionComponentForceZ(double argument) {}
 
 	public void setPrevTangentVelocityComponentOfForceX(double argument) {}
 
 	public void setPrevTangentVelocityComponentOfForceY(double argument) {}
+	
+	public void setPrevTangentVelocityComponentOfForceZ(double argument) {}
 
 	public void setPrevNormalVelocityComponentOfForceX(double argument) {}
 
 	public void setPrevNormalVelocityComponentOfForceY(double argument) {}
+	
+	public void setPrevNormalVelocityComponentOfForceZ(double argument) {}
 
 	public void setPrevLinearDragCoefficient(double argument) {}
 
