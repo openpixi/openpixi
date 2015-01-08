@@ -12,6 +12,8 @@ public class Cell implements Serializable {
 	private double jx;
 	/**electric current in y-Direction*/
 	private double jy;
+	/**electric current in z-Direction*/
+	private double jz;
 
 	/**sum of electric charges in a cell*/
 	private double rho;
@@ -22,6 +24,12 @@ public class Cell implements Serializable {
 	private double Ex;
 	/**electric field in y direction at time t+dt*/
 	private double Ey;
+	/**electric field in z direction at time t+dt*/
+	private double Ez;
+	/**magnetic field in x direction at time t+dt*/
+	private double Bx;
+	/**magnetic field in y direction at time t+dt*/
+	private double By;
 	/**magnetic field in z direction at time t+dt*/
 	private double Bz;
 
@@ -29,6 +37,12 @@ public class Cell implements Serializable {
 	private double Exo;
 	/**electric field in y direction at time t*/
 	private double Eyo;
+	/**electric field in z direction at time t*/
+	private double Ezo;
+	/**magnetic field in x direction at time t*/
+	private double Bxo;
+	/**magnetic field in y direction at time t*/
+	private double Byo;
 	/**magnetic field in z direction at time t*/
 	private double Bzo;
 
@@ -55,6 +69,18 @@ public class Cell implements Serializable {
 	 */
 	public synchronized void addJy(double value) {
 		this.jy += value;
+	}
+	
+	public double getJz() {
+		return jz;
+	}
+
+	/**
+	 * Needs to be synchronized as we expect in the parallel version
+	 * two threads trying to update the field at the same time.
+	 */
+	public synchronized void addJz(double value) {
+		this.jz += value;
 	}
 
 	public double getRho() {
@@ -96,7 +122,31 @@ public class Cell implements Serializable {
 	public void setEy(double ey) {
 		Ey = ey;
 	}
+	
+	public double getEz() {
+		return Ez;
+	}
 
+	public void setEz(double ez) {
+		Ex = ez;
+	}
+
+	public double getBx() {
+		return Bx;
+	}
+
+	public void setBx(double bx) {
+		Bx = bx;
+	}
+	
+	public double getBy() {
+		return By;
+	}
+
+	public void setBy(double by) {
+		By = by;
+	}
+	
 	public double getBz() {
 		return Bz;
 	}
@@ -120,6 +170,30 @@ public class Cell implements Serializable {
 	public void setEyo(double eyo) {
 		Eyo = eyo;
 	}
+	
+	public double getEzo() {
+		return Ezo;
+	}
+
+	public void setEzo(double ezo) {
+		Ezo = ezo;
+	}
+	
+	public double getBxo() {
+		return Bxo;
+	}
+
+	public void setBxo(double bxo) {
+		Bxo = bxo;
+	}
+	
+	public double getByo() {
+		return Byo;
+	}
+
+	public void setByo(double byo) {
+		Byo = byo;
+	}
 
 	public double getBzo() {
 		return Bzo;
@@ -133,6 +207,7 @@ public class Cell implements Serializable {
 	public void resetCurrent() {
 		jx = 0;
 		jy = 0;
+		jz = 0;
 	}
 
 	public void resetCharge() {
@@ -142,6 +217,9 @@ public class Cell implements Serializable {
 	public void storeFields() {
 		Exo = Ex;
 		Eyo = Ey;
+		Ezo = Ez;
+		Bxo = Bx;
+		Byo = By;
 		Bzo = Bz;
 	}
 
@@ -155,18 +233,25 @@ public class Cell implements Serializable {
 	public void copyFrom(Cell other) {
 		this.jx = other.jx;
 		this.jy = other.jy;
+		this.jz = other.jz;
 		this.rho = other.rho;
 		this.phi = other.phi;
 		this.Ex = other.Ex;
 		this.Ey = other.Ey;
+		this.Ez = other.Ez;
+		this.Bx = other.Bx;
+		this.By = other.By;
 		this.Bz = other.Bz;
 		this.Exo = other.Exo;
 		this.Eyo = other.Eyo;
+		this.Ezo = other.Ezo;
+		this.Bxo = other.Bxo;
+		this.Byo = other.Byo;
 		this.Bzo = other.Bzo;
 	}
 
 	@Override
 	public String toString() {
-		return String.format("E[%.3f,%.3f] Bz[%.3f] J[%.3f,%.3f]", Ex, Ey, Bz, jx, jy);
+		return String.format("E[%.3f,%.3f] B[%.3f,%.3f] J[%.3f,%.3f]", Ex, Ey, Ez, Bx, By, Bz, jx, jy, jz);
 	}
 }
