@@ -95,5 +95,73 @@ public class ParticleLoader {
 		 
 		 return particles;
 	}
+	
+	public List<Particle> load(List<ParticleFactory> particleFactories, double simulationWidth,
+			double simulationHeight, double simulationDepth) throws IllegalArgumentException {
+		
+		 List<Particle> particles = new ArrayList<Particle>();
+		 /** Starting index of a block of similar particles in the particle list */
+		 int index = 0;
+		 
+		 for(ParticleFactory f : particleFactories) {
+			 for(int i = 0; i < f.getNumberOfInstances(); i++) {
+				 particles.add(f.createParticle());				 
+			 }
+			 
+			 switch(f.getPositionDistribution()) {
+				case RANDOM: {
+			 		RandomPositionDistribution.apply(particles, index, index + f.getNumberOfInstances(), 
+			 				0, simulationHeight, 0, simulationWidth, 0, simulationDepth, f.getSeedForRandom1());
+			 		break;
+			 	}
+			 	case CONSTANT_SPACING: {
+			 		ConstantSpacingDistribution.apply(particles, index, index + f.getNumberOfInstances(),
+			 				0, simulationWidth, 0, simulationHeight);
+			 		break;
+			 	}
+				default: {
+					throw new IllegalArgumentException("Can't yet handle " + f.getPositionDistribution());
+				}
+			 }
+			 
+			 switch(f.getVelocityDistribution()) {
+			 	case NONE: {
+			 		// THIS IS FOR IMMOBILE PARTICLES!
+			 		// If the particle has a velocity variable this SHOULD NOT BE USED!
+			 		break;
+			 	}
+			 	case CONSTANT: {
+			 		ConstantVelocityDistribution.apply(particles, index, index + f.getNumberOfInstances(), 
+			 				f.getVelocityParameter1(), f.getVelocityParameter2());
+			 		break;
+			 	}
+			 	case RANDOM: {
+			 		RandomVelocityDistribution.apply(particles, index, index + f.getNumberOfInstances(), 
+			 				f.getVelocityParameter1(), f.getVelocityParameter2(), f.getVelocityParameter3(), 
+			 				f.getSeedForRandom2());
+			 	}
+			 	case MAXWELLIAN: {
+			 		MaxwellianDistribution.apply(particles, index, index + f.getNumberOfInstances(),
+			 				f.getVelocityParameter1(), f.getVelocityParameter2(), f.getSeedForRandom2());
+			 		break;
+			 	}
+			 	case MAXWELLIAN_WITH_CUTOFF: {
+			 		MaxwellianDistribution.applyWithCutoff(particles, index, 
+			 				index + f.getNumberOfInstances(), f.getVelocityParameter1(), 
+			 				f.getVelocityParameter2(), f.getVelocityParameter3(), f.getSeedForRandom2());
+			 		break;
+			 	}
+				default: {
+					throw new IllegalArgumentException("Can't yet handle " + f.getVelocityDistribution());
+				}
+			 }
+			 
+			 index += f.getNumberOfInstances();
+			 f = null;
+		 }
+		 
+		 return particles;
+	}
+	
 
 }

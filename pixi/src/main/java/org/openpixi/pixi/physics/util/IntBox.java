@@ -7,12 +7,16 @@ public class IntBox implements Serializable {
 	private int xmax;
 	private int ymin;
 	private int ymax;
+	private int zmin;
+	private int zmax;
 
-	public IntBox(int xmin, int xmax, int ymin, int ymax) {
+	public IntBox(int xmin, int xmax, int ymin, int ymax, int zmin, int zmax) {
 		this.xmin = xmin;
 		this.xmax = xmax;
 		this.ymin = ymin;
 		this.ymax = ymax;
+		this.zmin = zmin;
+		this.zmax = zmax;
 	}
 
 	public int xmin() {
@@ -38,9 +42,21 @@ public class IntBox implements Serializable {
 	public int ysize() {
 		return ymax - ymin + 1;
 	}
+	
+	public int zmin() {
+		return zmin;
+	}
 
-	public boolean contains(int x, int y) {
-		if (xmin <= x && x <= xmax && ymin <= y && y <= ymax()) {
+	public int zmax() {
+		return zmax;
+	}
+
+	public int zsize() {
+		return zmax - zmin + 1;
+	}
+
+	public boolean contains(int x, int y, int z) {
+		if (xmin <= x && x <= xmax && ymin <= y && y <= ymax && zmin <= z && z <= zmax) {
 			return true;
 		}
 		else {
@@ -53,14 +69,15 @@ public class IntBox implements Serializable {
 	 * Point lying on xmin, xmax, ymin or ymax has distance 0.
 	 * Does not distinguish whether the point lies outside the box or inside.
 	 */
-	public int distanceFromBorder(int x, int y) {
+	public int distanceFromBorder(int x, int y, int z) {
 		int xmind = Math.min(Math.abs(x - xmin), Math.abs(x - xmax));
 		int ymind = Math.min(Math.abs(y - ymin), Math.abs(y - ymax));
-		return Math.min(xmind, ymind);
+		int zmind = Math.min(Math.abs(z - zmin), Math.abs(z - zmax));
+		return Math.min(xmind, Math.min(ymind, zmind) );
 	}
 
 	@Override
 	public String toString() {
-		return String.format("[%d,%d,%d,%d]", xmin, xmax, ymin, ymax);
+		return String.format("[%d,%d,%d,%d,%d,%d]", xmin, xmax, ymin, ymax, zmin, zmax);
 	}
 }

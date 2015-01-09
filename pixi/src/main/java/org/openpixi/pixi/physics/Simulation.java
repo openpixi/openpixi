@@ -54,6 +54,10 @@ public class Simulation {
 	 * Height of simulated area
 	 */
 	private double height;
+	/**
+	 * Depth of simulated area
+	 */
+	private double depth;
 	private double speedOfLight;
 	private double eps0;
 	private double mu0;
@@ -114,6 +118,10 @@ public class Simulation {
 	public double getHeight() {
 		return height;
 	}
+	
+	public double getDepth() {
+		return depth;
+	}
 
 	public double getSpeedOfLight() {
 		return speedOfLight;
@@ -130,6 +138,7 @@ public class Simulation {
 		tstep = settings.getTimeStep();
 		width = settings.getSimulationWidth();
 		height = settings.getSimulationHeight();
+		depth = settings.getSimulationDepth();
 		speedOfLight = settings.getSpeedOfLight();
 		iterations = settings.getIterations();
 		tottime = 0;
@@ -144,7 +153,7 @@ public class Simulation {
 		f = settings.getForce();
 
 		ParticleBoundaries particleBoundaries = new SimpleParticleBoundaries(
-				new DoubleBox(0, width, 0, height),
+				new DoubleBox(0, width, 0, height),								//Has to be changed!!!
 				settings.getParticleBoundary());
 		mover = new ParticleMover(
 				settings.getParticleSolver(),
@@ -187,6 +196,7 @@ public class Simulation {
 		this.tstep = settings.getTimeStep();
 		this.width = settings.getSimulationWidth();
 		this.height = settings.getSimulationHeight();
+		this.depth = settings.getSimulationDepth();
 		this.speedOfLight = settings.getSpeedOfLight();
 		this.iterations = settings.getIterations();
 		this.tottime = 0;

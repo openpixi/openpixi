@@ -59,7 +59,7 @@ public class Settings {
 	// DEFAULT VALUES
 	//----------------------------------------------------------------------------------------------
 	private double speedOfLight = 1;
-	private double timeStep = 1;
+	private double timeStep = 0.5;
 	private double gridStep = 1;
 	private double tMax = 3000;
 	private int spectrumStep = 300;
@@ -70,12 +70,14 @@ public class Settings {
 	// Grid related settings
 	private int gridCellsX = 10;
 	private int gridCellsY = 10;
+	private int gridCellsZ = 10;
 	private double simulationWidth = gridCellsX*gridStep;
 	private double simulationHeight = gridCellsY*gridStep;
+	private double simulationDepth = gridCellsZ*gridStep;
 	private FieldSolver gridSolver = new SimpleSolver();
 	private PoissonSolver poissonSolver = new PoissonSolverFFTPeriodic();
 	private boolean useGrid = true;
-	private boolean relativistic = false;
+	private boolean relativistic = true;
 	private double eps0 = 1.0/(4*Math.PI);
 	private double mu0 = 4*Math.PI;
 	// Particle related settings
@@ -130,6 +132,10 @@ public class Settings {
 	public double getSimulationHeight() {
 		return simulationHeight;
 	}
+	
+	public double getSimulationDepth() {
+		return simulationDepth;
+	}
 
 	public int getGridCellsX() {
 		return gridCellsX;
@@ -137,6 +143,10 @@ public class Settings {
 
 	public int getGridCellsY() {
 		return gridCellsY;
+	}
+	
+	public int getGridCellsZ() {
+		return gridCellsZ;
 	}
 	
 	public double getGridStep() {
@@ -249,6 +259,10 @@ public class Settings {
 	public double getCellHeight() {
 		return simulationHeight / gridCellsY;
 	}
+	
+	public double getCellDepth() {
+		return simulationDepth / gridCellsZ;
+	}
 
 	/**
 	 * Build the combined force for simulation.
@@ -286,7 +300,7 @@ public class Settings {
 	public List<Particle> getParticles() {
 		if (particles.size() == 0) {
 			this.particles = (new ParticleLoader()).load(defaultParticleFactories(),
-					simulationWidth, simulationHeight, gridCellsX, gridCellsY);
+					simulationWidth, simulationHeight, simulationDepth);
 		}
 
 		return cloneParticles();
@@ -387,6 +401,11 @@ public class Settings {
 	public void setGridCellsY(int gridCellsY) {
 		this.gridCellsY = gridCellsY;
 		this.simulationHeight = this.gridStep*gridCellsY;
+	}
+	
+	public void setGridCellsZ(int gridCellsZ) {
+		this.gridCellsZ = gridCellsZ;
+		this.simulationDepth = this.gridStep*gridCellsZ;
 	}
 
 	public void setSpeedOfLight(double speedOfLight) {

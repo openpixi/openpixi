@@ -26,6 +26,21 @@ import java.util.Random;
 public class RandomPositionDistribution {
 
 	public static List<Particle> apply(List<Particle> particles, int startIndex, int endIndex,
+			double startX, double endX, double startY, double endY, double startZ, double endZ,
+			long seed) {
+		
+		Random rand = new Random(seed);
+		
+		for(int i = startIndex; i < endIndex; i++) {			
+			 particles.get(i).setX(rand.nextDouble() * (endX - startX) + startX);
+			 particles.get(i).setY(rand.nextDouble() * (endY - startY) + startY);
+			 particles.get(i).setZ(rand.nextDouble() * (endZ - startZ) + startZ);
+		 }
+		
+		return particles;
+	}
+	
+	public static List<Particle> apply(List<Particle> particles, int startIndex, int endIndex,
 			double startX, double endX, double startY, double endY,
 			long seed) {
 		

@@ -49,15 +49,19 @@ public class Grid {
 	private ResetChargeAction resetCharge = new ResetChargeAction();
 	private ResetCurrentAction resetCurrent = new ResetCurrentAction();
 	private StoreFieldsAction storeFields = new StoreFieldsAction();
-	private Cell[][] cells;
+	private Cell[][][] cells;
 	/**
 	 * number of cells in x direction
 	 */
 	private int numCellsX;
 	/**
-	 * number of cells in x direction
+	 * number of cells in y direction
 	 */
 	private int numCellsY;
+	/**
+	 * number of cells in z direction
+	 */
+	private int numCellsZ;
 	/**
 	 * width of each cell
 	 */
@@ -66,6 +70,10 @@ public class Grid {
 	 * height of each cell
 	 */
 	private double cellHeight;
+	/**
+	 * depth of each cell
+	 */
+	private double cellDepth;
 
 	public FieldSolver getFsolver() {
 		return fsolver;
@@ -76,103 +84,271 @@ public class Grid {
 	}
 
 	public double getJx(int x, int y) {
-		return cells[index(x)][index(y)].getJx();
+		return cells[index(x)][index(y)][0].getJx();
 	}
 
 	public void addJx(int x, int y, double value) {
-		cells[index(x)][index(y)].addJx(value);
+		cells[index(x)][index(y)][0].addJx(value);
+	}
+	
+	public double getJx(int x, int y, int z) {
+		return cells[index(x)][index(y)][index(z)].getJx();
+	}
+
+	public void addJx(int x, int y, int z, double value) {
+		cells[index(x)][index(y)][index(z)].addJx(value);
 	}
 
 	public double getJy(int x, int y) {
-		return cells[index(x)][index(y)].getJy();
+		return cells[index(x)][index(y)][0].getJy();
 	}
 
 	public void addJy(int x, int y, double value) {
-		cells[index(x)][index(y)].addJy(value);
+		cells[index(x)][index(y)][0].addJy(value);
+	}
+	
+	public double getJy(int x, int y, int z) {
+		return cells[index(x)][index(y)][index(z)].getJy();
+	}
+
+	public void addJy(int x, int y, int z, double value) {
+		cells[index(x)][index(y)][index(z)].addJy(value);
+	}
+	
+	public double getJz(int x, int y, int z) {
+		return cells[index(x)][index(y)][index(z)].getJz();
+	}
+
+	public void addJz(int x, int y, int z, double value) {
+		cells[index(x)][index(y)][index(z)].addJz(value);
 	}
 
 	public double getRho(int x, int y) {
-		return cells[index(x)][index(y)].getRho();
+		return cells[index(x)][index(y)][0].getRho();
+	}
+	
+	public double getRho(int x, int y, int z) {
+		return cells[index(x)][index(y)][index(z)].getRho();
 	}
 
 	public void setRho(int x, int y, double value) {
-		cells[index(x)][index(y)].setRho(value);
+		cells[index(x)][index(y)][0].setRho(value);
+	}
+	
+	public void setRho(int x, int y, int z, double value) {
+		cells[index(x)][index(y)][index(z)].setRho(value);
 	}
 
 	public void addRho(int x, int y, double value) {
-		cells[index(x)][index(y)].addRho(value);
+		cells[index(x)][index(y)][0].addRho(value);
+	}
+	
+	public void addRho(int x, int y, int z, double value) {
+		cells[index(x)][index(y)][index(z)].addRho(value);
 	}
 
 	public double getPhi(int x, int y) {
-		return cells[index(x)][index(y)].getPhi();
+		return cells[index(x)][index(y)][0].getPhi();
 	}
 
 	public void setPhi(int x, int y, double value) {
-		cells[index(x)][index(y)].setPhi(value);
+		cells[index(x)][index(y)][0].setPhi(value);
+	}
+	
+	public double getPhi(int x, int y, int z) {
+		return cells[index(x)][index(y)][index(z)].getPhi();
+	}
+
+	public void setPhi(int x, int y, int z, double value) {
+		cells[index(x)][index(y)][index(z)].setPhi(value);
 	}
 
 	public double getEx(int x, int y) {
-		return cells[index(x)][index(y)].getEx();
+		return cells[index(x)][index(y)][0].getEx();
 	}
 
 	public void setEx(int x, int y, double value) {
-		cells[index(x)][index(y)].setEx(value);
+		cells[index(x)][index(y)][0].setEx(value);
 	}
 
 	public double getExo(int x, int y) {
-		return cells[index(x)][index(y)].getExo();
+		return cells[index(x)][index(y)][0].getExo();
 	}
 
 	public void setExo(int x, int y, double value) {
-		cells[index(x)][index(y)].setExo(value);
+		cells[index(x)][index(y)][0].setExo(value);
 	}
 	
 	public void addEx(int x, int y, double value) {
-		cells[index(x)][index(y)].setEx(cells[index(x)][index(y)].getEx() + value);
+		cells[index(x)][index(y)][0].setEx(cells[index(x)][index(y)][0].getEx() + value);
+	}
+	
+	public double getEx(int x, int y, int z) {
+		return cells[index(x)][index(y)][index(z)].getEx();
+	}
+
+	public void setEx(int x, int y, int z, double value) {
+		cells[index(x)][index(y)][index(z)].setEx(value);
+	}
+
+	public double getExo(int x, int y, int z) {
+		return cells[index(x)][index(y)][index(z)].getExo();
+	}
+
+	public void setExo(int x, int y, int z, double value) {
+		cells[index(x)][index(y)][index(z)].setExo(value);
+	}
+	
+	public void addEx(int x, int y, int z, double value) {
+		cells[index(x)][index(y)][index(z)].setEx(cells[index(x)][index(y)][index(z)].getEx() + value);
 	}
 
 	public double getEy(int x, int y) {
-		return cells[index(x)][index(y)].getEy();
+		return cells[index(x)][index(y)][0].getEy();
 	}
 
 	public void setEy(int x, int y, double value) {
-		cells[index(x)][index(y)].setEy(value);
+		cells[index(x)][index(y)][0].setEy(value);
 	}
 
 	public double getEyo(int x, int y) {
-		return cells[index(x)][index(y)].getEyo();
+		return cells[index(x)][index(y)][0].getEyo();
 	}
 
 	public void setEyo(int x, int y, double value) {
-		cells[index(x)][index(y)].setEyo(value);
+		cells[index(x)][index(y)][0].setEyo(value);
 	}
 	
 	public void addEy(int x, int y, double value) {
-		cells[index(x)][index(y)].setEy(cells[index(x)][index(y)].getEy() + value);
+		cells[index(x)][index(y)][0].setEy(cells[index(x)][index(y)][0].getEy() + value);
+	}
+	
+	public double getEy(int x, int y, int z) {
+		return cells[index(x)][index(y)][index(z)].getEy();
+	}
+
+	public void setEy(int x, int y, int z, double value) {
+		cells[index(x)][index(y)][index(z)].setEy(value);
+	}
+
+	public double getEyo(int x, int y, int z) {
+		return cells[index(x)][index(y)][index(z)].getEyo();
+	}
+
+	public void setEyo(int x, int y, int z, double value) {
+		cells[index(x)][index(y)][index(z)].setEyo(value);
+	}
+	
+	public void addEy(int x, int y, int z, double value) {
+		cells[index(x)][index(y)][index(z)].setEy(cells[index(x)][index(y)][index(z)].getEy() + value);
+	}
+	
+	public double getEz(int x, int y, int z) {
+		return cells[index(x)][index(y)][index(z)].getEz();
+	}
+
+	public void setEz(int x, int y, int z, double value) {
+		cells[index(x)][index(y)][index(z)].setEz(value);
+	}
+
+	public double getEzo(int x, int y, int z) {
+		return cells[index(x)][index(y)][index(z)].getEzo();
+	}
+
+	public void setEzo(int x, int y, int z, double value) {
+		cells[index(x)][index(y)][index(z)].setEzo(value);
+	}
+	
+	public void addEz(int x, int y, int z, double value) {
+		cells[index(x)][index(y)][index(z)].setEz(cells[index(x)][index(y)][index(z)].getEz() + value);
 	}
 
 	public double getBz(int x, int y) {
-		return cells[index(x)][index(y)].getBz();
+		return cells[index(x)][index(y)][0].getBz();
 	}
 
 	public void setBz(int x, int y, double value) {
-		cells[index(x)][index(y)].setBz(value);
+		cells[index(x)][index(y)][0].setBz(value);
 	}
 
 	public void addBz(int x, int y, double value) {
-		cells[index(x)][index(y)].setBz(cells[index(x)][index(y)].getBz() + value);
+		cells[index(x)][index(y)][0].setBz(cells[index(x)][index(y)][0].getBz() + value);
 	}
 
 	public double getBzo(int x, int y) {
-		return cells[index(x)][index(y)].getBzo();
+		return cells[index(x)][index(y)][0].getBzo();
 	}
 
 	public void setBzo(int x, int y, double value) {
-		cells[index(x)][index(y)].setBzo(value);
+		cells[index(x)][index(y)][0].setBzo(value);
+	}
+	
+	public double getBz(int x, int y, int z) {
+		return cells[index(x)][index(y)][index(z)].getBz();
+	}
+
+	public void setBz(int x, int y, int z, double value) {
+		cells[index(x)][index(y)][index(z)].setBz(value);
+	}
+
+	public void addBz(int x, int y, int z, double value) {
+		cells[index(x)][index(y)][index(z)].setBz(cells[index(x)][index(y)][index(z)].getBz() + value);
+	}
+
+	public double getBzo(int x, int y, int z) {
+		return cells[index(x)][index(y)][index(z)].getBzo();
+	}
+
+	public void setBzo(int x, int y, int z, double value) {
+		cells[index(x)][index(y)][index(z)].setBzo(value);
+	}
+	
+	public double getBx(int x, int y, int z) {
+		return cells[index(x)][index(y)][index(z)].getBx();
+	}
+
+	public void setBx(int x, int y, int z, double value) {
+		cells[index(x)][index(y)][index(z)].setBx(value);
+	}
+
+	public void addBx(int x, int y, int z, double value) {
+		cells[index(x)][index(y)][index(z)].setBx(cells[index(x)][index(y)][index(z)].getBx() + value);
+	}
+
+	public double getBxo(int x, int y, int z) {
+		return cells[index(x)][index(y)][index(z)].getBxo();
+	}
+
+	public void setBxo(int x, int y, int z, double value) {
+		cells[index(x)][index(y)][index(z)].setBxo(value);
+	}
+	
+	public double getBy(int x, int y, int z) {
+		return cells[index(x)][index(y)][index(z)].getBy();
+	}
+
+	public void setBy(int x, int y, int z, double value) {
+		cells[index(x)][index(y)][index(z)].setBy(value);
+	}
+
+	public void addBy(int x, int y, int z, double value) {
+		cells[index(x)][index(y)][index(z)].setBy(cells[index(x)][index(y)][index(z)].getBy() + value);
+	}
+
+	public double getByo(int x, int y, int z) {
+		return cells[index(x)][index(y)][index(z)].getByo();
+	}
+
+	public void setByo(int x, int y, int z, double value) {
+		cells[index(x)][index(y)][index(z)].setByo(value);
 	}
 	
 	public void resetCharge(int x, int y) {
-		cells[index(x)][index(y)].resetCharge();
+		cells[index(x)][index(y)][0].resetCharge();
+	}
+	
+	public void resetCharge(int x, int y, int z) {
+		cells[index(x)][index(y)][index(z)].resetCharge();
 	}
 
 	public int getNumCellsX() {
@@ -182,6 +358,10 @@ public class Grid {
 	public int getNumCellsY() {
 		return numCellsY;
 	}
+	
+	public int getNumCellsZ() {
+		return numCellsZ;
+	}
 
 	public double getCellWidth() {
 		return cellWidth;
@@ -190,26 +370,34 @@ public class Grid {
 	public double getCellHeight() {
 		return cellHeight;
 	}
-
-	public Cell getCell(int x, int y) {
-		return cells[index(x)][index(y)];
+	
+	public double getCellDepth() {
+		return cellDepth;
 	}
 
-	public Cell[][] getCells() {
+	public Cell getCell(int x, int y) {
+		return cells[index(x)][index(y)][0];
+	}
+	
+	public Cell getCell(int x, int y, int z) {
+		return cells[index(x)][index(y)][index(z)];
+	}
+
+	public Cell[][][] getCells() {
 		return cells;
 	}
 
 	public Grid(Settings settings) {
 		this.boundaryType = settings.getGridBoundary();
 
-		set(settings.getGridCellsX(), settings.getGridCellsY(),
-				settings.getSimulationWidth(), settings.getSimulationHeight());
+		set(settings.getGridCellsX(), settings.getGridCellsY(), settings.getGridCellsZ(),
+				settings.getSimulationWidth(), settings.getSimulationHeight(), settings.getSimulationDepth());
 		
 		this.fsolver = settings.getGridSolver();
-		this.fsolver.initializeIterator(settings.getCellIterator(), numCellsX, numCellsY);
+		this.fsolver.initializeIterator(settings.getCellIterator(), numCellsX, numCellsY, numCellsZ);
 
 		this.cellIterator = settings.getCellIterator();
-		this.cellIterator.setNormalMode(numCellsX, numCellsY);//this.cellIterator.setExtraCellsMode(numCellsX, numCellsY);
+		this.cellIterator.setNormalMode(numCellsX, numCellsY, numCellsZ);//this.cellIterator.setExtraCellsMode(numCellsX, numCellsY);
 	}
 
 	/**
@@ -217,11 +405,13 @@ public class Grid {
 	 * come from master; hence, this constructor. Creates grid from the given
 	 * cells. The input cells have to contain also the boundary cells.
 	 */
-	public Grid(Settings settings, Cell[][] cells) {
+	public Grid(Settings settings, Cell[][][] cells) {
 		this.numCellsX = cells.length;//this.numCellsX = cells.length - EXTRA_CELLS_BEFORE_GRID - EXTRA_CELLS_AFTER_GRID;
 		this.numCellsY = cells[0].length;//this.numCellsY = cells[0].length - EXTRA_CELLS_BEFORE_GRID - EXTRA_CELLS_AFTER_GRID;
+		this.numCellsZ = cells[0][0].length;
 		this.cellWidth = settings.getGridStep();//this.cellWidth = settings.getSimulationWidth() / numCellsX;
 		this.cellHeight = this.cellWidth;//this.cellHeight = settings.getSimulationHeight() / numCellsY;
+		this.cellDepth = this.cellWidth;
 
 		this.cells = cells;
 
@@ -232,10 +422,10 @@ public class Grid {
 		 */
 
 		this.fsolver = settings.getGridSolver();
-		fsolver.initializeIterator(settings.getCellIterator(), numCellsX, numCellsY);
+		fsolver.initializeIterator(settings.getCellIterator(), numCellsX, numCellsY, numCellsZ);
 
 		this.cellIterator = settings.getCellIterator();
-		this.cellIterator.setNormalMode(this.numCellsX, this.numCellsY);//this.cellIterator.setExtraCellsMode(this.numCellsX, this.numCellsY);
+		this.cellIterator.setNormalMode(this.numCellsX, this.numCellsY, this.numCellsZ);//this.cellIterator.setExtraCellsMode(this.numCellsX, this.numCellsY);
 	}
 
 	/**
@@ -243,11 +433,11 @@ public class Grid {
 	 * in distributed version E.g. throw an exception if this is distributed
 	 * version
 	 */
-	public void changeSize(int numCellsX, int numCellsY,
-			double simWidth, double simHeight) {
-		set(numCellsX, numCellsY, simWidth, simHeight);
-		fsolver.changeSize(numCellsX, numCellsY);
-		cellIterator.setNormalMode(this.numCellsX, this.numCellsY);//cellIterator.setExtraCellsMode(this.numCellsX, this.numCellsY);
+	public void changeSize(int numCellsX, int numCellsY, int numCellsZ,
+			double simWidth, double simHeight, double simDepth) {
+		set(numCellsX, numCellsY, numCellsZ, simWidth, simHeight, simDepth);
+		fsolver.changeSize(numCellsX, numCellsY, numCellsZ);
+		cellIterator.setNormalMode(this.numCellsX, this.numCellsY, this.numCellsZ);//cellIterator.setExtraCellsMode(this.numCellsX, this.numCellsY);
 	}
 
 	/**
@@ -255,29 +445,32 @@ public class Grid {
 	 * TODO make sure the method can not be called in distributed version E.g.
 	 * throw an exception if this is distributed version
 	 */
-	private void set(int numCellsX, int numCellsY,
-			double simWidth, double simHeight) {
+	private void set(int numCellsX, int numCellsY, int numCellsZ,
+			double simWidth, double simHeight, double simDepth) {
 
 		this.numCellsX = numCellsX;
 		this.numCellsY = numCellsY;
+		this.numCellsZ = numCellsZ;
 		this.cellWidth = simWidth / numCellsX;
 		this.cellHeight = simHeight / numCellsY;
+		this.cellDepth = simDepth / numCellsZ;
 
 		createGridWithBoundaries();
 	}
 
 	private void createGridWithBoundaries() {
-		cells = new Cell[getNumCellsXTotal()][getNumCellsYTotal()];
+		cells = new Cell[getNumCellsX()][getNumCellsY()][getNumCellsZ()];
 		// Create inner cells
 		for (int x = 0; x < getNumCellsX(); x++) {
 			for (int y = 0; y < getNumCellsY(); y++) {
-				cells[index(x)][index(y)] = new Cell();
-
+				for (int z = 0; z < getNumCellsZ(); z++) {
+					cells[index(x)][index(y)][index(z)] = new Cell();
+				}
 			}
 		}
 		//createBoundaryCells();
 	}
-
+/*
 	private void createBoundaryCells() {
 		// left boundary (with corner cells)
 		for (int x = 0; x < EXTRA_CELLS_BEFORE_GRID; x++) {
@@ -304,10 +497,11 @@ public class Grid {
 			}
 		}
 	}
-
+*/
 	/**
 	 * Based on the boundary type creates the boundary cell.
 	 */
+/*	
 	private void createBoundaryCell(int x, int y) {
 		if (boundaryType == GridBoundaryType.Hardwall) {
 			cells[x][y] = new Cell();
@@ -333,7 +527,7 @@ public class Grid {
 			cells[x][y] = cells[refX][refY];
 		}
 	}
-
+*/
 	public void updateGrid(double tstep) {
 		storeFields();
 		getFsolver().step(this, tstep);
@@ -367,34 +561,38 @@ public class Grid {
 	 * Includes the extra cells.
 	 */
 	public int getNumCellsXTotal() {
-		return numCellsX + EXTRA_CELLS_BEFORE_GRID + EXTRA_CELLS_AFTER_GRID;
+		return numCellsX;//return numCellsX + EXTRA_CELLS_BEFORE_GRID + EXTRA_CELLS_AFTER_GRID;
 	}
 
 	/**
 	 * Includes the extra cells.
 	 */
 	public int getNumCellsYTotal() {
-		return numCellsY + EXTRA_CELLS_BEFORE_GRID + EXTRA_CELLS_AFTER_GRID;
+		return numCellsY;//return numCellsY + EXTRA_CELLS_BEFORE_GRID + EXTRA_CELLS_AFTER_GRID;
+	}
+	
+	public int getNumCellsZTotal() {
+		return numCellsZ;
 	}
 
 	private class ResetCurrentAction implements CellAction {
 
-		public void execute(Grid grid, int x, int y) {
-			grid.getCell(x, y).resetCurrent();
+		public void execute(Grid grid, int x, int y, int z) {
+			grid.getCell(x, y, z).resetCurrent();
 		}
 	}
 
 	private class ResetChargeAction implements CellAction {
 
-		public void execute(Grid grid, int x, int y) {
-			grid.resetCharge(x, y);
+		public void execute(Grid grid, int x, int y, int z) {
+			grid.resetCharge(x, y, z);
 		}
 	}
 
 	private class StoreFieldsAction implements CellAction {
 
-		public void execute(Grid grid, int x, int y) {
-			grid.getCell(x, y).storeFields();
+		public void execute(Grid grid, int x, int y, int z) {
+			grid.getCell(x, y, z).storeFields();
 		}
 	}
 }

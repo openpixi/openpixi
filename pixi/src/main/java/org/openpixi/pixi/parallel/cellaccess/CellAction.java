@@ -10,5 +10,5 @@ public interface CellAction {
 	/**
 	 * Executes the action on the cell [x,y].
 	 */
-	void execute(Grid grid, int x, int y);
+	void execute(Grid grid, int x, int y, int z);
 }

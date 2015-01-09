@@ -10,7 +10,9 @@ public class SequentialCellIterator extends CellIterator {
 	public void execute(Grid grid, CellAction action) {
 		for (int x = dimensions.xmin(); x <= dimensions.xmax(); ++x) {
 			for (int y = dimensions.ymin(); y <= dimensions.ymax(); ++y) {
-				action.execute(grid, x, y);
+				for (int z = dimensions.zmin(); z <= dimensions.zmax(); ++z) {
+					action.execute(grid, x, y, z);
+				}
 			}
 		}
 	}
