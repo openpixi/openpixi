@@ -25,6 +25,7 @@ import org.openpixi.pixi.physics.particles.Particle;
 import org.openpixi.pixi.physics.particles.ParticleFull;
 import org.openpixi.pixi.physics.solver.EulerRichardson;
 import org.openpixi.pixi.physics.solver.relativistic.BorisRelativistic;
+import org.openpixi.pixi.physics.solver.relativistic.LeapFrogRelativistic;
 import org.openpixi.pixi.physics.fields.PoissonSolverFFTPeriodic;
 import org.openpixi.pixi.physics.fields.EmptyPoissonSolver;
 import org.openpixi.pixi.physics.fields.SimpleSolver;
@@ -57,7 +58,8 @@ public class InitialConditions {
 				stt.getSpeedOfLight() / 3, count, radius));
 		stt.setBoundary(GeneralBoundaryType.Hardwall);
 		//stt.setParticleSolver(new EulerRichardson());
-		stt.setParticleSolver(new BorisRelativistic(stt.getSpeedOfLight()));
+		//stt.setParticleSolver(new BorisRelativistic(stt.getSpeedOfLight()));
+		stt.setParticleSolver(new LeapFrogRelativistic(stt.getSpeedOfLight()));
 		
 
 		Simulation simulation = new Simulation(stt);

@@ -49,16 +49,19 @@ public class SemiImplicitEulerRelativistic implements Solver {
 		//a(t) = F(u(t), x(t)) / m
 		p.setAx(f.getForceX(p) / p.getMass());
 		p.setAy(f.getForceY(p) / p.getMass());
+		p.setAz(f.getForceZ(p) / p.getMass());
 		
 		// u(t+dt) = u(t) + a(t)*dt
 		p.setVx(p.getVx() + p.getAx() * step);
 		p.setVy(p.getVy() + p.getAy() * step);
+		p.setVz(p.getVz() + p.getAz() * step);
 		
 		double gamma = relvelocity.calculateGamma(p);
 		
 		// x(t+dt) = x(t) + u(t+dt) * dt / gamma
 		p.setX(p.getX() + p.getVx() * step / gamma);
 		p.setY(p.getY() + p.getVy() * step / gamma);
+		p.setZ(p.getZ() + p.getVz() * step / gamma);
 		
 	}
 

@@ -24,6 +24,7 @@ import org.openpixi.pixi.physics.particles.ParticleFactory.PositionDistribution;
 import org.openpixi.pixi.physics.particles.ParticleFactory.VelocityDistribution;
 import org.openpixi.pixi.physics.solver.Euler;
 import org.openpixi.pixi.physics.solver.Solver;
+import org.openpixi.pixi.physics.solver.relativistic.LeapFrogRelativistic;
 import org.openpixi.pixi.physics.util.ClassCopier;
 import org.openpixi.pixi.physics.particles.ParticleFactory;
 import org.openpixi.pixi.physics.particles.ParticleLoader;
@@ -93,7 +94,7 @@ public class Settings {
 	private List<Particle> particles = new ArrayList<Particle>();
 	private Detector collisionDetector = new Detector();
 	private CollisionAlgorithm collisionResolver = new CollisionAlgorithm();
-	private Solver particleSolver = new Euler();
+	private Solver particleSolver = new LeapFrogRelativistic(speedOfLight);
 	private List<Force> forces = new ArrayList<Force>();
 	// Diagnostics related settings
 	/**

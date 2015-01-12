@@ -41,6 +41,14 @@ public class CombinedForce implements Force {
 		}
 		return sum;
 	}
+	
+	public double getForceZ(Particle p) {
+		double sum = 0;
+		for (Force f : forces) {
+			sum += f.getForceZ(p);
+		}
+		return sum;
+	}
 
 	public double getPositionComponentofForceX(Particle p) {
 		double sum = 0;

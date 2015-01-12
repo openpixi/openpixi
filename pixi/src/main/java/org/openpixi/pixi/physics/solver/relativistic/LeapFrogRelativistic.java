@@ -51,15 +51,18 @@ public class LeapFrogRelativistic implements Solver{
 		// x(t+dt) = x(t) + c(t+dt/2) * dt / gamma
 		p.setX(p.getX() + p.getVx() * dt / gamma);
 		p.setY(p.getY() + p.getVy() * dt / gamma);
+		p.setZ(p.getZ() + p.getVz() * dt / gamma);
 
 		// a(t+dt) = F(u(t+dt/2), x(t+dt)) / m
 		// WARNING: Force is evaluated at two different times t+dt/2 and t+dt!
 		p.setAx(f.getForceX(p) / p.getMass());
 		p.setAy(f.getForceY(p) / p.getMass());
+		p.setAz(f.getForceZ(p) / p.getMass());
 
 		// u(t+3*dt/2) = u(t+dt/2) + a(t+dt)*dt
 		p.setVx(p.getVx() + p.getAx() * dt);
 		p.setVy(p.getVy() + p.getAy() * dt);
+		p.setVz(p.getVz() + p.getAz() * dt);
 		
 	}
 	/**
@@ -72,10 +75,12 @@ public class LeapFrogRelativistic implements Solver{
 		//a(t) = F(v(t), x(t)) / m
 		p.setAx(f.getForceX(p) / p.getMass());
 		p.setAy(f.getForceY(p) / p.getMass());
+		p.setAz(f.getForceZ(p) / p.getMass());
 		
 		//v(t + dt / 2) = v(t) + a(t)*dt / 2
 		p.setVx(p.getVx() + p.getAx() * dt);
 		p.setVy(p.getVy() + p.getAy() * dt);
+		p.setVz(p.getVz() + p.getAz() * dt);
 	}
 	/**
 	 * complete method for bringing the velocity in the desired half step
@@ -87,6 +92,7 @@ public class LeapFrogRelativistic implements Solver{
 		//v(t) = v(t + dt / 2) - a(t)*dt / 2
 		p.setVx(p.getVx() - p.getAx() * dt);
 		p.setVy(p.getVy() - p.getAy() * dt);
+		p.setVz(p.getVz() - p.getAz() * dt);
 	}
 
 }

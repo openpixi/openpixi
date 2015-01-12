@@ -22,8 +22,9 @@ public class SimpleGridForceRelativistic implements Force {
 		
 		//v = u / gamma
 		double vy = p.getVy() / gamma;
+		double vz = p.getVz() / gamma;
 		
-		return p.getCharge() * ( p.getEx() + vy * p.getBz());
+		return p.getCharge() * ( p.getEx() + vy * p.getBz() - vz * p.getBy() );
 	}
 
 	public double getForceY(Particle p) {
@@ -31,8 +32,19 @@ public class SimpleGridForceRelativistic implements Force {
 		
 		//v = u / gamma
 		double vx = p.getVx() / gamma;
+		double vz = p.getVz() / gamma;
 		
-		return p.getCharge() * (p.getEy() - vx * p.getBz());
+		return p.getCharge() * ( p.getEy() + vz * p.getBx() - vx * p.getBz() );
+	}
+	
+	public double getForceZ(Particle p) {
+		double gamma = relvelocity.calculateGamma(p);
+		
+		//v = u / gamma
+		double vx = p.getVx() / gamma;
+		double vy = p.getVy() / gamma;
+		
+		return p.getCharge() * ( p.getEz() + vx * p.getBy() - vy * p.getBx() );
 	}
 
 	public double getPositionComponentofForceX(Particle p) {

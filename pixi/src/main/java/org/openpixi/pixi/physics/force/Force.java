@@ -40,6 +40,8 @@ public interface Force {
 	 * getTangentVelocityComponentOfForceY(p).
 	 */
 	public double getForceY(Particle p);
+	
+	public double getForceZ(Particle p);
 
 	/**
 	 * Position dependent component of the force in x-direction.

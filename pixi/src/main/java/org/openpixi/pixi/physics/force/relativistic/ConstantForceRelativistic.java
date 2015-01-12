@@ -21,9 +21,13 @@ public class ConstantForceRelativistic extends ConstantForce {
 	{
 		gx = 0;
 		gy = 0;
+		gz = 0;
 		drag = 0;
 		ex = 0;
 		ey = 0;
+		ez = 0;
+		bx = 0;
+		by = 0;
 		bz = 0;
 	}
 	
@@ -35,9 +39,10 @@ public class ConstantForceRelativistic extends ConstantForce {
 		//v = u / gamma
 		double vx = p.getVx() / gamma;
 		double vy = p.getVy() / gamma;
+		double vz = p.getVz() / gamma;
 		
 		return -drag * vx + p.getMass() * gx + p.getCharge() * ex +
-				p.getCharge() * vy * bz;
+				p.getCharge() * ( vy * bz - vz * by );
 	}
 	
 	//getting the force in the y - direction
@@ -48,10 +53,25 @@ public class ConstantForceRelativistic extends ConstantForce {
 		//v = u / gamma
 		double vx = p.getVx() / gamma;
 		double vy = p.getVy() / gamma;
+		double vz = p.getVz() / gamma;
 		
-		return - drag * vy + p.getMass() * gy + p.getCharge() * ey -
-				p.getCharge() * vx * bz;
+		return - drag * vy + p.getMass() * gy + p.getCharge() * ey +
+				p.getCharge() * ( vz * bx - vx * bz );
 	}
+	
+	//getting the force in the z - direction
+		@Override
+		public double getForceZ(Particle p) {
+			double gamma = relvelocity.calculateGamma(p);
+			
+			//v = u / gamma
+			double vx = p.getVx() / gamma;
+			double vy = p.getVy() / gamma;
+			double vz = p.getVz() / gamma;
+			
+			return - drag * vz + p.getMass() * gz + p.getCharge() * ez +
+					p.getCharge() * ( vx * by - vy * bx );
+		}
 
 	@Override
 	public double getPositionComponentofForceX(Particle p) {
