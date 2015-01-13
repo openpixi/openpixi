@@ -56,4 +56,29 @@ public class RandomVelocityDistribution {
 		return particles;
 	}
 	
+	public static List<Particle> apply(List<Particle> particles, int startIndex, int endIndex,
+			double avVelocityX, double avVelocityY, double avVelocityZ, double VelocityWidth,
+			long seed) {
+		
+		Random rand = new Random(seed);
+		
+		// Temporary variables used later
+		double rnd1;
+		double rnd2;
+		double rnd3;
+		
+		for(int i = startIndex; i < endIndex; i++) {
+			
+			rnd1 = rand.nextGaussian()*VelocityWidth + avVelocityX;
+			rnd2 = rand.nextGaussian()*VelocityWidth + avVelocityY;
+			rnd3 = rand.nextGaussian()*VelocityWidth + avVelocityZ;
+			
+			particles.get(i).setVx(rnd1 / particles.get(i).getMass());
+			particles.get(i).setVy(rnd2 / particles.get(i).getMass());
+			particles.get(i).setVz(rnd3 / particles.get(i).getMass());
+		 }
+		
+		return particles;
+	}
+	
 }

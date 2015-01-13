@@ -280,17 +280,31 @@ public class Settings {
 		// Random seed
 		long seed = (long) Math.random();
 		// If asList() is used the resulting list will have a fixed size!
+		if(relativistic == true) {
 		List<ParticleFactory> particleFactories = Arrays.asList(
 				new ParticleFactory(numOfParticles / 2, 1, 1, particleRadius,
 				PositionDistribution.RANDOM, VelocityDistribution.RANDOM,
-				particleMaxSpeed / 10, particleMaxSpeed / 10, particleMaxSpeed,
+				1, 1, 1, 0.2,
 				false, seed, seed),
 				new ParticleFactory(numOfParticles / 2, 1, -1, particleRadius,
 				PositionDistribution.RANDOM, VelocityDistribution.RANDOM,
-				particleMaxSpeed / 10, particleMaxSpeed / 10, particleMaxSpeed,
+				1, 1, 1, 0.2,
 				false, seed, seed));
 
 		return particleFactories;
+		} else {					//A two-dimesnional routine, doesn't work in 3D!!!
+			List<ParticleFactory> particleFactories = Arrays.asList(
+					new ParticleFactory(numOfParticles / 2, 1, 1, particleRadius,
+					PositionDistribution.RANDOM, VelocityDistribution.RANDOM,
+					particleMaxSpeed / 10, particleMaxSpeed / 10, particleMaxSpeed,
+					false, seed, seed),
+					new ParticleFactory(numOfParticles / 2, 1, -1, particleRadius,
+					PositionDistribution.RANDOM, VelocityDistribution.RANDOM,
+					particleMaxSpeed / 10, particleMaxSpeed / 10, particleMaxSpeed,
+					false, seed, seed));
+
+			return particleFactories;
+		}
 	}
 
 	/**

@@ -39,6 +39,7 @@ public class ParticleFactory {
 	private final double velocityParameter1;
 	private final double velocityParameter2;
 	private final double velocityParameter3;
+	private final double velocityWidth;
 	private final long seedForRandom1;
 	private final long seedForRandom2;
 	
@@ -76,6 +77,29 @@ public class ParticleFactory {
 	public ParticleFactory(int numberOfInstances, double mass, double charge, double radius,
 			PositionDistribution pdist, VelocityDistribution vdist,
 			double velocityParameter1, double velocityParameter2,
+			double velocityParameter3, double velocitySD, boolean immobile,
+			long seedForRandom1, long seedForRandom2) {
+		
+		this.numberOfInstances = numberOfInstances;
+		this.mass = mass;
+		this.charge = charge;
+		this.radius = radius;
+		this.velocityParameter1 = velocityParameter1;
+		this.velocityParameter2 = velocityParameter2;
+		this.velocityParameter3 = velocityParameter3;
+		this.velocityWidth = velocitySD;
+		this.seedForRandom1 = seedForRandom1;
+		this.seedForRandom2 = seedForRandom2;
+		this.immobile = immobile;
+		
+		this.velocityDistribution = vdist;
+		this.positionDistribution = pdist;
+		
+	}
+	
+	public ParticleFactory(int numberOfInstances, double mass, double charge, double radius,
+			PositionDistribution pdist, VelocityDistribution vdist,
+			double velocityParameter1, double velocityParameter2,
 			double velocityParameter3, boolean immobile,
 			long seedForRandom1, long seedForRandom2) {
 		
@@ -86,6 +110,7 @@ public class ParticleFactory {
 		this.velocityParameter1 = velocityParameter1;
 		this.velocityParameter2 = velocityParameter2;
 		this.velocityParameter3 = velocityParameter3;
+		this.velocityWidth = 0;
 		this.seedForRandom1 = seedForRandom1;
 		this.seedForRandom2 = seedForRandom2;
 		this.immobile = immobile;
@@ -109,6 +134,10 @@ public class ParticleFactory {
 	
 	public double getVelocityParameter3() {
 		return velocityParameter3;
+	}
+	
+	public double getVelocityWidth() {
+		return velocityWidth;
 	}
 	
 	public long getSeedForRandom1() {

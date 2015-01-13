@@ -115,8 +115,9 @@ public class ParticleLoader {
 			 		break;
 			 	}
 			 	case CONSTANT_SPACING: {
-			 		ConstantSpacingDistribution.apply(particles, index, index + f.getNumberOfInstances(),
+			 		/*ConstantSpacingDistribution.apply(particles, index, index + f.getNumberOfInstances(),
 			 				0, simulationWidth, 0, simulationHeight);
+			 				*/
 			 		break;
 			 	}
 				default: {
@@ -131,24 +132,27 @@ public class ParticleLoader {
 			 		break;
 			 	}
 			 	case CONSTANT: {
-			 		ConstantVelocityDistribution.apply(particles, index, index + f.getNumberOfInstances(), 
+			 		/*ConstantVelocityDistribution.apply(particles, index, index + f.getNumberOfInstances(), 
 			 				f.getVelocityParameter1(), f.getVelocityParameter2());
+			 				*/
 			 		break;
 			 	}
 			 	case RANDOM: {
 			 		RandomVelocityDistribution.apply(particles, index, index + f.getNumberOfInstances(), 
-			 				f.getVelocityParameter1(), f.getVelocityParameter2(), f.getVelocityParameter3(), 
+			 				f.getVelocityParameter1(), f.getVelocityParameter2(), f.getVelocityParameter3(), f.getVelocityWidth(),
 			 				f.getSeedForRandom2());
 			 	}
 			 	case MAXWELLIAN: {
-			 		MaxwellianDistribution.apply(particles, index, index + f.getNumberOfInstances(),
+			 		/*MaxwellianDistribution.apply(particles, index, index + f.getNumberOfInstances(),
 			 				f.getVelocityParameter1(), f.getVelocityParameter2(), f.getSeedForRandom2());
+			 				*/
 			 		break;
 			 	}
 			 	case MAXWELLIAN_WITH_CUTOFF: {
-			 		MaxwellianDistribution.applyWithCutoff(particles, index, 
+			 		/*MaxwellianDistribution.applyWithCutoff(particles, index, 
 			 				index + f.getNumberOfInstances(), f.getVelocityParameter1(), 
 			 				f.getVelocityParameter2(), f.getVelocityParameter3(), f.getSeedForRandom2());
+			 				*/
 			 		break;
 			 	}
 				default: {
