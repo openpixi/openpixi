@@ -207,8 +207,8 @@ fft.complexForward(trho);
 		for(int j = 1; j < rows; j++) {
 			for(int k = 1; k < depth; k++) {
 				double d = (6 - 2 * Math.cos((2 * Math.PI * i) / columns) - 2 * Math.cos((2 * Math.PI * j) / rows) - 2 * Math.cos((2 * Math.PI * k) / depth));
-				phi[i][j][2*k] = (cellVolume * trho[i][j][2*k]) / (d*eps0);
-				phi[i][j][2*k+1] = (cellVolume * trho[i][j][2*k+1]) / (d*eps0);
+				phi[i][j][2*k] = (cellArea * trho[i][j][2*k]) / (d*eps0);
+				phi[i][j][2*k+1] = (cellArea * trho[i][j][2*k+1]) / (d*eps0);
 			}
 		}
 	}
