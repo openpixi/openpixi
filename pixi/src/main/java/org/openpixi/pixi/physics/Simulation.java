@@ -259,9 +259,9 @@ public class Simulation {
 			if( (tottime % specstep) == 0) writeSpecFile(tottime);
 		}
 		particlePush();
-		detector.run();
-		collisionalgorithm.collide(detector.getOverlappedPairs(), f, mover.getSolver(), tstep);
-		interpolation.interpolateToGrid(particles, grid, tstep);
+		//detector.run();
+		//collisionalgorithm.collide(detector.getOverlappedPairs(), f, mover.getSolver(), tstep);
+		//interpolation.interpolateToGrid(particles, grid, tstep);
 		grid.updateGrid(tstep);
 		interpolation.interpolateToParticle(particles, grid);
 

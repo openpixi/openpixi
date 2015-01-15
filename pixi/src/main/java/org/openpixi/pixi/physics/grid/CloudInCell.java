@@ -93,6 +93,11 @@ public class CloudInCell implements InterpolatorAlgorithm {
 
 	@Override
 	public void interpolateChargedensity(Particle p, Grid g) {
+		
+		if(g.getNumCellsZ() > 1) {
+			interpolateChargedensity3D(p, g);
+			return;
+		}
 		/**X index of the grid point that is left from or at the x position of the particle*/
 		int i;
 		/**Y index of the grid point that is below or at the y position of the particle*/
@@ -130,6 +135,11 @@ public class CloudInCell implements InterpolatorAlgorithm {
 	
 	@Override
 	public void interpolateToParticle(Particle p, Grid g) {
+		
+		if(g.getNumCellsZ() > 1) {
+			interpolateToParticle3D(p, g);
+			return;
+		}
 
 		int xCellPosition = (int) Math.floor(p.getX() / g.getCellWidth());
 		int yCellPosition = (int) Math.floor(p.getY() / g.getCellHeight());
@@ -222,13 +232,14 @@ public class CloudInCell implements InterpolatorAlgorithm {
                 //p.setBz(0);
 	}
 
-
-	//@Override
-	public void interpolateToParticle_oldmaster(Particle p, Grid g) {
+public void interpolateChargedensity3D(Particle p, Grid g) {
+		
 		/**X index of the grid point that is left from or at the x position of the particle*/
 		int i;
 		/**Y index of the grid point that is below or at the y position of the particle*/
-		int j;		
+		int j;
+		/**Z index of the grid point that is below or at the z position of the particle*/
+		int k;
 		/**Normalized distance to the left cell boundary*/
 		double a;
 		/**Normalized distance to the right cell boundary*/
@@ -237,99 +248,369 @@ public class CloudInCell implements InterpolatorAlgorithm {
 		double c;
 		/**Normalized distance to the upper cell boundary*/
 		double d;
-		
-		a = p.getX() / g.getCellWidth();
-		i = (int) Math.floor(a);
+		/**Normalized distance to the nearer cell boundary*/
+		double e;
+		/**Normalized distance to the farther cell boundary*/
+		double f;
+
+		a = p.getX() /g.getCellWidth();
+        i = (int) Math.floor(a);
 		a -= i;
 		b = 1 - a;
-		
+
 		c = p.getY() / g.getCellHeight();
 		j = (int) Math.floor(c);
 		c -= j;
 		d = 1 - c;
 		
-		//Bz as given by the FDTD field solver is defined half a timestep ahead of particle
-		//time. Therefore we have to average over the old Bz (that is half a timestep behind)
-		//and the current Bz. The magnetic field is located at the grid points. 
-		//No adjustments to the grid are necessary.
-		p.setBz((formFactor(
-				g.getBzo(i, j), g.getBzo(i, j+1), g.getBzo(i+1, j+1), g.getBzo(i+1, j),
-				a, b, c, d) + 
-				formFactor(g.getBz(i, j), g.getBz(i, j+1), g.getBz(i+1, j+1), g.getBz(i+1, j),
-				a, b, c, d)) / 2);
-		
-		//The Ex-field is located in the middle of the left cell boundary.
-		//This means that the Ex-field-grid is shifted upwards by half a cell height.
-		//The adjustments are made to calculate the distance to the shifted grid. The
-		//only changes to be made are in the vertical plane. All changes are reversed
-		//after the calculation.
-		if( c < 0.5 ){
-			j -= 1;
-			c += 0.5;
-			d -= 0.5;
-			
-			p.setEx(formFactor(
-					g.getEx(i, j), g.getEx(i, j+1), g.getEx(i+1, j+1), g.getEx(i+1, j),
-					a, b, c, d));
-			
-			c -= 0.5;
-			d += 0.5;
-			j += 1;
-		} else {
-			c -= 0.5;
-			d += 0.5;
-			
-			p.setEx(formFactor(
-					g.getEx(i, j), g.getEx(i, j+1), g.getEx(i+1, j+1), g.getEx(i+1, j),
-					a, b, c, d));
-			
-			c += 0.5;
-			d -= 0.5;
-		}
-		
-		//The Ey-field is located in the middle of the lower cell boundary.
-		//This means that the Ey-field-grid is shifted to the right by half a cell width.
-		//The adjustments are made to calculate the distance to the shifted grid. The
-		//only changes to be made are in the horizontal plane.
-		if( a < 0.5 ){
-			i -= 1;
-			a += 0.5;
-			b -= 0.5;
-			
-			p.setEy(formFactor(
-					g.getEy(i, j), g.getEy(i, j+1), g.getEy(i+1, j+1), g.getEy(i+1, j),
-					a, b, c, d));
-			
-			//No need to return the values to their previous state because they are
-			//not going to be used anymore.
-		} else {
-			a -= 0.5;
-			b += 0.5;
-			
-			p.setEy(formFactor(
-					g.getEy(i, j), g.getEy(i, j+1), g.getEy(i+1, j+1), g.getEy(i+1, j),
-					a, b, c, d));
-			
-			//No need to return the values to their previous state because they are
-			//not going to be used anymore.		
-		}
+		e = p.getZ() / g.getCellDepth();
+		k = (int) Math.floor(e);
+		e -= k;
+		f = 1 - e;
+
+		//Assign a portion of the charge to the eight surrounding points depending on
+		//the distance.
+		g.addRho( (i + g.getNumCellsX())%g.getNumCellsX(),		(j + g.getNumCellsY())%g.getNumCellsY(),		(k + g.getNumCellsZ())%g.getNumCellsZ(),	p.getCharge() * b * d * f);
+		g.addRho( (i + g.getNumCellsX())%g.getNumCellsX(),		(j + 1 + g.getNumCellsY())%g.getNumCellsY(),	(k + g.getNumCellsZ())%g.getNumCellsZ(),	p.getCharge() * b * c * f);
+		g.addRho( (i + 1 + g.getNumCellsX())%g.getNumCellsX(),	(j + 1 + g.getNumCellsY())%g.getNumCellsY(),	(k + g.getNumCellsZ())%g.getNumCellsZ(),	p.getCharge() * a * c * f);
+		g.addRho( (i + 1 + g.getNumCellsX())%g.getNumCellsX(),	(j + g.getNumCellsY())%g.getNumCellsY(),		(k + g.getNumCellsZ())%g.getNumCellsZ(),	p.getCharge() * a * d * f);
+		g.addRho( (i + g.getNumCellsX())%g.getNumCellsX(),		(j + g.getNumCellsY())%g.getNumCellsY(),		(k + 1 + g.getNumCellsZ())%g.getNumCellsZ(),	p.getCharge() * b * d * e);
+		g.addRho( (i + g.getNumCellsX())%g.getNumCellsX(),		(j + 1 + g.getNumCellsY())%g.getNumCellsY(),	(k + 1 + g.getNumCellsZ())%g.getNumCellsZ(),	p.getCharge() * b * c * e);
+		g.addRho( (i + 1 + g.getNumCellsX())%g.getNumCellsX(),	(j + 1 + g.getNumCellsY())%g.getNumCellsY(),	(k + 1 + g.getNumCellsZ())%g.getNumCellsZ(),	p.getCharge() * a * c * e);
+		g.addRho( (i + 1 + g.getNumCellsX())%g.getNumCellsX(),	(j + g.getNumCellsY())%g.getNumCellsY(),		(k + 1 + g.getNumCellsZ())%g.getNumCellsZ(),	p.getCharge() * a * d * e);
 	}
 
-	/**Defines how grid values are weighted. Characteristic of interpolation algorithm.
-	 * <p>This is linear interpolation.</p>
-	 * @param A value at the lower left grid point
-	 * @param B value at the upper left grid point
-	 * @param C value at the upper right grid point
-	 * @param D value at the lower right grid point
-	 * @param a normalized distance to the left cell boundary
-	 * @param b normalized distance to the right cell boundary
-	 * @param c normalized distance to the lower cell boundary
-	 * @param d normalized distance to the upper cell boundary
-	 * @return Total value at the particle position
-	 */
-	private double formFactor(double A, double B, double C, double D,
-			double a, double b, double c, double d){
-		return A*b*d + B*b*c + C*a*c + D*a*d;
+public void interpolateToParticle3D(Particle p, Grid g) {
+	/**Normalized distance to the left cell boundary*/
+	double a;
+	/**Normalized distance to the right cell boundary*/
+	double b;
+	/**Normalized distance to the lower cell boundary*/
+	double c;
+	/**Normalized distance to the upper cell boundary*/
+	double d;
+	/**Normalized distance to the nearer cell boundary*/
+	double e;
+	/**Normalized distance to the farther cell boundary*/
+	double f;
+
+	int xCellPosition = (int) Math.floor(p.getX() / g.getCellWidth());
+	int yCellPosition = (int) Math.floor(p.getY() / g.getCellHeight());
+	int zCellPosition = (int) Math.floor(p.getZ() / g.getCellDepth());
+            
+            //Adaption since the electric field is stored in the edges of the cells
+            if(p.getX()/g.getCellWidth()-xCellPosition<0.5)
+            {
+                xCellPosition--;
+            }
+
+    		a = p.getX() /g.getCellWidth();
+    		a -= xCellPosition + 0.5;
+    		b = 1 - a;
+
+    		c = p.getY() / g.getCellHeight();
+    		c -= yCellPosition;
+    		d = 1 - c;
+    		
+    		e = p.getZ() / g.getCellDepth();
+    		e -= zCellPosition;
+    		f = 1 - e;
+
+            p.setEx(g.getEx( (xCellPosition + g.getNumCellsX())%g.getNumCellsX(), (yCellPosition + g.getNumCellsY())%g.getNumCellsY(),
+            				(zCellPosition + g.getNumCellsZ())%g.getNumCellsZ() ) * b * d * f +
+            			
+                    g.getEx( (xCellPosition + g.getNumCellsX())%g.getNumCellsX(), (yCellPosition + 1 + g.getNumCellsY())%g.getNumCellsY(),
+                    		 (zCellPosition + g.getNumCellsZ())%g.getNumCellsZ() ) * b * c * f +
+                        
+                    g.getEx( (xCellPosition + 1 + g.getNumCellsX())%g.getNumCellsX(), (yCellPosition + 1 + g.getNumCellsY())%g.getNumCellsY(),
+                    		 (zCellPosition + g.getNumCellsZ())%g.getNumCellsZ() ) * a * c * f +
+                    		 
+                    g.getEx( (xCellPosition + 1 + g.getNumCellsX())%g.getNumCellsX(), (yCellPosition + g.getNumCellsY())%g.getNumCellsY(),
+                    		(zCellPosition + g.getNumCellsZ())%g.getNumCellsZ() ) * a * d * f +
+                    		
+                    		g.getEx( (xCellPosition + g.getNumCellsX())%g.getNumCellsX(), (yCellPosition + g.getNumCellsY())%g.getNumCellsY(),
+                    				(zCellPosition + 1 + g.getNumCellsZ())%g.getNumCellsZ() ) * b * d * e +
+                    			
+                            g.getEx( (xCellPosition + g.getNumCellsX())%g.getNumCellsX(), (yCellPosition + 1 + g.getNumCellsY())%g.getNumCellsY(),
+                            		 (zCellPosition + 1 + g.getNumCellsZ())%g.getNumCellsZ() ) * b * c * e +
+                                
+                            g.getEx( (xCellPosition + 1 + g.getNumCellsX())%g.getNumCellsX(), (yCellPosition + 1 + g.getNumCellsY())%g.getNumCellsY(),
+                            		 (zCellPosition + 1 + g.getNumCellsZ())%g.getNumCellsZ() ) * a * c * e +
+                            		 
+                            g.getEx( (xCellPosition + 1 + g.getNumCellsX())%g.getNumCellsX(), (yCellPosition + g.getNumCellsY())%g.getNumCellsY(),
+                            		(zCellPosition + 1 + g.getNumCellsZ())%g.getNumCellsZ() ) * a * d * e
+                            		 
+            		);
+
+          //redo the adaption for the x-component
+            if(p.getX()/g.getCellWidth() - xCellPosition > 1)
+            {
+                xCellPosition++;
+            }
+            
+          //Adaption since the electric field is stored in the edges of the cells
+            if(p.getY()/g.getCellHeight()-yCellPosition <0.5)
+            {
+                yCellPosition--;
+            }
+
+    		a = p.getX() /g.getCellWidth();
+    		a -= xCellPosition;
+    		b = 1 - a;
+
+    		c = p.getY() / g.getCellHeight();
+    		c -= yCellPosition + 0.5;
+    		d = 1 - c;
+    		
+    		e = p.getZ() / g.getCellDepth();
+    		e -= zCellPosition;
+    		f = 1 - e;
+    		
+    		p.setEy(g.getEy( (xCellPosition + g.getNumCellsX())%g.getNumCellsX(), (yCellPosition + g.getNumCellsY())%g.getNumCellsY(),
+    				(zCellPosition + g.getNumCellsZ())%g.getNumCellsZ() ) * b * d * f +
+    			
+            g.getEy( (xCellPosition + g.getNumCellsX())%g.getNumCellsX(), (yCellPosition + 1 + g.getNumCellsY())%g.getNumCellsY(),
+            		 (zCellPosition + g.getNumCellsZ())%g.getNumCellsZ() ) * b * c * f +
+                
+            g.getEy( (xCellPosition + 1 + g.getNumCellsX())%g.getNumCellsX(), (yCellPosition + 1 + g.getNumCellsY())%g.getNumCellsY(),
+            		 (zCellPosition + g.getNumCellsZ())%g.getNumCellsZ() ) * a * c * f +
+            		 
+            g.getEy( (xCellPosition + 1 + g.getNumCellsX())%g.getNumCellsX(), (yCellPosition + g.getNumCellsY())%g.getNumCellsY(),
+            		(zCellPosition + g.getNumCellsZ())%g.getNumCellsZ() ) * a * d * f +
+            		
+            		g.getEy( (xCellPosition + g.getNumCellsX())%g.getNumCellsX(), (yCellPosition + g.getNumCellsY())%g.getNumCellsY(),
+            				(zCellPosition + 1 + g.getNumCellsZ())%g.getNumCellsZ() ) * b * d * e +
+            			
+                    g.getEy( (xCellPosition + g.getNumCellsX())%g.getNumCellsX(), (yCellPosition + 1 + g.getNumCellsY())%g.getNumCellsY(),
+                    		 (zCellPosition + 1 + g.getNumCellsZ())%g.getNumCellsZ() ) * b * c * e +
+                        
+                    g.getEy( (xCellPosition + 1 + g.getNumCellsX())%g.getNumCellsX(), (yCellPosition + 1 + g.getNumCellsY())%g.getNumCellsY(),
+                    		 (zCellPosition + 1 + g.getNumCellsZ())%g.getNumCellsZ() ) * a * c * e +
+                    		 
+                    g.getEy( (xCellPosition + 1 + g.getNumCellsX())%g.getNumCellsX(), (yCellPosition + g.getNumCellsY())%g.getNumCellsY(),
+                    		(zCellPosition + 1 + g.getNumCellsZ())%g.getNumCellsZ() ) * a * d * e
+                    		 
+    		);
+
+            //redo the adaption for the y-component
+              if(p.getY()/g.getCellHeight() - yCellPosition > 1)
+              {
+                  yCellPosition++;
+              }
+              
+            //Adaption since the electric field is stored in the edges of the cells
+              if(p.getZ()/g.getCellDepth()-zCellPosition <0.5)
+              {
+                  zCellPosition--;
+              }
+
+      		a = p.getX() /g.getCellWidth();
+      		a -= xCellPosition;
+      		b = 1 - a;
+
+      		c = p.getY() / g.getCellHeight();
+      		c -= yCellPosition;
+      		d = 1 - c;
+      		
+      		e = p.getZ() / g.getCellDepth();
+      		e -= zCellPosition + 0.5;
+      		f = 1 - e;
+      		
+      		p.setEz(g.getEz( (xCellPosition + g.getNumCellsX())%g.getNumCellsX(), (yCellPosition + g.getNumCellsY())%g.getNumCellsY(),
+      				(zCellPosition + g.getNumCellsZ())%g.getNumCellsZ() ) * b * d * f +
+      			
+              g.getEz( (xCellPosition + g.getNumCellsX())%g.getNumCellsX(), (yCellPosition + 1 + g.getNumCellsY())%g.getNumCellsY(),
+              		 (zCellPosition + g.getNumCellsZ())%g.getNumCellsZ() ) * b * c * f +
+                  
+              g.getEz( (xCellPosition + 1 + g.getNumCellsX())%g.getNumCellsX(), (yCellPosition + 1 + g.getNumCellsY())%g.getNumCellsY(),
+              		 (zCellPosition + g.getNumCellsZ())%g.getNumCellsZ() ) * a * c * f +
+              		 
+              g.getEz( (xCellPosition + 1 + g.getNumCellsX())%g.getNumCellsX(), (yCellPosition + g.getNumCellsY())%g.getNumCellsY(),
+              		(zCellPosition + g.getNumCellsZ())%g.getNumCellsZ() ) * a * d * f +
+              		
+              		g.getEz( (xCellPosition + g.getNumCellsX())%g.getNumCellsX(), (yCellPosition + g.getNumCellsY())%g.getNumCellsY(),
+              				(zCellPosition + 1 + g.getNumCellsZ())%g.getNumCellsZ() ) * b * d * e +
+              			
+                      g.getEz( (xCellPosition + g.getNumCellsX())%g.getNumCellsX(), (yCellPosition + 1 + g.getNumCellsY())%g.getNumCellsY(),
+                      		 (zCellPosition + 1 + g.getNumCellsZ())%g.getNumCellsZ() ) * b * c * e +
+                          
+                      g.getEz( (xCellPosition + 1 + g.getNumCellsX())%g.getNumCellsX(), (yCellPosition + 1 + g.getNumCellsY())%g.getNumCellsY(),
+                      		 (zCellPosition + 1 + g.getNumCellsZ())%g.getNumCellsZ() ) * a * c * e +
+                      		 
+                      g.getEz( (xCellPosition + 1 + g.getNumCellsX())%g.getNumCellsX(), (yCellPosition + g.getNumCellsY())%g.getNumCellsY(),
+                      		(zCellPosition + 1 + g.getNumCellsZ())%g.getNumCellsZ() ) * a * d * e
+                      		 
+      		);
+      		
+      	//redo the adaption for the z-component
+            if(p.getZ()/g.getCellDepth() - zCellPosition > 1)
+            {
+                zCellPosition++;
+            }
+           
+            //adapt the values of y/z CellPosition since the Bx-field is located in the middle of the grid
+            if(p.getZ()/g.getCellDepth()-zCellPosition<0.5)
+            {
+                zCellPosition--;
+            }
+            if(p.getY()/g.getCellHeight()-yCellPosition<0.5)
+            {
+                yCellPosition--;
+            }
+
+      		a = p.getX() /g.getCellWidth();
+      		a -= xCellPosition;
+      		b = 1 - a;
+
+      		c = p.getY() / g.getCellHeight();
+      		c -= yCellPosition + 0.5;
+      		d = 1 - c;
+      		
+      		e = p.getZ() / g.getCellDepth();
+      		e -= zCellPosition + 0.5;
+      		f = 1 - e;
+      		
+      		p.setBx(g.getBx( (xCellPosition + g.getNumCellsX())%g.getNumCellsX(), (yCellPosition + g.getNumCellsY())%g.getNumCellsY(),
+      				(zCellPosition + g.getNumCellsZ())%g.getNumCellsZ() ) * b * d * f +
+      			
+              g.getBx( (xCellPosition + g.getNumCellsX())%g.getNumCellsX(), (yCellPosition + 1 + g.getNumCellsY())%g.getNumCellsY(),
+              		 (zCellPosition + g.getNumCellsZ())%g.getNumCellsZ() ) * b * c * f +
+                  
+              g.getBx( (xCellPosition + 1 + g.getNumCellsX())%g.getNumCellsX(), (yCellPosition + 1 + g.getNumCellsY())%g.getNumCellsY(),
+              		 (zCellPosition + g.getNumCellsZ())%g.getNumCellsZ() ) * a * c * f +
+              		 
+              g.getBx( (xCellPosition + 1 + g.getNumCellsX())%g.getNumCellsX(), (yCellPosition + g.getNumCellsY())%g.getNumCellsY(),
+              		(zCellPosition + g.getNumCellsZ())%g.getNumCellsZ() ) * a * d * f +
+              		
+              		g.getBx( (xCellPosition + g.getNumCellsX())%g.getNumCellsX(), (yCellPosition + g.getNumCellsY())%g.getNumCellsY(),
+              				(zCellPosition + 1 + g.getNumCellsZ())%g.getNumCellsZ() ) * b * d * e +
+              			
+                      g.getBx( (xCellPosition + g.getNumCellsX())%g.getNumCellsX(), (yCellPosition + 1 + g.getNumCellsY())%g.getNumCellsY(),
+                      		 (zCellPosition + 1 + g.getNumCellsZ())%g.getNumCellsZ() ) * b * c * e +
+                          
+                      g.getBx( (xCellPosition + 1 + g.getNumCellsX())%g.getNumCellsX(), (yCellPosition + 1 + g.getNumCellsY())%g.getNumCellsY(),
+                      		 (zCellPosition + 1 + g.getNumCellsZ())%g.getNumCellsZ() ) * a * c * e +
+                      		 
+                      g.getBx( (xCellPosition + 1 + g.getNumCellsX())%g.getNumCellsX(), (yCellPosition + g.getNumCellsY())%g.getNumCellsY(),
+                      		(zCellPosition + 1 + g.getNumCellsZ())%g.getNumCellsZ() ) * a * d * e
+                      		 
+      		);
+      		
+      	//redo the adaption for the y/z-components
+            if(p.getZ()/g.getCellDepth() - zCellPosition > 1)
+            {
+                zCellPosition++;
+            }
+            if(p.getY()/g.getCellHeight() - yCellPosition > 1)
+            {
+                yCellPosition++;
+            }
+            
+          //adapt the values of x/z CellPosition since the By-field is located in the middle of the grid
+            if(p.getZ()/g.getCellDepth()-zCellPosition<0.5)
+            {
+                zCellPosition--;
+            }
+            if(p.getX()/g.getCellWidth()-xCellPosition<0.5)
+            {
+                xCellPosition--;
+            }
+
+      		a = p.getX() /g.getCellWidth();
+      		a -= xCellPosition + 0.5;
+      		b = 1 - a;
+
+      		c = p.getY() / g.getCellHeight();
+      		c -= yCellPosition;
+      		d = 1 - c;
+      		
+      		e = p.getZ() / g.getCellDepth();
+      		e -= zCellPosition + 0.5;
+      		f = 1 - e;
+      		
+      		p.setBy(g.getBy( (xCellPosition + g.getNumCellsX())%g.getNumCellsX(), (yCellPosition + g.getNumCellsY())%g.getNumCellsY(),
+      				(zCellPosition + g.getNumCellsZ())%g.getNumCellsZ() ) * b * d * f +
+      			
+              g.getBy( (xCellPosition + g.getNumCellsX())%g.getNumCellsX(), (yCellPosition + 1 + g.getNumCellsY())%g.getNumCellsY(),
+              		 (zCellPosition + g.getNumCellsZ())%g.getNumCellsZ() ) * b * c * f +
+                  
+              g.getBy( (xCellPosition + 1 + g.getNumCellsX())%g.getNumCellsX(), (yCellPosition + 1 + g.getNumCellsY())%g.getNumCellsY(),
+              		 (zCellPosition + g.getNumCellsZ())%g.getNumCellsZ() ) * a * c * f +
+              		 
+              g.getBy( (xCellPosition + 1 + g.getNumCellsX())%g.getNumCellsX(), (yCellPosition + g.getNumCellsY())%g.getNumCellsY(),
+              		(zCellPosition + g.getNumCellsZ())%g.getNumCellsZ() ) * a * d * f +
+              		
+              		g.getBy( (xCellPosition + g.getNumCellsX())%g.getNumCellsX(), (yCellPosition + g.getNumCellsY())%g.getNumCellsY(),
+              				(zCellPosition + 1 + g.getNumCellsZ())%g.getNumCellsZ() ) * b * d * e +
+              			
+                      g.getBy( (xCellPosition + g.getNumCellsX())%g.getNumCellsX(), (yCellPosition + 1 + g.getNumCellsY())%g.getNumCellsY(),
+                      		 (zCellPosition + 1 + g.getNumCellsZ())%g.getNumCellsZ() ) * b * c * e +
+                          
+                      g.getBy( (xCellPosition + 1 + g.getNumCellsX())%g.getNumCellsX(), (yCellPosition + 1 + g.getNumCellsY())%g.getNumCellsY(),
+                      		 (zCellPosition + 1 + g.getNumCellsZ())%g.getNumCellsZ() ) * a * c * e +
+                      		 
+                      g.getBy( (xCellPosition + 1 + g.getNumCellsX())%g.getNumCellsX(), (yCellPosition + g.getNumCellsY())%g.getNumCellsY(),
+                      		(zCellPosition + 1 + g.getNumCellsZ())%g.getNumCellsZ() ) * a * d * e
+                      		 
+      		);
+      		
+      	//redo the adaption for the x/z-components
+            if(p.getZ()/g.getCellDepth() - zCellPosition > 1)
+            {
+                zCellPosition++;
+            }
+            if(p.getX()/g.getCellWidth() - xCellPosition > 1)
+            {
+                xCellPosition++;
+            }
+           
+            //adapt the values of x/y CellPosition since the Bz-field is located in the middle of the grid
+            if(p.getX()/g.getCellWidth()-xCellPosition<0.5)
+            {
+                xCellPosition--;
+            }
+            if(p.getY()/g.getCellHeight()-yCellPosition<0.5)
+            {
+                yCellPosition--;
+            }
+
+      		a = p.getX() /g.getCellWidth();
+      		a -= xCellPosition + 0.5;
+      		b = 1 - a;
+
+      		c = p.getY() / g.getCellHeight();
+      		c -= yCellPosition + 0.5;
+      		d = 1 - c;
+      		
+      		e = p.getZ() / g.getCellDepth();
+      		e -= zCellPosition;
+      		f = 1 - e;
+      		
+      		p.setBz(g.getBz( (xCellPosition + g.getNumCellsX())%g.getNumCellsX(), (yCellPosition + g.getNumCellsY())%g.getNumCellsY(),
+      				(zCellPosition + g.getNumCellsZ())%g.getNumCellsZ() ) * b * d * f +
+      			
+              g.getBz( (xCellPosition + g.getNumCellsX())%g.getNumCellsX(), (yCellPosition + 1 + g.getNumCellsY())%g.getNumCellsY(),
+              		 (zCellPosition + g.getNumCellsZ())%g.getNumCellsZ() ) * b * c * f +
+                  
+              g.getBz( (xCellPosition + 1 + g.getNumCellsX())%g.getNumCellsX(), (yCellPosition + 1 + g.getNumCellsY())%g.getNumCellsY(),
+              		 (zCellPosition + g.getNumCellsZ())%g.getNumCellsZ() ) * a * c * f +
+              		 
+              g.getBz( (xCellPosition + 1 + g.getNumCellsX())%g.getNumCellsX(), (yCellPosition + g.getNumCellsY())%g.getNumCellsY(),
+              		(zCellPosition + g.getNumCellsZ())%g.getNumCellsZ() ) * a * d * f +
+              		
+              		g.getBz( (xCellPosition + g.getNumCellsX())%g.getNumCellsX(), (yCellPosition + g.getNumCellsY())%g.getNumCellsY(),
+              				(zCellPosition + 1 + g.getNumCellsZ())%g.getNumCellsZ() ) * b * d * e +
+              			
+                      g.getBz( (xCellPosition + g.getNumCellsX())%g.getNumCellsX(), (yCellPosition + 1 + g.getNumCellsY())%g.getNumCellsY(),
+                      		 (zCellPosition + 1 + g.getNumCellsZ())%g.getNumCellsZ() ) * b * c * e +
+                          
+                      g.getBz( (xCellPosition + 1 + g.getNumCellsX())%g.getNumCellsX(), (yCellPosition + 1 + g.getNumCellsY())%g.getNumCellsY(),
+                      		 (zCellPosition + 1 + g.getNumCellsZ())%g.getNumCellsZ() ) * a * c * e +
+                      		 
+                      g.getBz( (xCellPosition + 1 + g.getNumCellsX())%g.getNumCellsX(), (yCellPosition + g.getNumCellsY())%g.getNumCellsY(),
+                      		(zCellPosition + 1 + g.getNumCellsZ())%g.getNumCellsZ() ) * a * d * e
+                      		 
+      		);
 	}
 
 }
