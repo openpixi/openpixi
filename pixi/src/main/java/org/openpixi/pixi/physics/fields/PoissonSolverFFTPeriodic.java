@@ -115,7 +115,7 @@ public class PoissonSolverFFTPeriodic implements PoissonSolver {
 		
 	}
 	
-	public void solve1D(Grid g) {
+	private void solve1D(Grid g) {
 		
         double eps0 = 1.0/(4*Math.PI);
     
@@ -171,7 +171,7 @@ fft.complexForward(trho);
 
 	}
 	
-public void solve3D(Grid g) {
+private void solve3D(Grid g) {
 		
         double eps0 = 1.0/(4*Math.PI);
     

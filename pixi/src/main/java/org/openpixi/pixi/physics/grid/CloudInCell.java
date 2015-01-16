@@ -5,7 +5,7 @@ import org.openpixi.pixi.physics.particles.Particle;
 
 public class CloudInCell implements InterpolatorAlgorithm {
 
-	@Override
+	@Deprecated
 	public void interpolateToGrid(Particle p, Grid g, double tstep) {
 		/**X index of the grid point that is left from or at the x position of the particle*/
 		int i;
@@ -232,7 +232,7 @@ public class CloudInCell implements InterpolatorAlgorithm {
                 //p.setBz(0);
 	}
 
-public void interpolateChargedensity3D(Particle p, Grid g) {
+private void interpolateChargedensity3D(Particle p, Grid g) {
 		
 		/**X index of the grid point that is left from or at the x position of the particle*/
 		int i;
@@ -280,7 +280,7 @@ public void interpolateChargedensity3D(Particle p, Grid g) {
 		g.addRho( (i + 1 + g.getNumCellsX())%g.getNumCellsX(),	(j + g.getNumCellsY())%g.getNumCellsY(),		(k + 1 + g.getNumCellsZ())%g.getNumCellsZ(),	p.getCharge() * a * d * e);
 	}
 
-public void interpolateToParticle3D(Particle p, Grid g) {
+private void interpolateToParticle3D(Particle p, Grid g) {
 	/**Normalized distance to the left cell boundary*/
 	double a;
 	/**Normalized distance to the right cell boundary*/
