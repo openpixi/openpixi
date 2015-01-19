@@ -64,6 +64,7 @@ public class MainControlApplet extends JApplet {
 
 	private JTextField xboxentry;
 	private JTextField yboxentry;
+	private JTextField zboxentry;
 
 	private JComboBox initComboBox;
 	private JComboBox algorithmComboBox;
@@ -410,9 +411,11 @@ public class MainControlApplet extends JApplet {
 			Simulation s = simulationAnimation.getSimulation();
 			int xbox = Integer.parseInt(xboxentry.getText());
 			int ybox = Integer.parseInt(yboxentry.getText());
+			int zbox = Integer.parseInt(zboxentry.getText());
 			double width = s.getWidth();
 			double height = s.getHeight();
-			s.grid.changeSize(xbox, ybox, width, height);
+			double depth = s.getDepth();
+			s.grid.changeSize(xbox, ybox, zbox, width, height, depth);
 		}
 	}
 
@@ -596,6 +599,10 @@ public class MainControlApplet extends JApplet {
 		yboxentry = new JTextField(2);
 		yboxentry.setText("10");
 		yboxentry.addActionListener(new BoxDimension());
+		
+		zboxentry = new JTextField(2);
+		zboxentry.setText("10");
+		zboxentry.addActionListener(new BoxDimension());
 
 		hardBoundaries = new JRadioButton("Hardwall");
 		periodicBoundaries = new JRadioButton("Periodic");
@@ -615,6 +622,7 @@ public class MainControlApplet extends JApplet {
 
 		JLabel xboxentryLabel = new JLabel("Cell width");
 		JLabel yboxentryLabel = new JLabel("Cell height");
+		JLabel zboxentryLabel = new JLabel("Cell depth");
 
 		JPanel controlPanelUp = new JPanel();
 		controlPanelUp.setLayout(new FlowLayout());
@@ -685,6 +693,12 @@ public class MainControlApplet extends JApplet {
 		ybox.add(yboxentryLabel);
 		ybox.add(Box.createHorizontalStrut(96));
 		ybox.add(yboxentry);
+		/*
+		ybox.add(Box.createHorizontalStrut(50));
+		ybox.add(yboxentryLabel);
+		ybox.add(Box.createHorizontalStrut(96));
+		ybox.add(yboxentry);
+		 */
 
 		Box cellSettings = Box.createVerticalBox();
 		cellSettings.add(Box.createVerticalStrut(20));
@@ -952,6 +966,7 @@ public class MainControlApplet extends JApplet {
 		timer.setDelay((int) (1000 * Math.exp(-50 * speedSliderScaling)));
 		xboxentry.setText("10");
 		yboxentry.setText("10");
+		zboxentry.setText("10");
 		if(s.getParticleMover().getBoundaryType() == ParticleBoundaryType.Hardwall) {
 			hardBoundaries.setSelected(true);
 			periodicBoundaries.setSelected(false);

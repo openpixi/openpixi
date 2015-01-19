@@ -8,6 +8,11 @@ public class SpringForce implements Force {
 	{
 		return 0;
 	}
+	
+	public double getForceZ(Particle par)
+	{
+		return 0;
+	}
 
 	public double getForceY(Particle par)
 	{

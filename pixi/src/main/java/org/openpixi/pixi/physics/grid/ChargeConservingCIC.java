@@ -15,6 +15,12 @@ public class ChargeConservingCIC extends CloudInCell {
 
 	@Override
 	public void interpolateToGrid(Particle p, Grid g, double tstep) {
+		
+		if(g.getNumCellsZ() > 1) {
+			interpolateToGrid3D(p, g, tstep);
+			return;
+		}
+		
 		/**X index of local origin i.e. nearest grid point BEFORE particle push*/
 		int xStart;
 		/**Y index of local origin i.e. nearest grid point BEFORE particle push*/
@@ -438,5 +444,92 @@ public class ChargeConservingCIC extends CloudInCell {
 				}
 			}
 		}
+	}
+	
+private void interpolateToGrid3D(Particle p, Grid g, double tstep) {
+		
+		/**X index of local origin i.e. nearest grid point BEFORE particle push*/
+		int xStart;
+		/**Y index of local origin i.e. nearest grid point BEFORE particle push*/
+		int yStart;
+		/**Z index of local origin i.e. nearest grid point BEFORE particle push*/
+		int zStart;
+		/**X index of local origin i.e. nearest grid point AFTER particle push*/
+		int xEnd;
+		/**Y index of local origin i.e. nearest grid point AFTER particle push*/
+		int yEnd;
+		/**Z index of local origin i.e. nearest grid point AFTER particle push*/
+		int zEnd;
+		/**Normalized local x coordinate BEFORE particle push*/
+		double x;
+		/**Normalized local y coordinate BEFORE particle push*/
+		double y;
+		/**Normalized local z coordinate BEFORE particle push*/
+		double z;
+		/**Normalized distance covered in X direction*/
+		double deltaX;
+		/**Normalized distance covered in Y direction*/
+		double deltaY;
+		/**Normalized distance covered in Z direction*/
+		double deltaZ;    
+		
+		x = p.getPrevX() / g.getCellWidth();
+		y = p.getPrevY() / g.getCellHeight();
+		z = p.getPrevZ() / g.getCellDepth();
+		
+		xStart = (int) Math.floor(x);
+		yStart = (int) Math.floor(y);
+		zStart = (int) Math.floor(z);
+		
+		deltaX = p.getX() / g.getCellWidth();
+		deltaY = p.getY() / g.getCellHeight();
+		deltaZ = p.getZ() / g.getCellDepth();
+		
+		xEnd = (int) Math.floor(deltaX);
+		yEnd = (int) Math.floor(deltaY);
+		zEnd = (int) Math.floor(deltaZ);
+		
+		deltaX -= x;
+		deltaY -= y;
+		deltaZ -= z;
+		
+		int cellCheck = (xEnd - xStart) + (yEnd - yStart) + (zEnd - zStart);
+		
+		switch(cellCheck) {
+		
+        	case 0:  oneCellMove(xStart, yStart, zStart, x, y, z, deltaX, deltaY, deltaZ, p, g, tstep);
+        
+        	break;
+        	
+        	case 1:  //twoCellMove();
+            
+        	break;
+        	
+        	case 2:  //threeCellMove();
+            
+        	break;
+        	
+        	case 3:  //fourCellMove();
+            
+        	break;
+        	
+        	default: System.out.println("Interpolation error!!! Particle moved through more then 4 cells!!!");
+        	
+        	break;
+
+		}		
+	}
+
+private void oneCellMove(int xStart, int yStart, int zStart, double x, double y, double z, double deltaX, double deltaY, double deltaZ, Particle p, Grid g, double tstep) {
+
+		double locX = x - xStart - 0.5;
+		double locY = y - yStart - 0.5;
+		double locZ = z - zStart - 0.5;
+		/*
+		g.addJx(xStart, yStart, zStart, p.getCharge() * deltaX * ((1 - deltaY) / 2 - y) / g.getCellWidth() / tstep);
+		g.addJx((lx + g.getNumCellsX())%g.getNumCellsX(), (ly + 1 + g.getNumCellsY())%g.getNumCellsY(), 	p.getCharge()* deltaX * ((1 + deltaY) / 2 + y) / g.getCellWidth() / tstep);
+		g.addJy((lx + g.getNumCellsX())%g.getNumCellsX(), (ly + g.getNumCellsY())%g.getNumCellsY(), 	p.getCharge() * deltaY * ((1 - deltaX) / 2 - x) / g.getCellHeight() / tstep);
+		g.addJy((lx +1 + g.getNumCellsX())%g.getNumCellsX(), (ly + g.getNumCellsY())%g.getNumCellsY(), 	p.getCharge() * deltaY * ((1 + deltaX) / 2 + x) / g.getCellHeight() / tstep);
+		 */
 	}
 }

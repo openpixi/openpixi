@@ -15,6 +15,10 @@ public class RelativisticVelocity {
 		return Math.sqrt(1 + (ux * ux + uy * uy + uz * uz) / (c * c));
 	}
 	
+	public double calculateGamma(double ux, double uy) {		
+		return Math.sqrt(1 + (ux * ux + uy * uy) / (c * c));
+	}
+	
 	public double calculateGamma(Particle p) {
 		return calculateGamma(p.getVx(), p.getVy(), p.getVz());
 	}

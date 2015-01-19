@@ -44,9 +44,9 @@ public class ParallelCellIterator extends CellIterator {
 
 
 	@Override
-	public void setNormalMode(int numCellsX, int numCellsY) {
-		super.setNormalMode(numCellsX, numCellsY);
-		numOfCells = dimensions.xsize() * dimensions.ysize();
+	public void setNormalMode(int numCellsX, int numCellsY, int numCellsZ) {
+		super.setNormalMode(numCellsX, numCellsY, numCellsZ);
+		numOfCells = dimensions.xsize() * dimensions.ysize() * dimensions.zsize();
 	}
 
 /*
@@ -71,7 +71,8 @@ public class ParallelCellIterator extends CellIterator {
 			for (int cellIdx = threadIdx; cellIdx < numOfCells; cellIdx += numOfThreads) {
 				int x = (cellIdx / dimensions.ysize()) + dimensions.xmin();
 				int y = (cellIdx % dimensions.ysize()) + dimensions.ymin();
-				action.execute(grid, x, y);
+				int z = (cellIdx % dimensions.zsize()) + dimensions.zmin();
+				action.execute(grid, x, y, z);
 			}
 			return null;
 		}
