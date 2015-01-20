@@ -297,7 +297,7 @@ private void interpolateToParticle3D(Particle p, Grid g) {
 	int xCellPosition = (int) Math.floor(p.getX() / g.getCellWidth());
 	int yCellPosition = (int) Math.floor(p.getY() / g.getCellHeight());
 	int zCellPosition = (int) Math.floor(p.getZ() / g.getCellDepth());
-            
+	
             //Adaption since the electric field is stored in the edges of the cells
             if(p.getX()/g.getCellWidth()-xCellPosition<0.5)
             {
@@ -315,7 +315,7 @@ private void interpolateToParticle3D(Particle p, Grid g) {
     		e = p.getZ() / g.getCellDepth();
     		e -= zCellPosition;
     		f = 1 - e;
-
+    		
             p.setEx(g.getEx( (xCellPosition + g.getNumCellsX())%g.getNumCellsX(), (yCellPosition + g.getNumCellsY())%g.getNumCellsY(),
             				(zCellPosition + g.getNumCellsZ())%g.getNumCellsZ() ) * b * d * f +
             			
