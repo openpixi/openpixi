@@ -454,7 +454,7 @@ public class Simulation {
 	}
 	
 	public void particlePush() {
-		mover.push(particles, f, tstep);
+		mover.push(particles, f, grid, tstep);
 	}
 
 	public void prepareAllParticles() {

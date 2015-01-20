@@ -472,6 +472,12 @@ public class ParticleFull extends Particle {
 		prevY = y;
 		prevZ = z;
 	}
+	
+	public void applyPeriodicBoundary(double boundaryX, double boundaryY, double boundaryZ) {
+		x = (x + boundaryX) % boundaryX;
+		y = (y + boundaryY) % boundaryY;
+		z = (z + boundaryZ) % boundaryZ;
+	}
 
 
 	@Override

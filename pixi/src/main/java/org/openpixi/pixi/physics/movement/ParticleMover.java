@@ -7,6 +7,7 @@ import org.openpixi.pixi.physics.movement.boundary.ParticleBoundaries;
 import org.openpixi.pixi.physics.movement.boundary.ParticleBoundaryType;
 import org.openpixi.pixi.physics.particles.Particle;
 import org.openpixi.pixi.physics.solver.Solver;
+import org.openpixi.pixi.physics.grid.Grid;
 
 import java.util.List;
 
@@ -23,8 +24,12 @@ public class ParticleMover {
 	/* These are set in each iteration to enable the inner classes to read them. */
 	private Force force;
 	private double timeStep;
+	private double boundaryX;
+	private double boundaryY;
+	private double boundaryZ;
 
 	private Push push = new Push();
+	private Push3D push3D = new Push3D();
 	private Prepare prepare = new Prepare();
 	private Complete complete = new Complete();
 
@@ -57,10 +62,17 @@ public class ParticleMover {
 	}
 
 
-	public void push(List<Particle> particles, Force force, double timeStep) {
+	public void push(List<Particle> particles, Force force, Grid g, double timeStep) {
 		this.force = force;
 		this.timeStep = timeStep;
-		particleIterator.execute(particles, push);
+		this.boundaryX = g.getNumCellsX()*g.getCellWidth();
+		this.boundaryY = g.getNumCellsY()*g.getCellHeight();
+		this.boundaryZ = g.getNumCellsZ()*g.getCellDepth();
+		if(g.getNumCellsZ() == 1) {
+			particleIterator.execute(particles, push);
+		} else {
+			particleIterator.execute(particles, push3D);
+		}
 	}
 
 
@@ -83,6 +95,14 @@ public class ParticleMover {
 			particle.storePosition();
 			solver.step(particle, force, timeStep);
 			boundaries.applyOnParticleCenter(solver, force, particle, timeStep);
+		}
+	}
+	
+	private class Push3D implements ParticleAction {
+		public void execute(Particle particle) {
+			particle.storePosition();
+			solver.step(particle, force, timeStep);
+			particle.applyPeriodicBoundary(boundaryX, boundaryY, boundaryZ);
 		}
 	}
 

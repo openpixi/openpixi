@@ -189,6 +189,8 @@ public abstract class Particle implements Serializable {
 
 	public void storePosition() {}
 	
+	public void applyPeriodicBoundary(double argument1, double argument2, double argument3) {}
+	
 	public Particle copy() {
 		Particle p = new ParticleFull();
 		return p;
