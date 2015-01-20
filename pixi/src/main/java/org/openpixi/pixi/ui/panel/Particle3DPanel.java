@@ -30,6 +30,7 @@ import org.openpixi.pixi.physics.Simulation;
 import org.openpixi.pixi.physics.particles.Particle;
 import org.openpixi.pixi.ui.SimulationAnimation;
 import org.openpixi.pixi.ui.util.FrameRateDetector;
+import org.openpixi.pixi.ui.util.projection.LineObject;
 import org.openpixi.pixi.ui.util.projection.Projection;
 
 
@@ -52,17 +53,24 @@ public class Particle3DPanel extends AnimationPanel {
 	Color darkGreen = new Color(0x00, 0x80, 0x00);
 
 	private Projection projection = new Projection();
+	private LineObject object = new LineObject();
 
 	/** Constructor */
 	public Particle3DPanel(SimulationAnimation simulationAnimation) {
 		super(simulationAnimation);
 
-		projection.deltaX = -50;
-		projection.deltaY = -50;
-		projection.screenDeltaX = 50;
-		projection.screenDeltaY = 50;
-		projection.distance = 200;
-		projection.scale = 1;
+		Simulation s = simulationAnimation.getSimulation();
+		projection.deltaX = -s.getWidth()/2;
+		projection.deltaY = -s.getHeight()/2;
+		projection.deltaZ = -s.getHeight()/2; // TODO: Replace by z-coordinate
+		projection.screenDeltaX = s.getWidth()/2;
+		projection.screenDeltaY = s.getHeight()/2;
+		projection.distance = 2 * s.getWidth();
+		projection.scale = .7;
+		projection.phi = 0;
+		projection.theta = 0;
+
+		object.addCube(s.getWidth(), Color.black);
 	}
 
 	public void clear() {
@@ -110,11 +118,13 @@ public class Particle3DPanel extends AnimationPanel {
 		projection.phi += .01;
 		projection.updateRotationMatrix();
 
+		object.paint(projection, graph, sx, sy);
+
 		for (int i = 0; i < s.particles.size(); i++) {
 			Particle par = (Particle) s.particles.get(i);
 			graph.setColor(par.getColor());
 
-			projection.project(par.getX(), par.getY(), 0);
+			projection.project(par.getX(), par.getY(), s.getHeight()/2); // TODO: Use actual Z-coordinate
 			double screenX = projection.screenX;
 			double screenY = projection.screenY;
 			double screenScale = projection.screenScale;
