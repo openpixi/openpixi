@@ -26,13 +26,11 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.geom.AffineTransform;
 
-import javax.swing.JPanel;
-
 import org.openpixi.pixi.physics.Simulation;
 import org.openpixi.pixi.physics.particles.Particle;
 import org.openpixi.pixi.ui.SimulationAnimation;
-import org.openpixi.pixi.ui.SimulationAnimationListener;
 import org.openpixi.pixi.ui.util.FrameRateDetector;
+import org.openpixi.pixi.ui.util.projection.Projection;
 
 
 /**
@@ -53,9 +51,18 @@ public class Particle3DPanel extends AnimationPanel {
 
 	Color darkGreen = new Color(0x00, 0x80, 0x00);
 
+	private Projection projection = new Projection();
+
 	/** Constructor */
 	public Particle3DPanel(SimulationAnimation simulationAnimation) {
 		super(simulationAnimation);
+
+		projection.deltaX = -50;
+		projection.deltaY = -50;
+		projection.screenDeltaX = 50;
+		projection.screenDeltaY = 50;
+		projection.distance = 200;
+		projection.scale = 1;
 	}
 
 	public void clear() {
@@ -100,17 +107,27 @@ public class Particle3DPanel extends AnimationPanel {
 		/** Scaling factor for the displayed panel in y-direction*/
 		double sy = getHeight() / s.getHeight();
 
+		projection.phi += .01;
+		projection.updateRotationMatrix();
+
 		for (int i = 0; i < s.particles.size(); i++) {
 			Particle par = (Particle) s.particles.get(i);
 			graph.setColor(par.getColor());
-			double radius = par.getRadius();
+
+			projection.project(par.getX(), par.getY(), 0);
+			double screenX = projection.screenX;
+			double screenY = projection.screenY;
+			double screenScale = projection.screenScale;
+
+			double radius = screenScale * par.getRadius();
 			int width = (int) (2*sx*radius);
 			int height = (int) (2*sy*radius);
+
 			if(width > 2 && height > 2 && !paint_trace) {
-				graph.fillOval((int) (par.getX()*sx) - width/2, (int) (par.getY()*sy) - height/2,  width,  height);
+				graph.fillOval((int) (screenX*sx) - width/2, (int) (screenY*sy) - height/2,  width,  height);
 			}
 			else {
-				graph.drawRect((int) (par.getX()*sx), (int) (par.getY()*sy), 0, 0);
+				graph.drawRect((int) (screenX*sx), (int) (screenY*sy), 0, 0);
 			}
 		}
 

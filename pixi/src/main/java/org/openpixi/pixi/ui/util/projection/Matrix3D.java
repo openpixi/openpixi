@@ -40,4 +40,37 @@ public class Matrix3D {
 		C.m33 = A.m31 * B.m13 + A.m32 * B.m23 + A.m33 * B.m33;
 		return C;
 	}
+
+	public static Matrix3D getRotationMatrixZ(double angle) {
+		Matrix3D m = new Matrix3D();
+		m.reset();
+		m.m11 = Math.cos(angle);
+		m.m12 = -Math.sin(angle);
+		m.m21 = -m.m12; // +sin(phi)
+		m.m22 = m.m11; // cos(phi)
+		m.m33 = 1;
+		return m;
+	}
+
+	public static Matrix3D getRotationMatrixY(double angle) {
+		Matrix3D m = new Matrix3D();
+		m.reset();
+		m.m11 = Math.cos(angle);
+		m.m13 = Math.sin(angle);
+		m.m22 = 1;
+		m.m31 = -m.m13; // -sin(phi)
+		m.m33 = m.m11; // cos(phi)
+		return m;
+	}
+
+	public static Matrix3D getRotationMatrixX(double angle) {
+		Matrix3D m = new Matrix3D();
+		m.reset();
+		m.m11 = 1;
+		m.m22 = Math.cos(angle);
+		m.m23 = -Math.sin(angle);
+		m.m32 = -m.m23; // +sin(phi)
+		m.m33 = m.m22; // cos(phi)
+		return m;
+	}
 }
