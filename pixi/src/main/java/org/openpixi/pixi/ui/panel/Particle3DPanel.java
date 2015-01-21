@@ -24,6 +24,8 @@ import static java.awt.geom.AffineTransform.getTranslateInstance;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.awt.geom.AffineTransform;
 
 import org.openpixi.pixi.physics.Simulation;
@@ -76,6 +78,10 @@ public class Particle3DPanel extends AnimationPanel {
 		projection.theta = 0;
 
 		object.addCube(s.getWidth(), Color.black);
+
+		MouseListener l = new MouseListener();
+		addMouseListener(l);
+		addMouseMotionListener(l);
 	}
 
 	public void clear() {
@@ -120,7 +126,7 @@ public class Particle3DPanel extends AnimationPanel {
 		/** Scaling factor for the displayed panel in y-direction*/
 		double sy = getHeight() / s.getHeight();
 
-		projection.phi += .01;
+		//projection.phi += .01;
 		projection.updateRotationMatrix();
 
 		object.paint(projection, graph, sx, sy);
@@ -241,6 +247,33 @@ public class Particle3DPanel extends AnimationPanel {
 			graph.drawString("max memory: " + maxMemory /1024, 30, bottom - 50);
 			graph.drawString("total free memory: " +
 				(freeMemory + (maxMemory - allocatedMemory)) / 1024, 30, bottom - 30);
+		}
+	}
+
+	private int mouseOldX, mouseOldY;
+
+	class MouseListener extends MouseAdapter {
+		public void mousePressed(MouseEvent e) {
+			//System.out.println("Pressed "+e.getX() + " : " + e.getY());
+			mouseOldX = e.getX();
+			mouseOldY = e.getY();
+			super.mousePressed(e);
+		}
+
+		public void mouseDragged(MouseEvent e) {
+			//System.out.println("D "+e.getX() + " : " + e.getY());
+			double deltaX = e.getX() - mouseOldX;
+			double deltaY = e.getY() - mouseOldY;
+			double factor = 0.01;
+			projection.phi -= factor * deltaX;
+			projection.theta -= factor * deltaY;
+			mouseOldX = e.getX();
+			mouseOldY = e.getY();
+			super.mouseDragged(e);
+		}
+
+		public void mouseReleased(MouseEvent e) {
+			super.mouseReleased(e);
 		}
 	}
 }
