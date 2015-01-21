@@ -494,7 +494,7 @@ private void interpolateToGrid3D(Particle p, Grid g, double tstep) {
 		deltaZ -= z;
 		
 		int cellCheck = Math.abs(xEnd - xStart)%(g.getNumCellsX()-2) + Math.abs(yEnd - yStart)%(g.getNumCellsY()-2) + Math.abs(zEnd - zStart)%(g.getNumCellsZ()-2);
-		int checkSum1 = (xEnd - xStart)%(g.getNumCellsX()-2) + ((yEnd - yStart)%(g.getNumCellsY()-2))*2 + ((zEnd - zStart)%(g.getNumCellsZ()-2))*3;
+		int checkSum = Math.abs(xEnd - xStart)%(g.getNumCellsX()-2) + (Math.abs(yEnd - yStart)%(g.getNumCellsY()-2))*2 + (Math.abs(zEnd - zStart)%(g.getNumCellsZ()-2))*3;
 		
 		switch(cellCheck) {
 		
@@ -502,11 +502,11 @@ private void interpolateToGrid3D(Particle p, Grid g, double tstep) {
         
         	break;
         	
-        	case 1:  twoCellMove(xStart, yStart, zStart, checkSum1, xEnd, yEnd, zEnd, x, y, z, deltaX, deltaY, deltaZ, p.getCharge(), g, tstep);
+        	case 1:  twoCellMove(xStart, yStart, zStart, checkSum, xEnd, yEnd, zEnd, x, y, z, deltaX, deltaY, deltaZ, p.getCharge(), g, tstep);
             
         	break;
         	
-        	case 2:  //threeCellMove();
+        	case 2:  threeCellMove(xStart, yStart, zStart, checkSum, xEnd, yEnd, zEnd, x, y, z, deltaX, deltaY, deltaZ, p.getCharge(), g, tstep);
             
         	break;
         	
@@ -550,15 +550,15 @@ private void twoCellMove(int xStart, int yStart, int zStart, int checkSum, int x
 	int cellBound;
 	double t, newX, newY, newZ, deltaX1, deltaY1, deltaZ1, deltaX2, deltaY2, deltaZ2;
 	
-		switch(Math.abs(checkSum)) {
+		switch(checkSum) {
 	
 		case 1: 
 			
 			if( (xStart+xEnd) != (g.getNumCellsX()-1) ) {
-				if(checkSum < 0) cellBound = xStart;
+				if((xEnd - xStart) < 0) cellBound = xStart;
 				else cellBound = xEnd;
 			} else {
-				if(checkSum > 0) cellBound = 0;
+				if((xEnd - xStart) > 0) cellBound = 0;
 				else cellBound = g.getNumCellsX();
 			}
 			
@@ -569,7 +569,7 @@ private void twoCellMove(int xStart, int yStart, int zStart, int checkSum, int x
 			deltaZ1 = t * deltaZ;
 			
 			if( (xStart+xEnd) == (g.getNumCellsX()-1) ) {
-				if(checkSum > 0) newX = g.getNumCellsX();
+				if((xEnd - xStart) > 0) newX = g.getNumCellsX();
 				else newX = 0;
 			} else {
 				newX = cellBound;
@@ -590,10 +590,10 @@ private void twoCellMove(int xStart, int yStart, int zStart, int checkSum, int x
 		case 2: 
 			
 			if( (yStart+yEnd) != (g.getNumCellsY()-1) ) {
-				if(checkSum < 0) cellBound = yStart;
+				if((yEnd - yStart) < 0) cellBound = yStart;
 				else cellBound = yEnd;
 			} else {
-				if(checkSum > 0) cellBound = 0;
+				if((yEnd - yStart) > 0) cellBound = 0;
 				else cellBound = g.getNumCellsY();
 			}
 			
@@ -604,7 +604,7 @@ private void twoCellMove(int xStart, int yStart, int zStart, int checkSum, int x
 			deltaZ1 = t * deltaZ;
 			
 			if( (yStart+yEnd) == (g.getNumCellsY()-1) ) {
-				if(checkSum > 0) newY = g.getNumCellsY();
+				if((yEnd - yStart) > 0) newY = g.getNumCellsY();
 				else newY = 0;
 			} else {
 				newY = cellBound;
@@ -625,10 +625,10 @@ private void twoCellMove(int xStart, int yStart, int zStart, int checkSum, int x
 		case 3: 
 			
 			if( (zStart+zEnd) != (g.getNumCellsZ()-1) ) {
-				if(checkSum < 0) cellBound = zStart;
+				if((zEnd - zStart) < 0) cellBound = zStart;
 				else cellBound = zEnd;
 			} else {
-				if(checkSum > 0) cellBound = 0;
+				if((zEnd - zStart) > 0) cellBound = 0;
 				else cellBound = g.getNumCellsZ();
 			}
 			
@@ -639,7 +639,7 @@ private void twoCellMove(int xStart, int yStart, int zStart, int checkSum, int x
 			deltaZ1 = cellBound - z;
 			
 			if( (zStart+zEnd) == (g.getNumCellsZ()-1) ) {
-				if(checkSum > 0) newZ = g.getNumCellsZ();
+				if((zEnd - zStart) > 0) newZ = g.getNumCellsZ();
 				else newZ = 0;
 			} else {
 				newZ = cellBound;
@@ -658,6 +658,234 @@ private void twoCellMove(int xStart, int yStart, int zStart, int checkSum, int x
 		break;
 		
 		default: System.out.println("Interpolation error!!! Particle moved through more or less than 2 cells!!!");
+		
+		break;
+
+		}
+	
+	}
+
+private void threeCellMove(int xStart, int yStart, int zStart, int checkSum, int xEnd, int yEnd, int zEnd, double x, double y, double z, double deltaX, double deltaY, double deltaZ, double charge, Grid g, double tstep) {
+
+	int cellBound1, cellBound2;
+	double t1, t2, newX, newY, newZ, deltaX1, deltaY1, deltaZ1, deltaX2, deltaY2, deltaZ2;
+	
+		switch(checkSum) {
+	
+		case 3: 
+			
+			if( (xStart+xEnd) != (g.getNumCellsX()-1) ) {
+				if((xEnd - xStart) < 0) cellBound1 = xStart;
+				else cellBound1 = xEnd;
+			} else {
+				if((xEnd - xStart) > 0) cellBound1 = 0;
+				else cellBound1 = g.getNumCellsX();
+			}
+			
+			if( (yStart+yEnd) != (g.getNumCellsY()-1) ) {
+				if((yEnd - yStart) < 0) cellBound2 = yStart;
+				else cellBound2 = yEnd;
+			} else {
+				if((yEnd - yStart) > 0) cellBound2 = 0;
+				else cellBound2 = g.getNumCellsY();
+			}
+			
+			t1 = (cellBound1 - x)/deltaX;
+			t2 = (cellBound2 - y)/deltaY;
+			
+			if(t1 < t2) {
+				
+				deltaX1 = cellBound1 - x;
+				deltaY1 = t1 * deltaY;
+				deltaZ1 = t1 * deltaZ;
+				
+				if( (xStart+xEnd) == (g.getNumCellsX()-1) ) {
+					if((xEnd - xStart) > 0) newX = g.getNumCellsX();
+					else newX = 0;
+				} else {
+					newX = cellBound1;
+				}
+				
+				newY = y + deltaY1;
+				newZ = z + deltaZ1;
+				
+				deltaX2 = deltaX + x - newX;
+				deltaY2 = deltaY - deltaY1;
+				deltaZ2 = deltaZ - deltaZ1;
+				
+				oneCellMove(xStart, yStart, zStart, x, y, z, deltaX1, deltaY1, deltaZ1, charge, g, tstep);
+				twoCellMove(xEnd, yStart, zStart, 2, xEnd, yEnd, zEnd, newX, newY, newZ, deltaX2, deltaY2, deltaZ2, charge, g, tstep);
+				
+			} else {
+				
+				deltaX1 = t2 * deltaX;
+				deltaY1 = cellBound2 - y;
+				deltaZ1 = t2 * deltaZ;
+				
+				if( (yStart+yEnd) == (g.getNumCellsY()-1) ) {
+					if((yEnd - yStart) > 0) newY = g.getNumCellsY();
+					else newY = 0;
+				} else {
+					newY = cellBound2;
+				}
+				
+				newX = x + deltaX1;
+				newZ = z + deltaZ1;
+				
+				deltaX2 = deltaX - deltaX1;
+				deltaY2 = deltaY + y - newY;
+				deltaZ2 = deltaZ - deltaZ1;
+				
+				oneCellMove(xStart, yStart, zStart, x, y, z, deltaX1, deltaY1, deltaZ1, charge, g, tstep);
+				twoCellMove(xStart, yEnd, zStart, 1, xEnd, yEnd, zEnd, newX, newY, newZ, deltaX2, deltaY2, deltaZ2, charge, g, tstep);
+				
+			}
+    
+		break;
+		
+		case 4: 
+			
+			if( (xStart+xEnd) != (g.getNumCellsX()-1) ) {
+				if((xEnd - xStart) < 0) cellBound1 = xStart;
+				else cellBound1 = xEnd;
+			} else {
+				if((xEnd - xStart) > 0) cellBound1 = 0;
+				else cellBound1 = g.getNumCellsX();
+			}
+			
+			if( (zStart+zEnd) != (g.getNumCellsZ()-1) ) {
+				if((zEnd - zStart) < 0) cellBound2 = zStart;
+				else cellBound2 = zEnd;
+			} else {
+				if((zEnd - zStart) > 0) cellBound2 = 0;
+				else cellBound2 = g.getNumCellsZ();
+			}
+			
+			t1 = (cellBound1 - x)/deltaX;
+			t2 = (cellBound2 - z)/deltaZ;
+			
+			if(t1 < t2) {
+				
+				deltaX1 = cellBound1 - x;
+				deltaY1 = t1 * deltaY;
+				deltaZ1 = t1 * deltaZ;
+				
+				if( (xStart+xEnd) == (g.getNumCellsX()-1) ) {
+					if((xEnd - xStart) > 0) newX = g.getNumCellsX();
+					else newX = 0;
+				} else {
+					newX = cellBound1;
+				}
+				
+				newY = y + deltaY1;
+				newZ = z + deltaZ1;
+				
+				deltaX2 = deltaX + x - newX;
+				deltaY2 = deltaY - deltaY1;
+				deltaZ2 = deltaZ - deltaZ1;
+				
+				oneCellMove(xStart, yStart, zStart, x, y, z, deltaX1, deltaY1, deltaZ1, charge, g, tstep);
+				twoCellMove(xEnd, yStart, zStart, 3, xEnd, yEnd, zEnd, newX, newY, newZ, deltaX2, deltaY2, deltaZ2, charge, g, tstep);
+				
+			} else {
+				
+				deltaX1 = t2 * deltaX;
+				deltaY1 = t2 * deltaY;
+				deltaZ1 = cellBound2 - z;
+				
+				if( (zStart+zEnd) == (g.getNumCellsZ()-1) ) {
+					if((zEnd - zStart) > 0) newZ = g.getNumCellsZ();
+					else newZ = 0;
+				} else {
+					newZ = cellBound2;
+				}
+				
+				newX = x + deltaX1;
+				newY = y + deltaY1;
+				
+				deltaX2 = deltaX - deltaX1;
+				deltaY2 = deltaY - deltaY1;
+				deltaZ2 = deltaZ + z - newZ;
+				
+				oneCellMove(xStart, yStart, zStart, x, y, z, deltaX1, deltaY1, deltaZ1, charge, g, tstep);
+				twoCellMove(xStart, yStart, zEnd, 1, xEnd, yEnd, zEnd, newX, newY, newZ, deltaX2, deltaY2, deltaZ2, charge, g, tstep);
+				
+			}
+	    
+		break;
+		
+		case 5: 
+			
+			if( (zStart+zEnd) != (g.getNumCellsZ()-1) ) {
+				if((zEnd - zStart) < 0) cellBound1 = zStart;
+				else cellBound1 = zEnd;
+			} else {
+				if((zEnd - zStart) > 0) cellBound1 = 0;
+				else cellBound1 = g.getNumCellsZ();
+			}
+			
+			if( (yStart+yEnd) != (g.getNumCellsY()-1) ) {
+				if((yEnd - yStart) < 0) cellBound2 = yStart;
+				else cellBound2 = yEnd;
+			} else {
+				if((yEnd - yStart) > 0) cellBound2 = 0;
+				else cellBound2 = g.getNumCellsY();
+			}
+			
+			t1 = (cellBound1 - z)/deltaZ;
+			t2 = (cellBound2 - y)/deltaY;
+			
+			if(t1 < t2) {
+				
+				deltaX1 = t1 * deltaX;
+				deltaY1 = t1 * deltaY;
+				deltaZ1 = cellBound1 - z;
+				
+				if( (zStart+zEnd) == (g.getNumCellsZ()-1) ) {
+					if((zEnd - zStart) > 0) newZ = g.getNumCellsZ();
+					else newZ = 0;
+				} else {
+					newZ = cellBound1;
+				}
+				
+				newY = y + deltaY1;
+				newX = x + deltaX1;
+				
+				deltaX2 = deltaX - deltaX1;
+				deltaY2 = deltaY - deltaY1;
+				deltaZ2 = deltaZ + z - newZ;
+				
+				oneCellMove(xStart, yStart, zStart, x, y, z, deltaX1, deltaY1, deltaZ1, charge, g, tstep);
+				twoCellMove(xStart, yStart, zEnd, 2, xEnd, yEnd, zEnd, newX, newY, newZ, deltaX2, deltaY2, deltaZ2, charge, g, tstep);
+				
+			} else {
+				
+				deltaX1 = t2 * deltaX;
+				deltaY1 = cellBound2 - y;
+				deltaZ1 = t2 * deltaZ;
+				
+				if( (yStart+yEnd) == (g.getNumCellsY()-1) ) {
+					if((yEnd - yStart) > 0) newY = g.getNumCellsY();
+					else newY = 0;
+				} else {
+					newY = cellBound2;
+				}
+				
+				newX = x + deltaX1;
+				newZ = z + deltaZ1;
+				
+				deltaX2 = deltaX - deltaX1;
+				deltaY2 = deltaY + y - newY;
+				deltaZ2 = deltaZ - deltaZ1;
+				
+				oneCellMove(xStart, yStart, zStart, x, y, z, deltaX1, deltaY1, deltaZ1, charge, g, tstep);
+				twoCellMove(xStart, yEnd, zStart, 3, xEnd, yEnd, zEnd, newX, newY, newZ, deltaX2, deltaY2, deltaZ2, charge, g, tstep);
+				
+			}
+	    
+		break;
+		
+		default: System.out.println("Interpolation error!!! Particle moved through more or less than 3 cells!!!");
 		
 		break;
 
