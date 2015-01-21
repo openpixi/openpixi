@@ -22,6 +22,7 @@ public class LineObject {
 		pointcount = 0;
 		pointlist.clear();
 		linelist.clear();
+		colorlist.clear();
 	}
 
 	/** Add point to pointlist.
@@ -37,6 +38,18 @@ public class LineObject {
 		linelist.add(index1);
 		linelist.add(index2);
 		colorlist.add(color);
+	}
+
+	/** Add a line from point (x1, y1, z1) to (x2, y2, z2) with color */
+	public void addLine(double x1, double y1, double z1, double x2, double y2, double z2, Color color) {
+		int p1 = addPoint(x1, y1, z1);
+		int p2 = addPoint(x2, y2, z2);
+		addLine(p1, p2, color);
+	}
+
+	/** Add a line from point (x, y, z) to (x+dx, y+dy, z+dz) with color */
+	public void addLineDelta(double x, double y, double z, double dx, double dy, double dz, Color color) {
+		addLine(x, y, z, x + dx, y + dy, z + dz, color);
 	}
 
 	public void addCube(double size, Color color) {

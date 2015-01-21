@@ -43,6 +43,10 @@ public class Particle3DPanel extends AnimationPanel {
 
 	private boolean drawFields = false;
 
+	/** Whether to combine x- and y-components of the fields into a single vector
+	 * or whether to keep them separate. */
+	private boolean combinefields = false;
+
 	public boolean showinfo = false;
 
 	/** A state for the trace */
@@ -54,6 +58,7 @@ public class Particle3DPanel extends AnimationPanel {
 
 	private Projection projection = new Projection();
 	private LineObject object = new LineObject();
+	private LineObject fields = new LineObject();
 
 	/** Constructor */
 	public Particle3DPanel(SimulationAnimation simulationAnimation) {
@@ -141,40 +146,79 @@ public class Particle3DPanel extends AnimationPanel {
 			}
 		}
 
-		if(drawCurrentGrid)
-		{
-			graph.setColor(Color.black);
-			for(int i = 0; i < s.grid.getNumCellsX(); i++)
-				for(int k = 0; k < s.grid.getNumCellsY(); k++)
-				{
-					int xstart = (int) (s.grid.getCellWidth() * (i + 0.5) * sx);
-					int xstart2 = (int)(s.grid.getCellWidth() * i * sx);
-					int ystart = (int) (s.grid.getCellHeight() * (k + 0.5) * sy);
-					int ystart2 = (int) (s.grid.getCellHeight() * k * sy);
-					//drawArrow(graph, xstart, ystart, (int) Math.round(s.grid.getJx(i,k)*sx + xstart), (int) Math.round(s.grid.getJy(i,k)*sy + ystart));
-                                        drawArrow(graph, xstart, ystart2, (int) Math.round(s.grid.getJx(i,k)*sx+xstart), ystart2, Color.BLACK);
-                                        drawArrow(graph, xstart2, ystart, xstart2, (int) Math.round(s.grid.getJy(i,k)*sy+ystart),Color.BLACK);
+		fields.clear();
+
+		if(drawCurrentGrid) {
+			for(int i = 0; i < s.grid.getNumCellsX(); i++) {
+				for(int k = 0; k < s.grid.getNumCellsY(); k++) {
+					double xstart = s.grid.getCellWidth() * (i + 0.5);
+					double ystart = s.grid.getCellHeight() * (k + 0.5);
+					double zstart = s.getHeight()/2; // TODO: Use proper z-coordinate
+					double jx = scale * s.grid.getJx(i,k);
+					double jy = scale * s.grid.getJy(i,k);
+					double jz = scale * 0; // TODO: Add proper z-value
+					if (combinefields) {
+						// Combine x- and y-components of current
+						fields.addLineDelta(xstart, ystart, zstart,
+								jx, jy, jz,
+								Color.BLACK);
+					} else {
+						// Show x- and y-components of current separately
+						double xstart2 = s.grid.getCellWidth() * i;
+						double ystart2 = s.grid.getCellHeight() * k;
+						fields.addLineDelta(xstart, ystart2, zstart,
+								jx, 0, 0,
+								Color.BLACK);
+						fields.addLineDelta(xstart2, ystart, zstart,
+								0, jy, 0,
+								Color.BLACK);
+						// TODO: Add z-component
+					}
 				}
-			//return;
+			}
 		}
 
 		if(drawFields)
 		{
 			graph.setColor(Color.black);
-			for(int i = 0; i < s.grid.getNumCellsX(); i++)
-				for(int k = 0; k < s.grid.getNumCellsY(); k++)
-				{
-					int xstart = (int) (s.grid.getCellWidth() * (i + 0.5) * sx);
-                    int xstart2 = (int)(s.grid.getCellWidth() * i * sx);
-                    int ystart = (int) (s.grid.getCellHeight() * (k + 0.5) * sy);
-                    int ystart2 = (int) (s.grid.getCellHeight() * k * sy);
-//drawArrow(graph, xstart, ystart, (int) Math.round(scale * s.grid.getEx(i,k)*sx + xstart), (int) Math.round(scale* s.grid.getEy(i,k)*sy + ystart));
-                    drawArrow(graph, xstart, ystart2, (int) Math.round(scale*s.grid.getEx(i,k)*sx+xstart),ystart2, Color.BLACK);
-                    drawArrow(graph, xstart2, ystart, xstart2, (int) Math.round(scale*s.grid.getEy(i,k)*sy+ystart), Color.GREEN);
-                    drawArrow(graph, xstart, ystart, xstart, (int) Math.round(scale*s.grid.getBz(i,k)*sy+ystart), Color.RED);
+			for(int i = 0; i < s.grid.getNumCellsX(); i++) {
+				for(int k = 0; k < s.grid.getNumCellsY(); k++) {
+					double xstart = s.grid.getCellWidth() * (i + 0.5);
+					double ystart = s.grid.getCellHeight() * (k + 0.5);
+					double zstart = s.getHeight()/2; // TODO: Use proper z-coordinate
+					double ex = scale * s.grid.getEx(i,k);
+					double ey = scale * s.grid.getEy(i,k);
+					double ez = scale * 0; // TODO: Add proper z-value
+					double bx = scale * 0; // TODO: Add proper x-value
+					double by = scale * 0; // TODO: Add proper y-value
+					double bz = scale * s.grid.getBz(i,k);
+					if (combinefields) {
+						// Draw combined E- and B-fields
+						fields.addLineDelta(xstart, ystart, zstart,
+								ex, ey, ez,
+								Color.green);
+						fields.addLineDelta(xstart, ystart, zstart,
+								bx, by, bz,
+								Color.red);
+					} else {
+						// Draw x- and y-components of E- and B-fields separately
+						double xstart2 = s.grid.getCellWidth() * i;
+						double ystart2 = s.grid.getCellHeight() * k;
+						fields.addLineDelta(xstart, ystart2, zstart,
+								ex, 0, 0,
+								Color.green);
+						fields.addLineDelta(xstart2, ystart, zstart,
+								0, ey, 0,
+								Color.green);
+						fields.addLineDelta(xstart, ystart, zstart,
+								0, 0, bz,
+								Color.red);
+					}
 				}
-			//return;
+			}
 		}
+
+		fields.paint(projection, graph, sx, sy);
 
 		FrameRateDetector frameratedetector = getSimulationAnimation().getFrameRateDetector();
 
@@ -199,33 +243,4 @@ public class Particle3DPanel extends AnimationPanel {
 				(freeMemory + (maxMemory - allocatedMemory)) / 1024, 30, bottom - 30);
 		}
 	}
-
-
-	private void drawArrow(Graphics2D g, int x1, int y1, int x2, int y2, Color col) {
-
-		int ARR_SIZE = 5;
-
-        double dx = x2 - x1, dy = y2 - y1;
-        double angle = Math.atan2(dy, dx);
-        int len = (int) Math.sqrt(dx*dx + dy*dy);
-        // get the old transform matrix
-        AffineTransform old = g.getTransform();
-        AffineTransform at = getTranslateInstance(x1, y1);
-        at.concatenate(getRotateInstance(angle));
-        g.transform(at);
-        //g.setTransform(at);
-
-        // Draw horizontal arrow starting in (0, 0)
-        Color colold = g.getColor();
-        g.setColor(col);
-        g.drawLine(0, 0, (int) len, 0);
-        if(Math.abs(x2 - x1) > 0 || Math.abs(y2 - y1) > 0)
-        	g.fillPolygon(new int[] {len, len-ARR_SIZE, len-ARR_SIZE, len},
-        				  new int[] {0, -ARR_SIZE, ARR_SIZE, 0}, 4);
-        g.setColor(colold);
-
-        // reset transformationmatrix
-        g.setTransform(old);
-     }
-
 }

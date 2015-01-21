@@ -293,13 +293,23 @@ public class MainControlApplet extends JApplet {
 
 	class DrawCurrentGridListener implements ItemListener {
 		public void itemStateChanged(ItemEvent eve){
+			if (particlePanel != null) {
 				particlePanel.drawCurrentGrid();
+			}
+			if (particle3DPanel != null) {
+				particle3DPanel.drawCurrentGrid();
+			}
 		}
 	}
 
 	class DrawFieldsListener implements ItemListener {
 		public void itemStateChanged(ItemEvent eve){
+			if (particlePanel != null) {
 				particlePanel.drawFields();
+			}
+			if (particle3DPanel != null) {
+				particle3DPanel.drawFields();
+			}
 		}
 	}
 
