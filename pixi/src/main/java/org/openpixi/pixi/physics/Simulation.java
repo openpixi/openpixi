@@ -263,7 +263,7 @@ public class Simulation {
 		collisionalgorithm.collide(detector.getOverlappedPairs(), f, mover.getSolver(), tstep);
 		interpolation.interpolateToGrid(particles, grid, tstep);
 		grid.updateGrid(tstep);
-		interpolation.interpolateToParticle(particles, grid);
+		//interpolation.interpolateToParticle(particles, grid);
 
 		tottime++;
 	}

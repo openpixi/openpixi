@@ -69,7 +69,7 @@ public class Particle3DPanel extends AnimationPanel {
 		Simulation s = simulationAnimation.getSimulation();
 		projection.deltaX = -s.getWidth()/2;
 		projection.deltaY = -s.getHeight()/2;
-		projection.deltaZ = -s.getHeight()/2; // TODO: Replace by z-coordinate
+		projection.deltaZ = -s.getDepth()/2;
 		projection.screenDeltaX = s.getWidth()/2;
 		projection.screenDeltaY = s.getHeight()/2;
 		projection.distance = 2 * s.getWidth();
@@ -135,7 +135,7 @@ public class Particle3DPanel extends AnimationPanel {
 			Particle par = (Particle) s.particles.get(i);
 			graph.setColor(par.getColor());
 
-			projection.project(par.getX(), par.getY(), s.getHeight()/2); // TODO: Use actual Z-coordinate
+			projection.project(par.getX(), par.getY(), par.getZ());
 			double screenX = projection.screenX;
 			double screenY = projection.screenY;
 			double screenScale = projection.screenScale;
@@ -157,28 +157,30 @@ public class Particle3DPanel extends AnimationPanel {
 		if(drawCurrentGrid) {
 			for(int i = 0; i < s.grid.getNumCellsX(); i++) {
 				for(int k = 0; k < s.grid.getNumCellsY(); k++) {
-					double xstart = s.grid.getCellWidth() * (i + 0.5);
-					double ystart = s.grid.getCellHeight() * (k + 0.5);
-					double zstart = s.getHeight()/2; // TODO: Use proper z-coordinate
-					double jx = scale * s.grid.getJx(i,k);
-					double jy = scale * s.grid.getJy(i,k);
-					double jz = scale * 0; // TODO: Add proper z-value
-					if (combinefields) {
-						// Combine x- and y-components of current
-						fields.addLineDelta(xstart, ystart, zstart,
-								jx, jy, jz,
-								Color.BLACK);
-					} else {
-						// Show x- and y-components of current separately
-						double xstart2 = s.grid.getCellWidth() * i;
-						double ystart2 = s.grid.getCellHeight() * k;
-						fields.addLineDelta(xstart, ystart2, zstart,
-								jx, 0, 0,
-								Color.BLACK);
-						fields.addLineDelta(xstart2, ystart, zstart,
-								0, jy, 0,
-								Color.BLACK);
-						// TODO: Add z-component
+					for(int j = 0; j < s.grid.getNumCellsZ(); j++) {
+						double xstart = s.grid.getCellWidth() * (i + 0.5);
+						double ystart = s.grid.getCellHeight() * (k + 0.5);
+						double zstart = s.grid.getCellDepth() * (j + 0.5);
+						double jx = scale * s.grid.getJx(i,k,j);
+						double jy = scale * s.grid.getJy(i,k,j);
+						double jz = scale * s.grid.getJz(i,k,j);
+						if (combinefields) {
+							// Combine x- and y-components of current
+							fields.addLineDelta(xstart, ystart, zstart,
+									jx, jy, jz,
+									Color.BLACK);
+						} else {
+							// Show x- and y-components of current separately
+							double xstart2 = s.grid.getCellWidth() * i;
+							double ystart2 = s.grid.getCellHeight() * k;
+							fields.addLineDelta(xstart, ystart2, zstart,
+									jx, 0, 0,
+									Color.BLACK);
+							fields.addLineDelta(xstart2, ystart, zstart,
+									0, jy, 0,
+									Color.BLACK);
+							// TODO: Add z-component
+						}
 					}
 				}
 			}
@@ -189,36 +191,38 @@ public class Particle3DPanel extends AnimationPanel {
 			graph.setColor(Color.black);
 			for(int i = 0; i < s.grid.getNumCellsX(); i++) {
 				for(int k = 0; k < s.grid.getNumCellsY(); k++) {
-					double xstart = s.grid.getCellWidth() * (i + 0.5);
-					double ystart = s.grid.getCellHeight() * (k + 0.5);
-					double zstart = s.getHeight()/2; // TODO: Use proper z-coordinate
-					double ex = scale * s.grid.getEx(i,k);
-					double ey = scale * s.grid.getEy(i,k);
-					double ez = scale * 0; // TODO: Add proper z-value
-					double bx = scale * 0; // TODO: Add proper x-value
-					double by = scale * 0; // TODO: Add proper y-value
-					double bz = scale * s.grid.getBz(i,k);
-					if (combinefields) {
-						// Draw combined E- and B-fields
-						fields.addLineDelta(xstart, ystart, zstart,
-								ex, ey, ez,
-								Color.green);
-						fields.addLineDelta(xstart, ystart, zstart,
-								bx, by, bz,
-								Color.red);
-					} else {
-						// Draw x- and y-components of E- and B-fields separately
-						double xstart2 = s.grid.getCellWidth() * i;
-						double ystart2 = s.grid.getCellHeight() * k;
-						fields.addLineDelta(xstart, ystart2, zstart,
-								ex, 0, 0,
-								Color.green);
-						fields.addLineDelta(xstart2, ystart, zstart,
-								0, ey, 0,
-								Color.green);
-						fields.addLineDelta(xstart, ystart, zstart,
-								0, 0, bz,
-								Color.red);
+					for(int j = 0; j < s.grid.getNumCellsZ(); j++) {
+						double xstart = s.grid.getCellWidth() * (i + 0.5);
+						double ystart = s.grid.getCellHeight() * (k + 0.5);
+						double zstart = s.grid.getCellDepth() * (j + 0.5);
+						double ex = scale * s.grid.getEx(i,k,j);
+						double ey = scale * s.grid.getEy(i,k,j);
+						double ez = scale * s.grid.getEz(i,k,j);
+						double bx = scale * s.grid.getBx(i,k,j);
+						double by = scale * s.grid.getBy(i,k,j);
+						double bz = scale * s.grid.getBz(i,k,j);
+						if (combinefields) {
+							// Draw combined E- and B-fields
+							fields.addLineDelta(xstart, ystart, zstart,
+									ex, ey, ez,
+									Color.green);
+							fields.addLineDelta(xstart, ystart, zstart,
+									bx, by, bz,
+									Color.red);
+						} else {
+							// Draw x- and y-components of E- and B-fields separately
+							double xstart2 = s.grid.getCellWidth() * i;
+							double ystart2 = s.grid.getCellHeight() * k;
+							fields.addLineDelta(xstart, ystart2, zstart,
+									ex, 0, 0,
+									Color.green);
+							fields.addLineDelta(xstart2, ystart, zstart,
+									0, ey, 0,
+									Color.green);
+							fields.addLineDelta(xstart, ystart, zstart,
+									0, 0, bz,
+									Color.red);
+						}
 					}
 				}
 			}
