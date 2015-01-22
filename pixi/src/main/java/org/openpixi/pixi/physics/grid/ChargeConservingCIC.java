@@ -136,7 +136,7 @@ public class ChargeConservingCIC extends CloudInCell {
 				deltaY -= deltaY1;
 				y += deltaY1;
 				fourBoundaryMove(xEnd, yEnd, - 0.5, y, deltaX, deltaY, p, g, tstep);
-
+				
 			}
 			//particle moves left
 			else {
@@ -219,7 +219,6 @@ public class ChargeConservingCIC extends CloudInCell {
 						assert deltaY >=0: deltaY;
 						assert x <= 0 && x >= -0.5;
 					}
-
 				}
 				//upper local origin
 				else {
@@ -248,7 +247,7 @@ public class ChargeConservingCIC extends CloudInCell {
 						assert deltaY >=0: deltaY;
 						assert y <= 0 && y >= -0.5;
 					}
-
+				
 				}
 			}
 			//moved down
@@ -417,7 +416,7 @@ public class ChargeConservingCIC extends CloudInCell {
 					fourBoundaryMove(xStart, yStart, x, y, deltaX1, deltaY1, p, g, tstep);
 
 					double deltaY2 = -(0.5 + y + deltaY1);
-					double deltaX2 = (deltaX1 / deltaY1) * deltaY2;
+					double deltaX2 = (deltaX1 / deltaY1) * deltaY2;//Error source!!!
 					y += deltaY1;
 					fourBoundaryMove(xStart+1, yStart, 0.5, y, deltaX2, deltaY2, p, g, tstep);
 
@@ -436,7 +435,6 @@ public class ChargeConservingCIC extends CloudInCell {
 						assert deltaY <= 0: deltaY;
 						assert x >= 0 && x <= 0.5;
 					}
-
 				}
 			}
 		}

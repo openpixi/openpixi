@@ -294,7 +294,7 @@ public class InitialConditions {
     	stt.setGridCellsY(100);
     	/*
 		ConstantForce cf = new ConstantForce();
-		cf.bz = -1;
+		cf.ex = -1;
 		stt.addForce(cf);
 		*/
                 stt.setNumOfParticles(1);
