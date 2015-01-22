@@ -1,0 +1,45 @@
+# 100 random particles
+
+gridStep: 10
+gridCellsX: 10
+gridCellsY: 10
+poissonsolver: fft
+timeStep: .5
+duration: 1000
+
+streams:
+  # positively charged particles
+  - particle:
+      x: 0
+      y: 0
+      vx: 0
+      vy: 0
+      r: 1
+      m: 1
+      q: .01
+      color: red
+    randomX: 100
+    randomY: 100
+    randomGaussVx: .5
+    randomGaussVy: .5
+    number: 50
+  # negatively charged particles:
+  - particle:
+      x: 0
+      y: 0
+      vx: 0
+      vy: 0
+      r: 1
+      m: 1
+      q: -.01
+      color: blue
+    randomX: 100
+    randomY: 100
+    randomGaussVx: .5
+    randomGaussVy: .5
+    number: 50
+
+output:
+  path: 100randomparticles
+  daniil: 1
+  daniilspectrum: 300

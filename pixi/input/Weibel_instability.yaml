@@ -1,0 +1,43 @@
+# Weibel instability
+
+gridStep: 10
+gridCellsX: 10
+gridCellsY: 10
+poissonsolver: fft
+timeStep: 0.1
+duration: 1000
+
+streams:
+  # first stream:
+  - particle:
+      x: 25
+      y: 0
+      vx: 0
+      vy: .99
+      r: 1
+      m: 1
+      q: -.01
+      color: red
+    dx: 0
+    dy: .1
+    randomGaussX: 7.5
+    number: 1000
+  # second stream:
+  - particle:
+      x: 75
+      y: 50
+      vx: 0
+      vy: -.99
+      r: 1
+      m: 1
+      q: -.01
+      color: blue
+    dx: 0
+    dy: 0.1
+    randomGaussX: 7.5
+    number: 1000
+
+output:
+  path: weibelinstability
+  daniil: 1
+  daniilspectrum: 300

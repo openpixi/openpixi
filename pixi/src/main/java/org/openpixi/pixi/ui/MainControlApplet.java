@@ -32,6 +32,7 @@ import org.openpixi.pixi.physics.solver.*;
 import org.openpixi.pixi.physics.solver.relativistic.*;
 import org.openpixi.pixi.ui.panel.AnimationPanel;
 import org.openpixi.pixi.ui.panel.Particle2DPanel;
+import org.openpixi.pixi.ui.panel.Particle3DPanel;
 import org.openpixi.pixi.ui.panel.PhaseSpacePanel;
 import org.openpixi.pixi.ui.panel.ElectricFieldPanel;
 import org.openpixi.pixi.ui.tab.FileTab;
@@ -81,6 +82,7 @@ public class MainControlApplet extends JApplet {
 	private SimulationAnimation simulationAnimation;
 
 	private Particle2DPanel particlePanel;
+	private Particle3DPanel particle3DPanel;
 	private PhaseSpacePanel phaseSpacePanel;
 	private ElectricFieldPanel electricFieldPanel;
 
@@ -292,13 +294,23 @@ public class MainControlApplet extends JApplet {
 
 	class DrawCurrentGridListener implements ItemListener {
 		public void itemStateChanged(ItemEvent eve){
+			if (particlePanel != null) {
 				particlePanel.drawCurrentGrid();
+			}
+			if (particle3DPanel != null) {
+				particle3DPanel.drawCurrentGrid();
+			}
 		}
 	}
 
 	class DrawFieldsListener implements ItemListener {
 		public void itemStateChanged(ItemEvent eve){
+			if (particlePanel != null) {
 				particlePanel.drawFields();
+			}
+			if (particle3DPanel != null) {
+				particle3DPanel.drawFields();
+			}
 		}
 	}
 
@@ -740,6 +752,7 @@ public class MainControlApplet extends JApplet {
 	JMenuItem itemSplitVertically;
 	JMenuItem itemClosePanel;
 	JMenuItem itemParticle2DPanel;
+	JMenuItem itemParticle3DPanel;
 	JMenuItem itemPhaseSpacePanel;
 	JMenuItem itemElectricFieldPanel;
 
@@ -765,6 +778,10 @@ public class MainControlApplet extends JApplet {
 			itemParticle2DPanel = new JMenuItem("Particles");
 			itemParticle2DPanel.addActionListener(new MenuSelected());
 			add(itemParticle2DPanel);
+
+			itemParticle3DPanel = new JMenuItem("Particles 3D");
+			itemParticle3DPanel.addActionListener(new MenuSelected());
+			add(itemParticle3DPanel);
 
 			itemPhaseSpacePanel = new JMenuItem("Phase space");
 			itemPhaseSpacePanel.addActionListener(new MenuSelected());
@@ -817,6 +834,9 @@ public class MainControlApplet extends JApplet {
 			} else if (event.getSource() == itemParticle2DPanel) {
 				particlePanel = new Particle2DPanel(simulationAnimation);
 				component = particlePanel;
+			} else if (event.getSource() == itemParticle3DPanel) {
+				particle3DPanel = new Particle3DPanel(simulationAnimation);
+				component = particle3DPanel;
 			} else if (event.getSource() == itemPhaseSpacePanel) {
 				phaseSpacePanel = new PhaseSpacePanel(simulationAnimation);
 				component = phaseSpacePanel;
