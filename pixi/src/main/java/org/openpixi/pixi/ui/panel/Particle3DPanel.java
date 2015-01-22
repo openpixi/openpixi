@@ -34,6 +34,7 @@ import org.openpixi.pixi.ui.SimulationAnimation;
 import org.openpixi.pixi.ui.util.FrameRateDetector;
 import org.openpixi.pixi.ui.util.projection.LineObject;
 import org.openpixi.pixi.ui.util.projection.Projection;
+import org.openpixi.pixi.ui.util.projection.SphereObject;
 
 
 /**
@@ -61,6 +62,7 @@ public class Particle3DPanel extends AnimationPanel {
 	private Projection projection = new Projection();
 	private LineObject object = new LineObject();
 	private LineObject fields = new LineObject();
+	private SphereObject spheres = new SphereObject();
 
 	/** Constructor */
 	public Particle3DPanel(SimulationAnimation simulationAnimation) {
@@ -131,26 +133,18 @@ public class Particle3DPanel extends AnimationPanel {
 
 		object.paint(projection, graph, sx, sy);
 
-		for (int i = 0; i < s.particles.size(); i++) {
-			Particle par = (Particle) s.particles.get(i);
-			graph.setColor(par.getColor());
+		spheres.clear();
 
-			projection.project(par.getX(), par.getY(), s.getHeight()/2); // TODO: Use actual Z-coordinate
-			double screenX = projection.screenX;
-			double screenY = projection.screenY;
-			double screenScale = projection.screenScale;
-
-			double radius = screenScale * par.getRadius();
-			int width = (int) (2*sx*radius);
-			int height = (int) (2*sy*radius);
-
-			if(width > 2 && height > 2 && !paint_trace) {
-				graph.fillOval((int) (screenX*sx) - width/2, (int) (screenY*sy) - height/2,  width,  height);
-			}
-			else {
-				graph.drawRect((int) (screenX*sx), (int) (screenY*sy), 0, 0);
-			}
+		for (Particle p : s.particles) {
+			double x = p.getX();
+			double y = p.getY();
+			double z = s.getHeight()/2; // TODO: p.getZ();
+			double r = p.getRadius();
+			Color color = p.getColor();
+			spheres.addSphere(x, y, z, r, color);
 		}
+
+		spheres.paint(projection, graph, sx, sy);
 
 		fields.clear();
 
