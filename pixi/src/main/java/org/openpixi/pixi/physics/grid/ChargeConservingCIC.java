@@ -510,7 +510,7 @@ private void interpolateToGrid3D(Particle p, Grid g, double tstep) {
             
         	break;
         	
-        	case 3:  //fourCellMove();
+        	case 3:  fourCellMove(xStart, yStart, zStart, xEnd, yEnd, zEnd, x, y, z, deltaX, deltaY, deltaZ, p.getCharge(), g, tstep);
             
         	break;
         	
@@ -889,6 +889,136 @@ private void threeCellMove(int xStart, int yStart, int zStart, int checkSum, int
 		
 		break;
 
+		}
+	
+	}
+
+private void fourCellMove(int xStart, int yStart, int zStart, int xEnd, int yEnd, int zEnd, double x, double y, double z, double deltaX, double deltaY, double deltaZ, double charge, Grid g, double tstep) {
+
+	int cellBound1, cellBound2, cellBound3;
+	double newX, newY, newZ, deltaX1, deltaY1, deltaZ1, deltaX2, deltaY2, deltaZ2;
+	double[] t;
+	t = new double[3];
+	
+		if( (xStart+xEnd) != (g.getNumCellsX()-1) ) {
+			if((xEnd - xStart) < 0) cellBound1 = xStart;
+			else cellBound1 = xEnd;
+		} else {
+			if((xEnd - xStart) > 0) cellBound1 = 0;
+			else cellBound1 = g.getNumCellsX();
+		}
+		
+		if( (yStart+yEnd) != (g.getNumCellsY()-1) ) {
+			if((yEnd - yStart) < 0) cellBound2 = yStart;
+			else cellBound2 = yEnd;
+		} else {
+			if((yEnd - yStart) > 0) cellBound2 = 0;
+			else cellBound2 = g.getNumCellsY();
+		}
+		
+		if( (zStart+zEnd) != (g.getNumCellsZ()-1) ) {
+			if((zEnd - zStart) < 0) cellBound3 = zStart;
+			else cellBound3 = zEnd;
+		} else {
+			if((zEnd - zStart) > 0) cellBound3 = 0;
+			else cellBound3 = g.getNumCellsZ();
+		}
+		
+		t[0] = (cellBound1 - x)/deltaX;
+		t[1] = (cellBound2 - y)/deltaY;
+		t[2] = (cellBound3 - z)/deltaZ;
+		
+		int index = 0;
+		double smallest = t[0];
+		
+		for(int i=0;i<3;i++) {
+			if(t[i] < smallest) {
+				smallest = t[i];
+				index = i;
+			}
+		}
+		
+		switch(index) {
+		
+		case 0:
+			
+			deltaX1 = cellBound1 - x;
+			deltaY1 = t[0] * deltaY;
+			deltaZ1 = t[0] * deltaZ;
+			
+			if( (xStart+xEnd) == (g.getNumCellsX()-1) ) {
+				if((xEnd - xStart) > 0) newX = g.getNumCellsX();
+				else newX = 0;
+			} else {
+				newX = cellBound1;
+			}
+			
+			newY = y + deltaY1;
+			newZ = z + deltaZ1;
+			
+			deltaX2 = deltaX + x - newX;
+			deltaY2 = deltaY - deltaY1;
+			deltaZ2 = deltaZ - deltaZ1;
+			
+			oneCellMove(xStart, yStart, zStart, x, y, z, deltaX1, deltaY1, deltaZ1, charge, g, tstep);
+			threeCellMove(xEnd, yStart, zStart, 5, xEnd, yEnd, zEnd, newX, newY, newZ, deltaX2, deltaY2, deltaZ2, charge, g, tstep);
+			
+		break;
+		
+		case 1:
+			
+			deltaX1 = t[1] * deltaX;
+			deltaY1 = cellBound2 - y;
+			deltaZ1 = t[1] * deltaZ;
+			
+			if( (yStart+yEnd) == (g.getNumCellsY()-1) ) {
+				if((yEnd - yStart) > 0) newY = g.getNumCellsY();
+				else newY = 0;
+			} else {
+				newY = cellBound2;
+			}
+			
+			newX = x + deltaX1;
+			newZ = z + deltaZ1;
+			
+			deltaX2 = deltaX - deltaX1;
+			deltaY2 = deltaY + y - newY;
+			deltaZ2 = deltaZ - deltaZ1;
+			
+			oneCellMove(xStart, yStart, zStart, x, y, z, deltaX1, deltaY1, deltaZ1, charge, g, tstep);
+			threeCellMove(xStart, yEnd, zStart, 4, xEnd, yEnd, zEnd, newX, newY, newZ, deltaX2, deltaY2, deltaZ2, charge, g, tstep);
+			
+		break;
+		
+		case 2:
+			
+			deltaX1 = t[2] * deltaX;
+			deltaY1 = t[2] * deltaY;
+			deltaZ1 = cellBound3 - z;
+			
+			if( (zStart+zEnd) == (g.getNumCellsZ()-1) ) {
+				if((zEnd - zStart) > 0) newZ = g.getNumCellsZ();
+				else newZ = 0;
+			} else {
+				newZ = cellBound3;
+			}
+			
+			newY = y + deltaY1;
+			newX = x + deltaX1;
+			
+			deltaX2 = deltaX - deltaX1;
+			deltaY2 = deltaY - deltaY1;
+			deltaZ2 = deltaZ + z - newZ;
+			
+			oneCellMove(xStart, yStart, zStart, x, y, z, deltaX1, deltaY1, deltaZ1, charge, g, tstep);
+			threeCellMove(xStart, yStart, zEnd, 3, xEnd, yEnd, zEnd, newX, newY, newZ, deltaX2, deltaY2, deltaZ2, charge, g, tstep);
+			
+		break;
+		
+		default: System.out.println("Interpolation error!!! Error in the fourCellMove!!!");
+		
+		break;
+			
 		}
 	
 	}
