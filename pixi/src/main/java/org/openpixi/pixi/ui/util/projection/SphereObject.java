@@ -3,12 +3,15 @@ package org.openpixi.pixi.ui.util.projection;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 
 /**
  * A 3D object of spheres
  */
 public class SphereObject {
 	private ArrayList<Sphere> spherelist = new ArrayList<Sphere>();
+	private ArrayList<Distance> distancelist = new ArrayList<Distance>();
 
 	public SphereObject() {
 	}
@@ -32,14 +35,28 @@ public class SphereObject {
 			projection.project(s.x, s.y, s.z);
 			s.screenX = projection.screenX;
 			s.screenY = projection.screenY;
+			s.screenZ = projection.screenZ;
 			s.screenScale = projection.screenScale;
 		}
 	}
 
+	public void sort() {
+		distancelist.clear();
+		for (Sphere s : spherelist) {
+			Distance d = new Distance();
+			d.distance = -s.screenZ;
+			d.sphere = s;
+			distancelist.add(d);
+		}
+
+		Collections.sort(distancelist, new DistanceComparator());
+	}
+
 	public void paint(Projection projection, Graphics2D graphics, double sx, double sy) {
 		applyProjection(projection);
-
-		for (Sphere s : spherelist) {
+		sort();
+		for (Distance d : distancelist) {
+			Sphere s = d.sphere;
 			double radius = s.screenScale * s.r;
 			int width = (int) (2*sx*radius);
 			int height = (int) (2*sy*radius);
@@ -57,6 +74,18 @@ public class SphereObject {
 		double x, y, z;
 		double r;
 		Color color;
-		double screenX, screenY, screenScale;
+		double screenX, screenY, screenZ, screenScale;
+	}
+
+	private class Distance {
+		double distance;
+		Sphere sphere;
+	}
+
+	private class DistanceComparator implements Comparator<Distance> {
+		@Override
+		public int compare(Distance s1, Distance s2) {
+			return Double.compare(s1.distance, s2.distance);
+		}
 	}
 }
