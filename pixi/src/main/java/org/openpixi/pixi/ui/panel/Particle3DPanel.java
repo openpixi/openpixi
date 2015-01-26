@@ -18,22 +18,19 @@
  */
 package org.openpixi.pixi.ui.panel;
 
-import static java.awt.geom.AffineTransform.getRotateInstance;
-import static java.awt.geom.AffineTransform.getTranslateInstance;
-
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.geom.AffineTransform;
-
 import org.openpixi.pixi.physics.Simulation;
 import org.openpixi.pixi.physics.particles.Particle;
 import org.openpixi.pixi.ui.SimulationAnimation;
 import org.openpixi.pixi.ui.util.FrameRateDetector;
 import org.openpixi.pixi.ui.util.projection.LineObject;
 import org.openpixi.pixi.ui.util.projection.Projection;
+import org.openpixi.pixi.ui.util.projection.Scene;
+import org.openpixi.pixi.ui.util.projection.SphereObject;
 
 
 /**
@@ -61,6 +58,8 @@ public class Particle3DPanel extends AnimationPanel {
 	private Projection projection = new Projection();
 	private LineObject object = new LineObject();
 	private LineObject fields = new LineObject();
+	private SphereObject spheres = new SphereObject();
+	private Scene scene = new Scene();
 
 	/** Constructor */
 	public Particle3DPanel(SimulationAnimation simulationAnimation) {
@@ -78,6 +77,10 @@ public class Particle3DPanel extends AnimationPanel {
 		projection.theta = 0;
 
 		object.addCube(s.getWidth(), Color.black);
+
+		scene.add(object);
+		scene.add(fields);
+		scene.add(spheres);
 
 		MouseListener l = new MouseListener();
 		addMouseListener(l);
@@ -126,30 +129,17 @@ public class Particle3DPanel extends AnimationPanel {
 		/** Scaling factor for the displayed panel in y-direction*/
 		double sy = getHeight() / s.getHeight();
 
-		//projection.phi += .01;
 		projection.updateRotationMatrix();
 
-		object.paint(projection, graph, sx, sy);
+		spheres.clear();
 
-		for (int i = 0; i < s.particles.size(); i++) {
-			Particle par = (Particle) s.particles.get(i);
-			graph.setColor(par.getColor());
-
-			projection.project(par.getX(), par.getY(), par.getZ());
-			double screenX = projection.screenX;
-			double screenY = projection.screenY;
-			double screenScale = projection.screenScale;
-
-			double radius = screenScale * par.getRadius();
-			int width = (int) (2*sx*radius);
-			int height = (int) (2*sy*radius);
-
-			if(width > 2 && height > 2 && !paint_trace) {
-				graph.fillOval((int) (screenX*sx) - width/2, (int) (screenY*sy) - height/2,  width,  height);
-			}
-			else {
-				graph.drawRect((int) (screenX*sx), (int) (screenY*sy), 0, 0);
-			}
+		for (Particle p : s.particles) {
+			double x = p.getX();
+			double y = p.getY();
+			double z = p.getZ();
+			double r = p.getRadius();
+			Color color = p.getColor();
+			spheres.addSphere(x, y, z, r, color);
 		}
 
 		fields.clear();
@@ -228,7 +218,7 @@ public class Particle3DPanel extends AnimationPanel {
 			}
 		}
 
-		fields.paint(projection, graph, sx, sy);
+		scene.paint(projection, graph, sx, sy);
 
 		FrameRateDetector frameratedetector = getSimulationAnimation().getFrameRateDetector();
 

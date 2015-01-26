@@ -23,7 +23,7 @@ public class Projection {
 	private double x, y, z;
 
 	/** Screen coordinates */
-	public double screenX, screenY;
+	public double screenX, screenY, screenZ;
 
 	/** Screen scale factor */
 	public double screenScale;
@@ -57,6 +57,7 @@ public class Projection {
 			screenScale = distance / (this.z + distance);
 			screenX = this.x * screenScale + screenDeltaX;
 			screenY = this.y * screenScale + screenDeltaY;
+			screenZ = this.z; // arbitrary scale in z-direction
 			onscreen = true;
 		} else {
 			onscreen = false;
