@@ -495,7 +495,7 @@ private void interpolateToGrid3D(Particle p, Grid g, double tstep) {
 		
 		int cellCheck = Math.abs(xEnd - xStart)%(g.getNumCellsX()-2) + Math.abs(yEnd - yStart)%(g.getNumCellsY()-2) + Math.abs(zEnd - zStart)%(g.getNumCellsZ()-2);
 		int checkSum = Math.abs(xEnd - xStart)%(g.getNumCellsX()-2) + (Math.abs(yEnd - yStart)%(g.getNumCellsY()-2))*2 + (Math.abs(zEnd - zStart)%(g.getNumCellsZ()-2))*3;
-		//System.out.println(cellCheck);
+		//System.out.println(p.getZ());
 		switch(cellCheck) {
 		
         	case 0:  oneCellMove(xStart, yStart, zStart, x, y, z, deltaX, deltaY, deltaZ, p.getCharge(), g, tstep);

@@ -47,16 +47,16 @@ public class InitialConditions {
 
 		//stt.setSpeedOfLight(3);
 		// Use maximum speed available by grid
-		stt.setSpeedOfLight(stt.getCellWidth() / stt.getTimeStep());
+		//stt.setSpeedOfLight(stt.getCellWidth() / stt.getTimeStep());
 
 		stt.setSimulationWidth(100);
 		stt.setSimulationHeight(100);
 
 		stt.addForce(new ConstantForce());
 		stt.setParticleList(
-				createRandomParticles(stt.getSimulationWidth(), stt.getSimulationHeight(),
-				stt.getSpeedOfLight() / 3, count, radius));
-		stt.setBoundary(GeneralBoundaryType.Hardwall);
+				createRandomParticles(stt.getSimulationWidth(), stt.getSimulationHeight(), stt.getSimulationDepth(),
+				stt.getSpeedOfLight(), count, radius));
+		stt.setBoundary(GeneralBoundaryType.Periodic);
 		//stt.setParticleSolver(new EulerRichardson());
 		//stt.setParticleSolver(new BorisRelativistic(stt.getSpeedOfLight()));
 		stt.setParticleSolver(new LeapFrogRelativistic(stt.getSpeedOfLight()));
@@ -185,6 +185,35 @@ public class InitialConditions {
 			phi = 2 * Math.PI * Math.random();
 			p.setVx(maxspeed * Math.cos(phi));
 			p.setVy(maxspeed * Math.sin(phi));
+			p.setMass(1);
+            //overall charge is 0:
+			if (k<count/2) {
+				p.setCharge(.01);
+				p.setColor(Color.red);
+			} else {
+				p.setCharge(-.01);
+				p.setColor(Color.blue);
+			}
+			particlelist.add(p);
+		}
+
+		return particlelist;
+	}
+	
+	public static ArrayList<Particle> createRandomParticles(double width, double height, double depth, double maxspeed, int count, double radius) {
+
+		ArrayList<Particle> particlelist = new ArrayList<Particle>(count);
+
+		for (int k = 0; k < count; k++) {
+			Particle p = new ParticleFull();
+			p.setX(width * Math.random());
+			p.setY(height * Math.random());
+			p.setZ(depth * Math.random());
+			p.setRadius(radius);
+			phi = 2 * Math.PI * Math.random();
+			p.setVx(maxspeed * Math.random());
+			p.setVy(maxspeed * Math.random());
+			p.setVz(maxspeed * Math.random());
 			p.setMass(1);
             //overall charge is 0:
 			if (k<count/2) {
