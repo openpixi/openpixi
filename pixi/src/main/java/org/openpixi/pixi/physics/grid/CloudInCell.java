@@ -611,6 +611,8 @@ private void interpolateToParticle3D(Particle p, Grid g) {
                       		(zCellPosition + 1 + g.getNumCellsZ())%g.getNumCellsZ() ) * a * d * e
                       		 
       		);
+      		//System.out.println(p.getEx());System.out.println(p.getEy());System.out.println(p.getEz());
+      		//System.out.println(p.getBx());System.out.println(p.getBy());System.out.println(p.getBz());
 	}
 
 }

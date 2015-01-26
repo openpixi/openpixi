@@ -60,7 +60,7 @@ public class Settings {
 	// DEFAULT VALUES
 	//----------------------------------------------------------------------------------------------
 	private double speedOfLight = 1;
-	private double timeStep = 0.5;
+	private double timeStep = 0.1;
 	private double gridStep = 1;
 	private double tMax = 3000;
 	private int spectrumStep = 300;

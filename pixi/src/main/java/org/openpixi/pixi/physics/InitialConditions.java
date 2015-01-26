@@ -43,7 +43,7 @@ public class InitialConditions {
 	public static Simulation initRandomParticles(int count, double radius) {
 		Settings stt = new Settings();
 
-		stt.setTimeStep(1);
+		stt.setTimeStep(0.1);
 
 		//stt.setSpeedOfLight(3);
 		// Use maximum speed available by grid
