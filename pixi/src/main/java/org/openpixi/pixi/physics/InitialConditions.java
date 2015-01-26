@@ -49,8 +49,9 @@ public class InitialConditions {
 		// Use maximum speed available by grid
 		//stt.setSpeedOfLight(stt.getCellWidth() / stt.getTimeStep());
 
-		stt.setSimulationWidth(100);
-		stt.setSimulationHeight(100);
+		stt.setGridCellsX(100);
+		stt.setGridCellsY(100);
+		stt.setGridCellsZ(100);
 
 		stt.addForce(new ConstantForce());
 		stt.setParticleList(
@@ -427,6 +428,7 @@ public class InitialConditions {
     	stt.setGridStep(1);
     	stt.setGridCellsX(100);
     	stt.setGridCellsY(100);
+    	stt.setGridCellsZ(100);
     	stt.setNumOfParticles(0);
 
     	stt.setBoundary(GeneralBoundaryType.Periodic);
@@ -438,10 +440,12 @@ public class InitialConditions {
 
     	for (int i = 0; i < stt.getGridCellsY(); i++) {
     		for (int k = 0; k < stt.getGridCellsX(); k++) {
-
-    		simulation.grid.setEy(k, i, Math.sin( kx*stt.getGridStep()*(k+1/2) ));
-    		simulation.grid.setBz(k, i, Math.sin( kx*stt.getGridStep()*(k+1/2) ));
-    		
+    			for (int j = 0; j < stt.getGridCellsZ(); j++) {
+    				
+    				simulation.grid.setEy(k, i, j, Math.sin( kx*stt.getGridStep()*(k+1/2) ));
+    	    		simulation.grid.setBz(k, i, j, Math.sin( kx*stt.getGridStep()*(k+1/2) ));
+    	    		
+    			}
     		}
     	}
     	
