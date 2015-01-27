@@ -333,7 +333,7 @@ public class Simulation {
 		RelativisticVelocity relvelocity = new RelativisticVelocity(1);
 		
 		if(time == 0) {
-			pw.write("#time \t x \t y \t vx \t vy \t kinetic \t Ex \t Ey \t Bz");
+			pw.write("#time \t x \t y \t z \t vx \t vy \t vz \t kinetic \t Ex \t Ey \t Ez \t Bx \t By \t Bz");
 			pw.write("\n");
 		} else {}
 		
@@ -342,16 +342,22 @@ public class Simulation {
 		for (int i = 0; i < particles.size(); i++) {
 			pw.write(particles.get(i).getX() + "\t");
 			pw.write(particles.get(i).getY() + "\t");
+			pw.write(particles.get(i).getZ() + "\t");
 			//pw.write(particles.get(i).getRadius() + "\n");
 			pw.write(particles.get(i).getVx() + "\t");
 			pw.write(particles.get(i).getVy() + "\t");
+			pw.write(particles.get(i).getVz() + "\t");
 			pw.write(relvelocity.calculateGamma(particles.get(i)) + "\t");
-			if(relativistic == false) {kinetic = particles.get(i).getMass()*(particles.get(i).getVx() * particles.get(i).getVx() + particles.get(i).getVy()*particles.get(i).getVy())/2;}
-			else {kinetic = Math.sqrt(particles.get(i).getMass()*particles.get(i).getMass()*( particles.get(i).getVx() * particles.get(i).getVx() + particles.get(i).getVy()*particles.get(i).getVy() + 1) ); }
+			if(relativistic == false) {kinetic = particles.get(i).getMass()*(particles.get(i).getVx() * particles.get(i).getVx() + particles.get(i).getVy()*particles.get(i).getVy()
+					 					+ particles.get(i).getVz()*particles.get(i).getVz())/2;}
+			else {kinetic = Math.sqrt(particles.get(i).getMass()*particles.get(i).getMass()*( particles.get(i).getVx() * particles.get(i).getVx() + particles.get(i).getVy()*particles.get(i).getVy()
+					 					+ particles.get(i).getVz()*particles.get(i).getVz() + 1) ); }
 			pw.write(kinetic + "\t");
-			kineticTotal += kinetic;
 			pw.write(particles.get(i).getEx() + "\t");
 			pw.write(particles.get(i).getEy() + "\t");
+			pw.write(particles.get(i).getEz() + "\t");
+			pw.write(particles.get(i).getBx() + "\t");
+			pw.write(particles.get(i).getBy() + "\t");
 			pw.write(particles.get(i).getBz() + "\t");
 			/*pw.write(particles.get(i).getAx() + "\n");
 			pw.write(particles.get(i).getAy() + "\n");
@@ -367,6 +373,8 @@ public class Simulation {
 			pw.write(particles.get(i).getPrevNormalVelocityComponentOfForceY() + "\n");
 			pw.write(particles.get(i).getPrevBz() + "\n");
 			pw.write(particles.get(i).getPrevLinearDragCoefficient() + "\n");*/
+			
+			kineticTotal += kinetic;
 		}
 		pw.write("\n");
 		
@@ -381,27 +389,32 @@ public class Simulation {
 		double SumRho = 0;
 		double SumJx = 0;
 		double SumJy = 0;
+		double SumJz = 0;
 		double fieldEnergy = 0;
 		double GaussLaw = 0;
 		//int NumPoints = grid.getNumCellsX()*grid.getNumCellsY();
 		
 		for (int i = 0; i < grid.getNumCellsX(); i++) {
 			for (int j = 0; j < grid.getNumCellsY(); j++) {
+				for (int k = 0; k < grid.getNumCellsZ(); k++) {
 				
-				SumRho += grid.getRho(i, j);
-				SumJx += grid.getJx(i, j);
-				SumJy += grid.getJy(i, j);
-				fieldEnergy += ( grid.getBz(i, j)*grid.getBz(i, j) + grid.getEx(i, j)*grid.getEx(i, j) + grid.getEy(i, j)*grid.getEy(i, j))/2;
-				GaussLaw += (grid.getEx((i+1)%grid.getNumCellsX(), j) - grid.getEx(i, j)) / grid.getCellWidth() +
-						(grid.getEy(i, (j+1)%grid.getNumCellsY()) - grid.getEy(i, j)) / grid.getCellHeight() - grid.getRho(i,j)*4*Math.PI;
-				/*pw.write(grid.getCells()[i][j].getJx() + "\n");
-				pw.write(grid.getCells()[i][j].getJy() + "\n");
-				pw.write(grid.getCells()[i][j].getRho() + "\n");
-				pw.write(grid.getCells()[i][j].getPhi() + "\n");
-				pw.write(grid.getCells()[i][j].getEx() + "\n");
-				pw.write(grid.getCells()[i][j].getEy() + "\n");
-				pw.write(grid.getCells()[i][j].getBz() + "\n");
-				pw.write(grid.getCells()[i][j].getBzo() + "\n");*/
+					SumRho += grid.getRho(i, j, k);
+					SumJx += grid.getJx(i, j, k);
+					SumJy += grid.getJy(i, j, k);
+					SumJz += grid.getJz(i, j, k);
+					fieldEnergy += ( grid.getBz(i, j, k)*grid.getBz(i, j, k) + grid.getEx(i, j, k)*grid.getEx(i, j, k) + grid.getEy(i, j, k)*grid.getEy(i, j, k)
+									+ grid.getEz(i, j, k)*grid.getEz(i, j, k) + grid.getBx(i, j, k)*grid.getBx(i, j, k) + grid.getBy(i, j, k)*grid.getBy(i, j, k) )/2;
+					/*GaussLaw += (grid.getEx((i+1)%grid.getNumCellsX(), j) - grid.getEx(i, j)) / grid.getCellWidth() +
+							(grid.getEy(i, (j+1)%grid.getNumCellsY()) - grid.getEy(i, j)) / grid.getCellHeight() - grid.getRho(i,j)*4*Math.PI;
+					pw.write(grid.getCells()[i][j].getJx() + "\n");
+					pw.write(grid.getCells()[i][j].getJy() + "\n");
+					pw.write(grid.getCells()[i][j].getRho() + "\n");
+					pw.write(grid.getCells()[i][j].getPhi() + "\n");
+					pw.write(grid.getCells()[i][j].getEx() + "\n");
+					pw.write(grid.getCells()[i][j].getEy() + "\n");
+					pw.write(grid.getCells()[i][j].getBz() + "\n");
+					pw.write(grid.getCells()[i][j].getBzo() + "\n");*/
+				}
 			}
 		}
 		pw.write(kineticTotal + "\t");
@@ -409,6 +422,7 @@ public class Simulation {
 		pw.write(SumRho + "\t");
 		pw.write(SumJx + "\t");
 		pw.write(SumJy + "\t");
+		pw.write(SumJz + "\t");
 		pw.write(GaussLaw + "\t");
 		pw.write(grid.getEy(grid.getNumCellsX()/2, grid.getNumCellsY()/2) + "\t");
 		pw.write(grid.getBz(grid.getNumCellsX()/2, grid.getNumCellsY()/2) + "\t");
@@ -427,8 +441,10 @@ public class Simulation {
 			sw.write(i + "\t");
 			sw.write(particles.get(i).getX() + "\t");
 			sw.write(particles.get(i).getY() + "\t");
+			sw.write(particles.get(i).getZ() + "\t");
 			sw.write(particles.get(i).getVx() + "\t");
 			sw.write(particles.get(i).getVy() + "\t");
+			sw.write(particles.get(i).getVz() + "\t");
 			sw.write("\n");
 		}
 		

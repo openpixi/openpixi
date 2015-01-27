@@ -449,8 +449,54 @@ public class InitialConditions {
     		}
     	}
     	
-    	
-    	
+    	return simulation;
+    }
+    
+    public static Simulation initPair3D(double charge, double radius) {
+    	Settings stt = new Settings();
+
+    	stt.setTimeStep(0.1);
+    	stt.setTMax(1000);
+    	stt.setSpeedOfLight(1);
+    	stt.setRelativistic(true);
+    	/*stt.setSimulationWidth(100);
+    	stt.setSimulationHeight(100);*/
+    	stt.setGridStep(1);
+    	stt.setGridCellsX(10);
+    	stt.setGridCellsY(10);
+    	stt.setGridCellsZ(10);
+                stt.setNumOfParticles(2);
+
+    	stt.addForce(new ConstantForce());
+
+    	stt.setBoundary(GeneralBoundaryType.Periodic);
+                stt.setGridSolver(new SimpleSolver());
+
+    	for (int k = 0; k < 2; k++) {
+    		Particle par = new ParticleFull();
+    		par.setX(stt.getSimulationWidth() * 1/9.0*(k+4));
+    		par.setY(stt.getSimulationHeight() * 1/2 + stt.getGridStep()*1/2);
+    		par.setZ(stt.getSimulationDepth() * 1/2 + stt.getGridStep()*1/2);
+    		par.setRadius(radius);
+    		par.setVx(0);//par.setVx(0.1*(1-2*k));
+    		par.setVy(0);
+    		par.setVz(0);
+    		par.setMass(1);
+    		par.setCharge(charge*(1-2*k));
+    		if (k == 0) {
+    			par.setColor(Color.red);
+    		} else {
+    			par.setColor(Color.blue);
+    		}
+    		stt.addParticle(par);
+    	}
+                
+                stt.setPoissonSolver(new PoissonSolverFFTPeriodic());
+                stt.useGrid(true);
+                stt.setInterpolator(new ChargeConservingCIC());
+                //stt.setIterations(1);//Testing purposes!!!
+                //set to charge conserving CIC; already preset in settings
+    	Simulation simulation = new Simulation(stt);
     	return simulation;
     }
 

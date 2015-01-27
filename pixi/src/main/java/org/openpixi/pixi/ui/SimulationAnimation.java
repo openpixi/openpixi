@@ -177,6 +177,9 @@ public class SimulationAnimation {
 		case 11:
 			s = InitialConditions.initWaveTest(0.2);
 			break;
+		case 12:
+			s = InitialConditions.initPair3D(0.1,0.1);
+			break;
 		}
 		updateFieldForce();
 		s.prepareAllParticles();
