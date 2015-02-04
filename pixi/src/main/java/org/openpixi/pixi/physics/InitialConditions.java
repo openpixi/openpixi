@@ -499,6 +499,48 @@ public class InitialConditions {
     	Simulation simulation = new Simulation(stt);
     	return simulation;
     }
+    
+    public static Simulation initOneTest3D(double charge, double radius) {
+    	Settings stt = new Settings();
+
+    	stt.setTimeStep(0.01);
+    	stt.setSpeedOfLight(1);
+    	stt.setRelativistic(true);
+    	stt.setGridStep(1);
+    	stt.setGridCellsX(10);
+    	stt.setGridCellsY(10);
+    	stt.setGridCellsZ(10);
+    	stt.setTMax(1000);
+    	
+		ConstantForce cf = new ConstantForce();
+		cf.ex = -1;
+		cf.ey = -1;
+		cf.ez = -1;
+		stt.addForce(cf);
+		
+                stt.setNumOfParticles(1);
+
+    	stt.setBoundary(GeneralBoundaryType.Periodic);
+                stt.setGridSolver(new SimpleSolver());
+
+    		Particle par = new ParticleFull();
+    		par.setX(stt.getSimulationWidth() * 50/100);
+    		par.setVx(0.0);
+    		par.setY(stt.getSimulationHeight() * 50/100 );
+    		par.setZ(stt.getSimulationDepth() * 50/100 );
+    		par.setRadius(radius);
+    		par.setVy(0.0);
+    		par.setVz(0.0);
+    		par.setMass(1);
+    		par.setCharge(-charge);
+    		par.setColor(Color.red);
+    		stt.addParticle(par);
+
+    		stt.setPoissonSolver(new EmptyPoissonSolver());
+                stt.useGrid(true);
+    	Simulation simulation = new Simulation(stt);
+    	return simulation;
+    }
 
     
 }
