@@ -490,12 +490,26 @@ private void interpolateToGrid3D(Particle p, Grid g, double tstep) {
 		zEnd = (int) Math.floor(deltaZ);
 		
 		deltaX -= x;
+		if(Math.abs(deltaX) > 1) {
+			if(deltaX < 0) {deltaX += g.getNumCellsX();}
+			else {deltaX -= g.getNumCellsX();}
+		}
+		
 		deltaY -= y;
+		if(Math.abs(deltaY) > 1) {
+			if(deltaY < 0) {deltaY += g.getNumCellsY();}
+			else {deltaY -= g.getNumCellsY();}
+		}
+		
 		deltaZ -= z;
+		if(Math.abs(deltaZ) > 1) {
+			if(deltaZ < 0) {deltaZ += g.getNumCellsZ();}
+			else {deltaZ -= g.getNumCellsZ();}
+		}
 		
 		int cellCheck = Math.abs(xEnd - xStart)%(g.getNumCellsX()-2) + Math.abs(yEnd - yStart)%(g.getNumCellsY()-2) + Math.abs(zEnd - zStart)%(g.getNumCellsZ()-2);
 		int checkSum = Math.abs(xEnd - xStart)%(g.getNumCellsX()-2) + (Math.abs(yEnd - yStart)%(g.getNumCellsY()-2))*2 + (Math.abs(zEnd - zStart)%(g.getNumCellsZ()-2))*3;
-		//System.out.println(p.getZ());
+		//if(deltaY < 0) {System.out.println(yStart);System.out.println(yEnd);}if(cellCheck != 0) {System.out.println(cellCheck);System.out.println(checkSum);System.out.println("Test");}
 		switch(cellCheck) {
 		
         	case 0:  oneCellMove(xStart, yStart, zStart, x, y, z, deltaX, deltaY, deltaZ, p.getCharge(), g, tstep);
@@ -503,15 +517,15 @@ private void interpolateToGrid3D(Particle p, Grid g, double tstep) {
         	break;
         	
         	case 1:  twoCellMove(xStart, yStart, zStart, checkSum, xEnd, yEnd, zEnd, x, y, z, deltaX, deltaY, deltaZ, p.getCharge(), g, tstep);
-            
+        	
         	break;
         	
         	case 2:  threeCellMove(xStart, yStart, zStart, checkSum, xEnd, yEnd, zEnd, x, y, z, deltaX, deltaY, deltaZ, p.getCharge(), g, tstep);
-            
+        	//System.out.println(cellCheck-checkSum);System.out.println(checkSum+cellCheck);
         	break;
         	
         	case 3:  fourCellMove(xStart, yStart, zStart, xEnd, yEnd, zEnd, x, y, z, deltaX, deltaY, deltaZ, p.getCharge(), g, tstep);
-            
+        	//System.out.println(cellCheck-checkSum);System.out.println(checkSum+cellCheck);
         	break;
         	
         	default: System.out.println("Interpolation error!!! Particle moved through more than 4 cells!!!");
@@ -543,6 +557,9 @@ private void oneCellMove(int xStart, int yStart, int zStart, double x, double y,
 		g.addJz(xStart, (yStart + 1)%g.getNumCellsY(), zStart, 	charge * deltaZ * ((1 - deltaX) / 2 - locX) * ((1 + deltaY) / 2 + locY) / cellArea / tstep);
 		g.addJz((xStart + 1)%g.getNumCellsX(), (yStart + 1)%g.getNumCellsY(), zStart, 	charge * deltaZ * ((1 + deltaX) / 2 + locX) * ((1 + deltaY) / 2 + locY) / cellArea / tstep);
 		
+		/*System.out.println( g.getJy(xStart, yStart, zStart)+g.getJy(xStart, yStart, (zStart + 1)%g.getNumCellsZ())
+				+g.getJy((xStart + 1)%g.getNumCellsX(), yStart, zStart)+g.getJy((xStart + 1)%g.getNumCellsX(), yStart, (zStart + 1)%g.getNumCellsZ()) );
+		System.out.println(charge*deltaY/cellArea/tstep);System.out.println("Test");*/
 	}
 
 private void twoCellMove(int xStart, int yStart, int zStart, int checkSum, int xEnd, int yEnd, int zEnd, double x, double y, double z, double deltaX, double deltaY, double deltaZ, double charge, Grid g, double tstep) {
@@ -554,11 +571,11 @@ private void twoCellMove(int xStart, int yStart, int zStart, int checkSum, int x
 	
 		case 1: 
 			
-			if( (xStart+xEnd) != (g.getNumCellsX()-1) ) {
-				if((xEnd - xStart) < 0) cellBound = xStart;
+			if( Math.abs(xStart-xEnd) != (g.getNumCellsX()-1) ) {
+				if(xEnd < xStart) cellBound = xStart;
 				else cellBound = xEnd;
 			} else {
-				if((xEnd - xStart) > 0) cellBound = 0;
+				if(xEnd > xStart) cellBound = 0;
 				else cellBound = g.getNumCellsX();
 			}
 			
@@ -568,8 +585,8 @@ private void twoCellMove(int xStart, int yStart, int zStart, int checkSum, int x
 			deltaY1 = t * deltaY;
 			deltaZ1 = t * deltaZ;
 			
-			if( (xStart+xEnd) == (g.getNumCellsX()-1) ) {
-				if((xEnd - xStart) > 0) newX = g.getNumCellsX();
+			if( Math.abs(xStart-xEnd) == (g.getNumCellsX()-1) ) {
+				if(xEnd > xStart) newX = g.getNumCellsX();
 				else newX = 0;
 			} else {
 				newX = cellBound;
@@ -578,7 +595,7 @@ private void twoCellMove(int xStart, int yStart, int zStart, int checkSum, int x
 			newY = y + deltaY1;
 			newZ = z + deltaZ1;
 			
-			deltaX2 = deltaX + x - newX;
+			deltaX2 = deltaX - deltaX1;
 			deltaY2 = deltaY - deltaY1;
 			deltaZ2 = deltaZ - deltaZ1;
 			
@@ -589,11 +606,11 @@ private void twoCellMove(int xStart, int yStart, int zStart, int checkSum, int x
 		
 		case 2: 
 			
-			if( (yStart+yEnd) != (g.getNumCellsY()-1) ) {
-				if((yEnd - yStart) < 0) cellBound = yStart;
+			if( Math.abs(yStart-yEnd) != (g.getNumCellsY()-1) ) {
+				if(yEnd < yStart) cellBound = yStart;
 				else cellBound = yEnd;
 			} else {
-				if((yEnd - yStart) > 0) cellBound = 0;
+				if(yEnd > yStart) cellBound = 0;
 				else cellBound = g.getNumCellsY();
 			}
 			
@@ -602,9 +619,9 @@ private void twoCellMove(int xStart, int yStart, int zStart, int checkSum, int x
 			deltaX1 = t * deltaX;
 			deltaY1 = cellBound - y;
 			deltaZ1 = t * deltaZ;
-			
-			if( (yStart+yEnd) == (g.getNumCellsY()-1) ) {
-				if((yEnd - yStart) > 0) newY = g.getNumCellsY();
+			//if(cellBound == 10) {System.out.println(deltaY1);System.out.println(t);System.out.println(deltaY);System.out.println("Test");}
+			if( Math.abs(yStart-yEnd) == (g.getNumCellsY()-1) ) {
+				if(yEnd > yStart) newY = g.getNumCellsY();
 				else newY = 0;
 			} else {
 				newY = cellBound;
@@ -614,9 +631,9 @@ private void twoCellMove(int xStart, int yStart, int zStart, int checkSum, int x
 			newZ = z + deltaZ1;
 			
 			deltaX2 = deltaX - deltaX1;
-			deltaY2 = deltaY + y - newY;
+			deltaY2 = deltaY - deltaY1;
 			deltaZ2 = deltaZ - deltaZ1;
-			
+			//if(Math.abs(deltaY) != 0) {System.out.println(deltaY);System.out.println(deltaY1);System.out.println(deltaY2);System.out.println("Test");}
 			oneCellMove(xStart, yStart, zStart, x, y, z, deltaX1, deltaY1, deltaZ1, charge, g, tstep);
 			oneCellMove(xStart, yEnd, zStart, newX, newY, newZ, deltaX2, deltaY2, deltaZ2, charge, g, tstep);
 	    
@@ -624,11 +641,11 @@ private void twoCellMove(int xStart, int yStart, int zStart, int checkSum, int x
 		
 		case 3: 
 			
-			if( (zStart+zEnd) != (g.getNumCellsZ()-1) ) {
-				if((zEnd - zStart) < 0) cellBound = zStart;
+			if( Math.abs(zStart-zEnd) != (g.getNumCellsZ()-1) ) {
+				if(zEnd < zStart) cellBound = zStart;
 				else cellBound = zEnd;
 			} else {
-				if((zEnd - zStart) > 0) cellBound = 0;
+				if(zEnd > zStart) cellBound = 0;
 				else cellBound = g.getNumCellsZ();
 			}
 			
@@ -638,8 +655,8 @@ private void twoCellMove(int xStart, int yStart, int zStart, int checkSum, int x
 			deltaY1 = t * deltaY;
 			deltaZ1 = cellBound - z;
 			
-			if( (zStart+zEnd) == (g.getNumCellsZ()-1) ) {
-				if((zEnd - zStart) > 0) newZ = g.getNumCellsZ();
+			if( Math.abs(zStart-zEnd) == (g.getNumCellsZ()-1) ) {
+				if(zEnd > zStart) newZ = g.getNumCellsZ();
 				else newZ = 0;
 			} else {
 				newZ = cellBound;
@@ -650,7 +667,7 @@ private void twoCellMove(int xStart, int yStart, int zStart, int checkSum, int x
 			
 			deltaX2 = deltaX - deltaX1;
 			deltaY2 = deltaY - deltaY1;
-			deltaZ2 = deltaZ + z - newZ;
+			deltaZ2 = deltaZ - deltaZ1;
 			
 			oneCellMove(xStart, yStart, zStart, x, y, z, deltaX1, deltaY1, deltaZ1, charge, g, tstep);
 			oneCellMove(xStart, yStart, zEnd, newX, newY, newZ, deltaX2, deltaY2, deltaZ2, charge, g, tstep);
@@ -674,19 +691,19 @@ private void threeCellMove(int xStart, int yStart, int zStart, int checkSum, int
 	
 		case 3: 
 			
-			if( (xStart+xEnd) != (g.getNumCellsX()-1) ) {
-				if((xEnd - xStart) < 0) cellBound1 = xStart;
+			if( Math.abs(xStart-xEnd) != (g.getNumCellsX()-1) ) {
+				if(xEnd < xStart) cellBound1 = xStart;
 				else cellBound1 = xEnd;
 			} else {
-				if((xEnd - xStart) > 0) cellBound1 = 0;
+				if(xEnd > xStart) cellBound1 = 0;
 				else cellBound1 = g.getNumCellsX();
 			}
 			
-			if( (yStart+yEnd) != (g.getNumCellsY()-1) ) {
-				if((yEnd - yStart) < 0) cellBound2 = yStart;
+			if( Math.abs(yStart-yEnd) != (g.getNumCellsY()-1) ) {
+				if(yEnd < yStart) cellBound2 = yStart;
 				else cellBound2 = yEnd;
 			} else {
-				if((yEnd - yStart) > 0) cellBound2 = 0;
+				if(yEnd > yStart) cellBound2 = 0;
 				else cellBound2 = g.getNumCellsY();
 			}
 			
@@ -699,8 +716,8 @@ private void threeCellMove(int xStart, int yStart, int zStart, int checkSum, int
 				deltaY1 = t1 * deltaY;
 				deltaZ1 = t1 * deltaZ;
 				
-				if( (xStart+xEnd) == (g.getNumCellsX()-1) ) {
-					if((xEnd - xStart) > 0) newX = g.getNumCellsX();
+				if( Math.abs(xStart-xEnd) == (g.getNumCellsX()-1) ) {
+					if(xEnd > xStart) newX = g.getNumCellsX();
 					else newX = 0;
 				} else {
 					newX = cellBound1;
@@ -709,7 +726,7 @@ private void threeCellMove(int xStart, int yStart, int zStart, int checkSum, int
 				newY = y + deltaY1;
 				newZ = z + deltaZ1;
 				
-				deltaX2 = deltaX + x - newX;
+				deltaX2 = deltaX - deltaX1;
 				deltaY2 = deltaY - deltaY1;
 				deltaZ2 = deltaZ - deltaZ1;
 				
@@ -722,8 +739,8 @@ private void threeCellMove(int xStart, int yStart, int zStart, int checkSum, int
 				deltaY1 = cellBound2 - y;
 				deltaZ1 = t2 * deltaZ;
 				
-				if( (yStart+yEnd) == (g.getNumCellsY()-1) ) {
-					if((yEnd - yStart) > 0) newY = g.getNumCellsY();
+				if( Math.abs(yStart-yEnd) == (g.getNumCellsY()-1) ) {
+					if(yEnd > yStart) newY = g.getNumCellsY();
 					else newY = 0;
 				} else {
 					newY = cellBound2;
@@ -733,7 +750,7 @@ private void threeCellMove(int xStart, int yStart, int zStart, int checkSum, int
 				newZ = z + deltaZ1;
 				
 				deltaX2 = deltaX - deltaX1;
-				deltaY2 = deltaY + y - newY;
+				deltaY2 = deltaY - deltaY1;
 				deltaZ2 = deltaZ - deltaZ1;
 				
 				oneCellMove(xStart, yStart, zStart, x, y, z, deltaX1, deltaY1, deltaZ1, charge, g, tstep);
@@ -745,19 +762,19 @@ private void threeCellMove(int xStart, int yStart, int zStart, int checkSum, int
 		
 		case 4: 
 			
-			if( (xStart+xEnd) != (g.getNumCellsX()-1) ) {
-				if((xEnd - xStart) < 0) cellBound1 = xStart;
+			if( Math.abs(xStart-xEnd) != (g.getNumCellsX()-1) ) {
+				if(xEnd < xStart) cellBound1 = xStart;
 				else cellBound1 = xEnd;
 			} else {
-				if((xEnd - xStart) > 0) cellBound1 = 0;
+				if(xEnd > xStart) cellBound1 = 0;
 				else cellBound1 = g.getNumCellsX();
 			}
 			
-			if( (zStart+zEnd) != (g.getNumCellsZ()-1) ) {
-				if((zEnd - zStart) < 0) cellBound2 = zStart;
+			if( Math.abs(zStart-zEnd) != (g.getNumCellsZ()-1) ) {
+				if(zEnd < zStart) cellBound2 = zStart;
 				else cellBound2 = zEnd;
 			} else {
-				if((zEnd - zStart) > 0) cellBound2 = 0;
+				if(zEnd > zStart) cellBound2 = 0;
 				else cellBound2 = g.getNumCellsZ();
 			}
 			
@@ -770,8 +787,8 @@ private void threeCellMove(int xStart, int yStart, int zStart, int checkSum, int
 				deltaY1 = t1 * deltaY;
 				deltaZ1 = t1 * deltaZ;
 				
-				if( (xStart+xEnd) == (g.getNumCellsX()-1) ) {
-					if((xEnd - xStart) > 0) newX = g.getNumCellsX();
+				if( Math.abs(xStart-xEnd) == (g.getNumCellsX()-1) ) {
+					if(xEnd > xStart) newX = g.getNumCellsX();
 					else newX = 0;
 				} else {
 					newX = cellBound1;
@@ -780,7 +797,7 @@ private void threeCellMove(int xStart, int yStart, int zStart, int checkSum, int
 				newY = y + deltaY1;
 				newZ = z + deltaZ1;
 				
-				deltaX2 = deltaX + x - newX;
+				deltaX2 = deltaX - deltaX1;
 				deltaY2 = deltaY - deltaY1;
 				deltaZ2 = deltaZ - deltaZ1;
 				
@@ -793,8 +810,8 @@ private void threeCellMove(int xStart, int yStart, int zStart, int checkSum, int
 				deltaY1 = t2 * deltaY;
 				deltaZ1 = cellBound2 - z;
 				
-				if( (zStart+zEnd) == (g.getNumCellsZ()-1) ) {
-					if((zEnd - zStart) > 0) newZ = g.getNumCellsZ();
+				if( Math.abs(zStart-zEnd) == (g.getNumCellsZ()-1) ) {
+					if(zEnd > zStart) newZ = g.getNumCellsZ();
 					else newZ = 0;
 				} else {
 					newZ = cellBound2;
@@ -805,7 +822,7 @@ private void threeCellMove(int xStart, int yStart, int zStart, int checkSum, int
 				
 				deltaX2 = deltaX - deltaX1;
 				deltaY2 = deltaY - deltaY1;
-				deltaZ2 = deltaZ + z - newZ;
+				deltaZ2 = deltaZ - deltaZ1;
 				
 				oneCellMove(xStart, yStart, zStart, x, y, z, deltaX1, deltaY1, deltaZ1, charge, g, tstep);
 				twoCellMove(xStart, yStart, zEnd, 1, xEnd, yEnd, zEnd, newX, newY, newZ, deltaX2, deltaY2, deltaZ2, charge, g, tstep);
@@ -816,19 +833,19 @@ private void threeCellMove(int xStart, int yStart, int zStart, int checkSum, int
 		
 		case 5: 
 			
-			if( (zStart+zEnd) != (g.getNumCellsZ()-1) ) {
-				if((zEnd - zStart) < 0) cellBound1 = zStart;
+			if( Math.abs(zStart-zEnd) != (g.getNumCellsZ()-1) ) {
+				if(zEnd < zStart) cellBound1 = zStart;
 				else cellBound1 = zEnd;
 			} else {
-				if((zEnd - zStart) > 0) cellBound1 = 0;
+				if(zEnd > zStart) cellBound1 = 0;
 				else cellBound1 = g.getNumCellsZ();
 			}
 			
-			if( (yStart+yEnd) != (g.getNumCellsY()-1) ) {
-				if((yEnd - yStart) < 0) cellBound2 = yStart;
+			if( Math.abs(yStart-yEnd) != (g.getNumCellsY()-1) ) {
+				if(yEnd < yStart) cellBound2 = yStart;
 				else cellBound2 = yEnd;
 			} else {
-				if((yEnd - yStart) > 0) cellBound2 = 0;
+				if(yEnd > yStart) cellBound2 = 0;
 				else cellBound2 = g.getNumCellsY();
 			}
 			
@@ -841,8 +858,8 @@ private void threeCellMove(int xStart, int yStart, int zStart, int checkSum, int
 				deltaY1 = t1 * deltaY;
 				deltaZ1 = cellBound1 - z;
 				
-				if( (zStart+zEnd) == (g.getNumCellsZ()-1) ) {
-					if((zEnd - zStart) > 0) newZ = g.getNumCellsZ();
+				if( Math.abs(zStart-zEnd) == (g.getNumCellsZ()-1) ) {
+					if(zEnd > zStart) newZ = g.getNumCellsZ();
 					else newZ = 0;
 				} else {
 					newZ = cellBound1;
@@ -853,7 +870,7 @@ private void threeCellMove(int xStart, int yStart, int zStart, int checkSum, int
 				
 				deltaX2 = deltaX - deltaX1;
 				deltaY2 = deltaY - deltaY1;
-				deltaZ2 = deltaZ + z - newZ;
+				deltaZ2 = deltaZ - deltaZ1;
 				
 				oneCellMove(xStart, yStart, zStart, x, y, z, deltaX1, deltaY1, deltaZ1, charge, g, tstep);
 				twoCellMove(xStart, yStart, zEnd, 2, xEnd, yEnd, zEnd, newX, newY, newZ, deltaX2, deltaY2, deltaZ2, charge, g, tstep);
@@ -864,8 +881,8 @@ private void threeCellMove(int xStart, int yStart, int zStart, int checkSum, int
 				deltaY1 = cellBound2 - y;
 				deltaZ1 = t2 * deltaZ;
 				
-				if( (yStart+yEnd) == (g.getNumCellsY()-1) ) {
-					if((yEnd - yStart) > 0) newY = g.getNumCellsY();
+				if( Math.abs(yStart-yEnd) == (g.getNumCellsY()-1) ) {
+					if(yEnd > yStart) newY = g.getNumCellsY();
 					else newY = 0;
 				} else {
 					newY = cellBound2;
@@ -875,7 +892,7 @@ private void threeCellMove(int xStart, int yStart, int zStart, int checkSum, int
 				newZ = z + deltaZ1;
 				
 				deltaX2 = deltaX - deltaX1;
-				deltaY2 = deltaY + y - newY;
+				deltaY2 = deltaY - deltaY1;
 				deltaZ2 = deltaZ - deltaZ1;
 				
 				oneCellMove(xStart, yStart, zStart, x, y, z, deltaX1, deltaY1, deltaZ1, charge, g, tstep);
@@ -890,7 +907,7 @@ private void threeCellMove(int xStart, int yStart, int zStart, int checkSum, int
 		break;
 
 		}
-	
+	//System.out.println(checkSum);
 	}
 
 private void fourCellMove(int xStart, int yStart, int zStart, int xEnd, int yEnd, int zEnd, double x, double y, double z, double deltaX, double deltaY, double deltaZ, double charge, Grid g, double tstep) {
@@ -900,27 +917,27 @@ private void fourCellMove(int xStart, int yStart, int zStart, int xEnd, int yEnd
 	double[] t;
 	t = new double[3];
 	
-		if( (xStart+xEnd) != (g.getNumCellsX()-1) ) {
-			if((xEnd - xStart) < 0) cellBound1 = xStart;
+		if( Math.abs(xStart-xEnd) != (g.getNumCellsX()-1) ) {
+			if(xEnd < xStart) cellBound1 = xStart;
 			else cellBound1 = xEnd;
 		} else {
-			if((xEnd - xStart) > 0) cellBound1 = 0;
+			if(xEnd > xStart) cellBound1 = 0;
 			else cellBound1 = g.getNumCellsX();
 		}
 		
-		if( (yStart+yEnd) != (g.getNumCellsY()-1) ) {
-			if((yEnd - yStart) < 0) cellBound2 = yStart;
+		if( Math.abs(yStart-yEnd) != (g.getNumCellsY()-1) ) {
+			if(yEnd < yStart) cellBound2 = yStart;
 			else cellBound2 = yEnd;
 		} else {
-			if((yEnd - yStart) > 0) cellBound2 = 0;
+			if(yEnd > yStart) cellBound2 = 0;
 			else cellBound2 = g.getNumCellsY();
 		}
 		
-		if( (zStart+zEnd) != (g.getNumCellsZ()-1) ) {
-			if((zEnd - zStart) < 0) cellBound3 = zStart;
+		if( Math.abs(zStart-zEnd) != (g.getNumCellsZ()-1) ) {
+			if(zEnd < zStart) cellBound3 = zStart;
 			else cellBound3 = zEnd;
 		} else {
-			if((zEnd - zStart) > 0) cellBound3 = 0;
+			if(zEnd > zStart) cellBound3 = 0;
 			else cellBound3 = g.getNumCellsZ();
 		}
 		
@@ -946,8 +963,8 @@ private void fourCellMove(int xStart, int yStart, int zStart, int xEnd, int yEnd
 			deltaY1 = t[0] * deltaY;
 			deltaZ1 = t[0] * deltaZ;
 			
-			if( (xStart+xEnd) == (g.getNumCellsX()-1) ) {
-				if((xEnd - xStart) > 0) newX = g.getNumCellsX();
+			if( Math.abs(xStart-xEnd) == (g.getNumCellsX()-1) ) {
+				if(xEnd > xStart) newX = g.getNumCellsX();
 				else newX = 0;
 			} else {
 				newX = cellBound1;
@@ -956,7 +973,7 @@ private void fourCellMove(int xStart, int yStart, int zStart, int xEnd, int yEnd
 			newY = y + deltaY1;
 			newZ = z + deltaZ1;
 			
-			deltaX2 = deltaX + x - newX;
+			deltaX2 = deltaX - deltaX1;
 			deltaY2 = deltaY - deltaY1;
 			deltaZ2 = deltaZ - deltaZ1;
 			
@@ -971,8 +988,8 @@ private void fourCellMove(int xStart, int yStart, int zStart, int xEnd, int yEnd
 			deltaY1 = cellBound2 - y;
 			deltaZ1 = t[1] * deltaZ;
 			
-			if( (yStart+yEnd) == (g.getNumCellsY()-1) ) {
-				if((yEnd - yStart) > 0) newY = g.getNumCellsY();
+			if( Math.abs(yStart-yEnd) == (g.getNumCellsY()-1) ) {
+				if(yEnd > yStart) newY = g.getNumCellsY();
 				else newY = 0;
 			} else {
 				newY = cellBound2;
@@ -982,7 +999,7 @@ private void fourCellMove(int xStart, int yStart, int zStart, int xEnd, int yEnd
 			newZ = z + deltaZ1;
 			
 			deltaX2 = deltaX - deltaX1;
-			deltaY2 = deltaY + y - newY;
+			deltaY2 = deltaY - deltaY1;
 			deltaZ2 = deltaZ - deltaZ1;
 			
 			oneCellMove(xStart, yStart, zStart, x, y, z, deltaX1, deltaY1, deltaZ1, charge, g, tstep);
@@ -996,8 +1013,8 @@ private void fourCellMove(int xStart, int yStart, int zStart, int xEnd, int yEnd
 			deltaY1 = t[2] * deltaY;
 			deltaZ1 = cellBound3 - z;
 			
-			if( (zStart+zEnd) == (g.getNumCellsZ()-1) ) {
-				if((zEnd - zStart) > 0) newZ = g.getNumCellsZ();
+			if( Math.abs(zStart-zEnd) == (g.getNumCellsZ()-1) ) {
+				if(zEnd > zStart) newZ = g.getNumCellsZ();
 				else newZ = 0;
 			} else {
 				newZ = cellBound3;
@@ -1008,7 +1025,7 @@ private void fourCellMove(int xStart, int yStart, int zStart, int xEnd, int yEnd
 			
 			deltaX2 = deltaX - deltaX1;
 			deltaY2 = deltaY - deltaY1;
-			deltaZ2 = deltaZ + z - newZ;
+			deltaZ2 = deltaZ - deltaZ1;
 			
 			oneCellMove(xStart, yStart, zStart, x, y, z, deltaX1, deltaY1, deltaZ1, charge, g, tstep);
 			threeCellMove(xStart, yStart, zEnd, 3, xEnd, yEnd, zEnd, newX, newY, newZ, deltaX2, deltaY2, deltaZ2, charge, g, tstep);
