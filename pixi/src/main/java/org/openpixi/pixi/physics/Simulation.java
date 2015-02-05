@@ -26,8 +26,10 @@ import java.io.FileWriter;
 import org.openpixi.pixi.physics.collision.algorithms.CollisionAlgorithm;
 import org.openpixi.pixi.physics.collision.detectors.Detector;
 import org.openpixi.pixi.physics.fields.PoissonSolver;
+import org.openpixi.pixi.physics.force.Force;
 import org.openpixi.pixi.physics.force.CombinedForce;
 import org.openpixi.pixi.physics.force.SimpleGridForce;
+import org.openpixi.pixi.physics.force.relativistic.SimpleGridForceRelativistic;
 import org.openpixi.pixi.physics.grid.Grid;
 import org.openpixi.pixi.physics.grid.Interpolation;
 import org.openpixi.pixi.physics.grid.LocalInterpolation;
@@ -93,7 +95,8 @@ public class Simulation {
 	 * We can turn on or off the effect of the grid on particles by adding or
 	 * removing this force from the total force.
 	 */
-	private SimpleGridForce gridForce = new SimpleGridForce();
+	//private SimpleGridForce gridForce = new SimpleGridForce();
+	private Force gridForce;
 	private boolean usingGridForce = false;
 	public boolean relativistic = false;
 	private ParticleGridInitializer particleGridInitializer = new ParticleGridInitializer();
@@ -233,6 +236,11 @@ public class Simulation {
 
 	public void turnGridForceOn() {
 		if (!usingGridForce) {
+			if(relativistic == true) {
+				gridForce = new SimpleGridForceRelativistic(speedOfLight);
+			} else {
+				gridForce = new SimpleGridForce();
+			}
 			f.add(gridForce);
 			usingGridForce = true;
 		}
@@ -262,7 +270,7 @@ public class Simulation {
 		detector.run();
 		collisionalgorithm.collide(detector.getOverlappedPairs(), f, mover.getSolver(), tstep);
 		interpolation.interpolateToGrid(particles, grid, tstep);
-		grid.updateGrid(tstep);
+		//grid.updateGrid(tstep);
 		interpolation.interpolateToParticle(particles, grid);
 
 		tottime++;
