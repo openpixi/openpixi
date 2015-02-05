@@ -128,7 +128,7 @@ public class Cell implements Serializable {
 	}
 
 	public void setEz(double ez) {
-		Ex = ez;
+		Ez = ez;
 	}
 
 	public double getBx() {
