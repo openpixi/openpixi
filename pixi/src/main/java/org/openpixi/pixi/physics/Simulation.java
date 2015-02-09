@@ -270,7 +270,7 @@ public class Simulation {
 		detector.run();
 		collisionalgorithm.collide(detector.getOverlappedPairs(), f, mover.getSolver(), tstep);
 		interpolation.interpolateToGrid(particles, grid, tstep);
-		//grid.updateGrid(tstep);
+		grid.updateGrid(tstep);
 		interpolation.interpolateToParticle(particles, grid);
 
 		tottime++;
@@ -466,8 +466,8 @@ public class Simulation {
 				
 				snap.write(i + "\t");
 				snap.write(j + "\t");
-				snap.write(grid.getEy(i, j) + "\t");
-				snap.write(grid.getBz(i, j) + "\t");
+				snap.write(grid.getPhi(i, j, grid.getNumCellsZ()/2) + "\t");
+				snap.write(grid.getEx(i, j, grid.getNumCellsZ()/2) + "\t");
 				snap.write("\n");
 				
 			}

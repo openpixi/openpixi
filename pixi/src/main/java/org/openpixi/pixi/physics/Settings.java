@@ -62,7 +62,7 @@ public class Settings {
 	private double speedOfLight = 1;
 	private double timeStep = 0.1;
 	private double gridStep = 1;
-	private double tMax = 3000;
+	private double tMax = 1000;
 	private int spectrumStep = 300;
 	private String filePath = "default";
 	private GeneralBoundaryType boundaryType = GeneralBoundaryType.Periodic;

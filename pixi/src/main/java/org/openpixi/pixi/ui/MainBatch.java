@@ -45,6 +45,10 @@ public class MainBatch {
 	 * <pre>
 	 * mvn exec:java -Dexec.mainClass=org.openpixi.pixi.ui.MainBatch -Dexec.args="One_particle_Test.yaml"
 	 * </pre>
+	 * or
+	 * <pre>
+	 * java -cp target/pixi-0.6-SNAPSHOT.jar org.openpixi.pixi.ui.MainBatch "One_particle_Test.yaml"
+	 * </pre>
 	 */
 	public static void main(String[] args) throws FileNotFoundException, IOException, InterruptedException {
 		Debug.checkAssertsEnabled();
@@ -69,11 +73,12 @@ public class MainBatch {
 		}
 
 		// Creates the actual physics simulation that can be run iteratively.
-		simulation = new Simulation(settings);
+		//simulation = new Simulation(settings);
 
 		//simulation = InitialConditions.initTwoStream(0.01,1,50);
-		//simulation = InitialConditions.initPair(0.1,1);
+		//simulation = InitialConditions.initPair3D(0.1,1);
 		//simulation = InitialConditions.initOneTest(0.01,1);
+		simulation = InitialConditions.initOneTest3D(0.01,1);
 
 		while (simulation.continues()) {
 			// advance the simulation by one step

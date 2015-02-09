@@ -456,15 +456,15 @@ public class InitialConditions {
     	Settings stt = new Settings();
 
     	stt.setTimeStep(0.1);
-    	stt.setTMax(1000);
+    	stt.setTMax(10);
     	stt.setSpeedOfLight(1);
     	stt.setRelativistic(true);
     	/*stt.setSimulationWidth(100);
     	stt.setSimulationHeight(100);*/
-    	stt.setGridStep(1);
-    	stt.setGridCellsX(10);
-    	stt.setGridCellsY(10);
-    	stt.setGridCellsZ(10);
+    	stt.setGridStep(0.1);
+    	stt.setGridCellsX(100);
+    	stt.setGridCellsY(100);
+    	stt.setGridCellsZ(100);
                 stt.setNumOfParticles(2);
 
     	stt.addForce(new ConstantForce());
@@ -475,8 +475,8 @@ public class InitialConditions {
     	for (int k = 0; k < 2; k++) {
     		Particle par = new ParticleFull();
     		par.setX(stt.getSimulationWidth() * 1/9.0*(k+4));
-    		par.setY(stt.getSimulationHeight() * 1/2 + stt.getGridStep()*1/2);
-    		par.setZ(stt.getSimulationDepth() * 1/2 + stt.getGridStep()*1/2);
+    		par.setY(stt.getSimulationHeight() * 1/2 + stt.getGridStep()*0/2);
+    		par.setZ(stt.getSimulationDepth() * 1/2 + stt.getGridStep()*0/2);
     		par.setRadius(radius);
     		par.setVx(0);//par.setVx(0.1*(1-2*k));
     		par.setVy(0);
@@ -503,21 +503,18 @@ public class InitialConditions {
     public static Simulation initOneTest3D(double charge, double radius) {
     	Settings stt = new Settings();
 
-    	stt.setTimeStep(0.01);
+    	stt.setTimeStep(0.1);
     	stt.setSpeedOfLight(1);
-    	stt.setRelativistic(true);
-    	stt.setGridStep(1);
+    	stt.setGridStep(1.0);
     	stt.setGridCellsX(10);
     	stt.setGridCellsY(10);
     	stt.setGridCellsZ(10);
     	stt.setTMax(1000);
-    	
+    	/*
 		ConstantForce cf = new ConstantForce();
-		cf.ex = -1;
-		cf.ey = -1;
-		cf.ez = -1;
+		cf.bz = -1;
 		stt.addForce(cf);
-		
+		*/
                 stt.setNumOfParticles(1);
 
     	stt.setBoundary(GeneralBoundaryType.Periodic);
@@ -525,20 +522,32 @@ public class InitialConditions {
 
     		Particle par = new ParticleFull();
     		par.setX(stt.getSimulationWidth() * 50/100);
-    		par.setVx(0.0);
+    		par.setVx(0.1);
     		par.setY(stt.getSimulationHeight() * 50/100 );
     		par.setZ(stt.getSimulationDepth() * 50/100 );
     		par.setRadius(radius);
-    		par.setVy(0.0);
-    		par.setVz(0.0);
+    		par.setVy(0.1);
+    		par.setVz(0.1);
     		par.setMass(1);
     		par.setCharge(-charge);
     		par.setColor(Color.red);
     		stt.addParticle(par);
 
     		stt.setPoissonSolver(new EmptyPoissonSolver());
-                stt.useGrid(true);
+    		stt.useGrid(true);
+    		//stt.setPoissonSolver(new PoissonSolverFFTPeriodic());
     	Simulation simulation = new Simulation(stt);
+    	/*for (int i = 0; i < stt.getGridCellsY(); i++) {
+    		for (int k = 0; k < stt.getGridCellsX(); k++) {
+    			for (int j = 0; j < stt.getGridCellsZ(); j++) {
+    				
+    				simulation.grid.setEx(k, i, j, -1 );
+    				simulation.grid.setEy(k, i, j, -1 );
+    	    		simulation.grid.setEz(k, i, j, -1 );
+    	    		
+    			}
+    		}
+    	}*/
     	return simulation;
     }
 
