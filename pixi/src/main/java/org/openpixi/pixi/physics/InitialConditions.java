@@ -461,10 +461,10 @@ public class InitialConditions {
     	stt.setRelativistic(true);
     	/*stt.setSimulationWidth(100);
     	stt.setSimulationHeight(100);*/
-    	stt.setGridStep(0.1);
-    	stt.setGridCellsX(100);
-    	stt.setGridCellsY(100);
-    	stt.setGridCellsZ(100);
+    	stt.setGridStep(1);
+    	stt.setGridCellsX(20);
+    	stt.setGridCellsY(20);
+    	stt.setGridCellsZ(20);
                 stt.setNumOfParticles(2);
 
     	stt.addForce(new ConstantForce());
@@ -478,7 +478,7 @@ public class InitialConditions {
     		par.setY(stt.getSimulationHeight() * 1/2 + stt.getGridStep()*0/2);
     		par.setZ(stt.getSimulationDepth() * 1/2 + stt.getGridStep()*0/2);
     		par.setRadius(radius);
-    		par.setVx(0);//par.setVx(0.1*(1-2*k));
+    		par.setVx(0);par.setVx(0.1*(1-2*k));
     		par.setVy(0);
     		par.setVz(0);
     		par.setMass(1);
@@ -505,10 +505,10 @@ public class InitialConditions {
 
     	stt.setTimeStep(0.1);
     	stt.setSpeedOfLight(1);
-    	stt.setGridStep(1.0);
-    	stt.setGridCellsX(10);
-    	stt.setGridCellsY(10);
-    	stt.setGridCellsZ(10);
+    	stt.setGridStep(0.5);
+    	stt.setGridCellsX(20);
+    	stt.setGridCellsY(20);
+    	stt.setGridCellsZ(20);
     	stt.setTMax(1000);
     	/*
 		ConstantForce cf = new ConstantForce();
