@@ -9,9 +9,11 @@ import org.openpixi.pixi.physics.particles.ParticleFull;
 public class YamlParticle {
 	public Double x;
 	public Double y;
+	public Double z;
 	public Double r;
 	public Double vx;
 	public Double vy;
+	public Double vz;
 	public Double m;
 	public Double q;
 	public String color;
@@ -39,6 +41,10 @@ public class YamlParticle {
 			p.setY(y);
 		}
 
+		if (z != null) {
+			p.setZ(z);
+		}
+
 		if (r != null) {
 			p.setRadius(r);
 		}
@@ -49,6 +55,10 @@ public class YamlParticle {
 
 		if (vy != null) {
 			p.setVy(vy);
+		}
+
+		if (vz != null) {
+			p.setVz(vz);
 		}
 
 		if (m != null) {
