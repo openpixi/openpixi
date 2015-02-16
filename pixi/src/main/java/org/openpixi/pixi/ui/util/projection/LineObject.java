@@ -49,15 +49,15 @@ public class LineObject extends AbstractObject {
 		addLine(x, y, z, x + dx, y + dy, z + dz, color);
 	}
 
-	public void addCube(double size, Color color) {
+	public void addCuboid(double sx, double sy, double sz, Color color) {
 		Point p1 = addPoint(0, 0, 0);
-		Point p2 = addPoint(0, size, 0);
-		Point p3 = addPoint(size, size, 0);
-		Point p4 = addPoint(size, 0, 0);
-		Point p5 = addPoint(0, 0, size);
-		Point p6 = addPoint(0, size, size);
-		Point p7 = addPoint(size, size, size);
-		Point p8 = addPoint(size, 0, size);
+		Point p2 = addPoint(0, sy, 0);
+		Point p3 = addPoint(sx, sy, 0);
+		Point p4 = addPoint(sx, 0, 0);
+		Point p5 = addPoint(0, 0, sz);
+		Point p6 = addPoint(0, sy, sz);
+		Point p7 = addPoint(sx, sy, sz);
+		Point p8 = addPoint(sx, 0, sz);
 		addLine(p1, p2, color);
 		addLine(p2, p3, color);
 		addLine(p3, p4, color);

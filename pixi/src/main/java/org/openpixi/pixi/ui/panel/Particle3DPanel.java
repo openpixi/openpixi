@@ -56,7 +56,7 @@ public class Particle3DPanel extends AnimationPanel {
 	Color darkGreen = new Color(0x00, 0x80, 0x00);
 
 	private Projection projection = new Projection();
-	private LineObject object = new LineObject();
+	private LineObject cuboid = new LineObject();
 	private LineObject fields = new LineObject();
 	private SphereObject spheres = new SphereObject();
 	private Scene scene = new Scene();
@@ -66,9 +66,6 @@ public class Particle3DPanel extends AnimationPanel {
 		super(simulationAnimation);
 
 		Simulation s = simulationAnimation.getSimulation();
-		projection.deltaX = -s.getWidth()/2;
-		projection.deltaY = -s.getHeight()/2;
-		projection.deltaZ = -s.getDepth()/2;
 		projection.screenDeltaX = s.getWidth()/2;
 		projection.screenDeltaY = s.getHeight()/2;
 		projection.distance = 2 * s.getWidth();
@@ -76,9 +73,7 @@ public class Particle3DPanel extends AnimationPanel {
 		projection.phi = 0;
 		projection.theta = 0;
 
-		object.addCube(s.getWidth(), Color.black);
-
-		scene.add(object);
+		scene.add(cuboid);
 		scene.add(fields);
 		scene.add(spheres);
 
@@ -129,7 +124,14 @@ public class Particle3DPanel extends AnimationPanel {
 		/** Scaling factor for the displayed panel in y-direction*/
 		double sy = getHeight() / s.getHeight();
 
+		projection.deltaX = -s.getWidth()/2;
+		projection.deltaY = -s.getHeight()/2;
+		projection.deltaZ = -s.getDepth()/2;
+
 		projection.updateRotationMatrix();
+
+		cuboid.clear();
+		cuboid.addCuboid(s.getWidth(), s.getHeight(), s.getDepth(), Color.black);
 
 		spheres.clear();
 
