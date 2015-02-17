@@ -39,12 +39,12 @@ public class Scene {
 	}
 
 	/** Paint all objects in order of distance */
-	public void paint(Projection projection, Graphics2D graphics, double sx, double sy) {
+	public void paint(Projection projection, Graphics2D graphics) {
 		applyProjection(projection);
 		createObjectList();
 		sort();
 		for (Distance d : distancelist) {
-			d.object.paint(projection, graphics, sx, sy);
+			d.object.paint(projection, graphics);
 		}
 	}
 

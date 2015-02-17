@@ -66,10 +66,6 @@ public class Particle3DPanel extends AnimationPanel {
 		super(simulationAnimation);
 
 		Simulation s = simulationAnimation.getSimulation();
-		projection.screenDeltaX = s.getWidth()/2;
-		projection.screenDeltaY = s.getHeight()/2;
-		projection.distance = 2 * s.getWidth();
-		projection.scale = .7;
 		projection.phi = 0;
 		projection.theta = 0;
 
@@ -123,7 +119,22 @@ public class Particle3DPanel extends AnimationPanel {
 		double sx = getWidth() / s.getWidth();
 		/** Scaling factor for the displayed panel in y-direction*/
 		double sy = getHeight() / s.getHeight();
-
+		double screenscale = sx;
+		if (sy < screenscale) {
+			screenscale = sy;
+		}
+		double maxsize = s.getWidth();
+		if (s.getHeight() > maxsize) {
+			maxsize = s.getHeight();
+		}
+		if (s.getDepth() > maxsize) {
+			maxsize = s.getDepth();
+		}
+		projection.screenDeltaX = getWidth()/2;
+		projection.screenDeltaY = getHeight()/2;
+		projection.distance = 2 * maxsize;
+		projection.scale = .7;
+		projection.screenZoom = screenscale;
 		projection.deltaX = -s.getWidth()/2;
 		projection.deltaY = -s.getHeight()/2;
 		projection.deltaZ = -s.getDepth()/2;
@@ -220,7 +231,7 @@ public class Particle3DPanel extends AnimationPanel {
 			}
 		}
 
-		scene.paint(projection, graph, sx, sy);
+		scene.paint(projection, graph);
 
 		FrameRateDetector frameratedetector = getSimulationAnimation().getFrameRateDetector();
 

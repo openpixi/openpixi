@@ -16,6 +16,9 @@ public class Projection {
 	/** Translation of screen */
 	public double screenDeltaX, screenDeltaY;
 
+	/** Screen zoom factor */
+	public double screenZoom;
+
 	/** Rotation matrix */
 	private Matrix3D m;
 
@@ -41,6 +44,7 @@ public class Projection {
 		deltaZ = 0;
 		screenDeltaX = 0;
 		screenDeltaY = 0;
+		screenZoom = 1;
 	}
 
 	public void updateRotationMatrix() {
@@ -54,7 +58,7 @@ public class Projection {
 		multiplyMatrixVector(x + deltaX, y + deltaY, z + deltaZ);
 
 		if (this.z + distance > 0) {
-			screenScale = distance / (this.z + distance);
+			screenScale = screenZoom * distance / (this.z + distance);
 			screenX = this.x * screenScale + screenDeltaX;
 			screenY = this.y * screenScale + screenDeltaY;
 			screenZ = this.z; // arbitrary scale in z-direction

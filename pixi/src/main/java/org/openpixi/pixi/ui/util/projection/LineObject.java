@@ -91,7 +91,7 @@ public class LineObject extends AbstractObject {
 		Point p2;
 		Color color;
 
-		public void paint(Projection projection, Graphics2D graphics, double sx, double sy) {
+		public void paint(Projection projection, Graphics2D graphics) {
 			applyProjection(projection);
 
 			double x1 = p1.screenX;
@@ -100,7 +100,7 @@ public class LineObject extends AbstractObject {
 			double y2 = p2.screenY;
 			Color c = color;
 			graphics.setColor(c);
-			graphics.drawLine((int) (x1 * sx), (int) (y1 * sy), (int) (x2 * sx), (int) (y2 * sy));
+			graphics.drawLine((int) x1, (int) y1, (int) x2, (int) y2);
 		}
 
 		public double getDistance() {
