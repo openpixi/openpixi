@@ -53,6 +53,10 @@ public class Particle3DPanel extends AnimationPanel {
 
 	private boolean reset_trace;
 
+	private int gridstep = 1;
+	private int gridstepadjusted = 0;
+	private long currentrendertime = 0;
+
 	Color darkGreen = new Color(0x00, 0x80, 0x00);
 
 	private Projection projection = new Projection();
@@ -157,10 +161,31 @@ public class Particle3DPanel extends AnimationPanel {
 
 		fields.clear();
 
+		// Adaptive gridstep based on timeout in drawing routine
+		if (scene.drawtimeout) {
+			gridstep++;
+			gridstepadjusted = 0;
+		} else {
+			if (gridstepadjusted == 1) {
+				// First successful time measurement with new grid step
+				currentrendertime = scene.lastrendertime;
+			} else {
+				// If suddenly rendering is more than twice as fast
+				if (currentrendertime > 2 * scene.lastrendertime) {
+					// adjust the gridstep again
+					gridstep--;
+					if (gridstep < 1) {
+						gridstep = 1;
+					}
+				}
+			}
+			gridstepadjusted++;
+		}
+
 		if(drawCurrentGrid) {
-			for(int i = 0; i < s.grid.getNumCellsX(); i++) {
-				for(int k = 0; k < s.grid.getNumCellsY(); k++) {
-					for(int j = 0; j < s.grid.getNumCellsZ(); j++) {
+			for(int i = 0; i < s.grid.getNumCellsX(); i += gridstep) {
+				for(int k = 0; k < s.grid.getNumCellsY(); k += gridstep) {
+					for(int j = 0; j < s.grid.getNumCellsZ(); j += gridstep) {
 						double xstart = s.grid.getCellWidth() * (i + 0.5);
 						double ystart = s.grid.getCellHeight() * (k + 0.5);
 						double zstart = s.grid.getCellDepth() * (j + 0.5);
@@ -192,9 +217,9 @@ public class Particle3DPanel extends AnimationPanel {
 		if(drawFields)
 		{
 			graph.setColor(Color.black);
-			for(int i = 0; i < s.grid.getNumCellsX(); i++) {
-				for(int k = 0; k < s.grid.getNumCellsY(); k++) {
-					for(int j = 0; j < s.grid.getNumCellsZ(); j++) {
+			for(int i = 0; i < s.grid.getNumCellsX(); i += gridstep) {
+				for(int k = 0; k < s.grid.getNumCellsY(); k += gridstep) {
+					for(int j = 0; j < s.grid.getNumCellsZ(); j += gridstep) {
 						double xstart = s.grid.getCellWidth() * (i + 0.5);
 						double ystart = s.grid.getCellHeight() * (k + 0.5);
 						double zstart = s.grid.getCellDepth() * (j + 0.5);

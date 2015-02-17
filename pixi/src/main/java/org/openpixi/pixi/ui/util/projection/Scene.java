@@ -11,6 +11,12 @@ public class Scene {
 	private ArrayList<AbstractObject> objectlist = new ArrayList<AbstractObject>();
 	private ArrayList<Distance> distancelist = new ArrayList<Distance>();
 
+	/** Timeout of drawing operation in nanoseconds */
+	public long timeout = 100 * 1000 * 1000; // 100 ms
+
+	public boolean drawtimeout = false;
+	public long lastrendertime = 0;
+
 	/** Add object to scene */
 	public void add(AbstractObject object) {
 		objectlist.add(object);
@@ -43,9 +49,17 @@ public class Scene {
 		applyProjection(projection);
 		createObjectList();
 		sort();
+		long start = System.nanoTime();
+		boolean t = false;
 		for (Distance d : distancelist) {
 			d.object.paint(projection, graphics);
+			if (System.nanoTime() - start > timeout) {
+				t = true;
+				break;
+			}
 		}
+		drawtimeout = t;
+		lastrendertime = System.nanoTime() - start;
 	}
 
 	private class Distance {
