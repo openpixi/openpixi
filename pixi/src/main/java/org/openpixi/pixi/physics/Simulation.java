@@ -361,6 +361,9 @@ public class Simulation {
 			else {kinetic = Math.sqrt(particles.get(i).getMass()*particles.get(i).getMass()*( particles.get(i).getVx() * particles.get(i).getVx() + particles.get(i).getVy()*particles.get(i).getVy()
 					 					+ particles.get(i).getVz()*particles.get(i).getVz() + 1) ); }
 			pw.write(kinetic + "\t");
+			pw.write(particles.get(i).getAx() + "\t");
+			pw.write(particles.get(i).getAy() + "\t");
+			pw.write(particles.get(i).getAz() + "\t");
 			pw.write(particles.get(i).getEx() + "\t");
 			pw.write(particles.get(i).getEy() + "\t");
 			pw.write(particles.get(i).getEz() + "\t");

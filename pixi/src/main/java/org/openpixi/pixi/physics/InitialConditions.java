@@ -30,6 +30,7 @@ import org.openpixi.pixi.physics.fields.PoissonSolverFFTPeriodic;
 import org.openpixi.pixi.physics.fields.EmptyPoissonSolver;
 import org.openpixi.pixi.physics.fields.SimpleSolver;
 import org.openpixi.pixi.physics.grid.ChargeConservingCIC;
+import org.openpixi.pixi.physics.grid.NearestGridPoint;
 
 import java.awt.Color;
 import java.util.ArrayList;
@@ -503,12 +504,12 @@ public class InitialConditions {
     public static Simulation initOneTest3D(double charge, double radius) {
     	Settings stt = new Settings();
 
-    	stt.setTimeStep(0.1);
+    	stt.setTimeStep(0.025);
     	stt.setSpeedOfLight(1);
-    	stt.setGridStep(0.5);
-    	stt.setGridCellsX(20);
-    	stt.setGridCellsY(20);
-    	stt.setGridCellsZ(20);
+    	stt.setGridStep(0.25);
+    	stt.setGridCellsX(40);
+    	stt.setGridCellsY(40);
+    	stt.setGridCellsZ(40);
     	stt.setTMax(1000);
     	/*
 		ConstantForce cf = new ConstantForce();
@@ -522,20 +523,21 @@ public class InitialConditions {
 
     		Particle par = new ParticleFull();
     		par.setX(stt.getSimulationWidth() * 50/100);
-    		par.setVx(0.1);
+    		par.setVx(0.02);
     		par.setY(stt.getSimulationHeight() * 50/100 );
     		par.setZ(stt.getSimulationDepth() * 50/100 );
     		par.setRadius(radius);
-    		par.setVy(0.1);
-    		par.setVz(0.1);
+    		par.setVy(0);
+    		par.setVz(0);
     		par.setMass(1);
     		par.setCharge(-charge);
     		par.setColor(Color.red);
     		stt.addParticle(par);
 
-    		stt.setPoissonSolver(new EmptyPoissonSolver());
+    		//stt.setPoissonSolver(new EmptyPoissonSolver());
     		stt.useGrid(true);
-    		//stt.setPoissonSolver(new PoissonSolverFFTPeriodic());
+    		stt.setPoissonSolver(new PoissonSolverFFTPeriodic());
+    		stt.setInterpolator(new NearestGridPoint());
     	Simulation simulation = new Simulation(stt);
     	/*for (int i = 0; i < stt.getGridCellsY(); i++) {
     		for (int k = 0; k < stt.getGridCellsX(); k++) {
