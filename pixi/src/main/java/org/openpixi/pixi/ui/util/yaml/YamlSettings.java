@@ -19,6 +19,7 @@ public class YamlSettings {
 	public Double duration;
 	public Integer gridCellsX;
 	public Integer gridCellsY;
+	public Integer gridCellsZ;
 	public String poissonsolver;
 	public List<YamlParticle> particles;
 	public List<YamlParticleStream> streams;
@@ -56,6 +57,10 @@ public class YamlSettings {
 
 		if (gridCellsY != null) {
 			settings.setGridCellsY(gridCellsY);
+		}
+
+		if (gridCellsZ != null) {
+			settings.setGridCellsZ(gridCellsZ);
 		}
 
 		if (poissonsolver != null) {

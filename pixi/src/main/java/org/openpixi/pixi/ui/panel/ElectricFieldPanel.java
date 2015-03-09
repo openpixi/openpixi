@@ -43,7 +43,7 @@ public class ElectricFieldPanel extends AnimationPanel {
 			graph.setColor(par.getColor());
 			double radius = par.getRadius();
 			int width = (int) (2*sx*radius);
-			int height = (int) (2*sy*radius);
+			int height = (int) (2*sx*radius);
 			if(width > 2 && height > 2) {
 				graph.fillOval((int) (par.getX()*sx) - width/2, (int) (panelHeight/2 - height/2),  width,  height);
 			}

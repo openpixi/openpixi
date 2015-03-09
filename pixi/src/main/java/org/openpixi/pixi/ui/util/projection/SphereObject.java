@@ -42,16 +42,16 @@ public class SphereObject extends AbstractObject {
 		Color color;
 		double screenX, screenY, screenZ, screenScale;
 
-		public void paint(Projection projection, Graphics2D graphics, double sx, double sy) {
+		public void paint(Projection projection, Graphics2D graphics) {
 			double radius = screenScale * r;
-			int width = (int) (2*sx*radius);
-			int height = (int) (2*sy*radius);
+			int width = (int) (2*radius);
+			int height = (int) (2*radius);
 			graphics.setColor(color);
 			if(width > 2 && height > 2) {
-				graphics.fillOval((int) (screenX*sx) - width/2, (int) (screenY*sy) - height/2,  width,  height);
+				graphics.fillOval((int) (screenX) - width/2, (int) (screenY) - height/2,  width,  height);
 			}
 			else {
-				graphics.drawRect((int) (screenX*sx), (int) (screenY*sy), 0, 0);
+				graphics.drawRect((int) (screenX), (int) (screenY), 0, 0);
 			}
 		}
 

@@ -53,10 +53,14 @@ public class Particle3DPanel extends AnimationPanel {
 
 	private boolean reset_trace;
 
+	private int gridstep = 1;
+	private int gridstepadjusted = 0;
+	private long currentrendertime = 0;
+
 	Color darkGreen = new Color(0x00, 0x80, 0x00);
 
 	private Projection projection = new Projection();
-	private LineObject object = new LineObject();
+	private LineObject cuboid = new LineObject();
 	private LineObject fields = new LineObject();
 	private SphereObject spheres = new SphereObject();
 	private Scene scene = new Scene();
@@ -66,19 +70,10 @@ public class Particle3DPanel extends AnimationPanel {
 		super(simulationAnimation);
 
 		Simulation s = simulationAnimation.getSimulation();
-		projection.deltaX = -s.getWidth()/2;
-		projection.deltaY = -s.getHeight()/2;
-		projection.deltaZ = -s.getDepth()/2;
-		projection.screenDeltaX = s.getWidth()/2;
-		projection.screenDeltaY = s.getHeight()/2;
-		projection.distance = 2 * s.getWidth();
-		projection.scale = .7;
 		projection.phi = 0;
 		projection.theta = 0;
 
-		object.addCube(s.getWidth(), Color.black);
-
-		scene.add(object);
+		scene.add(cuboid);
 		scene.add(fields);
 		scene.add(spheres);
 
@@ -128,8 +123,30 @@ public class Particle3DPanel extends AnimationPanel {
 		double sx = getWidth() / s.getWidth();
 		/** Scaling factor for the displayed panel in y-direction*/
 		double sy = getHeight() / s.getHeight();
+		double screenscale = sx;
+		if (sy < screenscale) {
+			screenscale = sy;
+		}
+		double maxsize = s.getWidth();
+		if (s.getHeight() > maxsize) {
+			maxsize = s.getHeight();
+		}
+		if (s.getDepth() > maxsize) {
+			maxsize = s.getDepth();
+		}
+		projection.screenDeltaX = getWidth()/2;
+		projection.screenDeltaY = getHeight()/2;
+		projection.distance = 2 * maxsize;
+		projection.scale = .7;
+		projection.screenZoom = screenscale;
+		projection.deltaX = -s.getWidth()/2;
+		projection.deltaY = -s.getHeight()/2;
+		projection.deltaZ = -s.getDepth()/2;
 
 		projection.updateRotationMatrix();
+
+		cuboid.clear();
+		cuboid.addCuboid(s.getWidth(), s.getHeight(), s.getDepth(), Color.black);
 
 		spheres.clear();
 
@@ -144,10 +161,31 @@ public class Particle3DPanel extends AnimationPanel {
 
 		fields.clear();
 
+		// Adaptive gridstep based on timeout in drawing routine
+		if (scene.drawtimeout) {
+			gridstep++;
+			gridstepadjusted = 0;
+		} else {
+			if (gridstepadjusted == 1) {
+				// First successful time measurement with new grid step
+				currentrendertime = scene.lastrendertime;
+			} else {
+				// If suddenly rendering is more than twice as fast
+				if (currentrendertime > 2 * scene.lastrendertime) {
+					// adjust the gridstep again
+					gridstep--;
+					if (gridstep < 1) {
+						gridstep = 1;
+					}
+				}
+			}
+			gridstepadjusted++;
+		}
+
 		if(drawCurrentGrid) {
-			for(int i = 0; i < s.grid.getNumCellsX(); i++) {
-				for(int k = 0; k < s.grid.getNumCellsY(); k++) {
-					for(int j = 0; j < s.grid.getNumCellsZ(); j++) {
+			for(int i = 0; i < s.grid.getNumCellsX(); i += gridstep) {
+				for(int k = 0; k < s.grid.getNumCellsY(); k += gridstep) {
+					for(int j = 0; j < s.grid.getNumCellsZ(); j += gridstep) {
 						double xstart = s.grid.getCellWidth() * (i + 0.5);
 						double ystart = s.grid.getCellHeight() * (k + 0.5);
 						double zstart = s.grid.getCellDepth() * (j + 0.5);
@@ -179,9 +217,9 @@ public class Particle3DPanel extends AnimationPanel {
 		if(drawFields)
 		{
 			graph.setColor(Color.black);
-			for(int i = 0; i < s.grid.getNumCellsX(); i++) {
-				for(int k = 0; k < s.grid.getNumCellsY(); k++) {
-					for(int j = 0; j < s.grid.getNumCellsZ(); j++) {
+			for(int i = 0; i < s.grid.getNumCellsX(); i += gridstep) {
+				for(int k = 0; k < s.grid.getNumCellsY(); k += gridstep) {
+					for(int j = 0; j < s.grid.getNumCellsZ(); j += gridstep) {
 						double xstart = s.grid.getCellWidth() * (i + 0.5);
 						double ystart = s.grid.getCellHeight() * (k + 0.5);
 						double zstart = s.grid.getCellDepth() * (j + 0.5);
@@ -218,7 +256,7 @@ public class Particle3DPanel extends AnimationPanel {
 			}
 		}
 
-		scene.paint(projection, graph, sx, sy);
+		scene.paint(projection, graph);
 
 		FrameRateDetector frameratedetector = getSimulationAnimation().getFrameRateDetector();
 

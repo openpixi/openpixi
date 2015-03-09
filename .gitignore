@@ -26,3 +26,6 @@ dependency-reduced-pom.xml
 
 # Generated output files
 output/
+
+# Personal input files
+personal_input/
