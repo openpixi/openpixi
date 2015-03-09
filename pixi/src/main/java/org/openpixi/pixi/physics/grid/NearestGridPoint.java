@@ -6,7 +6,7 @@ public class NearestGridPoint implements InterpolatorAlgorithm {
 	
 	@Override
 	public void interpolateToGrid(Particle p, Grid g, double tstep) {
-		
+		//System.out.println("Grid!");
 		/**X index of the nearest grid point BEFORE particle push*/
 		int xStart = (int) Math.rint( p.getPrevX()/g.getCellWidth() );
 		/**Y index of the nearest grid point BEFORE particle push*/
@@ -44,7 +44,7 @@ public class NearestGridPoint implements InterpolatorAlgorithm {
 	
 	@Override
 	public void interpolateChargedensity(Particle p, Grid g) {
-		
+		//System.out.println("Charge!");
 		/**X index of the nearest grid point*/
 		int i = (int) Math.rint( p.getX()/g.getCellWidth() );
 		/**Y index of the nearest grid point*/
@@ -58,7 +58,7 @@ public class NearestGridPoint implements InterpolatorAlgorithm {
 	
 	@Override
 	public void interpolateToParticle(Particle p, Grid g) {
-		
+		//System.out.println("Particles!");
 		/**X index of the nearest grid point*/
 		int i;
 		/**Y index of the nearest grid point*/

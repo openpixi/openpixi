@@ -261,6 +261,7 @@ public class Simulation {
 	 */
 	public void step() throws FileNotFoundException,IOException {
 
+		interpolation.interpolateToParticle(particles, grid);
 		if (continues()) {
 			// Only write to file while simulation continues.
 			writeToFile(tstep*tottime);
@@ -271,7 +272,6 @@ public class Simulation {
 		collisionalgorithm.collide(detector.getOverlappedPairs(), f, mover.getSolver(), tstep);
 		interpolation.interpolateToGrid(particles, grid, tstep);
 		grid.updateGrid(tstep);
-		interpolation.interpolateToParticle(particles, grid);
 
 		tottime++;
 	}

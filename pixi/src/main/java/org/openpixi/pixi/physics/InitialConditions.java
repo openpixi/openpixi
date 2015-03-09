@@ -504,13 +504,13 @@ public class InitialConditions {
     public static Simulation initOneTest3D(double charge, double radius) {
     	Settings stt = new Settings();
 
-    	stt.setTimeStep(0.025);
+    	stt.setTimeStep(0.1);
     	stt.setSpeedOfLight(1);
-    	stt.setGridStep(0.25);
-    	stt.setGridCellsX(40);
-    	stt.setGridCellsY(40);
-    	stt.setGridCellsZ(40);
-    	stt.setTMax(1000);
+    	stt.setGridStep(0.5);
+    	stt.setGridCellsX(20);
+    	stt.setGridCellsY(20);
+    	stt.setGridCellsZ(20);
+    	stt.setTMax(100);
     	/*
 		ConstantForce cf = new ConstantForce();
 		cf.bz = -1;
@@ -523,7 +523,7 @@ public class InitialConditions {
 
     		Particle par = new ParticleFull();
     		par.setX(stt.getSimulationWidth() * 50/100);
-    		par.setVx(0.02);
+    		par.setVx(0.1);
     		par.setY(stt.getSimulationHeight() * 50/100 );
     		par.setZ(stt.getSimulationDepth() * 50/100 );
     		par.setRadius(radius);
@@ -550,6 +550,53 @@ public class InitialConditions {
     			}
     		}
     	}*/
+    	return simulation;
+    }
+    
+    public static Simulation initInterpolationTest3D(double charge, double radius) {
+    	Settings stt = new Settings();
+
+    	stt.setTimeStep(1);
+    	stt.setSpeedOfLight(1);
+    	stt.setGridStep(1);
+    	stt.setGridCellsX(4);
+    	stt.setGridCellsY(4);
+    	stt.setGridCellsZ(4);
+    	stt.setTMax(1);
+    	/*
+		ConstantForce cf = new ConstantForce();
+		cf.bz = -1;
+		stt.addForce(cf);
+		*/
+                stt.setNumOfParticles(1);
+
+    	stt.setBoundary(GeneralBoundaryType.Periodic);
+                stt.setGridSolver(new SimpleSolver());
+
+    		Particle par = new ParticleFull();
+    		par.setX(0.75);
+    		par.setVx(0);
+    		par.setY(0.75);
+    		par.setZ(0.75);
+    		par.setRadius(radius);
+    		par.setVy(0);
+    		par.setVz(0);
+    		par.setMass(1);
+    		par.setCharge(-charge);
+    		par.setColor(Color.red);
+    		stt.addParticle(par);
+
+    		stt.setPoissonSolver(new EmptyPoissonSolver());
+    		stt.useGrid(true);
+    		//stt.setPoissonSolver(new PoissonSolverFFTPeriodic());
+    		stt.setInterpolator(new NearestGridPoint());
+    	Simulation simulation = new Simulation(stt);
+    	
+    	simulation.grid.setEx(0, 0, 0, -1 );
+    	simulation.grid.setEx(0, 1, 0, 2 );
+    	simulation.grid.setEx(0, 0, 1, 2 );
+    	simulation.grid.setEx(0, 1, 1, -4 );
+    	
     	return simulation;
     }
 
