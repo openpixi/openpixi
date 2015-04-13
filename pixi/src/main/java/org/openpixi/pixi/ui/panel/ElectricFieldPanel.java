@@ -67,7 +67,7 @@ public class ElectricFieldPanel extends AnimationPanel {
 				int oldPosition = newPosition;
 				int oldValue = newValue;
 				newPosition = (int) (s.grid.getCellWidth() * (i + 0.5) * sx);
-				newValue = (int) (((0.5 - scaleE * s.grid.getEx(i,k)) * panelHeight));
+				newValue = (int) (((0.5 - scaleE * s.grid.getEx(i,k,s.grid.getNumCellsZ()/2)) * panelHeight));
 
 				if (i > 0) {
 					graph.drawLine(oldPosition, oldValue,newPosition, newValue);

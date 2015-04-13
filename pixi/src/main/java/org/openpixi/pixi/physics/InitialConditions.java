@@ -419,17 +419,17 @@ public class InitialConditions {
     public static Simulation initWaveTest(double kx) {
     	Settings stt = new Settings();
 
-    	stt.setTimeStep(0.1);
-    	stt.setTMax(1000);
-    	stt.setSpectrumStep(100);
+    	stt.setTimeStep(0.5);
+    	stt.setTMax(100);
+    	stt.setSpectrumStep(1);
     	stt.setSpeedOfLight(1);
     	stt.setRelativistic(true);
     	/*stt.setSimulationWidth(100);
     	stt.setSimulationHeight(100);*/
     	stt.setGridStep(1);
-    	stt.setGridCellsX(100);
-    	stt.setGridCellsY(100);
-    	stt.setGridCellsZ(100);
+    	stt.setGridCellsX(40);
+    	stt.setGridCellsY(10);
+    	stt.setGridCellsZ(10);
     	stt.setNumOfParticles(0);
 
     	stt.setBoundary(GeneralBoundaryType.Periodic);
@@ -443,8 +443,8 @@ public class InitialConditions {
     		for (int k = 0; k < stt.getGridCellsX(); k++) {
     			for (int j = 0; j < stt.getGridCellsZ(); j++) {
     				
-    				simulation.grid.setEy(k, i, j, Math.sin( kx*stt.getGridStep()*(k+1/2) ));
-    	    		simulation.grid.setBz(k, i, j, Math.sin( kx*stt.getGridStep()*(k+1/2) ));
+    				simulation.grid.setEy(k, i, stt.getGridCellsZ()/2, Math.sin( kx*Math.PI/stt.getGridCellsX()*k ));
+    	    		simulation.grid.setBz(k, i, stt.getGridCellsZ()/2, Math.sin( kx*Math.PI/stt.getGridCellsX()*k ));
     	    		
     			}
     		}
@@ -456,14 +456,15 @@ public class InitialConditions {
     public static Simulation initPair3D(double charge, double radius) {
     	Settings stt = new Settings();
 
-    	stt.setTimeStep(0.1);
-    	stt.setTMax(10);
+    	stt.setTimeStep(0.025);
+    	stt.setTMax(5000);
     	stt.setSpeedOfLight(1);
     	stt.setRelativistic(true);
+    	stt.setSpectrumStep(500);
     	/*stt.setSimulationWidth(100);
     	stt.setSimulationHeight(100);*/
     	stt.setGridStep(1);
-    	stt.setGridCellsX(20);
+    	stt.setGridCellsX(40);
     	stt.setGridCellsY(20);
     	stt.setGridCellsZ(20);
                 stt.setNumOfParticles(2);
@@ -475,11 +476,11 @@ public class InitialConditions {
 
     	for (int k = 0; k < 2; k++) {
     		Particle par = new ParticleFull();
-    		par.setX(stt.getSimulationWidth() * 1/9.0*(k+4));
+    		par.setX(stt.getSimulationWidth() * 1/100.0*(10*k+45));
     		par.setY(stt.getSimulationHeight() * 1/2 + stt.getGridStep()*0/2);
     		par.setZ(stt.getSimulationDepth() * 1/2 + stt.getGridStep()*0/2);
     		par.setRadius(radius);
-    		par.setVx(0);par.setVx(0.1*(1-2*k));
+    		par.setVx(0.0*(1-2*k));
     		par.setVy(0);
     		par.setVz(0);
     		par.setMass(1);
@@ -491,13 +492,37 @@ public class InitialConditions {
     		}
     		stt.addParticle(par);
     	}
-                
+    	/*
+    	for (int k = 0; k < 2; k++) {
+    		Particle par = new ParticleFull();
+    		par.setX(stt.getSimulationWidth() * 1/100.0*(5*k+70));
+    		par.setY(stt.getSimulationHeight() * 1/2 + stt.getGridStep()*0/2);
+    		par.setZ(stt.getSimulationDepth() * 1/2 + stt.getGridStep()*0/2);
+    		par.setRadius(radius);
+    		par.setVx(-0.0*(1-2*k));
+    		par.setVy(0);
+    		par.setVz(0);
+    		par.setMass(1);
+    		par.setCharge(-charge*(1-2*k));
+    		if (k == 0) {
+    			par.setColor(Color.blue);
+    		} else {
+    			par.setColor(Color.red);
+    		}
+    		stt.addParticle(par);
+    	}
+         */       
                 stt.setPoissonSolver(new PoissonSolverFFTPeriodic());
+                //stt.setPoissonSolver(new EmptyPoissonSolver());
                 stt.useGrid(true);
+                //stt.setInterpolator(new NearestGridPoint());
                 stt.setInterpolator(new ChargeConservingCIC());
                 //stt.setIterations(1);//Testing purposes!!!
                 //set to charge conserving CIC; already preset in settings
     	Simulation simulation = new Simulation(stt);
+    	
+    	//DipoleCorrection(simulation);
+    	
     	return simulation;
     }
     
@@ -534,10 +559,10 @@ public class InitialConditions {
     		par.setColor(Color.red);
     		stt.addParticle(par);
 
-    		//stt.setPoissonSolver(new EmptyPoissonSolver());
+    		stt.setPoissonSolver(new EmptyPoissonSolver());
     		stt.useGrid(true);
-    		stt.setPoissonSolver(new PoissonSolverFFTPeriodic());
-    		stt.setInterpolator(new NearestGridPoint());
+    		//stt.setPoissonSolver(new PoissonSolverFFTPeriodic());
+    		//stt.setInterpolator(new NearestGridPoint());
     	Simulation simulation = new Simulation(stt);
     	/*for (int i = 0; i < stt.getGridCellsY(); i++) {
     		for (int k = 0; k < stt.getGridCellsX(); k++) {
@@ -556,7 +581,7 @@ public class InitialConditions {
     public static Simulation initInterpolationTest3D(double charge, double radius) {
     	Settings stt = new Settings();
 
-    	stt.setTimeStep(1);
+    	stt.setTimeStep(.1);
     	stt.setSpeedOfLight(1);
     	stt.setGridStep(1);
     	stt.setGridCellsX(4);
@@ -574,10 +599,10 @@ public class InitialConditions {
                 stt.setGridSolver(new SimpleSolver());
 
     		Particle par = new ParticleFull();
-    		par.setX(0.75);
+    		par.setX(1.0);
     		par.setVx(0);
-    		par.setY(0.75);
-    		par.setZ(0.75);
+    		par.setY(0.5);
+    		par.setZ(0.5);
     		par.setRadius(radius);
     		par.setVy(0);
     		par.setVz(0);
@@ -589,16 +614,59 @@ public class InitialConditions {
     		stt.setPoissonSolver(new EmptyPoissonSolver());
     		stt.useGrid(true);
     		//stt.setPoissonSolver(new PoissonSolverFFTPeriodic());
-    		stt.setInterpolator(new NearestGridPoint());
+    		//stt.setInterpolator(new NearestGridPoint());
+    		stt.setInterpolator(new ChargeConservingCIC());
     	Simulation simulation = new Simulation(stt);
     	
-    	simulation.grid.setEx(0, 0, 0, -1 );
-    	simulation.grid.setEx(0, 1, 0, 2 );
-    	simulation.grid.setEx(0, 0, 1, 2 );
-    	simulation.grid.setEx(0, 1, 1, -4 );
+    	simulation.grid.setEx(0, 0, 0, 1 );
+    	simulation.grid.setEx(0, 0, 1, 1 );
+    	simulation.grid.setEx(0, 1, 0, 1 );
+    	simulation.grid.setEx(0, 1, 1, 1 );
+    	simulation.grid.setEx(1, 0, 0, 2 );
+    	simulation.grid.setEx(1, 0, 1, 2 );
+    	simulation.grid.setEx(1, 1, 0, 2 );
+    	simulation.grid.setEx(1, 1, 1, 2 );
     	
     	return simulation;
     }
+    
+    private static void DipoleCorrection(Simulation sim) {
+
+    	double correctionX = 0;
+    	double correctionY = 0;
+    	double correctionZ = 0;
+    	int volume = sim.grid.getNumCellsX()*sim.grid.getNumCellsY()*sim.grid.getNumCellsZ();
+    	
+    	for (int i = 0; i < sim.grid.getNumCellsX(); i++) {
+    		for (int j = 0; j < sim.grid.getNumCellsY(); j++) {
+    			for (int k = 0; k < sim.grid.getNumCellsZ(); k++) {
+    				
+    				correctionX += sim.grid.getRho(i, j, k) * i * sim.grid.getCellWidth();
+    	    		correctionY += sim.grid.getRho(i, j, k) * j * sim.grid.getCellHeight();
+    	    		correctionZ += sim.grid.getRho(i, j, k) * k * sim.grid.getCellDepth();
+    	    		
+    			}
+    		}
+    	}
+    	
+    	System.out.println(correctionX);
+    	System.out.println(correctionY);
+    	System.out.println(correctionZ);
+    	
+    	for (int i = 0; i < sim.grid.getNumCellsX(); i++) {
+    		for (int j = 0; j < sim.grid.getNumCellsY(); j++) {
+    			for (int k = 0; k < sim.grid.getNumCellsZ(); k++) {
+    	    		
+    	    		sim.grid.addEx( i, j, k, -correctionX/volume );
+    	    		sim.grid.addEy( i, j, k, -correctionY/volume );
+    	    		sim.grid.addEz( i, j, k, -correctionZ/volume );
+    	    		
+    			}
+    		}
+    	}
+    	
+    	
+	}
 
     
 }

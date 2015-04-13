@@ -469,15 +469,28 @@ public class Simulation {
 				
 				snap.write(i + "\t");
 				snap.write(j + "\t");
-				snap.write(grid.getPhi(i, j, grid.getNumCellsZ()/2) + "\t");
 				snap.write(grid.getEx(i, j, grid.getNumCellsZ()/2) + "\t");
+				snap.write(grid.getBz(i, j, grid.getNumCellsZ()/2) + "\t");
 				snap.write("\n");
 				
 			}
 		}
 		
 		snap.close();
+		/*
+		file = getOutputFile("snapshot_1D" + time + ".txt");
+		PrintWriter snap1D = new PrintWriter(file);
+
+		for (int i = 0; i < grid.getNumCellsX(); i++) {
+				
+				snap1D.write(i + "\t");
+				snap1D.write(grid.getEx(i, grid.getNumCellsY()/2, grid.getNumCellsZ()/2) + "\t");
+				snap1D.write("\n");
+
+		}
 		
+		snap1D.close();
+		*/
 	}
 	
 	public void particlePush() {
