@@ -467,7 +467,7 @@ public class InitialConditions {
     	stt.setGridCellsX(40);
     	stt.setGridCellsY(20);
     	stt.setGridCellsZ(20);
-                stt.setNumOfParticles(2);
+                stt.setNumOfParticles(4);
 
     	stt.addForce(new ConstantForce());
 
@@ -476,7 +476,7 @@ public class InitialConditions {
 
     	for (int k = 0; k < 2; k++) {
     		Particle par = new ParticleFull();
-    		par.setX(stt.getSimulationWidth() * 1/100.0*(10*k+45));
+    		par.setX(stt.getSimulationWidth() * 1/100.0*(5*k+25));
     		par.setY(stt.getSimulationHeight() * 1/2 + stt.getGridStep()*0/2);
     		par.setZ(stt.getSimulationDepth() * 1/2 + stt.getGridStep()*0/2);
     		par.setRadius(radius);
@@ -492,7 +492,7 @@ public class InitialConditions {
     		}
     		stt.addParticle(par);
     	}
-    	/*
+    	
     	for (int k = 0; k < 2; k++) {
     		Particle par = new ParticleFull();
     		par.setX(stt.getSimulationWidth() * 1/100.0*(5*k+70));
@@ -511,7 +511,7 @@ public class InitialConditions {
     		}
     		stt.addParticle(par);
     	}
-         */       
+                
                 stt.setPoissonSolver(new PoissonSolverFFTPeriodic());
                 //stt.setPoissonSolver(new EmptyPoissonSolver());
                 stt.useGrid(true);
@@ -575,6 +575,50 @@ public class InitialConditions {
     			}
     		}
     	}*/
+    	return simulation;
+    }
+    
+    public static Simulation initTwoStream3D(double charge, double radius, int numpart) {
+    	Settings stt = new Settings();
+    	double dnumpart = numpart;
+    	Random ranGen = new Random();
+
+    	stt.setTimeStep(0.1);
+    	stt.setSpeedOfLight(1);
+    	stt.setRelativistic(true);
+    	/*stt.setSimulationWidth(100);
+    	stt.setSimulationHeight(100);*/
+    	stt.setGridStep(5);
+    	stt.setGridCellsX(20);
+    	stt.setGridCellsY(4);
+    	stt.setGridCellsZ(4);
+                stt.setNumOfParticles(2*numpart);
+
+    	stt.setBoundary(GeneralBoundaryType.Periodic);
+                stt.setGridSolver(new SimpleSolver());
+
+    	for (int k = 0; k < 2*numpart; k++) {
+    		Particle par = new ParticleFull();
+    		if(k < numpart) {par.setX(stt.getSimulationWidth() * 1/dnumpart*k);
+    		par.setVx(0.2 + ranGen.nextGaussian()*0.001);
+    		par.setColor(Color.red);
+    		}
+    		else {par.setX(stt.getSimulationWidth() * 1/dnumpart*(k-numpart));
+    		par.setVx(-0.2 + ranGen.nextGaussian()*0.001);
+    		par.setColor(Color.blue);
+    		}
+    		par.setY(stt.getSimulationHeight() * 1/2 );
+    		par.setZ(stt.getSimulationHeight() * 1/2 );
+    		par.setRadius(radius);
+    		par.setVy(0);
+    		par.setVz(0);
+    		par.setMass(1);
+    		par.setCharge(-charge);
+    		stt.addParticle(par);
+    	}
+    	stt.setPoissonSolver(new EmptyPoissonSolver());
+                stt.useGrid(true);
+    	Simulation simulation = new Simulation(stt);
     	return simulation;
     }
     
