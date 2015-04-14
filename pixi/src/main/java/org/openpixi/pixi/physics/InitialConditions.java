@@ -622,6 +622,73 @@ public class InitialConditions {
     	return simulation;
     }
     
+    public static Simulation initWeibel3D(double charge, double radius, int numpart, int numstripes, double speed) {
+    	Settings stt = new Settings();
+    	double dnumpart = numpart;
+
+    	stt.setTimeStep(0.1);
+    	stt.setSpeedOfLight(1);
+    	stt.setRelativistic(true);
+    	/*stt.setSimulationWidth(100);
+    	stt.setSimulationHeight(100);*/
+    	stt.setGridStep(10);
+    	stt.setGridCellsX(10);
+    	stt.setGridCellsY(10);
+    	stt.setGridCellsZ(10);
+                stt.setNumOfParticles(numpart);
+
+    	stt.setBoundary(GeneralBoundaryType.Periodic);
+                stt.setGridSolver(new SimpleSolver());
+                
+        double stripeWidth = stt.getSimulationWidth() / numstripes;
+        
+        if ( (numpart % numstripes) != 0 ) {
+        	System.out.println( "Error!! Number of particles and number of stripes don't fit!!");
+        	Simulation simulation = new Simulation(stt);
+        	return simulation;
+        }
+        
+        Random ranGen = new Random();
+
+    	for (int i = 0; i < numstripes; i++) {
+    		for (int k = 0; k < numpart/numstripes; k++) {
+    			
+    		Particle par = new ParticleFull();
+    		par.setY(stt.getSimulationHeight() * 1/dnumpart*numstripes*k);
+    		if ( ( (i+1) % 2 ) == 0 ) {
+    			par.setVy(speed);
+    		} else {
+    			par.setVy(-speed);
+    		}
+
+    		//par.setX(stt.getSimulationWidth() / numstripes * i + stripeWidth/2 + (Math.random() - 0.5)*stripeWidth );
+    		par.setX(stt.getSimulationWidth() / numstripes * i + stripeWidth/2 + ranGen.nextGaussian()*stripeWidth*0.1 );
+    		par.setZ(stt.getSimulationDepth() / 2 + ranGen.nextGaussian()*stripeWidth*0.1 );
+    		par.setRadius(radius);
+    		par.setVx(0);
+    		par.setVz(0);
+    		par.setCharge(-charge);
+    		par.setMass(1);
+    		stt.addParticle(par);
+    		
+    		}
+    	}
+    	
+    	stt.setPoissonSolver(new EmptyPoissonSolver());
+                stt.useGrid(true);
+    	Simulation simulation = new Simulation(stt);
+    	/*
+    	for (int i = 0; i < stt.getGridCellsY(); i++) {
+    		for (int k = 0; k < stt.getGridCellsX(); k++) {
+
+    		simulation.grid.setBz(k, i, 0.3*Math.cos( Math.PI/stt.getSimulationWidth()*numstripes*stt.getGridStep()*(k+1/2)));
+    		
+    		}
+    	}
+    	*/
+    	return simulation;
+    }
+    
     public static Simulation initInterpolationTest3D(double charge, double radius) {
     	Settings stt = new Settings();
 
