@@ -261,6 +261,7 @@ public class Simulation {
 	 */
 	public void step() throws FileNotFoundException,IOException {
 
+		interpolation.interpolateToParticle(particles, grid);
 		if (continues()) {
 			// Only write to file while simulation continues.
 			writeToFile(tstep*tottime);
@@ -271,7 +272,6 @@ public class Simulation {
 		collisionalgorithm.collide(detector.getOverlappedPairs(), f, mover.getSolver(), tstep);
 		interpolation.interpolateToGrid(particles, grid, tstep);
 		grid.updateGrid(tstep);
-		interpolation.interpolateToParticle(particles, grid);
 
 		tottime++;
 	}
@@ -361,6 +361,9 @@ public class Simulation {
 			else {kinetic = Math.sqrt(particles.get(i).getMass()*particles.get(i).getMass()*( particles.get(i).getVx() * particles.get(i).getVx() + particles.get(i).getVy()*particles.get(i).getVy()
 					 					+ particles.get(i).getVz()*particles.get(i).getVz() + 1) ); }
 			pw.write(kinetic + "\t");
+			pw.write(particles.get(i).getAx() + "\t");
+			pw.write(particles.get(i).getAy() + "\t");
+			pw.write(particles.get(i).getAz() + "\t");
 			pw.write(particles.get(i).getEx() + "\t");
 			pw.write(particles.get(i).getEy() + "\t");
 			pw.write(particles.get(i).getEz() + "\t");
@@ -466,15 +469,28 @@ public class Simulation {
 				
 				snap.write(i + "\t");
 				snap.write(j + "\t");
-				snap.write(grid.getPhi(i, j, grid.getNumCellsZ()/2) + "\t");
 				snap.write(grid.getEx(i, j, grid.getNumCellsZ()/2) + "\t");
+				snap.write(grid.getBz(i, j, grid.getNumCellsZ()/2) + "\t");
 				snap.write("\n");
 				
 			}
 		}
 		
 		snap.close();
+		/*
+		file = getOutputFile("snapshot_1D" + time + ".txt");
+		PrintWriter snap1D = new PrintWriter(file);
+
+		for (int i = 0; i < grid.getNumCellsX(); i++) {
+				
+				snap1D.write(i + "\t");
+				snap1D.write(grid.getEx(i, grid.getNumCellsY()/2, grid.getNumCellsZ()/2) + "\t");
+				snap1D.write("\n");
+
+		}
 		
+		snap1D.close();
+		*/
 	}
 	
 	public void particlePush() {

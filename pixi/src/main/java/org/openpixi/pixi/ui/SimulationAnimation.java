@@ -180,6 +180,12 @@ public class SimulationAnimation {
 		case 12:
 			s = InitialConditions.initPair3D(0.1,1);
 			break;
+		case 13:
+			s = InitialConditions.initTwoStream3D(0.1,0.1,5000);
+			break;
+		case 14:
+			s = InitialConditions.initWeibel3D(0.01,1,1000,2,0.9);
+			break;
 		}
 		updateFieldForce();
 		s.prepareAllParticles();

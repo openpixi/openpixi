@@ -203,12 +203,16 @@ private void solve3D(Grid g) {
 //perform Fourier transformation
 fft.complexForward(trho);
 
-	for(int i = 1; i < columns; i++) {
-		for(int j = 1; j < rows; j++) {
-			for(int k = 1; k < depth; k++) {
+	for(int i = 0; i < columns; i++) {
+		for(int j = 0; j < rows; j++) {
+			for(int k = 0; k < depth; k++) {
+				
 				double d = (6 - 2 * Math.cos((2 * Math.PI * i) / columns) - 2 * Math.cos((2 * Math.PI * j) / rows) - 2 * Math.cos((2 * Math.PI * k) / depth));
-				phi[i][j][2*k] = (cellArea * trho[i][j][2*k]) / (d*eps0);
-				phi[i][j][2*k+1] = (cellArea * trho[i][j][2*k+1]) / (d*eps0);
+				if( (i+j+k) != 0 ) {
+					phi[i][j][2*k] = (cellArea * trho[i][j][2*k]) / (d*eps0);
+					phi[i][j][2*k+1] = (cellArea * trho[i][j][2*k+1]) / (d*eps0);
+				}
+				
 			}
 		}
 	}

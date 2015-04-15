@@ -75,7 +75,7 @@ public class SimpleSolver extends FieldSolver {
 			 * Because we are using a FDTD grid B(x,y) is in between of E(x+1,y) and E(x,y)
 			 * (same for y). Therefore this is something like a center difference.*/
 			double cx = (grid.getEz(x, (y+1)%grid.getNumCellsY(), z) - grid.getEz(x, y, z)) / grid.getCellHeight()
-					- (grid.getEy(x, y, (z+1)%grid.getNumCellsZ()) - grid.getEy(x, y, z)) / grid.getCellDepth();
+						- (grid.getEy(x, y, (z+1)%grid.getNumCellsZ()) - grid.getEy(x, y, z)) / grid.getCellDepth();
 			double cy = (grid.getEx(x, y, (z+1)%grid.getNumCellsZ()) - grid.getEx(x, y, z)) / grid.getCellDepth()
 						- (grid.getEz((x+1)%grid.getNumCellsX(), y, z) - grid.getEz(x, y, z)) / grid.getCellWidth();
 	        double cz = (grid.getEy((x+1)%grid.getNumCellsX(), y, z) - grid.getEy(x, y, z)) / grid.getCellWidth()
