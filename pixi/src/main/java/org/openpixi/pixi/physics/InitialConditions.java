@@ -20,17 +20,13 @@
 package org.openpixi.pixi.physics;
 
 import org.openpixi.pixi.physics.force.ConstantForce;
-import org.openpixi.pixi.physics.force.SpringForce;
 import org.openpixi.pixi.physics.particles.Particle;
 import org.openpixi.pixi.physics.particles.ParticleFull;
-import org.openpixi.pixi.physics.solver.EulerRichardson;
-import org.openpixi.pixi.physics.solver.relativistic.BorisRelativistic;
 import org.openpixi.pixi.physics.solver.relativistic.LeapFrogRelativistic;
 import org.openpixi.pixi.physics.fields.PoissonSolverFFTPeriodic;
 import org.openpixi.pixi.physics.fields.EmptyPoissonSolver;
 import org.openpixi.pixi.physics.fields.SimpleSolver;
 import org.openpixi.pixi.physics.grid.ChargeConservingCIC;
-import org.openpixi.pixi.physics.grid.NearestGridPoint;
 
 import java.awt.Color;
 import java.util.ArrayList;
@@ -67,105 +63,6 @@ public class InitialConditions {
 		Simulation simulation = new Simulation(stt);
 		return simulation;
 	}
-
-	public static Simulation initGravity(int count, double radius) {
-		Settings stt = new Settings();
-
-		stt.setTimeStep(1);
-		stt.setSpeedOfLight(3);
-		stt.setSimulationWidth(100);
-		stt.setSimulationHeight(100);
-
-		ConstantForce cf = new ConstantForce();
-		cf.gy = -1;
-		stt.addForce(cf);
-		stt.setParticleList(
-				createRandomParticles(stt.getSimulationWidth(), stt.getSimulationHeight(),
-				stt.getSpeedOfLight(), count, radius));
-
-		stt.setBoundary(GeneralBoundaryType.Hardwall);
-		stt.setParticleSolver(new EulerRichardson());
-
-		Simulation simulation = new Simulation(stt);
-		return simulation;
-	}
-
-	public static Simulation initElectric(int count, double radius) {
-		Settings stt = new Settings();
-
-		stt.setTimeStep(1);
-		stt.setSpeedOfLight(3);
-		stt.setSimulationWidth(100);
-		stt.setSimulationHeight(100);
-
-		ConstantForce cf = new ConstantForce();
-		cf.ey = -1;
-		stt.addForce(cf);
-		stt.setParticleList(
-				createRandomParticles(stt.getSimulationWidth(), stt.getSimulationHeight(),
-				stt.getSpeedOfLight(), count, radius));
-
-		stt.setBoundary(GeneralBoundaryType.Hardwall);
-		stt.setParticleSolver(new EulerRichardson());
-
-		Simulation simulation = new Simulation(stt);
-		return simulation;
-	}
-
-	public static Simulation initMagnetic(int count, double radius) {
-		Settings stt = new Settings();
-
-		stt.setTimeStep(1);
-		stt.setSpeedOfLight(3);
-		stt.setSimulationWidth(100);
-		stt.setSimulationHeight(100);
-
-		ConstantForce cf = new ConstantForce();
-		cf.bz = -1;
-		stt.addForce(cf);
-		stt.setParticleList(
-				createRandomParticles(stt.getSimulationWidth(), stt.getSimulationHeight(),
-				stt.getSpeedOfLight(), count, radius));
-
-		stt.setBoundary(GeneralBoundaryType.Hardwall);
-		stt.setParticleSolver(new EulerRichardson());
-
-		Simulation simulation = new Simulation(stt);
-		return simulation;
-	}
-
-	public static Simulation initSpring(int count, double radius) {
-		Settings stt = new Settings();
-
-		stt.setTimeStep(1);
-		stt.setSpeedOfLight(3);
-		stt.setSimulationWidth(100);
-		stt.setSimulationHeight(100);
-
-		stt.addForce(new ConstantForce());
-		stt.addForce(new SpringForce());
-
-		stt.setParticleList(new ArrayList<Particle>());
-
-		stt.setBoundary(GeneralBoundaryType.Periodic);
-		stt.setParticleSolver(new EulerRichardson());
-
-		for (int k = 0; k < count; k++) {
-			Particle par = new ParticleFull();
-			par.setX(stt.getSimulationWidth() * Math.random());
-			par.setY(stt.getSimulationHeight() * Math.random());
-			par.setRadius(15);
-			par.setVx(10 * Math.random());
-			par.setVy(0);
-			par.setMass(1);
-			par.setCharge(.001);
-			stt.addParticle(par);
-		}
-
-		Simulation simulation = new Simulation(stt);
-		return simulation;
-	}
-
 
 	/**Creates particles on random positions with random speeds
 	 * @param width		maximal x-coodrinate

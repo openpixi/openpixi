@@ -147,13 +147,10 @@ public class SimulationAnimation {
 			s = InitialConditions.initRandomParticles(10000, 0.01);
 			break;
 		case 4:
-			s = InitialConditions.initGravity(1, 2);
 			break;
 		case 5:
-			s = InitialConditions.initElectric(1, 2);
 			break;
 		case 6:
-			s = InitialConditions.initMagnetic(3, 2);
 			break;
 		case 7:
 			s = InitialConditions.initPair(0.1,1);
@@ -257,7 +254,7 @@ public class SimulationAnimation {
 		if(relativistic == false) {
 			s.relativistic = false;
 			if (s.f instanceof CombinedForce) {
-				ArrayList<Force> forces = ((CombinedForce) s.f).forces;
+				ArrayList<Force> forces = s.f.forces;
 				for (int j = 0; j < forces.size(); j++) {
 					if (forces.get(j) instanceof ConstantForceRelativistic){
 						forces.set(j, new ConstantForce());
@@ -283,7 +280,7 @@ public class SimulationAnimation {
 			s.relativistic = true;
 			//System.out.println("relativistic version on");
 			if (s.f instanceof CombinedForce) {
-				ArrayList<Force> forces = ((CombinedForce) s.f).forces;
+				ArrayList<Force> forces = s.f.forces;
 				for (int j = 0; j < forces.size(); j++) {
 					if (forces.get(j) instanceof ConstantForce){
 						forces.set(j, new ConstantForceRelativistic(s.getSpeedOfLight()));
