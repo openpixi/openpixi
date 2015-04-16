@@ -463,7 +463,9 @@ public class Simulation {
 				
 			}
 		}
-		
+
+        //teeest
+
 		snap.close();
 		/*
 		file = getOutputFile("snapshot_1D" + time + ".txt");
