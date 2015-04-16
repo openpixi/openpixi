@@ -41,6 +41,8 @@ import org.openpixi.pixi.ui.tab.FileTab;
  */
 public class MainControlApplet extends JApplet
 {
+    //Test commit.
+
 	private JButton startButton;
 	private JButton stopButton;
 	private JButton resetButton;
