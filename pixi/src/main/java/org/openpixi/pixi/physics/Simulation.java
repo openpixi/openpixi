@@ -23,8 +23,6 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.FileWriter;
-import org.openpixi.pixi.physics.collision.algorithms.CollisionAlgorithm;
-import org.openpixi.pixi.physics.collision.detectors.Detector;
 import org.openpixi.pixi.physics.fields.PoissonSolver;
 import org.openpixi.pixi.physics.force.Force;
 import org.openpixi.pixi.physics.force.CombinedForce;
@@ -89,8 +87,6 @@ public class Simulation {
 	 * Grid for dynamic field calculation
 	 */
 	public Grid grid;
-	public Detector detector;
-	public CollisionAlgorithm collisionalgorithm;
 	/**
 	 * We can turn on or off the effect of the grid on particles by adding or
 	 * removing this force from the total force.
@@ -175,9 +171,6 @@ public class Simulation {
 				settings.getInterpolator(), settings.getParticleIterator());
 		particleGridInitializer.initialize(interpolation, poisolver, particles, grid);
 
-		detector = settings.getCollisionDetector();
-		collisionalgorithm = settings.getCollisionAlgorithm();
-
 		prepareAllParticles();
 		
 		clearFile();
@@ -226,9 +219,6 @@ public class Simulation {
 
 		this.interpolation = interpolation;
 
-		detector = settings.getCollisionDetector();
-		collisionalgorithm = settings.getCollisionAlgorithm();
-
 		prepareAllParticles();
 		
 		clearFile();
@@ -268,8 +258,6 @@ public class Simulation {
 			if( (tottime % specstep) == 0) writeSpecFile(tottime);
 		}
 		particlePush();
-		detector.run();
-		collisionalgorithm.collide(detector.getOverlappedPairs(), f, mover.getSolver(), tstep);
 		interpolation.interpolateToGrid(particles, grid, tstep);
 		grid.updateGrid(tstep);
 

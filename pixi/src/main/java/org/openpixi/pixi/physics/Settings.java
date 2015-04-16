@@ -7,8 +7,6 @@ import org.openpixi.pixi.parallel.cellaccess.SequentialCellIterator;
 import org.openpixi.pixi.parallel.particleaccess.ParallelParticleIterator;
 import org.openpixi.pixi.parallel.particleaccess.ParticleIterator;
 import org.openpixi.pixi.parallel.particleaccess.SequentialParticleIterator;
-import org.openpixi.pixi.physics.collision.algorithms.CollisionAlgorithm;
-import org.openpixi.pixi.physics.collision.detectors.Detector;
 import org.openpixi.pixi.physics.fields.FieldSolver;
 import org.openpixi.pixi.physics.fields.PoissonSolver;
 import org.openpixi.pixi.physics.fields.PoissonSolverFFTPeriodic;
@@ -92,8 +90,6 @@ public class Settings {
 	// Modify defaultParticleFactories() method to determine what kind of particles
 	// will be loaded by default.
 	private List<Particle> particles = new ArrayList<Particle>();
-	private Detector collisionDetector = new Detector();
-	private CollisionAlgorithm collisionResolver = new CollisionAlgorithm();
 	private Solver particleSolver = new LeapFrogRelativistic(speedOfLight);
 	private List<Force> forces = new ArrayList<Force>();
 	// Diagnostics related settings
@@ -180,14 +176,6 @@ public class Settings {
 
 	public double getTimeStep() {
 		return timeStep;
-	}
-
-	public Detector getCollisionDetector() {
-		return collisionDetector;
-	}
-
-	public CollisionAlgorithm getCollisionAlgorithm() {
-		return collisionResolver;
 	}
 
 	public FieldSolver getGridSolver() {
@@ -455,14 +443,6 @@ public class Settings {
 
 	public void setRelativistic(boolean rel) {
 		this.relativistic = rel;
-	}
-
-	public void setCollisionDetector(Detector collisionDetector) {
-		this.collisionDetector = collisionDetector;
-	}
-
-	public void setCollisionResolver(CollisionAlgorithm collisionResolver) {
-		this.collisionResolver = collisionResolver;
 	}
 
 	public void setGridSolver(FieldSolver gridSolver) {

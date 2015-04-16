@@ -13,13 +13,6 @@ import javax.swing.Timer;
 import org.openpixi.pixi.physics.InitialConditions;
 import org.openpixi.pixi.physics.Settings;
 import org.openpixi.pixi.physics.Simulation;
-import org.openpixi.pixi.physics.collision.algorithms.CollisionAlgorithm;
-import org.openpixi.pixi.physics.collision.algorithms.MatrixTransformation;
-import org.openpixi.pixi.physics.collision.algorithms.SimpleCollision;
-import org.openpixi.pixi.physics.collision.algorithms.VectorTransformation;
-import org.openpixi.pixi.physics.collision.detectors.AllParticles;
-import org.openpixi.pixi.physics.collision.detectors.Detector;
-import org.openpixi.pixi.physics.collision.detectors.SweepAndPrune;
 import org.openpixi.pixi.physics.force.CombinedForce;
 import org.openpixi.pixi.physics.force.ConstantForce;
 import org.openpixi.pixi.physics.force.Force;
@@ -312,35 +305,6 @@ public class SimulationAnimation {
 			}
 		}
 
-	}
-
-	public void collisionChange(int i) {
-		switch(i) {
-		case 0:
-			s.detector = new Detector();
-			s.collisionalgorithm = new CollisionAlgorithm();
-			break;
-		case 1:
-			s.detector = new AllParticles(s.particles);
-			break;
-		case 2:
-			s.detector = new SweepAndPrune(s.particles);
-			break;
-		}
-	}
-
-	public void algorithmCollisionChange(int i) {
-		switch(i) {
-		case 0:
-			s.collisionalgorithm = new SimpleCollision();
-			break;
-		case 1:
-			s.collisionalgorithm = new VectorTransformation();
-			break;
-		case 2:
-			s.collisionalgorithm = new MatrixTransformation();
-			break;
-		}
 	}
 
 	public void boundariesChange(int i) {
