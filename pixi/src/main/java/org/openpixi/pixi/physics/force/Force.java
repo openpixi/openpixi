@@ -25,76 +25,17 @@ public interface Force {
 
 	/**
 	 * Total force in the x-direction.
-	 *
-	 * This should always equal getPositionComponentofForceX(p) +
-	 * getNormalVelocityComponentofForceX(p) +
-	 * getTangentVelocityComponentOfForceX(p).
 	 */
-	public double getForceX(Particle p);
+	double getForceX(Particle p);
 
 	/**
 	 * Total force in the y-direction.
-	 *
-	 * This should always equal getPositionComponentofForceY(p) +
-	 * getNormalVelocityComponentofForceY(p) +
-	 * getTangentVelocityComponentOfForceY(p).
 	 */
-	public double getForceY(Particle p);
-	
-	public double getForceZ(Particle p);
+	double getForceY(Particle p);
 
 	/**
-	 * Position dependent component of the force in x-direction.
+	 * Total force in the y-direction.
 	 */
-	public double getPositionComponentofForceX(Particle p);
-
-	/**
-	 * Position dependent component of the force in y-direction.
-	 */
-	public double getPositionComponentofForceY(Particle p);
-
-	/**
-	 * Velocity dependent component of the force in the propagating direction of
-	 * the particle (x-component).
-	 *
-	 * This should always equal -getLinearDragCoefficient(p) * p.vx.
-	 */
-	public double getTangentVelocityComponentOfForceX(Particle p);
-
-	/**
-	 * Velocity dependent component of the force in the propagating direction of
-	 * the particle (y-component).
-	 *
-	 * This should always equal -getLinearDragCoefficient(p) * p.vy.
-	 */
-	public double getTangentVelocityComponentOfForceY(Particle p);
-
-	/**
-	 * Velocity dependent component of the force orthogonal to the propagating
-	 * direction of the particle (x-component).
-	 *
-	 * This should always equal p.charge * p.vy * getBz(p).
-	 */
-	public double getNormalVelocityComponentofForceX(Particle p);
-
-	/**
-	 * 
-	 * Velocity dependent component of the force orthogonal to the propagating
-	 * direction of the particle (y-component).
-	 *
-	 * This should always equal -p.charge * p.vx * getBz(p)
-	 */
-	public double getNormalVelocityComponentofForceY(Particle p);
-
-	/**
-	 * Magnetic field the particle is exposed to.
-	 */
-	public double getBz(Particle p);
-
-	/**
-	 * Drag coefficient for a drag term that is linear in the velocity of the
-	 * particle.
-	 */
-	public double getLinearDragCoefficient(Particle p);
+	double getForceZ(Particle p);
 
 }
