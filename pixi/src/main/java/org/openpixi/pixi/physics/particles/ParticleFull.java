@@ -78,45 +78,6 @@ public class ParticleFull extends Particle {
 	private double Bx;
 	private double By;
 	private double Bz;
-	
-	/**previous position component of the force in x - direction used in Boris & BorisDamped*/
-	private double prevpositionComponentForceX;
-	
-	/**previous position component of the force in y - direction used in Boris & BorisDamped*/
-	private double prevpositionComponentForceY;
-	
-	/**previous position component of the force in z - direction used in Boris & BorisDamped*/
-	private double prevpositionComponentForceZ;
-
-	/**previous tangent velocity component of the force in x - direction used in Boris*/
-	private double prevtangentVelocityComponentOfForceX;
-
-	/**previous tangent velocity component of the force in y - direction used in Boris*/
-	private double prevtangentVelocityComponentOfForceY;
-	
-	/**previous tangent velocity component of the force in z - direction used in Boris*/
-	private double prevtangentVelocityComponentOfForceZ;
-	
-	/**previous normal velocity component of the force in x - direction used in LeapFrogDamped*/
-	private double prevnormalVelocityComponentOfForceX;
-
-	/**previous normal velocity component of the force in y - direction used in LeapFrogDamped*/
-	private double prevnormalVelocityComponentOfForceY;
-	
-	/**previous normal velocity component of the force in z - direction used in LeapFrogDamped*/
-	private double prevnormalVelocityComponentOfForceZ;
-	
-	/**previous magnetic field in x - direction used in Boris & BorisDamped*/
-	private double prevBx;
-	
-	/**previous magnetic field in y - direction used in Boris & BorisDamped*/
-	private double prevBy;
-
-	/**previous magnetic field in z - direction used in Boris & BorisDamped*/
-	private double prevBz;
-	
-	/**previous linear drag coefficient used in BorisDamped*/
-	private double prevLinearDragCoefficient;
 
 	public double getX() {
 		return x;
@@ -318,110 +279,6 @@ public class ParticleFull extends Particle {
 		this.Bz = Bz;
 	}
 
-	public double getPrevPositionComponentForceX() {
-		return prevpositionComponentForceX;
-	}
-
-	public void setPrevPositionComponentForceX(double prevpositionComponentForceX) {
-		this.prevpositionComponentForceX = prevpositionComponentForceX;
-	}
-	
-	public double getPrevPositionComponentForceY() {
-		return prevpositionComponentForceY;
-	}
-
-	public void setPrevPositionComponentForceY(double prevpositionComponentForceY) {
-		this.prevpositionComponentForceY = prevpositionComponentForceY;
-	}
-
-	public double getPrevPositionComponentForceZ() {
-		return prevpositionComponentForceZ;
-	}
-
-	public void setPrevPositionComponentForceZ(double prevpositionComponentForceZ) {
-		this.prevpositionComponentForceZ = prevpositionComponentForceZ;
-	}
-	
-	public double getPrevTangentVelocityComponentOfForceX() {
-		return prevtangentVelocityComponentOfForceX;
-	}
-
-	public void setPrevTangentVelocityComponentOfForceX(double prevtangentVelocityComponentOfForceX) {
-		this.prevtangentVelocityComponentOfForceX = prevtangentVelocityComponentOfForceX;
-	}
-
-	public double getPrevTangentVelocityComponentOfForceY() {
-		return prevtangentVelocityComponentOfForceY;
-	}
-
-	public void setPrevTangentVelocityComponentOfForceY(double prevtangentVelocityComponentOfForceY) {
-		this.prevtangentVelocityComponentOfForceY = prevtangentVelocityComponentOfForceY;
-	}
-	
-	public double getPrevTangentVelocityComponentOfForceZ() {
-		return prevtangentVelocityComponentOfForceZ;
-	}
-
-	public void setPrevTangentVelocityComponentOfForceZ(double prevtangentVelocityComponentOfForceZ) {
-		this.prevtangentVelocityComponentOfForceZ = prevtangentVelocityComponentOfForceZ;
-	}
-	
-	public double getPrevNormalVelocityComponentOfForceX() {
-		return prevnormalVelocityComponentOfForceX;
-	}
-
-	public void setPrevNormalVelocityComponentOfForceX(double prevnormalVelocityComponentOfForceX) {
-		this.prevnormalVelocityComponentOfForceX = prevnormalVelocityComponentOfForceX;
-	}
-
-	public double getPrevNormalVelocityComponentOfForceY() {
-		return prevnormalVelocityComponentOfForceY;
-	}
-
-	public void setPrevNormalVelocityComponentOfForceY(double prevnormalVelocityComponentOfForceY) {
-		this.prevnormalVelocityComponentOfForceY = prevnormalVelocityComponentOfForceY;
-	}
-	
-	public double getPrevNormalVelocityComponentOfForceZ() {
-		return prevnormalVelocityComponentOfForceZ;
-	}
-
-	public void setPrevNormalVelocityComponentOfForceZ(double prevnormalVelocityComponentOfForceZ) {
-		this.prevnormalVelocityComponentOfForceZ = prevnormalVelocityComponentOfForceZ;
-	}
-	
-	public double getPrevBz() {
-		return prevBz;
-	}
-
-	public void setPrevBz(double prevBz) {
-		this.prevBz = prevBz;
-	}
-	
-	public double getPrevBx() {
-		return prevBx;
-	}
-
-	public void setPrevBx(double prevBx) {
-		this.prevBx = prevBx;
-	}
-	
-	public double getPrevBy() {
-		return prevBy;
-	}
-
-	public void setPrevBy(double prevBy) {
-		this.prevBy = prevBy;
-	}
-	
-	public double getPrevLinearDragCoefficient() {
-		return prevLinearDragCoefficient;
-	}
-
-	public void setPrevLinearDragCoefficient(double prevLinearDragCoefficient) {
-		this.prevLinearDragCoefficient = prevLinearDragCoefficient;
-	}
-
 
 	/** Empty constructor */
 	public ParticleFull() {
@@ -452,16 +309,6 @@ public class ParticleFull extends Particle {
 		p.setBx(Bx);
 		p.setBy(By);
 		p.setBz(Bz);
-		p.setPrevPositionComponentForceX(prevpositionComponentForceX);
-		p.setPrevPositionComponentForceY(prevpositionComponentForceY);
-		p.setPrevPositionComponentForceY(prevpositionComponentForceZ);
-		p.setPrevTangentVelocityComponentOfForceX(prevtangentVelocityComponentOfForceX);
-		p.setPrevTangentVelocityComponentOfForceY(prevtangentVelocityComponentOfForceY);
-		p.setPrevTangentVelocityComponentOfForceY(prevtangentVelocityComponentOfForceZ);
-		p.setPrevBz(prevBx);
-		p.setPrevBz(prevBy);
-		p.setPrevBz(prevBz);
-		p.setPrevLinearDragCoefficient(prevLinearDragCoefficient);
 		
 		return p;
 	}

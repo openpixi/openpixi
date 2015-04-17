@@ -70,32 +70,6 @@ public abstract class Particle implements Serializable {
 	public double getBy() {return 0;}
 	
 	public double getBz() {return 0;}
-	
-	public double getPrevBx() {return 0;}
-	
-	public double getPrevBy() {return 0;}
-	
-	public double getPrevBz() {return 0;}
-	
-	public double getPrevPositionComponentForceX() {return 0;}
-	
-	public double getPrevPositionComponentForceY() {return 0;}
-	
-	public double getPrevPositionComponentForceZ() {return 0;}
-	
-	public double getPrevTangentVelocityComponentOfForceX() {return 0;}
-	
-	public double getPrevTangentVelocityComponentOfForceY() {return 0;}
-	
-	public double getPrevTangentVelocityComponentOfForceZ() {return 0;}
-	
-	public double getPrevNormalVelocityComponentOfForceX() {return 0;}
-	
-	public double getPrevNormalVelocityComponentOfForceY() {return 0;}
-	
-	public double getPrevNormalVelocityComponentOfForceZ() {return 0;}
-	
-	public double getPrevLinearDragCoefficient() {return 0;}
 
 	//----------------------------------------------------------------------------------------------
 	// SETTERS
@@ -156,32 +130,6 @@ public abstract class Particle implements Serializable {
 	public void setBy(double By) {}
 
 	public void setBz(double Bz) {}
-	
-	public void setPrevBx(double prevBx) {}
-	
-	public void setPrevBy(double prevBy) {}
-	
-	public void setPrevBz(double prevBz) {}
-
-	public void setPrevPositionComponentForceX(double argument) {}
-
-	public void setPrevPositionComponentForceY(double argument) {}
-	
-	public void setPrevPositionComponentForceZ(double argument) {}
-
-	public void setPrevTangentVelocityComponentOfForceX(double argument) {}
-
-	public void setPrevTangentVelocityComponentOfForceY(double argument) {}
-	
-	public void setPrevTangentVelocityComponentOfForceZ(double argument) {}
-
-	public void setPrevNormalVelocityComponentOfForceX(double argument) {}
-
-	public void setPrevNormalVelocityComponentOfForceY(double argument) {}
-	
-	public void setPrevNormalVelocityComponentOfForceZ(double argument) {}
-
-	public void setPrevLinearDragCoefficient(double argument) {}
 
 	//----------------------------------------------------------------------------------------------
 	// UTILITY METHODS
