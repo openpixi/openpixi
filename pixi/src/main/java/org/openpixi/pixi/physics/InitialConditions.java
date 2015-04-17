@@ -127,7 +127,26 @@ public class InitialConditions {
 
 		return particlelist;
 	}
-	   
+
+	public static Simulation initEmptySimulation()
+	{
+		Settings sst = new Settings();
+
+		sst.setTimeStep(0.1);
+		sst.setTMax(1000);
+		sst.setSpeedOfLight(1);
+		sst.setRelativistic(true);
+		sst.setGridStep(1);
+		sst.setGridCellsX(1);
+		sst.setGridCellsY(1);
+		sst.setGridCellsZ(1);
+		sst.setNumOfParticles(0);
+
+		sst.addForce(new ConstantForce());
+
+		return new Simulation(sst);
+	}
+
     public static Simulation initPair(double charge, double radius) {
 	Settings stt = new Settings();
 

@@ -50,7 +50,7 @@ public class SimulationAnimation {
 	public SimulationAnimation() {
 		timer = new Timer(interval, new TimerListener());
 		frameratedetector = new FrameRateDetector(500);
-		s = InitialConditions.initRandomParticles(10, 2);
+		s = InitialConditions.initEmptySimulation();
 	}
 
 	/** Listener for timer */
