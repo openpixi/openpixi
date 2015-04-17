@@ -19,10 +19,6 @@ public class ConstantForceRelativistic extends ConstantForce {
 
 	public void reset()
 	{
-		gx = 0;
-		gy = 0;
-		gz = 0;
-		drag = 0;
 		ex = 0;
 		ey = 0;
 		ez = 0;
@@ -41,7 +37,7 @@ public class ConstantForceRelativistic extends ConstantForce {
 		double vy = p.getVy() / gamma;
 		double vz = p.getVz() / gamma;
 		
-		return -drag * vx + p.getMass() * gx + p.getCharge() * ex +
+		return  p.getCharge() * ex +
 				p.getCharge() * ( vy * bz - vz * by );
 	}
 	
@@ -55,81 +51,21 @@ public class ConstantForceRelativistic extends ConstantForce {
 		double vy = p.getVy() / gamma;
 		double vz = p.getVz() / gamma;
 		
-		return - drag * vy + p.getMass() * gy + p.getCharge() * ey +
+		return  p.getCharge() * ey +
 				p.getCharge() * ( vz * bx - vx * bz );
 	}
 	
 	//getting the force in the z - direction
-		@Override
-		public double getForceZ(Particle p) {
-			double gamma = relvelocity.calculateGamma(p);
-			
-			//v = u / gamma
-			double vx = p.getVx() / gamma;
-			double vy = p.getVy() / gamma;
-			double vz = p.getVz() / gamma;
-			
-			return - drag * vz + p.getMass() * gz + p.getCharge() * ez +
-					p.getCharge() * ( vx * by - vy * bx );
-		}
-
 	@Override
-	public double getPositionComponentofForceX(Particle p) {
-		return p.getMass() * gx + p.getCharge() * ex;
-	}
-
-	@Override
-	public double getPositionComponentofForceY(Particle p) {
-		return p.getMass() * gy + p.getCharge() * ey;
-	}
-
-	@Override
-	public double getTangentVelocityComponentOfForceX(Particle p) {
+	public double getForceZ(Particle p) {
 		double gamma = relvelocity.calculateGamma(p);
-		
+
 		//v = u / gamma
 		double vx = p.getVx() / gamma;
-		
-		return - drag * vx;
-	}
-
-	@Override
-	public double getTangentVelocityComponentOfForceY(Particle p) {
-		double gamma = relvelocity.calculateGamma(p);
-		
 		double vy = p.getVy() / gamma;
-		
-		return - drag * vy;
-	}
+		double vz = p.getVz() / gamma;
 
-	@Override
-	public double getNormalVelocityComponentofForceX(Particle p) {
-		double gamma = relvelocity.calculateGamma(p);
-		
-		//v = u / gamma
-		double vy = p.getVy() / gamma;
-		
-		return p.getCharge() * vy * bz;
+		return p.getCharge() * ez +
+				p.getCharge() * (vx * by - vy * bx);
 	}
-
-	@Override
-	public double getNormalVelocityComponentofForceY(Particle p) {
-		double gamma = relvelocity.calculateGamma(p);
-		
-		//v = u / gamma
-		double vx = p.getVx() / gamma;
-		
-		return - p.getCharge() * vx * bz;
-	}
-
-	@Override
-	public double getBz(Particle p) {
-		return bz;
-	}
-
-	@Override
-	public double getLinearDragCoefficient(Particle p) {
-		return drag;
-	}
-	
 }
