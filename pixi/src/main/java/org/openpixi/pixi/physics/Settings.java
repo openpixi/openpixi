@@ -54,6 +54,7 @@ public class Settings {
 	// DEFAULT VALUES
 	//----------------------------------------------------------------------------------------------
 	private double speedOfLight = 1;
+	private int    numberOfColors = 1;
 	private double timeStep = 0.1;
 	private double gridStep = 1;
 	private double tMax = 1000;
@@ -161,7 +162,11 @@ public class Settings {
 	public double getSpeedOfLight() {
 		return speedOfLight;
 	}
-	
+
+	public double getNumberOfColors() {
+		return numberOfColors;
+	}
+
 	public double getEps0() {
 		return eps0;
 	}
@@ -413,6 +418,11 @@ public class Settings {
 		} else {
 			System.out.println("Your chosen speed of light is in contradiction to the values of eps_0 and mu_0 !! Default value of c is used instead!!");
 		}
+	}
+
+	public void setNumberOfColors(int numberOfColors)
+	{
+		this.numberOfColors = numberOfColors;
 	}
 
 	public void setTimeStep(double timeStep) {
