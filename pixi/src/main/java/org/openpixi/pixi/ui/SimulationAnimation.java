@@ -20,17 +20,8 @@ import org.openpixi.pixi.physics.force.SimpleGridForce;
 import org.openpixi.pixi.physics.force.relativistic.ConstantForceRelativistic;
 import org.openpixi.pixi.physics.force.relativistic.SimpleGridForceRelativistic;
 import org.openpixi.pixi.physics.movement.boundary.ParticleBoundaryType;
-import org.openpixi.pixi.physics.solver.Boris;
-import org.openpixi.pixi.physics.solver.BorisDamped;
-import org.openpixi.pixi.physics.solver.Euler;
-import org.openpixi.pixi.physics.solver.EulerRichardson;
 import org.openpixi.pixi.physics.solver.LeapFrog;
-import org.openpixi.pixi.physics.solver.LeapFrogDamped;
-import org.openpixi.pixi.physics.solver.LeapFrogHalfStep;
-import org.openpixi.pixi.physics.solver.SemiImplicitEuler;
-import org.openpixi.pixi.physics.solver.relativistic.BorisRelativistic;
 import org.openpixi.pixi.physics.solver.relativistic.LeapFrogRelativistic;
-import org.openpixi.pixi.physics.solver.relativistic.SemiImplicitEulerRelativistic;
 import org.openpixi.pixi.ui.panel.Particle2DPanel;
 import org.openpixi.pixi.ui.util.FrameRateDetector;
 
@@ -218,32 +209,12 @@ public class SimulationAnimation {
 	{
 		s.completeAllParticles();
 
-		switch(id) {
-		case 0:
-			s.getParticleMover().setSolver(new EulerRichardson());
-			break;
-		case 1:
-			s.getParticleMover().setSolver(new LeapFrog());
-			break;
-		case 2:
-			s.getParticleMover().setSolver(new LeapFrogDamped());
-			break;
-		case 3:
-			s.getParticleMover().setSolver(new LeapFrogHalfStep());
-			break;
-		case 4:
-			s.getParticleMover().setSolver(new Boris());
-			break;
-		case 5:
-			s.getParticleMover().setSolver(new BorisDamped());
-			break;
-		case 6:
-			s.getParticleMover().setSolver(new SemiImplicitEuler());
-			break;
-		case 7:
-			s.getParticleMover().setSolver(new Euler());
-			break;
-			}
+		switch(id)
+		{
+			case 0:
+				s.getParticleMover().setSolver(new LeapFrog());
+				break;
+		}
 
 		s.prepareAllParticles();
 	}
@@ -265,13 +236,8 @@ public class SimulationAnimation {
 				}
 			}
 			switch(i) {
-			case 1:
+			case 0:
 				s.getParticleMover().setSolver(new LeapFrog());
-			case 4:
-				s.getParticleMover().setSolver(new Boris());
-				break;
-			case 6:
-				s.getParticleMover().setSolver(new SemiImplicitEuler());
 				break;
 			}
 		}
@@ -290,15 +256,11 @@ public class SimulationAnimation {
 					}
 				}
 			}
-			switch(i) {
-			case 1:
-				s.getParticleMover().setSolver(new LeapFrogRelativistic(s.getSpeedOfLight()));
-			case 4:
-				s.getParticleMover().setSolver(new BorisRelativistic(s.getSpeedOfLight()));
-				break;
-			case 6:
-				s.getParticleMover().setSolver(new SemiImplicitEulerRelativistic(s.getSpeedOfLight()));
-				break;
+			switch(i)
+			{
+				case 0:
+					s.getParticleMover().setSolver(new LeapFrogRelativistic(s.getSpeedOfLight()));
+					break;
 			}
 		}
 

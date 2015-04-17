@@ -3,7 +3,7 @@ package org.openpixi.pixi.physics.grid;
 import junit.framework.Assert;
 import org.openpixi.pixi.physics.GeneralBoundaryType;
 import org.openpixi.pixi.physics.Settings;
-import org.openpixi.pixi.physics.solver.Boris;
+import org.openpixi.pixi.physics.solver.LeapFrog;
 
 /**
  * Extends the grid functionality which is required in one or more tests.
@@ -16,7 +16,7 @@ public class GridTestCommon {
 		stt.setSpeedOfLight(0.7);
 		stt.setSimulationWidth(10);
 		stt.setSimulationHeight(10);
-		stt.setParticleSolver(new Boris());
+		stt.setParticleSolver(new LeapFrog());
 		stt.setBoundary(GeneralBoundaryType.Periodic);
 
 		stt.setGridCellsX(10);

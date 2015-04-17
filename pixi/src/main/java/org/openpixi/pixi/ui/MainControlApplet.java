@@ -97,14 +97,7 @@ public class MainControlApplet extends JApplet
             "Weibel instability in 3D"};
 
 	String[] solverString = {
-			"Euler Richardson",
-			"LeapFrog",
-			"LeapFrog Damped",
-			"LeapFrog Half Step",
-			"Boris",
-			"Boris Damped",
-			"Semi Implicit Euler",
-			"Euler"};
+			"LeapFrog"};
 
 	/**
 	 * Listener for slider.
@@ -135,7 +128,7 @@ public class MainControlApplet extends JApplet
 			JComboBox cbox = (JComboBox) eve.getSource();
 			int id = cbox.getSelectedIndex();
 			simulationAnimation.algorithmChange(id);
-			if ((id == 1) || (id == 4) || (id == 6)) {
+			if (id == 0) {
 				relativisticCheck.setEnabled(true);
 			}
 			else {
@@ -711,18 +704,15 @@ public class MainControlApplet extends JApplet
 
 		// Set algorithm UI according to current setting
 		Solver solver = s.getParticleMover().getSolver();
-		if (solver instanceof Boris) {
-			algorithmComboBox.setSelectedIndex(4);
-			relativisticCheck.setSelected(false);
-		} else if (solver instanceof BorisRelativistic) {
-			algorithmComboBox.setSelectedIndex(4);
-			relativisticCheck.setSelected(true);
-		} else if (solver instanceof EulerRichardson) {
+		if (solver instanceof LeapFrog)
+		{
 			algorithmComboBox.setSelectedIndex(0);
 			relativisticCheck.setSelected(false);
+		} else if (solver instanceof LeapFrogRelativistic)
+		{
+			algorithmComboBox.setSelectedIndex(0);
+			relativisticCheck.setSelected(true);
 		}
-		// TODO: Implement this for other solvers.
-		// (Currently only implemented for solvers used in InitialConditions.)
 	}
 
 	@Override

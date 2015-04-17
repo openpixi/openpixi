@@ -13,17 +13,14 @@ import org.openpixi.pixi.physics.fields.PoissonSolverFFTPeriodic;
 import org.openpixi.pixi.physics.fields.SimpleSolver;
 import org.openpixi.pixi.physics.force.CombinedForce;
 import org.openpixi.pixi.physics.force.Force;
-import org.openpixi.pixi.physics.grid.CloudInCell;
 import org.openpixi.pixi.physics.grid.GridBoundaryType;
 import org.openpixi.pixi.physics.grid.InterpolatorAlgorithm;
 import org.openpixi.pixi.physics.movement.boundary.ParticleBoundaryType;
 import org.openpixi.pixi.physics.particles.Particle;
 import org.openpixi.pixi.physics.particles.ParticleFactory.PositionDistribution;
 import org.openpixi.pixi.physics.particles.ParticleFactory.VelocityDistribution;
-import org.openpixi.pixi.physics.solver.Euler;
 import org.openpixi.pixi.physics.solver.Solver;
 import org.openpixi.pixi.physics.solver.relativistic.LeapFrogRelativistic;
-import org.openpixi.pixi.physics.util.ClassCopier;
 import org.openpixi.pixi.physics.particles.ParticleFactory;
 import org.openpixi.pixi.physics.particles.ParticleLoader;
 
@@ -32,8 +29,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import static org.openpixi.pixi.physics.GeneralBoundaryType.Hardwall;
-import static org.openpixi.pixi.physics.GeneralBoundaryType.Periodic;
+
 import org.openpixi.pixi.physics.grid.ChargeConservingCIC;
 
 /**

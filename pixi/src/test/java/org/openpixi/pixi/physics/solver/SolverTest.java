@@ -35,7 +35,7 @@ public class SolverTest extends TestCase {
 	public SolverTest(String testName) {
 		super(testName);
 
-		solver = new Euler();
+		solver = new LeapFrog();
 	}
 
 	/**
@@ -97,7 +97,7 @@ public class SolverTest extends TestCase {
 		Particle p = new ParticleFull();
 		ConstantForce f = new ConstantForce();
 		double step = 0.00001d;
-		Solver solver2 = new Euler();
+		Solver solver2 = new LeapFrog();
 
 		f.ex = 1.234;
 		f.ey = 3.456;
