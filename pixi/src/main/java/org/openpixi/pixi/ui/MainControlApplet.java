@@ -76,6 +76,8 @@ public class MainControlApplet extends JApplet
 	private PhaseSpacePanel phaseSpacePanel;
 	private ElectricFieldPanel electricFieldPanel;
 
+	private FileTab fileTab;
+
 	private static final double speedSliderScaling = 0.07;
 	private static final double stepSliderScaling = 0.01;
 
@@ -160,7 +162,9 @@ public class MainControlApplet extends JApplet
 	 */
 	class ResetListener implements ActionListener {
 		public void actionPerformed(ActionEvent eve) {
-			simulationAnimation.resetAnimation(initComboBox.getSelectedIndex());
+			//simulationAnimation.resetAnimation(initComboBox.getSelectedIndex());
+			fileTab.applyTextAreaSettings();
+
 			setSlidersValue();
 		}
 	}
@@ -310,6 +314,7 @@ public class MainControlApplet extends JApplet
 		step.add(stepLabel);
 		step.add(stepSlider);
 
+		/*
 		initComboBox = new JComboBox(initStrings);
 		initComboBox.setSelectedIndex(0);
 		initComboBox.addActionListener(new ComboBoxListener());
@@ -318,6 +323,7 @@ public class MainControlApplet extends JApplet
 		initBox.add(initComboBoxLabel);
 		initBox.add(Box.createHorizontalGlue());
 		initBox.add(initComboBox);
+		*/
 
 		algorithmComboBox = new JComboBox(solverString);
 		algorithmComboBox.setSelectedIndex(0);
@@ -349,6 +355,7 @@ public class MainControlApplet extends JApplet
 
 		calculateFieldsCheck = new JCheckBox("Calculate Fields");
 		calculateFieldsCheck.addItemListener(new CalculateFieldsListener());
+		calculateFieldsCheck.setEnabled(true);
 
 		framerateCheck = new JCheckBox("Info");
 		framerateCheck.addItemListener(new FrameListener());
@@ -391,7 +398,7 @@ public class MainControlApplet extends JApplet
 		controlPanelUp.add(stopButton);
 		controlPanelUp.add(resetButton);
 		controlPanelUp.add(Box.createHorizontalStrut(25));
-		controlPanelUp.add(initBox);
+		//controlPanelUp.add(initBox);
 		controlPanelUp.add(Box.createHorizontalStrut(25));
 		Box settingControls = Box.createVerticalBox();
 		JPanel controlPanelDown = new JPanel();
@@ -442,7 +449,7 @@ public class MainControlApplet extends JApplet
 		cellSettings.add(ybox);
 		cellSettings.add(Box.createVerticalStrut(200));
 
-		FileTab fileTab = new FileTab(MainControlApplet.this, simulationAnimation);
+		this.fileTab = new FileTab(MainControlApplet.this, simulationAnimation);
 
 		settingControls.setPreferredSize(new Dimension (300, 100));
 

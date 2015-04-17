@@ -124,12 +124,15 @@ public class FileTab extends Box {
 	/**
 	 * Apply the settings from the text area and restart the simulation.
 	 */
-	private void applyTextAreaSettings() {
+	public void applyTextAreaSettings() {
 		String string = fileTextArea.getText();
-		Settings settings = new Settings();
-		YamlParser parser = new YamlParser(settings);
-		parser.parseString(string);
-		simulationAnimation.resetAnimation(settings);
+		if(string.length() > 0)
+		{
+			Settings settings = new Settings();
+			YamlParser parser = new YamlParser(settings);
+			parser.parseString(string);
+			simulationAnimation.resetAnimation(settings);
+		}
 	}
 
 }
