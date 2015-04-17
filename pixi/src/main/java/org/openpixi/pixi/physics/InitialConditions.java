@@ -20,17 +20,6 @@
 package org.openpixi.pixi.physics;
 
 import org.openpixi.pixi.physics.force.ConstantForce;
-import org.openpixi.pixi.physics.particles.Particle;
-import org.openpixi.pixi.physics.particles.ParticleFull;
-import org.openpixi.pixi.physics.solver.relativistic.LeapFrogRelativistic;
-import org.openpixi.pixi.physics.fields.PoissonSolverFFTPeriodic;
-import org.openpixi.pixi.physics.fields.EmptyPoissonSolver;
-import org.openpixi.pixi.physics.fields.SimpleSolver;
-import org.openpixi.pixi.physics.grid.ChargeConservingCIC;
-
-import java.awt.Color;
-import java.util.ArrayList;
-import java.util.Random;
 
 public class InitialConditions {
 	public static Simulation initEmptySimulation() {
