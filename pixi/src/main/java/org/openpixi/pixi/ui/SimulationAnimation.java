@@ -125,48 +125,9 @@ public class SimulationAnimation {
 		timer.stop();
 		clear();
 		switch(id) {
-		case 0:
-			s = InitialConditions.initRandomParticles(10, 2);
-			break;
-		case 1:
-			s = InitialConditions.initRandomParticles(100, 1);
-			break;
-		case 2:
-			s = InitialConditions.initRandomParticles(1000, 0.5);
-			break;
-		case 3:
-			s = InitialConditions.initRandomParticles(10000, 0.01);
-			break;
-		case 4:
-			break;
-		case 5:
-			break;
-		case 6:
-			break;
-		case 7:
-			s = InitialConditions.initPair(0.1,1);
-			break;
-		case 8:
-			s = InitialConditions.initTwoStream(0.1,1,1000);
-			break;
-		case 9:
-			s = InitialConditions.initWeibel(0.01,1,2000,4,0.9);
-			break;
-		case 10:
-			s = InitialConditions.initOneTest(0.01,1);
-			break;
-		case 11:
-			s = InitialConditions.initWaveTest(0.2);
-			break;
-		case 12:
-			s = InitialConditions.initPair3D(0.1,1);
-			break;
-		case 13:
-			s = InitialConditions.initTwoStream3D(0.1,0.1,5000);
-			break;
-		case 14:
-			s = InitialConditions.initWeibel3D(0.01,1,1000,2,0.9);
-			break;
+			case 0:
+				s = InitialConditions.initEmptySimulation();
+				break;
 		}
 		updateFieldForce();
 		s.prepareAllParticles();
