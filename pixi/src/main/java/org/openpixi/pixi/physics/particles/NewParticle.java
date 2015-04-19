@@ -17,7 +17,7 @@ public class NewParticle implements IParticle, Serializable
 	private double  acc[];
 
 	private double  E[][];
-	private double  B[][];
+	private double  F[][][];
 
 	private double  r;
 	private Color   col;
@@ -47,7 +47,7 @@ public class NewParticle implements IParticle, Serializable
 	public double getAcceleration(int d)    {   return acc[d];              }
 
 	public double getE(int d, int c)        {   return E[d][c];             }
-	public double getB(int d, int c)        {   return B[d][c];             }
+	public double getF(int i, int j, int c) {   return F[i][j][c];          }
 
 	public double getCharge(int c)          {   return charge[c];           }
 	public double getMass()                 {   return mass;                }
@@ -79,9 +79,9 @@ public class NewParticle implements IParticle, Serializable
 	public double getEy()                   {   return getE(1, 0);          }
 	public double getEz()                   {   return getE(2, 0);          }
 
-	public double getBx()                   {   return getE(0, 0);          }
-	public double getBy()                   {   return getE(1, 0);          }
-	public double getBz()                   {   return getE(2, 0);          }
+	public double getBx()                   {   return getF(2, 1, 0);       }
+	public double getBy()                   {   return getF(0, 2, 0);       }
+	public double getBz()                   {   return getF(1, 0, 0);       }
 
 	public double getCharge()               {   return getCharge(0);        }
 
@@ -102,7 +102,7 @@ public class NewParticle implements IParticle, Serializable
 	public void addAcceleration(int d, double value)            {   this.acc[d] += value;           }
 
 	public void setE(int d, int c, double E)                    {   this.E[d][c] = E;               }
-	public void setB(int d, int c, double B)                    {   this.B[d][c] = B;               }
+	public void setF(int i, int j, int c, double F)             {   this.F[i][j][c] = F;            }
 
 	public void setNumberOfColors(int numberOfColors)
 	{
@@ -112,10 +112,7 @@ public class NewParticle implements IParticle, Serializable
 		this.charge = new double[this.numberOfComponents];
 
 		if(this.numberOfDimensions > 0)
-		{
-			this.E = new double[this.numberOfDimensions][this.numberOfComponents];
-			this.B = new double[this.numberOfDimensions][this.numberOfComponents];
-		}
+			initializeFields();
 	}
 
 	public void setNumberOfDimensions(int numberOfDimensions)
@@ -128,10 +125,7 @@ public class NewParticle implements IParticle, Serializable
 		this.acc = new double[this.numberOfDimensions];
 
 		if(this.numberOfColors > 0)
-		{
-			this.E = new double[this.numberOfDimensions][this.numberOfComponents];
-			this.B = new double[this.numberOfDimensions][this.numberOfComponents];
-		}
+			initializeFields();
 	}
 
 	public void setCharge(int c, double q)
@@ -187,9 +181,21 @@ public class NewParticle implements IParticle, Serializable
 	public void setEy(double Ey)            {   this.setE(1, 0, Ey);                    }
 	public void setEz(double Ez)            {   this.setE(2, 0, Ez);                    }
 
-	public void setBx(double Bx)            {   this.setB(0, 0, Bx);                    }
-	public void setBy(double By)            {   this.setB(1, 0, By);                    }
-	public void setBz(double Bz)            {   this.setB(2, 0, Bz);                    }
+	public void setBx(double Bx)
+	{
+		this.setF(2, 1, 0, Bx);
+		this.setF(1, 2, 0, -Bx);
+	}
+	public void setBy(double By)
+	{
+		this.setF(0, 2, 0, By);
+		this.setF(2, 0, 0, -By);
+	}
+	public void setBz(double Bz)
+	{
+		this.setF(1, 0, 0, Bz);
+		this.setF(0, 1, 0, -Bz);
+	}
 
 	public void storePosition()
 	{
@@ -215,17 +221,24 @@ public class NewParticle implements IParticle, Serializable
 			p.setPrevPosition(d, this.prevPos[d]);
 			p.setVelocity(d, this.vel[d]);
 			p.setAcceleration(d, this.acc[d]);
+		}
 
-			p.setMass(this.mass);
 
-			p.setRadius(this.r);
-			p.setColor(this.col);
 
-			for(int c = 0; c < this.numberOfComponents; c++)
+		p.setMass(this.mass);
+		p.setRadius(this.r);
+		p.setColor(this.col);
+
+		for (int c = 0; c < this.numberOfComponents; c++)
+		{
+			p.setCharge(c, this.charge[c]);
+			for(int i = 0; i < this.numberOfDimensions; i++)
 			{
-				p.setCharge(c, this.charge[c]);
-				p.setE(d, c, this.E[d][c]);
-				p.setB(d, c, this.B[d][c]);
+				p.setE(i, c, this.E[i][c]);
+				for(int j = 0; j < this.numberOfDimensions; j++)
+				{
+					p.setF(i, j, c, this.F[i][j][c]);
+				}
 			}
 		}
 
@@ -243,5 +256,11 @@ public class NewParticle implements IParticle, Serializable
 		}
 		output += "]";
 		return output;
+	}
+
+	private void initializeFields()
+	{
+		this.E = new double[this.numberOfDimensions][this.numberOfComponents];
+		this.F = new double[this.numberOfDimensions][this.numberOfDimensions][this.numberOfComponents];
 	}
 }

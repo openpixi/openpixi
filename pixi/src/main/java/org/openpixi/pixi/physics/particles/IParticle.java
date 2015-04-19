@@ -26,7 +26,7 @@ public interface IParticle
 	 */
 
 	double getE(int d, int c);
-	double getB(int d, int c);
+	double getF(int i, int j, int c);
 
 	/*
 		Getters for particle properties
@@ -100,7 +100,7 @@ public interface IParticle
 	 */
 
 	void setE(int d, int c, double E);
-	void setB(int d, int c, double B);
+	void setF(int i, int j, int c, double F);
 
 	/*
 		Setters for particle properties
