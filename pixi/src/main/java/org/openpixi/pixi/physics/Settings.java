@@ -98,7 +98,7 @@ public class Settings {
 	// Batch version settings
 	private int iterations = (int) Math.ceil(tMax/timeStep);
 	// Parallel (threaded) version settings
-	private int numOfThreads = 1;
+	private int numOfThreads = 4;
 	/* The creation and start of the new threads is expensive. Therefore, in the parallel
 	 * simulation we use ExecutorService which is maintaining a fixed number of threads running
 	 * all the time and assigns work to the threads on the fly according to demand. */
