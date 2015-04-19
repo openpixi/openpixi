@@ -8,6 +8,7 @@ import org.openpixi.pixi.physics.fields.EmptyPoissonSolver;
 import org.openpixi.pixi.physics.fields.PoissonSolverFFTPeriodic;
 import org.openpixi.pixi.physics.fields.SimpleSolver;
 import org.openpixi.pixi.physics.grid.ChargeConservingCIC;
+import org.openpixi.pixi.physics.solver.relativistic.LeapFrogRelativistic;
 
 /**
  * Generic settings class into which the YAML parser parses
@@ -45,6 +46,7 @@ public class YamlSettings {
 
 		if (speedOfLight != null) {
 			settings.setSpeedOfLight(speedOfLight);
+			settings.setParticleSolver(new LeapFrogRelativistic(speedOfLight));
 		}
 
 		if (gridStep != null) {
