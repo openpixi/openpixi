@@ -16,7 +16,7 @@ import org.openpixi.pixi.physics.force.Force;
 import org.openpixi.pixi.physics.grid.GridBoundaryType;
 import org.openpixi.pixi.physics.grid.InterpolatorAlgorithm;
 import org.openpixi.pixi.physics.movement.boundary.ParticleBoundaryType;
-import org.openpixi.pixi.physics.particles.Particle;
+import org.openpixi.pixi.physics.particles.IParticle;
 import org.openpixi.pixi.physics.particles.ParticleFactory.PositionDistribution;
 import org.openpixi.pixi.physics.particles.ParticleFactory.VelocityDistribution;
 import org.openpixi.pixi.physics.solver.Solver;
@@ -86,7 +86,7 @@ public class Settings {
 	private String OCLGridInterpolator;
 	// Modify defaultParticleFactories() method to determine what kind of particles
 	// will be loaded by default.
-	private List<Particle> particles = new ArrayList<Particle>();
+	private List<IParticle> particles = new ArrayList<IParticle>();
 	private Solver particleSolver = new LeapFrogRelativistic(speedOfLight);
 	private List<Force> forces = new ArrayList<Force>();
 	// Diagnostics related settings
@@ -301,7 +301,7 @@ public class Settings {
 	 *
 	 * !!! IMPORTANT !!! Always returns deep copy of the actual particle list!
 	 */
-	public List<Particle> getParticles() {
+	public List<IParticle> getParticles() {
 		if (particles.size() == 0) {
 			this.particles = (new ParticleLoader()).load(defaultParticleFactories(),
 					simulationWidth, simulationHeight, simulationDepth);
@@ -310,9 +310,9 @@ public class Settings {
 		return cloneParticles();
 	}
 
-	private List<Particle> cloneParticles() {
-		List<Particle> copy = new ArrayList<Particle>();
-		for (Particle p : particles) {
+	private List<IParticle> cloneParticles() {
+		List<IParticle> copy = new ArrayList<IParticle>();
+		for (IParticle p : particles) {
 			copy.add(p.copy());
 		}
 		return copy;
@@ -495,7 +495,7 @@ public class Settings {
 		this.numOfParticles = numOfParticles;
 	}
 
-	public void setParticleList(List<Particle> particles) {
+	public void setParticleList(List<IParticle> particles) {
 		this.numOfParticles = particles.size();
 		this.particles = particles;
 	}
@@ -508,7 +508,7 @@ public class Settings {
 		this.particleMaxSpeed = particleMaxSpeed;
 	}
 
-	public void addParticle(Particle p) {
+	public void addParticle(IParticle p) {
 		particles.add(p);
 	}
 

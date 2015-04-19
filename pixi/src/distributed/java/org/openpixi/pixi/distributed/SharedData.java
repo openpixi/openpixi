@@ -5,7 +5,7 @@ import org.openpixi.pixi.distributed.util.BooleanLock;
 import org.openpixi.pixi.distributed.util.IncomingCellsHandler;
 import org.openpixi.pixi.distributed.util.IncomingParticlesHandler;
 import org.openpixi.pixi.distributed.util.IncomingPointsHandler;
-import org.openpixi.pixi.physics.particles.Particle;
+import org.openpixi.pixi.physics.particles.IParticle;
 import org.openpixi.pixi.physics.grid.Cell;
 import org.openpixi.pixi.physics.grid.Grid;
 import org.openpixi.pixi.physics.movement.boundary.ParticleBoundaries;
@@ -43,13 +43,13 @@ public class SharedData {
 	private List<Cell> localGhostCells;
 
 	/** Ghost particles of neighbors - particles to be send to neighbors. */
-	private List<Particle> borderParticles = new ArrayList<Particle>();
+	private List<IParticle> borderParticles = new ArrayList<IParticle>();
 	/** Particles leaving this node - particles to be send to neighbors. */
-	private List<Particle> leavingParticles = new ArrayList<Particle>();
+	private List<IParticle> leavingParticles = new ArrayList<IParticle>();
 	/** Ghost particles of this node - particles to be received from neighbors. */
-	private List<Particle> ghostParticles = new ArrayList<Particle>();
+	private List<IParticle> ghostParticles = new ArrayList<IParticle>();
 	/** Particles arriving to this node - particles to be received from neighbors. */
-	private List<Particle> arrivingParticles = new ArrayList<Particle>();
+	private List<IParticle> arrivingParticles = new ArrayList<IParticle>();
 
 	/**
 	 * The arriving particles need to be checked
@@ -99,12 +99,12 @@ public class SharedData {
 	}
 
 
-	public void registerBorderParticle(Particle p) {
+	public void registerBorderParticle(IParticle p) {
 		borderParticles.add(p);
 	}
 
 
-	public void registerLeavingParticle(Particle p) {
+	public void registerLeavingParticle(IParticle p) {
 		leavingParticles.add(p);
 	}
 
@@ -145,7 +145,7 @@ public class SharedData {
 	/**
 	 * Blocks until the arriving particles are received.
 	 */
-	public List<Particle> getArrivingParticles() {
+	public List<IParticle> getArrivingParticles() {
 		waitForArrivingParticles();
 		return arrivingParticles;
 	}
@@ -154,13 +154,13 @@ public class SharedData {
 	/**
 	 * Blocks until the ghost particles are received.
 	 */
-	public List<Particle> getGhostParticles() {
+	public List<IParticle> getGhostParticles() {
 		ghostParticlesLock.waitForTrue();
 		return ghostParticles;
 	}
 
 
-	public List<Particle> getLeavingParticles() {
+	public List<IParticle> getLeavingParticles() {
 		return leavingParticles;
 	}
 
@@ -223,7 +223,7 @@ public class SharedData {
 
 
 	private class GhostParticlesHandler implements IncomingParticlesHandler {
-		public void handle(List<Particle> particles) {
+		public void handle(List<IParticle> particles) {
 			ghostParticles = particles;
 			ghostParticlesLock.setToTrue();
 		}
@@ -237,9 +237,9 @@ public class SharedData {
 		 * All arriving particle become right away also border particles.
 		 * Furthermore, they might also lie outside of the simulation area.
 		 */
-		public void handle(List<Particle> particles) {
+		public void handle(List<IParticle> particles) {
 			arrivingParticles = particles;
-			for (Particle particle: particles) {
+			for (IParticle particle: particles) {
 				/**
 				 * The nulls won't work with hardwall boundaries!!!
 				 * TODO inject the solver, force and time step into shared data from classes above

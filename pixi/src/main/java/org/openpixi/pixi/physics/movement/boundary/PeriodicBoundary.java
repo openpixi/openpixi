@@ -1,7 +1,7 @@
 package org.openpixi.pixi.physics.movement.boundary;
 
 import org.openpixi.pixi.physics.force.Force;
-import org.openpixi.pixi.physics.particles.Particle;
+import org.openpixi.pixi.physics.particles.IParticle;
 import org.openpixi.pixi.physics.solver.Solver;
 
 /**
@@ -15,7 +15,7 @@ public class PeriodicBoundary extends ParticleBoundary {
 	}
 
 	@Override
-	public void apply(Solver solver, Force force, Particle particle, double timeStep) {
+	public void apply(Solver solver, Force force, IParticle particle, double timeStep) {
 		particle.addX(-xoffset);
 		particle.addPrevX(-xoffset);
 		particle.addY(-yoffset);

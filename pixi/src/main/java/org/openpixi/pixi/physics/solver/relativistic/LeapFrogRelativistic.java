@@ -20,7 +20,7 @@ package org.openpixi.pixi.physics.solver.relativistic;
 
 import org.openpixi.pixi.physics.*;
 import org.openpixi.pixi.physics.force.Force;
-import org.openpixi.pixi.physics.particles.Particle;
+import org.openpixi.pixi.physics.particles.IParticle;
 import org.openpixi.pixi.physics.solver.Solver;
 
 /**This class represents the LeapFrog algorithm and the equations that are used one can be find here:
@@ -44,14 +44,14 @@ public class LeapFrogRelativistic implements Solver{
 	 *                 after the update: x(t+dt), u(t+3*dt/2), a(t+dt)
 	 *                  u(t) is the relativistic momentum
 	 */
-	public void step(Particle p, Force f, double dt) {
+	public void step(IParticle p, Force f, double dt) {
 		
 		double gamma = relvelocity.calculateGamma(p);
 		
 		// x(t+dt) = x(t) + c(t+dt/2) * dt / gamma
-		p.setX(p.getX() + p.getVx() * dt / gamma);
-		p.setY(p.getY() + p.getVy() * dt / gamma);
-		p.setZ(p.getZ() + p.getVz() * dt / gamma);
+		p.addX(p.getVx() * dt / gamma);
+		p.addY(p.getVy() * dt / gamma);
+		p.addZ(p.getVz() * dt / gamma);
 
 		// a(t+dt) = F(u(t+dt/2), x(t+dt)) / m
 		// WARNING: Force is evaluated at two different times t+dt/2 and t+dt!
@@ -70,7 +70,7 @@ public class LeapFrogRelativistic implements Solver{
 	 * @param p before the update: v(t);
 	 *                 after the update: v(t+dt/2)
 	 */
-	public void prepare(Particle p, Force f, double dt)
+	public void prepare(IParticle p, Force f, double dt)
 	{
 		//a(t) = F(v(t), x(t)) / m
 		p.setAx(f.getForceX(p) / p.getMass());
@@ -87,7 +87,7 @@ public class LeapFrogRelativistic implements Solver{
 	 * @param p before the update: v(t+dt/2);
 	 *                 after the update: v(t)
 	 */
-	public void complete(Particle p, Force f, double dt)
+	public void complete(IParticle p, Force f, double dt)
 	{
 		//v(t) = v(t + dt / 2) - a(t)*dt / 2
 		p.setVx(p.getVx() - p.getAx() * dt);

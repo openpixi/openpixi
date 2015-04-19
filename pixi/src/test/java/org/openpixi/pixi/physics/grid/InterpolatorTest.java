@@ -2,9 +2,8 @@ package org.openpixi.pixi.physics.grid;
 
 import junit.framework.TestCase;
 import org.openpixi.pixi.physics.Settings;
-import org.openpixi.pixi.physics.grid.CloudInCell;
-import org.openpixi.pixi.physics.particles.ParticleFull;
 import org.openpixi.pixi.physics.particles.Particle;
+import org.openpixi.pixi.physics.particles.IParticle;
 
 import java.util.Random;
 import java.util.ArrayList;
@@ -44,10 +43,10 @@ public class InterpolatorTest extends TestCase {
 		}
 
 		
-		ArrayList<Particle> particles = new ArrayList<Particle>(); 
+		ArrayList<IParticle> particles = new ArrayList<IParticle>();
 		
 		for (int i=0; i < 100; i++) {
-			Particle p = new ParticleFull();
+			IParticle p = new Particle();
 			p.setX(random.nextDouble()*stt.getSimulationWidth());
 			p.setY(random.nextDouble()*stt.getSimulationHeight());
 			//Assign random integer charge in the range (-10,10)
@@ -59,7 +58,7 @@ public class InterpolatorTest extends TestCase {
 		
 		InterpolatorAlgorithm interpolation = new CloudInCell();
 		
-		for (Particle p : particles) {
+		for (IParticle p : particles) {
 			interpolation.interpolateChargedensity(p, grid);
 		}
 
@@ -79,9 +78,9 @@ public class InterpolatorTest extends TestCase {
 		return sum;
 	}
 	
-	public static double getTotalParticleCharge(ArrayList<Particle> particles) {
+	public static double getTotalParticleCharge(ArrayList<IParticle> particles) {
 		double sum = 0;
-		for (Particle p : particles) {
+		for (IParticle p : particles) {
 			sum += p.getCharge();
 		}
 		return sum;		

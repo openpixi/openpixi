@@ -3,7 +3,7 @@ package org.openpixi.pixi.distributed.grid;
 import org.openpixi.pixi.distributed.SharedDataManager;
 import org.openpixi.pixi.parallel.particleaccess.ParticleAction;
 import org.openpixi.pixi.parallel.particleaccess.ParticleIterator;
-import org.openpixi.pixi.physics.particles.Particle;
+import org.openpixi.pixi.physics.particles.IParticle;
 import org.openpixi.pixi.physics.grid.Grid;
 import org.openpixi.pixi.physics.grid.Interpolation;
 import org.openpixi.pixi.physics.grid.InterpolatorAlgorithm;
@@ -25,8 +25,8 @@ public class DistributedInterpolation extends Interpolation {
 	 * without any need of cells from neighbors.
 	 */
 	private DoubleBox zoneOfLocalInfluence;
-	private List<Particle> particlesWithOutsideInfluence =
-			Collections.synchronizedList(new ArrayList<Particle>());
+	private List<IParticle> particlesWithOutsideInfluence =
+			Collections.synchronizedList(new ArrayList<IParticle>());
 
 	/* These are passed to inner classes as a parameter to theirs methods. */
 	private Grid grid;
@@ -62,14 +62,14 @@ public class DistributedInterpolation extends Interpolation {
 	 * we interpolate our local particles.
 	 */
 	@Override
-	public void interpolateToGrid(List<Particle> localParticles, Grid grid, double timeStep) {	   	
+	public void interpolateToGrid(List<IParticle> localParticles, Grid grid, double timeStep) {
 		
 		sharedDataManager.startExchangeOfParticles();		
 		grid.resetCurrent();
 
 		// Remove leaving particles
-		List<Particle> leavingParticles = sharedDataManager.getLeavingParticles();
-		for (Particle leavingParticle: leavingParticles) {
+		List<IParticle> leavingParticles = sharedDataManager.getLeavingParticles();
+		for (IParticle leavingParticle: leavingParticles) {
 			localParticles.remove(leavingParticle);
 		}
 		
@@ -80,11 +80,11 @@ public class DistributedInterpolation extends Interpolation {
 		particleIterator.execute(localParticles, interpolateToGrid);
 
 		// Interpolate arriving particles
-		List<Particle> arrivingParticles = sharedDataManager.getArrivingParticles();
+		List<IParticle> arrivingParticles = sharedDataManager.getArrivingParticles();
 		particleIterator.execute(arrivingParticles, interpolateToGrid);
 
 		// Interpolate ghost particles
-		List<Particle> ghostParticles = sharedDataManager.getGhostParticles();
+		List<IParticle> ghostParticles = sharedDataManager.getGhostParticles();
 		particleIterator.execute(ghostParticles, interpolateToGrid);
 
 		// Add arriving particles to the list of local particles
@@ -101,7 +101,7 @@ public class DistributedInterpolation extends Interpolation {
 	 * only when all the cells from neighbors arrived we interpolate to the rest of the particles.
 	 */
 	@Override
-	public void interpolateToParticle(List<Particle> particles, Grid grid) {
+	public void interpolateToParticle(List<IParticle> particles, Grid grid) {
 
 		// Initiate the exchange of cells
 		sharedDataManager.exchangeCells();
@@ -120,7 +120,7 @@ public class DistributedInterpolation extends Interpolation {
 
 
 	@Override
-	public void interpolateChargedensity(List<Particle> particles, Grid grid) {
+	public void interpolateChargedensity(List<IParticle> particles, Grid grid) {
 		throw new UnsupportedOperationException(
 				"Interpolation of charge density is done only once when the grid is initialized " +
 				"before the Poisson solver is called. " +
@@ -129,7 +129,7 @@ public class DistributedInterpolation extends Interpolation {
 
 
 	private class InterpolateToInsideParticle implements ParticleAction {
-		public void execute(Particle particle) {
+		public void execute(IParticle particle) {
 			if (zoneOfLocalInfluence.contains(particle.getX(), particle.getY())) {
 				interpolator.interpolateToParticle(particle, grid);
 			}
@@ -141,14 +141,14 @@ public class DistributedInterpolation extends Interpolation {
 
 
 	private class InterpolateToOutsideParticle implements ParticleAction {
-		public void execute(Particle particle) {
+		public void execute(IParticle particle) {
 			interpolator.interpolateToParticle(particle, grid);
 		}
 	}
 
 
 	private class InterpolateToGrid implements ParticleAction {
-		public void execute(Particle particle) {
+		public void execute(IParticle particle) {
 			interpolator.interpolateToGrid(particle, grid, timeStep);
 		}
 	}

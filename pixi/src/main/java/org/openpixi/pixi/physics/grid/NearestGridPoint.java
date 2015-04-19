@@ -1,11 +1,11 @@
 package org.openpixi.pixi.physics.grid;
 
-import org.openpixi.pixi.physics.particles.Particle;
+import org.openpixi.pixi.physics.particles.IParticle;
 
 public class NearestGridPoint implements InterpolatorAlgorithm {
 	
 	@Override
-	public void interpolateToGrid(Particle p, Grid g, double tstep) {
+	public void interpolateToGrid(IParticle p, Grid g, double tstep) {
 		//System.out.println("Grid!");
 		/**X index of the nearest grid point BEFORE particle push*/
 		int xStart = (int) Math.rint( p.getPrevX()/g.getCellWidth() );
@@ -43,7 +43,7 @@ public class NearestGridPoint implements InterpolatorAlgorithm {
 	}
 	
 	@Override
-	public void interpolateChargedensity(Particle p, Grid g) {
+	public void interpolateChargedensity(IParticle p, Grid g) {
 		//System.out.println("Charge!");
 		/**X index of the nearest grid point*/
 		int i = (int) Math.rint( p.getX()/g.getCellWidth() );
@@ -57,7 +57,7 @@ public class NearestGridPoint implements InterpolatorAlgorithm {
 	}
 	
 	@Override
-	public void interpolateToParticle(Particle p, Grid g) {
+	public void interpolateToParticle(IParticle p, Grid g) {
 		//System.out.println("Particles!");
 		/**X index of the nearest grid point*/
 		int i;

@@ -1,7 +1,7 @@
 package org.openpixi.pixi.physics.movement.boundary;
 
 import org.openpixi.pixi.physics.force.Force;
-import org.openpixi.pixi.physics.particles.Particle;
+import org.openpixi.pixi.physics.particles.IParticle;
 import org.openpixi.pixi.physics.solver.Solver;
 
 public interface ParticleBoundaries {
@@ -21,7 +21,7 @@ public interface ParticleBoundaries {
 	 *   is not thread safe. On the other hand, to create a new bounding box (call constructor)
 	 *   for each particle would be thread safe but also slow.
 	 */
-	void applyOnParticleBoundingBox(Solver solver, Force force, Particle particle, double timeStep);
+	void applyOnParticleBoundingBox(Solver solver, Force force, IParticle particle, double timeStep);
 
 	/**
 	 * We need to pass the solver force and time step so that the hardwall boundary can call
@@ -29,7 +29,7 @@ public interface ParticleBoundaries {
 	 * This solution is very ugly and cumbersome but if we want to have the periodic boundaries
 	 * fast we have no other solution.
 	 */
-	void applyOnParticleCenter(Solver solver, Force force, Particle particle, double timeStep);
+	void applyOnParticleCenter(Solver solver, Force force, IParticle particle, double timeStep);
 
 	ParticleBoundaryType getType();
 }

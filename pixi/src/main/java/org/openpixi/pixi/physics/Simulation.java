@@ -21,8 +21,7 @@ package org.openpixi.pixi.physics;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.FileWriter;
+
 import org.openpixi.pixi.physics.fields.PoissonSolver;
 import org.openpixi.pixi.physics.force.Force;
 import org.openpixi.pixi.physics.force.CombinedForce;
@@ -34,7 +33,7 @@ import org.openpixi.pixi.physics.grid.LocalInterpolation;
 import org.openpixi.pixi.physics.movement.ParticleMover;
 import org.openpixi.pixi.physics.movement.boundary.ParticleBoundaries;
 import org.openpixi.pixi.physics.movement.boundary.SimpleParticleBoundaries;
-import org.openpixi.pixi.physics.particles.Particle;
+import org.openpixi.pixi.physics.particles.IParticle;
 import org.openpixi.pixi.physics.util.DoubleBox;
 
 import java.util.ArrayList;
@@ -80,7 +79,7 @@ public class Simulation {
 	/**
 	 * Contains all Particle2D objects
 	 */
-	public ArrayList<Particle> particles;
+	public ArrayList<IParticle> particles;
 	public CombinedForce f;
 	private ParticleMover mover;
 	/**
@@ -148,7 +147,7 @@ public class Simulation {
 		mu0 = settings.getMu0();
 
 		// TODO make particles a generic list
-		particles = (ArrayList<Particle>) settings.getParticles();
+		particles = (ArrayList<IParticle>) settings.getParticles();
 		f = settings.getForce();
 
 		ParticleBoundaries particleBoundaries = new SimpleParticleBoundaries(
@@ -185,7 +184,7 @@ public class Simulation {
 	 */
 	public Simulation(Settings settings,
 			Grid grid,
-			List<Particle> particles,
+			List<IParticle> particles,
 			ParticleBoundaries particleBoundaries,
 			Interpolation interpolation) {
 
@@ -202,7 +201,7 @@ public class Simulation {
 		this.eps0 = settings.getEps0();
 		this.mu0 = settings.getMu0();
 
-		this.particles = (ArrayList<Particle>) particles;
+		this.particles = (ArrayList<IParticle>) particles;
 		f = settings.getForce();
 
 		mover = new ParticleMover(

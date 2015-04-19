@@ -28,7 +28,7 @@ public class MaxwellianDistribution {
 	 *  momentum space.
 	 *  TODO make this compatible with relativistic momenta
 	 */
-	public static List<Particle> apply (List<Particle> particles, int startIndex, int endIndex,
+	public static List<IParticle> apply (List<IParticle> particles, int startIndex, int endIndex,
 			double thermalVelocityX, double thermalVelocityY, long seed) {
 		
 		Random rand = new Random(seed);
@@ -66,7 +66,7 @@ public class MaxwellianDistribution {
 		return particles;
 	}
 	
-	public static List<Particle> applyWithCutoff (List<Particle> particles, int startIndex, int endIndex,
+	public static List<IParticle> applyWithCutoff (List<IParticle> particles, int startIndex, int endIndex,
 			double thermalVelocityX, double thermalVelocityY, double cutoffVelocity,  long seed) {
 		
 		Random rand = new Random(seed);

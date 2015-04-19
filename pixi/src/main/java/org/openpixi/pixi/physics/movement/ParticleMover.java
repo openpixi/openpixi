@@ -5,7 +5,7 @@ import org.openpixi.pixi.parallel.particleaccess.ParticleIterator;
 import org.openpixi.pixi.physics.force.Force;
 import org.openpixi.pixi.physics.movement.boundary.ParticleBoundaries;
 import org.openpixi.pixi.physics.movement.boundary.ParticleBoundaryType;
-import org.openpixi.pixi.physics.particles.Particle;
+import org.openpixi.pixi.physics.particles.IParticle;
 import org.openpixi.pixi.physics.solver.Solver;
 import org.openpixi.pixi.physics.grid.Grid;
 
@@ -62,7 +62,7 @@ public class ParticleMover {
 	}
 
 
-	public void push(List<Particle> particles, Force force, Grid g, double timeStep) {
+	public void push(List<IParticle> particles, Force force, Grid g, double timeStep) {
 		this.force = force;
 		this.timeStep = timeStep;
 		this.boundaryX = g.getNumCellsX()*g.getCellWidth();
@@ -76,14 +76,14 @@ public class ParticleMover {
 	}
 
 
-	public void prepare(List<Particle> particles, Force force, double timeStep) {
+	public void prepare(List<IParticle> particles, Force force, double timeStep) {
 		this.force = force;
 		this.timeStep = timeStep;
 		particleIterator.execute(particles, prepare);
 	}
 
 
-	public void complete(List<Particle> particles, Force force, double timeStep) {
+	public void complete(List<IParticle> particles, Force force, double timeStep) {
 		this.force = force;
 		this.timeStep = timeStep;
 		particleIterator.execute(particles, complete);
@@ -91,7 +91,7 @@ public class ParticleMover {
 
 
 	private class Push implements ParticleAction {
-		public void execute(Particle particle) {
+		public void execute(IParticle particle) {
 			particle.storePosition();
 			solver.step(particle, force, timeStep);
 			boundaries.applyOnParticleCenter(solver, force, particle, timeStep);
@@ -99,7 +99,7 @@ public class ParticleMover {
 	}
 	
 	private class Push3D implements ParticleAction {
-		public void execute(Particle particle) {
+		public void execute(IParticle particle) {
 			particle.storePosition();
 			solver.step(particle, force, timeStep);
 			particle.applyPeriodicBoundary(boundaryX, boundaryY, boundaryZ);
@@ -108,14 +108,14 @@ public class ParticleMover {
 
 
 	private class Prepare implements ParticleAction {
-		public void execute(Particle particle) {
+		public void execute(IParticle particle) {
 			solver.prepare(particle, force, timeStep);
 		}
 	}
 
 
 	private class Complete implements ParticleAction {
-		public void execute(Particle particle) {
+		public void execute(IParticle particle) {
 			solver.complete(particle, force, timeStep);
 		}
 	}

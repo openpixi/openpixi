@@ -1,6 +1,6 @@
 package org.openpixi.pixi.parallel.particleaccess;
 
-import org.openpixi.pixi.physics.particles.Particle;
+import org.openpixi.pixi.physics.particles.IParticle;
 
 import java.util.List;
 
@@ -13,5 +13,5 @@ import java.util.List;
  *  Each implementation calls the ParticleAction.execute() method on each particle.
  */
 public interface ParticleIterator {
-	void execute(List<Particle> particles, ParticleAction action);
+	void execute(List<IParticle> particles, ParticleAction action);
 }

@@ -21,7 +21,7 @@ package org.openpixi.pixi.diagnostics.methods;
 
 import java.util.ArrayList;
 import org.openpixi.pixi.physics.grid.Grid;
-import org.openpixi.pixi.physics.particles.Particle;
+import org.openpixi.pixi.physics.particles.IParticle;
 
 import org.openpixi.pixi.diagnostics.DataOutput;
 
@@ -31,7 +31,7 @@ import org.openpixi.pixi.diagnostics.DataOutput;
 public interface Diagnostics {
 	
 	/** Performes the desired diagnostics*/
-	public void calculate(Grid grid, ArrayList<Particle> particles);
+	public void calculate(Grid grid, ArrayList<IParticle> particles);
 	
 	/** The next iteration when this diagnostic should be performed */
 	public int getNextIteration();

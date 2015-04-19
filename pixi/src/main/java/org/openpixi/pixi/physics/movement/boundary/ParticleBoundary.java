@@ -1,7 +1,7 @@
 package org.openpixi.pixi.physics.movement.boundary;
 
 import org.openpixi.pixi.physics.force.Force;
-import org.openpixi.pixi.physics.particles.Particle;
+import org.openpixi.pixi.physics.particles.IParticle;
 import org.openpixi.pixi.physics.solver.Solver;
 
 /**
@@ -28,5 +28,5 @@ public abstract class ParticleBoundary {
 		this.yoffset = yoffset;
 	}
 
-	public abstract void apply(Solver solver, Force force, Particle particle, double timeStep);
+	public abstract void apply(Solver solver, Force force, IParticle particle, double timeStep);
 }

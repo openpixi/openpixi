@@ -156,15 +156,15 @@ public class ParticleFactory {
 		return positionDistribution;
 	}
 	
-	public Particle createParticle() {
-		Particle p;
+	public IParticle createParticle() {
+		IParticle p;
 		
 		if (immobile) {
 			p = new ImmobileParticle();
 			p.setCharge(charge);
 			p.setRadius(radius);
 		} else {
-			p = new ParticleFull();
+			p = new Particle();
 			p.setMass(mass);
 			p.setCharge(charge);
 			p.setRadius(radius);

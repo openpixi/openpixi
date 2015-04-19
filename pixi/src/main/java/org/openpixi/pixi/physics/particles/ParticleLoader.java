@@ -29,10 +29,10 @@ import java.util.ArrayList;
  */
 public class ParticleLoader {
 	
-	public List<Particle> load(List<ParticleFactory> particleFactories, double simulationWidth,
+	public List<IParticle> load(List<ParticleFactory> particleFactories, double simulationWidth,
 			double simulationHeight, int numCellsX, int numCellsY) throws IllegalArgumentException {
 		
-		 List<Particle> particles = new ArrayList<Particle>();
+		 List<IParticle> particles = new ArrayList<IParticle>();
 		 /** Starting index of a block of similar particles in the particle list */
 		 int index = 0;
 		 
@@ -96,10 +96,10 @@ public class ParticleLoader {
 		 return particles;
 	}
 	
-	public List<Particle> load(List<ParticleFactory> particleFactories, double simulationWidth,
+	public List<IParticle> load(List<ParticleFactory> particleFactories, double simulationWidth,
 			double simulationHeight, double simulationDepth) throws IllegalArgumentException {
 		
-		 List<Particle> particles = new ArrayList<Particle>();
+		 List<IParticle> particles = new ArrayList<IParticle>();
 		 /** Starting index of a block of similar particles in the particle list */
 		 int index = 0;
 		 

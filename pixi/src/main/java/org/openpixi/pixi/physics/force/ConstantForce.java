@@ -1,6 +1,6 @@
 package org.openpixi.pixi.physics.force;
 
-import org.openpixi.pixi.physics.particles.Particle;
+import org.openpixi.pixi.physics.particles.IParticle;
 
 public class ConstantForce implements Force {
 
@@ -33,17 +33,17 @@ public class ConstantForce implements Force {
 		bz = 0;
 	}
 
-	public double getForceX(Particle p) {
+	public double getForceX(IParticle p) {
 		return  p.getCharge() * ex +
 				p.getCharge() * ( p.getVy() * bz - p.getVz() * by );
 	}
 
-	public double getForceY(Particle p) {
+	public double getForceY(IParticle p) {
 		return  p.getCharge() * ey +
 				p.getCharge() * ( p.getVz() * bx - p.getVx() * bz );
 	}
 	
-	public double getForceZ(Particle p) {
+	public double getForceZ(IParticle p) {
 		return  p.getCharge() * ez +
 				p.getCharge() * ( p.getVx() * by - p.getVy() * bx );
 	}

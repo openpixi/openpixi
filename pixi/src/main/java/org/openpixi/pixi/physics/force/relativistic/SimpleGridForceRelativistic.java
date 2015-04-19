@@ -3,7 +3,7 @@ package org.openpixi.pixi.physics.force.relativistic;
 import org.openpixi.pixi.physics.RelativisticVelocity;
 import org.openpixi.pixi.physics.Simulation;
 import org.openpixi.pixi.physics.force.Force;
-import org.openpixi.pixi.physics.particles.Particle;
+import org.openpixi.pixi.physics.particles.IParticle;
 
 public class SimpleGridForceRelativistic implements Force {
 
@@ -22,7 +22,7 @@ public class SimpleGridForceRelativistic implements Force {
 		relvelocity = new RelativisticVelocity(speedOfLight);
 	}
 
-	public double getForceX(Particle p) {
+	public double getForceX(IParticle p) {
 		double gamma = relvelocity.calculateGamma(p);
 		
 		//v = u / gamma
@@ -32,7 +32,7 @@ public class SimpleGridForceRelativistic implements Force {
 		return p.getCharge() * ( p.getEx() + vy * p.getBz() - vz * p.getBy() );
 	}
 
-	public double getForceY(Particle p) {
+	public double getForceY(IParticle p) {
 		double gamma = relvelocity.calculateGamma(p);
 		
 		//v = u / gamma
@@ -42,7 +42,7 @@ public class SimpleGridForceRelativistic implements Force {
 		return p.getCharge() * ( p.getEy() + vz * p.getBx() - vx * p.getBz() );
 	}
 	
-	public double getForceZ(Particle p) {
+	public double getForceZ(IParticle p) {
 		double gamma = relvelocity.calculateGamma(p);
 		
 		//v = u / gamma

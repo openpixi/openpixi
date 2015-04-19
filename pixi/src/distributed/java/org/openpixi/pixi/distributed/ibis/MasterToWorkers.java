@@ -2,7 +2,7 @@ package org.openpixi.pixi.distributed.ibis;
 
 import ibis.ipl.*;
 import org.openpixi.pixi.distributed.util.IncomingResultHandler;
-import org.openpixi.pixi.physics.particles.Particle;
+import org.openpixi.pixi.physics.particles.IParticle;
 import org.openpixi.pixi.physics.grid.Cell;
 import org.openpixi.pixi.physics.util.IntBox;
 
@@ -37,7 +37,7 @@ public class MasterToWorkers {
 	 * number of open connections.
 	 */
 	public void sendProblem(int workerID, IntBox[] partitions,
-	                        List<Particle> particles,
+	                        List<IParticle> particles,
 	                        Cell[][] cells) throws IOException {
 		SendPort sendPort = registry.getIbis().createSendPort(PixiPorts.ONE_TO_ONE_PORT);
 		sendPort.connect(
@@ -67,7 +67,7 @@ public class MasterToWorkers {
 	private class IncomingResults implements MessageUpcall {
 		public void upcall(ReadMessage readMessage) throws IOException, ClassNotFoundException {
 			int workerID = readMessage.readInt();
-			List<Particle> particles = (List<Particle>)readMessage.readObject();
+			List<IParticle> particles = (List<IParticle>)readMessage.readObject();
 			Cell[][] cells = (Cell[][])readMessage.readObject();
 			resultHandler.handle(workerID, particles, cells);
 		}

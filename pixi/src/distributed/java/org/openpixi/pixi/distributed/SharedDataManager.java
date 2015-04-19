@@ -3,7 +3,7 @@ package org.openpixi.pixi.distributed;
 import org.openpixi.pixi.distributed.ibis.IbisRegistry;
 import org.openpixi.pixi.distributed.ibis.WorkerToWorker;
 import org.openpixi.pixi.physics.GeneralBoundaryType;
-import org.openpixi.pixi.physics.particles.Particle;
+import org.openpixi.pixi.physics.particles.IParticle;
 import org.openpixi.pixi.physics.grid.Grid;
 import org.openpixi.pixi.physics.movement.boundary.ParticleBoundaries;
 import org.openpixi.pixi.physics.util.IntBox;
@@ -156,8 +156,8 @@ public class SharedDataManager {
 	}
 
 
-	public List<Particle> getArrivingParticles() {
-		List<Particle> arrivingParticles = new ArrayList<Particle>();
+	public List<IParticle> getArrivingParticles() {
+		List<IParticle> arrivingParticles = new ArrayList<IParticle>();
 		for (SharedData sd: sharedData.values()) {
 			arrivingParticles.addAll(sd.getArrivingParticles());
 		}
@@ -165,8 +165,8 @@ public class SharedDataManager {
 	}
 
 
-	public List<Particle> getGhostParticles() {
-		List<Particle> ghostParticles = new ArrayList<Particle>();
+	public List<IParticle> getGhostParticles() {
+		List<IParticle> ghostParticles = new ArrayList<IParticle>();
 		for (SharedData sd: sharedData.values()) {
 			ghostParticles.addAll(sd.getGhostParticles());
 		}
@@ -174,8 +174,8 @@ public class SharedDataManager {
 	}
 
 
-	public List<Particle> getLeavingParticles() {
-		List<Particle> leavingParticles = new ArrayList<Particle>();
+	public List<IParticle> getLeavingParticles() {
+		List<IParticle> leavingParticles = new ArrayList<IParticle>();
 		for (SharedData sd: sharedData.values()) {
 			leavingParticles.addAll(sd.getLeavingParticles());
 		}

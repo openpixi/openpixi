@@ -1,7 +1,7 @@
 package org.openpixi.pixi.distributed.movement.boundary;
 
 import org.openpixi.pixi.distributed.SharedData;
-import org.openpixi.pixi.physics.particles.Particle;
+import org.openpixi.pixi.physics.particles.IParticle;
 import org.openpixi.pixi.physics.force.Force;
 import org.openpixi.pixi.physics.movement.boundary.ParticleBoundary;
 import org.openpixi.pixi.physics.solver.Solver;
@@ -22,14 +22,14 @@ public class BorderGate extends ParticleBoundary {
 
 
 	@Override
-	public void apply(Solver solver, Force force, Particle particle, double timeStep) {
+	public void apply(Solver solver, Force force, IParticle particle, double timeStep) {
 
 		// We need to translate the position of the particle to the coordinates
 		// valid at the neighbor.
 		// However, we want the particle to keep its position at the local node.
 		// Thus, we need a copy of the particle.
 
-		Particle copy = particle.copy();
+		IParticle copy = particle.copy();
 		copy.addX(-xoffset);
 		copy.addPrevX(-xoffset);
 		copy.addY(-yoffset);

@@ -6,7 +6,7 @@ import org.openpixi.pixi.distributed.partitioning.Partitioner;
 import org.openpixi.pixi.distributed.partitioning.SimplePartitioner;
 import org.openpixi.pixi.distributed.util.CountLock;
 import org.openpixi.pixi.distributed.util.IncomingResultHandler;
-import org.openpixi.pixi.physics.particles.Particle;
+import org.openpixi.pixi.physics.particles.IParticle;
 import org.openpixi.pixi.physics.ParticleGridInitializer;
 import org.openpixi.pixi.physics.Settings;
 import org.openpixi.pixi.physics.grid.Cell;
@@ -31,10 +31,10 @@ public class Master {
 	private Settings settings;
 
 	private Grid initialGrid;
-	private List<Particle> initialParticles;
+	private List<IParticle> initialParticles;
 
 	private Grid finalGrid;
-	private List<Particle> finalParticles;
+	private List<IParticle> finalParticles;
 
 	/**
 	 * Problem decomposition table.
@@ -44,7 +44,7 @@ public class Master {
 
 	/* Results received from workers */
 	private Cell[][][] gridPartitions;
-	private List<List<Particle>> particlePartitions = new ArrayList<List<Particle>>();
+	private List<List<IParticle>> particlePartitions = new ArrayList<List<IParticle>>();
 
 	private CountLock resultsLock;
 
@@ -53,7 +53,7 @@ public class Master {
 		return finalGrid;
 	}
 
-	public List<Particle> getFinalParticles() {
+	public List<IParticle> getFinalParticles() {
 		return finalParticles;
 	}
 
@@ -83,7 +83,7 @@ public class Master {
 		// Initialize the classes holding the result
 		gridPartitions = new Cell[settings.getNumOfNodes()][][];
 		for (int i = 0; i < settings.getNumOfNodes(); i++) {
-			particlePartitions.add(new ArrayList<Particle>());
+			particlePartitions.add(new ArrayList<IParticle>());
 		}
 
 		resultsLock = new CountLock(settings.getNumOfNodes());
@@ -101,8 +101,8 @@ public class Master {
 		logger.debug("Problem partitioning:\n{}", partitioner);
 
 		// Partition the data
-		List<Particle> initialParticlesCopy = copyInitialParticles();
-		List<List<Particle>> particlePartitions = partitionParticles(
+		List<IParticle> initialParticlesCopy = copyInitialParticles();
+		List<List<IParticle>> particlePartitions = partitionParticles(
 				partitions, initialParticlesCopy);
 		Cell[][][] gridPartitions = partitionGrid(partitions, initialGrid);
 
@@ -120,9 +120,9 @@ public class Master {
 	}
 
 
-	private List<Particle> copyInitialParticles() {
-		List<Particle> copy = new ArrayList<Particle>();
-		for (Particle p: initialParticles) {
+	private List<IParticle> copyInitialParticles() {
+		List<IParticle> copy = new ArrayList<IParticle>();
+		for (IParticle p: initialParticles) {
 			copy.add(ClassCopier.copy(p));
 		}
 		return copy;
@@ -172,13 +172,13 @@ public class Master {
 	/**
 	 * Divides particles according to partitions they belong to.
 	 */
-	private List<List<Particle>> partitionParticles(IntBox[] partitions, List<Particle> particles) {
-		List<List<Particle>> particlePartitions = new ArrayList<List<Particle>>();
+	private List<List<IParticle>> partitionParticles(IntBox[] partitions, List<IParticle> particles) {
+		List<List<IParticle>> particlePartitions = new ArrayList<List<IParticle>>();
 		for (int i = 0; i < partitions.length; ++i) {
-			particlePartitions.add(new ArrayList<Particle>());
+			particlePartitions.add(new ArrayList<IParticle>());
 		}
 
-		for (Particle p: particles) {
+		for (IParticle p: particles) {
 			int partitionIndex = -1;
 			int cellX = (int)Math.floor(p.getX() / initialGrid.getCellWidth());
 			int cellY = (int)Math.floor(p.getY() / initialGrid.getCellHeight());
@@ -214,14 +214,14 @@ public class Master {
 	/**
 	 * Puts together the particle lists coming from workers.
 	 */
-	private List<Particle> assembleParticles(List<List<Particle>> particlePartitions) {
-		List<Particle> assembledParticles = new ArrayList<Particle>();
+	private List<IParticle> assembleParticles(List<List<IParticle>> particlePartitions) {
+		List<IParticle> assembledParticles = new ArrayList<IParticle>();
 		for (int i = 0; i < particlePartitions.size(); ++i) {
 
 			double xmin = partitions[i].xmin() * settings.getCellWidth();
 			double ymin = partitions[i].ymin() * settings.getCellHeight();
 
-			for (Particle p: particlePartitions.get(i)) {
+			for (IParticle p: particlePartitions.get(i)) {
 
 				// Translate particles position
 				p.setX(p.getX() + xmin);
@@ -293,7 +293,7 @@ public class Master {
 
 
 	private class ResultHandler implements IncomingResultHandler {
-		public void handle(int workerID, List<Particle> particles, Cell[][] cells) {
+		public void handle(int workerID, List<IParticle> particles, Cell[][] cells) {
 			gridPartitions[workerID] = cells;
 			particlePartitions.set(workerID, particles);
 			resultsLock.increase();

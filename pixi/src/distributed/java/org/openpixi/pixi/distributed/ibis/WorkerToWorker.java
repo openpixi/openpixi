@@ -4,7 +4,7 @@ import ibis.ipl.*;
 import org.openpixi.pixi.distributed.util.IncomingCellsHandler;
 import org.openpixi.pixi.distributed.util.IncomingParticlesHandler;
 import org.openpixi.pixi.distributed.util.IncomingPointsHandler;
-import org.openpixi.pixi.physics.particles.Particle;
+import org.openpixi.pixi.physics.particles.IParticle;
 import org.openpixi.pixi.physics.grid.Cell;
 import org.openpixi.pixi.physics.util.Point;
 
@@ -93,7 +93,7 @@ public class WorkerToWorker {
 	}
 
 
-	public void sendLeavingParticles(List<Particle> leavingParticles) {
+	public void sendLeavingParticles(List<IParticle> leavingParticles) {
 		try {
 			WriteMessage wm = sendPort.newMessage();
 			wm.writeInt(ARRIVING_PARTICLES_MSG);
@@ -106,7 +106,7 @@ public class WorkerToWorker {
 	}
 
 
-	public void sendBorderParticles(List<Particle> borderParticles) {
+	public void sendBorderParticles(List<IParticle> borderParticles) {
 		try {
 			WriteMessage wm = sendPort.newMessage();
 			wm.writeInt(GHOST_PARTICLES_MSG);
@@ -176,12 +176,12 @@ public class WorkerToWorker {
 					return;
 
 				case ARRIVING_PARTICLES_MSG:
-					List<Particle> particles = (List<Particle>)readMessage.readObject();
+					List<IParticle> particles = (List<IParticle>)readMessage.readObject();
 					arrivingParticlesHandler.handle(particles);
 					return;
 
 				case GHOST_PARTICLES_MSG:
-					particles = (List<Particle>)readMessage.readObject();
+					particles = (List<IParticle>)readMessage.readObject();
 					ghostParticlesHandler.handle(particles);
 					return;
 

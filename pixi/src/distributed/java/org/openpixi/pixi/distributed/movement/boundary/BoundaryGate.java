@@ -1,7 +1,7 @@
 package org.openpixi.pixi.distributed.movement.boundary;
 
 import org.openpixi.pixi.distributed.SharedData;
-import org.openpixi.pixi.physics.particles.Particle;
+import org.openpixi.pixi.physics.particles.IParticle;
 import org.openpixi.pixi.physics.force.Force;
 import org.openpixi.pixi.physics.movement.boundary.ParticleBoundary;
 import org.openpixi.pixi.physics.solver.Solver;
@@ -21,7 +21,7 @@ public class BoundaryGate extends ParticleBoundary {
 
 
 	@Override
-	public void apply(Solver solver, Force force, Particle particle, double timeStep) {
+	public void apply(Solver solver, Force force, IParticle particle, double timeStep) {
 		// Translate the position of the particle to match the position at the remote node.
 		particle.addX(-xoffset);
 		particle.addPrevX(-xoffset);

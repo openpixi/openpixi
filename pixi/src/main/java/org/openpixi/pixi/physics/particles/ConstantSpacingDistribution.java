@@ -31,7 +31,7 @@ import java.util.List;
  */
 public class ConstantSpacingDistribution {
 
-	public static List<Particle> apply(List<Particle> particles, int startIndex, int endIndex,
+	public static List<IParticle> apply(List<IParticle> particles, int startIndex, int endIndex,
 			double startX, double endX, double startY, double endY) throws IllegalArgumentException {
 		
 		int numOfParticles = endIndex - startIndex;

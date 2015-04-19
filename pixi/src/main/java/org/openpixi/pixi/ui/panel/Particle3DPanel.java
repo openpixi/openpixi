@@ -24,7 +24,7 @@ import java.awt.Graphics2D;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import org.openpixi.pixi.physics.Simulation;
-import org.openpixi.pixi.physics.particles.Particle;
+import org.openpixi.pixi.physics.particles.IParticle;
 import org.openpixi.pixi.ui.SimulationAnimation;
 import org.openpixi.pixi.ui.util.FrameRateDetector;
 import org.openpixi.pixi.ui.util.projection.LineObject;
@@ -150,7 +150,7 @@ public class Particle3DPanel extends AnimationPanel {
 
 		spheres.clear();
 
-		for (Particle p : s.particles) {
+		for (IParticle p : s.particles) {
 			double x = p.getX();
 			double y = p.getY();
 			double z = p.getZ();

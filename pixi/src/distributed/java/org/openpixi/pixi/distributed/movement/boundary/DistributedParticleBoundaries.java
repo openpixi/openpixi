@@ -2,7 +2,7 @@ package org.openpixi.pixi.distributed.movement.boundary;
 
 import org.openpixi.pixi.distributed.SharedData;
 import org.openpixi.pixi.distributed.SharedDataManager;
-import org.openpixi.pixi.physics.particles.Particle;
+import org.openpixi.pixi.physics.particles.IParticle;
 import org.openpixi.pixi.physics.force.Force;
 import org.openpixi.pixi.physics.movement.boundary.*;
 import org.openpixi.pixi.physics.solver.Solver;
@@ -129,7 +129,7 @@ public class DistributedParticleBoundaries implements ParticleBoundaries {
 
 
 	public void applyOnParticleBoundingBox(
-			Solver solver, Force force, Particle particle, double timeStep) {
+			Solver solver, Force force, IParticle particle, double timeStep) {
 		throw new UnsupportedOperationException(
 				"In distributed boundaries we can not deduce particle's position " +
 				"based on its bounding box as it would result in errors.");
@@ -137,7 +137,7 @@ public class DistributedParticleBoundaries implements ParticleBoundaries {
 
 
 	public void applyOnParticleCenter(
-			Solver solver, Force force, Particle particle, double timeStep) {
+			Solver solver, Force force, IParticle particle, double timeStep) {
 		int borderRegion = borderRegions.getRegion(particle.getX(), particle.getY());
 		for (BorderGate bg: borderMap.get(borderRegion)) {
 			bg.apply(solver, force, particle, timeStep);

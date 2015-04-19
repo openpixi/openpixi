@@ -5,8 +5,8 @@ import org.openpixi.pixi.physics.Settings;
 import org.openpixi.pixi.physics.Simulation;
 import org.openpixi.pixi.physics.fields.SimpleSolver;
 import org.openpixi.pixi.physics.force.ConstantForce;
+import org.openpixi.pixi.physics.particles.IParticle;
 import org.openpixi.pixi.physics.particles.Particle;
-import org.openpixi.pixi.physics.particles.ParticleFull;
 
 /**
  * THIS TEST IS CURRENTLY DISABLED! (it does not test the right thing)
@@ -135,7 +135,7 @@ public class ChargeConservingCICTest extends TestCase {
 		stt.setInterpolator(new ChargeConservingCIC());
 
 		// Add single particle
-		Particle p = new ParticleFull();
+		IParticle p = new Particle();
 		p.setX(x1);
 		p.setY(y1);
 		p.setVx((x2 - x1) / stt.getTimeStep());
@@ -206,7 +206,7 @@ public class ChargeConservingCICTest extends TestCase {
 		stt.setInterpolator(new ChargeConservingCIC());
 
 		// Add single particle
-		Particle p = new ParticleFull();
+		IParticle p = new Particle();
 		p.setX(x1);
 		p.setY(y1);
 		p.setVx(vx);

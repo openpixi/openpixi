@@ -1,6 +1,6 @@
 package org.openpixi.pixi.physics;
 
-import org.openpixi.pixi.physics.particles.Particle;
+import org.openpixi.pixi.physics.particles.IParticle;
 
 public class RelativisticVelocity {
 	
@@ -19,7 +19,7 @@ public class RelativisticVelocity {
 		return Math.sqrt(1 + (ux * ux + uy * uy) / (c * c));
 	}
 	
-	public double calculateGamma(Particle p) {
+	public double calculateGamma(IParticle p) {
 		return calculateGamma(p.getVx(), p.getVy(), p.getVz());
 	}
 

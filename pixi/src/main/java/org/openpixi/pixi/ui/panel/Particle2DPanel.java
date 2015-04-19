@@ -26,12 +26,9 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.geom.AffineTransform;
 
-import javax.swing.JPanel;
-
 import org.openpixi.pixi.physics.Simulation;
-import org.openpixi.pixi.physics.particles.Particle;
+import org.openpixi.pixi.physics.particles.IParticle;
 import org.openpixi.pixi.ui.SimulationAnimation;
-import org.openpixi.pixi.ui.SimulationAnimationListener;
 import org.openpixi.pixi.ui.util.FrameRateDetector;
 
 
@@ -101,7 +98,7 @@ public class Particle2DPanel extends AnimationPanel {
 		double sy = getHeight() / s.getHeight();
 
 		for (int i = 0; i < s.particles.size(); i++) {
-			Particle par = (Particle) s.particles.get(i);
+			IParticle par = (IParticle) s.particles.get(i);
 			graph.setColor(par.getColor());
 			double radius = par.getRadius();//double radius = par.getRadius()*(2 - 1.9*par.getZ()/s.getDepth());
 			int width = (int) (2*sx*radius);

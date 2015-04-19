@@ -1,6 +1,6 @@
 package org.openpixi.pixi.parallel.particleaccess;
 
-import org.openpixi.pixi.physics.particles.Particle;
+import org.openpixi.pixi.physics.particles.IParticle;
 
 import java.util.List;
 
@@ -9,8 +9,8 @@ import java.util.List;
  */
 public class SequentialParticleIterator implements ParticleIterator {
 
-	public void execute(List<Particle> particles, ParticleAction action) {
-		for (Particle particle: particles) {
+	public void execute(List<IParticle> particles, ParticleAction action) {
+		for (IParticle particle: particles) {
 			action.execute(particle);
 		}
 	}

@@ -5,7 +5,7 @@ import java.util.List;
 
 public class ConstantVelocityDistribution{
 
-	public static List<Particle> apply(List<Particle> particles, int startIndex, int endIndex,
+	public static List<IParticle> apply(List<IParticle> particles, int startIndex, int endIndex,
 			double constantVelocityX, double constantVelocityY) {
 		
 		for(int i = startIndex; i < endIndex; i++) {

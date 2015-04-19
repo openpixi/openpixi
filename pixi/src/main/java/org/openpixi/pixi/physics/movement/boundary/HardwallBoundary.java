@@ -1,7 +1,7 @@
 package org.openpixi.pixi.physics.movement.boundary;
 
 import org.openpixi.pixi.physics.force.Force;
-import org.openpixi.pixi.physics.particles.Particle;
+import org.openpixi.pixi.physics.particles.IParticle;
 import org.openpixi.pixi.physics.solver.Solver;
 
 /**
@@ -18,7 +18,7 @@ public class HardwallBoundary extends ParticleBoundary {
 	 * Since we are modifying the velocity we need to bring it from the half step to whole step.
 	 */
 	@Override
-	public void apply(Solver solver, Force force, Particle particle, double timeStep) {
+	public void apply(Solver solver, Force force, IParticle particle, double timeStep) {
 		solver.complete(particle, force, timeStep);
 
 		if (xoffset < 0) {

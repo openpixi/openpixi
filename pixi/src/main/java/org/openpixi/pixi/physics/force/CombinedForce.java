@@ -1,7 +1,7 @@
 package org.openpixi.pixi.physics.force;
 
 
-import org.openpixi.pixi.physics.particles.Particle;
+import org.openpixi.pixi.physics.particles.IParticle;
 
 import java.util.ArrayList;
 
@@ -26,7 +26,7 @@ public class CombinedForce implements Force {
 		forces.clear();
 	}
 
-	public double getForceX(Particle p) {
+	public double getForceX(IParticle p) {
 		double sum = 0;
 		for (Force f : forces) {
 			sum += f.getForceX(p);
@@ -34,7 +34,7 @@ public class CombinedForce implements Force {
 		return sum;
 	}
 
-	public double getForceY(Particle p) {
+	public double getForceY(IParticle p) {
 		double sum = 0;
 		for (Force f : forces) {
 			sum += f.getForceY(p);
@@ -42,7 +42,7 @@ public class CombinedForce implements Force {
 		return sum;
 	}
 	
-	public double getForceZ(Particle p) {
+	public double getForceZ(IParticle p) {
 		double sum = 0;
 		for (Force f : forces) {
 			sum += f.getForceZ(p);

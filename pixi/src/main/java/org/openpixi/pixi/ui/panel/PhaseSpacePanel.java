@@ -5,7 +5,7 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 
 import org.openpixi.pixi.physics.Simulation;
-import org.openpixi.pixi.physics.particles.Particle;
+import org.openpixi.pixi.physics.particles.IParticle;
 import org.openpixi.pixi.ui.SimulationAnimation;
 
 /**
@@ -39,7 +39,7 @@ public class PhaseSpacePanel extends AnimationPanel {
 		double panelHeight = getHeight();
 
 		for (int i = 0; i < s.particles.size(); i++) {
-			Particle par = (Particle) s.particles.get(i);
+			IParticle par = (IParticle) s.particles.get(i);
 			graph.setColor(par.getColor());
 			double radius = par.getRadius();
 			int width = (int) (2*sx*radius);

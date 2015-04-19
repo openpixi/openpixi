@@ -1,6 +1,6 @@
 package org.openpixi.pixi.physics.grid;
 
-import org.openpixi.pixi.physics.particles.Particle;
+import org.openpixi.pixi.physics.particles.IParticle;
 
 import java.util.List;
 
@@ -15,9 +15,9 @@ public abstract class Interpolation {
 		this.interpolator = interpolator;
 	}
 
-	public abstract void interpolateToGrid(List<Particle> particles, Grid grid, double tstep);
+	public abstract void interpolateToGrid(List<IParticle> particles, Grid grid, double tstep);
 
-	public abstract void interpolateToParticle(List<Particle> particles, Grid grid);
+	public abstract void interpolateToParticle(List<IParticle> particles, Grid grid);
 
-	public abstract void interpolateChargedensity(List<Particle> particles, Grid grid);
+	public abstract void interpolateChargedensity(List<IParticle> particles, Grid grid);
 }

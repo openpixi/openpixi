@@ -3,7 +3,7 @@ package org.openpixi.pixi.ui.util.yaml;
 import java.util.Random;
 
 import org.openpixi.pixi.physics.Settings;
-import org.openpixi.pixi.physics.particles.ParticleFull;
+import org.openpixi.pixi.physics.particles.Particle;
 
 public class YamlParticleStream {
 	public YamlParticle particle;
@@ -33,7 +33,7 @@ public class YamlParticleStream {
 	 * @param settings Settings object to which particles are added.
 	 */
 	public void applyTo(Settings settings) {
-		ParticleFull p;
+		Particle p;
 		double dx = 0;
 		double dy = 0;
 		double dz = 0;
@@ -73,7 +73,7 @@ public class YamlParticleStream {
 		}
 	}
 
-	private void applyRandomModifications(ParticleFull p) {
+	private void applyRandomModifications(Particle p) {
 		if (this.randomX != null) {
 			p.addX(random.nextDouble() * this.randomX);
 		}

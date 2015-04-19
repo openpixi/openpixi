@@ -25,7 +25,7 @@ import java.util.Random;
 
 public class RandomPositionDistribution {
 
-	public static List<Particle> apply(List<Particle> particles, int startIndex, int endIndex,
+	public static List<IParticle> apply(List<IParticle> particles, int startIndex, int endIndex,
 			double startX, double endX, double startY, double endY, double startZ, double endZ,
 			long seed) {
 		
@@ -40,7 +40,7 @@ public class RandomPositionDistribution {
 		return particles;
 	}
 	
-	public static List<Particle> apply(List<Particle> particles, int startIndex, int endIndex,
+	public static List<IParticle> apply(List<IParticle> particles, int startIndex, int endIndex,
 			double startX, double endX, double startY, double endY,
 			long seed) {
 		

@@ -25,7 +25,7 @@ import java.util.Random;
 
 public class RandomVelocityDistribution {
 
-	public static List<Particle> apply(List<Particle> particles, int startIndex, int endIndex,
+	public static List<IParticle> apply(List<IParticle> particles, int startIndex, int endIndex,
 			double minVelocityX, double minVelocityY, double maxVelocity,
 			long seed) {
 		
@@ -56,7 +56,7 @@ public class RandomVelocityDistribution {
 		return particles;
 	}
 	
-	public static List<Particle> apply(List<Particle> particles, int startIndex, int endIndex,
+	public static List<IParticle> apply(List<IParticle> particles, int startIndex, int endIndex,
 			double avVelocityX, double avVelocityY, double avVelocityZ, double VelocityWidth,
 			long seed) {
 		

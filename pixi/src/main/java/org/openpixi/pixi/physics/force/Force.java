@@ -19,23 +19,23 @@
 //First I would like to start with very simple class Force.java, so we could see the graphic result.
 package org.openpixi.pixi.physics.force;
 
-import org.openpixi.pixi.physics.particles.Particle;
+import org.openpixi.pixi.physics.particles.IParticle;
 
 public interface Force {
 
 	/**
 	 * Total force in the x-direction.
 	 */
-	double getForceX(Particle p);
+	double getForceX(IParticle p);
 
 	/**
 	 * Total force in the y-direction.
 	 */
-	double getForceY(Particle p);
+	double getForceY(IParticle p);
 
 	/**
 	 * Total force in the y-direction.
 	 */
-	double getForceZ(Particle p);
+	double getForceZ(IParticle p);
 
 }

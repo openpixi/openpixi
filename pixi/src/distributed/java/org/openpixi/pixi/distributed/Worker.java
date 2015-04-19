@@ -7,7 +7,7 @@ import org.openpixi.pixi.distributed.ibis.WorkerToMaster;
 import org.openpixi.pixi.distributed.movement.boundary.DistributedParticleBoundaries;
 import org.openpixi.pixi.distributed.util.BooleanLock;
 import org.openpixi.pixi.distributed.util.IncomingProblemHandler;
-import org.openpixi.pixi.physics.particles.Particle;
+import org.openpixi.pixi.physics.particles.IParticle;
 import org.openpixi.pixi.physics.Settings;
 import org.openpixi.pixi.physics.Simulation;
 import org.openpixi.pixi.physics.grid.Cell;
@@ -41,7 +41,7 @@ public class Worker {
 
 	/* Received problem */
 	private IntBox[] partitions;
-	private List<Particle> particles;
+	private List<IParticle> particles;
 	private Cell[][] cells;
 
 	private BooleanLock recvProblemLock = new BooleanLock();
@@ -215,7 +215,7 @@ public class Worker {
 
 
 	private class ProblemHandler implements IncomingProblemHandler {
-		public void handle(IntBox[] partitions, List<Particle> particles, Cell[][] cells) {
+		public void handle(IntBox[] partitions, List<IParticle> particles, Cell[][] cells) {
 			Worker.this.partitions = partitions;
 			Worker.this.particles = particles;
 			Worker.this.cells = cells;

@@ -4,7 +4,7 @@ import java.awt.Color;
 import java.lang.reflect.Field;
 
 import org.openpixi.pixi.physics.Settings;
-import org.openpixi.pixi.physics.particles.ParticleFull;
+import org.openpixi.pixi.physics.particles.Particle;
 
 public class YamlParticle {
 	public Double x;
@@ -20,7 +20,7 @@ public class YamlParticle {
 
 	public void applyTo(Settings settings) {
 
-		ParticleFull p = getParticle();
+		Particle p = getParticle();
 
 		settings.addParticle(p);
 	}
@@ -30,8 +30,8 @@ public class YamlParticle {
 	 * YAML document to it.
 	 * @return new particle
 	 */
-	public ParticleFull getParticle() {
-		ParticleFull p = new ParticleFull();
+	public Particle getParticle() {
+		Particle p = new Particle();
 
 		if (x != null) {
 			p.setX(x);

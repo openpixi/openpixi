@@ -2,7 +2,7 @@ package org.openpixi.pixi.physics.force.relativistic;
 
 import org.openpixi.pixi.physics.RelativisticVelocity;
 import org.openpixi.pixi.physics.force.ConstantForce;
-import org.openpixi.pixi.physics.particles.Particle;
+import org.openpixi.pixi.physics.particles.IParticle;
 
 public class ConstantForceRelativistic extends ConstantForce {
 	
@@ -29,7 +29,7 @@ public class ConstantForceRelativistic extends ConstantForce {
 	
 	//getting the force in the x - direction
 	@Override
-	public double getForceX(Particle p) {
+	public double getForceX(IParticle p) {
 		double gamma = relvelocity.calculateGamma(p);
 		
 		//v = u / gamma
@@ -43,7 +43,7 @@ public class ConstantForceRelativistic extends ConstantForce {
 	
 	//getting the force in the y - direction
 	@Override
-	public double getForceY(Particle p) {
+	public double getForceY(IParticle p) {
 		double gamma = relvelocity.calculateGamma(p);
 		
 		//v = u / gamma
@@ -57,7 +57,7 @@ public class ConstantForceRelativistic extends ConstantForce {
 	
 	//getting the force in the z - direction
 	@Override
-	public double getForceZ(Particle p) {
+	public double getForceZ(IParticle p) {
 		double gamma = relvelocity.calculateGamma(p);
 
 		//v = u / gamma

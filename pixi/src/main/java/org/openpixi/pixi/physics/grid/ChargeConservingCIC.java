@@ -1,7 +1,7 @@
 package org.openpixi.pixi.physics.grid;
 
 import org.openpixi.pixi.physics.Debug;
-import org.openpixi.pixi.physics.particles.Particle;
+import org.openpixi.pixi.physics.particles.IParticle;
 
 /**
  *Interpolates current from the particles to the grid in a way s.t. the continuity equation 
@@ -14,7 +14,7 @@ import org.openpixi.pixi.physics.particles.Particle;
 public class ChargeConservingCIC extends CloudInCell {
 
 	@Override
-	public void interpolateToGrid(Particle p, Grid g, double tstep) {
+	public void interpolateToGrid(IParticle p, Grid g, double tstep) {
 		
 		if(g.getNumCellsZ() > 1) {
 			interpolateToGrid3D(p, g, tstep);
@@ -97,7 +97,7 @@ public class ChargeConservingCIC extends CloudInCell {
 	 * @param tstep
 	 */
 	private void fourBoundaryMove(int lx, int ly, double x, double y,
-								  double deltaX, double deltaY, Particle p, Grid g, double tstep) {
+								  double deltaX, double deltaY, IParticle p, Grid g, double tstep) {
 		//A few cancellations were made to reduce computation time. Till this point the algorithm has
 		//calculated the area that swept over a cell boundary for a normalized grid (i.e. unit square cells).
 		//and unit square charges. This area needs to be denormalized and then multiplied with the charge
@@ -128,7 +128,7 @@ public class ChargeConservingCIC extends CloudInCell {
 	}
 
 	private void sevenBoundaryMove(double x, double y, int xStart, int yStart, int xEnd, int yEnd,
-								   double deltaX, double deltaY, Particle p, Grid g, double tstep) {
+								   double deltaX, double deltaY, IParticle p, Grid g, double tstep) {
 		//7-boundary move with equal y?
 		if (yStart == yEnd) {
 			//particle moves right?
@@ -191,7 +191,7 @@ public class ChargeConservingCIC extends CloudInCell {
 	}
 
 	private void tenBoundaryMove(double x, double y, int xStart, int yStart, int xEnd, int yEnd,
-								 double deltaX, double deltaY, Particle p, Grid g, double tstep) {
+								 double deltaX, double deltaY, IParticle p, Grid g, double tstep) {
 		//moved right?
 		if (xEnd == (xStart+1)) {
 			//moved up?
@@ -446,7 +446,7 @@ public class ChargeConservingCIC extends CloudInCell {
 		}
 	}
 	
-private void interpolateToGrid3D(Particle p, Grid g, double tstep) {
+private void interpolateToGrid3D(IParticle p, Grid g, double tstep) {
 		
 		/**X index of local origin i.e. nearest grid point BEFORE particle push*/
 		int xStart;

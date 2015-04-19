@@ -18,9 +18,8 @@
  */
 package org.openpixi.pixi.physics.solver;
 
-import org.openpixi.pixi.physics.*;
 import org.openpixi.pixi.physics.force.Force;
-import org.openpixi.pixi.physics.particles.Particle;
+import org.openpixi.pixi.physics.particles.IParticle;
 
 /**This class represents the LeapFrog algorithm and the equations that are used one can be find here:
  * http://phycomp.technion.ac.il/~david/thesis/node34.html
@@ -40,11 +39,11 @@ public class LeapFrog implements Solver{
 	 * @param p before the update: x(t), v(t+dt/2), a(t);
 	 *                 after the update: x(t+dt), v(t+3*dt/2), a(t+dt)
 	 */
-	public void step(Particle p, Force f, double dt) {
+	public void step(IParticle p, Force f, double dt) {
 		// x(t+dt) = x(t) + v(t+dt/2)*dt
-		p.setX(p.getX() + p.getVx() * dt);
-		p.setY(p.getY() + p.getVy() * dt);
-		p.setZ(p.getZ() + p.getVz() * dt);
+		p.addX(p.getVx() * dt);
+		p.addY(p.getVy() * dt);
+		p.addY(p.getVz() * dt);
 
 		// a(t+dt) = F(v(t+dt/2), x(t+dt)) / m
 		// WARNING: Force is evaluated at two different times t+dt/2 and t+dt!
@@ -63,7 +62,7 @@ public class LeapFrog implements Solver{
 	 * @param p before the update: v(t);
 	 *                 after the update: v(t+dt/2)
 	 */
-	public void prepare(Particle p, Force f, double dt)
+	public void prepare(IParticle p, Force f, double dt)
 	{
 		//a(t) = F(v(t), x(t)) / m
 		p.setAx(f.getForceX(p) / p.getMass());
@@ -80,7 +79,7 @@ public class LeapFrog implements Solver{
 	 * @param p before the update: v(t+dt/2);
 	 *                 after the update: v(t)
 	 */
-	public void complete(Particle p, Force f, double dt)
+	public void complete(IParticle p, Force f, double dt)
 	{
 		//v(t) = v(t + dt / 2) - a(t)*dt / 2
 		p.setVx(p.getVx() - p.getAx() * dt / 2);
