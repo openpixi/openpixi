@@ -6,6 +6,7 @@ gridCellsY: 64
 gridCellsZ: 64
 poissonsolver: fft
 timeStep: 0.2
+speedOfLight: 1
 duration: 1000
 
 streams:
@@ -36,7 +37,7 @@ streams:
       vz: 0
       r: 0.2
       m: 10
-      q: -.1
+      q: .1
       color: blue
     dx: 0
     dy: 0.0625
