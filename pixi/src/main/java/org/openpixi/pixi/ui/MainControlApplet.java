@@ -81,23 +81,6 @@ public class MainControlApplet extends JApplet
 	private static final double speedSliderScaling = 0.07;
 	private static final double stepSliderScaling = 0.01;
 
-	String[] initStrings = {
-			"10 random particles",
-			"100 random particles",
-			"1000 random particles",
-			"10000 random particles",
-			"",
-			"",
-			"",
-            "Pair of particles",
-            "Two stream instability",
-            "Weibel instability",
-            "One particle test",
-            "Wave propagation test",
-            "Two particles in 3D",
-            "Two stream instability in 3D",
-            "Weibel instability in 3D"};
-
 	String[] solverString = {
 			"LeapFrog"};
 
