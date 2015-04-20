@@ -1,11 +1,11 @@
 # Weibel instability
 
-gridStep: 1
-gridCellsX: 64
-gridCellsY: 64
-gridCellsZ: 64
+gridStep: 6.4
+gridCellsX: 10
+gridCellsY: 10
+gridCellsZ: 10
 poissonsolver: fft
-timeStep: 0.2
+timeStep: 0.02
 speedOfLight: 1
 duration: 1000
 
@@ -16,16 +16,16 @@ streams:
       y: 0
       z: 32
       vx: 0
-      vy: .99
+      vy: -.99
       vz: 0
-      r: 0.2
+      r: 0
       m: 10
       q: .1
       color: red
     dx: 0
     dy: 0.0625
-    randomGaussX: 1.5
-    randomGaussZ: 1.5
+    randomGaussX: 2.5
+    randomGaussZ: 2.5
     number: 1024
   # second stream:
   - particle:
@@ -33,14 +33,14 @@ streams:
       y: 0
       z: 32
       vx: 0
-      vy: -.99
+      vy: .99
       vz: 0
-      r: 0.2
+      r: 0
       m: 10
       q: .1
       color: blue
     dx: 0
     dy: 0.0625
-    randomGaussX: 1.5
-    randomGaussZ: 1.5
+    randomGaussX: 2.5
+    randomGaussZ: 2.5
     number: 1024
