@@ -19,7 +19,6 @@ import org.openpixi.pixi.physics.force.Force;
 import org.openpixi.pixi.physics.force.SimpleGridForce;
 import org.openpixi.pixi.physics.force.relativistic.ConstantForceRelativistic;
 import org.openpixi.pixi.physics.force.relativistic.SimpleGridForceRelativistic;
-import org.openpixi.pixi.physics.movement.boundary.ParticleBoundaryType;
 import org.openpixi.pixi.physics.solver.LeapFrog;
 import org.openpixi.pixi.physics.solver.relativistic.LeapFrogRelativistic;
 import org.openpixi.pixi.ui.panel.Particle2DPanel;
@@ -223,17 +222,6 @@ public class SimulationAnimation {
 					s.getParticleMover().setSolver(new LeapFrogRelativistic(s.getSpeedOfLight()));
 					break;
 			}
-		}
-
-	}
-
-	public void boundariesChange(int i) {
-		switch(i) {
-		case 0:
-			s.getParticleMover().changeBoundaryType(ParticleBoundaryType.Hardwall);
-			break;
-		case 1:
-			s.getParticleMover().changeBoundaryType(ParticleBoundaryType.Periodic);
 		}
 
 	}
