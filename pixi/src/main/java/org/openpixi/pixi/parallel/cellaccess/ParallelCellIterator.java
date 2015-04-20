@@ -83,7 +83,7 @@ public class ParallelCellIterator extends CellIterator {
 
             pos[0] = ci % dimensions.xsize() + dimensions.xmin();
             ci = (ci - pos[0]) / dimensions.xsize();
-            pos[1] = ci % dimensions.xsize() + dimensions.ymin();
+            pos[1] = ci % dimensions.ysize() + dimensions.ymin();
             ci = (ci - pos[1]) / dimensions.ysize();
             pos[2] = ci % dimensions.zsize() + dimensions.zmin();
 
