@@ -31,22 +31,22 @@ public class Particle implements IParticle, Serializable
 		this(3, 1);
 	}
 
-	public Particle(int d, int c)
+	public Particle(int numberOfDimensions, int numberOfColors)
 	{
-		this.setNumberOfDimensions(d);
-		this.setNumberOfColors(c);
+		this.setNumberOfDimensions(numberOfDimensions);
+		this.setNumberOfColors(numberOfColors);
 	}
 
 	/*
 			GETTERS
 	 */
 
-	public double getPosition(int d)        {   return pos[d];              }
-	public double getPrevPosition(int d)    {   return prevPos[d];          }
-	public double getVelocity(int d)        {   return vel[d];              }
-	public double getAcceleration(int d)    {   return acc[d];              }
+	public double getPosition(int i)        {   return pos[i];              }
+	public double getPrevPosition(int i)    {   return prevPos[i];          }
+	public double getVelocity(int i)        {   return vel[i];              }
+	public double getAcceleration(int i)    {   return acc[i];              }
 
-	public double getE(int d, int c)        {   return E[d][c];             }
+	public double getE(int i, int c)        {   return E[i][c];             }
 	public double getF(int i, int j, int c) {   return F[i][j][c];          }
 
 	public double getCharge(int c)          {   return charge[c];           }
@@ -89,19 +89,19 @@ public class Particle implements IParticle, Serializable
 			SETTERS
 	 */
 
-	public void setPosition(int d, double value)                {   this.pos[d] = value;            }
-	public void addPosition(int d, double value)                {   this.pos[d] += value;           }
+	public void setPosition(int i, double value)                {   this.pos[i] = value;            }
+	public void addPosition(int i, double value)                {   this.pos[i] += value;           }
 
-	public void setPrevPosition(int d, double value)            {   this.prevPos[d] = value;        }
-	public void addPrevPosition(int d, double value)            {   this.prevPos[d] += value;       }
+	public void setPrevPosition(int i, double value)            {   this.prevPos[i] = value;        }
+	public void addPrevPosition(int i, double value)            {   this.prevPos[i] += value;       }
 
-	public void setVelocity(int d, double value)                {   this.vel[d] = value;            }
-	public void addVelocity(int d, double value)                {   this.vel[d] += value;           }
+	public void setVelocity(int i, double value)                {   this.vel[i] = value;            }
+	public void addVelocity(int i, double value)                {   this.vel[i] += value;           }
 
-	public void setAcceleration(int d, double value)            {   this.acc[d] = value;            }
-	public void addAcceleration(int d, double value)            {   this.acc[d] += value;           }
+	public void setAcceleration(int i, double value)            {   this.acc[i] = value;            }
+	public void addAcceleration(int i, double value)            {   this.acc[i] += value;           }
 
-	public void setE(int d, int c, double E)                    {   this.E[d][c] = E;               }
+	public void setE(int i, int c, double E)                    {   this.E[i][c] = E;               }
 	public void setF(int i, int j, int c, double F)             {   this.F[i][j][c] = F;            }
 
 	public void setNumberOfColors(int numberOfColors)
@@ -218,12 +218,12 @@ public class Particle implements IParticle, Serializable
 		p.setNumberOfDimensions(this.numberOfDimensions);
 		p.setNumberOfColors(this.numberOfColors);
 
-		for (int d = 0; d < this.numberOfDimensions; d++)
+		for (int i = 0; i < this.numberOfDimensions; i++)
 		{
-			p.setPosition(d, this.pos[d]);
-			p.setPrevPosition(d, this.prevPos[d]);
-			p.setVelocity(d, this.vel[d]);
-			p.setAcceleration(d, this.acc[d]);
+			p.setPosition(i, this.pos[i]);
+			p.setPrevPosition(i, this.prevPos[i]);
+			p.setVelocity(i, this.vel[i]);
+			p.setAcceleration(i, this.acc[i]);
 		}
 
 
@@ -251,10 +251,10 @@ public class Particle implements IParticle, Serializable
 	public String toString()
 	{
 		String output = "[";
-		for(int d = 0; d < this.numberOfDimensions; d++)
+		for(int i = 0; i < this.numberOfDimensions; i++)
 		{
-			output += this.pos[d];
-			if(d < this.numberOfDimensions - 1)
+			output += this.pos[i];
+			if(i < this.numberOfDimensions - 1)
 				output += ",";
 		}
 		output += "]";

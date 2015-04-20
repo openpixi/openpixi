@@ -6,7 +6,7 @@ package org.openpixi.pixi.physics.particles;
 public class ImmobileParticle extends Particle
 {
 
-	public double getVelocity(int d)        {   return 0;              }
-	public double getAcceleration(int d)    {   return 0;              }
+	public double getVelocity(int i)        {   return 0;              }
+	public double getAcceleration(int i)    {   return 0;              }
 
 }
