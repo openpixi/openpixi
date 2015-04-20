@@ -26,7 +26,6 @@ import javax.swing.event.*;
 
 import org.openpixi.pixi.physics.Debug;
 import org.openpixi.pixi.physics.Simulation;
-import org.openpixi.pixi.physics.movement.boundary.ParticleBoundaryType;
 import org.openpixi.pixi.physics.solver.*;
 import org.openpixi.pixi.physics.solver.relativistic.*;
 import org.openpixi.pixi.ui.panel.AnimationPanel;
@@ -56,18 +55,10 @@ public class MainControlApplet extends JApplet
 	private JCheckBox calculateFieldsCheck;
 	private JCheckBox relativisticCheck;
 
-	private JTextField xboxentry;
-	private JTextField yboxentry;
-	private JTextField zboxentry;
-
-	private JComboBox initComboBox;
 	private JComboBox algorithmComboBox;
 	private JCheckBox traceCheck;
-	private JRadioButton hardBoundaries;
-	private JRadioButton periodicBoundaries;
 
 	private JTabbedPane tabs;
-	private JSplitPane splitPane;
 
 	private SimulationAnimation simulationAnimation;
 
@@ -96,15 +87,6 @@ public class MainControlApplet extends JApplet
 				int delay = (int) (1000 * Math.exp(-source.getValue() * speedSliderScaling));
 				timer.setDelay(delay);
 			}
-		}
-	}
-
-	class ComboBoxListener implements ActionListener {
-		public void actionPerformed(ActionEvent e) {
-			JComboBox cb = (JComboBox) e.getSource();
-			int id  = cb.getSelectedIndex();
-			simulationAnimation.resetAnimation(id);
-			setSlidersValue();
 		}
 	}
 
@@ -155,18 +137,6 @@ public class MainControlApplet extends JApplet
 	class CheckListener implements ItemListener {
 		public void itemStateChanged(ItemEvent eve){
 				particlePanel.checkTrace();
-		}
-	}
-
-	class SelectBoundaries implements ActionListener {
-		public void actionPerformed(ActionEvent eve) {
-			AbstractButton abut = (AbstractButton) eve.getSource();
-			if(abut.equals(hardBoundaries)) {
-				simulationAnimation.boundariesChange(0);
-			}
-			else if(abut.equals(periodicBoundaries)) {
-				simulationAnimation.boundariesChange(1);
-			}
 		}
 	}
 
@@ -235,19 +205,6 @@ public class MainControlApplet extends JApplet
 		}
 	}
 
-	class BoxDimension implements ActionListener{
-		public void actionPerformed(ActionEvent eve) {
-			Simulation s = simulationAnimation.getSimulation();
-			int xbox = Integer.parseInt(xboxentry.getText());
-			int ybox = Integer.parseInt(yboxentry.getText());
-			int zbox = Integer.parseInt(zboxentry.getText());
-			double width = s.getWidth();
-			double height = s.getHeight();
-			double depth = s.getDepth();
-			s.grid.changeSize(xbox, ybox, zbox, width, height, depth);
-		}
-	}
-
 	/**
 	 * Constructor.
 	 */
@@ -297,17 +254,6 @@ public class MainControlApplet extends JApplet
 		step.add(stepLabel);
 		step.add(stepSlider);
 
-		/*
-		initComboBox = new JComboBox(initStrings);
-		initComboBox.setSelectedIndex(0);
-		initComboBox.addActionListener(new ComboBoxListener());
-		JLabel initComboBoxLabel = new JLabel("Initial conditions");
-		Box initBox = Box.createHorizontalBox();
-		initBox.add(initComboBoxLabel);
-		initBox.add(Box.createHorizontalGlue());
-		initBox.add(initComboBox);
-		*/
-
 		algorithmComboBox = new JComboBox(solverString);
 		algorithmComboBox.setSelectedIndex(0);
 		algorithmComboBox.addActionListener(new AlgorithmListener());
@@ -343,45 +289,12 @@ public class MainControlApplet extends JApplet
 		framerateCheck = new JCheckBox("Info");
 		framerateCheck.addItemListener(new FrameListener());
 
-		xboxentry = new JTextField(2);
-		xboxentry.setText("10");
-		xboxentry.addActionListener(new BoxDimension());
-
-		yboxentry = new JTextField(2);
-		yboxentry.setText("10");
-		yboxentry.addActionListener(new BoxDimension());
-		
-		zboxentry = new JTextField(2);
-		zboxentry.setText("10");
-		zboxentry.addActionListener(new BoxDimension());
-
-		hardBoundaries = new JRadioButton("Hardwall");
-		periodicBoundaries = new JRadioButton("Periodic");
-
-		ButtonGroup bgroup = new ButtonGroup();
-
-		bgroup.add(hardBoundaries);
-		bgroup.add(periodicBoundaries);
-
-		hardBoundaries.addActionListener(new SelectBoundaries());
-		periodicBoundaries.addActionListener(new SelectBoundaries());
-
-		JPanel boundaries = new JPanel();
-		boundaries.add(hardBoundaries);
-		boundaries.add(periodicBoundaries);
-		JLabel boundariesLabel = new JLabel("Boundaries");
-
-		JLabel xboxentryLabel = new JLabel("Cell width");
-		JLabel yboxentryLabel = new JLabel("Cell height");
-		JLabel zboxentryLabel = new JLabel("Cell depth");
-
 		JPanel controlPanelUp = new JPanel();
 		controlPanelUp.setLayout(new FlowLayout());
 		controlPanelUp.add(startButton);
 		controlPanelUp.add(stopButton);
 		controlPanelUp.add(resetButton);
 		controlPanelUp.add(Box.createHorizontalStrut(25));
-		//controlPanelUp.add(initBox);
 		controlPanelUp.add(Box.createHorizontalStrut(25));
 		Box settingControls = Box.createVerticalBox();
 		JPanel controlPanelDown = new JPanel();
@@ -394,8 +307,6 @@ public class MainControlApplet extends JApplet
 		settingControls.add(Box.createVerticalGlue());
 		settingControls.add(step);
 		settingControls.add(Box.createVerticalGlue());
-		settingControls.add(boundariesLabel);
-		settingControls.add(boundaries);
 		settingControls.add(traceCheck);
 		settingControls.add(framerateCheck);
 
@@ -408,17 +319,6 @@ public class MainControlApplet extends JApplet
 
 		tabs = new JTabbedPane();
 
-		Box xbox = Box.createHorizontalBox();
-		Box ybox = Box.createHorizontalBox();
-		xbox.add(Box.createHorizontalStrut(50));
-		xbox.add(xboxentryLabel);
-		xbox.add(Box.createHorizontalStrut(100));
-		xbox.add(xboxentry);
-		ybox.add(Box.createHorizontalStrut(50));
-		ybox.add(yboxentryLabel);
-		ybox.add(Box.createHorizontalStrut(96));
-		ybox.add(yboxentry);
-
 		Box cellSettings = Box.createVerticalBox();
 		cellSettings.add(Box.createVerticalStrut(20));
 		cellSettings.add(calculateFieldsCheck);
@@ -426,10 +326,6 @@ public class MainControlApplet extends JApplet
 		cellSettings.add(currentgridCheck);
 		cellSettings.add(Box.createVerticalGlue());
 		cellSettings.add(drawFieldsCheck);
-		cellSettings.add(Box.createVerticalStrut(20));
-		cellSettings.add(xbox);
-		cellSettings.add(Box.createVerticalStrut(10));
-		cellSettings.add(ybox);
 		cellSettings.add(Box.createVerticalStrut(200));
 
 		this.fileTab = new FileTab(MainControlApplet.this, simulationAnimation);
@@ -679,17 +575,6 @@ public class MainControlApplet extends JApplet
 		stepSlider.setValue((int)(s.tstep / stepSliderScaling));
 		speedSlider.setValue(50);
 		timer.setDelay((int) (1000 * Math.exp(-50 * speedSliderScaling)));
-		xboxentry.setText("10");
-		yboxentry.setText("10");
-		zboxentry.setText("10");
-		if(s.getParticleMover().getBoundaryType() == ParticleBoundaryType.Hardwall) {
-			hardBoundaries.setSelected(true);
-			periodicBoundaries.setSelected(false);
-		}
-		else if(s.getParticleMover().getBoundaryType() == ParticleBoundaryType.Periodic) {
-			hardBoundaries.setSelected(false);
-			periodicBoundaries.setSelected(true);
-		}
 
 
 		// Set algorithm UI according to current setting
