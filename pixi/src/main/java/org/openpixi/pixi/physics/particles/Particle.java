@@ -205,12 +205,6 @@ public class Particle implements IParticle, Serializable
 		prevPos = pos.clone();
 	}
 
-	public void applyPeriodicBoundary(double boundaryX, double boundaryY, double boundaryZ) {
-		this.setPosition(0, (this.getPosition(0) + boundaryX) % boundaryX);
-		this.setPosition(1, (this.getPosition(1) + boundaryY) % boundaryY);
-		this.setPosition(2, (this.getPosition(2) + boundaryZ) % boundaryZ);
-	}
-
 	public IParticle copy()
 	{
 		Particle p = new Particle();

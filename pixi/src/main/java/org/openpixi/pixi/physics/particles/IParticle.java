@@ -181,8 +181,6 @@ public interface IParticle
 
 	void storePosition();
 
-	void applyPeriodicBoundary(double argument1, double argument2, double argument3);
-
 	IParticle copy();
 
 	String toString();

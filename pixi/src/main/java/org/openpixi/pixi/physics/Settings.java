@@ -15,7 +15,6 @@ import org.openpixi.pixi.physics.force.CombinedForce;
 import org.openpixi.pixi.physics.force.Force;
 import org.openpixi.pixi.physics.grid.GridBoundaryType;
 import org.openpixi.pixi.physics.grid.InterpolatorAlgorithm;
-import org.openpixi.pixi.physics.movement.boundary.ParticleBoundaryType;
 import org.openpixi.pixi.physics.particles.IParticle;
 import org.openpixi.pixi.physics.particles.ParticleFactory.PositionDistribution;
 import org.openpixi.pixi.physics.particles.ParticleFactory.VelocityDistribution;
@@ -55,6 +54,7 @@ public class Settings {
 	//----------------------------------------------------------------------------------------------
 	private double speedOfLight = 1;
 	private int    numberOfColors = 1;
+	private int	   numberOfDimensions = 3;
 	private double timeStep = 0.1;
 	private double gridStep = 1;
 	private double tMax = 1000;
@@ -62,7 +62,6 @@ public class Settings {
 	private String filePath = "default";
 	private GeneralBoundaryType boundaryType = GeneralBoundaryType.Periodic;
 	private InterpolatorAlgorithm interpolator = new ChargeConservingCIC();
-	//private InterpolatorAlgorithm interpolator = new CloudInCell();
 	// Grid related settings
 	private int gridCellsX = 10;
 	private int gridCellsY = 10;
@@ -82,8 +81,6 @@ public class Settings {
 	private double particleMaxSpeed = speedOfLight / 3;
 	private int simulationType = 0;
 	private int writeToFile = 0;
-	private String OCLParticleSolver;
-	private String OCLGridInterpolator;
 	// Modify defaultParticleFactories() method to determine what kind of particles
 	// will be loaded by default.
 	private List<IParticle> particles = new ArrayList<IParticle>();
@@ -98,15 +95,11 @@ public class Settings {
 	// Batch version settings
 	private int iterations = (int) Math.ceil(tMax/timeStep);
 	// Parallel (threaded) version settings
-	private int numOfThreads = 6;
+	private int numOfThreads = 4;
 	/* The creation and start of the new threads is expensive. Therefore, in the parallel
 	 * simulation we use ExecutorService which is maintaining a fixed number of threads running
 	 * all the time and assigns work to the threads on the fly according to demand. */
 	private ExecutorService threadsExecutor;
-	// Distributed version settings
-	private int numOfNodes = 1;
-	private String iplServer = "localhost";
-	private String iplPool = "openpixi";
 
 	//----------------------------------------------------------------------------------------------
 	// SIMPLE GETTERS
@@ -163,8 +156,12 @@ public class Settings {
 		return speedOfLight;
 	}
 
-	public double getNumberOfColors() {
+	public int getNumberOfColors() {
 		return numberOfColors;
+	}
+
+	public int getNumberOfDimensions() {
+		return numberOfDimensions;
 	}
 
 	public double getEps0() {
@@ -195,28 +192,13 @@ public class Settings {
 		return particleSolver;
 	}
 
-	public String getOCLParticleSolver() {
-		return this.OCLParticleSolver;
-	}
-
 	public InterpolatorAlgorithm getInterpolator() {
 		return interpolator;
 	}
 
-	public String getOCLGridInterpolator() {
-		return this.OCLGridInterpolator;
-	}
-
-	public String getRunid() {
-		return runid;
-	}
 
 	public List<Diagnostics> getDiagnostics() {
 		return diagnostics;
-	}
-
-	public int getNumOfNodes() {
-		return numOfNodes;
 	}
 
 	public GeneralBoundaryType getBoundaryType() {
@@ -227,16 +209,8 @@ public class Settings {
 		return iterations;
 	}
 
-	public String getIplServer() {
-		return iplServer;
-	}
-
 	public boolean useGrid() {
 		return useGrid;
-	}
-
-	public String getIplPool() {
-		return iplPool;
 	}
 
 	//----------------------------------------------------------------------------------------------
@@ -319,24 +293,10 @@ public class Settings {
 	}
 
 	public GridBoundaryType getGridBoundary() {
-		switch (boundaryType) {
-			case Periodic:
+		switch (boundaryType)
+		{
+			default:
 				return GridBoundaryType.Periodic;
-			case Hardwall:
-				return GridBoundaryType.Hardwall;
-			default:
-				return GridBoundaryType.Hardwall;
-		}
-	}
-
-	public ParticleBoundaryType getParticleBoundary() {
-		switch (boundaryType) {
-			case Periodic:
-				return ParticleBoundaryType.Periodic;
-			case Hardwall:
-				return ParticleBoundaryType.Hardwall;
-			default:
-				return ParticleBoundaryType.Hardwall;
 		}
 	}
 
@@ -424,6 +384,11 @@ public class Settings {
 	{
 		this.numberOfColors = numberOfColors;
 	}
+	public void setNumberOfDimensions(int numberOfDimensions)
+	{
+		this.numberOfDimensions = numberOfDimensions;
+	}
+
 
 	public void setTimeStep(double timeStep) {
 		this.timeStep = timeStep;
@@ -463,20 +428,8 @@ public class Settings {
 		this.particleSolver = particleSolver;
 	}
 
-	public void setOCLParticleSolver(String OCLParticleSolver) {
-		this.OCLParticleSolver = OCLParticleSolver;
-	}
-
 	public void setInterpolator(InterpolatorAlgorithm interpolator) {
 		this.interpolator = interpolator;
-	}
-
-	public void setOCLGridInterpolator(String OCLGridInterpolator) {
-		this.OCLGridInterpolator = OCLGridInterpolator;
-	}
-
-	public void setRunid(String runid) {
-		this.runid = runid;
 	}
 
 	public void setDiagnostics(List<Diagnostics> diagnostics) {
@@ -520,24 +473,12 @@ public class Settings {
 		this.iterations = iterations;
 	}
 
-	public void setNumOfNodes(int numOfNodes) {
-		this.numOfNodes = numOfNodes;
-	}
-
 	public void setBoundary(GeneralBoundaryType boundaryType) {
 		this.boundaryType = boundaryType;
 	}
 
-	public void setIplServer(String iplServer) {
-		this.iplServer = iplServer;
-	}
-
 	public void useGrid(boolean useGrid) {
 		this.useGrid = useGrid;
-	}
-
-	public void setIplPool(String iplPool) {
-		this.iplPool = iplPool;
 	}
 
 	public void setNumOfThreads(int numOfThreads) {

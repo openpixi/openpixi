@@ -31,13 +31,12 @@ import org.openpixi.pixi.physics.grid.Grid;
 import org.openpixi.pixi.physics.grid.Interpolation;
 import org.openpixi.pixi.physics.grid.LocalInterpolation;
 import org.openpixi.pixi.physics.movement.ParticleMover;
-import org.openpixi.pixi.physics.movement.boundary.ParticleBoundaries;
-import org.openpixi.pixi.physics.movement.boundary.SimpleParticleBoundaries;
+import org.openpixi.pixi.physics.movement.boundary.IParticleBoundaryConditions;
+import org.openpixi.pixi.physics.movement.boundary.PeriodicParticleBoundaryConditions;
 import org.openpixi.pixi.physics.particles.IParticle;
 import org.openpixi.pixi.physics.util.DoubleBox;
 
 import java.util.ArrayList;
-import java.util.List;
 
 public class Simulation {
 
@@ -57,6 +56,11 @@ public class Simulation {
 	 * Depth of simulated area
 	 */
 	private double depth;
+
+
+	private int numberOfColors;
+	private int numberOfDimensions;
+
 	private double speedOfLight;
 	private double eps0;
 	private double mu0;
@@ -138,6 +142,9 @@ public class Simulation {
 		height = settings.getSimulationHeight();
 		depth = settings.getSimulationDepth();
 		speedOfLight = settings.getSpeedOfLight();
+		numberOfColors = settings.getNumberOfColors();
+		numberOfDimensions = settings.getNumberOfDimensions();
+
 		iterations = settings.getIterations();
 		tottime = 0;
 		specstep = settings.getSpectrumStep();
@@ -150,12 +157,22 @@ public class Simulation {
 		particles = (ArrayList<IParticle>) settings.getParticles();
 		f = settings.getForce();
 
-		ParticleBoundaries particleBoundaries = new SimpleParticleBoundaries(
-				new DoubleBox(0, width, 0, height),								//Has to be changed!!!
-				settings.getParticleBoundary());
+		DoubleBox simulationBox = new DoubleBox(numberOfDimensions, new double[] {0, 0, 0}, new double[] {width, height, depth});
+		IParticleBoundaryConditions particleBoundaryConditions;
+		switch (settings.getBoundaryType())
+		{
+			case Periodic:
+				particleBoundaryConditions = new PeriodicParticleBoundaryConditions(simulationBox, numberOfDimensions);
+				break;
+			default:
+				particleBoundaryConditions = new PeriodicParticleBoundaryConditions(simulationBox, numberOfDimensions);
+				break;
+
+		}
+
 		mover = new ParticleMover(
 				settings.getParticleSolver(),
-				particleBoundaries,
+				particleBoundaryConditions,
 				settings.getParticleIterator());
 
 		grid = new Grid(settings);
@@ -169,54 +186,6 @@ public class Simulation {
 		interpolation = new LocalInterpolation(
 				settings.getInterpolator(), settings.getParticleIterator());
 		particleGridInitializer.initialize(interpolation, poisolver, particles, grid);
-
-		prepareAllParticles();
-		
-		clearFile();
-	}
-
-	/**
-	 * Constructor for distributed simulation. Expects settings specific to the
-	 * local node => the simulation width and height as well as the number of
-	 * cells in y and x direction must pertain to local simulation not to the
-	 * global simulation. (No need to set poison solver and run
-	 * ParticleGridInitializer as it was already run on the master node).
-	 */
-	public Simulation(Settings settings,
-			Grid grid,
-			List<IParticle> particles,
-			ParticleBoundaries particleBoundaries,
-			Interpolation interpolation) {
-
-		this.tstep = settings.getTimeStep();
-		this.width = settings.getSimulationWidth();
-		this.height = settings.getSimulationHeight();
-		this.depth = settings.getSimulationDepth();
-		this.speedOfLight = settings.getSpeedOfLight();
-		this.iterations = settings.getIterations();
-		this.tottime = 0;
-		this.specstep = settings.getSpectrumStep();
-		this.filePath = settings.getFilePath();
-		this.relativistic = settings.getRelativistic();
-		this.eps0 = settings.getEps0();
-		this.mu0 = settings.getMu0();
-
-		this.particles = (ArrayList<IParticle>) particles;
-		f = settings.getForce();
-
-		mover = new ParticleMover(
-				settings.getParticleSolver(),
-				particleBoundaries,
-				settings.getParticleIterator());
-
-		this.grid = grid;
-		if (settings.useGrid()) {
-			turnGridForceOn();
-		} else {
-			turnGridForceOff();
-		}
-
-		this.interpolation = interpolation;
 
 		prepareAllParticles();
 		

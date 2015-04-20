@@ -12,6 +12,5 @@ package org.openpixi.pixi.physics;
  * we can still use the hardwall boundary type for the grid.
  */
 public enum GeneralBoundaryType {
-	Hardwall,
 	Periodic,
 }
