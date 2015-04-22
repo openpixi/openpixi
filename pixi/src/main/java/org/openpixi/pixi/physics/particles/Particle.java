@@ -41,19 +41,28 @@ public class Particle implements IParticle, Serializable
 			GETTERS
 	 */
 
-	public double getPosition(int i)        {   return pos[i];              }
-	public double getPrevPosition(int i)    {   return prevPos[i];          }
-	public double getVelocity(int i)        {   return vel[i];              }
-	public double getAcceleration(int i)    {   return acc[i];              }
+	public double getPosition(int i)        {   return pos[i];                  }
+	public double getPrevPosition(int i)    {   return prevPos[i];              }
+	public double getVelocity(int i)        {   return vel[i];                  }
+	public double getAcceleration(int i)    {   return acc[i];                  }
 
-	public double getE(int i, int c)        {   return E[i][c];             }
-	public double getF(int i, int j, int c) {   return F[i][j][c];          }
+    public double[] getPosition()           {   return pos;                     }
+    public double[] getPrevPosition()       {   return prevPos;                 }
+    public double[] getVelocity()           {   return vel;                     }
+    public double[] getAcceleration()       {   return acc;                     }
 
-	public double getCharge(int c)          {   return charge[c];           }
-	public double getMass()                 {   return mass;                }
+	public double getE(int i, int c)        {   return E[i][c];                 }
+	public double getF(int i, int j, int c) {   return F[i][j][c];              }
 
-	public double getRadius()               {   return r;                   }
-	public Color getColor()                 {   return col;                 }
+	public double getCharge(int c)          {   return charge[c];               }
+	public double getMass()                 {   return mass;                    }
+
+	public double getRadius()               {   return r;                       }
+	public Color  getColor()                {   return col;                     }
+
+    public int getNumberOfColors()          {   return this.numberOfColors;     }
+    public int getNumberOfDimensions()      {   return this.numberOfDimensions; }
+    public int getNumberOfComponents()      {   return this.numberOfComponents; }
 
 	/*
 		Legacy getters

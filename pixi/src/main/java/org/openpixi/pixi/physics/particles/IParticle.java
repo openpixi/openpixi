@@ -14,12 +14,18 @@ public interface IParticle
 
 	/*
 		Particle position, velocity and acceleration getters
+		Note: in a relativistic context 'velocity' refers to the relativistic velocity usually denoted as 'u'.
 	 */
 
 	double getPosition(int d);
 	double getPrevPosition(int d);
 	double getVelocity(int d);
 	double getAcceleration(int d);
+
+    double[] getPosition();
+    double[] getPrevPosition();
+    double[] getVelocity();
+    double[] getAcceleration();
 
 	/*
 		Getters for fields at particle position
@@ -32,8 +38,11 @@ public interface IParticle
 		Getters for particle properties
 	 */
 
-	double getCharge(int c);
-	double getMass();
+	double  getCharge(int c);
+	double  getMass();
+    int     getNumberOfColors();
+    int     getNumberOfDimensions();
+    int     getNumberOfComponents();
 
 	/*
 		Getters for display properties
