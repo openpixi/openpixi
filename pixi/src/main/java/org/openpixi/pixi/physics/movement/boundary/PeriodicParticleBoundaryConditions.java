@@ -22,8 +22,17 @@ public class PeriodicParticleBoundaryConditions implements IParticleBoundaryCond
     {
         for(int i = 0; i < numberOfDimensions; i++)
         {
-            particle.setPosition(i, (particle.getPosition(i) + simulationBox.getSize(i)) % simulationBox.getSize(i));
-            //particle.setPrevPosition(i, (particle.getPrevPosition(i) + simulationBox.getSize(i)) % simulationBox.getSize(i));
+            double positionShift = (particle.getPosition(i) + simulationBox.getSize(i)) % simulationBox.getSize(i) - particle.getPosition(i);
+            particle.addPosition(i, positionShift);
+
+            /*
+                If the particle position gets shifted due to periodic boundary conditions, then the previous position should get shifted as well.
+                This ensures that
+                                dx = x(t) - x(t-dt)
+                stays the same during a shift because of the boundary conditions, even if x(t-dt) becomes negative.
+             */
+
+            particle.addPrevPosition(i, positionShift);
         }
     }
 }
