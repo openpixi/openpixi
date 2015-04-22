@@ -60,6 +60,7 @@ public class Simulation {
 
 	private int numberOfColors;
 	private int numberOfDimensions;
+    private double couplingConstant;
 
 	private double speedOfLight;
 	private double eps0;
@@ -144,6 +145,7 @@ public class Simulation {
 		speedOfLight = settings.getSpeedOfLight();
 		numberOfColors = settings.getNumberOfColors();
 		numberOfDimensions = settings.getNumberOfDimensions();
+        couplingConstant = settings.getCouplingConstant();
 
 		iterations = settings.getIterations();
 		tottime = 0;
