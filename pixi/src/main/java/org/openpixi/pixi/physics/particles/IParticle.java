@@ -60,27 +60,9 @@ public interface IParticle
 	double getY();
 	double getZ();
 
-	double getPrevX();
-	double getPrevY();
-	double getPrevZ();
-
 	double getVx();
 	double getVy();
 	double getVz();
-
-	double getAx();
-	double getAy();
-	double getAz();
-
-	double getEx();
-	double getEy();
-	double getEz();
-
-	double getBx();
-	double getBy();
-	double getBz();
-
-	double getCharge();
 
 
 	/*
@@ -137,25 +119,13 @@ public interface IParticle
 
 	void addX(double x);
 
-	void setPrevX(double prevX);
-
-	void addPrevX(double x);
-
 	void setY(double y);
 
 	void addY(double y);
 
-	void setPrevY(double prevY);
-
-	void addPrevY(double y);
-
 	void setZ(double z);
 
 	void addZ(double z);
-
-	void setPrevZ(double prevZ);
-
-	void addPrevZ(double z);
 
 	void setVx(double vx);
 
@@ -163,25 +133,7 @@ public interface IParticle
 
 	void setVz(double vz);
 
-	void setAx(double ax);
-
-	void setAy(double ay);
-
-	void setAz(double az);
-
 	void setCharge(double charge);
-
-	void setEx(double Ex);
-
-	void setEy(double Ey);
-
-	void setEz(double Ez);
-
-	void setBx(double Bx);
-
-	void setBy(double By);
-
-	void setBz(double Bz);
 
 
 	//----------------------------------------------------------------------------------------------

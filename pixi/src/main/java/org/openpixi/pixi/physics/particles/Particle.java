@@ -72,27 +72,9 @@ public class Particle implements IParticle, Serializable
 	public double getY()                    {   return getPosition(1);      }
 	public double getZ()                    {   return getPosition(2);      }
 
-	public double getPrevX()                {   return getPrevPosition(0);  }
-	public double getPrevY()                {   return getPrevPosition(1);  }
-	public double getPrevZ()                {   return getPrevPosition(2);  }
-
 	public double getVx()                   {   return getVelocity(0);      }
 	public double getVy()                   {   return getVelocity(1);      }
 	public double getVz()                   {   return getVelocity(2);      }
-
-	public double getAx()                   {   return getAcceleration(0);  }
-	public double getAy()                   {   return getAcceleration(1);  }
-	public double getAz()                   {   return getAcceleration(2);  }
-
-	public double getEx()                   {   return getE(0, 0);          }
-	public double getEy()                   {   return getE(1, 0);          }
-	public double getEz()                   {   return getE(2, 0);          }
-
-	public double getBx()                   {   return getF(2, 1, 0);       }
-	public double getBy()                   {   return getF(0, 2, 0);       }
-	public double getBz()                   {   return getF(1, 0, 0);       }
-
-	public double getCharge()               {   return getCharge(0);        }
 
 	/*
 			SETTERS
@@ -183,31 +165,7 @@ public class Particle implements IParticle, Serializable
 	public void setVy(double vy)            {   this.setVelocity(1, vy);                }
 	public void setVz(double vz)            {   this.setVelocity(2, vz);                }
 
-	public void setAx(double ax)            {   this.setAcceleration(0, ax);            }
-	public void setAy(double ay)            {   this.setAcceleration(1, ay);            }
-	public void setAz(double az)            {   this.setAcceleration(2, az);            }
-
 	public void setCharge(double q)         {    this.setCharge(0, q);                  }
-
-	public void setEx(double Ex)            {   this.setE(0, 0, Ex);                    }
-	public void setEy(double Ey)            {   this.setE(1, 0, Ey);                    }
-	public void setEz(double Ez)            {   this.setE(2, 0, Ez);                    }
-
-	public void setBx(double Bx)
-	{
-		this.setF(2, 1, 0, Bx);
-		this.setF(1, 2, 0, -Bx);
-	}
-	public void setBy(double By)
-	{
-		this.setF(0, 2, 0, By);
-		this.setF(2, 0, 0, -By);
-	}
-	public void setBz(double Bz)
-	{
-		this.setF(1, 0, 0, Bz);
-		this.setF(0, 1, 0, -Bz);
-	}
 
 	public void storePosition()
 	{
