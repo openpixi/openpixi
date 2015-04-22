@@ -7,7 +7,6 @@ import org.openpixi.pixi.physics.Settings;
 import org.openpixi.pixi.physics.fields.EmptyPoissonSolver;
 import org.openpixi.pixi.physics.fields.SimpleSolver;
 import org.openpixi.pixi.physics.grid.EmptyInterpolator;
-import org.openpixi.pixi.physics.solver.LeapFrog;
 import org.openpixi.pixi.physics.solver.relativistic.LeapFrogRelativistic;
 
 /**
@@ -21,9 +20,7 @@ public class YamlSettings {
     public Double couplingConstant;
 	public Double gridStep;
 	public Double duration;
-	public Integer gridCellsX;
-	public Integer gridCellsY;
-	public Integer gridCellsZ;
+	public List<Integer> gridCells;
 	public String poissonsolver;
 	public List<YamlParticle> particles;
 	public List<YamlParticleStream> streams;
@@ -71,16 +68,10 @@ public class YamlSettings {
 			settings.setGridStep(gridStep);
 		}
 
-		if (gridCellsX != null) {
-			settings.setGridCellsX(gridCellsX);
-		}
-
-		if (gridCellsY != null) {
-			settings.setGridCellsY(gridCellsY);
-		}
-
-		if (gridCellsZ != null) {
-			settings.setGridCellsZ(gridCellsZ);
+		if (gridCells != null) {
+			settings.setGridCellsX(gridCells.get(0));
+			settings.setGridCellsY(gridCells.get(1));
+			settings.setGridCellsZ(gridCells.get(2));
 		}
 
 		if (poissonsolver != null) {
@@ -90,7 +81,7 @@ public class YamlSettings {
 			} else if (poissonsolver.equals("empty")) {
 				settings.setPoissonSolver(new EmptyPoissonSolver());
 			} else {
-				throw new RuntimeException("Unkown Poisson solver specified in YAML file.");
+				throw new RuntimeException("Unknown Poisson solver specified in YAML file.");
 			}
 		}
 

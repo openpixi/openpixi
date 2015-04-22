@@ -1,9 +1,9 @@
-# Weibel instability in 3D
+# Weibel instability
 
 gridStep: 6.4
 numberOfDimensions: 3
 numberOfColors: 1
-gridCells: [10, 10, 10]
+gridCells: [10, 10, 1]
 poissonsolver: fft
 timeStep: 0.2
 speedOfLight: 1
@@ -12,23 +12,23 @@ duration: 1000
 streams:
   # first stream:
   - particle:
-      position: [16, 0, 32]
+      position: [16, 0, 0]
       velocity: [0, -.99, 0]
       r: 0
       m: 10
       q: [.1]
       color: red
     distances: [0, 0.0625, 0]
-    randomGaussPositions: [2.5, 0, 2.5]
+    randomGaussPositions: [2.5, 0, 0]
     number: 1024
   # second stream:
   - particle:
-      position: [48, 0, 32]
+      position: [48, 0, 0]
       velocity: [0, .99, 0]
       r: 0
       m: 10
       q: [-.1]
       color: blue
     distances: [0, 0.0625, 0]
-    randomGaussPositions: [2.5, 0, 2.5]
+    randomGaussPositions: [2.5, 0, 0]
     number: 1024
