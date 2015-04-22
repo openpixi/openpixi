@@ -11,7 +11,6 @@ import org.openpixi.pixi.physics.fields.*;
 import org.openpixi.pixi.physics.force.CombinedForce;
 import org.openpixi.pixi.physics.force.Force;
 import org.openpixi.pixi.physics.grid.EmptyInterpolator;
-import org.openpixi.pixi.physics.grid.GridBoundaryType;
 import org.openpixi.pixi.physics.grid.InterpolatorAlgorithm;
 import org.openpixi.pixi.physics.particles.IParticle;
 import org.openpixi.pixi.physics.particles.ParticleFactory.PositionDistribution;
@@ -287,14 +286,6 @@ public class Settings {
 			copy.add(p.copy());
 		}
 		return copy;
-	}
-
-	public GridBoundaryType getGridBoundary() {
-		switch (boundaryType)
-		{
-			default:
-				return GridBoundaryType.Periodic;
-		}
 	}
 
 	public ParticleIterator getParticleIterator() {
