@@ -81,7 +81,7 @@ public class Settings {
 	// Modify defaultParticleFactories() method to determine what kind of particles
 	// will be loaded by default.
 	private List<IParticle> particles = new ArrayList<IParticle>();
-	private Solver particleSolver = new LeapFrogRelativistic(speedOfLight);
+	private Solver particleSolver = new LeapFrogRelativistic(numberOfDimensions, speedOfLight);
 	private List<Force> forces = new ArrayList<Force>();
 	// Diagnostics related settings
 	/**

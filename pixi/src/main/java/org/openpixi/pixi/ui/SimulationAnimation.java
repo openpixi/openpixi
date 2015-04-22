@@ -219,7 +219,7 @@ public class SimulationAnimation {
 			switch(i)
 			{
 				case 0:
-					s.getParticleMover().setSolver(new LeapFrogRelativistic(s.getSpeedOfLight()));
+					s.getParticleMover().setSolver(new LeapFrogRelativistic(s));
 					break;
 			}
 		}

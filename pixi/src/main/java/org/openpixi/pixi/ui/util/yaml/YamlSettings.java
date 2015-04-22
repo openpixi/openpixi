@@ -38,10 +38,10 @@ public class YamlSettings {
 		settings.useGrid(true);
 		settings.setInterpolator(new EmptyInterpolator());
         settings.setSpeedOfLight(1.0);
-        settings.setParticleSolver(new LeapFrogRelativistic(1.0));
         settings.setNumberOfDimensions(3);
         settings.setNumberOfColors(1);
         settings.setCouplingConstant(1.0);
+        settings.setParticleSolver(new LeapFrogRelativistic(settings.getNumberOfDimensions(), settings.getSpeedOfLight()));
 
 		// Custom settings:
 		if (timeStep != null) {
@@ -52,14 +52,14 @@ public class YamlSettings {
 			settings.setTMax(duration);
 		}
 
+        if(numberOfDimensions != null)
+            settings.setNumberOfDimensions(numberOfDimensions);
+
 		if (speedOfLight != null) {
             settings.setRelativistic(true);
 			settings.setSpeedOfLight(speedOfLight);
-            settings.setParticleSolver(new LeapFrogRelativistic(speedOfLight));
+            settings.setParticleSolver(new LeapFrogRelativistic(settings.getNumberOfDimensions(), speedOfLight));
 		}
-
-        if(numberOfDimensions != null)
-            settings.setNumberOfDimensions(numberOfDimensions);
 
         if(numberOfColors != null)
             settings.setNumberOfColors(numberOfColors);
