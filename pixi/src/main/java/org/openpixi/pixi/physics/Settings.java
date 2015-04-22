@@ -51,6 +51,7 @@ public class Settings {
 	private double speedOfLight = 1;
 	private int    numberOfColors = 1;
 	private int	   numberOfDimensions = 3;
+    private double couplingConstant = 1.0;
 	private double timeStep = 0.1;
 	private double gridStep = 1;
 	private double tMax = 1000;
@@ -159,6 +160,11 @@ public class Settings {
 	public int getNumberOfDimensions() {
 		return numberOfDimensions;
 	}
+
+    public double getCouplingConstant()
+    {
+        return couplingConstant;
+    }
 
 	public double getEps0() {
 		return eps0;
@@ -372,11 +378,16 @@ public class Settings {
 	{
 		this.numberOfColors = numberOfColors;
 	}
+
 	public void setNumberOfDimensions(int numberOfDimensions)
 	{
 		this.numberOfDimensions = numberOfDimensions;
 	}
 
+    public void setCouplingConstant(double g)
+    {
+        this.couplingConstant = g;
+    }
 
 	public void setTimeStep(double timeStep) {
 		this.timeStep = timeStep;
