@@ -7,12 +7,10 @@ import org.openpixi.pixi.parallel.cellaccess.SequentialCellIterator;
 import org.openpixi.pixi.parallel.particleaccess.ParallelParticleIterator;
 import org.openpixi.pixi.parallel.particleaccess.ParticleIterator;
 import org.openpixi.pixi.parallel.particleaccess.SequentialParticleIterator;
-import org.openpixi.pixi.physics.fields.FieldSolver;
-import org.openpixi.pixi.physics.fields.PoissonSolver;
-import org.openpixi.pixi.physics.fields.PoissonSolverFFTPeriodic;
-import org.openpixi.pixi.physics.fields.SimpleSolver;
+import org.openpixi.pixi.physics.fields.*;
 import org.openpixi.pixi.physics.force.CombinedForce;
 import org.openpixi.pixi.physics.force.Force;
+import org.openpixi.pixi.physics.grid.EmptyInterpolator;
 import org.openpixi.pixi.physics.grid.GridBoundaryType;
 import org.openpixi.pixi.physics.grid.InterpolatorAlgorithm;
 import org.openpixi.pixi.physics.particles.IParticle;
@@ -29,7 +27,6 @@ import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import org.openpixi.pixi.physics.grid.ChargeConservingCIC;
 
 /**
  * Specifies default values of simulation parameters. The default values can be
@@ -61,7 +58,7 @@ public class Settings {
 	private int spectrumStep = 300;
 	private String filePath = "default";
 	private GeneralBoundaryType boundaryType = GeneralBoundaryType.Periodic;
-	private InterpolatorAlgorithm interpolator = new ChargeConservingCIC();
+	private InterpolatorAlgorithm interpolator = new EmptyInterpolator();
 	// Grid related settings
 	private int gridCellsX = 10;
 	private int gridCellsY = 10;
@@ -70,7 +67,7 @@ public class Settings {
 	private double simulationHeight = gridCellsY*gridStep;
 	private double simulationDepth = gridCellsZ*gridStep;
 	private FieldSolver gridSolver = new SimpleSolver();
-	private PoissonSolver poissonSolver = new PoissonSolverFFTPeriodic();
+	private PoissonSolver poissonSolver = new EmptyPoissonSolver();
 	private boolean useGrid = true;
 	private boolean relativistic = true;
 	private double eps0 = 1.0/(4*Math.PI);

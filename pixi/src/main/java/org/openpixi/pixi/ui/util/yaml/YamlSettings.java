@@ -5,9 +5,8 @@ import java.util.List;
 import org.openpixi.pixi.physics.GeneralBoundaryType;
 import org.openpixi.pixi.physics.Settings;
 import org.openpixi.pixi.physics.fields.EmptyPoissonSolver;
-import org.openpixi.pixi.physics.fields.PoissonSolverFFTPeriodic;
 import org.openpixi.pixi.physics.fields.SimpleSolver;
-import org.openpixi.pixi.physics.grid.ChargeConservingCIC;
+import org.openpixi.pixi.physics.grid.EmptyInterpolator;
 import org.openpixi.pixi.physics.solver.relativistic.LeapFrogRelativistic;
 
 /**
@@ -33,7 +32,7 @@ public class YamlSettings {
 		settings.setBoundary(GeneralBoundaryType.Periodic);
 		settings.setGridSolver(new SimpleSolver());
 		settings.useGrid(true);
-		settings.setInterpolator(new ChargeConservingCIC());
+		settings.setInterpolator(new EmptyInterpolator());
 
 		// Custom settings:
 		if (timeStep != null) {
@@ -67,7 +66,8 @@ public class YamlSettings {
 
 		if (poissonsolver != null) {
 			if (poissonsolver.equals("fft")) {
-				settings.setPoissonSolver(new PoissonSolverFFTPeriodic());
+                System.out.println("Warning: FFT Poisson solver not yet implemented. Using EmptyPoissonSolver instead.");
+				settings.setPoissonSolver(new EmptyPoissonSolver());
 			} else if (poissonsolver.equals("empty")) {
 				settings.setPoissonSolver(new EmptyPoissonSolver());
 			} else {
