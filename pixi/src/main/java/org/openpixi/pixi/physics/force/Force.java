@@ -23,9 +23,20 @@ import org.openpixi.pixi.physics.particles.IParticle;
 
 public interface Force {
 
+    /**
+     Total force in the i-direction.
+     */
+
+    double getForce(int i, IParticle p);
+
+    /*
+        LEGACY
+     */
+
 	/**
 	 * Total force in the x-direction.
 	 */
+
 	double getForceX(IParticle p);
 
 	/**
@@ -34,8 +45,10 @@ public interface Force {
 	double getForceY(IParticle p);
 
 	/**
-	 * Total force in the y-direction.
+	 * Total force in the z-direction.
 	 */
 	double getForceZ(IParticle p);
+
+
 
 }

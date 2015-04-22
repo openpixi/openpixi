@@ -26,28 +26,26 @@ public class CombinedForce implements Force {
 		forces.clear();
 	}
 
+    public double getForce(int i, IParticle p)
+    {
+        double sum = 0.0;
+        for(Force f : forces)
+        {
+            sum += f.getForce(i, p);
+        }
+        return sum;
+    }
+
 	public double getForceX(IParticle p) {
-		double sum = 0;
-		for (Force f : forces) {
-			sum += f.getForceX(p);
-		}
-		return sum;
+		return getForce(0, p);
 	}
 
 	public double getForceY(IParticle p) {
-		double sum = 0;
-		for (Force f : forces) {
-			sum += f.getForceY(p);
-		}
-		return sum;
+        return getForce(1, p);
 	}
 	
 	public double getForceZ(IParticle p) {
-		double sum = 0;
-		for (Force f : forces) {
-			sum += f.getForceZ(p);
-		}
-		return sum;
+        return getForce(2, p);
 	}
 
 	public void remove(Force force) {

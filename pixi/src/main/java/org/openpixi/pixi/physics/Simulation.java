@@ -129,10 +129,20 @@ public class Simulation {
 	public double getSpeedOfLight() {
 		return speedOfLight;
 	}
-
-	public ParticleMover getParticleMover() {
-		return mover;
+	public int getNumberOfColors() {
+		return numberOfColors;
 	}
+	public int getNumberOfDimensions() {
+		return numberOfDimensions;
+	}
+    public double getCouplingConstant() {
+        return couplingConstant;
+    }
+
+    public ParticleMover getParticleMover()
+    {
+        return  mover;
+    }
 
 	/**
 	 * Constructor for non distributed simulation.
@@ -197,7 +207,7 @@ public class Simulation {
 	public void turnGridForceOn() {
 		if (!usingGridForce) {
 			if(relativistic == true) {
-				gridForce = new SimpleGridForceRelativistic(speedOfLight);
+				gridForce = new SimpleGridForceRelativistic(this);
 			} else {
 				gridForce = new SimpleGridForce();
 			}

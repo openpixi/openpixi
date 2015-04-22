@@ -209,7 +209,7 @@ public class SimulationAnimation {
 				ArrayList<Force> forces = s.f.forces;
 				for (int j = 0; j < forces.size(); j++) {
 					if (forces.get(j) instanceof ConstantForce){
-						forces.set(j, new ConstantForceRelativistic(s.getSpeedOfLight()));
+						forces.set(j, new ConstantForceRelativistic(s));
 					}
 					if (forces.get(j) instanceof SimpleGridForce){
 						forces.set(j, new SimpleGridForceRelativistic(s));
