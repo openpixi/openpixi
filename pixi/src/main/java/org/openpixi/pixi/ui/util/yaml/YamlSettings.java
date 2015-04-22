@@ -7,6 +7,7 @@ import org.openpixi.pixi.physics.Settings;
 import org.openpixi.pixi.physics.fields.EmptyPoissonSolver;
 import org.openpixi.pixi.physics.fields.SimpleSolver;
 import org.openpixi.pixi.physics.grid.EmptyInterpolator;
+import org.openpixi.pixi.physics.solver.LeapFrog;
 import org.openpixi.pixi.physics.solver.relativistic.LeapFrogRelativistic;
 
 /**
@@ -15,6 +16,9 @@ import org.openpixi.pixi.physics.solver.relativistic.LeapFrogRelativistic;
 public class YamlSettings {
 	public Double timeStep;
 	public Double speedOfLight;
+    public Integer numberOfDimensions;
+    public Integer numberOfColors;
+    public Double couplingConstant;
 	public Double gridStep;
 	public Double duration;
 	public Integer gridCellsX;
@@ -28,11 +32,16 @@ public class YamlSettings {
 	public void applyTo(Settings settings) {
 
 		// Default settings:
-		settings.setRelativistic(true);
+		settings.setRelativistic(false);
 		settings.setBoundary(GeneralBoundaryType.Periodic);
 		settings.setGridSolver(new SimpleSolver());
 		settings.useGrid(true);
 		settings.setInterpolator(new EmptyInterpolator());
+        settings.setSpeedOfLight(1.0);
+        settings.setParticleSolver(new LeapFrogRelativistic(1.0));
+        settings.setNumberOfDimensions(3);
+        settings.setNumberOfColors(1);
+        settings.setCouplingConstant(1.0);
 
 		// Custom settings:
 		if (timeStep != null) {
@@ -44,9 +53,19 @@ public class YamlSettings {
 		}
 
 		if (speedOfLight != null) {
+            settings.setRelativistic(true);
 			settings.setSpeedOfLight(speedOfLight);
-			settings.setParticleSolver(new LeapFrogRelativistic(speedOfLight));
+            settings.setParticleSolver(new LeapFrogRelativistic(speedOfLight));
 		}
+
+        if(numberOfDimensions != null)
+            settings.setNumberOfDimensions(numberOfDimensions);
+
+        if(numberOfColors != null)
+            settings.setNumberOfColors(numberOfColors);
+
+        if(couplingConstant != null)
+            settings.setCouplingConstant(couplingConstant);
 
 		if (gridStep != null) {
 			settings.setGridStep(gridStep);
