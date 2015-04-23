@@ -51,8 +51,13 @@ public class KineticEnergy implements Diagnostics {
 	public void calculate(Grid grid, ArrayList<IParticle> particles) {
 		totalKineticEnergy = 0;
 		
-		for(IParticle p : particles) {
-			totalKineticEnergy += p.getMass()*(p.getVx() * p.getVx() + p.getVy()*p.getVy());
+		for(IParticle p : particles)
+        {
+            double[] velocity = p.getVelocity();
+            double velocity2 = 0.0;
+            for(int i = 0; i < velocity.length; i++)
+                velocity2 += velocity[i] * velocity[i];
+			totalKineticEnergy += p.getMass()*velocity2;
 		}
 		
 		totalKineticEnergy = totalKineticEnergy/2;
