@@ -129,22 +129,6 @@ public class Particle implements IParticle, Serializable
 	{
 		this.col = color;
 	}
-	
-	/*
-		Legacy setters
-	 */
-
-	public void setX(double x)              {   this.setPosition(0, x);                 }
-
-	public void setY(double y)              {   this.setPosition(1, y);                 }
-
-	public void setZ(double z)              {   this.setPosition(2, z);                 }
-
-	public void setVx(double vx)            {   this.setVelocity(0, vx);                }
-	public void setVy(double vy)            {   this.setVelocity(1, vy);                }
-	public void setVz(double vz)            {   this.setVelocity(2, vz);                }
-
-	public void setCharge(double q)         {    this.setCharge(0, q);                  }
 
 	public void storePosition()
 	{

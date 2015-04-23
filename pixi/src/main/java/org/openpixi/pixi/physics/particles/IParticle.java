@@ -96,26 +96,6 @@ public interface IParticle
 	void setColor(Color color);
 
 
-	/*
-		Legacy setters
-		Note: these should be removed in the future.
-	 */
-
-	void setX(double x);
-
-	void setY(double y);
-
-	void setZ(double z);
-
-	void setVx(double vx);
-
-	void setVy(double vy);
-
-	void setVz(double vz);
-
-	void setCharge(double charge);
-
-
 	//----------------------------------------------------------------------------------------------
 	// UTILITY METHODS
 	//----------------------------------------------------------------------------------------------
