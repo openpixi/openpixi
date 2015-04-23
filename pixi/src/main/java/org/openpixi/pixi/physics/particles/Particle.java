@@ -65,18 +65,6 @@ public class Particle implements IParticle, Serializable
     public int getNumberOfComponents()      {   return this.numberOfComponents; }
 
 	/*
-		Legacy getters
-	 */
-
-	public double getX()                    {   return getPosition(0);      }
-	public double getY()                    {   return getPosition(1);      }
-	public double getZ()                    {   return getPosition(2);      }
-
-	public double getVx()                   {   return getVelocity(0);      }
-	public double getVy()                   {   return getVelocity(1);      }
-	public double getVz()                   {   return getVelocity(2);      }
-
-	/*
 			SETTERS
 	 */
 
@@ -147,19 +135,10 @@ public class Particle implements IParticle, Serializable
 	 */
 
 	public void setX(double x)              {   this.setPosition(0, x);                 }
-	public void addX(double x)              {   this.addPosition(0, x);                 }
-	public void setPrevX(double x)          {   this.setPrevPosition(0, x);             }
-	public void addPrevX(double x)          {   this.addPrevPosition(0, x);             }
 
 	public void setY(double y)              {   this.setPosition(1, y);                 }
-	public void addY(double y)              {   this.addPosition(1, y);                 }
-	public void setPrevY(double prevY)      {   this.setPrevPosition(1, prevY);         }
-	public void addPrevY(double prevY)      {   this.addPrevPosition(1, prevY);         }
 
 	public void setZ(double z)              {   this.setPosition(2, z);                 }
-	public void addZ(double z)              {   this.addPosition(2, z);                 }
-	public void setPrevZ(double prevZ)      {   this.setPrevPosition(2, prevZ);         }
-	public void addPrevZ(double prevZ)      {   this.addPrevPosition(2, prevZ);         }
 
 	public void setVx(double vx)            {   this.setVelocity(0, vx);                }
 	public void setVy(double vy)            {   this.setVelocity(1, vy);                }

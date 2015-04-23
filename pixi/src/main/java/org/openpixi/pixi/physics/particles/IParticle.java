@@ -52,20 +52,6 @@ public interface IParticle
 	Color getColor();
 
 	/*
-		Legacy getters
-		Note: these should be removed in the future.
-	 */
-
-	double getX();
-	double getY();
-	double getZ();
-
-	double getVx();
-	double getVy();
-	double getVz();
-
-
-	/*
 			SETTERS
 	 */
 
@@ -117,15 +103,9 @@ public interface IParticle
 
 	void setX(double x);
 
-	void addX(double x);
-
 	void setY(double y);
 
-	void addY(double y);
-
 	void setZ(double z);
-
-	void addZ(double z);
 
 	void setVx(double vx);
 
