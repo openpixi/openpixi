@@ -60,13 +60,13 @@ public class ParticleComparator {
 	/**
 	 * Compares just the position.
 	 */
-	private boolean compareParticles(IParticle p1, IParticle p2, Double tolerance) {
-		if (Math.abs(p1.getX() - p2.getX()) > tolerance) {
-			return false;
-		}
-		if (Math.abs(p1.getY() - p2.getY()) > tolerance) {
-			return false;
-		}
+	private boolean compareParticles(IParticle p1, IParticle p2, Double tolerance)
+    {
+        double[] pos1 = p1.getPosition();
+        double[] pos2 = p2.getPosition();
+		for(int i = 0; i < pos1.length; i++)
+            if(Math.abs(pos1[i] - pos2[i]) > tolerance)
+                return false;
 		return true;
 	}
 
