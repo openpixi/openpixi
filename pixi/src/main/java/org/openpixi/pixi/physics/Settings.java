@@ -13,12 +13,8 @@ import org.openpixi.pixi.physics.force.Force;
 import org.openpixi.pixi.physics.grid.EmptyInterpolator;
 import org.openpixi.pixi.physics.grid.InterpolatorAlgorithm;
 import org.openpixi.pixi.physics.particles.IParticle;
-import org.openpixi.pixi.physics.particles.ParticleFactory.PositionDistribution;
-import org.openpixi.pixi.physics.particles.ParticleFactory.VelocityDistribution;
 import org.openpixi.pixi.physics.solver.Solver;
 import org.openpixi.pixi.physics.solver.relativistic.LeapFrogRelativistic;
-import org.openpixi.pixi.physics.particles.ParticleFactory;
-import org.openpixi.pixi.physics.particles.ParticleLoader;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -241,48 +237,12 @@ public class Settings {
 		return combinedForce;
 	}
 
-	private List<ParticleFactory> defaultParticleFactories() {
-		// Random seed
-		long seed = (long) Math.random();
-		// If asList() is used the resulting list will have a fixed size!
-		if(relativistic == true) {
-		List<ParticleFactory> particleFactories = Arrays.asList(
-				new ParticleFactory(numOfParticles / 2, 1, 1, particleRadius,
-				PositionDistribution.RANDOM, VelocityDistribution.RANDOM,
-				1, 1, 1, 0.2,
-				false, seed, seed),
-				new ParticleFactory(numOfParticles / 2, 1, -1, particleRadius,
-				PositionDistribution.RANDOM, VelocityDistribution.RANDOM,
-				1, 1, 1, 0.2,
-				false, seed, seed));
-
-		return particleFactories;
-		} else {					//A two-dimesnional routine, doesn't work in 3D!!!
-			List<ParticleFactory> particleFactories = Arrays.asList(
-					new ParticleFactory(numOfParticles / 2, 1, 1, particleRadius,
-					PositionDistribution.RANDOM, VelocityDistribution.RANDOM,
-					particleMaxSpeed / 10, particleMaxSpeed / 10, particleMaxSpeed,
-					false, seed, seed),
-					new ParticleFactory(numOfParticles / 2, 1, -1, particleRadius,
-					PositionDistribution.RANDOM, VelocityDistribution.RANDOM,
-					particleMaxSpeed / 10, particleMaxSpeed / 10, particleMaxSpeed,
-					false, seed, seed));
-
-			return particleFactories;
-		}
-	}
-
 	/**
 	 * If no particles are specified creates random particles.
 	 *
 	 * !!! IMPORTANT !!! Always returns deep copy of the actual particle list!
 	 */
 	public List<IParticle> getParticles() {
-		if (particles.size() == 0) {
-			this.particles = (new ParticleLoader()).load(defaultParticleFactories(),
-					simulationWidth, simulationHeight, simulationDepth);
-		}
-
 		return cloneParticles();
 	}
 
