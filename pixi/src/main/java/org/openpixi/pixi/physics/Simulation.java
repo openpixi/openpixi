@@ -61,10 +61,7 @@ public class Simulation {
 	private int numberOfColors;
 	private int numberOfDimensions;
     private double couplingConstant;
-
 	private double speedOfLight;
-	private double eps0;
-	private double mu0;
 	/**
 	 * Number of iterations in the non-interactive simulation.
 	 */
@@ -162,8 +159,6 @@ public class Simulation {
 		specstep = settings.getSpectrumStep();
 		filePath = settings.getFilePath();
 		relativistic = settings.getRelativistic();
-		eps0 = settings.getEps0();
-		mu0 = settings.getMu0();
 
 		// TODO make particles a generic list
 		particles = (ArrayList<IParticle>) settings.getParticles();

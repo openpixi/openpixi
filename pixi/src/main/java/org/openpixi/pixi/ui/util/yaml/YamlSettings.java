@@ -17,6 +17,7 @@ public class YamlSettings {
 	public Double speedOfLight;
     public Integer numberOfDimensions;
     public Integer numberOfColors;
+    public Integer numberOfThreads;
     public Double couplingConstant;
 	public Double gridStep;
 	public Double duration;
@@ -39,6 +40,7 @@ public class YamlSettings {
         settings.setNumberOfColors(1);
         settings.setCouplingConstant(1.0);
         settings.setParticleSolver(new LeapFrogRelativistic(settings.getNumberOfDimensions(), settings.getSpeedOfLight()));
+        settings.setNumOfThreads(1);
 
 		// Custom settings:
 		if (timeStep != null) {
@@ -63,6 +65,9 @@ public class YamlSettings {
 
         if(couplingConstant != null)
             settings.setCouplingConstant(couplingConstant);
+
+        if(numberOfThreads != null)
+            settings.setNumOfThreads(numberOfThreads);
 
 		if (gridStep != null) {
 			settings.setGridStep(gridStep);

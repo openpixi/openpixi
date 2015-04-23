@@ -1,23 +1,16 @@
 package org.openpixi.pixi.physics;
 
 import org.openpixi.pixi.diagnostics.methods.Diagnostics;
-import org.openpixi.pixi.parallel.cellaccess.CellIterator;
-import org.openpixi.pixi.parallel.cellaccess.ParallelCellIterator;
-import org.openpixi.pixi.parallel.cellaccess.SequentialCellIterator;
-import org.openpixi.pixi.parallel.particleaccess.ParallelParticleIterator;
-import org.openpixi.pixi.parallel.particleaccess.ParticleIterator;
-import org.openpixi.pixi.parallel.particleaccess.SequentialParticleIterator;
+import org.openpixi.pixi.parallel.cellaccess.*;
+import org.openpixi.pixi.parallel.particleaccess.*;
 import org.openpixi.pixi.physics.fields.*;
-import org.openpixi.pixi.physics.force.CombinedForce;
-import org.openpixi.pixi.physics.force.Force;
-import org.openpixi.pixi.physics.grid.EmptyInterpolator;
-import org.openpixi.pixi.physics.grid.InterpolatorAlgorithm;
-import org.openpixi.pixi.physics.particles.IParticle;
-import org.openpixi.pixi.physics.solver.Solver;
+import org.openpixi.pixi.physics.force.*;
+import org.openpixi.pixi.physics.grid.*;
+import org.openpixi.pixi.physics.particles.*;
+import org.openpixi.pixi.physics.solver.*;
 import org.openpixi.pixi.physics.solver.relativistic.LeapFrogRelativistic;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -55,6 +48,7 @@ public class Settings {
 	private String filePath = "default";
 	private GeneralBoundaryType boundaryType = GeneralBoundaryType.Periodic;
 	private InterpolatorAlgorithm interpolator = new EmptyInterpolator();
+
 	// Grid related settings
 	private int gridCellsX = 10;
 	private int gridCellsY = 10;
@@ -66,18 +60,14 @@ public class Settings {
 	private PoissonSolver poissonSolver = new EmptyPoissonSolver();
 	private boolean useGrid = true;
 	private boolean relativistic = true;
-	private double eps0 = 1.0/(4*Math.PI);
-	private double mu0 = 4*Math.PI;
+
 	// Particle related settings
-	private int numOfParticles = 128;
-	private double particleRadius = 1;
-	private double particleMaxSpeed = speedOfLight / 3;
+	private int numOfParticles = 0;
+
 	private int simulationType = 0;
 	private int writeToFile = 0;
-	// Modify defaultParticleFactories() method to determine what kind of particles
-	// will be loaded by default.
 	private List<IParticle> particles = new ArrayList<IParticle>();
-	private Solver particleSolver = new LeapFrogRelativistic(numberOfDimensions, speedOfLight);
+	private Solver particleSolver = new EmptyParticleSolver();
 	private List<Force> forces = new ArrayList<Force>();
 	// Diagnostics related settings
 	/**
@@ -88,7 +78,7 @@ public class Settings {
 	// Batch version settings
 	private int iterations = (int) Math.ceil(tMax/timeStep);
 	// Parallel (threaded) version settings
-	private int numOfThreads = 4;
+	private int numOfThreads = 1;
 	/* The creation and start of the new threads is expensive. Therefore, in the parallel
 	 * simulation we use ExecutorService which is maintaining a fixed number of threads running
 	 * all the time and assigns work to the threads on the fly according to demand. */
@@ -161,14 +151,6 @@ public class Settings {
     {
         return couplingConstant;
     }
-
-	public double getEps0() {
-		return eps0;
-	}
-	
-	public double getMu0() {
-		return mu0;
-	}
 
 	public double getTimeStep() {
 		return timeStep;
@@ -295,22 +277,6 @@ public class Settings {
 		this.writeToFile = writeTo;
 	}
 
-	/**
-	 * @deprecated Use setGridStep() and setGridCellsX() instead.
-	 */
-	@Deprecated
-	public void setSimulationWidth(double simulationWidth) {
-		this.simulationWidth = simulationWidth;
-	}
-
-	/**
-	 * @deprecated Use setGridStep() and setGridCellsY() instead.
-	 */
-	@Deprecated
-	public void setSimulationHeight(double simulationHeight) {
-		this.simulationHeight = simulationHeight;
-	}
-
 	public void setGridCellsX(int gridCellsX) {
 		this.gridCellsX = gridCellsX;
 		this.simulationWidth = this.gridStep*gridCellsX;
@@ -327,11 +293,7 @@ public class Settings {
 	}
 
 	public void setSpeedOfLight(double speedOfLight) {
-		if( (this.eps0 * this.mu0) == speedOfLight*speedOfLight ) {
-			this.speedOfLight = speedOfLight;
-		} else {
-			System.out.println("Your chosen speed of light is in contradiction to the values of eps_0 and mu_0 !! Default value of c is used instead!!");
-		}
+        this.speedOfLight = speedOfLight;
 	}
 
 	public void setNumberOfColors(int numberOfColors)
@@ -410,14 +372,6 @@ public class Settings {
 	public void setParticleList(List<IParticle> particles) {
 		this.numOfParticles = particles.size();
 		this.particles = particles;
-	}
-
-	public void setParticleRadius(double particleRadius) {
-		this.particleRadius = particleRadius;
-	}
-
-	public void setParticleMaxSpeed(double particleMaxSpeed) {
-		this.particleMaxSpeed = particleMaxSpeed;
 	}
 
 	public void addParticle(IParticle p) {

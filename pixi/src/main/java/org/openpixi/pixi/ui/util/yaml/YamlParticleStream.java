@@ -21,8 +21,8 @@ public class YamlParticleStream {
 
 	/**
 	 * Creates a stream of particles. The particle is copied
-	 * 'number' times. Each time, the x-, y-, and z-values are
-	 * adjusted by adding dx, dy, and dz.
+	 * 'number' times. Each time, the positions are
+	 * adjusted by adding the distances defined in List<Double> distances.
 	 * @param settings Settings object to which particles are added.
 	 */
 	public void applyTo(Settings settings) {
