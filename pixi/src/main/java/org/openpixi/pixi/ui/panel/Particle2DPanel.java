@@ -104,10 +104,10 @@ public class Particle2DPanel extends AnimationPanel {
 			int width = (int) (2*sx*radius);
 			int height = (int) (2*sy*radius);
 			if(width > 2 && height > 2 && !paint_trace) {
-				graph.fillOval((int) (par.getX()*sx) - width/2, (int) (par.getY()*sy) - height/2,  width,  height);
+				graph.fillOval((int) (par.getPosition(0)*sx) - width/2, (int) (par.getPosition(1)*sy) - height/2,  width,  height);
 			}
 			else {
-				graph.drawRect((int) (par.getX()*sx), (int) (par.getY()*sy), 0, 0);
+				graph.drawRect((int) (par.getPosition(0)*sx), (int) (par.getPosition(1)*sy), 0, 0);
 			}
 		}
 
