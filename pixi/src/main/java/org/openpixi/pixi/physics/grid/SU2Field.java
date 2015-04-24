@@ -23,6 +23,14 @@ public class SU2Field extends YMField {
 		
 	}
 	
+	public void reset () {
+		
+		v[0] = 0;
+		v[1] = 0;
+		v[2] = 0;
+		
+	}
+	
 	public YMField add (YMField a) {
 		
 		SU2Field b = new SU2Field();
@@ -30,6 +38,14 @@ public class SU2Field extends YMField {
 		b.v[1] = v[1]+a.v[1];
 		b.v[2] = v[2]+a.v[2];
 		return b;
+		
+	}
+	
+public void addequate (YMField a) {
+		
+		v[0] += a.v[0];
+		v[1] += a.v[1];
+		v[2] += a.v[2];
 		
 	}
 	
@@ -94,9 +110,10 @@ public class SU2Field extends YMField {
 		
 		double sum = (v[0]*v[0]+v[1]*v[1]+v[2]*v[2])/4;
 		double mod = Math.sqrt(sum);
+		double sinfakt = 1/2/mod*Math.sin(mod);
 		if (sum>1) { System.out.println("Electric fields too large!\n"); System.exit(1); return new SU2Matrix(); }
 		else { 
-			SU2Matrix b = new SU2Matrix(Math.cos(mod), v[0]/2/mod*Math.sin(mod), v[1]/2/mod*Math.sin(mod), v[2]/2/mod*Math.sin(mod));
+			SU2Matrix b = new SU2Matrix(Math.cos(mod), v[0]*sinfakt, v[1]*sinfakt, v[2]*sinfakt);
 			return b;
 		}
 	}
