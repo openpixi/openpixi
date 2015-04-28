@@ -132,7 +132,7 @@ public class Particle implements IParticle, Serializable
 
 	public void storePosition()
 	{
-		prevPos = pos.clone();
+        prevPos = pos.clone();
 	}
 
 	public IParticle copy()
