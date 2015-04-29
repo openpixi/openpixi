@@ -1,13 +1,13 @@
 package org.openpixi.pixi.physics.grid;
 
-import org.openpixi.pixi.physics.particles.Particle;
+import org.openpixi.pixi.physics.particles.IParticle;
 
 public interface InterpolatorAlgorithm {
 
-	public void interpolateToGrid(Particle p, Grid g, double tstep);
+	public void interpolateToGrid(IParticle p, Grid g, double tstep);
 	
-	public void interpolateChargedensity(Particle p, Grid g);
+	public void interpolateChargedensity(IParticle p, Grid g);
 
-	public void interpolateToParticle(Particle p, Grid g);
+	public void interpolateToParticle(IParticle p, Grid g);
 
 }

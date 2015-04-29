@@ -2,7 +2,7 @@ package org.openpixi.pixi.physics.util;
 
 import org.openpixi.pixi.physics.grid.Cell;
 import org.openpixi.pixi.physics.grid.Grid;
-import org.openpixi.pixi.physics.particles.Particle;
+import org.openpixi.pixi.physics.particles.IParticle;
 
 import java.util.List;
 
@@ -32,7 +32,7 @@ public class ResultsComparator {
 
 
 	public void compare(
-			List<Particle> expectedParticles, List<Particle> actualParticles,
+			List<IParticle> expectedParticles, List<IParticle> actualParticles,
 			Grid expectedGrid, Grid actualGrid) {
 
 		compareParticleLists(expectedParticles, actualParticles, TOLERANCE);
@@ -41,7 +41,7 @@ public class ResultsComparator {
 
 
 	private void compareParticleLists(
-			List<Particle> expectedParticles, List<Particle> actualParticles, double tolerance) {
+			List<IParticle> expectedParticles, List<IParticle> actualParticles, double tolerance) {
 
 		if (expectedParticles.size() < actualParticles.size()) {
 			fail("There are more actual particles than expected!");
@@ -50,7 +50,7 @@ public class ResultsComparator {
 			fail("There are less actual particles than expected!");
 		}
 
-		for (Particle p: expectedParticles) {
+		for (IParticle p: expectedParticles) {
 			if (!findParticle(p, actualParticles, tolerance)) {
 				fail("Could not find particle " + p + " in the list of actual particles!");
 			}
@@ -59,9 +59,9 @@ public class ResultsComparator {
 
 
 	private boolean findParticle(
-			Particle p, List<Particle> particles, Double tolerance) {
+			IParticle p, List<IParticle> particles, Double tolerance) {
 		boolean retval = false;
-		for (Particle p2: particles) {
+		for (IParticle p2: particles) {
 			if (compareParticles(p, p2, tolerance)) {
 				return true;
 			}
@@ -73,14 +73,13 @@ public class ResultsComparator {
 	/**
 	 * Compares just the position.
 	 */
-	private boolean compareParticles(Particle p1, Particle p2, Double tolerance) {
-		if (Math.abs(p1.getX() - p2.getX()) > tolerance) {
-			return false;
-		}
-		if (Math.abs(p1.getY() - p2.getY()) > tolerance) {
-			return false;
-		}
-		return true;
+	private boolean compareParticles(IParticle p1, IParticle p2, Double tolerance) {
+        double[] pos1 = p1.getPosition();
+        double[] pos2 = p2.getPosition();
+        for(int i = 0; i < pos1.length; i++)
+            if(Math.abs(pos1[i] - pos2[i]) > tolerance)
+                return false;
+        return true;
 	}
 
 

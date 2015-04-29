@@ -21,7 +21,7 @@ package org.openpixi.pixi.diagnostics.methods;
 
 import org.openpixi.pixi.diagnostics.DataOutput;
 import org.openpixi.pixi.physics.grid.Grid;
-import org.openpixi.pixi.physics.particles.Particle;
+import org.openpixi.pixi.physics.particles.IParticle;
 
 import java.util.ArrayList;
 
@@ -48,11 +48,16 @@ public class KineticEnergy implements Diagnostics {
 		this.calculationPeriod = calculationPeriod;
 	}
 	
-	public void calculate(Grid grid, ArrayList<Particle> particles) {
+	public void calculate(Grid grid, ArrayList<IParticle> particles) {
 		totalKineticEnergy = 0;
 		
-		for(Particle p : particles) {
-			totalKineticEnergy += p.getMass()*(p.getVx() * p.getVx() + p.getVy()*p.getVy());
+		for(IParticle p : particles)
+        {
+            double[] velocity = p.getVelocity();
+            double velocity2 = 0.0;
+            for(int i = 0; i < velocity.length; i++)
+                velocity2 += velocity[i] * velocity[i];
+			totalKineticEnergy += p.getMass()*velocity2;
 		}
 		
 		totalKineticEnergy = totalKineticEnergy/2;

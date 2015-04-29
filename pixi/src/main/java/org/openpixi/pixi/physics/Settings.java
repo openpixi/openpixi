@@ -1,42 +1,20 @@
 package org.openpixi.pixi.physics;
 
 import org.openpixi.pixi.diagnostics.methods.Diagnostics;
-import org.openpixi.pixi.parallel.cellaccess.CellIterator;
-import org.openpixi.pixi.parallel.cellaccess.ParallelCellIterator;
-import org.openpixi.pixi.parallel.cellaccess.SequentialCellIterator;
-import org.openpixi.pixi.parallel.particleaccess.ParallelParticleIterator;
-import org.openpixi.pixi.parallel.particleaccess.ParticleIterator;
-import org.openpixi.pixi.parallel.particleaccess.SequentialParticleIterator;
-import org.openpixi.pixi.physics.collision.algorithms.CollisionAlgorithm;
-import org.openpixi.pixi.physics.collision.detectors.Detector;
-import org.openpixi.pixi.physics.fields.FieldSolver;
-import org.openpixi.pixi.physics.fields.PoissonSolver;
-import org.openpixi.pixi.physics.fields.PoissonSolverFFTPeriodic;
-import org.openpixi.pixi.physics.fields.SimpleSolver;
-import org.openpixi.pixi.physics.force.CombinedForce;
-import org.openpixi.pixi.physics.force.Force;
-import org.openpixi.pixi.physics.grid.CloudInCell;
-import org.openpixi.pixi.physics.grid.GridBoundaryType;
-import org.openpixi.pixi.physics.grid.InterpolatorAlgorithm;
-import org.openpixi.pixi.physics.movement.boundary.ParticleBoundaryType;
-import org.openpixi.pixi.physics.particles.Particle;
-import org.openpixi.pixi.physics.particles.ParticleFactory.PositionDistribution;
-import org.openpixi.pixi.physics.particles.ParticleFactory.VelocityDistribution;
-import org.openpixi.pixi.physics.solver.Euler;
-import org.openpixi.pixi.physics.solver.Solver;
+import org.openpixi.pixi.parallel.cellaccess.*;
+import org.openpixi.pixi.parallel.particleaccess.*;
+import org.openpixi.pixi.physics.fields.*;
+import org.openpixi.pixi.physics.force.*;
+import org.openpixi.pixi.physics.grid.*;
+import org.openpixi.pixi.physics.particles.*;
+import org.openpixi.pixi.physics.solver.*;
 import org.openpixi.pixi.physics.solver.relativistic.LeapFrogRelativistic;
-import org.openpixi.pixi.physics.util.ClassCopier;
-import org.openpixi.pixi.physics.particles.ParticleFactory;
-import org.openpixi.pixi.physics.particles.ParticleLoader;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import static org.openpixi.pixi.physics.GeneralBoundaryType.Hardwall;
-import static org.openpixi.pixi.physics.GeneralBoundaryType.Periodic;
-import org.openpixi.pixi.physics.grid.ChargeConservingCIC;
+
 
 /**
  * Specifies default values of simulation parameters. The default values can be
@@ -60,14 +38,17 @@ public class Settings {
 	// DEFAULT VALUES
 	//----------------------------------------------------------------------------------------------
 	private double speedOfLight = 1;
+	private int    numberOfColors = 1;
+	private int	   numberOfDimensions = 3;
+    private double couplingConstant = 1.0;
 	private double timeStep = 0.1;
 	private double gridStep = 1;
 	private double tMax = 1000;
 	private int spectrumStep = 300;
 	private String filePath = "default";
 	private GeneralBoundaryType boundaryType = GeneralBoundaryType.Periodic;
-	private InterpolatorAlgorithm interpolator = new ChargeConservingCIC();
-	//private InterpolatorAlgorithm interpolator = new CloudInCell();
+	private InterpolatorAlgorithm interpolator = new EmptyInterpolator();
+
 	// Grid related settings
 	private int gridCellsX = 10;
 	private int gridCellsY = 10;
@@ -76,25 +57,17 @@ public class Settings {
 	private double simulationHeight = gridCellsY*gridStep;
 	private double simulationDepth = gridCellsZ*gridStep;
 	private FieldSolver gridSolver = new SimpleSolver();
-	private PoissonSolver poissonSolver = new PoissonSolverFFTPeriodic();
+	private PoissonSolver poissonSolver = new EmptyPoissonSolver();
 	private boolean useGrid = true;
 	private boolean relativistic = true;
-	private double eps0 = 1.0/(4*Math.PI);
-	private double mu0 = 4*Math.PI;
+
 	// Particle related settings
-	private int numOfParticles = 128;
-	private double particleRadius = 1;
-	private double particleMaxSpeed = speedOfLight / 3;
+	private int numOfParticles = 0;
+
 	private int simulationType = 0;
 	private int writeToFile = 0;
-	private String OCLParticleSolver;
-	private String OCLGridInterpolator;
-	// Modify defaultParticleFactories() method to determine what kind of particles
-	// will be loaded by default.
-	private List<Particle> particles = new ArrayList<Particle>();
-	private Detector collisionDetector = new Detector();
-	private CollisionAlgorithm collisionResolver = new CollisionAlgorithm();
-	private Solver particleSolver = new LeapFrogRelativistic(speedOfLight);
+	private List<IParticle> particles = new ArrayList<IParticle>();
+	private Solver particleSolver = new EmptyParticleSolver();
 	private List<Force> forces = new ArrayList<Force>();
 	// Diagnostics related settings
 	/**
@@ -110,10 +83,6 @@ public class Settings {
 	 * simulation we use ExecutorService which is maintaining a fixed number of threads running
 	 * all the time and assigns work to the threads on the fly according to demand. */
 	private ExecutorService threadsExecutor;
-	// Distributed version settings
-	private int numOfNodes = 1;
-	private String iplServer = "localhost";
-	private String iplPool = "openpixi";
 
 	//----------------------------------------------------------------------------------------------
 	// SIMPLE GETTERS
@@ -169,25 +138,22 @@ public class Settings {
 	public double getSpeedOfLight() {
 		return speedOfLight;
 	}
-	
-	public double getEps0() {
-		return eps0;
+
+	public int getNumberOfColors() {
+		return numberOfColors;
 	}
-	
-	public double getMu0() {
-		return mu0;
+
+	public int getNumberOfDimensions() {
+		return numberOfDimensions;
 	}
+
+    public double getCouplingConstant()
+    {
+        return couplingConstant;
+    }
 
 	public double getTimeStep() {
 		return timeStep;
-	}
-
-	public Detector getCollisionDetector() {
-		return collisionDetector;
-	}
-
-	public CollisionAlgorithm getCollisionAlgorithm() {
-		return collisionResolver;
 	}
 
 	public FieldSolver getGridSolver() {
@@ -206,28 +172,13 @@ public class Settings {
 		return particleSolver;
 	}
 
-	public String getOCLParticleSolver() {
-		return this.OCLParticleSolver;
-	}
-
 	public InterpolatorAlgorithm getInterpolator() {
 		return interpolator;
 	}
 
-	public String getOCLGridInterpolator() {
-		return this.OCLGridInterpolator;
-	}
-
-	public String getRunid() {
-		return runid;
-	}
 
 	public List<Diagnostics> getDiagnostics() {
 		return diagnostics;
-	}
-
-	public int getNumOfNodes() {
-		return numOfNodes;
 	}
 
 	public GeneralBoundaryType getBoundaryType() {
@@ -238,16 +189,8 @@ public class Settings {
 		return iterations;
 	}
 
-	public String getIplServer() {
-		return iplServer;
-	}
-
 	public boolean useGrid() {
 		return useGrid;
-	}
-
-	public String getIplPool() {
-		return iplPool;
 	}
 
 	//----------------------------------------------------------------------------------------------
@@ -276,79 +219,21 @@ public class Settings {
 		return combinedForce;
 	}
 
-	private List<ParticleFactory> defaultParticleFactories() {
-		// Random seed
-		long seed = (long) Math.random();
-		// If asList() is used the resulting list will have a fixed size!
-		if(relativistic == true) {
-		List<ParticleFactory> particleFactories = Arrays.asList(
-				new ParticleFactory(numOfParticles / 2, 1, 1, particleRadius,
-				PositionDistribution.RANDOM, VelocityDistribution.RANDOM,
-				1, 1, 1, 0.2,
-				false, seed, seed),
-				new ParticleFactory(numOfParticles / 2, 1, -1, particleRadius,
-				PositionDistribution.RANDOM, VelocityDistribution.RANDOM,
-				1, 1, 1, 0.2,
-				false, seed, seed));
-
-		return particleFactories;
-		} else {					//A two-dimesnional routine, doesn't work in 3D!!!
-			List<ParticleFactory> particleFactories = Arrays.asList(
-					new ParticleFactory(numOfParticles / 2, 1, 1, particleRadius,
-					PositionDistribution.RANDOM, VelocityDistribution.RANDOM,
-					particleMaxSpeed / 10, particleMaxSpeed / 10, particleMaxSpeed,
-					false, seed, seed),
-					new ParticleFactory(numOfParticles / 2, 1, -1, particleRadius,
-					PositionDistribution.RANDOM, VelocityDistribution.RANDOM,
-					particleMaxSpeed / 10, particleMaxSpeed / 10, particleMaxSpeed,
-					false, seed, seed));
-
-			return particleFactories;
-		}
-	}
-
 	/**
 	 * If no particles are specified creates random particles.
 	 *
 	 * !!! IMPORTANT !!! Always returns deep copy of the actual particle list!
 	 */
-	public List<Particle> getParticles() {
-		if (particles.size() == 0) {
-			this.particles = (new ParticleLoader()).load(defaultParticleFactories(),
-					simulationWidth, simulationHeight, simulationDepth);
-		}
-
+	public List<IParticle> getParticles() {
 		return cloneParticles();
 	}
 
-	private List<Particle> cloneParticles() {
-		List<Particle> copy = new ArrayList<Particle>();
-		for (Particle p : particles) {
+	private List<IParticle> cloneParticles() {
+		List<IParticle> copy = new ArrayList<IParticle>();
+		for (IParticle p : particles) {
 			copy.add(p.copy());
 		}
 		return copy;
-	}
-
-	public GridBoundaryType getGridBoundary() {
-		switch (boundaryType) {
-			case Periodic:
-				return GridBoundaryType.Periodic;
-			case Hardwall:
-				return GridBoundaryType.Hardwall;
-			default:
-				return GridBoundaryType.Hardwall;
-		}
-	}
-
-	public ParticleBoundaryType getParticleBoundary() {
-		switch (boundaryType) {
-			case Periodic:
-				return ParticleBoundaryType.Periodic;
-			case Hardwall:
-				return ParticleBoundaryType.Hardwall;
-			default:
-				return ParticleBoundaryType.Hardwall;
-		}
 	}
 
 	public ParticleIterator getParticleIterator() {
@@ -392,22 +277,6 @@ public class Settings {
 		this.writeToFile = writeTo;
 	}
 
-	/**
-	 * @deprecated Use setGridStep() and setGridCellsX() instead.
-	 */
-	@Deprecated
-	public void setSimulationWidth(double simulationWidth) {
-		this.simulationWidth = simulationWidth;
-	}
-
-	/**
-	 * @deprecated Use setGridStep() and setGridCellsY() instead.
-	 */
-	@Deprecated
-	public void setSimulationHeight(double simulationHeight) {
-		this.simulationHeight = simulationHeight;
-	}
-
 	public void setGridCellsX(int gridCellsX) {
 		this.gridCellsX = gridCellsX;
 		this.simulationWidth = this.gridStep*gridCellsX;
@@ -424,12 +293,23 @@ public class Settings {
 	}
 
 	public void setSpeedOfLight(double speedOfLight) {
-		if( (this.eps0 * this.mu0) == speedOfLight*speedOfLight ) {
-			this.speedOfLight = speedOfLight;
-		} else {
-			System.out.println("Your chosen speed of light is in contradiction to the values of eps_0 and mu_0 !! Default value of c is used instead!!");
-		}
+        this.speedOfLight = speedOfLight;
 	}
+
+	public void setNumberOfColors(int numberOfColors)
+	{
+		this.numberOfColors = numberOfColors;
+	}
+
+	public void setNumberOfDimensions(int numberOfDimensions)
+	{
+		this.numberOfDimensions = numberOfDimensions;
+	}
+
+    public void setCouplingConstant(double g)
+    {
+        this.couplingConstant = g;
+    }
 
 	public void setTimeStep(double timeStep) {
 		this.timeStep = timeStep;
@@ -457,14 +337,6 @@ public class Settings {
 		this.relativistic = rel;
 	}
 
-	public void setCollisionDetector(Detector collisionDetector) {
-		this.collisionDetector = collisionDetector;
-	}
-
-	public void setCollisionResolver(CollisionAlgorithm collisionResolver) {
-		this.collisionResolver = collisionResolver;
-	}
-
 	public void setGridSolver(FieldSolver gridSolver) {
 		this.gridSolver = gridSolver;
 	}
@@ -477,20 +349,8 @@ public class Settings {
 		this.particleSolver = particleSolver;
 	}
 
-	public void setOCLParticleSolver(String OCLParticleSolver) {
-		this.OCLParticleSolver = OCLParticleSolver;
-	}
-
 	public void setInterpolator(InterpolatorAlgorithm interpolator) {
 		this.interpolator = interpolator;
-	}
-
-	public void setOCLGridInterpolator(String OCLGridInterpolator) {
-		this.OCLGridInterpolator = OCLGridInterpolator;
-	}
-
-	public void setRunid(String runid) {
-		this.runid = runid;
 	}
 
 	public void setDiagnostics(List<Diagnostics> diagnostics) {
@@ -509,20 +369,12 @@ public class Settings {
 		this.numOfParticles = numOfParticles;
 	}
 
-	public void setParticleList(List<Particle> particles) {
+	public void setParticleList(List<IParticle> particles) {
 		this.numOfParticles = particles.size();
 		this.particles = particles;
 	}
 
-	public void setParticleRadius(double particleRadius) {
-		this.particleRadius = particleRadius;
-	}
-
-	public void setParticleMaxSpeed(double particleMaxSpeed) {
-		this.particleMaxSpeed = particleMaxSpeed;
-	}
-
-	public void addParticle(Particle p) {
+	public void addParticle(IParticle p) {
 		particles.add(p);
 	}
 
@@ -534,24 +386,12 @@ public class Settings {
 		this.iterations = iterations;
 	}
 
-	public void setNumOfNodes(int numOfNodes) {
-		this.numOfNodes = numOfNodes;
-	}
-
 	public void setBoundary(GeneralBoundaryType boundaryType) {
 		this.boundaryType = boundaryType;
 	}
 
-	public void setIplServer(String iplServer) {
-		this.iplServer = iplServer;
-	}
-
 	public void useGrid(boolean useGrid) {
 		this.useGrid = useGrid;
-	}
-
-	public void setIplPool(String iplPool) {
-		this.iplPool = iplPool;
 	}
 
 	public void setNumOfThreads(int numOfThreads) {

@@ -1,135 +1,116 @@
 package org.openpixi.pixi.physics.force.relativistic;
 
 import org.openpixi.pixi.physics.RelativisticVelocity;
-import org.openpixi.pixi.physics.force.ConstantForce;
-import org.openpixi.pixi.physics.particles.Particle;
+import org.openpixi.pixi.physics.Simulation;
+import org.openpixi.pixi.physics.particles.IParticle;
+import org.openpixi.pixi.physics.force.Force;
 
-public class ConstantForceRelativistic extends ConstantForce {
-	
-	RelativisticVelocity relvelocity;
-	
-	/** New empty force */
-	public ConstantForceRelativistic(double c)
-	{
-		super();
-		reset();
+public class ConstantForceRelativistic implements Force {
 
-		relvelocity = new RelativisticVelocity(c);
-	}
 
-	public void reset()
-	{
-		gx = 0;
-		gy = 0;
-		gz = 0;
-		drag = 0;
-		ex = 0;
-		ey = 0;
-		ez = 0;
-		bx = 0;
-		by = 0;
-		bz = 0;
-	}
-	
-	//getting the force in the x - direction
-	@Override
-	public double getForceX(Particle p) {
-		double gamma = relvelocity.calculateGamma(p);
-		
-		//v = u / gamma
-		double vx = p.getVx() / gamma;
-		double vy = p.getVy() / gamma;
-		double vz = p.getVz() / gamma;
-		
-		return -drag * vx + p.getMass() * gx + p.getCharge() * ex +
-				p.getCharge() * ( vy * bz - vz * by );
-	}
-	
-	//getting the force in the y - direction
-	@Override
-	public double getForceY(Particle p) {
-		double gamma = relvelocity.calculateGamma(p);
-		
-		//v = u / gamma
-		double vx = p.getVx() / gamma;
-		double vy = p.getVy() / gamma;
-		double vz = p.getVz() / gamma;
-		
-		return - drag * vy + p.getMass() * gy + p.getCharge() * ey +
-				p.getCharge() * ( vz * bx - vx * bz );
-	}
-	
-	//getting the force in the z - direction
-		@Override
-		public double getForceZ(Particle p) {
-			double gamma = relvelocity.calculateGamma(p);
-			
-			//v = u / gamma
-			double vx = p.getVx() / gamma;
-			double vy = p.getVy() / gamma;
-			double vz = p.getVz() / gamma;
-			
-			return - drag * vz + p.getMass() * gz + p.getCharge() * ez +
-					p.getCharge() * ( vx * by - vy * bx );
-		}
+    private int numberOfDimensions;
+    private int numberOfColors;
+    private int numberOfComponents;
 
-	@Override
-	public double getPositionComponentofForceX(Particle p) {
-		return p.getMass() * gx + p.getCharge() * ex;
-	}
+    private double couplingConstant;
+    private double speedOfLight;
 
-	@Override
-	public double getPositionComponentofForceY(Particle p) {
-		return p.getMass() * gy + p.getCharge() * ey;
-	}
+    private RelativisticVelocity relVelocity;
 
-	@Override
-	public double getTangentVelocityComponentOfForceX(Particle p) {
-		double gamma = relvelocity.calculateGamma(p);
-		
-		//v = u / gamma
-		double vx = p.getVx() / gamma;
-		
-		return - drag * vx;
-	}
+    public double[][] E;
+    public double[][][] F;
 
-	@Override
-	public double getTangentVelocityComponentOfForceY(Particle p) {
-		double gamma = relvelocity.calculateGamma(p);
-		
-		double vy = p.getVy() / gamma;
-		
-		return - drag * vy;
-	}
+    /*
+        Primary constructor
+     */
 
-	@Override
-	public double getNormalVelocityComponentofForceX(Particle p) {
-		double gamma = relvelocity.calculateGamma(p);
-		
-		//v = u / gamma
-		double vy = p.getVy() / gamma;
-		
-		return p.getCharge() * vy * bz;
-	}
+    public ConstantForceRelativistic(int numberOfDimensions, int numberOfColors, double couplingConstant, double speedOfLight)
+    {
+        this.numberOfDimensions = numberOfDimensions;
+        this.numberOfColors = numberOfColors;
+        this.couplingConstant = couplingConstant;
+        this.speedOfLight = speedOfLight;
 
-	@Override
-	public double getNormalVelocityComponentofForceY(Particle p) {
-		double gamma = relvelocity.calculateGamma(p);
-		
-		//v = u / gamma
-		double vx = p.getVx() / gamma;
-		
-		return - p.getCharge() * vx * bz;
-	}
+        if(this.numberOfColors > 1)
+        {
+            this.numberOfComponents = this.numberOfColors * this.numberOfColors - 1;
+        }
+        else
+        {
+            this.numberOfComponents = 1;
+        }
 
-	@Override
-	public double getBz(Particle p) {
-		return bz;
-	}
+        this.relVelocity = new RelativisticVelocity(this.speedOfLight);
 
-	@Override
-	public double getLinearDragCoefficient(Particle p) {
-		return drag;
-	}
-	
+
+        this.E = new double[this.numberOfDimensions][this.numberOfComponents];
+        this.F = new double[this.numberOfDimensions][this.numberOfDimensions][this.numberOfComponents];
+
+        reset();
+    }
+
+    public ConstantForceRelativistic(int numberOfDimensions, int numberOfColors, double couplingConstant, double speedOfLight, double[][] E, double[][][] F)
+    {
+        this(numberOfDimensions, numberOfColors, couplingConstant, speedOfLight);
+
+        this.E = E;
+        this.F = F;
+    }
+
+    public ConstantForceRelativistic(Simulation s)
+    {
+        this(s.getNumberOfDimensions(), s.getNumberOfColors(), s.getCouplingConstant(), s.getSpeedOfLight());
+    }
+
+    /** New empty force */
+    public ConstantForceRelativistic()
+    {
+        this(3, 1, 1.0, 1.0);
+    }
+
+    public double getForce(int i, IParticle p)
+    {
+        double gamma = relVelocity.calculateGamma(p);
+        double f = 0.0;
+        for(int c = 0; c < this.numberOfComponents; c++)
+        {
+            f += p.getCharge(c) * E[c][i];
+            for(int j = 0; j < this.numberOfDimensions; j++)
+            {
+                f += p.getCharge(c) * p.getVelocity(j) * F[i][j][c] / gamma;
+            }
+        }
+        f *= this.couplingConstant;
+        return f;
+    }
+
+    public double getForceX(IParticle p) {
+        return  getForce(0, p);
+    }
+
+    public double getForceY(IParticle p) {
+        return  getForce(1, p);
+    }
+
+    public double getForceZ(IParticle p) {
+        return  getForce(2, p);
+    }
+
+    public void reset()
+    {
+        for(int c = 0; c < this.numberOfColors; c++)
+        {
+            for(int i = 0; i < this.numberOfComponents; i++)
+            {
+                this.E[i][c] = 0;
+
+                for(int j = 0; j < this.numberOfComponents; j++)
+                {
+                    this.F[i][j][c] = 0.0;
+                }
+            }
+        }
+
+    }
+
 }

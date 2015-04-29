@@ -3,7 +3,7 @@ package org.openpixi.pixi.physics;
 import org.openpixi.pixi.physics.fields.PoissonSolver;
 import org.openpixi.pixi.physics.grid.Grid;
 import org.openpixi.pixi.physics.grid.Interpolation;
-import org.openpixi.pixi.physics.particles.Particle;
+import org.openpixi.pixi.physics.particles.IParticle;
 
 import java.util.List;
 
@@ -13,7 +13,7 @@ import java.util.List;
  */
 public class ParticleGridInitializer {
 	public void initialize(Interpolation interpolation, PoissonSolver poissonSolver,
-	                       List<Particle> particles, Grid grid) {
+	                       List<IParticle> particles, Grid grid) {
 		interpolation.interpolateChargedensity(particles, grid);
 		poissonSolver.solve(grid);
 	}

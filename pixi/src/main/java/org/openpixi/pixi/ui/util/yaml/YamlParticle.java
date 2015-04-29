@@ -2,25 +2,22 @@ package org.openpixi.pixi.ui.util.yaml;
 
 import java.awt.Color;
 import java.lang.reflect.Field;
+import java.util.List;
 
 import org.openpixi.pixi.physics.Settings;
-import org.openpixi.pixi.physics.particles.ParticleFull;
+import org.openpixi.pixi.physics.particles.Particle;
 
 public class YamlParticle {
-	public Double x;
-	public Double y;
-	public Double z;
+	public List<Double> position;
+	public List<Double> velocity;
 	public Double r;
-	public Double vx;
-	public Double vy;
-	public Double vz;
 	public Double m;
-	public Double q;
+	public List<Double> q;
 	public String color;
 
 	public void applyTo(Settings settings) {
 
-		ParticleFull p = getParticle();
+		Particle p = getParticle();
 
 		settings.addParticle(p);
 	}
@@ -30,44 +27,28 @@ public class YamlParticle {
 	 * YAML document to it.
 	 * @return new particle
 	 */
-	public ParticleFull getParticle() {
-		ParticleFull p = new ParticleFull();
+	public Particle getParticle() {
+		Particle p = new Particle();
 
-		if (x != null) {
-			p.setX(x);
-		}
+		if(position != null)
+			for(int i = 0; i < position.size(); i++)
+				p.setPosition(i, position.get(i));
 
-		if (y != null) {
-			p.setY(y);
-		}
-
-		if (z != null) {
-			p.setZ(z);
-		}
+		if(velocity != null)
+			for(int i = 0; i < velocity.size(); i++)
+				p.setVelocity(i, velocity.get(i));
 
 		if (r != null) {
 			p.setRadius(r);
-		}
-
-		if (vx != null) {
-			p.setVx(vx);
-		}
-
-		if (vy != null) {
-			p.setVy(vy);
-		}
-
-		if (vz != null) {
-			p.setVz(vz);
 		}
 
 		if (m != null) {
 			p.setMass(m);
 		}
 
-		if (q != null) {
-			p.setCharge(q);
-		}
+		if (q != null)
+			for(int c = 0; c < q.size(); c++)
+				p.setCharge(c, q.get(c));
 
 		if (color != null) {
 			p.setColor(getColorFromString(color));

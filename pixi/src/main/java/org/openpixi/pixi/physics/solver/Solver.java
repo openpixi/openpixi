@@ -20,13 +20,13 @@
 package org.openpixi.pixi.physics.solver;
 
 import org.openpixi.pixi.physics.force.Force;
-import org.openpixi.pixi.physics.particles.Particle;
+import org.openpixi.pixi.physics.particles.IParticle;
 
 public interface Solver {
 	
-	public void step(Particle p, Force f, double step);
+	public void step(IParticle p, Force f, double step);
 	
-	public void prepare(Particle p, Force f, double step);
+	public void prepare(IParticle p, Force f, double step);
 	
-	public void complete(Particle p, Force f, double step);
+	public void complete(IParticle p, Force f, double step);
 }

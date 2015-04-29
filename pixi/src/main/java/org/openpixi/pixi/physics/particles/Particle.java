@@ -1,201 +1,193 @@
-/*
- * OpenPixi - Open Particle-In-Cell (PIC) Simulator
- * Copyright (C) 2012  OpenPixi.org
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License along
- * with this program; if not, write to the Free Software Foundation, Inc.,
- * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
- */
 package org.openpixi.pixi.physics.particles;
 
 import java.awt.Color;
 import java.io.Serializable;
 
-public abstract class Particle implements Serializable {
+public class Particle implements IParticle, Serializable
+{
+	protected int     numberOfDimensions;
+	protected int     numberOfColors;
+	protected int     numberOfComponents;
+	protected double  charge[];
+	protected double  mass;
 
-	//----------------------------------------------------------------------------------------------
-	// GETTERS
-	//----------------------------------------------------------------------------------------------
-	
-	public double getX() {return 0;}
-	
-	public double getY() {return 0;}
-	
-	public double getZ() {return 0;}
-	
-	public double getPrevX() {return 0;}
-	
-	public double getPrevY() {return 0;}
-	
-	public double getPrevZ() {return 0;}
-	
-	public double getRadius() {return 0;}
+	protected double  pos[];
+	protected double  prevPos[];
+	protected double  vel[];
+	protected double  acc[];
 
-	public Color getColor() {return Color.black;}
-	
-	public double getVx() {return 0;}
-	
-	public double getVy() {return 0;}
-	
-	public double getVz() {return 0;}
-	
-	public double getAx() {return 0;}
-	
-	public double getAy() {return 0;}
-	
-	public double getAz() {return 0;}
-	
-	public double getMass() {return 0;}
-	
-	public double getCharge() {return 0;}
-	
-	public double getEx() {return 0;}
-	
-	public double getEy() {return 0;}
-	
-	public double getEz() {return 0;}
-	
-	public double getBx() {return 0;}
-	
-	public double getBy() {return 0;}
-	
-	public double getBz() {return 0;}
-	
-	public double getPrevBx() {return 0;}
-	
-	public double getPrevBy() {return 0;}
-	
-	public double getPrevBz() {return 0;}
-	
-	public double getPrevPositionComponentForceX() {return 0;}
-	
-	public double getPrevPositionComponentForceY() {return 0;}
-	
-	public double getPrevPositionComponentForceZ() {return 0;}
-	
-	public double getPrevTangentVelocityComponentOfForceX() {return 0;}
-	
-	public double getPrevTangentVelocityComponentOfForceY() {return 0;}
-	
-	public double getPrevTangentVelocityComponentOfForceZ() {return 0;}
-	
-	public double getPrevNormalVelocityComponentOfForceX() {return 0;}
-	
-	public double getPrevNormalVelocityComponentOfForceY() {return 0;}
-	
-	public double getPrevNormalVelocityComponentOfForceZ() {return 0;}
-	
-	public double getPrevLinearDragCoefficient() {return 0;}
+	protected double  E[][];
+	protected double  F[][][];
 
-	//----------------------------------------------------------------------------------------------
-	// SETTERS
-	//----------------------------------------------------------------------------------------------
-	
-	public void setX(double x) {}
+	protected double  r;
+	protected Color   col;
 
-	public void addX(double x) {}
-	
-	public void setPrevX(double prevX) {}
+	/*
+			CONSTRUCTOR
+	 */
 
-	public void addPrevX(double x) {}
+	public Particle()
+	{
+		this(3, 1);
+	}
 
-	public void setY(double y) {}
+	public Particle(int numberOfDimensions, int numberOfColors)
+	{
+		this.setNumberOfDimensions(numberOfDimensions);
+		this.setNumberOfColors(numberOfColors);
+	}
 
-	public void addY(double y) {}
-	
-	public void setPrevY(double prevY) {}
+	/*
+			GETTERS
+	 */
 
-	public void addPrevY(double y) {}
+	public double getPosition(int i)        {   return pos[i];                  }
+	public double getPrevPosition(int i)    {   return prevPos[i];              }
+	public double getVelocity(int i)        {   return vel[i];                  }
+	public double getAcceleration(int i)    {   return acc[i];                  }
 
-	public void setZ(double z) {}
+    public double[] getPosition()           {   return pos;                     }
+    public double[] getPrevPosition()       {   return prevPos;                 }
+    public double[] getVelocity()           {   return vel;                     }
+    public double[] getAcceleration()       {   return acc;                     }
 
-	public void addZ(double z) {}
-	
-	public void setPrevZ(double prevZ) {}
+	public double getE(int i, int c)        {   return E[i][c];                 }
+	public double getF(int i, int j, int c) {   return F[i][j][c];              }
 
-	public void addPrevZ(double z) {}
+	public double getCharge(int c)          {   return charge[c];               }
+	public double getMass()                 {   return mass;                    }
 
-	public void setRadius(double radius) {}
+	public double getRadius()               {   return r;                       }
+	public Color  getColor()                {   return col;                     }
 
-	public void setColor(Color color) {}
+    public int getNumberOfColors()          {   return this.numberOfColors;     }
+    public int getNumberOfDimensions()      {   return this.numberOfDimensions; }
+    public int getNumberOfComponents()      {   return this.numberOfComponents; }
 
-	public void setVx(double vx) {}
+	/*
+			SETTERS
+	 */
 
-	public void setVy(double vy) {}
-	
-	public void setVz(double vz) {}
-	
-	public void setAx(double ax) {}
+	public void setPosition(int i, double value)                {   this.pos[i] = value;            }
+	public void addPosition(int i, double value)                {   this.pos[i] += value;           }
 
-	public void setAy(double ay) {}
-	
-	public void setAz(double az) {}
+	public void setPrevPosition(int i, double value)            {   this.prevPos[i] = value;        }
+	public void addPrevPosition(int i, double value)            {   this.prevPos[i] += value;       }
 
-	public void setMass(double mass) {}
+	public void setVelocity(int i, double value)                {   this.vel[i] = value;            }
+	public void addVelocity(int i, double value)                {   this.vel[i] += value;           }
 
-	public void setCharge(double charge) {}
+	public void setAcceleration(int i, double value)            {   this.acc[i] = value;            }
+	public void addAcceleration(int i, double value)            {   this.acc[i] += value;           }
 
-	public void setEx(double Ex) {}
+	public void setE(int i, int c, double E)                    {   this.E[i][c] = E;               }
+	public void setF(int i, int j, int c, double F)             {   this.F[i][j][c] = F;            }
 
-	public void setEy(double Ey) {}
-	
-	public void setEz(double Ez) {}
-	
-	public void setBx(double Bx) {}
-	
-	public void setBy(double By) {}
+	public void setNumberOfColors(int numberOfColors)
+	{
+		this.numberOfColors = numberOfColors;
+		if(this.numberOfColors > 1)
+			this.numberOfComponents = numberOfColors * numberOfColors - 1;
+		else
+			this.numberOfComponents = 1;
 
-	public void setBz(double Bz) {}
-	
-	public void setPrevBx(double prevBx) {}
-	
-	public void setPrevBy(double prevBy) {}
-	
-	public void setPrevBz(double prevBz) {}
+		this.charge = new double[this.numberOfComponents];
 
-	public void setPrevPositionComponentForceX(double argument) {}
+		if(this.numberOfDimensions > 0)
+			initializeFields();
+	}
 
-	public void setPrevPositionComponentForceY(double argument) {}
-	
-	public void setPrevPositionComponentForceZ(double argument) {}
+	public void setNumberOfDimensions(int numberOfDimensions)
+	{
+		this.numberOfDimensions = numberOfDimensions;
 
-	public void setPrevTangentVelocityComponentOfForceX(double argument) {}
+		this.pos = new double[this.numberOfDimensions];
+		this.prevPos = new double[this.numberOfDimensions];
+		this.vel = new double[this.numberOfDimensions];
+		this.acc = new double[this.numberOfDimensions];
 
-	public void setPrevTangentVelocityComponentOfForceY(double argument) {}
-	
-	public void setPrevTangentVelocityComponentOfForceZ(double argument) {}
+		if(this.numberOfColors > 0)
+			initializeFields();
+	}
 
-	public void setPrevNormalVelocityComponentOfForceX(double argument) {}
+	public void setCharge(int c, double q)
+	{
+		this.charge[c] = q;
+	}
 
-	public void setPrevNormalVelocityComponentOfForceY(double argument) {}
-	
-	public void setPrevNormalVelocityComponentOfForceZ(double argument) {}
+	public void setMass(double m)
+	{
+		this.mass = m;
+	}
 
-	public void setPrevLinearDragCoefficient(double argument) {}
+	public void setRadius(double r)
+	{
+		this.r = r;
+	}
 
-	//----------------------------------------------------------------------------------------------
-	// UTILITY METHODS
-	//----------------------------------------------------------------------------------------------
+	public void setColor(Color color)
+	{
+		this.col = color;
+	}
 
-	public void storePosition() {}
-	
-	public void applyPeriodicBoundary(double argument1, double argument2, double argument3) {}
-	
-	public Particle copy() {
-		Particle p = new ParticleFull();
+	public void storePosition()
+	{
+        prevPos = pos.clone();
+	}
+
+	public IParticle copy()
+	{
+		Particle p = new Particle();
+
+		p.setNumberOfDimensions(this.numberOfDimensions);
+		p.setNumberOfColors(this.numberOfColors);
+
+		for (int i = 0; i < this.numberOfDimensions; i++)
+		{
+			p.setPosition(i, this.pos[i]);
+			p.setPrevPosition(i, this.prevPos[i]);
+			p.setVelocity(i, this.vel[i]);
+			p.setAcceleration(i, this.acc[i]);
+		}
+
+
+
+		p.setMass(this.mass);
+		p.setRadius(this.r);
+		p.setColor(this.col);
+
+		for (int c = 0; c < this.numberOfComponents; c++)
+		{
+			p.setCharge(c, this.charge[c]);
+			for(int i = 0; i < this.numberOfDimensions; i++)
+			{
+				p.setE(i, c, this.E[i][c]);
+				for(int j = 0; j < this.numberOfDimensions; j++)
+				{
+					p.setF(i, j, c, this.F[i][j][c]);
+				}
+			}
+		}
+
 		return p;
 	}
 
-	@Override
-	public String toString() {return null;}
+	public String toString()
+	{
+		String output = "[";
+		for(int i = 0; i < this.numberOfDimensions; i++)
+		{
+			output += this.pos[i];
+			if(i < this.numberOfDimensions - 1)
+				output += ",";
+		}
+		output += "]";
+		return output;
+	}
+
+	private void initializeFields()
+	{
+		this.E = new double[this.numberOfDimensions][this.numberOfComponents];
+		this.F = new double[this.numberOfDimensions][this.numberOfDimensions][this.numberOfComponents];
+	}
 }

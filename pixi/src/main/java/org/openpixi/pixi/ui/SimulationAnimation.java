@@ -13,31 +13,14 @@ import javax.swing.Timer;
 import org.openpixi.pixi.physics.InitialConditions;
 import org.openpixi.pixi.physics.Settings;
 import org.openpixi.pixi.physics.Simulation;
-import org.openpixi.pixi.physics.collision.algorithms.CollisionAlgorithm;
-import org.openpixi.pixi.physics.collision.algorithms.MatrixTransformation;
-import org.openpixi.pixi.physics.collision.algorithms.SimpleCollision;
-import org.openpixi.pixi.physics.collision.algorithms.VectorTransformation;
-import org.openpixi.pixi.physics.collision.detectors.AllParticles;
-import org.openpixi.pixi.physics.collision.detectors.Detector;
-import org.openpixi.pixi.physics.collision.detectors.SweepAndPrune;
 import org.openpixi.pixi.physics.force.CombinedForce;
 import org.openpixi.pixi.physics.force.ConstantForce;
 import org.openpixi.pixi.physics.force.Force;
 import org.openpixi.pixi.physics.force.SimpleGridForce;
 import org.openpixi.pixi.physics.force.relativistic.ConstantForceRelativistic;
 import org.openpixi.pixi.physics.force.relativistic.SimpleGridForceRelativistic;
-import org.openpixi.pixi.physics.movement.boundary.ParticleBoundaryType;
-import org.openpixi.pixi.physics.solver.Boris;
-import org.openpixi.pixi.physics.solver.BorisDamped;
-import org.openpixi.pixi.physics.solver.Euler;
-import org.openpixi.pixi.physics.solver.EulerRichardson;
 import org.openpixi.pixi.physics.solver.LeapFrog;
-import org.openpixi.pixi.physics.solver.LeapFrogDamped;
-import org.openpixi.pixi.physics.solver.LeapFrogHalfStep;
-import org.openpixi.pixi.physics.solver.SemiImplicitEuler;
-import org.openpixi.pixi.physics.solver.relativistic.BorisRelativistic;
 import org.openpixi.pixi.physics.solver.relativistic.LeapFrogRelativistic;
-import org.openpixi.pixi.physics.solver.relativistic.SemiImplicitEulerRelativistic;
 import org.openpixi.pixi.ui.panel.Particle2DPanel;
 import org.openpixi.pixi.ui.util.FrameRateDetector;
 
@@ -66,7 +49,7 @@ public class SimulationAnimation {
 	public SimulationAnimation() {
 		timer = new Timer(interval, new TimerListener());
 		frameratedetector = new FrameRateDetector(500);
-		s = InitialConditions.initRandomParticles(10, 2);
+		s = InitialConditions.initEmptySimulation();
 	}
 
 	/** Listener for timer */
@@ -141,51 +124,9 @@ public class SimulationAnimation {
 		timer.stop();
 		clear();
 		switch(id) {
-		case 0:
-			s = InitialConditions.initRandomParticles(10, 2);
-			break;
-		case 1:
-			s = InitialConditions.initRandomParticles(100, 1);
-			break;
-		case 2:
-			s = InitialConditions.initRandomParticles(1000, 0.5);
-			break;
-		case 3:
-			s = InitialConditions.initRandomParticles(10000, 0.01);
-			break;
-		case 4:
-			s = InitialConditions.initGravity(1, 2);
-			break;
-		case 5:
-			s = InitialConditions.initElectric(1, 2);
-			break;
-		case 6:
-			s = InitialConditions.initMagnetic(3, 2);
-			break;
-		case 7:
-			s = InitialConditions.initPair(0.1,1);
-			break;
-		case 8:
-			s = InitialConditions.initTwoStream(0.1,1,1000);
-			break;
-		case 9:
-			s = InitialConditions.initWeibel(0.01,1,2000,4,0.9);
-			break;
-		case 10:
-			s = InitialConditions.initOneTest(0.01,1);
-			break;
-		case 11:
-			s = InitialConditions.initWaveTest(0.2);
-			break;
-		case 12:
-			s = InitialConditions.initPair3D(0.1,1);
-			break;
-		case 13:
-			s = InitialConditions.initTwoStream3D(0.1,0.1,5000);
-			break;
-		case 14:
-			s = InitialConditions.initWeibel3D(0.01,1,1000,2,0.9);
-			break;
+			case 0:
+				s = InitialConditions.initEmptySimulation();
+				break;
 		}
 		updateFieldForce();
 		s.prepareAllParticles();
@@ -228,32 +169,12 @@ public class SimulationAnimation {
 	{
 		s.completeAllParticles();
 
-		switch(id) {
-		case 0:
-			s.getParticleMover().setSolver(new EulerRichardson());
-			break;
-		case 1:
-			s.getParticleMover().setSolver(new LeapFrog());
-			break;
-		case 2:
-			s.getParticleMover().setSolver(new LeapFrogDamped());
-			break;
-		case 3:
-			s.getParticleMover().setSolver(new LeapFrogHalfStep());
-			break;
-		case 4:
-			s.getParticleMover().setSolver(new Boris());
-			break;
-		case 5:
-			s.getParticleMover().setSolver(new BorisDamped());
-			break;
-		case 6:
-			s.getParticleMover().setSolver(new SemiImplicitEuler());
-			break;
-		case 7:
-			s.getParticleMover().setSolver(new Euler());
-			break;
-			}
+		switch(id)
+		{
+			case 0:
+				s.getParticleMover().setSolver(new LeapFrog());
+				break;
+		}
 
 		s.prepareAllParticles();
 	}
@@ -264,7 +185,7 @@ public class SimulationAnimation {
 		if(relativistic == false) {
 			s.relativistic = false;
 			if (s.f instanceof CombinedForce) {
-				ArrayList<Force> forces = ((CombinedForce) s.f).forces;
+				ArrayList<Force> forces = s.f.forces;
 				for (int j = 0; j < forces.size(); j++) {
 					if (forces.get(j) instanceof ConstantForceRelativistic){
 						forces.set(j, new ConstantForce());
@@ -275,13 +196,8 @@ public class SimulationAnimation {
 				}
 			}
 			switch(i) {
-			case 1:
+			case 0:
 				s.getParticleMover().setSolver(new LeapFrog());
-			case 4:
-				s.getParticleMover().setSolver(new Boris());
-				break;
-			case 6:
-				s.getParticleMover().setSolver(new SemiImplicitEuler());
 				break;
 			}
 		}
@@ -290,66 +206,22 @@ public class SimulationAnimation {
 			s.relativistic = true;
 			//System.out.println("relativistic version on");
 			if (s.f instanceof CombinedForce) {
-				ArrayList<Force> forces = ((CombinedForce) s.f).forces;
+				ArrayList<Force> forces = s.f.forces;
 				for (int j = 0; j < forces.size(); j++) {
 					if (forces.get(j) instanceof ConstantForce){
-						forces.set(j, new ConstantForceRelativistic(s.getSpeedOfLight()));
+						forces.set(j, new ConstantForceRelativistic(s));
 					}
 					if (forces.get(j) instanceof SimpleGridForce){
 						forces.set(j, new SimpleGridForceRelativistic(s));
 					}
 				}
 			}
-			switch(i) {
-			case 1:
-				s.getParticleMover().setSolver(new LeapFrogRelativistic(s.getSpeedOfLight()));
-			case 4:
-				s.getParticleMover().setSolver(new BorisRelativistic(s.getSpeedOfLight()));
-				break;
-			case 6:
-				s.getParticleMover().setSolver(new SemiImplicitEulerRelativistic(s.getSpeedOfLight()));
-				break;
+			switch(i)
+			{
+				case 0:
+					s.getParticleMover().setSolver(new LeapFrogRelativistic(s));
+					break;
 			}
-		}
-
-	}
-
-	public void collisionChange(int i) {
-		switch(i) {
-		case 0:
-			s.detector = new Detector();
-			s.collisionalgorithm = new CollisionAlgorithm();
-			break;
-		case 1:
-			s.detector = new AllParticles(s.particles);
-			break;
-		case 2:
-			s.detector = new SweepAndPrune(s.particles);
-			break;
-		}
-	}
-
-	public void algorithmCollisionChange(int i) {
-		switch(i) {
-		case 0:
-			s.collisionalgorithm = new SimpleCollision();
-			break;
-		case 1:
-			s.collisionalgorithm = new VectorTransformation();
-			break;
-		case 2:
-			s.collisionalgorithm = new MatrixTransformation();
-			break;
-		}
-	}
-
-	public void boundariesChange(int i) {
-		switch(i) {
-		case 0:
-			s.getParticleMover().changeBoundaryType(ParticleBoundaryType.Hardwall);
-			break;
-		case 1:
-			s.getParticleMover().changeBoundaryType(ParticleBoundaryType.Periodic);
 		}
 
 	}
