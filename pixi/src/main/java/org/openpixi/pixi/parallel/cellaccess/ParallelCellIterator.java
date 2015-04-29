@@ -1,6 +1,7 @@
 package org.openpixi.pixi.parallel.cellaccess;
 
 import org.openpixi.pixi.physics.grid.Grid;
+import org.openpixi.pixi.physics.util.IntBox;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -67,14 +68,26 @@ public class ParallelCellIterator extends CellIterator {
 			this.numOfThreads = numOfThreads;
 		}
 
-		public Object call() throws Exception {
-			for (int cellIdx = threadIdx; cellIdx < numOfCells; cellIdx += numOfThreads) {
-				int x = (cellIdx / dimensions.ysize()) + dimensions.xmin();
-				int y = (cellIdx % dimensions.ysize()) + dimensions.ymin();
-				int z = (cellIdx % dimensions.zsize()) + dimensions.zmin();
-				action.execute(grid, x, y, z);
-			}
-			return null;
-		}
+        public Object call() throws Exception {
+            for (int cellIdx = threadIdx; cellIdx < numOfCells; cellIdx += numOfThreads) {
+                int[] pos = convertCellIndexToPosition(cellIdx, dimensions);
+                action.execute(grid, pos[0], pos[1], pos[2]);
+            }
+            return null;
+        }
+
+        private int[] convertCellIndexToPosition(int ci, IntBox dimensions)
+        {
+            int dim = 3;
+            int[] pos = new int[dim];
+
+            pos[0] = ci % dimensions.xsize() + dimensions.xmin();
+            ci = (ci - pos[0]) / dimensions.xsize();
+            pos[1] = ci % dimensions.ysize() + dimensions.ymin();
+            ci = (ci - pos[1]) / dimensions.ysize();
+            pos[2] = ci % dimensions.zsize() + dimensions.zmin();
+
+            return pos;
+        }
 	}
 }
