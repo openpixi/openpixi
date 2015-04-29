@@ -4,7 +4,7 @@ import org.openpixi.pixi.physics.grid.LinkMatrix;
 
 public abstract class YMField {
 	
-	public double[] v;
+	protected double[] v;
 	
 	public abstract YMField add (YMField a);
 	

@@ -5,7 +5,7 @@ import org.openpixi.pixi.physics.grid.YMField;
 
 public class SU2Field extends YMField {
 	
-	private double[] v = new double[3];
+	protected double[] v = new double[3];
 	
 	public SU2Field () {
 			
