@@ -2,6 +2,7 @@ package org.openpixi.pixi.physics.grid;
 
 import org.openpixi.pixi.parallel.cellaccess.CellAction;
 import org.openpixi.pixi.parallel.cellaccess.CellIterator;
+import org.openpixi.pixi.physics.GeneralBoundaryType;
 import org.openpixi.pixi.physics.Settings;
 import org.openpixi.pixi.physics.fields.FieldSolver;
 
@@ -44,7 +45,7 @@ public class Grid {
 	 * solver algorithm for the maxwell equations
 	 */
 	private FieldSolver fsolver;
-	private GridBoundaryType boundaryType;
+	private GeneralBoundaryType boundaryType;
 	private CellIterator cellIterator;
 	private ResetChargeAction resetCharge = new ResetChargeAction();
 	private ResetCurrentAction resetCurrent = new ResetCurrentAction();
@@ -388,7 +389,7 @@ public class Grid {
 	}
 
 	public Grid(Settings settings) {
-		this.boundaryType = settings.getGridBoundary();
+		this.boundaryType = settings.getBoundaryType();
 
 		set(settings.getGridCellsX(), settings.getGridCellsY(), settings.getGridCellsZ(),
 				settings.getSimulationWidth(), settings.getSimulationHeight(), settings.getSimulationDepth());
@@ -510,7 +511,6 @@ public class Grid {
 			int xmax = numCellsX + EXTRA_CELLS_BEFORE_GRID - 1;
 			int ymin = EXTRA_CELLS_BEFORE_GRID;
 			int ymax = numCellsY + EXTRA_CELLS_BEFORE_GRID - 1;
-
 			int refX = x;
 			int refY = y;
 			if (x < xmin) {
@@ -523,7 +523,6 @@ public class Grid {
 			} else if (y > ymax) {
 				refY -= numCellsY;
 			}
-
 			cells[x][y] = cells[refX][refY];
 		}
 	}
