@@ -25,6 +25,8 @@ public class InitialConditions {
 	public static Simulation initEmptySimulation() {
 		Settings sst = new Settings();
 
+		sst.setNumberOfDimensions(3);
+		sst.setNumberOfColors(2);
 		sst.setTimeStep(0.1);
 		sst.setTMax(1000);
 		sst.setSpeedOfLight(1);
