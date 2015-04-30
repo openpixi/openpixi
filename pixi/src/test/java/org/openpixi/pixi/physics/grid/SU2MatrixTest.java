@@ -148,8 +148,6 @@ public class SU2MatrixTest {
 		}
 	}
 
-
-	@Ignore
 	@Test
 	public void testBasicMatrixConversionStuff()
 	{
@@ -181,7 +179,7 @@ public class SU2MatrixTest {
 		// Pauli z
 		Array2DRowFieldMatrix<Complex> s3 = new Array2DRowFieldMatrix<Complex>(field, 2, 2);
 		s3.setEntry(0, 0, new Complex(1.0, 0.0));
-		s3.setEntry(1, 1, new Complex(0.0, -1.0));
+		s3.setEntry(1, 1, new Complex(-1.0, 0.0));
 		s3 = (Array2DRowFieldMatrix<Complex>) s3.scalarMultiply(imaginaryUnit);
 
 
@@ -221,29 +219,24 @@ public class SU2MatrixTest {
 		Array2DRowFieldMatrix<Complex> rMatrix;
 		Array2DRowFieldMatrix<Complex> rMatrix2;
 
-		// Expected result: -\simga_x \sigma_y =
 		r = b.mult(c);
 		rMatrix = convertToMatrix(r);
 		rMatrix2 = bMatrix.multiply(cMatrix);
 		compareMatrices(rMatrix, rMatrix2);
 
-		// Expected result: -\simga_y \sigma_z =
 		r = c.mult(d);
 		rMatrix = convertToMatrix(r);
 		rMatrix2 = cMatrix.multiply(dMatrix);
 		compareMatrices(rMatrix, rMatrix2);
 
-		// Expected result: \simga_x \sigma_z =
 		r = b.mult(d);
 		rMatrix = convertToMatrix(r);
-		rMatrix2 = cMatrix.multiply(dMatrix);
+		rMatrix2 = bMatrix.multiply(dMatrix);
 		compareMatrices(rMatrix, rMatrix2);
 
 
 	}
 
-
-	@Ignore
 	@Test
 	public void testMultiplication()
 	{
@@ -357,7 +350,7 @@ public class SU2MatrixTest {
 		// Pauli z
 		Array2DRowFieldMatrix<Complex> s3 = new Array2DRowFieldMatrix<Complex>(field, 2, 2);
 		s3.setEntry(0, 0, new Complex(1.0, 0.0));
-		s3.setEntry(1, 1, new Complex(0.0, -1.0));
+		s3.setEntry(1, 1, new Complex(-1.0, 0.0));
 
 		/*
 			Representation of a SU(2) matrix using Pauli matrices.
