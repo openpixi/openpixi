@@ -99,12 +99,10 @@ public class SU2Matrix extends LinkMatrix {
 	public LinkMatrix mult (LinkMatrix a) {
 		
 		SU2Matrix b = new SU2Matrix();
-
-		b.e[0] = e[0] * a.e[0] - e[1] * a.e[1] - e[2] * a.e[2] - e[3] * a.e[3];
-		b.e[1] = e[1] * a.e[0] + e[0] * a.e[1] + e[3] * a.e[2] - e[2] * a.e[3];
-		b.e[2] = e[2] * a.e[0] - e[3] * a.e[1] + e[0] * a.e[2] + e[1] * a.e[3];
-		b.e[3] = e[3] * a.e[0] + e[2] * a.e[1] - e[1] * a.e[2] + e[0] * a.e[3];
-
+		b.e[0] = e[0]*a.e[0]-e[1]*a.e[1]-e[2]*a.e[2]-e[3]*a.e[3];
+		b.e[1] = e[0]*a.e[1]+e[1]*a.e[0]-e[2]*a.e[3]+e[3]*a.e[2];
+		b.e[2] = e[0]*a.e[2]+e[2]*a.e[0]-e[3]*a.e[1]+e[1]*a.e[3];
+		b.e[3] = e[0]*a.e[3]+e[3]*a.e[0]-e[1]*a.e[2]+e[2]*a.e[1];
 		return b;
 		
 	}
