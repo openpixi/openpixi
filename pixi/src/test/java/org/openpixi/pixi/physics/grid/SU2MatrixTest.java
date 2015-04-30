@@ -15,8 +15,7 @@ public class SU2MatrixTest {
 	private final double accuracy = 1.E-13;
 
 	@Test
-	public void testGetterAndSetter()
-	{
+	public void testGetterAndSetter() {
 				/*
 			Create random SU2 matrix.
 		 */
@@ -28,8 +27,7 @@ public class SU2MatrixTest {
 		}
 		modulus = Math.sqrt(modulus);
 
-		for (int i = 0; i < 4; i++)
-		{
+		for (int i = 0; i < 4; i++) {
 			vec[i] /= modulus;
 		}
 
@@ -39,16 +37,14 @@ public class SU2MatrixTest {
 
 		SU2Matrix firstMatrix = new SU2Matrix(vec[0], vec[1], vec[2], vec[3]);
 		SU2Matrix secondMatrix = new SU2Matrix();
-		for(int i = 0; i < 4; i++)
-		{
+		for (int i = 0; i < 4; i++) {
 			secondMatrix.set(i, vec[i]);
 		}
 
 		/*
 			Now we test if the values have been set correctly.
 		 */
-		for(int i = 0; i<4; i++)
-		{
+		for (int i = 0; i < 4; i++) {
 			Assert.assertEquals(firstMatrix.get(i), vec[i], accuracy);
 			Assert.assertEquals(secondMatrix.get(i), vec[i], accuracy);
 		}
@@ -62,8 +58,7 @@ public class SU2MatrixTest {
 	}
 
 	@Test
-	public void testUnitarity()
-	{
+	public void testUnitarity() {
 		/*
 			Create random SU2 matrix. Should be unitary.
 		 */
@@ -84,8 +79,7 @@ public class SU2MatrixTest {
 	}
 
 	@Test
-	public void testAdditionAndSubtraction()
-	{
+	public void testAdditionAndSubtraction() {
 		/*
 			Prepare some variables.
 		 */
@@ -97,26 +91,23 @@ public class SU2MatrixTest {
 		double aMod = 0.0;
 		double bMod = 0.0;
 
-		for(int i = 0; i< 4; i++)
-		{
-			aVec[i] = Math.random()- 0.5;
-			bVec[i] = Math.random()- 0.5;
+		for (int i = 0; i < 4; i++) {
+			aVec[i] = Math.random() - 0.5;
+			bVec[i] = Math.random() - 0.5;
 
-			aMod += aVec[i]*aVec[i];
-			bMod += bVec[i]*bVec[i];
+			aMod += aVec[i] * aVec[i];
+			bMod += bVec[i] * bVec[i];
 		}
 
 		aMod = Math.sqrt(aMod);
 		bMod = Math.sqrt(bMod);
 
-		for(int i = 0; i< 4; i++)
-		{
+		for (int i = 0; i < 4; i++) {
 			aVec[i] /= aMod;
 			bVec[i] /= bMod;
 		}
 
-		for(int i = 0; i< 4; i++)
-		{
+		for (int i = 0; i < 4; i++) {
 			rVec1[i] = aVec[i] + bVec[i];
 			rVec2[i] = aVec[i] - bVec[i];
 		}
@@ -126,8 +117,7 @@ public class SU2MatrixTest {
 		 */
 		SU2Matrix a = new SU2Matrix();
 		SU2Matrix b = new SU2Matrix();
-		for(int i = 0; i < 4; i++)
-		{
+		for (int i = 0; i < 4; i++) {
 			a.set(i, aVec[i]);
 			b.set(i, bVec[i]);
 		}
@@ -141,16 +131,14 @@ public class SU2MatrixTest {
 		/*
 			Compare results.
 		 */
-		for(int i = 0; i < 4; i++)
-		{
+		for (int i = 0; i < 4; i++) {
 			Assert.assertEquals(r1.get(i), rVec1[i], accuracy);
 			Assert.assertEquals(r2.get(i), rVec2[i], accuracy);
 		}
 	}
 
 	@Test
-	public void testBasicMatrixConversionStuff()
-	{
+	public void testBasicMatrixConversionStuff() {
 
 		Field<Complex> field = ComplexField.getInstance();
 		Complex imaginaryUnit = new Complex(0.0, 1.0);
@@ -238,8 +226,7 @@ public class SU2MatrixTest {
 	}
 
 	@Test
-	public void testMultiplication()
-	{
+	public void testMultiplication() {
 		SU2Matrix a = createRandomSU2Matrix();
 		SU2Matrix b = createRandomSU2Matrix();
 
@@ -257,27 +244,23 @@ public class SU2MatrixTest {
 		 */
 		Array2DRowFieldMatrix<Complex> cMatrix2 = convertToMatrix(c);
 
-		for(int i = 0; i < 2; i++)
-		{
-			for(int j = 0; j < 2; j++)
-			{
+		for (int i = 0; i < 2; i++) {
+			for (int j = 0; j < 2; j++) {
 				Assert.assertEquals(cMatrix.getEntry(i, j).getReal(),
-									cMatrix2.getEntry(i, j).getReal(),
-									accuracy);
+						cMatrix2.getEntry(i, j).getReal(),
+						accuracy);
 
 				Assert.assertEquals(cMatrix.getEntry(i, j).getImaginary(),
-									cMatrix2.getEntry(i, j).getImaginary(),
-									accuracy);
+						cMatrix2.getEntry(i, j).getImaginary(),
+						accuracy);
 			}
 
 		}
 
 
-
 	}
 
-	private SU2Matrix createRandomSU2Matrix()
-	{
+	private SU2Matrix createRandomSU2Matrix() {
 		/*
 			Create random SU2 matrix.
 		 */
@@ -289,8 +272,7 @@ public class SU2MatrixTest {
 		}
 		modulus = Math.sqrt(modulus);
 
-		for (int i = 0; i < 4; i++)
-		{
+		for (int i = 0; i < 4; i++) {
 			vec[i] /= modulus;
 		}
 
@@ -300,12 +282,9 @@ public class SU2MatrixTest {
 		return m;
 	}
 
-	private void compareMatrices(Array2DRowFieldMatrix<Complex> a, Array2DRowFieldMatrix<Complex> b)
-	{
-		for(int i = 0; i < 2; i++)
-		{
-			for(int j = 0; j < 2; j++)
-			{
+	private void compareMatrices(Array2DRowFieldMatrix<Complex> a, Array2DRowFieldMatrix<Complex> b) {
+		for (int i = 0; i < 2; i++) {
+			for (int j = 0; j < 2; j++) {
 				Assert.assertEquals(a.getEntry(i, j).getReal(),
 						b.getEntry(i, j).getReal(),
 						accuracy);
@@ -318,8 +297,7 @@ public class SU2MatrixTest {
 		}
 	}
 
-	private Array2DRowFieldMatrix<Complex> convertToMatrix(LinkMatrix input)
-	{
+	private Array2DRowFieldMatrix<Complex> convertToMatrix(LinkMatrix input) {
 		/*
 			This is very, very tedious. I'm sorry.
 		 */
