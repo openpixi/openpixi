@@ -260,6 +260,72 @@ public class SU2MatrixTest {
 
 	}
 
+	@Test
+	public void testScalarMultiplication()
+	{
+		int numberOfTests = 10;
+		for(int t = 0; t < numberOfTests; t++)
+		{
+			/*
+				Create a random matrix.
+			 */
+			SU2Matrix m1 = createRandomSU2Matrix();
+			Array2DRowFieldMatrix<Complex> m2 = convertToMatrix(m1);
+
+			/*
+				Multiply with real scalar.
+			 */
+			double rand = Math.random() - 0.5;
+
+			m1 = (SU2Matrix) m1.mult(rand);
+			m2 = (Array2DRowFieldMatrix<Complex>) m2.scalarMultiply(new Complex(rand));
+
+			/*
+				Compare results.
+			 */
+			Array2DRowFieldMatrix<Complex> m3 = convertToMatrix(m1);
+			compareMatrices(m2, m3);
+
+
+		}
+	}
+
+	@Test
+	public void testConjugation()
+	{
+		int numberOfTests = 10;
+		for(int t = 0; t < numberOfTests; t++)
+		{
+			/*
+				Create a random matrix.
+			 */
+			SU2Matrix m1 = createRandomSU2Matrix();
+			Array2DRowFieldMatrix<Complex> m2 = convertToMatrix(m1);
+
+			/*
+				Apply hermitian conjugation.
+			 */
+			m1.adj();
+			m2 = (Array2DRowFieldMatrix<Complex>) m2.transpose();
+			for(int i = 0; i < 2; i++)
+			{
+				for(int j = 0; j < 2; j++)
+				{
+					Complex v = m2.getEntry(i, j).conjugate();
+					m2.setEntry(i, j, v);
+				}
+			}
+
+			/*
+				Compare results.
+			 */
+			Array2DRowFieldMatrix<Complex> m3 = convertToMatrix(m1);
+			compareMatrices(m2, m3);
+
+
+		}
+	}
+
 	private SU2Matrix createRandomSU2Matrix() {
 		/*
 			Create random SU2 matrix.
