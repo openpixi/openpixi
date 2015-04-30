@@ -16,21 +16,16 @@ public abstract class CellIterator {
 	/**
 	 * In this mode the iterator does not calculate the extra cells.
 	 */
-	public void setNormalMode(int numCellsX, int numCellsY, int numCellsZ) {
-		dimensions = new IntBox(0, numCellsX - 1,0, numCellsY - 1,0, numCellsZ - 1);
+	public void setNormalMode(int[] numCells) {
+		
+		int length = numCells.length;
+		int[] min = new int[length];
+		int[] max = new int[length];
+		for (int i=0;i<length;i++) {
+			min[i] = 0;
+			max[i] = numCells[i] - 1;
+		}
+		dimensions = new IntBox(length, min, max);
 	}
 
-
-	/**
-	 * In this mode the iterator does also calculate the extra cells.
-	 */
-	/*
-	public void setExtraCellsMode(int numCellsX, int numCellsY) {
-		dimensions = new IntBox(
-				-Grid.EXTRA_CELLS_BEFORE_GRID,
-				numCellsX + Grid.EXTRA_CELLS_AFTER_GRID - 1,
-				-Grid.EXTRA_CELLS_BEFORE_GRID,
-				numCellsY + Grid.EXTRA_CELLS_AFTER_GRID - 1);
-	}
-	*/
 }

@@ -5,17 +5,20 @@ import org.openpixi.pixi.physics.grid.YMField;
 
 public class SU2Field extends YMField {
 	
-	protected double[] v = new double[3];
 	
 	public SU2Field () {
+		
+		v = new double[3];
 			
-			v[0] = 0;
-			v[1] = 0;
-			v[2] = 0;
+		v[0] = 0;
+		v[1] = 0;
+		v[2] = 0;
 			
-		}
+	}
 	
 	public SU2Field (double a, double b, double c) {
+		
+		v = new double[3];
 		
 		v[0] = a;
 		v[1] = b;

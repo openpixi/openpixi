@@ -50,13 +50,9 @@ public class Settings {
 	private InterpolatorAlgorithm interpolator = new EmptyInterpolator();
 
 	// Grid related settings
-	private int gridCellsX = 10;
-	private int gridCellsY = 10;
-	private int gridCellsZ = 10;
-	private double simulationWidth = gridCellsX*gridStep;
-	private double simulationHeight = gridCellsY*gridStep;
-	private double simulationDepth = gridCellsZ*gridStep;
-	private FieldSolver gridSolver = new SimpleSolver();
+	private int[] gridCells;
+	private double[] simulationWidth;
+	private FieldSolver gridSolver = new FieldSolver();
 	private PoissonSolver poissonSolver = new EmptyPoissonSolver();
 	private boolean useGrid = true;
 	private boolean relativistic = true;
@@ -94,29 +90,38 @@ public class Settings {
 	public int getWriteToFile() {
 		return this.writeToFile;
 	}
+	
+	public double getSimulationWidth(int i) {
+		return simulationWidth[i];
+	}
 
 	public double getSimulationWidth() {
-		return simulationWidth;
+		return getSimulationWidth(0);
 	}
 
 	public double getSimulationHeight() {
-		return simulationHeight;
+		return getSimulationWidth(1);
 	}
 	
 	public double getSimulationDepth() {
-		return simulationDepth;
+		return getSimulationWidth(2);
+	}
+	
+	public int getGridCells(int i)
+	{
+		return gridCells[i];
 	}
 
 	public int getGridCellsX() {
-		return gridCellsX;
+		return getGridCells(0);
 	}
 
 	public int getGridCellsY() {
-		return gridCellsY;
+		return getGridCells(1);
 	}
 	
 	public int getGridCellsZ() {
-		return gridCellsZ;
+		return getGridCells(2);
 	}
 	
 	public double getGridStep() {
@@ -196,17 +201,6 @@ public class Settings {
 	//----------------------------------------------------------------------------------------------
 	// MORE COMPLEX GETTERS / BUILDERS
 	//----------------------------------------------------------------------------------------------
-	public double getCellWidth() {
-		return simulationWidth / gridCellsX;
-	}
-
-	public double getCellHeight() {
-		return simulationHeight / gridCellsY;
-	}
-	
-	public double getCellDepth() {
-		return simulationDepth / gridCellsZ;
-	}
 
 	/**
 	 * Build the combined force for simulation.
@@ -277,19 +271,22 @@ public class Settings {
 		this.writeToFile = writeTo;
 	}
 
-	public void setGridCellsX(int gridCellsX) {
-		this.gridCellsX = gridCellsX;
-		this.simulationWidth = this.gridStep*gridCellsX;
+	public void setGridCells(int i, int num) {
+		gridCells[i] = num;
+		simulationWidth[i] = gridStep*num;
+	}
+	
+	public void setGridCellsX(int gridCellsX) 
+	{
+		setGridCells(0, gridCellsX);
 	}
 
 	public void setGridCellsY(int gridCellsY) {
-		this.gridCellsY = gridCellsY;
-		this.simulationHeight = this.gridStep*gridCellsY;
+		setGridCells(1, gridCellsY);
 	}
 	
 	public void setGridCellsZ(int gridCellsZ) {
-		this.gridCellsZ = gridCellsZ;
-		this.simulationDepth = this.gridStep*gridCellsZ;
+		setGridCells(2, gridCellsZ);
 	}
 
 	public void setSpeedOfLight(double speedOfLight) {
@@ -304,6 +301,8 @@ public class Settings {
 	public void setNumberOfDimensions(int numberOfDimensions)
 	{
 		this.numberOfDimensions = numberOfDimensions;
+		gridCells = new int[numberOfDimensions];
+		simulationWidth = new double[numberOfDimensions];
 	}
 
     public void setCouplingConstant(double g)

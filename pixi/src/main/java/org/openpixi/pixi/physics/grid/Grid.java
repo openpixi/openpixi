@@ -102,7 +102,7 @@ public class Grid {
 	}
 	
 	public void resetCharge(int[] coor) {
-		cells[index(coor)].resetCharge(numCol);
+		cells[index(coor)].resetCharge();
 	}
 
 	public int getNumCellsX() {
@@ -141,19 +141,15 @@ public class Grid {
 		numDim = settings.getNumberOfDimensions();
 		numCells = new int[numDim];
 		
-		//TODO Change the Settings class and eliminate this if-clause
-		if(numDim == 3) {
-			numCells[0] = settings.getGridCellsX();
-			numCells[1] = settings.getGridCellsY();
-			numCells[2] = settings.getGridCellsZ();
-			createGrid();
-		} else {}
+		for(int i = 0; i < numDim; i++) {
+			numCells[i] = settings.getGridCells(i);
+		}
+
+		createGrid();
 				
-		//TODO Change the FieldSolver class and make it d dimensional
 		this.fsolver = settings.getGridSolver();
 		this.fsolver.initializeIterator(settings.getCellIterator(), numCells);
 
-		//TODO Change the CellIterator class and make it d dimensional
 		this.cellIterator = settings.getCellIterator();
 		this.cellIterator.setNormalMode(numCells);
 		
@@ -214,14 +210,10 @@ public class Grid {
 		int[] modCoor = periodic(coor);
 		int res = modCoor[0];
 		
-		if(numDim > 1) {
-			for (int i = 1; i < numDim; ++i) {
-				res += modCoor[i]*numCells[i-1];
-			}
-			return res;
-		} else {
-			return res;
+		for (int i = 1; i < numDim; ++i) {
+			res += modCoor[i]*numCells[i-1];
 		}
+		return res;
 	}
 	
 	private int[] periodic(int[] coor) {
@@ -232,11 +224,11 @@ public class Grid {
 		}
 		return res;
 	}
-	//TODO Change the CellAction class and make it d dimensional
+
 	private class ResetCurrentAction implements CellAction {
 
-		public void execute(Grid grid, int[] coor, int dir) {
-			grid.getCell(coor).resetCurrent(dir, numCol);
+		public void execute(Grid grid, int[] coor) {
+			grid.getCell(coor).resetCurrent();
 		}
 	}
 

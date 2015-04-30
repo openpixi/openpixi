@@ -35,6 +35,18 @@ public class Cell implements Serializable {
 			E = new SU2Field[dimensions];
 			J = new SU2Field[dimensions];
 			rho = new SU2Field();
+			
+			for(int i = 0; i < dimensions; i++)
+			{
+				U[i] = new SU2Matrix();
+				Unext[i] = new SU2Matrix();
+				E[i] = new SU2Field();
+				J[i] = new SU2Field();
+				
+				for(int j = 0; j < dimensions; j++) {
+					F[i][j] = new SU2Field();
+				}
+			}
 		}
 		else {}
 	}
@@ -104,18 +116,14 @@ public class Cell implements Serializable {
 	}
 	
 
-	public void resetCurrent(int dir, int colors) {
-		if(colors == 2) {
-			J[dir].reset();
+	public void resetCurrent() {
+		for (int i=0;i<J.length;i++) {
+			J[i].reset();
 		}
-		else {}
 	}
 
-	public void resetCharge(int colors) {
-		if(colors == 2) {
-			rho.reset();
-		}
-		else {}
+	public void resetCharge() {
+		rho.reset();
 	}
 
 	public void reassignLinks() {

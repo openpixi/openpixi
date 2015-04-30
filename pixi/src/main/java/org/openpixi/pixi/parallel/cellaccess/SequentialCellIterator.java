@@ -1,6 +1,7 @@
 package org.openpixi.pixi.parallel.cellaccess;
 
 import org.openpixi.pixi.physics.grid.Grid;
+import org.openpixi.pixi.physics.util.IntBox;
 
 /**
  * Iterates over all the cells in sequential order.
@@ -8,12 +9,27 @@ import org.openpixi.pixi.physics.grid.Grid;
 public class SequentialCellIterator extends CellIterator {
 
 	public void execute(Grid grid, CellAction action) {
-		for (int x = dimensions.xmin(); x <= dimensions.xmax(); ++x) {
-			for (int y = dimensions.ymin(); y <= dimensions.ymax(); ++y) {
-				for (int z = dimensions.zmin(); z <= dimensions.zmax(); ++z) {
-					action.execute(grid, x, y, z);
-				}
-			}
+		
+		int numOfCells = dimensions.getNumCells();
+		for (int cellIdx = 0; cellIdx < numOfCells; cellIdx++) {
+            int[] pos = convertCellIndexToPosition(cellIdx, dimensions);
+			action.execute(grid, pos);
 		}
 	}
+	//TODO This should happen only once to avoid code duplication
+	private int[] convertCellIndexToPosition(int ci, IntBox dimensions)
+    {
+        int dim = dimensions.getDim();
+        int[] pos = new int[dim];
+
+        for(int i = 0; i < dim; i++)
+        {
+            pos[i] = ci % dimensions.getSize(i) + dimensions.getMin(i);
+            ci -= pos[i];
+            ci /= dimensions.getSize(i);
+        }
+
+        return pos;
+    }
+	
 }
