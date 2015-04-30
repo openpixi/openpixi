@@ -87,9 +87,13 @@ public class Particle implements IParticle, Serializable
 	{
 		this.numberOfColors = numberOfColors;
 		if(this.numberOfColors > 1)
+		{
 			this.numberOfComponents = numberOfColors * numberOfColors - 1;
+		}
 		else
+		{
 			this.numberOfComponents = 1;
+		}
 
 		this.charge = new double[this.numberOfComponents];
 

@@ -145,7 +145,7 @@ public class SimulationAnimation {
 		clear();
 		s = new Simulation(settings);
 		//updateFieldForce();
-		s.prepareAllParticles();
+		//s.prepareAllParticles();
 		//s.turnGridForceOn();
 		timer.start();
 	}

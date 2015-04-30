@@ -17,7 +17,7 @@ public class YamlParticle {
 
 	public void applyTo(Settings settings) {
 
-		Particle p = getParticle();
+		Particle p = getParticle(settings.getNumberOfDimensions(), settings.getNumberOfColors());
 
 		settings.addParticle(p);
 	}
@@ -27,8 +27,9 @@ public class YamlParticle {
 	 * YAML document to it.
 	 * @return new particle
 	 */
-	public Particle getParticle() {
-		Particle p = new Particle();
+	public Particle getParticle(int numberOfDimensions, int numberOfColors) {
+		Particle p = new Particle(numberOfDimensions, numberOfColors);
+		
 
 		if(position != null)
 			for(int i = 0; i < position.size(); i++)
