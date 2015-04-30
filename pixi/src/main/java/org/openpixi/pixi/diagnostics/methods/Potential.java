@@ -23,7 +23,7 @@ import java.util.ArrayList;
 
 import org.openpixi.pixi.diagnostics.DataOutput;
 import org.openpixi.pixi.physics.grid.Grid;
-import org.openpixi.pixi.physics.particles.Particle;
+import org.openpixi.pixi.physics.particles.IParticle;
 
 import edu.emory.mathcs.jtransforms.fft.*;
 
@@ -50,7 +50,7 @@ public class Potential implements Diagnostics {
 		this.calculationPeriod = calculationPeriod;
 	}
 	
-	public void calculate(Grid g, ArrayList<Particle> particles) {
+	public void calculate(Grid g, ArrayList<IParticle> particles) {
 		
 		//size of the array to be transformed
 		int columns = g.getNumCellsX();

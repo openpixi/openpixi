@@ -1,54 +1,33 @@
-# 100 random particles 3D
+# 100 random particles in 3D
 
 gridStep: 10
-gridCellsX: 10
-gridCellsY: 10
-gridCellsZ: 10
+numberOfDimensions: 3
+numberOfColors: 1
+gridCells: [10, 10, 10]
 poissonsolver: fft
 timeStep: .5
 duration: 1000
 
 streams:
-  # positively charged particles
-  - particle:
-      x: 0
-      y: 0
-      z: 0
-      vx: 0
-      vy: 0
-      vz: 0
-      r: 1
-      m: 1
-      q: .01
-      color: red
-    randomX: 100
-    randomY: 100
-    randomZ: 100
-    randomGaussVx: .5
-    randomGaussVy: .5
-    randomGaussVz: .5
-    number: 50
+    # positively charged particles
+    - particle:
+        position: [0, 0, 0]
+        velocity: [0, 0, 0]
+        r: 1
+        m: 1
+        q: [0.01]
+        color: red
+      randomPositions: [100, 100, 100]
+      randomGaussVelocities: [.5, .5, .5]
+      number: 50
   # negatively charged particles:
-  - particle:
-      x: 0
-      y: 0
-      z: 0
-      vx: 0
-      vy: 0
-      vz: 0
-      r: 1
-      m: 1
-      q: -.01
-      color: blue
-    randomX: 100
-    randomY: 100
-    randomZ: 100
-    randomGaussVx: .5
-    randomGaussVy: .5
-    randomGaussVz: .5
-    number: 50
-
-output:
-  path: 100randomparticles_3D
-  daniil: 1
-  daniilspectrum: 300
+    - particle:
+        position: [0, 0, 0]
+        velocity: [0, 0, 0]
+        r: 1
+        m: 1
+        q: [-0.01]
+        color: blue
+      randomPositions: [100, 100, 100]
+      randomGaussVelocities: [.5, .5, .5]
+      number: 50

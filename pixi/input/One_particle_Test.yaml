@@ -1,20 +1,19 @@
 # One particle test
 
 gridStep: 10
-gridCellsX: 10
-gridCellsY: 10
+numberOfDimensions: 3
+numberOfColors: 1
+gridCells: [10, 10, 1]
 poissonsolver: empty
 timeStep: 0.1
 duration: 1000
 
 particles:
-  - x: 50
-    y: 50
-    vx: 0.5
-    vy: 0
+  - position: [50, 50, 0]
+    velocity: [0.5, 0, 0]
     r: 1
     m: 1
-    q: -.01
+    q: [-.01]
     color: blue
 
 output:

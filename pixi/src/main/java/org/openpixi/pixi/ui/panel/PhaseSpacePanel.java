@@ -5,7 +5,7 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 
 import org.openpixi.pixi.physics.Simulation;
-import org.openpixi.pixi.physics.particles.Particle;
+import org.openpixi.pixi.physics.particles.IParticle;
 import org.openpixi.pixi.ui.SimulationAnimation;
 
 /**
@@ -39,17 +39,17 @@ public class PhaseSpacePanel extends AnimationPanel {
 		double panelHeight = getHeight();
 
 		for (int i = 0; i < s.particles.size(); i++) {
-			Particle par = (Particle) s.particles.get(i);
+			IParticle par = (IParticle) s.particles.get(i);
 			graph.setColor(par.getColor());
 			double radius = par.getRadius();
 			int width = (int) (2*sx*radius);
 			int height = (int) (2*sx*radius);
-			double position = (0.5 + scaleV * par.getVx() ) * panelHeight;
+			double position = (0.5 + scaleV * par.getVelocity(0) ) * panelHeight;
 			if(width > 2 && height > 2) {
-				graph.fillOval((int) (par.getX()*sx) - width/2, (int) position - height/2,  width,  height);
+				graph.fillOval((int) (par.getPosition(0)*sx) - width/2, (int) position - height/2,  width,  height);
 			}
 			else {
-				graph.drawRect((int) (par.getX()*sx), (int) position, 0, 0);
+				graph.drawRect((int) (par.getPosition(0)*sx), (int) position, 0, 0);
 			}
 		}
 

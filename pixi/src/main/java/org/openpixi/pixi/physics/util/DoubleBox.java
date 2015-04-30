@@ -1,52 +1,87 @@
 package org.openpixi.pixi.physics.util;
 
-public class DoubleBox {
-	private double xmin;
-	private double xmax;
-	private double ymin;
-	private double ymax;
+import java.io.Serializable;
 
-	public DoubleBox(double xmin, double xmax, double ymin, double ymax) {
-		set(xmin, xmax, ymin, ymax);
+public class DoubleBox implements Serializable
+{
+
+	private int dim;
+	private double[] min;
+	private double[] max;
+
+	public DoubleBox(int dim, double[] min, double[] max)
+	{
+		this.dim = dim;
+		this.min = min;
+		this.max = max;
 	}
 
-	public double xmin() {
-		return xmin;
+	public DoubleBox(double xmin, double xmax, double ymin, double ymax, double zmin, double zmax)
+	{
+		this(3, new double[] {xmin, ymin, zmin}, new double[] {xmax, ymax, zmax});
 	}
 
-	public double xsize() {
-		return xmax - xmin;
+	public int getDim()
+	{
+		return this.dim;
 	}
 
-	public double xmax() {
-		return xmax;
+	public double getMin(int i)
+	{
+		return this.min[i];
 	}
 
-	public double ymin() {
-		return ymin;
+	public double getMax(int i)
+	{
+		return this.max[i];
 	}
 
-	public double ymax() {
-		return ymax;
+	public double getSize(int i)
+	{
+		return getMax(i) - getMin(i);
 	}
 
-	public double ysize() {
-		return ymax - ymin;
-	}
+    /*
+        Legacy getters
+     */
 
-	public boolean contains(double x, double y) {
-		if (xmin <= x && x <= xmax && ymin <= y && y <= ymax()) {
-			return true;
+	public double xmin()               {  return getMin(0);        }
+	public double xmax()               {  return getMax(0);        }
+	public double xsize()              {  return getSize(0);       }
+
+	public double ymin()               {  return getMin(1);        }
+	public double ymax()               {  return getMax(1);        }
+	public double ysize()              {  return getSize(1);       }
+
+	public double zmin()               {  return getMin(2);        }
+	public double zmax()               {  return getMax(2);        }
+	public double zsize()              {  return getSize(2);       }
+
+	public boolean contains(double[] p)
+	{
+		for(int i = 0; i < this.dim; i++)
+		{
+			if(p[i] < this.min[i] || p[i] > this.max[i])
+				return false;
 		}
-		else {
-			return false;
-		}
+		return true;
 	}
 
-	public void set(double xmin, double xmax, double ymin, double ymax) {
-		this.xmin = xmin;
-		this.xmax = xmax;
-		this.ymin = ymin;
-		this.ymax = ymax;
+	public boolean contains(double x, double y, double z) {
+		return this.contains(new double[] {x,y,z});
+	}
+
+	@Override
+	public String toString()
+	{
+		String output = "[";
+		for(int i = 0; i < this.dim; i++)
+		{
+			output += this.min[i] + ", " + this.max[i];
+			if(i < this.dim - 1)
+				output += ",";
+		}
+		output += "]";
+		return output;
 	}
 }

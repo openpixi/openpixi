@@ -2,7 +2,7 @@ package org.openpixi.pixi.physics.grid;
 
 import org.openpixi.pixi.parallel.particleaccess.ParticleAction;
 import org.openpixi.pixi.parallel.particleaccess.ParticleIterator;
-import org.openpixi.pixi.physics.particles.Particle;
+import org.openpixi.pixi.physics.particles.IParticle;
 
 import java.util.List;
 
@@ -31,7 +31,7 @@ public class LocalInterpolation extends Interpolation {
 
 
 	@Override
-	public void interpolateToGrid(List<Particle> particles, Grid grid, double timeStep) {
+	public void interpolateToGrid(List<IParticle> particles, Grid grid, double timeStep) {
 		grid.resetCurrent();
 		this.grid = grid;
 		this.timeStep = timeStep;
@@ -39,13 +39,13 @@ public class LocalInterpolation extends Interpolation {
 	}
 
 	@Override
-	public void interpolateToParticle(List<Particle> particles, Grid grid) {
+	public void interpolateToParticle(List<IParticle> particles, Grid grid) {
 		this.grid = grid;
 		particleIterator.execute(particles, interpolateToParticle);
 	}
 
 	@Override
-	public void interpolateChargedensity(List<Particle> particles, Grid grid) {
+	public void interpolateChargedensity(List<IParticle> particles, Grid grid) {
 		grid.resetCharge();
 		this.grid = grid;
 		particleIterator.execute(particles, interpolateChargedensity);
@@ -53,21 +53,21 @@ public class LocalInterpolation extends Interpolation {
 
 
 	private class InterpolateToGrid implements ParticleAction {
-		public void execute(Particle particle) {
+		public void execute(IParticle particle) {
 			interpolator.interpolateToGrid(particle, grid, timeStep);
 		}
 	}
 
 
 	private class InterpolateToParticle implements ParticleAction {
-		public void execute(Particle particle) {
+		public void execute(IParticle particle) {
 			interpolator.interpolateToParticle(particle, grid);
 		}
 	}
 
 
 	private class InterpolateChargedensity implements ParticleAction {
-		public void execute(Particle particle) {
+		public void execute(IParticle particle) {
 			interpolator.interpolateChargedensity(particle, grid);
 		}
 	}

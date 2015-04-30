@@ -1,6 +1,6 @@
 package org.openpixi.pixi.parallel.particleaccess;
 
-import org.openpixi.pixi.physics.particles.Particle;
+import org.openpixi.pixi.physics.particles.IParticle;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,7 +20,7 @@ public class ParallelParticleIterator implements ParticleIterator {
 	/* These are exposed here for inner classes
 	   since they can to be passed to them as method arguments */
 	private ParticleAction action;
-	private List<Particle> particles;
+	private List<IParticle> particles;
 
 	private List<Callable<Object>> tasks = new ArrayList<Callable<Object>>();
 	private ExecutorService threadExecutor;
@@ -32,7 +32,7 @@ public class ParallelParticleIterator implements ParticleIterator {
 		}
 	}
 
-	public void execute(List<Particle> particles, ParticleAction action) {
+	public void execute(List<IParticle> particles, ParticleAction action) {
 		this.action = action;
 		this.particles = particles;
 

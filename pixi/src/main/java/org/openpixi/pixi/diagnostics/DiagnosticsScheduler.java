@@ -21,7 +21,7 @@ package org.openpixi.pixi.diagnostics;
 
 import org.openpixi.pixi.diagnostics.methods.Diagnostics;
 import org.openpixi.pixi.physics.grid.Grid;
-import org.openpixi.pixi.physics.particles.Particle;
+import org.openpixi.pixi.physics.particles.IParticle;
 import org.openpixi.pixi.physics.Settings;
 import java.util.ArrayList;
 import java.util.List;
@@ -42,13 +42,13 @@ import java.util.List;
 public class DiagnosticsScheduler {
 	
 	private Grid grid;
-	private ArrayList<Particle> particles;
+	private ArrayList<IParticle> particles;
 	
 	/** List of all diagnostic classes that should be applied */
 	private List<Diagnostics> diagnostics;
 	
 	
-	public DiagnosticsScheduler(Grid grid, ArrayList<Particle> particles, Settings stt) {
+	public DiagnosticsScheduler(Grid grid, ArrayList<IParticle> particles, Settings stt) {
 		
 		this.grid = grid;
 		this.particles = particles;

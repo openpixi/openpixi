@@ -26,8 +26,6 @@ import javax.swing.event.*;
 
 import org.openpixi.pixi.physics.Debug;
 import org.openpixi.pixi.physics.Simulation;
-import org.openpixi.pixi.physics.force.*;
-import org.openpixi.pixi.physics.movement.boundary.ParticleBoundaryType;
 import org.openpixi.pixi.physics.solver.*;
 import org.openpixi.pixi.physics.solver.relativistic.*;
 import org.openpixi.pixi.ui.panel.AnimationPanel;
@@ -40,7 +38,9 @@ import org.openpixi.pixi.ui.tab.FileTab;
 /**
  * Displays the animation of particles.
  */
-public class MainControlApplet extends JApplet {
+public class MainControlApplet extends JApplet
+{
+    //Test commit.
 
 	private JButton startButton;
 	private JButton stopButton;
@@ -49,35 +49,16 @@ public class MainControlApplet extends JApplet {
 	private JSlider speedSlider;
 	private JSlider stepSlider;
 
-	private JSlider  dragSlider;
-
-	private JSlider efieldXSlider;
-	private JSlider efieldYSlider;
-	private JSlider bfieldZSlider;
-	private JSlider gfieldXSlider;
-	private JSlider gfieldYSlider;
-
 	private JCheckBox framerateCheck;
 	private JCheckBox currentgridCheck;
 	private JCheckBox drawFieldsCheck;
 	private JCheckBox calculateFieldsCheck;
 	private JCheckBox relativisticCheck;
 
-	private JTextField xboxentry;
-	private JTextField yboxentry;
-	private JTextField zboxentry;
-
-	private JComboBox initComboBox;
 	private JComboBox algorithmComboBox;
 	private JCheckBox traceCheck;
-	private JComboBox collisionComboBox;
-	private JComboBox collisionAlgorithm;
-
-	private JRadioButton hardBoundaries;
-	private JRadioButton periodicBoundaries;
 
 	private JTabbedPane tabs;
-	private JSplitPane splitPane;
 
 	private SimulationAnimation simulationAnimation;
 
@@ -86,88 +67,13 @@ public class MainControlApplet extends JApplet {
 	private PhaseSpacePanel phaseSpacePanel;
 	private ElectricFieldPanel electricFieldPanel;
 
+	private FileTab fileTab;
+
 	private static final double speedSliderScaling = 0.07;
 	private static final double stepSliderScaling = 0.01;
-	private static final double dragSliderScaling = 0.01;
-	private static final double exSliderScaling = 0.5;
-	private static final double eySliderScaling = 0.5;
-	private static final double bzSliderScaling = 0.05;
-	private static final double gxSliderScaling = 0.01;
-	private static final double gySliderScaling = 0.01;
-
-	private ConstantForce force = null;
-
-	String[] initStrings = {
-			"10 random particles",
-			"100 random particles",
-			"1000 random particles",
-			"10000 random particles",
-			"Single particle in gravity",
-			"Single particle in el. Field",
-			"3 part. in magnetic field",
-            "Pair of particles",
-            "Two stream instability",
-            "Weibel instability",
-            "One particle test",
-            "Wave propagation test",
-            "Two particles in 3D",
-            "Two stream instability in 3D",
-            "Weibel instability in 3D"};
 
 	String[] solverString = {
-			"Euler Richardson",
-			"LeapFrog",
-			"LeapFrog Damped",
-			"LeapFrog Half Step",
-			"Boris",
-			"Boris Damped",
-			"Semi Implicit Euler",
-			"Euler"};
-
-	String[] collisionsString = {
-			"No collisions",
-			"All particles",
-			"Sweep & Prune"
-	};
-
-	String[] collisionalgorithmString = {
-			"Simple collision",
-			"With vectors",
-			"With matrices"
-	};
-
-
-
-	private void linkConstantForce() {
-		Simulation s = simulationAnimation.getSimulation();
-		force = getFirstConstantForce(s.f);
-		if(force == null) {
-			force = new ConstantForce();
-			s.f.add(force);
-		}
-		assert force != null : "no force found";
-	}
-
-	/**
-	 * Returns the first constant force encountered. Scans recursively through
-	 * all CombindeForces.
-	 * @param force
-	 * @return
-	 */
-	private ConstantForce getFirstConstantForce(Force force) {
-		ConstantForce firstconstantforce = null;
-		if (force instanceof ConstantForce) {
-			firstconstantforce = (ConstantForce) force;
-		} else if (force instanceof CombinedForce) {
-			for (Force f : ((CombinedForce) force).forces) {
-				firstconstantforce = getFirstConstantForce(f);
-				if (firstconstantforce != null) {
-					break;
-				}
-			}
-		}
-		return firstconstantforce;
-	}
+			"LeapFrog"};
 
 	/**
 	 * Listener for slider.
@@ -184,22 +90,12 @@ public class MainControlApplet extends JApplet {
 		}
 	}
 
-	class ComboBoxListener implements ActionListener {
-		public void actionPerformed(ActionEvent e) {
-			JComboBox cb = (JComboBox) e.getSource();
-			int id  = cb.getSelectedIndex();
-			simulationAnimation.resetAnimation(id);
-			linkConstantForce();
-			setSlidersValue();
-		}
-	}
-
 	class AlgorithmListener implements ActionListener {
 		public void actionPerformed(ActionEvent eve) {
 			JComboBox cbox = (JComboBox) eve.getSource();
 			int id = cbox.getSelectedIndex();
 			simulationAnimation.algorithmChange(id);
-			if ((id == 1) || (id == 4) || (id == 6)) {
+			if (id == 0) {
 				relativisticCheck.setEnabled(true);
 			}
 			else {
@@ -207,39 +103,7 @@ public class MainControlApplet extends JApplet {
 			}
 		}
 	}
-	class Collisions implements ActionListener {
-		public void actionPerformed(ActionEvent eve) {
-			JComboBox cbox = (JComboBox) eve.getSource();
-			int i = cbox.getSelectedIndex();
-			simulationAnimation.collisionChange(i);
-			if(i == 0) {
-				collisionAlgorithm.setEnabled(false);
-				collisionAlgorithm.addItem("Enable collisions first");
-				collisionAlgorithm.setSelectedItem("Enable collisions first");
-			} else {
-				collisionAlgorithm.setEnabled(true);
-				//setSelectedIndex() automatically calls collisionAlgorithm.actionPerformed()!
-				collisionAlgorithm.setSelectedIndex(0);
-				collisionAlgorithm.removeItem("Enable collisions first");
-			}
-		}
-	}
 
-	class CollisionAlgorithm implements ActionListener {
-		
-		public void actionPerformed(ActionEvent eve) {
-			JComboBox cbox = (JComboBox) eve.getSource();
-			int i = cbox.getSelectedIndex();
-			int j = collisionComboBox.getSelectedIndex();
-			if (j == 0) {
-				collisionAlgorithm.setSelectedItem("Enable collisions first");
-			} else {
-				simulationAnimation.algorithmCollisionChange(i);
-			}
-		}
-	}
-
- 
 	/**
 	 * Listener for start button.
 	 */
@@ -263,8 +127,9 @@ public class MainControlApplet extends JApplet {
 	 */
 	class ResetListener implements ActionListener {
 		public void actionPerformed(ActionEvent eve) {
-			simulationAnimation.resetAnimation(initComboBox.getSelectedIndex());
-			linkConstantForce();
+			//simulationAnimation.resetAnimation(initComboBox.getSelectedIndex());
+			fileTab.applyTextAreaSettings();
+
 			setSlidersValue();
 		}
 	}
@@ -275,23 +140,10 @@ public class MainControlApplet extends JApplet {
 		}
 	}
 
-	class SelectBoundaries implements ActionListener {
-		public void actionPerformed(ActionEvent eve) {
-			AbstractButton abut = (AbstractButton) eve.getSource();
-			if(abut.equals(hardBoundaries)) {
-				simulationAnimation.boundariesChange(0);
-			}
-			else if(abut.equals(periodicBoundaries)) {
-				simulationAnimation.boundariesChange(1);
-			}
-		}
-	}
-
 	class RelativisticEffects implements ItemListener {
 		public void itemStateChanged(ItemEvent eve){
-			int i = (int)algorithmComboBox.getSelectedIndex();
+			int i = algorithmComboBox.getSelectedIndex();
 			simulationAnimation.relativisticEffects(i);
-			linkConstantForce();
 		}
 	}
 
@@ -341,74 +193,6 @@ public class MainControlApplet extends JApplet {
 		}
 	}
 
-
-
-	class DragListener implements ChangeListener{
-		public void stateChanged(ChangeEvent eve) {
-			JSlider source = (JSlider) eve.getSource();
-			if(source.getValueIsAdjusting())
-			{
-				double value = source.getValue() * dragSliderScaling;
-				force.drag = value;
-			}
-		}
-	}
-
-	class EFieldXListener implements ChangeListener{
-		public void stateChanged(ChangeEvent eve) {
-			JSlider source = (JSlider) eve.getSource();
-			if(source.getValueIsAdjusting())
-			{
-				double value = source.getValue() * exSliderScaling;
-				force.ex = value;
-			}
-		}
-	}
-
-	class EFieldYListener implements ChangeListener{
-		public void stateChanged(ChangeEvent eve) {
-			JSlider source = (JSlider) eve.getSource();
-			if(source.getValueIsAdjusting())
-			{
-				double value = source.getValue() * eySliderScaling;
-				force.ey = value;
-			}
-		}
-	}
-
-	class BFieldZListener implements ChangeListener{
-		public void stateChanged(ChangeEvent eve) {
-			JSlider source = (JSlider) eve.getSource();
-			if(source.getValueIsAdjusting())
-			{
-				double value = source.getValue() * bzSliderScaling;
-				force.bz = value;
-			}
-		}
-	}
-
-	class GFieldXListener implements ChangeListener{
-		public void stateChanged(ChangeEvent eve) {
-			JSlider source = (JSlider) eve.getSource();
-			if(source.getValueIsAdjusting())
-			{
-				double value = source.getValue() * gxSliderScaling;
-				force.gx = value;
-			}
-		}
-	}
-
-	class GFieldYListener implements ChangeListener{
-		public void stateChanged(ChangeEvent eve) {
-			JSlider source = (JSlider) eve.getSource();
-			if(source.getValueIsAdjusting())
-			{
-				double value = source.getValue() * gySliderScaling;
-				force.gy = value;
-			}
-		}
-	}
-
 	class StepListener implements ChangeListener{
 		public void stateChanged(ChangeEvent eve) {
 			Simulation s = simulationAnimation.getSimulation();
@@ -421,19 +205,6 @@ public class MainControlApplet extends JApplet {
 		}
 	}
 
-	class BoxDimension implements ActionListener{
-		public void actionPerformed(ActionEvent eve) {
-			Simulation s = simulationAnimation.getSimulation();
-			int xbox = Integer.parseInt(xboxentry.getText());
-			int ybox = Integer.parseInt(yboxentry.getText());
-			int zbox = Integer.parseInt(zboxentry.getText());
-			double width = s.getWidth();
-			double height = s.getHeight();
-			double depth = s.getDepth();
-			s.grid.changeSize(xbox, ybox, zbox, width, height, depth);
-		}
-	}
-
 	/**
 	 * Constructor.
 	 */
@@ -443,7 +214,6 @@ public class MainControlApplet extends JApplet {
 		simulationAnimation = new SimulationAnimation();
 		particlePanel = new Particle2DPanel(simulationAnimation);
 		Simulation s = simulationAnimation.getSimulation();
-		linkConstantForce();
 
 		startButton = new JButton("start");
 		stopButton = new JButton("stop");
@@ -484,76 +254,6 @@ public class MainControlApplet extends JApplet {
 		step.add(stepLabel);
 		step.add(stepSlider);
 
-		dragSlider = new JSlider();
-		dragSlider.addChangeListener(new DragListener());
-		dragSlider.setMinimum(0);
-		dragSlider.setMaximum(100);
-		dragSlider.setValue((int) force.drag);
-		dragSlider.setMajorTickSpacing(50);
-		dragSlider.setMinorTickSpacing(10);
-		dragSlider.setPaintTicks(true);
-		dragSlider.setPaintLabels(true);
-		JLabel dragLabel = new JLabel("Drag coefficient");
-
-		efieldXSlider = new JSlider();
-		efieldXSlider.addChangeListener(new EFieldXListener());
-		efieldXSlider.setMinimum(-100);
-		efieldXSlider.setMaximum(100);
-		efieldXSlider.setValue((int) force.ex);
-		efieldXSlider.setMajorTickSpacing(50);
-		efieldXSlider.setMinorTickSpacing(10);
-		efieldXSlider.setPaintTicks(true);
-		efieldXSlider.setPaintLabels(true);
-
-		efieldYSlider = new JSlider();
-		efieldYSlider.addChangeListener(new EFieldYListener());
-		efieldYSlider.setMinimum(-100);
-		efieldYSlider.setMaximum(100);
-		efieldYSlider.setValue((int) force.ey);
-		efieldYSlider.setMajorTickSpacing(50);
-		efieldYSlider.setMinorTickSpacing(10);
-		efieldYSlider.setPaintTicks(true);
-		efieldYSlider.setPaintLabels(true);
-
-		bfieldZSlider = new JSlider();
-		bfieldZSlider.addChangeListener(new BFieldZListener());
-		bfieldZSlider.setMinimum(-100);
-		bfieldZSlider.setMaximum(100);
-		bfieldZSlider.setValue((int) force.bz);
-		bfieldZSlider.setMajorTickSpacing(50);
-		bfieldZSlider.setMinorTickSpacing(10);
-		bfieldZSlider.setPaintTicks(true);
-		bfieldZSlider.setPaintLabels(true);
-
-		gfieldXSlider = new JSlider();
-		gfieldXSlider.addChangeListener(new GFieldXListener());
-		gfieldXSlider.setMinimum(-100);
-		gfieldXSlider.setMaximum(100);
-		gfieldXSlider.setValue((int) force.gx);
-		gfieldXSlider.setMajorTickSpacing(50);
-		gfieldXSlider.setMinorTickSpacing(10);
-		gfieldXSlider.setPaintTicks(true);
-		gfieldXSlider.setPaintLabels(true);
-
-		gfieldYSlider = new JSlider();
-		gfieldYSlider.addChangeListener(new GFieldYListener());
-		gfieldYSlider.setMinimum(-100);
-		gfieldYSlider.setMaximum(100);
-		gfieldYSlider.setValue((int) force.gy);
-		gfieldYSlider.setMajorTickSpacing(50);
-		gfieldYSlider.setMinorTickSpacing(10);
-		gfieldYSlider.setPaintTicks(true);
-		gfieldYSlider.setPaintLabels(true);
-
-		initComboBox = new JComboBox(initStrings);
-		initComboBox.setSelectedIndex(0);
-		initComboBox.addActionListener(new ComboBoxListener());
-		JLabel initComboBoxLabel = new JLabel("Initial conditions");
-		Box initBox = Box.createHorizontalBox();
-		initBox.add(initComboBoxLabel);
-		initBox.add(Box.createHorizontalGlue());
-		initBox.add(initComboBox);
-
 		algorithmComboBox = new JComboBox(solverString);
 		algorithmComboBox.setSelectedIndex(0);
 		algorithmComboBox.addActionListener(new AlgorithmListener());
@@ -562,25 +262,6 @@ public class MainControlApplet extends JApplet {
 		Box algorithmBox = Box.createVerticalBox();
 		algorithmBox.add(algorithmLabel);
 		algorithmBox.add(algorithmComboBox);
-
-		collisionComboBox = new JComboBox(collisionsString);
-		collisionComboBox.setSelectedIndex(0);
-		collisionComboBox.addActionListener(new Collisions());
-		//collisionComboBox.setPreferredSize(new Dimension(collisionComboBox.getPreferredSize().width, 5));
-		JLabel collisionsLabel = new JLabel("Collisions");
-
-		collisionAlgorithm = new JComboBox(collisionalgorithmString);
-		collisionAlgorithm.setSelectedIndex(0);
-		collisionAlgorithm.addActionListener(new CollisionAlgorithm());
-		JLabel colAlgorithmLabel = new JLabel("Algorithm for the collisions");
-
-		Box collisionBox = Box.createVerticalBox();
-		collisionBox.add(collisionsLabel);
-		collisionBox.add(collisionComboBox);
-		collisionBox.add(Box.createVerticalGlue());
-		collisionBox.add(colAlgorithmLabel);
-		collisionBox.add(collisionAlgorithm);
-		collisionBox.add(Box.createVerticalStrut(170));
 
 		startButton.addActionListener(new StartListener());
 		stopButton.addActionListener(new StopListener());
@@ -603,41 +284,10 @@ public class MainControlApplet extends JApplet {
 
 		calculateFieldsCheck = new JCheckBox("Calculate Fields");
 		calculateFieldsCheck.addItemListener(new CalculateFieldsListener());
+		calculateFieldsCheck.setEnabled(true);
 
 		framerateCheck = new JCheckBox("Info");
 		framerateCheck.addItemListener(new FrameListener());
-
-		xboxentry = new JTextField(2);
-		xboxentry.setText("10");
-		xboxentry.addActionListener(new BoxDimension());
-
-		yboxentry = new JTextField(2);
-		yboxentry.setText("10");
-		yboxentry.addActionListener(new BoxDimension());
-		
-		zboxentry = new JTextField(2);
-		zboxentry.setText("10");
-		zboxentry.addActionListener(new BoxDimension());
-
-		hardBoundaries = new JRadioButton("Hardwall");
-		periodicBoundaries = new JRadioButton("Periodic");
-
-		ButtonGroup bgroup = new ButtonGroup();
-
-		bgroup.add(hardBoundaries);
-		bgroup.add(periodicBoundaries);
-
-		hardBoundaries.addActionListener(new SelectBoundaries());
-		periodicBoundaries.addActionListener(new SelectBoundaries());
-
-		JPanel boundaries = new JPanel();
-		boundaries.add(hardBoundaries);
-		boundaries.add(periodicBoundaries);
-		JLabel boundariesLabel = new JLabel("Boundaries");
-
-		JLabel xboxentryLabel = new JLabel("Cell width");
-		JLabel yboxentryLabel = new JLabel("Cell height");
-		JLabel zboxentryLabel = new JLabel("Cell depth");
 
 		JPanel controlPanelUp = new JPanel();
 		controlPanelUp.setLayout(new FlowLayout());
@@ -645,7 +295,6 @@ public class MainControlApplet extends JApplet {
 		controlPanelUp.add(stopButton);
 		controlPanelUp.add(resetButton);
 		controlPanelUp.add(Box.createHorizontalStrut(25));
-		controlPanelUp.add(initBox);
 		controlPanelUp.add(Box.createHorizontalStrut(25));
 		Box settingControls = Box.createVerticalBox();
 		JPanel controlPanelDown = new JPanel();
@@ -658,8 +307,6 @@ public class MainControlApplet extends JApplet {
 		settingControls.add(Box.createVerticalGlue());
 		settingControls.add(step);
 		settingControls.add(Box.createVerticalGlue());
-		settingControls.add(boundariesLabel);
-		settingControls.add(boundaries);
 		settingControls.add(traceCheck);
 		settingControls.add(framerateCheck);
 
@@ -667,53 +314,10 @@ public class MainControlApplet extends JApplet {
 		panelBox.add(controlPanelUp);
 		panelBox.add(controlPanelDown);
 
-		JLabel eFieldXLabel = new JLabel("Electric Field in x - direction");
-		JLabel eFieldYLabel = new JLabel("Electric Field in y - direction");
-		JLabel bFieldZLabel = new JLabel("Magnetic Field in z - direction");
-		JLabel gFieldXLabel = new JLabel("Gravitation in x - direction Field");
-		JLabel gFieldYLabel = new JLabel("Gravitation in y - direction Field");
-
 		// Change background color of tab from blue to system gray
 		UIManager.put("TabbedPane.contentAreaColor", new Color(238, 238, 238));
 
 		tabs = new JTabbedPane();
-
-		Box fieldsBox = Box.createVerticalBox();
-		fieldsBox.add(eFieldXLabel);
-		fieldsBox.add(efieldXSlider);
-		fieldsBox.add(Box.createVerticalStrut(5));
-		fieldsBox.add(eFieldYLabel);
-		fieldsBox.add(efieldYSlider);
-		fieldsBox.add(Box.createVerticalGlue());
-		fieldsBox.add(bFieldZLabel);
-		fieldsBox.add(bfieldZSlider);
-		fieldsBox.add(Box.createVerticalGlue());
-		fieldsBox.add(gFieldXLabel);
-		fieldsBox.add(gfieldXSlider);
-		fieldsBox.add(Box.createVerticalStrut(5));
-		fieldsBox.add(gFieldYLabel);
-		fieldsBox.add(gfieldYSlider);
-		fieldsBox.add(Box.createVerticalGlue());
-		fieldsBox.add(dragLabel);
-		fieldsBox.add(dragSlider);
-		fieldsBox.add(Box.createVerticalGlue());
-
-		Box xbox = Box.createHorizontalBox();
-		Box ybox = Box.createHorizontalBox();
-		xbox.add(Box.createHorizontalStrut(50));
-		xbox.add(xboxentryLabel);
-		xbox.add(Box.createHorizontalStrut(100));
-		xbox.add(xboxentry);
-		ybox.add(Box.createHorizontalStrut(50));
-		ybox.add(yboxentryLabel);
-		ybox.add(Box.createHorizontalStrut(96));
-		ybox.add(yboxentry);
-		/*
-		ybox.add(Box.createHorizontalStrut(50));
-		ybox.add(yboxentryLabel);
-		ybox.add(Box.createHorizontalStrut(96));
-		ybox.add(yboxentry);
-		 */
 
 		Box cellSettings = Box.createVerticalBox();
 		cellSettings.add(Box.createVerticalStrut(20));
@@ -722,21 +326,13 @@ public class MainControlApplet extends JApplet {
 		cellSettings.add(currentgridCheck);
 		cellSettings.add(Box.createVerticalGlue());
 		cellSettings.add(drawFieldsCheck);
-		cellSettings.add(Box.createVerticalStrut(20));
-		cellSettings.add(xbox);
-		cellSettings.add(Box.createVerticalStrut(10));
-		cellSettings.add(ybox);
 		cellSettings.add(Box.createVerticalStrut(200));
 
-		FileTab fileTab = new FileTab(MainControlApplet.this, simulationAnimation);
+		this.fileTab = new FileTab(MainControlApplet.this, simulationAnimation);
 
-		fieldsBox.setPreferredSize(new Dimension(300, 100));
 		settingControls.setPreferredSize(new Dimension (300, 100));
-		collisionBox.setPreferredSize(new Dimension (300, 100));
 
-		tabs.addTab("Fields", fieldsBox);
 		tabs.addTab("Settings", settingControls);
-		tabs.addTab("Coll.", collisionBox);
 		tabs.addTab("Cell", cellSettings);
 		tabs.addTab("File", fileTab);
 
@@ -977,48 +573,21 @@ public class MainControlApplet extends JApplet {
 		Timer timer = simulationAnimation.getTimer();
 
 		stepSlider.setValue((int)(s.tstep / stepSliderScaling));
-		efieldXSlider.setValue((int) (force.ex / exSliderScaling));
-		efieldYSlider.setValue((int) (force.ey / eySliderScaling));
-		bfieldZSlider.setValue((int) (force.bz / bzSliderScaling));
-		gfieldXSlider.setValue((int) (force.gx / gxSliderScaling));
-		gfieldYSlider.setValue((int) (force.gy / gySliderScaling));
-		dragSlider.setValue((int) (force.drag / dragSliderScaling));
-		//int delay = particlePanel.timer.getDelay();
-		//speedSlider.setValue((int) (-Math.log(delay / 1000.) / speedSliderScaling));
 		speedSlider.setValue(50);
 		timer.setDelay((int) (1000 * Math.exp(-50 * speedSliderScaling)));
-		xboxentry.setText("10");
-		yboxentry.setText("10");
-		zboxentry.setText("10");
-		if(s.getParticleMover().getBoundaryType() == ParticleBoundaryType.Hardwall) {
-			hardBoundaries.setSelected(true);
-			periodicBoundaries.setSelected(false);
-		}
-		else if(s.getParticleMover().getBoundaryType() == ParticleBoundaryType.Periodic) {
-			hardBoundaries.setSelected(false);
-			periodicBoundaries.setSelected(true);
-		}
-		
-		//ordering of these two is important!
-		collisionComboBox.setSelectedIndex(0);
-		collisionAlgorithm.setSelectedIndex(0);
+
 
 		// Set algorithm UI according to current setting
 		Solver solver = s.getParticleMover().getSolver();
-		if (solver instanceof Boris) {
-			algorithmComboBox.setSelectedIndex(4);
-			relativisticCheck.setSelected(false);
-		} else if (solver instanceof BorisRelativistic) {
-			algorithmComboBox.setSelectedIndex(4);
-			relativisticCheck.setSelected(true);
-		} else if (solver instanceof EulerRichardson) {
+		if (solver instanceof LeapFrog)
+		{
 			algorithmComboBox.setSelectedIndex(0);
 			relativisticCheck.setSelected(false);
+		} else if (solver instanceof LeapFrogRelativistic)
+		{
+			algorithmComboBox.setSelectedIndex(0);
+			relativisticCheck.setSelected(true);
 		}
-		// TODO: Implement this for other solvers.
-		// (Currently only implemented for solvers used in InitialConditions.)
-
-		linkConstantForce();
 	}
 
 	@Override

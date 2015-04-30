@@ -1,6 +1,7 @@
 package org.openpixi.pixi.parallel.cellaccess;
 
 import org.openpixi.pixi.physics.grid.Grid;
+import org.openpixi.pixi.physics.util.IntBox;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -49,14 +50,6 @@ public class ParallelCellIterator extends CellIterator {
 		numOfCells = dimensions.xsize() * dimensions.ysize() * dimensions.zsize();
 	}
 
-/*
-	@Override
-	public void setExtraCellsMode(int numCellsX, int numCellsY) {
-		super.setExtraCellsMode(numCellsX, numCellsY);
-		numOfCells = dimensions.xsize() * dimensions.ysize();
-	}
-*/
-
 	private class Task implements Callable<Object> {
 
 		private int threadIdx;
@@ -69,12 +62,25 @@ public class ParallelCellIterator extends CellIterator {
 
 		public Object call() throws Exception {
 			for (int cellIdx = threadIdx; cellIdx < numOfCells; cellIdx += numOfThreads) {
-				int x = (cellIdx / dimensions.ysize()) + dimensions.xmin();
-				int y = (cellIdx % dimensions.ysize()) + dimensions.ymin();
-				int z = (cellIdx % dimensions.zsize()) + dimensions.zmin();
-				action.execute(grid, x, y, z);
+                int[] pos = convertCellIndexToPosition(cellIdx, dimensions);
+				action.execute(grid, pos[0], pos[1], pos[2]);
 			}
 			return null;
 		}
+
+        private int[] convertCellIndexToPosition(int ci, IntBox dimensions)
+        {
+            int dim = dimensions.getDim();
+            int[] pos = new int[dim];
+
+            for(int i = 0; i < dim; i++)
+            {
+                pos[i] = ci % dimensions.getSize(i) + dimensions.getMin(i);
+                ci -= pos[i];
+                ci /= dimensions.getSize(i);
+            }
+
+            return pos;
+        }
 	}
 }

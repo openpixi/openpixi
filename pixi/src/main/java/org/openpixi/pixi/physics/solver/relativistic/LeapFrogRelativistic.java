@@ -20,7 +20,8 @@ package org.openpixi.pixi.physics.solver.relativistic;
 
 import org.openpixi.pixi.physics.*;
 import org.openpixi.pixi.physics.force.Force;
-import org.openpixi.pixi.physics.particles.Particle;
+import org.openpixi.pixi.physics.particles.IParticle;
+import org.openpixi.pixi.physics.solver.LeapFrog;
 import org.openpixi.pixi.physics.solver.Solver;
 
 /**This class represents the LeapFrog algorithm and the equations that are used one can be find here:
@@ -29,70 +30,88 @@ import org.openpixi.pixi.physics.solver.Solver;
  * http://www.artcompsci.org/vol_1/v1_web/node34.html#leapfrog-step2
  */
 public class LeapFrogRelativistic implements Solver{
-	
-	RelativisticVelocity relvelocity;
-	
-	public LeapFrogRelativistic(double c)
-	{
-		relvelocity = new RelativisticVelocity(c);
-	}
 
-	/**
-	 * LeapFrog algorithm. The damping is implemented with an linear error O(dt).
-	 * Warning: the velocity is stored half a time step ahead of the position.
-	 * @param p before the update: x(t), u(t+dt/2), a(t);
-	 *                 after the update: x(t+dt), u(t+3*dt/2), a(t+dt)
-	 *                  u(t) is the relativistic momentum
-	 */
-	public void step(Particle p, Force f, double dt) {
-		
-		double gamma = relvelocity.calculateGamma(p);
-		
-		// x(t+dt) = x(t) + c(t+dt/2) * dt / gamma
-		p.setX(p.getX() + p.getVx() * dt / gamma);
-		p.setY(p.getY() + p.getVy() * dt / gamma);
-		p.setZ(p.getZ() + p.getVz() * dt / gamma);
+    private Simulation s;
+    private int numberOfDimensions;
+    RelativisticVelocity relVelocity;
 
-		// a(t+dt) = F(u(t+dt/2), x(t+dt)) / m
-		// WARNING: Force is evaluated at two different times t+dt/2 and t+dt!
-		p.setAx(f.getForceX(p) / p.getMass());
-		p.setAy(f.getForceY(p) / p.getMass());
-		p.setAz(f.getForceZ(p) / p.getMass());
+    public LeapFrogRelativistic(Simulation s)
+    {
+        this(s.getNumberOfDimensions(), s.getSpeedOfLight());
+        this.s = s;
+    }
 
-		// u(t+3*dt/2) = u(t+dt/2) + a(t+dt)*dt
-		p.setVx(p.getVx() + p.getAx() * dt);
-		p.setVy(p.getVy() + p.getAy() * dt);
-		p.setVz(p.getVz() + p.getAz() * dt);
-		
-	}
-	/**
-	 * prepare method for bringing the velocity in the desired half step
-	 * @param p before the update: v(t);
-	 *                 after the update: v(t+dt/2)
-	 */
-	public void prepare(Particle p, Force f, double dt)
-	{
-		//a(t) = F(v(t), x(t)) / m
-		p.setAx(f.getForceX(p) / p.getMass());
-		p.setAy(f.getForceY(p) / p.getMass());
-		p.setAz(f.getForceZ(p) / p.getMass());
-		
-		//v(t + dt / 2) = v(t) + a(t)*dt / 2
-		p.setVx(p.getVx() + p.getAx() * dt);
-		p.setVy(p.getVy() + p.getAy() * dt);
-		p.setVz(p.getVz() + p.getAz() * dt);
-	}
-	/**
-	 * complete method for bringing the velocity in the desired half step
-	 * @param p before the update: v(t+dt/2);
-	 *                 after the update: v(t)
-	 */
-	public void complete(Particle p, Force f, double dt)
-	{
-		//v(t) = v(t + dt / 2) - a(t)*dt / 2
-		p.setVx(p.getVx() - p.getAx() * dt);
-		p.setVy(p.getVy() - p.getAy() * dt);
-		p.setVz(p.getVz() - p.getAz() * dt);
-	}
+    public LeapFrogRelativistic(int numberOfDimensions, double speedOfLight)
+    {
+        this.numberOfDimensions = numberOfDimensions;
+        this.relVelocity = new RelativisticVelocity(speedOfLight);
+    }
+
+    public LeapFrogRelativistic(double speedOfLight)
+    {
+        this(3, speedOfLight);
+    }
+
+    /**
+     * LeapFrog algorithm. The damping is implemented with an linear error O(dt).
+     * Warning: the velocity is stored half a time step ahead of the position.
+     * @param p before the update: x(t), v(t+dt/2), a(t);
+     *                 after the update: x(t+dt), v(t+3*dt/2), a(t+dt)
+     */
+    public void step(IParticle p, Force f, double dt)
+    {
+        double gamma = relVelocity.calculateGamma(p);
+        /*
+            Warning: This is really inefficient and should be changed in the future.
+         */
+        for(int i = 0 ; i < this.numberOfDimensions; i++)
+        {
+            // x(t+dt) = x(t) + v(t+dt/2)*dt
+            p.addPosition(i, p.getVelocity(i)  * dt / gamma);
+
+            // a(t+dt) = F(v(t+dt/2), x(t+dt)) / m
+            // WARNING: Force is evaluated at two different times t+dt/2 and t+dt!
+            p.setAcceleration(i, f.getForce(i, p) / p.getMass());
+
+            // v(t+3*dt/2) = v(t+dt/2) + a(t+dt)*dt
+            p.addVelocity(i, p.getAcceleration(i) * dt);
+        }
+    }
+    /**
+     * prepare method for bringing the velocity in the desired half step
+     * @param p before the update: v(t);
+     *                 after the update: v(t+dt/2)
+     */
+    public void prepare(IParticle p, Force f, double dt)
+    {
+         /*
+            Warning: This is really inefficient and should be changed in the future.
+         */
+        for(int i = 0 ; i < this.numberOfDimensions; i++)
+        {
+            //a(t) = F(v(t), x(t)) / m
+            p.setAcceleration(i, f.getForce(i, p) / p.getMass());
+
+            //v(t + dt / 2) = v(t) + a(t)*dt / 2
+            p.addVelocity(i, p.getAcceleration(i) * dt / 2.0);
+        }
+
+    }
+    /**
+     * complete method for bringing the velocity in the desired half step
+     * @param p before the update: v(t+dt/2);
+     *                 after the update: v(t)
+     */
+    public void complete(IParticle p, Force f, double dt)
+    {
+        /*
+            Warning: This is really inefficient and should be changed in the future.
+         */
+        for(int i = 0 ; i < this.numberOfDimensions; i++)
+        {
+            //v(t) = v(t + dt / 2) - a(t)*dt / 2
+            p.addVelocity(i,  - p.getAcceleration(i) * dt / 2.0);
+        }
+    }
 
 }

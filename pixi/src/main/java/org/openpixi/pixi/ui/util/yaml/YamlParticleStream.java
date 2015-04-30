@@ -1,125 +1,74 @@
 package org.openpixi.pixi.ui.util.yaml;
 
+import java.util.List;
 import java.util.Random;
 
 import org.openpixi.pixi.physics.Settings;
-import org.openpixi.pixi.physics.particles.ParticleFull;
+import org.openpixi.pixi.physics.particles.Particle;
 
 public class YamlParticleStream {
 	public YamlParticle particle;
-	public Double dx;
-	public Double dy;
-	public Double dz;
-	public Double randomX;
-	public Double randomY;
-	public Double randomZ;
-	public Double randomVx;
-	public Double randomVy;
-	public Double randomVz;
-	public Double randomGaussX;
-	public Double randomGaussY;
-	public Double randomGaussZ;
-	public Double randomGaussVx;
-	public Double randomGaussVy;
-	public Double randomGaussVz;
+	public List<Double> distances;
+	public List<Double> randomPositions;
+	public List<Double> randomVelocities;
+	public List<Double> randomGaussPositions;
+	public List<Double> randomGaussVelocities;
 	public Integer number;
 
+	private int numberOfDimensions;
 	private Random random = new Random();
+
 
 	/**
 	 * Creates a stream of particles. The particle is copied
-	 * 'number' times. Each time, the x-, y-, and z-values are
-	 * adjusted by adding dx, dy, and dz.
+	 * 'number' times. Each time, the positions are
+	 * adjusted by adding the distances defined in List<Double> distances.
 	 * @param settings Settings object to which particles are added.
 	 */
 	public void applyTo(Settings settings) {
-		ParticleFull p;
-		double dx = 0;
-		double dy = 0;
-		double dz = 0;
+		Particle p;
+		numberOfDimensions = settings.getNumberOfDimensions();
+		double[] distances = new double[numberOfDimensions];
 		double number = 0;
 
-		if (this.dx != null) {
-			dx = this.dx;
-		}
-
-		if (this.dy != null) {
-			dy = this.dy;
-		}
-
-		if (this.dz != null) {
-			dz = this.dz;
-		}
+		if(this.distances != null)
+			for(int i = 0; i < numberOfDimensions; i++)
+				distances[i] = this.distances.get(i);
 
 		if (this.number != null) {
 			number = this.number;
 		}
 
 		if (this.particle != null) {
-			p = particle.getParticle();
 
-			double x = p.getX();
-			double y = p.getY();
-			double z = p.getZ();
-
-			for (int i = 0; i < number; i++) {
+			for (int n = 0; n < number; n++)
+			{
 				p = particle.getParticle();
-				p.setX(x + i * dx);
-				p.setY(y + i * dy);
-				p.setZ(z + i * dz);
+				for(int i = 0; i < numberOfDimensions; i++)
+					p.addPosition(i, n * distances[i]);
+
 				applyRandomModifications(p);
 				settings.addParticle(p);
 			}
 		}
 	}
 
-	private void applyRandomModifications(ParticleFull p) {
-		if (this.randomX != null) {
-			p.addX(random.nextDouble() * this.randomX);
-		}
+	private void applyRandomModifications(Particle p) {
 
-		if (this.randomY != null) {
-			p.addY(random.nextDouble() * this.randomY);
-		}
+		if(this.randomPositions != null)
+			for(int i = 0; i < numberOfDimensions; i++)
+				p.addPosition(i, random.nextDouble() * this.randomPositions.get(i));
 
-		if (this.randomZ != null) {
-			p.addZ(random.nextDouble() * this.randomZ);
-		}
+		if(this.randomVelocities != null)
+			for(int i = 0; i < numberOfDimensions; i++)
+				p.addVelocity(i, random.nextDouble() * this.randomVelocities.get(i));
 
-		if (this.randomVx != null) {
-			p.setVx(p.getVx() + random.nextDouble() * this.randomVx);
-		}
+		if(this.randomGaussPositions != null)
+			for(int i = 0; i < numberOfDimensions; i++)
+				p.addPosition(i, random.nextGaussian() * this.randomGaussPositions.get(i));
 
-		if (this.randomVy != null) {
-			p.setVy(p.getVy() + random.nextDouble() * this.randomVy);
-		}
-
-		if (this.randomVz != null) {
-			p.setVz(p.getVz() + random.nextDouble() * this.randomVz);
-		}
-
-		if (this.randomGaussX != null) {
-			p.addX(random.nextGaussian() * this.randomGaussX);
-		}
-
-		if (this.randomGaussY != null) {
-			p.addY(random.nextGaussian() * this.randomGaussY);
-		}
-
-		if (this.randomGaussZ != null) {
-			p.addZ(random.nextGaussian() * this.randomGaussZ);
-		}
-
-		if (this.randomGaussVx != null) {
-			p.setVx(p.getVx() + random.nextGaussian() * this.randomGaussVx);
-		}
-
-		if (this.randomGaussVy != null) {
-			p.setVy(p.getVy() + random.nextGaussian() * this.randomGaussVy);
-		}
-
-		if (this.randomGaussVz != null) {
-			p.setVz(p.getVz() + random.nextGaussian() * this.randomGaussVz);
-		}
+		if(this.randomGaussVelocities != null)
+			for(int i = 0; i < numberOfDimensions; i++)
+				p.addVelocity(i, random.nextGaussian() * this.randomGaussVelocities.get(i));
 	}
 }

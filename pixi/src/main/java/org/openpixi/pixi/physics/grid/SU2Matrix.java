@@ -4,11 +4,12 @@ import org.openpixi.pixi.physics.grid.YMField;
 import org.openpixi.pixi.physics.grid.LinkMatrix;
 
 public class SU2Matrix extends LinkMatrix {
-	
-	private double[] e = new double[4];
+
 	
 	public SU2Matrix () {
-		
+
+		e = new double[4];
+
 		e[0] = 0;
 		e[1] = 0;
 		e[2] = 0;
@@ -16,8 +17,10 @@ public class SU2Matrix extends LinkMatrix {
 		
 	}
 	
-public SU2Matrix (double a, double b, double c, double d) {
-		
+	public SU2Matrix (double a, double b, double c, double d) {
+
+		e = new double[4];
+
 		e[0] = a;
 		e[1] = b;
 		e[2] = c;

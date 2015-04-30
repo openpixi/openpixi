@@ -2,82 +2,86 @@ package org.openpixi.pixi.physics.util;
 
 import java.io.Serializable;
 
-public class IntBox implements Serializable {
-	private int xmin;
-	private int xmax;
-	private int ymin;
-	private int ymax;
-	private int zmin;
-	private int zmax;
+public class IntBox implements Serializable
+{
 
-	public IntBox(int xmin, int xmax, int ymin, int ymax, int zmin, int zmax) {
-		this.xmin = xmin;
-		this.xmax = xmax;
-		this.ymin = ymin;
-		this.ymax = ymax;
-		this.zmin = zmin;
-		this.zmax = zmax;
-	}
+    private int dim;
+    private int[] min;
+    private int[] max;
 
-	public int xmin() {
-		return xmin;
+    public IntBox(int dim, int[] min, int[] max)
+    {
+        this.dim = dim;
+        this.min = min;
+        this.max = max;
+    }
+
+	public IntBox(int xmin, int xmax, int ymin, int ymax, int zmin, int zmax)
+    {
+        this(3, new int[] {xmin, ymin, zmin}, new int[] {xmax, ymax, zmax});
 	}
 
-	public int xsize() {
-		return xmax - xmin + 1;
-	}
+    public int getDim()
+    {
+        return this.dim;
+    }
 
-	public int xmax() {
-		return xmax;
-	}
+    public int getMin(int i)
+    {
+        return this.min[i];
+    }
 
-	public int ymin() {
-		return ymin;
-	}
+    public int getMax(int i)
+    {
+        return this.max[i];
+    }
 
-	public int ymax() {
-		return ymax;
-	}
+    public int getSize(int i)
+    {
+        return getMax(i) - getMin(i) + 1;
+    }
 
-	public int ysize() {
-		return ymax - ymin + 1;
-	}
-	
-	public int zmin() {
-		return zmin;
-	}
+    /*
+        Legacy getters
+     */
 
-	public int zmax() {
-		return zmax;
-	}
+	public int xmin()               {  return getMin(0);        }
+	public int xmax()               {  return getMax(0);        }
+	public int xsize()              {  return getSize(0);       }
 
-	public int zsize() {
-		return zmax - zmin + 1;
-	}
+    public int ymin()               {  return getMin(1);        }
+    public int ymax()               {  return getMax(1);        }
+    public int ysize()              {  return getSize(1);       }
+
+    public int zmin()               {  return getMin(2);        }
+    public int zmax()               {  return getMax(2);        }
+    public int zsize()              {  return getSize(2);       }
+
+    public boolean contains(int[] p)
+    {
+        for(int i = 0; i < this.dim; i++)
+        {
+            if(p[i] < this.min[i] || p[i] > this.max[i])
+                return false;
+        }
+        return true;
+    }
 
 	public boolean contains(int x, int y, int z) {
-		if (xmin <= x && x <= xmax && ymin <= y && y <= ymax && zmin <= z && z <= zmax) {
-			return true;
-		}
-		else {
-			return false;
-		}
-	}
-
-	/**
-	 * Returns distance of a given point to the border of this box.
-	 * Point lying on xmin, xmax, ymin or ymax has distance 0.
-	 * Does not distinguish whether the point lies outside the box or inside.
-	 */
-	public int distanceFromBorder(int x, int y, int z) {
-		int xmind = Math.min(Math.abs(x - xmin), Math.abs(x - xmax));
-		int ymind = Math.min(Math.abs(y - ymin), Math.abs(y - ymax));
-		int zmind = Math.min(Math.abs(z - zmin), Math.abs(z - zmax));
-		return Math.min(xmind, Math.min(ymind, zmind) );
+        return this.contains(new int[] {x,y,z});
 	}
 
 	@Override
-	public String toString() {
-		return String.format("[%d,%d,%d,%d,%d,%d]", xmin, xmax, ymin, ymax, zmin, zmax);
+	public String toString()
+    {
+        String output = "[";
+        for(int i = 0; i < this.dim; i++)
+        {
+            output += this.min[i] + ", " + this.max[i];
+            if(i < this.dim - 1)
+                output += ",";
+        }
+        output += "]";
+        return output;
 	}
 }
