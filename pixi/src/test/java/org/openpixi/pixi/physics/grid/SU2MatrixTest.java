@@ -124,8 +124,8 @@ public class SU2MatrixTest {
 		/*
 			Use add and sub methods.
 		 */
-		LinkMatrix r1 = a.add(b);
-		LinkMatrix r2 = a.sub(b);
+		SU2Matrix r1 = (SU2Matrix) a.add(b);
+		SU2Matrix r2 = (SU2Matrix) a.sub(b);
 
 		/*
 			Compare results.
@@ -356,10 +356,12 @@ public class SU2MatrixTest {
 		}
 	}
 
-	private Array2DRowFieldMatrix<Complex> convertToMatrix(LinkMatrix input) {
+	private Array2DRowFieldMatrix<Complex> convertToMatrix(LinkMatrix arg) {
 		/*
 			This is very, very tedious. I'm sorry.
 		 */
+
+		SU2Matrix input = (SU2Matrix) arg;
 
 		Field<Complex> field = ComplexField.getInstance();
 		Complex imaginaryUnit = new Complex(0.0, 1.0);

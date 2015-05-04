@@ -9,7 +9,7 @@ package org.openpixi.pixi.physics.grid;
  * where \sigma_i is the i-th Pauli matrix.
  *
  */
-public class SU2Matrix extends LinkMatrix {
+public class SU2Matrix implements LinkMatrix {
 
 	private double[] e;
 
@@ -62,11 +62,11 @@ public class SU2Matrix extends LinkMatrix {
 	 * The result is not a valid SU2 matrix since the parameter norm will not be one in general.
 	 * This method does not change the original SU2Matrix instance.
 	 *
-	 * @param a SU2Matrix which is added to the current SU2Matrix instance.
+	 * @param arg SU2Matrix which is added to the current SU2Matrix instance.
 	 * @return Sum of the SU2Matrix instances.
 	 */
-	public LinkMatrix add(LinkMatrix a) {
-
+	public LinkMatrix add(LinkMatrix arg) {
+		SU2Matrix a = (SU2Matrix) arg;
 		SU2Matrix b = new SU2Matrix();
 		for (int i = 0; i < 4; i++) {
 			b.set(i, e[i] + a.get(i));
@@ -80,11 +80,11 @@ public class SU2Matrix extends LinkMatrix {
 	 * The result is not a valid SU2 matrix since the parameter norm will not be one in general.
 	 * This method does not change the original SU2Matrix instance.
 	 *
-	 * @param a SU2Matrix which is subtracted from the current SU2Matrix instance.
+	 * @param arg SU2Matrix which is subtracted from the current SU2Matrix instance.
 	 * @return Difference of the SU2Matrix instances.
 	 */
-	public LinkMatrix sub(LinkMatrix a) {
-
+	public LinkMatrix sub(LinkMatrix arg) {
+		SU2Matrix a = (SU2Matrix) arg;
 		SU2Matrix b = new SU2Matrix();
 		for (int i = 0; i < 4; i++) {
 			b.set(i, e[i] - a.get(i));
@@ -96,10 +96,10 @@ public class SU2Matrix extends LinkMatrix {
 	/**
 	 * Copies values from another SU2Matrix instance to this instance.
 	 *
-	 * @param a SU2Matrix to copy from.
+	 * @param arg SU2Matrix to copy from.
 	 */
-	public void set(LinkMatrix a) {
-
+	public void set(LinkMatrix arg) {
+		SU2Matrix a = (SU2Matrix) arg;
 		for (int i = 0; i < 4; i++) {
 			e[i] = a.get(i);
 		}
@@ -197,12 +197,13 @@ public class SU2Matrix extends LinkMatrix {
 	 * the right).
 	 * This method does not change the original SU2Matrix instance.
 	 *
-	 * @param a SU2Matrix instance used for post-multiplication.
+	 * @param arg SU2Matrix instance used for post-multiplication.
 	 * @return  Result of the multiplication.
 	 */
-	public LinkMatrix mult(LinkMatrix a) {
+	public LinkMatrix mult(LinkMatrix arg) {
 
 		SU2Matrix b = new SU2Matrix();
+		SU2Matrix a = (SU2Matrix) arg;
 		b.e[0] = e[0] * a.get(0) - e[1] * a.get(1) - e[2] * a.get(2) - e[3] * a.get(3);
 		b.e[1] = e[0] * a.get(1) + e[1] * a.get(0) - e[2] * a.get(3) + e[3] * a.get(2);
 		b.e[2] = e[0] * a.get(2) + e[2] * a.get(0) - e[3] * a.get(1) + e[1] * a.get(3);

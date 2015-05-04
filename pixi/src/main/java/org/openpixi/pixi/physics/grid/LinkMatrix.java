@@ -1,23 +1,19 @@
 package org.openpixi.pixi.physics.grid;
 
-public abstract class LinkMatrix {
+public interface LinkMatrix {
 
-	public abstract LinkMatrix add(LinkMatrix a);
+	LinkMatrix add(LinkMatrix a);
 
-	public abstract LinkMatrix sub(LinkMatrix a);
+	LinkMatrix sub(LinkMatrix a);
 
-	public abstract void set(int j, double value);
+	LinkMatrix adj();
 
-	public abstract double get(int j);
+	LinkMatrix mult(double number);
 
-	public abstract LinkMatrix adj();
+	LinkMatrix mult(LinkMatrix a);
 
-	public abstract LinkMatrix mult(double number);
+	YMField getAlgebraElement();
 
-	public abstract LinkMatrix mult(LinkMatrix a);
-
-	public abstract YMField getAlgebraElement();
-
-	public abstract void set(LinkMatrix a);
+	void set(LinkMatrix a);
 
 }
