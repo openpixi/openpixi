@@ -142,8 +142,8 @@ public class Particle2DPanel extends AnimationPanel {
 		if(drawFields)
 		{
 			graph.setColor(Color.black);
-			for(int i = 0; i < s.grid.getNumCellsX(); i++)
-				for(int k = 0; k < s.grid.getNumCellsY(); k++)
+			for(int i = 0; i < s.grid.getNumCells(0); i++)
+				for(int k = 0; k < s.grid.getNumCells(1); k++)
 				{
 					int xstart = (int) (s.grid.getLatticeSpacing() * (i + 0.5) * sx);
                     int xstart2 = (int)(s.grid.getLatticeSpacing() * i * sx);

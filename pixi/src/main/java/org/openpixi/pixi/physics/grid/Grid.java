@@ -104,18 +104,6 @@ public class Grid {
 	public void resetCharge(int[] coor) {
 		cells[index(coor)].resetCharge();
 	}
-
-	public int getNumCellsX() {
-		return numCells[0];
-	}
-
-	public int getNumCellsY() {
-		return numCells[1];
-	}
-	
-	public int getNumCellsZ() {
-		return numCells[2];
-	}
 	
 	public int getNumCells(int dir) {
 		return numCells[dir];
