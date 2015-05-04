@@ -260,11 +260,9 @@ public class SU2MatrixTest {
 	}
 
 	@Test
-	public void testScalarMultiplication()
-	{
+	public void testScalarMultiplication() {
 		int numberOfTests = 10;
-		for(int t = 0; t < numberOfTests; t++)
-		{
+		for (int t = 0; t < numberOfTests; t++) {
 			/*
 				Create a random matrix.
 			 */
@@ -290,11 +288,9 @@ public class SU2MatrixTest {
 	}
 
 	@Test
-	public void testConjugation()
-	{
+	public void testConjugation() {
 		int numberOfTests = 10;
-		for(int t = 0; t < numberOfTests; t++)
-		{
+		for (int t = 0; t < numberOfTests; t++) {
 			/*
 				Create a random matrix.
 			 */
@@ -306,10 +302,8 @@ public class SU2MatrixTest {
 			 */
 			m1.adj();
 			m2 = (Array2DRowFieldMatrix<Complex>) m2.transpose();
-			for(int i = 0; i < 2; i++)
-			{
-				for(int j = 0; j < 2; j++)
-				{
+			for (int i = 0; i < 2; i++) {
+				for (int j = 0; j < 2; j++) {
 					Complex v = m2.getEntry(i, j).conjugate();
 					m2.setEntry(i, j, v);
 				}
