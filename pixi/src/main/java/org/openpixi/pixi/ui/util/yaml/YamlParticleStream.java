@@ -43,7 +43,7 @@ public class YamlParticleStream {
 
 			for (int n = 0; n < number; n++)
 			{
-				p = particle.getParticle();
+				p = particle.getParticle(settings.getNumberOfDimensions(), settings.getNumberOfColors());
 				for(int i = 0; i < numberOfDimensions; i++)
 					p.addPosition(i, n * distances[i]);
 
