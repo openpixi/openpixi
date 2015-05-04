@@ -7,7 +7,6 @@ import org.apache.commons.math3.complex.ComplexField;
 import org.apache.commons.math3.linear.Array2DRowFieldMatrix;
 import org.junit.Assert;
 import org.junit.Test;
-import org.junit.Ignore;
 
 public class SU2MatrixTest {
 
@@ -53,8 +52,8 @@ public class SU2MatrixTest {
 			We check for unitarity using the built-in methods.
 		 */
 
-		Assert.assertEquals(firstMatrix.checkUnitarity(), 1.0, accuracy);
-		Assert.assertEquals(secondMatrix.checkUnitarity(), 1.0, accuracy);
+		Assert.assertEquals(firstMatrix.computeParameterNorm(), 1.0, accuracy);
+		Assert.assertEquals(secondMatrix.computeParameterNorm(), 1.0, accuracy);
 	}
 
 	@Test
@@ -67,14 +66,14 @@ public class SU2MatrixTest {
 		/*
 			We check for unitarity using the built-in methods.
 		 */
-		Assert.assertEquals(matrix.checkUnitarity(), 1.0, accuracy);
+		Assert.assertEquals(matrix.computeParameterNorm(), 1.0, accuracy);
 
 		/*
 			Now we make a change to the matrix and see if unitarity can be restored.
 		 */
 		matrix.set(3, 0.0);
-		matrix.makeFirst();
-		Assert.assertEquals(matrix.checkUnitarity(), 1.0, accuracy);
+		matrix.computeFirstParameter();
+		Assert.assertEquals(matrix.computeParameterNorm(), 1.0, accuracy);
 
 	}
 
@@ -343,7 +342,7 @@ public class SU2MatrixTest {
 		}
 
 		SU2Matrix m = new SU2Matrix(vec[0], vec[1], vec[2], vec[3]);
-		Assert.assertEquals(m.checkUnitarity(), 1.0, accuracy);
+		Assert.assertEquals(m.computeParameterNorm(), 1.0, accuracy);
 
 		return m;
 	}

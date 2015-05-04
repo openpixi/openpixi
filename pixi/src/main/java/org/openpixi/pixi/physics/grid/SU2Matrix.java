@@ -5,16 +5,16 @@ import org.openpixi.pixi.physics.grid.LinkMatrix;
 
 public class SU2Matrix extends LinkMatrix {
 
+	private double[] e;
 	
 	public SU2Matrix () {
 
 		e = new double[4];
 
-		e[0] = 0;
-		e[1] = 0;
-		e[2] = 0;
-		e[3] = 0;
-		
+		for(int i = 0; i < 4; i++)
+		{
+			e[i] = 0.0;
+		}
 	}
 	
 	public SU2Matrix (double a, double b, double c, double d) {
@@ -31,10 +31,10 @@ public class SU2Matrix extends LinkMatrix {
 	public LinkMatrix add (LinkMatrix a) {
 		
 		SU2Matrix b = new SU2Matrix();
-		b.e[0] = e[0]+a.e[0];
-		b.e[1] = e[1]+a.e[1];
-		b.e[2] = e[2]+a.e[2];
-		b.e[3] = e[3]+a.e[3];
+		for(int i=0; i < 4; i++)
+		{
+			b.set(i, e[i] + a.get(i));
+		}
 		return b;
 		
 	}
@@ -42,10 +42,10 @@ public class SU2Matrix extends LinkMatrix {
 	public LinkMatrix sub (LinkMatrix a) {
 		
 		SU2Matrix b = new SU2Matrix();
-		b.e[0] = e[0]-a.e[0];
-		b.e[1] = e[1]-a.e[1];
-		b.e[2] = e[2]-a.e[2];
-		b.e[3] = e[3]-a.e[3];
+		for(int i=0; i < 4; i++)
+		{
+			b.set(i, e[i] - a.get(i));
+		}
 		return b;
 		
 	}
@@ -57,29 +57,33 @@ public class SU2Matrix extends LinkMatrix {
 	}
 	
 	public double get (int j) {
-		
-		double b = e[j];
-		return b;
+
+		return e[j];
 		
 	}
 	
 	public void adj () {
-		
-		e[1]=-e[1];
-		e[2]=-e[2];
-		e[3]=-e[3];
-		
+
+		for(int i = 1; i < 4; i++)
+		{
+			e[i] = -e[i];
+		}
 	}
 	
-	public void makeFirst () {
+	public void computeFirstParameter() {
 		
 		double sum = e[1]*e[1]+e[2]*e[2]+e[3]*e[3];
-		if (sum>1) { System.out.println("Gauge fields too large!\n"); System.exit(1); }
-		else { e[0]=Math.sqrt(1.0-sum); }
-		
+		if (sum>1)
+		{
+			System.out.println("Parameters too large!\n");
+		}
+		else
+		{
+			e[0]=Math.sqrt(1.0-sum);
+		}
 	}
 	
-	public double checkUnitarity () {
+	public double computeParameterNorm() {
 		
 		return e[0]*e[0]+e[1]*e[1]+e[2]*e[2]+e[3]*e[3];
 		
@@ -88,10 +92,10 @@ public class SU2Matrix extends LinkMatrix {
 	public LinkMatrix mult (double number) {
 		
 		SU2Matrix b = new SU2Matrix();
-		b.e[0] = e[0]*number;
-		b.e[1] = e[1]*number;
-		b.e[2] = e[2]*number;
-		b.e[3] = e[3]*number;
+		for(int i = 0; i < 4; i++)
+		{
+			b.set(i, e[i] * number);
+		}
 		return b;
 		
 	}
@@ -99,28 +103,24 @@ public class SU2Matrix extends LinkMatrix {
 	public LinkMatrix mult (LinkMatrix a) {
 		
 		SU2Matrix b = new SU2Matrix();
-		b.e[0] = e[0]*a.e[0]-e[1]*a.e[1]-e[2]*a.e[2]-e[3]*a.e[3];
-		b.e[1] = e[0]*a.e[1]+e[1]*a.e[0]-e[2]*a.e[3]+e[3]*a.e[2];
-		b.e[2] = e[0]*a.e[2]+e[2]*a.e[0]-e[3]*a.e[1]+e[1]*a.e[3];
-		b.e[3] = e[0]*a.e[3]+e[3]*a.e[0]-e[1]*a.e[2]+e[2]*a.e[1];
+		b.e[0] = e[0]*a.get(0)-e[1]*a.get(1)-e[2]*a.get(2)-e[3]*a.get(3);
+		b.e[1] = e[0]*a.get(1)+e[1]*a.get(0)-e[2]*a.get(3)+e[3]*a.get(2);
+		b.e[2] = e[0]*a.get(2)+e[2]*a.get(0)-e[3]*a.get(1)+e[1]*a.get(3);
+		b.e[3] = e[0]*a.get(3)+e[3]*a.get(0)-e[1]*a.get(2)+e[2]*a.get(1);
 		return b;
 		
 	}
 	
 	public YMField getField () {
-		
-		SU2Field b = new SU2Field(e[1]*2, e[2]*2, e[3]*2);
-		return b;
-		
+		return new SU2Field(e[1]*2, e[2]*2, e[3]*2);
 	}
 	
 	public void set (LinkMatrix a) {
-		
-		e[0] = a.e[0];
-		e[1] = a.e[1];
-		e[2] = a.e[2];
-		e[3] = a.e[3];
-		
+
+		for(int i = 0; i < 4; i++)
+		{
+			e[i] = a.get(i);
+		}
 	}
 
 }

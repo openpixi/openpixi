@@ -4,8 +4,6 @@ import org.openpixi.pixi.physics.grid.YMField;
 
 public abstract class LinkMatrix {
 	
-	public double[] e;
-	
 	public abstract LinkMatrix add (LinkMatrix a);
 	
 	public abstract LinkMatrix sub (LinkMatrix a);
@@ -15,10 +13,6 @@ public abstract class LinkMatrix {
 	public abstract double get (int j);
 	
 	public abstract void adj ();
-	
-	public abstract void makeFirst ();
-	
-	public abstract double checkUnitarity ();
 	
 	public abstract LinkMatrix mult (double number);
 	
