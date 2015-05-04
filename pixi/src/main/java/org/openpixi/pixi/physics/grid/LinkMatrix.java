@@ -16,7 +16,7 @@ public abstract class LinkMatrix {
 
 	public abstract LinkMatrix mult(LinkMatrix a);
 
-	public abstract YMField getField();
+	public abstract YMField getAlgebraElement();
 
 	public abstract void set(LinkMatrix a);
 
