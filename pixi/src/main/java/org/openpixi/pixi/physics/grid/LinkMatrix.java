@@ -10,7 +10,7 @@ public abstract class LinkMatrix {
 
 	public abstract double get(int j);
 
-	public abstract void adj();
+	public abstract LinkMatrix adj();
 
 	public abstract LinkMatrix mult(double number);
 

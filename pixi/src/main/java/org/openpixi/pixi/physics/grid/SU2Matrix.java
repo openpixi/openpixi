@@ -47,6 +47,17 @@ public class SU2Matrix extends LinkMatrix {
 	}
 
 	/**
+	 * Constructs a new SU2Matrix instance from a given SU2Matrix instance.
+	 *
+	 * @param matrix    SU2Matrix instance which should be copied.
+	 */
+	public SU2Matrix(SU2Matrix matrix)
+	{
+		this();
+		this.set(matrix);
+	}
+
+	/**
 	 * Adds two SU2Matrix instances and returns the result as a copy.
 	 * The result is not a valid SU2 matrix since the parameter norm will not be one in general.
 	 * This method does not change the original SU2Matrix instance.
@@ -121,15 +132,18 @@ public class SU2Matrix extends LinkMatrix {
 	}
 
 	/**
-	 * Applies hermitian conjugation to the current instance of SU2Matrix.
-	 * This method changes the original SU2Matrix instance.
+	 * Applies hermitian conjugation to the current instance of SU2Matrix and returns a copy.
+	 * This method does not change the original SU2Matrix instance.
 	 *
+	 * @return  Hermitian conjugate of the current instance.
 	 */
-	public void adj() {
-
-		for (int i = 1; i < 4; i++) {
-			e[i] = -e[i];
+	public LinkMatrix adj() {
+		SU2Matrix b = new SU2Matrix(this);
+		for (int i = 1; i < 4; i++)
+		{
+			b.set(i, -b.get(i));
 		}
+		return b;
 	}
 
 	/**

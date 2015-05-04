@@ -300,7 +300,7 @@ public class SU2MatrixTest {
 			/*
 				Apply hermitian conjugation.
 			 */
-			m1.adj();
+			m1 = (SU2Matrix) m1.adj();
 			m2 = (Array2DRowFieldMatrix<Complex>) m2.transpose();
 			for (int i = 0; i < 2; i++) {
 				for (int j = 0; j < 2; j++) {
