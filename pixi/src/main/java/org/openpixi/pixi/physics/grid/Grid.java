@@ -170,8 +170,8 @@ public class Grid {
 	}
 
 	public void updateGrid(double tstep) {
-		storeFields();
 		getFsolver().step(this, tstep);
+		storeFields();
 	}
 
 	public void resetCurrent() {

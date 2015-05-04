@@ -67,7 +67,7 @@ public class ParallelCellIterator extends CellIterator {
 			}
 			return null;
 		}
-
+		//TODO This should happen only once to avoid code duplication
         private int[] convertCellIndexToPosition(int ci, IntBox dimensions)
         {
             int dim = dimensions.getDim();
