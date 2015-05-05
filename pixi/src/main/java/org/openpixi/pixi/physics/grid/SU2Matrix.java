@@ -145,6 +145,19 @@ public class SU2Matrix implements LinkMatrix {
 		}
 		return b;
 	}
+	
+	/**
+	 * Applies hermitian conjugation to the current instance of SU2Matrix without returning a copy.
+	 * This method changes the original SU2Matrix instance.
+	 *
+	 * @return  Hermitian conjugate of the current instance.
+	 */
+	public void selfadj() {
+		for (int i = 1; i < 4; i++)
+		{
+			this.set(i, -this.get(i));
+		}
+	}
 
 	/**
 	 * Computes the first parameter from the other three parameters such that the parameter norm is 1.

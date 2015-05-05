@@ -7,6 +7,8 @@ public interface LinkMatrix {
 	LinkMatrix sub(LinkMatrix a);
 
 	LinkMatrix adj();
+	
+	void selfadj();
 
 	LinkMatrix mult(double number);
 
