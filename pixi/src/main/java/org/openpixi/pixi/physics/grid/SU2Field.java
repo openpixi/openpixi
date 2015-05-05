@@ -99,11 +99,16 @@ public void addequate (YMField a) {
 		
 	}
 	
-	public void FieldFromForwardPlaquette (LinkMatrix a, LinkMatrix b, LinkMatrix c, LinkMatrix d) {
+	public void FieldFromForwardPlaquette (LinkMatrix A, LinkMatrix B, LinkMatrix C, LinkMatrix D) {
 		
 		double a0,a1,a2,a3;
 		double b0,b1,b2,b3;
-	
+
+		SU2Matrix a = (SU2Matrix) A;
+		SU2Matrix b = (SU2Matrix) B;
+		SU2Matrix c = (SU2Matrix) C;
+		SU2Matrix d = (SU2Matrix) D;
+
 		 a0 =  a.get(0)*b.get(0) - a.get(1)*b.get(1) - a.get(2)*b.get(2) - a.get(3)*b.get(3);
 		 a1 =  a.get(0)*b.get(1) + a.get(1)*b.get(0) - a.get(2)*b.get(3) + a.get(3)*b.get(2);
 		 a2 =  a.get(0)*b.get(2) + a.get(2)*b.get(0) - a.get(3)*b.get(1) + a.get(1)*b.get(3);
@@ -122,10 +127,15 @@ public void addequate (YMField a) {
 		
 	}
 
-	public void FieldFromBackwardPlaquette (LinkMatrix a, LinkMatrix b, LinkMatrix c, LinkMatrix d) {
+	public void FieldFromBackwardPlaquette (LinkMatrix A, LinkMatrix B, LinkMatrix C, LinkMatrix D) {
 	
 		double a0,a1,a2,a3;
 		double b0,b1,b2,b3;
+
+		SU2Matrix a = (SU2Matrix) A;
+		SU2Matrix b = (SU2Matrix) B;
+		SU2Matrix c = (SU2Matrix) C;
+		SU2Matrix d = (SU2Matrix) D;
 	
 		a0 = a.get(0)*b.get(0) + a.get(1)*b.get(1) + a.get(2)*b.get(2) + a.get(3)*b.get(3);
 		a1 = -a.get(0)*b.get(1) + a.get(1)*b.get(0) + a.get(2)*b.get(3) - a.get(3)*b.get(2);
