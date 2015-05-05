@@ -4,6 +4,7 @@ import org.openpixi.pixi.parallel.cellaccess.CellAction;
 import org.openpixi.pixi.parallel.cellaccess.CellIterator;
 import org.openpixi.pixi.physics.Settings;
 import org.openpixi.pixi.physics.fields.FieldSolver;
+import org.openpixi.pixi.physics.grid.YMField;
 
 public class Grid {
 
@@ -503,4 +504,36 @@ public class Grid {
 			grid.getCell(coor).reassignLinks();
 		}
 	}
+	
+	public YMField FieldFromForwardPlaquette(int[] coor, int j, int k) {
+		
+		YMField res = cells[index(coor)].getEmptyField(numCol);
+		int[] coor1 = new int[numDim];
+		int[] coor2 = new int[numDim];
+		System.arraycopy(coor, 0, coor1, 0, coor.length);
+		System.arraycopy(coor, 0, coor2, 0, coor.length);
+		coor1[j]++;
+		coor2[k]++;
+
+		res.FieldFromForwardPlaquette(cells[index(coor)].getU(j), cells[index(coor1)].getU(k), cells[index(coor2)].getU(j), cells[index(coor)].getU(k));
+
+		return res;
+	}
+	
+	public YMField FieldFromBackwardPlaquette(int[] coor, int j, int k) {
+		
+		YMField res = cells[index(coor)].getEmptyField(numCol);
+		int[] coor1 = new int[numDim];
+		int[] coor2 = new int[numDim];
+		System.arraycopy(coor, 0, coor1, 0, coor.length);
+		System.arraycopy(coor, 0, coor2, 0, coor.length);
+		coor1[j]++;
+		coor1[k]--;
+		coor2[k]--;
+
+		res.FieldFromBackwardPlaquette(cells[index(coor)].getU(j), cells[index(coor1)].getU(k), cells[index(coor2)].getU(j), cells[index(coor2)].getU(k));
+
+		return res;
+	}
+
 }
