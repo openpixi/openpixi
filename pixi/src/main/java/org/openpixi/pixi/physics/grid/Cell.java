@@ -125,6 +125,12 @@ public class Cell implements Serializable {
 	public void resetCharge() {
 		rho.reset();
 	}
+	
+	public YMField getEmptyField(int colors) {
+		if(colors == 2) {
+			return new SU2Field();
+		} else {System.out.println("Error!! Number of colors should be equal to 2!!"); return null;}
+	}
 
 	public void reassignLinks() {
 		LinkMatrix[] temp = U;
