@@ -37,6 +37,11 @@ public class Grid {
 	 */
 	private double gaugeCoupling;
 
+	/**
+	 * Unit vectors to be used for the shift method.
+	 */
+	private int[][] unitVectors;
+
 	public FieldSolver getFsolver() {
 		return fsolver;
 	}
@@ -156,10 +161,17 @@ public class Grid {
 	}
 
 	private void createGrid() {
-		
+
+		unitVectors = new int[numDim][numDim];
+
 		int length = 1;
 		for(int i = 0; i < numDim; i++) {
 			length *= numCells[i];
+
+			/*
+				Setup unit vectors.
+			 */
+			unitVectors[i][i] = 1;
 		}
 		cells = new Cell[length];
 
@@ -186,12 +198,12 @@ public class Grid {
 		cellIterator.execute(this, storeFields);
 	}
 
+
 	/**
-	 * Maps the client index which can be negative to the real array index which
-	 * has to be non-negative. The client index can be negative if the client is
-	 * asking for a cell which is within the top or left boundary. (By client we
-	 * mean any code which is using this class)
+	 * This method translates a lattice coordinate vector to the corresponding cell id.
 	 *
+	 * @param coor  lattice coordinate vector
+	 * @return      cell id
 	 */
 	private int index(int[] coor) {
 		
@@ -203,7 +215,14 @@ public class Grid {
 		}
 		return res;
 	}
-	
+
+	/**
+	 * This method implements periodic boundary conditions on the lattice.
+	 * If the lattice coordinate vector is outside the bounds of the simulation box it gets shifted appropriately.
+	 *
+	 * @param coor  lattice coordinate vector
+	 * @return      shifted lattice coordinate vector
+	 */
 	private int[] periodic(int[] coor) {
 		
 		int[] res = new int[numDim];
@@ -211,6 +230,31 @@ public class Grid {
 			res[i] = (coor[i] + numCells[i]) % numCells[i];
 		}
 		return res;
+	}
+
+	/**
+	 * Shifts a lattice coorindate vector by one unit step in a certain direction. The direction is passed as an integer for the direction and an orientation.
+	 * Examples:
+	 * Shift by one in negative x-direction: shift(coor, 0, -1)
+	 * Shift by one in positive x-direction: shift(coor, 0, 1)
+	 * Shift by one in positive z-direction: shift(coor, 2, 1)
+	 *
+	 * @param coor          Input lattice coordinate vector
+	 * @param dir           Direction of the shift (0 - (numberOfDirections-1))
+	 * @param orientation   Orientation of the direction (1 or -1)
+	 * @return
+	 */
+	private int[] shift(int[] coor, int dir, int orientation)
+	{
+		int[] shiftedCoordinate = coor.clone();
+
+		for(int i = 0; i < numDim; i++)
+		{
+			shiftedCoordinate[i] =+ orientation * unitVectors[dir][i];
+		}
+
+
+		return periodic(shiftedCoordinate);
 	}
 
 	private class ResetCurrentAction implements CellAction {
