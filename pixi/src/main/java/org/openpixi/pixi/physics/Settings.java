@@ -52,7 +52,7 @@ public class Settings {
 	// Grid related settings
 	private int[] gridCells;
 	private double[] simulationWidth;
-	private FieldSolver gridSolver = new FieldSolver();
+	private FieldSolver gridSolver = new YangMillsSolver();//new FieldSolver();
 	private PoissonSolver poissonSolver = new EmptyPoissonSolver();
 	private boolean useGrid = true;
 	private boolean relativistic = true;
