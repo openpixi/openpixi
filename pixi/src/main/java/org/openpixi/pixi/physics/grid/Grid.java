@@ -125,7 +125,7 @@ public class Grid {
 	 * @return      Cell instance at lattice coordinates with respect to periodic boundary conditions
 	 */
 	public Cell getCell(int[] coor) {
-		return cells[index(periodic(coor))];
+		return cells[index(coor)];
 	}
 
 	public Cell[] getCells() {
@@ -226,7 +226,8 @@ public class Grid {
 
 
 	/**
-	 * This method translates a lattice coordinate vector to the corresponding cell id.
+	 * This method translates a lattice coordinate vector to the corresponding cell id with respect
+	 * to periodic boundary conditions.
 	 *
 	 * @param coor  lattice coordinate vector
 	 * @return      cell id
