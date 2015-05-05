@@ -28,6 +28,8 @@ public abstract class YMField {
 	
 	public abstract void FieldFromBackwardPlaquette (LinkMatrix a, LinkMatrix b, LinkMatrix c, LinkMatrix d);
 	
+	public abstract void addfour (YMField a, YMField b, YMField c, YMField d);
+	
 	public abstract LinkMatrix getLink ();
 	
 	public abstract LinkMatrix getLinkExact ();
