@@ -205,6 +205,49 @@ public class Grid {
 	}
 
 	/**
+	 * Calculates the plaquette starting at lattice coordinate coor in the plane of d1 and d2 with orientations o1, o2.
+	 * This method implements the following definition of the plaquette:
+	 *      U_{x, ij} = U_{x+j, -j} U_{x+i+j, -i} U_{x+i, j} U_{x, i}
+	 *
+	 *
+	 * @param coor  Lattice coordinate from where the plaquette starts
+	 * @param d1    Index of the first direction
+	 * @param d2    Index of the second direction
+	 * @param o1    Orientation of the first direction
+	 * @param o2    Orientation of the second direction
+	 * @return      Plaquette as LinkMatrix with correct orientation
+	 */
+	public LinkMatrix getPlaquette(int[] coor, int d1, int d2, int o1, int o2)
+	{
+		/*
+			The four lattice coordinates associated with the plaquette.
+		 */
+		int[] x1 = coor.clone();
+		int[] x2 = shift(x1, d1, o1);
+		int[] x3 = shift(x2, d2, o2);
+		int[] x4 = shift(x3, d1, -o1);
+
+		/*
+			The four gauge links associated with the plaquette.
+		 */
+
+		LinkMatrix U1 = getLink(x1, d1, o1);
+		LinkMatrix U2 = getLink(x2, d2, o2);
+		LinkMatrix U3 = getLink(x3, d1, -o1);
+		LinkMatrix U4 = getLink(x4, d2, -o2);
+
+		/*
+			Plaquette calculation
+		 */
+
+		LinkMatrix P = U4.mult(U3);
+		P = P.mult(U2);
+		P = P.mult(U1);
+
+		return P;
+	}
+
+	/**
 	 * Getter for gauge links. Returns a link starting from a certain lattice coordinate with the right direction and orientation.
 	 * Examples:
 	 * Link starting at coor in positive x-direction: getLink(coor, 0, 1)
