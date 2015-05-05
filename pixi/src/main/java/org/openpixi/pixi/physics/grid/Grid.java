@@ -198,6 +198,26 @@ public class Grid {
 		cellIterator.execute(this, storeFields);
 	}
 
+	/**
+	 * Getter for gauge links. Returns a link starting from a certain lattice coordinate with the right direction and orientation.
+	 * Examples:
+	 * Link starting at coor in positive x-direction: getLink(coor, 0, 1)
+	 * Link starting at coor in negative x-direction: getLink(coor, 0, -1)
+	 *
+	 * @param coor          Lattice coordinate from which the link starts from
+	 * @param dir           Direction of the link (0 - (numberOfDimensions-1))
+	 * @param orientation   Orientation of the link (-1 or 1)
+	 * @return              Gauge link in certain direction with correct orientation
+	 */
+	public LinkMatrix getLink(int[] coor, int dir, int orientation)
+	{
+		if(orientation < 0)
+		{
+			return getCell(shift(coor, dir, orientation)).getU(dir).adj();
+		}
+		return getCell(coor).getU(dir);
+	}
+
 
 	/**
 	 * This method translates a lattice coordinate vector to the corresponding cell id.
