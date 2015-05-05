@@ -14,6 +14,8 @@ public interface LinkMatrix {
 
 	YMField getAlgebraElement();
 
+	YMField proj();
+
 	void set(LinkMatrix a);
 
 }

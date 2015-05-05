@@ -250,6 +250,26 @@ public class SU2Matrix implements LinkMatrix {
 		return field;
 	}
 
+	/**
+	 * Returns the projection of the matrix onto the generators of the group as a YMField. This is done via the formula
+	 *
+	 *      u_a = - i tr (t_a U),
+	 *
+	 * where U is the SU2Matrix, t_a is the a-th generator of the group and u_a is the a-th component of the YMField.
+	 *
+	 * @return YMField instance of the projection
+	 */
+	public YMField proj()
+	{
+		SU2Field field = new SU2Field();
+
+		field.set(0, this.e[1]);
+		field.set(1, this.e[2]);
+		field.set(2, this.e[2]);
+
+		return field;
+	}
+
 
 
 }
