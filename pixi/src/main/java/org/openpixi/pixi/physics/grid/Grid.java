@@ -86,34 +86,78 @@ public class Grid {
 		return cells[index(coor)].getFieldStrength(dir1, dir2);
 	}
 
+	/**
+	 * Sets value the field strength component (dir1, dir2) tensor at a certain lattice coordinate.
+	 * @param coor      Lattice coordinate of the field strength tensor
+	 * @param dir1      First space component (0 - (numberOfDimensions-1))
+	 * @param dir2      Second space component (0 - (numberOfDimensions-1))
+	 * @param field     YMField instance which the field strength tensor should be set to.
+	 */
 	public void setFTensor(int[] coor, int dir1, int dir2, YMField field) {
 		cells[index(coor)].setFieldStrength(dir1, dir2, field);
 	}
-	
+
+	/**
+	 * Returns the gauge link at (t) at a given lattice coordinate in a given direction/
+	 * @param coor  Lattice coordinate of the gauge link
+	 * @param dir   Direction of the gauge link
+	 * @return      Instance of the gauge link
+	 */
 	public LinkMatrix getU(int[] coor, int dir) {
 		return cells[index(coor)].getU(dir);
 	}
 
+	/**
+	 * Sets the gauge link at (t) at given lattice coordinate in given direction to a new value.
+	 * @param coor  Lattice coordinate of the gauge link
+	 * @param dir   Direction of the gauge link
+	 * @param mat   LinkMatrix instance
+	 */
 	public void setU(int[] coor, int dir, LinkMatrix mat) {
 		cells[index(coor)].setU(dir, mat);
 	}
-	
+
+	/**
+	 * Returns the gauge link at (t+dt) at a given lattice coordinate in a given direction/
+	 * @param coor  Lattice coordinate of the gauge link
+	 * @param dir   Direction of the gauge link
+	 * @return      Instance of the gauge link
+	 */
 	public LinkMatrix getUnext(int[] coor, int dir) {
 		return cells[index(coor)].getUnext(dir);
 	}
 
+	/**
+	 * Sets the gauge link at (t+dt) at given lattice coordinate in given direction to a new value.
+	 * @param coor  Lattice coordinate of the gauge link
+	 * @param dir   Direction of the gauge link
+	 * @param mat   LinkMatrix instance
+	 */
 	public void setUnext(int[] coor, int dir, LinkMatrix mat) {
 		cells[index(coor)].setUnext(dir, mat);
 	}
-	
+
+	/**
+	 * Resets charge in a cell at a given lattice coordinate.
+	 * @param coor  Lattice coordinate of the cell
+	 */
 	public void resetCharge(int[] coor) {
 		cells[index(coor)].resetCharge();
 	}
-	
+
+	/**
+	 * Returns the number of cells in the grid in a given direction.
+	 * @param dir   Index of the direction
+	 * @return      Number of cells in given direction.
+	 */
 	public int getNumCells(int dir) {
 		return numCells[dir];
 	}
 
+	/**
+	 * Returns the lattice spacing of the grid.
+	 * @return  Lattice spacing of the grid.
+	 */
 	public double getLatticeSpacing() {
 		return as;
 	}
@@ -128,10 +172,18 @@ public class Grid {
 		return cells[index(coor)];
 	}
 
+	/**
+	 * Returns full Cell array of the grid. Note that the cells in this array are index by cell indices.
+	 * @return  Full array with all cells
+	 */
 	public Cell[] getCells() {
 		return cells;
 	}
 
+	/**
+	 * Main constructor for the Grid class. Given a settings file it initializes the lattice and sets up the FieldSolver and the CellIterator.
+	 * @param settings
+	 */
 	public Grid(Settings settings) {
 
 		gaugeCoupling = settings.getCouplingConstant();
@@ -166,6 +218,9 @@ public class Grid {
 		cellIterator.setNormalMode(numCells);
 	}
 
+	/**
+	 * This methods initializes the each cell in the grid.
+	 */
 	private void createGrid() {
 
 		unitVectors = new int[numDim][numDim];
@@ -187,19 +242,35 @@ public class Grid {
 	
 	}
 
+	/**
+	 * This method advances the grid by one time step:
+	 * It stores the fields (i.e. sets (t+dt) fields from the last grid update to the old ones)
+	 * and calls the FieldSolver to solve the equations of motion for one time step.
+	 *
+	 * @param tstep size of the time step
+	 */
 	public void updateGrid(double tstep) {
 		storeFields();
 		getFsolver().step(this, tstep);
 	}
 
+	/**
+	 * Resets all currents in every cell to zero.
+	 */
 	public void resetCurrent() {
 		cellIterator.execute(this, resetCurrent);
 	}
 
+	/**
+	 * Resets all charges in every cell to zero.
+	 */
 	public void resetCharge() {
 		cellIterator.execute(this, resetCharge);
 	}
 
+	/**
+	 * Stores "new" fields which have been calculated in the last simulation step to the variables of the "old" fields.
+	 */
 	public void storeFields() {
 		cellIterator.execute(this, storeFields);
 	}
@@ -312,7 +383,7 @@ public class Grid {
 	 * @param coor          Input lattice coordinate vector
 	 * @param dir           Direction of the shift (0 - (numberOfDirections-1))
 	 * @param orientation   Orientation of the direction (1 or -1)
-	 * @return
+	 * @return              Shifted coordinate with respect to periodic boundary conditions.
 	 */
 	private int[] shift(int[] coor, int dir, int orientation)
 	{
