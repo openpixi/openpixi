@@ -317,8 +317,8 @@ public class Grid {
 	 * @param tstep size of the time step
 	 */
 	public void updateGrid(double tstep) {
-		storeFields();
 		getFsolver().step(this, tstep);
+		storeFields();
 	}
 
 	/**
