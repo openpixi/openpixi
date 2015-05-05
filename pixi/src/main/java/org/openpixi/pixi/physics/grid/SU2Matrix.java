@@ -215,7 +215,7 @@ public class SU2Matrix implements LinkMatrix {
 	/**
 	 * Returns approximate algebra element of the group element. The algebra element generates the group element via
 	 * the exponential map.
-	 * This only works if the group element is close to unity.
+	 * This only works if the group element is close to identity.
 	 *
 	 * @return  Approximate algebra element of the SU2Matrix.
 	 */
@@ -227,7 +227,7 @@ public class SU2Matrix implements LinkMatrix {
 	/**
 	 * Returns the exact algebra element of the group element. The algebra element generates the group element
 	 * via the exponential map.
-	 * This also works far from unity but is not always continuous.
+	 * This also works far from identity but is not always continuous.
 	 *
 	 * @return  Algebra element of the SU2Matrix.
 	 */
