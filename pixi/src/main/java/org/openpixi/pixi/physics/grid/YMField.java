@@ -24,6 +24,10 @@ public abstract class YMField {
 	
 	public abstract void reset ();
 	
+	public abstract void FieldFromForwardPlaquette (LinkMatrix a, LinkMatrix b, LinkMatrix c, LinkMatrix d);
+	
+	public abstract void FieldFromBackwardPlaquette (LinkMatrix a, LinkMatrix b, LinkMatrix c, LinkMatrix d);
+	
 	public abstract LinkMatrix getLink ();
 	
 	public abstract LinkMatrix getLinkExact ();
