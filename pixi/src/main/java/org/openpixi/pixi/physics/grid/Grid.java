@@ -117,9 +117,15 @@ public class Grid {
 	public double getLatticeSpacing() {
 		return as;
 	}
-	
+
+	/**
+	 * Returns the Cell instance at given lattice coorindates with respect to periodic boundary conditions.
+	 *
+	 * @param coor  Lattice coordinate of the cell
+	 * @return      Cell instance at lattice coordinates with respect to periodic boundary conditions
+	 */
 	public Cell getCell(int[] coor) {
-		return cells[index(coor)];
+		return cells[index(periodic(coor))];
 	}
 
 	public Cell[] getCells() {
