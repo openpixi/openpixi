@@ -31,7 +31,7 @@ public class YangMillsSolver extends FieldSolver {
 		cellIterator.execute(grid, linkUpdater);
 	}
 
-
+	
 	private class UpdateFields implements CellAction {
                 
 		private double at;
@@ -40,9 +40,13 @@ public class YangMillsSolver extends FieldSolver {
 		private YMField a1,a2,a3,a4,res;
 		
 		public void setFactor() {
-			factor = at*at/as/as;
+			factor = at*at/as/as;      					//A factor of g*at*as is included in my E-field definition!!
 		}
-
+		/**
+		 * Updates the electric fields at a given coordinate
+		 *
+		 * @param coor  Lattice coordinate
+		 */
 		public void execute(Grid grid, int[] coor) {
 			
 			if(coor.length == 3) {
@@ -85,7 +89,7 @@ public class YangMillsSolver extends FieldSolver {
 					      }	
 	
 					res = grid.getE(coor, k);
-					res.addfour(a1, a2, a3, a4);      					//A factor of g*at*as is included in my E-field definition!!
+					res.addfour(a1, a2, a3, a4);
 					grid.setE(coor, k, res);
 				
 				}
@@ -94,7 +98,11 @@ public class YangMillsSolver extends FieldSolver {
 	}
 
 	private class UpdateLinks implements CellAction {
-
+		/**
+		 * Updates the links matrices at a given coordinate
+		 *
+		 * @param coor  Lattice coordinate
+		 */
 		public void execute(Grid grid, int[] coor) {
 			
 			LinkMatrix V;
