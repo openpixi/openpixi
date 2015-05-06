@@ -505,6 +505,17 @@ public class Grid {
 		}
 	}
 	
+	/**
+	 * Calculates the field from the forward plaquette starting at lattice coordinate coor in the directions j and k.
+	 * The matrix multiplication is done in the concrete field class.
+	 * The forward plaquette is defined as follows:
+	 *      U_{x, jk} = U_{x, j} U_{x+j, k} U^adj_{x+k, j} U^adj_{x, k}
+	 *
+	 * @param coor  Lattice coordinate from where the plaquette starts
+	 * @param j    Index of the first direction
+	 * @param k    Index of the second direction
+	 * @return      Field from the forward plaquette
+	 */
 	public YMField FieldFromForwardPlaquette(int[] coor, int j, int k) {
 		
 		YMField res = cells[index(coor)].getEmptyField(numCol);
@@ -520,6 +531,17 @@ public class Grid {
 		return res;
 	}
 	
+	/**
+	 * Calculates the field from the backward plaquette starting at lattice coordinate coor in the directions j and k.
+	 * The matrix multiplication is done in the concrete field class.
+	 * The backward plaquette is defined as follows:
+	 *      U_{x, jk} = U_{x, j} U^adj_{x+j-k, k} U^adj_{x-k, j} U_{x, k}
+	 *
+	 * @param coor  Lattice coordinate from where the plaquette starts
+	 * @param j    Index of the first direction
+	 * @param k    Index of the second direction
+	 * @return      Field from the backward plaquette
+	 */
 	public YMField FieldFromBackwardPlaquette(int[] coor, int j, int k) {
 		
 		YMField res = cells[index(coor)].getEmptyField(numCol);
