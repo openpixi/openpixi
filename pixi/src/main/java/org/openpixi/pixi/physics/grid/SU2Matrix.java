@@ -21,7 +21,8 @@ public class SU2Matrix implements LinkMatrix {
 
 		e = new double[4];
 
-		for (int i = 0; i < 4; i++) {
+		e[0] = 1.0;
+		for (int i = 1; i < 4; i++) {
 			e[i] = 0.0;
 		}
 	}
@@ -66,10 +67,10 @@ public class SU2Matrix implements LinkMatrix {
 	 * @return Sum of the SU2Matrix instances.
 	 */
 	public LinkMatrix add(LinkMatrix arg) {
-		SU2Matrix a = (SU2Matrix) arg;
+		
 		SU2Matrix b = new SU2Matrix();
 		for (int i = 0; i < 4; i++) {
-			b.set(i, e[i] + a.get(i));
+			b.set(i, e[i] + arg.get(i));
 		}
 		return b;
 
@@ -84,10 +85,10 @@ public class SU2Matrix implements LinkMatrix {
 	 * @return Difference of the SU2Matrix instances.
 	 */
 	public LinkMatrix sub(LinkMatrix arg) {
-		SU2Matrix a = (SU2Matrix) arg;
+		
 		SU2Matrix b = new SU2Matrix();
 		for (int i = 0; i < 4; i++) {
-			b.set(i, e[i] - a.get(i));
+			b.set(i, e[i] - arg.get(i));
 		}
 		return b;
 
@@ -99,9 +100,9 @@ public class SU2Matrix implements LinkMatrix {
 	 * @param arg SU2Matrix to copy from.
 	 */
 	public void set(LinkMatrix arg) {
-		SU2Matrix a = (SU2Matrix) arg;
+		
 		for (int i = 0; i < 4; i++) {
-			e[i] = a.get(i);
+			e[i] = arg.get(i);
 		}
 	}
 
@@ -216,11 +217,10 @@ public class SU2Matrix implements LinkMatrix {
 	public LinkMatrix mult(LinkMatrix arg) {
 
 		SU2Matrix b = new SU2Matrix();
-		SU2Matrix a = (SU2Matrix) arg;
-		b.e[0] = e[0] * a.get(0) - e[1] * a.get(1) - e[2] * a.get(2) - e[3] * a.get(3);
-		b.e[1] = e[0] * a.get(1) + e[1] * a.get(0) - e[2] * a.get(3) + e[3] * a.get(2);
-		b.e[2] = e[0] * a.get(2) + e[2] * a.get(0) - e[3] * a.get(1) + e[1] * a.get(3);
-		b.e[3] = e[0] * a.get(3) + e[3] * a.get(0) - e[1] * a.get(2) + e[2] * a.get(1);
+		b.e[0] = e[0] * arg.get(0) - e[1] * arg.get(1) - e[2] * arg.get(2) - e[3] * arg.get(3);
+		b.e[1] = e[0] * arg.get(1) + e[1] * arg.get(0) - e[2] * arg.get(3) + e[3] * arg.get(2);
+		b.e[2] = e[0] * arg.get(2) + e[2] * arg.get(0) - e[3] * arg.get(1) + e[1] * arg.get(3);
+		b.e[3] = e[0] * arg.get(3) + e[3] * arg.get(0) - e[1] * arg.get(2) + e[2] * arg.get(1);
 		return b;
 
 	}
@@ -278,7 +278,7 @@ public class SU2Matrix implements LinkMatrix {
 
 		field.set(0, this.e[1]);
 		field.set(1, this.e[2]);
-		field.set(2, this.e[2]);
+		field.set(2, this.e[3]);
 
 		return field;
 	}
