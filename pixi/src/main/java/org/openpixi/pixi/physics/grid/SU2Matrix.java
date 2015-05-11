@@ -254,10 +254,14 @@ public class SU2Matrix implements LinkMatrix {
 		norm = Math.sqrt(norm);
 
 		SU2Field field = new SU2Field();
-
-		for(int i = 0; i < 3; i++)
-		{
-			field.set(i, 2.0 * Math.asin(norm) / norm * this.e[i+1]);
+		
+		if(norm < 1.E-15) {
+			field = new SU2Field(0,0,0);
+		} else {
+			for(int i = 0; i < 3; i++)
+			{
+				field.set(i, 2.0 * Math.asin(norm) / norm * this.e[i+1]);
+			}
 		}
 
 		return field;
