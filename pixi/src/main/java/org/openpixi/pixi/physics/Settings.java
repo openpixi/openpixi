@@ -408,6 +408,11 @@ public class Settings {
 		this.numOfThreads = numOfThreads;
 	}
 
+    public void setFieldGenerators(ArrayList<IFieldGenerator> fieldGenerators)
+    {
+        this.fieldGenerators = fieldGenerators;
+    }
+
     public void addFieldGenerator(IFieldGenerator generator)
     {
         this.fieldGenerators.add(generator);
