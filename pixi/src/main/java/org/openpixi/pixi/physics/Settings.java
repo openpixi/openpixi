@@ -4,6 +4,7 @@ import org.openpixi.pixi.diagnostics.methods.Diagnostics;
 import org.openpixi.pixi.parallel.cellaccess.*;
 import org.openpixi.pixi.parallel.particleaccess.*;
 import org.openpixi.pixi.physics.fields.*;
+import org.openpixi.pixi.physics.fields.FieldGenerators.IFieldGenerator;
 import org.openpixi.pixi.physics.force.*;
 import org.openpixi.pixi.physics.grid.*;
 import org.openpixi.pixi.physics.particles.*;
@@ -65,6 +66,11 @@ public class Settings {
 	private List<IParticle> particles = new ArrayList<IParticle>();
 	private Solver particleSolver = new EmptyParticleSolver();
 	private List<Force> forces = new ArrayList<Force>();
+
+
+	// FieldGenerator related settings
+	private ArrayList<IFieldGenerator> fieldGenerators = new ArrayList<IFieldGenerator>();
+
 	// Diagnostics related settings
 	/**
 	 * Used to mark output files
@@ -197,6 +203,11 @@ public class Settings {
 	public boolean useGrid() {
 		return useGrid;
 	}
+
+    public ArrayList<IFieldGenerator> getFieldGenerators()
+    {
+        return this.fieldGenerators;
+    }
 
 	//----------------------------------------------------------------------------------------------
 	// MORE COMPLEX GETTERS / BUILDERS
@@ -396,6 +407,11 @@ public class Settings {
 	public void setNumOfThreads(int numOfThreads) {
 		this.numOfThreads = numOfThreads;
 	}
+
+    public void addFieldGenerator(IFieldGenerator generator)
+    {
+        this.fieldGenerators.add(generator);
+    }
 
 	//----------------------------------------------------------------------------------------------
 	// VARIOUS
