@@ -86,11 +86,7 @@ public class SU2PlaneWave implements IFieldGenerator {
                 currentCell.getU(i).mult(U);
 
                 //Setup the electric fields
-                YMField electricFieldAmplitude = new SU2Field();
-                electricFieldAmplitude.set(amplitudeYMField[i]);
-                electricFieldAmplitude.mult(phase0 * omega);
-
-                currentCell.addE(i, amplitudeYMField[i].mult(phase0 * omega));
+                currentCell.addE(i, amplitudeYMField[i].mult(omega * phase0));
             }
         }
 
