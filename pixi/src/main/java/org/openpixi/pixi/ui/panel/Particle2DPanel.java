@@ -116,6 +116,9 @@ public class Particle2DPanel extends AnimationPanel {
 			pos[w] = s.grid.getNumCells(w)/2;
 		}
 		
+		int colorIndex = getSimulationAnimation().getColorIndex();
+		int dirIndex = getSimulationAnimation().getDirectionIndex();
+		
 		if(drawCurrentGrid)
 		{
 			graph.setColor(Color.black);
@@ -133,8 +136,8 @@ public class Particle2DPanel extends AnimationPanel {
 					pos[0] = i;
 					pos[1] = k;
 					//drawArrow(graph, xstart, ystart, (int) Math.round(s.grid.getJx(i,k)*sx + xstart), (int) Math.round(s.grid.getJy(i,k)*sy + ystart));
-                                        drawArrow(graph, xstart, ystart2, (int) Math.round(s.grid.getJ(pos, 0).get(0)*sx+xstart), ystart2, Color.BLACK);
-                                        drawArrow(graph, xstart2, ystart, xstart2, (int) Math.round(s.grid.getJ(pos, 1).get(0)*sy+ystart),Color.BLACK);
+                                        drawArrow(graph, xstart, ystart2, (int) Math.round(s.grid.getJ(pos, 0).get(colorIndex)*sx+xstart), ystart2, Color.BLACK);
+                                        drawArrow(graph, xstart2, ystart, xstart2, (int) Math.round(s.grid.getJ(pos, 1).get(colorIndex)*sy+ystart),Color.BLACK);
 				}
 			//return;
 		}
@@ -154,8 +157,8 @@ public class Particle2DPanel extends AnimationPanel {
 					pos[1] = k;
 					
 //drawArrow(graph, xstart, ystart, (int) Math.round(scale * s.grid.getEx(i,k)*sx + xstart), (int) Math.round(scale* s.grid.getEy(i,k)*sy + ystart));
-                    drawArrow(graph, xstart, ystart2, (int) Math.round(scale*s.grid.getE(pos, 0).get(0)*sx+xstart),ystart2, Color.BLACK);
-                    drawArrow(graph, xstart2, ystart, xstart2, (int) Math.round(scale*s.grid.getE(pos, 1).get(0)*sy+ystart), Color.GREEN);
+                    drawArrow(graph, xstart, ystart2, (int) Math.round(scale*s.grid.getE(pos, 0).get(colorIndex)*sx+xstart),ystart2, Color.BLACK);
+                    drawArrow(graph, xstart2, ystart, xstart2, (int) Math.round(scale*s.grid.getE(pos, 1).get(colorIndex)*sy+ystart), Color.GREEN);
                     //drawArrow(graph, xstart, ystart, xstart, (int) Math.round(scale*s.grid.getBz(i,k)*sy+ystart), Color.RED);
 				}
 			//return;

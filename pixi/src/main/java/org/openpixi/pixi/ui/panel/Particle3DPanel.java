@@ -187,6 +187,9 @@ public class Particle3DPanel extends AnimationPanel {
 			pos[w] = s.grid.getNumCells(w)/2;
 		}
 		
+		int colorIndex = getSimulationAnimation().getColorIndex();
+		int dirIndex = getSimulationAnimation().getDirectionIndex();
+		
 		if(drawCurrentGrid) {
 			for(int i = 0; i < s.grid.getNumCells(0); i += gridstep) {
 				for(int k = 0; k < s.grid.getNumCells(1); k += gridstep) {
@@ -198,9 +201,9 @@ public class Particle3DPanel extends AnimationPanel {
 						pos[0] = i;
 						pos[1] = k;
 						pos[2] = j;
-						double jx = scale * s.grid.getJ(pos, 0).get(0);
-						double jy = scale * s.grid.getJ(pos, 1).get(0);
-						double jz = scale * s.grid.getJ(pos, 2).get(0);
+						double jx = scale * s.grid.getJ(pos, 0).get(colorIndex);
+						double jy = scale * s.grid.getJ(pos, 1).get(colorIndex);
+						double jz = scale * s.grid.getJ(pos, 2).get(colorIndex);
 						if (combinefields) {
 							// Combine x- and y-components of current
 							fields.addLineDelta(xstart, ystart, zstart,
@@ -236,9 +239,9 @@ public class Particle3DPanel extends AnimationPanel {
 						pos[0] = i;
 						pos[1] = k;
 						pos[2] = j;
-						double ex = scale * s.grid.getE(pos, 0).get(0);
-						double ey = scale * s.grid.getE(pos, 1).get(0);
-						double ez = scale * s.grid.getE(pos, 2).get(0);
+						double ex = scale * s.grid.getE(pos, 0).get(colorIndex);
+						double ey = scale * s.grid.getE(pos, 1).get(colorIndex);
+						double ez = scale * s.grid.getE(pos, 2).get(colorIndex);
 
 						if (combinefields) {
 							// Draw combined E- and B-fields

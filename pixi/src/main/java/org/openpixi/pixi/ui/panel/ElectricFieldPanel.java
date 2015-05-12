@@ -52,6 +52,8 @@ public class ElectricFieldPanel extends AnimationPanel {
 			}
 		}
 
+		int colorIndex = getSimulationAnimation().getColorIndex();
+		int dirIndex = getSimulationAnimation().getDirectionIndex();
 		// scale factor for electric field
 		double scaleE = 1;
 
@@ -76,7 +78,7 @@ public class ElectricFieldPanel extends AnimationPanel {
 				pos[1] = k;
 				
 				newPosition = (int) (s.grid.getLatticeSpacing() * (i + 0.5) * sx);
-				newValue = (int) (((0.5 - scaleE * s.grid.getE(pos, 1).get(0)) * panelHeight));
+				newValue = (int) (((0.5 - scaleE * s.grid.getE(pos, dirIndex).get(colorIndex)) * panelHeight));
 
 				if (i > 0) {
 					graph.drawLine(oldPosition, oldValue,newPosition, newValue);
@@ -100,7 +102,7 @@ public class ElectricFieldPanel extends AnimationPanel {
 				pos[1] = k;
 						
 				newPosition = (int) (s.grid.getLatticeSpacing() * (i + 0.5) * sx);
-				newValue = (int) (((0.5 - scaleE * s.grid.getU(pos, 1).getLinearizedAlgebraElement().get(0)) * panelHeight));
+				newValue = (int) (((0.5 - scaleE * s.grid.getU(pos, dirIndex).getLinearizedAlgebraElement().get(colorIndex)) * panelHeight));
 
 				if (i > 0) {
 					graph.drawLine(oldPosition, oldValue,newPosition, newValue);
