@@ -1,0 +1,16 @@
+# One particle test
+
+gridStep: 10
+numberOfDimensions: 3
+numberOfColors: 2
+gridCells: [10, 10, 10]
+poissonsolver: empty
+timeStep: 0.1
+duration: 1000
+
+fields:
+  SU2PlaneWaves:
+    - k: [20.0, 20.0, 20.0]
+      aSpatial: [1.0, 1.0, 1.0]
+      aColor: [1.0, 1.0, 1.0]
+      a: 0.001
