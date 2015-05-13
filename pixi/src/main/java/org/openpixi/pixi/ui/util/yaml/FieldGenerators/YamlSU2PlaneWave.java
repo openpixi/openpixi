@@ -38,7 +38,7 @@ public class YamlSU2PlaneWave {
 	 */
 	public boolean checkConsistency(Settings settings) {
 		if (k.size() != settings.getNumberOfDimensions()) {
-			System.out.println("SU2PlaneWave: k vector does not have the right dimensions.");
+			System.out.println("SU2PlaneWave: dir vector does not have the right dimensions.");
 			return false;
 		}
 
