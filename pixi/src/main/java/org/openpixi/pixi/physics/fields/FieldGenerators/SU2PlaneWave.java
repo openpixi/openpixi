@@ -20,8 +20,13 @@ public class SU2PlaneWave implements IFieldGenerator {
         this.numberOfComponents = amplitudeColorDirection.length;
 
         this.k = k;
-        this.amplitudeSpatialDirection = amplitudeSpatialDirection;
-        this.amplitudeColorDirection = amplitudeColorDirection;
+
+		/*
+			Amplitude directions should be normalized.
+		 */
+        this.amplitudeSpatialDirection = this.normalizeVector(amplitudeSpatialDirection);
+        this.amplitudeColorDirection = this.normalizeVector(amplitudeColorDirection);
+
         this.amplitudeMagnitude = amplitudeMagnitude;
     }
 
@@ -91,6 +96,22 @@ public class SU2PlaneWave implements IFieldGenerator {
         }
 
     }
+
+	private double[] normalizeVector(double[] vector)
+	{
+		double norm = 0.0;
+		double[] output = new double[vector.length];
+		for(int i = 0; i < vector.length; i++)
+		{
+			norm += vector[i] * vector[i];
+		}
+		norm = Math.sqrt(norm);
+		for(int i = 0; i < vector.length; i++)
+		{
+			output[i] = vector[i] / norm;
+		}
+		return output;
+	}
 
     private int getCellIndex(int[] pos)
     {
