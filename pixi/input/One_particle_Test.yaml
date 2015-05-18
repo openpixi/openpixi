@@ -2,7 +2,7 @@
 
 gridStep: 10
 numberOfDimensions: 3
-numberOfColors: 1
+numberOfColors: 2
 gridCells: [10, 10, 1]
 poissonsolver: empty
 timeStep: 0.1
@@ -13,7 +13,7 @@ particles:
     velocity: [0.5, 0, 0]
     r: 1
     m: 1
-    q: [-.01]
+    q: [-.01, 0, 0]
     color: blue
 
 output:

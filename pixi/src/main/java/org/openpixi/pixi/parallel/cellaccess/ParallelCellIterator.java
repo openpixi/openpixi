@@ -45,9 +45,9 @@ public class ParallelCellIterator extends CellIterator {
 
 
 	@Override
-	public void setNormalMode(int numCellsX, int numCellsY, int numCellsZ) {
-		super.setNormalMode(numCellsX, numCellsY, numCellsZ);
-		numOfCells = dimensions.xsize() * dimensions.ysize() * dimensions.zsize();
+	public void setNormalMode(int[] numCells) {
+		super.setNormalMode(numCells);
+		numOfCells = dimensions.getNumCells();
 	}
 
 	private class Task implements Callable<Object> {
@@ -63,11 +63,11 @@ public class ParallelCellIterator extends CellIterator {
 		public Object call() throws Exception {
 			for (int cellIdx = threadIdx; cellIdx < numOfCells; cellIdx += numOfThreads) {
                 int[] pos = convertCellIndexToPosition(cellIdx, dimensions);
-				action.execute(grid, pos[0], pos[1], pos[2]);
+				action.execute(grid, pos);
 			}
 			return null;
 		}
-
+		//TODO This should happen only once to avoid code duplication
         private int[] convertCellIndexToPosition(int ci, IntBox dimensions)
         {
             int dim = dimensions.getDim();

@@ -2,598 +2,560 @@ package org.openpixi.pixi.physics.grid;
 
 import org.openpixi.pixi.parallel.cellaccess.CellAction;
 import org.openpixi.pixi.parallel.cellaccess.CellIterator;
-import org.openpixi.pixi.physics.GeneralBoundaryType;
 import org.openpixi.pixi.physics.Settings;
 import org.openpixi.pixi.physics.fields.FieldSolver;
+import org.openpixi.pixi.physics.grid.YMField;
 
 public class Grid {
 
-	/*
-	 * TODO remove the accessors for individual cell fields and call directly the accessors on the cell
-	 * TODO extract field solver to simulation
-	 *      - makes grid simpler
-	 *      - makes all the important initialization to happen at one place (in simulation)
-	 */
 	/**
-	 * The purpose of the extra cells is twofold. 1) They represent the
-	 * boundaries around the simulation area cells. The boundaries assure that
-	 * we always have a cell to interpolate to. For example, the hardwall
-	 * particle boundaries allow the particle to be outside of the simulation
-	 * area. That means that the particle can be in a cell [numCellsX,
-	 * numCellsY]. If the particle is in this cell, it will be interpolated to
-	 * the four surrounding cells from [numCellsX, numCellsY] to [numCellsX+1,
-	 * numCellsY+1]. Hence, the two extra cells after the grid's end. However,
-	 * at the beginning we only need one extra cell as the particle in cell
-	 * [-1,-1] interpolates to cells from [-1,-1] to [0,0].
-	 *
-	 * 2) In the field solver we usually have to use left, right, top and bottom
-	 * neighboring cell to update the value of the current cell. Without the
-	 * extra cells we would have to treat each side separately in order not to
-	 * get IndexOutOfBounds exception. With the extra cells we can comfortably
-	 * iterate through the entire grid in a uniform way using the 0 values of
-	 * extra cells when calculating the fields at the sides.
-	 */
-	public static final int INTERPOLATION_RADIUS = 1;
-	public static final int HARDWALL_SAFETY_CELLS = 1;
-	//Check comment above, but due to the CIC to particle interpolator
-	//we actually need two cells at the beginning. But for an other reason than at the end.
-	public static final int EXTRA_CELLS_BEFORE_GRID =
-			INTERPOLATION_RADIUS + HARDWALL_SAFETY_CELLS - 1 + 1;
-	public static final int EXTRA_CELLS_AFTER_GRID =
-			INTERPOLATION_RADIUS + HARDWALL_SAFETY_CELLS;
-	/**
-	 * solver algorithm for the maxwell equations
+	 * Solver algorithm for the field equations
 	 */
 	private FieldSolver fsolver;
-	private GeneralBoundaryType boundaryType;
+
+	/**
+	 * Instance of the CellIterator which iterates over all cells in the grid (either sequentially or in parallel)
+	 */
 	private CellIterator cellIterator;
+
+	/*
+	 *      Cell actions
+	 */
 	private ResetChargeAction resetCharge = new ResetChargeAction();
 	private ResetCurrentAction resetCurrent = new ResetCurrentAction();
 	private StoreFieldsAction storeFields = new StoreFieldsAction();
-	private Cell[][][] cells;
 	/**
-	 * number of cells in x direction
+	 * Cell array. This one dimensional array is used to represent the d-dimensional grid. The cells are indexed by
+	 * their cell ids. Cell ids can be computed from lattice coordinates with the index() method.
 	 */
-	private int numCellsX;
-	/**
-	 * number of cells in y direction
-	 */
-	private int numCellsY;
-	/**
-	 * number of cells in z direction
-	 */
-	private int numCellsZ;
-	/**
-	 * width of each cell
-	 */
-	private double cellWidth;
-	/**
-	 * height of each cell
-	 */
-	private double cellHeight;
-	/**
-	 * depth of each cell
-	 */
-	private double cellDepth;
+	private Cell[] cells;
 
+	/**
+	 * Number of dimensions
+	 */
+	private int numDim;
+
+	/**
+	 * Number of colors
+	 */
+	private int numCol;
+
+	/**
+	 * Number of cells (size of the grid) in each direction
+	 */
+	private int numCells[];
+
+	/**
+	 * Spatial lattice spacing
+	 */
+	private double as;
+
+	/**
+	 * Gauge coupling strength
+	 */
+	private double gaugeCoupling;
+
+	/**
+	 * Unit vectors to be used for the shift method.
+	 */
+	private int[][] unitVectors;
+
+	/**
+	 * Returns the FieldSolver instance currently used.
+	 * @return  Instance of the FieldSolver
+	 */
 	public FieldSolver getFsolver() {
 		return fsolver;
 	}
 
+	/**
+	 * Sets the FieldSolver used for grid updates.
+	 * @param fsolver   Instance of the FieldSolver which should be used.
+	 */
 	public void setFsolver(FieldSolver fsolver) {
 		this.fsolver = fsolver;
 	}
 
-	public double getJx(int x, int y) {
-		return cells[index(x)][index(y)][0].getJx();
+	/**
+	 * Returns the YMField instance of the (dir)-component of the current.
+	 * @param coor      Lattice coordinate of the current
+	 * @param dir       Index of the component
+	 * @return          YMField instance of the (dir)-component of the current.
+	 */
+	public YMField getJ(int[] coor, int dir) {
+		return cells[index(coor)].getJ(dir);
 	}
 
-	public void addJx(int x, int y, double value) {
-		cells[index(x)][index(y)][0].addJx(value);
-	}
-	
-	public double getJx(int x, int y, int z) {
-		return cells[index(x)][index(y)][index(z)].getJx();
-	}
-
-	public void addJx(int x, int y, int z, double value) {
-		cells[index(x)][index(y)][index(z)].addJx(value);
+	/**
+	 * Adds a YMField instance to the (dir)-component of the current.
+	 * @param coor      Lattice coordinate of the current
+	 * @param dir       Index of the component
+	 * @param field     YMField to be added to the (dir)-component of the current.
+	 */
+	public void addJ(int[] coor, int dir, YMField field) {
+		cells[index(coor)].addJ(dir, field);
 	}
 
-	public double getJy(int x, int y) {
-		return cells[index(x)][index(y)][0].getJy();
+	/**
+	 * Returns the YMField instance of the charge density.
+	 * @param coor      Lattice coordinate of the charge density
+	 * @return          YMField instance of the charge density
+	 */
+	public YMField getRho(int[] coor) {
+		return cells[index(coor)].getRho();
 	}
 
-	public void addJy(int x, int y, double value) {
-		cells[index(x)][index(y)][0].addJy(value);
-	}
-	
-	public double getJy(int x, int y, int z) {
-		return cells[index(x)][index(y)][index(z)].getJy();
-	}
-
-	public void addJy(int x, int y, int z, double value) {
-		cells[index(x)][index(y)][index(z)].addJy(value);
-	}
-	
-	public double getJz(int x, int y, int z) {
-		return cells[index(x)][index(y)][index(z)].getJz();
+	/**
+	 * Sets the YMField instance of the charge density.
+	 * @param coor      Lattice coordinate of the charge density
+	 * @param field     YMField instance which the electric field should be set to.
+	 */
+	public void setRho(int[] coor, YMField field) {
+		cells[index(coor)].setRho(field);
 	}
 
-	public void addJz(int x, int y, int z, double value) {
-		cells[index(x)][index(y)][index(z)].addJz(value);
+	/**
+	 * Adds a YMField to the charge density.
+	 * @param coor      Lattice coordinate of the charge density
+	 * @param field     YMField instance which should be added.
+	 */
+	public void addRho(int[] coor, YMField field) {
+		cells[index(coor)].addRho(field);
 	}
 
-	public double getRho(int x, int y) {
-		return cells[index(x)][index(y)][0].getRho();
-	}
-	
-	public double getRho(int x, int y, int z) {
-		return cells[index(x)][index(y)][index(z)].getRho();
-	}
-
-	public void setRho(int x, int y, double value) {
-		cells[index(x)][index(y)][0].setRho(value);
-	}
-	
-	public void setRho(int x, int y, int z, double value) {
-		cells[index(x)][index(y)][index(z)].setRho(value);
+	/**
+	 * Returns the YMField instance of the (dir)-component of the electric field.
+	 * @param coor      Lattice coordinate of the electric field
+	 * @param dir       Index of the component
+	 * @return          YMField instance of the (dir)-component
+	 */
+	public YMField getE(int[] coor, int dir) {
+		return cells[index(coor)].getE(dir);
 	}
 
-	public void addRho(int x, int y, double value) {
-		cells[index(x)][index(y)][0].addRho(value);
-	}
-	
-	public void addRho(int x, int y, int z, double value) {
-		cells[index(x)][index(y)][index(z)].addRho(value);
-	}
-
-	public double getPhi(int x, int y) {
-		return cells[index(x)][index(y)][0].getPhi();
+	/**
+	 * Sets the YMField instance of the (dir)-component of the electric field.
+	 * @param coor      Lattice coordinate of the electric field
+	 * @param dir       Index of the component
+	 * @param field     YMField instance which the electric field should be set to.
+	 */
+	public void setE(int[] coor, int dir, YMField field) {
+		cells[index(coor)].setE(dir, field);
 	}
 
-	public void setPhi(int x, int y, double value) {
-		cells[index(x)][index(y)][0].setPhi(value);
-	}
-	
-	public double getPhi(int x, int y, int z) {
-		return cells[index(x)][index(y)][index(z)].getPhi();
-	}
-
-	public void setPhi(int x, int y, int z, double value) {
-		cells[index(x)][index(y)][index(z)].setPhi(value);
+	/**
+	 * Adds a YMField to the (dir)-component of the electric field.
+	 * @param coor      Lattice coordinate of the electric field
+	 * @param dir       Index of the component
+	 * @param field     YMField instance which should be added.
+	 */
+	public void addE(int[] coor, int dir, YMField field) {
+		cells[index(coor)].addE(dir, field);
 	}
 
-	public double getEx(int x, int y) {
-		return cells[index(x)][index(y)][0].getEx();
+
+	/**
+	 * Returns the (dir1, dir2)-component of the field strength tensor at a certain lattice coordinate.
+	 * @param coor      Lattice coordinate of the field strength tensor
+	 * @param dir1      First spatial component (0 - (numberOfDimensions-1))
+	 * @param dir2      Second spatial component (0 - (numberOfDimensions-1))
+	 * @return          YMField instance of the (dir1, dir2)-component
+	 */
+	public YMField getFTensor(int[] coor, int dir1, int dir2) {
+		return cells[index(coor)].getFieldStrength(dir1, dir2);
 	}
 
-	public void setEx(int x, int y, double value) {
-		cells[index(x)][index(y)][0].setEx(value);
+	/**
+	 * Sets the (dir1, dir2)-component of the field strength tensor at a certain lattice coordinate.
+	 * @param coor      Lattice coordinate of the field strength tensor
+	 * @param dir1      First space component (0 - (numberOfDimensions-1))
+	 * @param dir2      Second space component (0 - (numberOfDimensions-1))
+	 * @param field     YMField instance which the field strength tensor should be set to.
+	 */
+	public void setFTensor(int[] coor, int dir1, int dir2, YMField field) {
+		cells[index(coor)].setFieldStrength(dir1, dir2, field);
 	}
 
-	public double getExo(int x, int y) {
-		return cells[index(x)][index(y)][0].getExo();
+	/**
+	 * Returns the gauge link at time (t) at a given lattice coordinate in a given direction.
+	 * @param coor  Lattice coordinate of the gauge link
+	 * @param dir   Direction of the gauge link
+	 * @return      Instance of the gauge link
+	 */
+	public LinkMatrix getU(int[] coor, int dir) {
+		return cells[index(coor)].getU(dir);
 	}
 
-	public void setExo(int x, int y, double value) {
-		cells[index(x)][index(y)][0].setExo(value);
-	}
-	
-	public void addEx(int x, int y, double value) {
-		cells[index(x)][index(y)][0].setEx(cells[index(x)][index(y)][0].getEx() + value);
-	}
-	
-	public double getEx(int x, int y, int z) {
-		return cells[index(x)][index(y)][index(z)].getEx();
+	/**
+	 * Sets the gauge link at time (t) at given lattice coordinate in given direction to a new value.
+	 * @param coor  Lattice coordinate of the gauge link
+	 * @param dir   Direction of the gauge link
+	 * @param mat   LinkMatrix instance
+	 */
+	public void setU(int[] coor, int dir, LinkMatrix mat) {
+		cells[index(coor)].setU(dir, mat);
 	}
 
-	public void setEx(int x, int y, int z, double value) {
-		cells[index(x)][index(y)][index(z)].setEx(value);
+	/**
+	 * Returns the gauge link at time (t+dt) at a given lattice coordinate in a given direction.
+	 * @param coor  Lattice coordinate of the gauge link
+	 * @param dir   Direction of the gauge link
+	 * @return      Instance of the gauge link
+	 */
+	public LinkMatrix getUnext(int[] coor, int dir) {
+		return cells[index(coor)].getUnext(dir);
 	}
 
-	public double getExo(int x, int y, int z) {
-		return cells[index(x)][index(y)][index(z)].getExo();
+	/**
+	 * Sets the gauge link at time (t+dt) at given lattice coordinate in given direction to a new value.
+	 * @param coor  Lattice coordinate of the gauge link
+	 * @param dir   Direction of the gauge link
+	 * @param mat   LinkMatrix instance
+	 */
+	public void setUnext(int[] coor, int dir, LinkMatrix mat) {
+		cells[index(coor)].setUnext(dir, mat);
 	}
 
-	public void setExo(int x, int y, int z, double value) {
-		cells[index(x)][index(y)][index(z)].setExo(value);
-	}
-	
-	public void addEx(int x, int y, int z, double value) {
-		cells[index(x)][index(y)][index(z)].setEx(cells[index(x)][index(y)][index(z)].getEx() + value);
-	}
-
-	public double getEy(int x, int y) {
-		return cells[index(x)][index(y)][0].getEy();
+	/**
+	 * Resets charge in a cell at a given lattice coordinate.
+	 * @param coor  Lattice coordinate of the cell
+	 */
+	public void resetCharge(int[] coor) {
+		cells[index(coor)].resetCharge();
 	}
 
-	public void setEy(int x, int y, double value) {
-		cells[index(x)][index(y)][0].setEy(value);
+	/**
+	 * Returns the number of cells in the grid in a given direction.
+	 * @param dir   Index of the direction
+	 * @return      Number of cells in given direction.
+	 */
+	public int getNumCells(int dir) {
+		return numCells[dir];
 	}
 
-	public double getEyo(int x, int y) {
-		return cells[index(x)][index(y)][0].getEyo();
+	/**
+	 * Returns the lattice spacing of the grid.
+	 * @return  Lattice spacing of the grid.
+	 */
+	public double getLatticeSpacing() {
+		return as;
 	}
 
-	public void setEyo(int x, int y, double value) {
-		cells[index(x)][index(y)][0].setEyo(value);
-	}
-	
-	public void addEy(int x, int y, double value) {
-		cells[index(x)][index(y)][0].setEy(cells[index(x)][index(y)][0].getEy() + value);
-	}
-	
-	public double getEy(int x, int y, int z) {
-		return cells[index(x)][index(y)][index(z)].getEy();
+	/**
+	 * Returns the Cell instance at given lattice coordinates with respect to periodic boundary conditions.
+	 *
+	 * @param coor  Lattice coordinate of the cell
+	 * @return      Cell instance at lattice coordinates with respect to periodic boundary conditions
+	 */
+	public Cell getCell(int[] coor) {
+		return cells[index(coor)];
 	}
 
-	public void setEy(int x, int y, int z, double value) {
-		cells[index(x)][index(y)][index(z)].setEy(value);
-	}
-
-	public double getEyo(int x, int y, int z) {
-		return cells[index(x)][index(y)][index(z)].getEyo();
-	}
-
-	public void setEyo(int x, int y, int z, double value) {
-		cells[index(x)][index(y)][index(z)].setEyo(value);
-	}
-	
-	public void addEy(int x, int y, int z, double value) {
-		cells[index(x)][index(y)][index(z)].setEy(cells[index(x)][index(y)][index(z)].getEy() + value);
-	}
-	
-	public double getEz(int x, int y, int z) {
-		return cells[index(x)][index(y)][index(z)].getEz();
-	}
-
-	public void setEz(int x, int y, int z, double value) {
-		cells[index(x)][index(y)][index(z)].setEz(value);
-	}
-
-	public double getEzo(int x, int y, int z) {
-		return cells[index(x)][index(y)][index(z)].getEzo();
-	}
-
-	public void setEzo(int x, int y, int z, double value) {
-		cells[index(x)][index(y)][index(z)].setEzo(value);
-	}
-	
-	public void addEz(int x, int y, int z, double value) {
-		cells[index(x)][index(y)][index(z)].setEz(cells[index(x)][index(y)][index(z)].getEz() + value);
-	}
-
-	public double getBz(int x, int y) {
-		return cells[index(x)][index(y)][0].getBz();
-	}
-
-	public void setBz(int x, int y, double value) {
-		cells[index(x)][index(y)][0].setBz(value);
-	}
-
-	public void addBz(int x, int y, double value) {
-		cells[index(x)][index(y)][0].setBz(cells[index(x)][index(y)][0].getBz() + value);
-	}
-
-	public double getBzo(int x, int y) {
-		return cells[index(x)][index(y)][0].getBzo();
-	}
-
-	public void setBzo(int x, int y, double value) {
-		cells[index(x)][index(y)][0].setBzo(value);
-	}
-	
-	public double getBz(int x, int y, int z) {
-		return cells[index(x)][index(y)][index(z)].getBz();
-	}
-
-	public void setBz(int x, int y, int z, double value) {
-		cells[index(x)][index(y)][index(z)].setBz(value);
-	}
-
-	public void addBz(int x, int y, int z, double value) {
-		cells[index(x)][index(y)][index(z)].setBz(cells[index(x)][index(y)][index(z)].getBz() + value);
-	}
-
-	public double getBzo(int x, int y, int z) {
-		return cells[index(x)][index(y)][index(z)].getBzo();
-	}
-
-	public void setBzo(int x, int y, int z, double value) {
-		cells[index(x)][index(y)][index(z)].setBzo(value);
-	}
-	
-	public double getBx(int x, int y, int z) {
-		return cells[index(x)][index(y)][index(z)].getBx();
-	}
-
-	public void setBx(int x, int y, int z, double value) {
-		cells[index(x)][index(y)][index(z)].setBx(value);
-	}
-
-	public void addBx(int x, int y, int z, double value) {
-		cells[index(x)][index(y)][index(z)].setBx(cells[index(x)][index(y)][index(z)].getBx() + value);
-	}
-
-	public double getBxo(int x, int y, int z) {
-		return cells[index(x)][index(y)][index(z)].getBxo();
-	}
-
-	public void setBxo(int x, int y, int z, double value) {
-		cells[index(x)][index(y)][index(z)].setBxo(value);
-	}
-	
-	public double getBy(int x, int y, int z) {
-		return cells[index(x)][index(y)][index(z)].getBy();
-	}
-
-	public void setBy(int x, int y, int z, double value) {
-		cells[index(x)][index(y)][index(z)].setBy(value);
-	}
-
-	public void addBy(int x, int y, int z, double value) {
-		cells[index(x)][index(y)][index(z)].setBy(cells[index(x)][index(y)][index(z)].getBy() + value);
-	}
-
-	public double getByo(int x, int y, int z) {
-		return cells[index(x)][index(y)][index(z)].getByo();
-	}
-
-	public void setByo(int x, int y, int z, double value) {
-		cells[index(x)][index(y)][index(z)].setByo(value);
-	}
-	
-	public void resetCharge(int x, int y) {
-		cells[index(x)][index(y)][0].resetCharge();
-	}
-	
-	public void resetCharge(int x, int y, int z) {
-		cells[index(x)][index(y)][index(z)].resetCharge();
-	}
-
-	public int getNumCellsX() {
-		return numCellsX;
-	}
-
-	public int getNumCellsY() {
-		return numCellsY;
-	}
-	
-	public int getNumCellsZ() {
-		return numCellsZ;
-	}
-
-	public double getCellWidth() {
-		return cellWidth;
-	}
-
-	public double getCellHeight() {
-		return cellHeight;
-	}
-	
-	public double getCellDepth() {
-		return cellDepth;
-	}
-
-	public Cell getCell(int x, int y) {
-		return cells[index(x)][index(y)][0];
-	}
-	
-	public Cell getCell(int x, int y, int z) {
-		return cells[index(x)][index(y)][index(z)];
-	}
-
-	public Cell[][][] getCells() {
+	/**
+	 * Returns full Cell array of the grid. Note that the cells in this array are indexed by cell ids.
+	 * @return  Full array with all cells
+	 */
+	public Cell[] getCells() {
 		return cells;
 	}
 
+	/**
+	 * Main constructor for the Grid class. Given a settings file it initializes the lattice and sets up the FieldSolver
+	 * and the CellIterator.
+	 * @param settings  Settings instance
+	 */
 	public Grid(Settings settings) {
-		this.boundaryType = settings.getBoundaryType();
 
-		set(settings.getGridCellsX(), settings.getGridCellsY(), settings.getGridCellsZ(),
-				settings.getSimulationWidth(), settings.getSimulationHeight(), settings.getSimulationDepth());
+		gaugeCoupling = settings.getCouplingConstant();
+		as = settings.getGridStep();
+		numCol = settings.getNumberOfColors();
+		numDim = settings.getNumberOfDimensions();
+		numCells = new int[numDim];
 		
+		for(int i = 0; i < numDim; i++) {
+			numCells[i] = settings.getGridCells(i);
+		}
+
+		createGrid();
+				
 		this.fsolver = settings.getGridSolver();
-		this.fsolver.initializeIterator(settings.getCellIterator(), numCellsX, numCellsY, numCellsZ);
+		this.fsolver.initializeIterator(settings.getCellIterator(), numCells);
 
 		this.cellIterator = settings.getCellIterator();
-		this.cellIterator.setNormalMode(numCellsX, numCellsY, numCellsZ);//this.cellIterator.setExtraCellsMode(numCellsX, numCellsY);
+		this.cellIterator.setNormalMode(numCells);
+		
 	}
 
 	/**
-	 * In the distributed version we want to create the grid from cells which
-	 * come from master; hence, this constructor. Creates grid from the given
-	 * cells. The input cells have to contain also the boundary cells.
+	 * This methods initializes each cell in the grid.
 	 */
-	public Grid(Settings settings, Cell[][][] cells) {
-		this.numCellsX = cells.length;//this.numCellsX = cells.length - EXTRA_CELLS_BEFORE_GRID - EXTRA_CELLS_AFTER_GRID;
-		this.numCellsY = cells[0].length;//this.numCellsY = cells[0].length - EXTRA_CELLS_BEFORE_GRID - EXTRA_CELLS_AFTER_GRID;
-		this.numCellsZ = cells[0][0].length;
-		this.cellWidth = settings.getGridStep();//this.cellWidth = settings.getSimulationWidth() / numCellsX;
-		this.cellHeight = this.cellWidth;//this.cellHeight = settings.getSimulationHeight() / numCellsY;
-		this.cellDepth = this.cellWidth;
+	private void createGrid() {
 
-		this.cells = cells;
+		unitVectors = new int[numDim][numDim];
 
-		/*
-		 * Grid and FieldSolver must have each its own cell iterator!
-		 * They use different modes of iteration.
-		 * While the grid iterates also over the extra cells the field solver does not.
-		 */
+		int length = 1;
+		for(int i = 0; i < numDim; i++) {
+			length *= numCells[i];
 
-		this.fsolver = settings.getGridSolver();
-		fsolver.initializeIterator(settings.getCellIterator(), numCellsX, numCellsY, numCellsZ);
+			/*
+				Setup unit vectors.
+			 */
+			unitVectors[i][i] = 1;
+		}
+		cells = new Cell[length];
 
-		this.cellIterator = settings.getCellIterator();
-		this.cellIterator.setNormalMode(this.numCellsX, this.numCellsY, this.numCellsZ);//this.cellIterator.setExtraCellsMode(this.numCellsX, this.numCellsY);
+		for(int i = 0; i < length; i++) {
+			cells[i] = new Cell(numDim, numCol);
+		}
+	
 	}
 
 	/**
-	 * Change the size of the field. TODO make sure the method can not be called
-	 * in distributed version E.g. throw an exception if this is distributed
-	 * version
+	 * This method advances the grid by one time step:
+	 * It stores the fields, i.e. sets (t+dt) fields from the last grid update to the old ones at time (t) and calls the
+	 * FieldSolver to solve the equations of motion for one time step.
+	 *
+	 * @param tstep size of the time step
 	 */
-	public void changeSize(int numCellsX, int numCellsY, int numCellsZ,
-			double simWidth, double simHeight, double simDepth) {
-		set(numCellsX, numCellsY, numCellsZ, simWidth, simHeight, simDepth);
-		fsolver.changeSize(numCellsX, numCellsY, numCellsZ);
-		cellIterator.setNormalMode(this.numCellsX, this.numCellsY, this.numCellsZ);//cellIterator.setExtraCellsMode(this.numCellsX, this.numCellsY);
-	}
-
-	/**
-	 * This method is dangerous as it would not work in distributed version.
-	 * TODO make sure the method can not be called in distributed version E.g.
-	 * throw an exception if this is distributed version
-	 */
-	private void set(int numCellsX, int numCellsY, int numCellsZ,
-			double simWidth, double simHeight, double simDepth) {
-
-		this.numCellsX = numCellsX;
-		this.numCellsY = numCellsY;
-		this.numCellsZ = numCellsZ;
-		this.cellWidth = simWidth / numCellsX;
-		this.cellHeight = simHeight / numCellsY;
-		this.cellDepth = simDepth / numCellsZ;
-
-		createGridWithBoundaries();
-	}
-
-	private void createGridWithBoundaries() {
-		cells = new Cell[getNumCellsX()][getNumCellsY()][getNumCellsZ()];
-		// Create inner cells
-		for (int x = 0; x < getNumCellsX(); x++) {
-			for (int y = 0; y < getNumCellsY(); y++) {
-				for (int z = 0; z < getNumCellsZ(); z++) {
-					cells[index(x)][index(y)][index(z)] = new Cell();
-				}
-			}
-		}
-		//createBoundaryCells();
-	}
-/*
-	private void createBoundaryCells() {
-		// left boundary (with corner cells)
-		for (int x = 0; x < EXTRA_CELLS_BEFORE_GRID; x++) {
-			for (int y = 0; y < getNumCellsYTotal(); y++) {
-				createBoundaryCell(x, y);
-			}
-		}
-		// right boundary (with corner cells)
-		for (int x = EXTRA_CELLS_BEFORE_GRID + numCellsX; x < getNumCellsXTotal(); x++) {
-			for (int y = 0; y < getNumCellsYTotal(); y++) {
-				createBoundaryCell(x, y);
-			}
-		}
-		// top boundary (without corner cells)
-		for (int x = EXTRA_CELLS_BEFORE_GRID; x < EXTRA_CELLS_BEFORE_GRID + numCellsX; x++) {
-			for (int y = 0; y < EXTRA_CELLS_BEFORE_GRID; y++) {
-				createBoundaryCell(x, y);
-			}
-		}
-		// bottom boundary (without corner cells)
-		for (int x = EXTRA_CELLS_BEFORE_GRID; x < EXTRA_CELLS_BEFORE_GRID + numCellsX; x++) {
-			for (int y = EXTRA_CELLS_BEFORE_GRID + numCellsY; y < getNumCellsYTotal(); y++) {
-				createBoundaryCell(x, y);
-			}
-		}
-	}
-*/
-	/**
-	 * Based on the boundary type creates the boundary cell.
-	 */
-/*	
-	private void createBoundaryCell(int x, int y) {
-		if (boundaryType == GridBoundaryType.Hardwall) {
-			cells[x][y] = new Cell();
-		} else if (boundaryType == GridBoundaryType.Periodic) {
-			int xmin = EXTRA_CELLS_BEFORE_GRID;
-			int xmax = numCellsX + EXTRA_CELLS_BEFORE_GRID - 1;
-			int ymin = EXTRA_CELLS_BEFORE_GRID;
-			int ymax = numCellsY + EXTRA_CELLS_BEFORE_GRID - 1;
-
-			int refX = x;
-			int refY = y;
-			if (x < xmin) {
-				refX += numCellsX;
-			} else if (x > xmax) {
-				refX -= numCellsX;
-			}
-			if (y < ymin) {
-				refY += numCellsY;
-			} else if (y > ymax) {
-				refY -= numCellsY;
-			}
-
-			cells[x][y] = cells[refX][refY];
-		}
-	}
-*/
 	public void updateGrid(double tstep) {
-		storeFields();
 		getFsolver().step(this, tstep);
+		storeFields();
 	}
 
+	/**
+	 * Resets all currents in every cell to zero.
+	 */
 	public void resetCurrent() {
 		cellIterator.execute(this, resetCurrent);
 	}
 
+	/**
+	 * Resets all charges in every cell to zero.
+	 */
 	public void resetCharge() {
 		cellIterator.execute(this, resetCharge);
 	}
 
+	/**
+	 * Stores "new" fields which have been calculated in the last simulation step to the variables of the "old" fields.
+	 */
 	public void storeFields() {
 		cellIterator.execute(this, storeFields);
 	}
 
 	/**
-	 * Maps the client index which can be negative to the real array index which
-	 * has to be non-negative. The client index can be negative if the client is
-	 * asking for a cell which is within the top or left boundary. (By client we
-	 * mean any code which is using this class)
+	 * Calculates the plaquette starting at lattice coordinate coor in the plane of d1 and d2 with orientations o1, o2.
+	 * This method implements the following definition of the plaquette:
+	 *      U_{x, ij} = U_{x+j, -j} U_{x+i+j, -i} U_{x+i, j} U_{x, i}
 	 *
+	 *
+	 * @param coor  Lattice coordinate from where the plaquette starts
+	 * @param d1    Index of the first direction
+	 * @param d2    Index of the second direction
+	 * @param o1    Orientation of the first direction
+	 * @param o2    Orientation of the second direction
+	 * @return      Plaquette as LinkMatrix with correct orientation
 	 */
-	private int index(int clientIdx) {
-		//return EXTRA_CELLS_BEFORE_GRID + clientIdx;
-		return clientIdx;
+	public LinkMatrix getPlaquette(int[] coor, int d1, int d2, int o1, int o2)
+	{
+		/*
+			The four lattice coordinates associated with the plaquette.
+		 */
+		int[] x1 = coor.clone();
+		int[] x2 = shift(x1, d1, o1);
+		int[] x3 = shift(x2, d2, o2);
+		int[] x4 = shift(x3, d1, -o1);
+
+		/*
+			The four gauge links associated with the plaquette.
+		 */
+
+		LinkMatrix U1 = getLink(x1, d1, o1);
+		LinkMatrix U2 = getLink(x2, d2, o2);
+		LinkMatrix U3 = getLink(x3, d1, -o1);
+		LinkMatrix U4 = getLink(x4, d2, -o2);
+
+		/*
+			Plaquette calculation
+		 */
+
+		LinkMatrix P = U4.mult(U3);
+		P = P.mult(U2);
+		P = P.mult(U1);
+
+		return P;
 	}
 
 	/**
-	 * Includes the extra cells.
+	 * Getter for gauge links. Returns a link starting from a certain lattice coordinate with the right direction and
+	 * orientation.
+	 *
+	 * Examples:
+	 * Link starting at coor in positive x-direction: getLink(coor, 0, 1)
+	 * Link starting at coor in negative x-direction: getLink(coor, 0, -1)
+	 *
+	 * @param coor          Lattice coordinate from which the link starts from
+	 * @param dir           Direction of the link (0 - (numberOfDimensions-1))
+	 * @param orientation   Orientation of the link (-1 or 1)
+	 * @return              Gauge link in certain direction with correct orientation
 	 */
-	public int getNumCellsXTotal() {
-		return numCellsX;//return numCellsX + EXTRA_CELLS_BEFORE_GRID + EXTRA_CELLS_AFTER_GRID;
+	public LinkMatrix getLink(int[] coor, int dir, int orientation)
+	{
+		if(orientation < 0)
+		{
+			return getCell(shift(coor, dir, orientation)).getU(dir).adj();
+		}
+		return getCell(coor).getU(dir);
+	}
+
+
+	/**
+	 * This method translates a lattice coordinate vector to the corresponding cell id with respect to periodic boundary
+	 * conditions.
+	 *
+	 * @param coor  lattice coordinate vector
+	 * @return      cell id
+	 */
+	private int index(int[] coor) {
+		
+		int[] modCoor = periodic(coor);
+		int res = modCoor[0];
+		
+		for (int i = 1; i < numDim; ++i) {
+			res += modCoor[i]*numCells[i-1];
+		}
+		return res;
 	}
 
 	/**
-	 * Includes the extra cells.
+	 * This method implements periodic boundary conditions on the lattice. If the lattice coordinate vector is outside
+	 * the bounds of the simulation box it gets shifted appropriately.
+	 *
+	 * @param coor  lattice coordinate vector
+	 * @return      shifted lattice coordinate vector
 	 */
-	public int getNumCellsYTotal() {
-		return numCellsY;//return numCellsY + EXTRA_CELLS_BEFORE_GRID + EXTRA_CELLS_AFTER_GRID;
-	}
-	
-	public int getNumCellsZTotal() {
-		return numCellsZ;
+	private int[] periodic(int[] coor) {
+		
+		int[] res = new int[numDim];
+		for (int i = 0; i < numDim; ++i) {
+			res[i] = (coor[i] + numCells[i]) % numCells[i];
+		}
+		return res;
 	}
 
+	/**
+	 * Shifts a lattice coorindate vector by one unit step in a certain direction. The direction is passed as an integer
+	 * for the direction and an orientation.
+	 *
+	 * Examples:
+	 * Shift by one in negative x-direction: shift(coor, 0, -1)
+	 * Shift by one in positive x-direction: shift(coor, 0, 1)
+	 * Shift by one in positive z-direction: shift(coor, 2, 1)
+	 *
+	 * @param coor          Input lattice coordinate vector
+	 * @param dir           Direction of the shift (0 - (numberOfDirections-1))
+	 * @param orientation   Orientation of the direction (1 or -1)
+	 * @return              Shifted coordinate with respect to periodic boundary conditions.
+	 */
+	private int[] shift(int[] coor, int dir, int orientation)
+	{
+		int[] shiftedCoordinate = coor.clone();
+
+		for(int i = 0; i < numDim; i++)
+		{
+			shiftedCoordinate[i] =+ orientation * unitVectors[dir][i];
+		}
+
+
+		return periodic(shiftedCoordinate);
+	}
+
+	/*
+		Cell actions
+	 */
+
+	/**
+	 * ResetCurrentAction is used by the CellIterator to reset all currents in the grid.
+	 */
 	private class ResetCurrentAction implements CellAction {
 
-		public void execute(Grid grid, int x, int y, int z) {
-			grid.getCell(x, y, z).resetCurrent();
+		public void execute(Grid grid, int[] coor) {
+			grid.getCell(coor).resetCurrent();
 		}
 	}
 
+	/**
+	 * ResetChargeAction is used by the CellIterator to reset all charges on the grid.
+	 */
 	private class ResetChargeAction implements CellAction {
 
-		public void execute(Grid grid, int x, int y, int z) {
-			grid.resetCharge(x, y, z);
+		public void execute(Grid grid, int[] coor) {
+			grid.resetCharge(coor);
 		}
 	}
 
+	/**
+	 * StoreFieldsAction is used by the CellIterator to save the new (t+dt) values of the fields to the variables of the
+	 * old (t) fields. Or more simple: The new fields become the old fields.
+	 */
 	private class StoreFieldsAction implements CellAction {
 
-		public void execute(Grid grid, int x, int y, int z) {
-			grid.getCell(x, y, z).storeFields();
+		public void execute(Grid grid, int[] coor) {
+			grid.getCell(coor).reassignLinks();
 		}
 	}
+	
+	/**
+	 * Calculates the field from the forward plaquette starting at lattice coordinate coor in the directions j and k.
+	 * The matrix multiplication is done in the concrete field class.
+	 * The forward plaquette is defined as follows:
+	 *      U_{x, jk} = U_{x, j} U_{x+j, k} U^adj_{x+k, j} U^adj_{x, k}
+	 *
+	 * @param coor  Lattice coordinate from where the plaquette starts
+	 * @param j    Index of the first direction
+	 * @param k    Index of the second direction
+	 * @return      Field from the forward plaquette
+	 */
+	public YMField FieldFromForwardPlaquette(int[] coor, int j, int k) {
+		
+		YMField res = cells[index(coor)].getEmptyField(numCol);
+		int[] coor1 = new int[numDim];
+		int[] coor2 = new int[numDim];
+		System.arraycopy(coor, 0, coor1, 0, coor.length);
+		System.arraycopy(coor, 0, coor2, 0, coor.length);
+		coor1[j]++;
+		coor2[k]++;
+
+		res.FieldFromForwardPlaquette(cells[index(coor)].getU(j), cells[index(coor1)].getU(k), cells[index(coor2)].getU(j), cells[index(coor)].getU(k));
+
+		return res;
+	}
+	
+	/**
+	 * Calculates the field from the backward plaquette starting at lattice coordinate coor in the directions j and k.
+	 * The matrix multiplication is done in the concrete field class.
+	 * The backward plaquette is defined as follows:
+	 *      U_{x, jk} = U_{x, j} U^adj_{x+j-k, k} U^adj_{x-k, j} U_{x, k}
+	 *
+	 * @param coor  Lattice coordinate from where the plaquette starts
+	 * @param j    Index of the first direction
+	 * @param k    Index of the second direction
+	 * @return      Field from the backward plaquette
+	 */
+	public YMField FieldFromBackwardPlaquette(int[] coor, int j, int k) {
+		
+		YMField res = cells[index(coor)].getEmptyField(numCol);
+		int[] coor1 = new int[numDim];
+		int[] coor2 = new int[numDim];
+		System.arraycopy(coor, 0, coor1, 0, coor.length);
+		System.arraycopy(coor, 0, coor2, 0, coor.length);
+		coor1[j]++;
+		coor1[k]--;
+		coor2[k]--;
+
+		res.FieldFromBackwardPlaquette(cells[index(coor)].getU(j), cells[index(coor1)].getU(k), cells[index(coor2)].getU(j), cells[index(coor2)].getU(k));
+
+		return res;
+	}
+
 }

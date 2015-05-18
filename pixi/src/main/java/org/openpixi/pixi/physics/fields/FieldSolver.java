@@ -51,13 +51,13 @@ public class FieldSolver {
 		this.cellIterator = origin.cellIterator;
 	}
 
-	public void initializeIterator(CellIterator cellIterator, int numCellsX, int numCellsY, int numCellsZ) {
+	public void initializeIterator(CellIterator cellIterator, int[] numCells) {
 		this.cellIterator = cellIterator;
-		this.cellIterator.setNormalMode(numCellsX, numCellsY, numCellsZ);
+		this.cellIterator.setNormalMode(numCells);
 	}
 
-	public void changeSize(int numCellsX, int numCellsY, int numCellsZ) {
-		this.cellIterator.setNormalMode(numCellsX, numCellsY, numCellsZ);
+	public void changeSize(int[] numCells) {
+		this.cellIterator.setNormalMode(numCells);
 	}
 
 	public void step(Grid g, double timeStep) {

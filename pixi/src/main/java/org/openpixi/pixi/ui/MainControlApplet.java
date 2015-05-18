@@ -57,6 +57,9 @@ public class MainControlApplet extends JApplet
 
 	private JComboBox algorithmComboBox;
 	private JCheckBox traceCheck;
+	
+	private JComboBox colorIndexComboBox;
+	private JComboBox directionIndexComboBox;
 
 	private JTabbedPane tabs;
 
@@ -74,6 +77,16 @@ public class MainControlApplet extends JApplet
 
 	String[] solverString = {
 			"LeapFrog"};
+	
+	String[] colorString = {
+			"1",
+			"2",
+			"3"};
+	
+	String[] directionString = {
+			"x",
+			"y",
+			"z"};
 
 	/**
 	 * Listener for slider.
@@ -101,6 +114,22 @@ public class MainControlApplet extends JApplet
 			else {
 				relativisticCheck.setEnabled(false);
 			}
+		}
+	}
+	
+	class ColorListener implements ActionListener {
+		public void actionPerformed(ActionEvent eve) {
+			JComboBox cbox = (JComboBox) eve.getSource();
+			int id = cbox.getSelectedIndex();
+			simulationAnimation.colorIndexSet(id);
+		}
+	}
+	
+	class DirectionListener implements ActionListener {
+		public void actionPerformed(ActionEvent eve) {
+			JComboBox cbox = (JComboBox) eve.getSource();
+			int id = cbox.getSelectedIndex();
+			simulationAnimation.directionSet(id);
 		}
 	}
 
@@ -262,6 +291,24 @@ public class MainControlApplet extends JApplet
 		Box algorithmBox = Box.createVerticalBox();
 		algorithmBox.add(algorithmLabel);
 		algorithmBox.add(algorithmComboBox);
+		
+		colorIndexComboBox = new JComboBox(colorString);
+		colorIndexComboBox.setSelectedIndex(0);
+		colorIndexComboBox.addActionListener(new AlgorithmListener());
+		colorIndexComboBox.setPreferredSize(new Dimension(colorIndexComboBox.getPreferredSize().width, 5));
+		JLabel colorLabel = new JLabel("Color index");
+		Box colorBox = Box.createVerticalBox();
+		colorBox.add(colorLabel);
+		colorBox.add(colorIndexComboBox);
+		
+		directionIndexComboBox = new JComboBox(directionString);
+		directionIndexComboBox.setSelectedIndex(1);
+		directionIndexComboBox.addActionListener(new AlgorithmListener());
+		directionIndexComboBox.setPreferredSize(new Dimension(directionIndexComboBox.getPreferredSize().width, 5));
+		JLabel directionLabel = new JLabel("Field direction");
+		Box directionBox = Box.createVerticalBox();
+		directionBox.add(directionLabel);
+		directionBox.add(directionIndexComboBox);
 
 		startButton.addActionListener(new StartListener());
 		stopButton.addActionListener(new StopListener());
@@ -300,6 +347,10 @@ public class MainControlApplet extends JApplet
 		JPanel controlPanelDown = new JPanel();
 		controlPanelDown.setLayout(new FlowLayout());
 		settingControls.add(algorithmBox);
+		settingControls.add(Box.createVerticalGlue());
+		settingControls.add(colorBox);
+		settingControls.add(Box.createVerticalGlue());
+		settingControls.add(directionBox);
 		settingControls.add(Box.createVerticalGlue());
 		settingControls.add(relativisticCheck);
 		settingControls.add(Box.createVerticalGlue());

@@ -1,31 +1,30 @@
 package org.openpixi.pixi.physics.grid;
 
-import org.openpixi.pixi.physics.grid.YMField;
+public interface LinkMatrix {
 
-public abstract class LinkMatrix {
+	LinkMatrix add(LinkMatrix a);
+
+	LinkMatrix sub(LinkMatrix a);
+
+	LinkMatrix adj();
 	
-	public double[] e;
+	void selfadj();
+
+	LinkMatrix mult(double number);
+
+	LinkMatrix mult(LinkMatrix a);
+
+	YMField getAlgebraElement();
+
+	YMField proj();
+
+	void set(LinkMatrix a);
 	
-	public abstract LinkMatrix add (LinkMatrix a);
+	//Following methods could be exported to a new, "dirtier" interface in the future.
+	void set (int j, double value);
 	
-	public abstract LinkMatrix sub (LinkMatrix a);
+	double get (int j);
 	
-	public abstract void set (int j, double value);
-	
-	public abstract double get (int j);
-	
-	public abstract void adj ();
-	
-	public abstract void makeFirst ();
-	
-	public abstract double checkUnitarity ();
-	
-	public abstract LinkMatrix mult (double number);
-	
-	public abstract LinkMatrix mult (LinkMatrix a);
-	
-	public abstract YMField getField ();
-	
-	public abstract void set (LinkMatrix a);
+	YMField getLinearizedAlgebraElement();
 
 }

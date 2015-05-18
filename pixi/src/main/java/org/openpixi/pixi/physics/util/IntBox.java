@@ -16,14 +16,18 @@ public class IntBox implements Serializable
         this.max = max;
     }
 
-	public IntBox(int xmin, int xmax, int ymin, int ymax, int zmin, int zmax)
-    {
-        this(3, new int[] {xmin, ymin, zmin}, new int[] {xmax, ymax, zmax});
-	}
-
     public int getDim()
     {
         return this.dim;
+    }
+    
+    public int getNumCells()
+    {
+        int num = 1;
+        for(int i=0;i<dim;i++) {
+        	num *= getSize(i);
+        }
+        return num;
     }
 
     public int getMin(int i)
@@ -41,22 +45,7 @@ public class IntBox implements Serializable
         return getMax(i) - getMin(i) + 1;
     }
 
-    /*
-        Legacy getters
-     */
-
-	public int xmin()               {  return getMin(0);        }
-	public int xmax()               {  return getMax(0);        }
-	public int xsize()              {  return getSize(0);       }
-
-    public int ymin()               {  return getMin(1);        }
-    public int ymax()               {  return getMax(1);        }
-    public int ysize()              {  return getSize(1);       }
-
-    public int zmin()               {  return getMin(2);        }
-    public int zmax()               {  return getMax(2);        }
-    public int zsize()              {  return getSize(2);       }
-
+ 
     public boolean contains(int[] p)
     {
         for(int i = 0; i < this.dim; i++)

@@ -8,86 +8,66 @@ import java.io.Serializable;
  * WHEN ADDING NEW FIELDS THE COPY() METHOD NEEDS TO BE UPDATED !!!
  */
 public class Cell implements Serializable {
-	/**electric current in x-Direction*/
-	private double jx;
-	/**electric current in y-Direction*/
-	private double jy;
-	/**electric current in z-Direction*/
-	private double jz;
+	/**Local electric current in d directions*/
+	private YMField[] J;
 
-	/**sum of electric charges in a cell*/
-	private double rho;
-	/**electrostatic potential*/
-	private double phi;
+	/**Local charge density*/
+	private YMField rho;
 
-	/**electric field in x direction at time t+dt*/
-	private double Ex;
-	/**electric field in y direction at time t+dt*/
-	private double Ey;
-	/**electric field in z direction at time t+dt*/
-	private double Ez;
-	/**magnetic field in x direction at time t+dt*/
-	private double Bx;
-	/**magnetic field in y direction at time t+dt*/
-	private double By;
-	/**magnetic field in z direction at time t+dt*/
-	private double Bz;
-
-	/**electric field in x direction at time t*/
-	private double Exo;
-	/**electric field in y direction at time t*/
-	private double Eyo;
-	/**electric field in z direction at time t*/
-	private double Ezo;
-	/**magnetic field in x direction at time t*/
-	private double Bxo;
-	/**magnetic field in y direction at time t*/
-	private double Byo;
-	/**magnetic field in z direction at time t*/
-	private double Bzo;
-
-
-	public double getJx() {
-		return jx;
-	}
-
-	/**
-	 * Needs to be synchronized as we expect in the parallel version
-	 * two threads trying to update the field at the same time.
-	 */
-	public synchronized void addJx(double value) {
-		this.jx += value;
-	}
-
-	public double getJy() {
-		return jy;
-	}
-
-	/**
-	 * Needs to be synchronized as we expect in the parallel version
-	 * two threads trying to update the field at the same time.
-	 */
-	public synchronized void addJy(double value) {
-		this.jy += value;
-	}
+	/**Electric fields in d directions at time t+dt*/
+	private YMField[] E;
 	
-	public double getJz() {
-		return jz;
+	/**Purely spatial components of the field-strength tensor*/
+	private YMField[][] F;
+	
+	/**Link matrices at time t*/
+	private LinkMatrix[] U;
+	
+	/**Link matrices at time t+dt*/
+	private LinkMatrix[] Unext;
+
+	
+	public Cell(int dimensions, int colors) {
+		if(colors == 2) {
+			F = new SU2Field[dimensions][dimensions];
+			U = new SU2Matrix[dimensions];
+			Unext = new SU2Matrix[dimensions];
+			E = new SU2Field[dimensions];
+			J = new SU2Field[dimensions];
+			rho = new SU2Field();
+			
+			for(int i = 0; i < dimensions; i++)
+			{
+				U[i] = new SU2Matrix();
+				Unext[i] = new SU2Matrix();
+				E[i] = new SU2Field();
+				J[i] = new SU2Field();
+				
+				for(int j = 0; j < dimensions; j++) {
+					F[i][j] = new SU2Field();
+				}
+			}
+		}
+		else {}
 	}
 
 	/**
 	 * Needs to be synchronized as we expect in the parallel version
 	 * two threads trying to update the field at the same time.
 	 */
-	public synchronized void addJz(double value) {
-		this.jz += value;
+	public synchronized void addJ(int dir, YMField current) {
+		J[dir].addequate(current);
 	}
 
-	public double getRho() {
+	public YMField getJ(int dir) {
+		return J[dir];
+	}
+
+	public YMField getRho() {
 		return rho;
 	}
 
-	public void setRho(double rho) {
+	public void setRho(YMField rho) {
 		this.rho = rho;
 	}
 
@@ -95,132 +75,67 @@ public class Cell implements Serializable {
 	 * Needs to be synchronized as we expect in the parallel version
 	 * two threads trying to update the field at the same time.
 	 */
-	public synchronized void addRho(double value) {
-		this.rho += value;
+	public synchronized void addRho(YMField rho) {
+		this.rho.addequate(rho);
 	}
 
-	public double getPhi() {
-		return phi;
+	public YMField getE(int dir) {
+		return E[dir];
 	}
 
-	public void setPhi(double phi) {
-		this.phi = phi;
-	}
-
-	public double getEx() {
-		return Ex;
-	}
-
-	public void setEx(double ex) {
-		Ex = ex;
-	}
-
-	public double getEy() {
-		return Ey;
-	}
-
-	public void setEy(double ey) {
-		Ey = ey;
+	public void setE(int dir, YMField field) {
+		E[dir].set(field);
 	}
 	
-	public double getEz() {
-		return Ez;
-	}
-
-	public void setEz(double ez) {
-		Ez = ez;
-	}
-
-	public double getBx() {
-		return Bx;
-	}
-
-	public void setBx(double bx) {
-		Bx = bx;
+	public void addE(int dir, YMField field) {
+		E[dir].addequate(field);
 	}
 	
-	public double getBy() {
-		return By;
+	public LinkMatrix getU(int dir) {
+		return U[dir];
 	}
 
-	public void setBy(double by) {
-		By = by;
+	public void setU(int dir, LinkMatrix link) {
+		U[dir].set(link);
 	}
 	
-	public double getBz() {
-		return Bz;
+	public LinkMatrix getUnext(int dir) {
+		return Unext[dir];
 	}
 
-	public void setBz(double bz) {
-		Bz = bz;
+	public void setUnext(int dir, LinkMatrix link) {
+		Unext[dir].set(link);
 	}
 
-	public double getExo() {
-		return Exo;
+	public YMField getFieldStrength(int i, int j) {
+		return F[i][j];
 	}
 
-	public void setExo(double exo) {
-		Exo = exo;
-	}
-
-	public double getEyo() {
-		return Eyo;
-	}
-
-	public void setEyo(double eyo) {
-		Eyo = eyo;
+	public void setFieldStrength(int i, int j, YMField field) {
+		F[i][j].set(field);
 	}
 	
-	public double getEzo() {
-		return Ezo;
-	}
-
-	public void setEzo(double ezo) {
-		Ezo = ezo;
-	}
-	
-	public double getBxo() {
-		return Bxo;
-	}
-
-	public void setBxo(double bxo) {
-		Bxo = bxo;
-	}
-	
-	public double getByo() {
-		return Byo;
-	}
-
-	public void setByo(double byo) {
-		Byo = byo;
-	}
-
-	public double getBzo() {
-		return Bzo;
-	}
-
-	public void setBzo(double bzo) {
-		Bzo = bzo;
-	}
-
 
 	public void resetCurrent() {
-		jx = 0;
-		jy = 0;
-		jz = 0;
+		for (int i=0;i<J.length;i++) {
+			J[i].reset();
+		}
 	}
 
 	public void resetCharge() {
-		rho = 0;
+		rho.reset();
+	}
+	
+	public YMField getEmptyField(int colors) {
+		if(colors == 2) {
+			return new SU2Field();
+		} else {System.out.println("Error!! Number of colors should be equal to 2!!"); return null;}
 	}
 
-	public void storeFields() {
-		Exo = Ex;
-		Eyo = Ey;
-		Ezo = Ez;
-		Bxo = Bx;
-		Byo = By;
-		Bzo = Bz;
+	public void reassignLinks() {
+		LinkMatrix[] temp = U;
+	    U = Unext;
+	    Unext = temp;
 	}
 
 	/**
@@ -231,27 +146,21 @@ public class Cell implements Serializable {
 	 * thus, a manual solution is more preferable than reflection.
 	 */
 	public void copyFrom(Cell other) {
-		this.jx = other.jx;
-		this.jy = other.jy;
-		this.jz = other.jz;
-		this.rho = other.rho;
-		this.phi = other.phi;
-		this.Ex = other.Ex;
-		this.Ey = other.Ey;
-		this.Ez = other.Ez;
-		this.Bx = other.Bx;
-		this.By = other.By;
-		this.Bz = other.Bz;
-		this.Exo = other.Exo;
-		this.Eyo = other.Eyo;
-		this.Ezo = other.Ezo;
-		this.Bxo = other.Bxo;
-		this.Byo = other.Byo;
-		this.Bzo = other.Bzo;
-	}
+		
+		for (int i=0;i<other.F.length;i++) {
+			System.arraycopy(other.F[i],0,this.F[i],0,other.F[i].length);
+		}
 
+		System.arraycopy(other.J, 0, this.J, 0, other.J.length);
+		System.arraycopy(other.U, 0, this.U, 0, other.U.length);
+		System.arraycopy(other.Unext, 0, this.Unext, 0, other.Unext.length);
+		System.arraycopy(other.E, 0, this.E, 0, other.E.length);
+		this.rho.set(other.rho);
+		
+	}
+/*
 	@Override
 	public String toString() {
 		return String.format("E[%.3f,%.3f] B[%.3f,%.3f] J[%.3f,%.3f]", Ex, Ey, Ez, Bx, By, Bz, jx, jy, jz);
-	}
+	}*/
 }
