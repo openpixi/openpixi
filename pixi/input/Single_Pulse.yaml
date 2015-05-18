@@ -1,0 +1,29 @@
+# Single pulse test
+
+gridStep: 10
+numberOfDimensions: 3
+numberOfColors: 2
+gridCells: [10, 10, 10]
+poissonsolver: empty
+timeStep: 0.1
+duration: 1000
+
+fields:
+  SU2PlanePulses:
+      # direction vector of the plane pulse
+    - dir: [1.0, 0.0, 0.0]
+
+      # position of the pulse (meaning: any position of the wave front)
+      pos: [50.0, 0.0, 0.0]
+
+      # spatial part of the pulse amplitude
+      aSpatial: [0.0, 1.0, 0.0]
+
+      # color part of the pulse amplitude
+      aColor: [1.0, 0.0, 0.0]
+
+      # magnitude of the pulse amplitude
+      a: 0.1
+
+      # width of the pulse
+      sigma: 10

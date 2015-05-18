@@ -1,10 +1,12 @@
 package org.openpixi.pixi.ui.util.yaml;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.openpixi.pixi.physics.GeneralBoundaryType;
 import org.openpixi.pixi.physics.Settings;
 import org.openpixi.pixi.physics.fields.EmptyPoissonSolver;
+import org.openpixi.pixi.physics.fields.FieldGenerators.IFieldGenerator;
 import org.openpixi.pixi.physics.fields.FieldSolver;
 import org.openpixi.pixi.physics.fields.YangMillsSolver;
 import org.openpixi.pixi.physics.grid.EmptyInterpolator;
@@ -26,6 +28,7 @@ public class YamlSettings {
 	public String poissonsolver;
 	public List<YamlParticle> particles;
 	public List<YamlParticleStream> streams;
+    public YamlFields fields;
 	public YamlOutput output;
 
 	public void applyTo(Settings settings) {
@@ -42,6 +45,7 @@ public class YamlSettings {
         settings.setCouplingConstant(1.0);
         settings.setParticleSolver(new LeapFrogRelativistic(settings.getNumberOfDimensions(), settings.getSpeedOfLight()));
         settings.setNumOfThreads(1);
+        settings.setFieldGenerators(new ArrayList<IFieldGenerator>());
 
 		// Custom settings:
 		if (timeStep != null) {
@@ -102,6 +106,11 @@ public class YamlSettings {
 				s.applyTo(settings);
 			}
 		}
+
+        if(fields != null)
+        {
+            fields.applyTo(settings);
+        }
 
 		if (output != null) {
 			output.applyTo(settings);

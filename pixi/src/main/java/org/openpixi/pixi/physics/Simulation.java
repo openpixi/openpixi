@@ -22,6 +22,8 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
+import org.openpixi.pixi.physics.fields.FieldGenerators.IFieldGenerator;
+import org.openpixi.pixi.physics.fields.FieldGenerators.SU2PlaneWave;
 import org.openpixi.pixi.physics.fields.PoissonSolver;
 import org.openpixi.pixi.physics.force.Force;
 import org.openpixi.pixi.physics.force.CombinedForce;
@@ -103,6 +105,11 @@ public class Simulation {
 	 */
 	private PoissonSolver poisolver;
 
+    /**
+     * List of field generators which are applied when the simulation starts.
+     */
+    private ArrayList<IFieldGenerator>  fieldGenerators;
+
 	public Interpolation getInterpolation() {
 		return interpolation;
 	}
@@ -134,6 +141,9 @@ public class Simulation {
 	}
     public double getCouplingConstant() {
         return couplingConstant;
+    }
+    public double getTimeStep() {
+        return tstep;
     }
 
     public ParticleMover getParticleMover()
@@ -193,6 +203,17 @@ public class Simulation {
 		interpolation = new LocalInterpolation(
 				settings.getInterpolator(), settings.getParticleIterator());
 		particleGridInitializer.initialize(interpolation, poisolver, particles, grid);
+
+        //Cycle through field generators and apply field configurations to the Grid.
+        fieldGenerators = settings.getFieldGenerators();
+        for (int f = 0; f < fieldGenerators.size(); f++)
+        {
+            fieldGenerators.get(f).applyFieldConfiguration(this);
+        }
+		/*
+			TODO After running through each field generator we should check if the intial state is consistent.
+			(e.g. check if Gauss law is fulfilled.)
+		 */
 
 		prepareAllParticles();
 		

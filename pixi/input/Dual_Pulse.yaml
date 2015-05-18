@@ -1,0 +1,25 @@
+# Single pulse test
+
+gridStep: 10
+numberOfDimensions: 3
+numberOfColors: 2
+gridCells: [32, 2, 2]
+poissonsolver: empty
+timeStep: 0.1
+duration: 1000
+
+fields:
+  SU2PlanePulses:
+    - dir: [1.0, 0.0, 0.0]
+      pos: [80.0, 0.0, 0.0]
+      aSpatial: [0.0, 1.0, 0.0]
+      aColor: [1.0, 0.0, 0.0]
+      a: 0.1
+      sigma: 10
+
+    - dir: [1.0, 0.0, 0.0]
+      pos: [240.0, 0.0, 0.0]
+      aSpatial: [0.0, 0.0, 1.0]
+      aColor: [1.0, 0.0, 0.0]
+      a: 0.1
+      sigma: 10
