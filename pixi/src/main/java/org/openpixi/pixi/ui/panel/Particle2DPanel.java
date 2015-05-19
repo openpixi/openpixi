@@ -118,6 +118,8 @@ public class Particle2DPanel extends AnimationPanel {
 		
 		int colorIndex = getSimulationAnimation().getColorIndex();
 		int dirIndex = getSimulationAnimation().getDirectionIndex();
+		double eFactor = s.grid.getLatticeSpacing()*s.getTimeStep()*s.getCouplingConstant();
+		double aFactor = s.grid.getLatticeSpacing()*s.getCouplingConstant();
 		
 		if(drawCurrentGrid)
 		{
@@ -157,8 +159,8 @@ public class Particle2DPanel extends AnimationPanel {
 					pos[1] = k;
 					
 //drawArrow(graph, xstart, ystart, (int) Math.round(scale * s.grid.getEx(i,k)*sx + xstart), (int) Math.round(scale* s.grid.getEy(i,k)*sy + ystart));
-                    drawArrow(graph, xstart, ystart2, (int) Math.round(scale*s.grid.getE(pos, 0).get(colorIndex)*sx+xstart),ystart2, Color.BLACK);
-                    drawArrow(graph, xstart2, ystart, xstart2, (int) Math.round(scale*s.grid.getE(pos, 1).get(colorIndex)*sy+ystart), Color.GREEN);
+                    drawArrow(graph, xstart, ystart2, (int) Math.round(scale*s.grid.getE(pos, 0).get(colorIndex)/eFactor*sx+xstart),ystart2, Color.BLACK);
+                    drawArrow(graph, xstart2, ystart, xstart2, (int) Math.round(scale*s.grid.getE(pos, 1).get(colorIndex)/eFactor*sy+ystart), Color.GREEN);
                     //drawArrow(graph, xstart, ystart, xstart, (int) Math.round(scale*s.grid.getBz(i,k)*sy+ystart), Color.RED);
 				}
 			//return;
