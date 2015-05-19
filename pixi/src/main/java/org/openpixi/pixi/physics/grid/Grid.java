@@ -260,6 +260,15 @@ public class Grid {
 	}
 
 	/**
+	 * Returns number of dimensions of the grid.
+	 * @return	Number of dimensions
+	 */
+	public int getNumberOfDimensions()
+	{
+		return numDim;
+	}
+
+	/**
 	 * Main constructor for the Grid class. Given a settings file it initializes the lattice and sets up the FieldSolver
 	 * and the CellIterator.
 	 * @param settings  Settings instance
