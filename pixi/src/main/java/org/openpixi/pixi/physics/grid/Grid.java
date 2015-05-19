@@ -83,7 +83,7 @@ public class Grid {
 	 * @return          YMField instance of the (dir)-component of the current.
 	 */
 	public YMField getJ(int[] coor, int dir) {
-		return cells[index(coor)].getJ(dir);
+		return cells[getCellIndex(coor)].getJ(dir);
 	}
 
 	/**
@@ -93,7 +93,7 @@ public class Grid {
 	 * @param field     YMField to be added to the (dir)-component of the current.
 	 */
 	public void addJ(int[] coor, int dir, YMField field) {
-		cells[index(coor)].addJ(dir, field);
+		cells[getCellIndex(coor)].addJ(dir, field);
 	}
 
 	/**
@@ -102,7 +102,7 @@ public class Grid {
 	 * @return          YMField instance of the charge density
 	 */
 	public YMField getRho(int[] coor) {
-		return cells[index(coor)].getRho();
+		return cells[getCellIndex(coor)].getRho();
 	}
 
 	/**
@@ -111,7 +111,7 @@ public class Grid {
 	 * @param field     YMField instance which the electric field should be set to.
 	 */
 	public void setRho(int[] coor, YMField field) {
-		cells[index(coor)].setRho(field);
+		cells[getCellIndex(coor)].setRho(field);
 	}
 
 	/**
@@ -120,7 +120,7 @@ public class Grid {
 	 * @param field     YMField instance which should be added.
 	 */
 	public void addRho(int[] coor, YMField field) {
-		cells[index(coor)].addRho(field);
+		cells[getCellIndex(coor)].addRho(field);
 	}
 
 	/**
@@ -130,7 +130,7 @@ public class Grid {
 	 * @return          YMField instance of the (dir)-component
 	 */
 	public YMField getE(int[] coor, int dir) {
-		return cells[index(coor)].getE(dir);
+		return cells[getCellIndex(coor)].getE(dir);
 	}
 
 	/**
@@ -140,7 +140,7 @@ public class Grid {
 	 * @param field     YMField instance which the electric field should be set to.
 	 */
 	public void setE(int[] coor, int dir, YMField field) {
-		cells[index(coor)].setE(dir, field);
+		cells[getCellIndex(coor)].setE(dir, field);
 	}
 
 	/**
@@ -150,7 +150,7 @@ public class Grid {
 	 * @param field     YMField instance which should be added.
 	 */
 	public void addE(int[] coor, int dir, YMField field) {
-		cells[index(coor)].addE(dir, field);
+		cells[getCellIndex(coor)].addE(dir, field);
 	}
 
 
@@ -162,7 +162,7 @@ public class Grid {
 	 * @return          YMField instance of the (dir1, dir2)-component
 	 */
 	public YMField getFTensor(int[] coor, int dir1, int dir2) {
-		return cells[index(coor)].getFieldStrength(dir1, dir2);
+		return cells[getCellIndex(coor)].getFieldStrength(dir1, dir2);
 	}
 
 	/**
@@ -173,7 +173,7 @@ public class Grid {
 	 * @param field     YMField instance which the field strength tensor should be set to.
 	 */
 	public void setFTensor(int[] coor, int dir1, int dir2, YMField field) {
-		cells[index(coor)].setFieldStrength(dir1, dir2, field);
+		cells[getCellIndex(coor)].setFieldStrength(dir1, dir2, field);
 	}
 
 	/**
@@ -183,7 +183,7 @@ public class Grid {
 	 * @return      Instance of the gauge link
 	 */
 	public LinkMatrix getU(int[] coor, int dir) {
-		return cells[index(coor)].getU(dir);
+		return cells[getCellIndex(coor)].getU(dir);
 	}
 
 	/**
@@ -193,7 +193,7 @@ public class Grid {
 	 * @param mat   LinkMatrix instance
 	 */
 	public void setU(int[] coor, int dir, LinkMatrix mat) {
-		cells[index(coor)].setU(dir, mat);
+		cells[getCellIndex(coor)].setU(dir, mat);
 	}
 
 	/**
@@ -203,7 +203,7 @@ public class Grid {
 	 * @return      Instance of the gauge link
 	 */
 	public LinkMatrix getUnext(int[] coor, int dir) {
-		return cells[index(coor)].getUnext(dir);
+		return cells[getCellIndex(coor)].getUnext(dir);
 	}
 
 	/**
@@ -213,7 +213,7 @@ public class Grid {
 	 * @param mat   LinkMatrix instance
 	 */
 	public void setUnext(int[] coor, int dir, LinkMatrix mat) {
-		cells[index(coor)].setUnext(dir, mat);
+		cells[getCellIndex(coor)].setUnext(dir, mat);
 	}
 
 	/**
@@ -221,7 +221,7 @@ public class Grid {
 	 * @param coor  Lattice coordinate of the cell
 	 */
 	public void resetCharge(int[] coor) {
-		cells[index(coor)].resetCharge();
+		cells[getCellIndex(coor)].resetCharge();
 	}
 
 	/**
@@ -248,7 +248,7 @@ public class Grid {
 	 * @return      Cell instance at lattice coordinates with respect to periodic boundary conditions
 	 */
 	public Cell getCell(int[] coor) {
-		return cells[index(coor)];
+		return cells[getCellIndex(coor)];
 	}
 
 	/**
@@ -408,6 +408,48 @@ public class Grid {
 		return getCell(coor).getU(dir);
 	}
 
+	/**
+	 * This method translates a cell index to the corresponding lattice position with respect to periodic boundary
+	 * donitions.
+	 *
+	 * @param index	Cell index
+	 * @return		Lattice positions of the cell
+	 */
+	public int[] getCellPos(int index)
+	{
+		int[] pos = new int[this.numDim];
+
+		for(int i = this.numDim-1; i >= 0; i--)
+		{
+			pos[i] = index % this.numCells[i];
+			index -= pos[i];
+			index /= this.numCells[i];
+		}
+
+		return pos;
+	}
+
+	/**
+	 * This method translates a lattice coordinate vector to the corresponding cell id with respect to periodic boundary
+	 * conditions.
+	 *
+	 * @param coor  lattice coordinate vector
+	 * @return      cell id
+	 */
+	public int getCellIndex(int[] coor)
+	{
+		//ensure periodicity
+		int[] periodicCoor = periodic(coor);
+
+		int cellIndex = periodicCoor[0];
+
+		for(int i = 1; i < coor.length; i++)
+		{
+			cellIndex *= numCells[i];
+			cellIndex += periodicCoor[i];
+		}
+		return  cellIndex;
+	}
 
 	/**
 	 * This method translates a lattice coordinate vector to the corresponding cell id with respect to periodic boundary
@@ -521,7 +563,7 @@ public class Grid {
 	 */
 	public YMField FieldFromForwardPlaquette(int[] coor, int j, int k) {
 		
-		YMField res = cells[index(coor)].getEmptyField(numCol);
+		YMField res = cells[getCellIndex(coor)].getEmptyField(numCol);
 		int[] coor1 = new int[numDim];
 		int[] coor2 = new int[numDim];
 		System.arraycopy(coor, 0, coor1, 0, coor.length);
@@ -529,7 +571,7 @@ public class Grid {
 		coor1[j]++;
 		coor2[k]++;
 
-		res.FieldFromForwardPlaquette(cells[index(coor)].getU(j), cells[index(coor1)].getU(k), cells[index(coor2)].getU(j), cells[index(coor)].getU(k));
+		res.FieldFromForwardPlaquette(cells[getCellIndex(coor)].getU(j), cells[getCellIndex(coor1)].getU(k), cells[getCellIndex(coor2)].getU(j), cells[getCellIndex(coor)].getU(k));
 
 		return res;
 	}
@@ -547,7 +589,7 @@ public class Grid {
 	 */
 	public YMField FieldFromBackwardPlaquette(int[] coor, int j, int k) {
 		
-		YMField res = cells[index(coor)].getEmptyField(numCol);
+		YMField res = cells[getCellIndex(coor)].getEmptyField(numCol);
 		int[] coor1 = new int[numDim];
 		int[] coor2 = new int[numDim];
 		System.arraycopy(coor, 0, coor1, 0, coor.length);
@@ -556,7 +598,7 @@ public class Grid {
 		coor1[k]--;
 		coor2[k]--;
 
-		res.FieldFromBackwardPlaquette(cells[index(coor)].getU(j), cells[index(coor1)].getU(k), cells[index(coor2)].getU(j), cells[index(coor2)].getU(k));
+		res.FieldFromBackwardPlaquette(cells[getCellIndex(coor)].getU(j), cells[getCellIndex(coor1)].getU(k), cells[getCellIndex(coor2)].getU(j), cells[getCellIndex(coor2)].getU(k));
 
 		return res;
 	}
