@@ -62,25 +62,10 @@ public class ParallelCellIterator extends CellIterator {
 
 		public Object call() throws Exception {
 			for (int cellIdx = threadIdx; cellIdx < numOfCells; cellIdx += numOfThreads) {
-                int[] pos = convertCellIndexToPosition(cellIdx, dimensions);
+                int[] pos = grid.getCellPos(cellIdx);
 				action.execute(grid, pos);
 			}
 			return null;
 		}
-		//TODO This should happen only once to avoid code duplication
-        private int[] convertCellIndexToPosition(int ci, IntBox dimensions)
-        {
-            int dim = dimensions.getDim();
-            int[] pos = new int[dim];
-
-            for(int i = 0; i < dim; i++)
-            {
-                pos[i] = ci % dimensions.getSize(i) + dimensions.getMin(i);
-                ci -= pos[i];
-                ci /= dimensions.getSize(i);
-            }
-
-            return pos;
-        }
 	}
 }
