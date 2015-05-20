@@ -1,25 +1,25 @@
-# Single pulse test
+# Dual pulse test
 
-gridStep: 10
+gridStep: 1
 numberOfDimensions: 3
 numberOfColors: 2
-gridCells: [32, 2, 2]
+gridCells: [1024, 1, 1]
 poissonsolver: empty
-timeStep: 0.1
+timeStep: 0.3
 duration: 1000
 
 fields:
   SU2PlanePulses:
-    - dir: [1.0, 0.0, 0.0]
-      pos: [80.0, 0.0, 0.0]
+    - dir: [-1.0, 0.0, 0.0]
+      pos: [256, 0.0, 0.0]
       aSpatial: [0.0, 1.0, 0.0]
       aColor: [1.0, 0.0, 0.0]
-      a: 0.1
-      sigma: 10
+      a: 1
+      sigma: 8
 
     - dir: [1.0, 0.0, 0.0]
-      pos: [240.0, 0.0, 0.0]
-      aSpatial: [0.0, 0.0, 1.0]
-      aColor: [1.0, 0.0, 0.0]
-      a: 0.1
-      sigma: 10
+      pos: [768, 0.0, 0.0]
+      aSpatial: [0.0,1.0, 0.0]
+      aColor: [0.0, 1.0, 0.0]
+      a: 1
+      sigma: 8

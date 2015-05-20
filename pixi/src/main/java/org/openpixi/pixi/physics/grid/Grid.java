@@ -260,6 +260,15 @@ public class Grid {
 	}
 
 	/**
+	 * Returns number of dimensions of the grid.
+	 * @return	Number of dimensions
+	 */
+	public int getNumberOfDimensions()
+	{
+		return numDim;
+	}
+
+	/**
 	 * Main constructor for the Grid class. Given a settings file it initializes the lattice and sets up the FieldSolver
 	 * and the CellIterator.
 	 * @param settings  Settings instance
@@ -379,11 +388,7 @@ public class Grid {
 			Plaquette calculation
 		 */
 
-		LinkMatrix P = U4.mult(U3);
-		P = P.mult(U2);
-		P = P.mult(U1);
-
-		return P;
+		return U4.mult(U3).mult(U2).mult(U1);
 	}
 
 	/**
@@ -508,7 +513,7 @@ public class Grid {
 
 		for(int i = 0; i < numDim; i++)
 		{
-			shiftedCoordinate[i] =+ orientation * unitVectors[dir][i];
+			shiftedCoordinate[i] += orientation * unitVectors[dir][i];
 		}
 
 
