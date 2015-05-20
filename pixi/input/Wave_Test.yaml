@@ -1,9 +1,9 @@
 # Wave test
 
-gridStep: 10
+gridStep: 1
 numberOfDimensions: 3
 numberOfColors: 2
-gridCells: [10, 10, 10]
+gridCells: [256, 1, 1]
 poissonsolver: empty
 timeStep: 0.1
 duration: 1000
@@ -11,13 +11,13 @@ duration: 1000
 fields:
   SU2PlaneWaves:
       # wave vector of the plane wave
-    - k: [20.0, 20.0, 20.0]
+    - k: [0.490874, 0.0, 0.0]
 
       # spatial part of the wave amplitude
-      aSpatial: [1.0, 1.0, 1.0]
+      aSpatial: [0.0, 1.0,0.0]
 
       # color part of the wave amplitude
-      aColor: [1.0, 1.0, 1.0]
+      aColor: [1.0, 0.0, 0.0]
 
       # magnitude of the wave amplitude
-      a: 0.001
+      a: 0.1
