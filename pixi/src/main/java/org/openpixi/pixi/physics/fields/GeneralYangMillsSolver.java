@@ -38,6 +38,7 @@ public class GeneralYangMillsSolver extends FieldSolver
 	{
 		private double as;
 		private double at;
+		private double g;
 
 		/**
 		 * Updates the electric fields at a given coordinate
@@ -63,8 +64,8 @@ public class GeneralYangMillsSolver extends FieldSolver
 					plaquettes[0] = plaquettes[0].add(plaquettes[p]);
 				}
 
-				YMField currentE =  grid.getE(coor, i);
-				grid.setE(coor, i, currentE.sub(plaquettes[0].proj().mult(2*at/(as*as))));
+				YMField currentE =  grid.getE(coor, i).sub(plaquettes[0].proj().mult(2 * at / (as * as )));
+				grid.setE(coor, i, currentE);
 			}
 		}
 	}
@@ -85,8 +86,8 @@ public class GeneralYangMillsSolver extends FieldSolver
 
 			for(int k=0;k<coor.length;k++) {
 
-				V = grid.getE(coor, k).mult(- at).getLinkExact();	//minus sign takes take of conjugation
-				grid.setUnext( coor, k, V.mult( grid.getU(coor, k) ) );
+				V = grid.getE(coor, k).mult(at).getLinkExact();	//minus sign takes take of conjugation
+				grid.setUnext( coor, k, grid.getU(coor, k).mult(V) );
 
 			}
 		}
