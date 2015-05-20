@@ -56,7 +56,7 @@ public class ElectricFieldPanel extends AnimationPanel {
 		int dirIndex = getSimulationAnimation().getDirectionIndex();
 		// scale factor for electric field
 		double scaleE = 1;
-		double eFactor = s.grid.getLatticeSpacing()*s.getTimeStep()*s.getCouplingConstant();
+		double eFactor = s.grid.getLatticeSpacing()*s.getCouplingConstant();//s.grid.getLatticeSpacing()*s.getTimeStep()*s.getCouplingConstant();
 		double aFactor = s.grid.getLatticeSpacing()*s.getCouplingConstant();
 
 		// Draw electric field:

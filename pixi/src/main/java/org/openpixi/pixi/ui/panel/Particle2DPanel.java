@@ -118,7 +118,7 @@ public class Particle2DPanel extends AnimationPanel {
 		
 		int colorIndex = getSimulationAnimation().getColorIndex();
 		int dirIndex = getSimulationAnimation().getDirectionIndex();
-		double eFactor = s.grid.getLatticeSpacing()*s.getTimeStep()*s.getCouplingConstant();
+		double eFactor = s.grid.getLatticeSpacing()*s.getCouplingConstant();//s.grid.getLatticeSpacing()*s.getTimeStep()*s.getCouplingConstant();
 		double aFactor = s.grid.getLatticeSpacing()*s.getCouplingConstant();
 		
 		if(drawCurrentGrid)
