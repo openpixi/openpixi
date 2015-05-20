@@ -388,11 +388,7 @@ public class Grid {
 			Plaquette calculation
 		 */
 
-		LinkMatrix P = U4.mult(U3);
-		P = P.mult(U2);
-		P = P.mult(U1);
-
-		return P;
+		return U4.mult(U3).mult(U2).mult(U1);
 	}
 
 	/**
