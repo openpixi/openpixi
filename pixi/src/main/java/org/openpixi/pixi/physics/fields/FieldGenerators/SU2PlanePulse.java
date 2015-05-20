@@ -42,6 +42,7 @@ public class SU2PlanePulse implements IFieldGenerator {
 		this.s = s;
 		this.g = s.grid;
 		this.timeStep = s.getTimeStep();
+		double c = s.getSpeedOfLight();
 
 		/*
 			Setup the field amplitude for the plane pulse.
@@ -66,9 +67,9 @@ public class SU2PlanePulse implements IFieldGenerator {
 		/*
 			Cycle through each cell and apply the plane pulse configuration to the links and electric fields.
 		 */
-		for (int c = 0; c < numberOfCells; c++)
+		for (int ci = 0; ci < numberOfCells; ci++)
 		{
-			int[] cellPosition = g.getCellPos(c);
+			int[] cellPosition = g.getCellPos(ci);
 			double[] currentPosition =  getPosition(cellPosition);
 
 			/*
@@ -81,10 +82,12 @@ public class SU2PlanePulse implements IFieldGenerator {
 			}
 
 			//Multiplicative factor for the plane pulse at t = - dt/2 (for electric fields)
-			double phaseE = scalarProduct + s.getTimeStep()/2.0;
-			double factorForE = - Math.exp(-1.0 / (2.0 * sigma * sigma) * Math.pow(phaseE, 2.0)) * phaseE / (sigma * sigma);
+			double phaseE = scalarProduct + c*timeStep/2.0;
+			double factorForE =  c * phaseE / Math.pow(sigma, 2.0) *
+					Math.exp(- Math.pow(phaseE / this.sigma, 2.0) / 2.0);
 			//Multiplicative factor for the plane pulse at t = 0 (for links)
-			double factorForU = Math.exp(-1.0 / (2.0 * this.sigma * this.sigma) * Math.pow(scalarProduct, 2.0));
+			double phaseU = scalarProduct;
+			double factorForU = Math.exp(- Math.pow(phaseU / this.sigma, 2.0) / 2.0);
 
 
 

@@ -10,7 +10,7 @@ duration: 1000
 
 fields:
   SU2PlanePulses:
-    - dir: [-1.0, 0.0, 0.0]
+    - dir: [1.0, 0.0, 0.0]
       pos: [256, 0.0, 0.0]
       aSpatial: [0.0, 1.0, 0.0]
       aColor: [1.0, 0.0, 0.0]
