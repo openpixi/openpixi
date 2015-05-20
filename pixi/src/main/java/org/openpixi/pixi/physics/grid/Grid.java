@@ -514,7 +514,7 @@ public class Grid {
 
 		for(int i = 0; i < numDim; i++)
 		{
-			shiftedCoordinate[i] =+ orientation * unitVectors[dir][i];
+			shiftedCoordinate[i] += orientation * unitVectors[dir][i];
 		}
 
 
