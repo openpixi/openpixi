@@ -164,11 +164,8 @@ public void addequate (YMField a) {
 	public LinkMatrix getLink () {
 		
 		double sum = (v[0]*v[0]+v[1]*v[1]+v[2]*v[2])/4;
-		if (sum>1) { System.out.println("Electric fields too large!\n"); return new SU2Matrix(); }
-		else { 
-			SU2Matrix b = new SU2Matrix(Math.sqrt(1.0-sum), v[0]/2, v[1]/2, v[2]/2);
-			return b;
-		}
+		SU2Matrix b = new SU2Matrix(Math.sqrt(1.0-sum), v[0]/2, v[1]/2, v[2]/2);
+		return b;
 	}
 	
 	public LinkMatrix getLinkExact () {
@@ -181,11 +178,8 @@ public void addequate (YMField a) {
 		} else {
 			sinfakt = 0.5/mod*Math.sin(mod);
 		}
-		if (sum>1) { System.out.println("Electric fields too large!\n"); return new SU2Matrix(); }
-		else {
-			SU2Matrix b = new SU2Matrix(Math.cos(mod), v[0]*sinfakt, v[1]*sinfakt, v[2]*sinfakt);
-			return b;
-		}
+		SU2Matrix b = new SU2Matrix(Math.cos(mod), v[0]*sinfakt, v[1]*sinfakt, v[2]*sinfakt);
+		return b;
 	}
 
 }
