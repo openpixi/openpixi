@@ -287,6 +287,16 @@ public class SU2Matrix implements LinkMatrix {
 		return field;
 	}
 
+	/**
+	 * Returns the trace of the matrix.
+	 *
+	 * @return	Trace of the matrix.
+	 */
+	public double getTrace()
+	{
+		return 2*e[0];
+	}
+
 
 
 }

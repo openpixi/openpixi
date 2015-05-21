@@ -27,4 +27,6 @@ public interface LinkMatrix {
 	
 	YMField getLinearizedAlgebraElement();
 
+	double getTrace();
+
 }
