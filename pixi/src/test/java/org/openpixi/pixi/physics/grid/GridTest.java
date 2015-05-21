@@ -5,7 +5,7 @@ import org.junit.Test;
 import org.openpixi.pixi.physics.GeneralBoundaryType;
 import org.openpixi.pixi.physics.Settings;
 import org.openpixi.pixi.physics.Simulation;
-import org.openpixi.pixi.physics.fields.FieldGenerators.RandomSU2Fields;
+import org.openpixi.pixi.physics.fields.FieldGenerators.SU2RandomFields;
 import org.openpixi.pixi.physics.fields.GeneralYangMillsSolver;
 import org.openpixi.pixi.physics.solver.relativistic.LeapFrogRelativistic;
 
@@ -17,7 +17,7 @@ public class GridTest {
 	public void testLinkMethods() {
 		// Initialize simulation
 		Settings settings = getStandardSettings();
-		settings.addFieldGenerator(new RandomSU2Fields());
+		settings.addFieldGenerator(new SU2RandomFields());
 		Simulation s = new Simulation(settings);
 		Grid g = s.grid;
 
@@ -81,7 +81,7 @@ public class GridTest {
 		int numberOfTests = 10;
 
 		Settings settings = getStandardSettings();
-		settings.addFieldGenerator(new RandomSU2Fields());
+		settings.addFieldGenerator(new SU2RandomFields());
 		Simulation s = new Simulation(settings);
 		Grid g = s.grid;
 
@@ -107,7 +107,7 @@ public class GridTest {
 		int numberOfTests = 10;
 
 		Settings settings = getStandardSettings();
-		settings.addFieldGenerator(new RandomSU2Fields());
+		settings.addFieldGenerator(new SU2RandomFields());
 		Simulation s = new Simulation(settings);
 		Grid g = s.grid;
 

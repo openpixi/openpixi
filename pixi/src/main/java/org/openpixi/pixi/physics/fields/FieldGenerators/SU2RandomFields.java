@@ -6,13 +6,13 @@ import org.openpixi.pixi.physics.grid.Grid;
 import org.openpixi.pixi.physics.grid.SU2Field;
 import org.openpixi.pixi.physics.grid.SU2Matrix;
 
-public class RandomSU2Fields implements IFieldGenerator {
+public class SU2RandomFields implements IFieldGenerator {
 
     private int numberOfDimensions;
     private int numberOfComponents;
     private Grid g;
 
-    public RandomSU2Fields()
+    public SU2RandomFields()
     {
     }
 

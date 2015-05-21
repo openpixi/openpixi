@@ -16,17 +16,16 @@ public interface LinkMatrix {
 
 	YMField getAlgebraElement();
 
-	YMField proj();
-
-	void set(LinkMatrix a);
-	
-	//Following methods could be exported to a new, "dirtier" interface in the future.
-	void set (int j, double value);
-	
-	double get (int j);
-	
 	YMField getLinearizedAlgebraElement();
 
 	double getTrace();
 
+	YMField proj();
+
+	void set(LinkMatrix a);
+
+	//Following methods could be exported to a new, "dirtier" interface in the future.
+	void set (int j, double value);
+	
+	double get (int j);
 }
