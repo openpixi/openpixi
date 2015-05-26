@@ -54,11 +54,18 @@ public class ElectricFieldPanel extends AnimationPanel {
 
 		int colorIndex = getSimulationAnimation().getColorIndex();
 		int dirIndex = getSimulationAnimation().getDirectionIndex();
-		// scale factor for electric field
-		double scaleE = 1;
+
+
+		/*
+			Note: The Java 2D API coordinate system is as follows:
+			Let (x,y) denote a point. (0,0) is in the upper-left corner of the drawing area.
+			The x component increases to the right, the y component increases downward.
+		 */
 
 		// Draw electric field:
 		graph.setColor(Color.black);
+		// Scale factor for electric field
+		double scaleE = 1;
 		
 		int[] pos = new int[s.getNumberOfDimensions()];
 		for(int w = 2; w < s.getNumberOfDimensions(); w++) {
@@ -76,9 +83,13 @@ public class ElectricFieldPanel extends AnimationPanel {
 				int oldValue = newValue;
 				pos[0] = i;
 				pos[1] = k;
-				
-				newPosition = (int) (s.grid.getLatticeSpacing() * (i + 0.5) * sx);
-				newValue = (int) (((0.5 - scaleE * s.grid.getE(pos, dirIndex).get(colorIndex)) * panelHeight));
+
+				// Electric fields are placed at the lattice points.
+				newPosition = (int) (s.grid.getLatticeSpacing() * (i) * sx);
+
+				// The y-component in the Java 2D API increases downward. Positive field components should (?) point upward.
+				double electricField = s.grid.getE(pos, dirIndex).get(colorIndex);
+				newValue = (int) (((0.5 + scaleE * electricField) * panelHeight));
 
 				if (i > 0) {
 					graph.drawLine(oldPosition, oldValue,newPosition, newValue);
@@ -100,9 +111,13 @@ public class ElectricFieldPanel extends AnimationPanel {
 				int oldValue = newValue;
 				pos[0] = i;
 				pos[1] = k;
-						
-				newPosition = (int) (s.grid.getLatticeSpacing() * (i + 0.5) * sx);
-				newValue = (int) (((0.5 - scaleE * s.grid.getU(pos, dirIndex).getLinearizedAlgebraElement().get(colorIndex)) * panelHeight));
+
+				// Gauge fields are placed at the lattice points.
+				newPosition = (int) (s.grid.getLatticeSpacing() * i * sx);
+
+				// The y-component in the Java 2D API increases downward. Positive field components should (?) point upward.
+				double gaugeField = s.grid.getU(pos, dirIndex).getLinearizedAlgebraElement().get(colorIndex);
+				newValue = (int) (((0.5 + scaleE * gaugeField) * panelHeight));
 
 				if (i > 0) {
 					graph.drawLine(oldPosition, oldValue,newPosition, newValue);
