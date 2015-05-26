@@ -293,8 +293,8 @@ public class MainControlApplet extends JApplet
 		algorithmBox.add(algorithmComboBox);
 		
 		colorIndexComboBox = new JComboBox(colorString);
-		colorIndexComboBox.setSelectedIndex(0);
 		colorIndexComboBox.addActionListener(new ColorListener());
+		colorIndexComboBox.setSelectedIndex(0);
 		colorIndexComboBox.setPreferredSize(new Dimension(colorIndexComboBox.getPreferredSize().width, 5));
 		JLabel colorLabel = new JLabel("Color index");
 		Box colorBox = Box.createVerticalBox();
@@ -302,8 +302,8 @@ public class MainControlApplet extends JApplet
 		colorBox.add(colorIndexComboBox);
 		
 		directionIndexComboBox = new JComboBox(directionString);
-		directionIndexComboBox.setSelectedIndex(1);
 		directionIndexComboBox.addActionListener(new DirectionListener());
+		directionIndexComboBox.setSelectedIndex(1);
 		directionIndexComboBox.setPreferredSize(new Dimension(directionIndexComboBox.getPreferredSize().width, 5));
 		JLabel directionLabel = new JLabel("Field direction");
 		Box directionBox = Box.createVerticalBox();

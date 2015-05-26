@@ -463,7 +463,7 @@ public class Grid {
 	 * @param coor  lattice coordinate vector
 	 * @return      cell id
 	 */
-	private int index(int[] coor) {
+	public int index(int[] coor) {
 		
 		int[] modCoor = periodic(coor);
 		int res = modCoor[0];
@@ -481,7 +481,7 @@ public class Grid {
 	 * @param coor  lattice coordinate vector
 	 * @return      shifted lattice coordinate vector
 	 */
-	private int[] periodic(int[] coor) {
+	public int[] periodic(int[] coor) {
 		
 		int[] res = new int[numDim];
 		for (int i = 0; i < numDim; ++i) {
@@ -504,7 +504,7 @@ public class Grid {
 	 * @param orientation   Orientation of the direction (1 or -1)
 	 * @return              Shifted coordinate with respect to periodic boundary conditions.
 	 */
-	private int[] shift(int[] coor, int dir, int orientation)
+	public int[] shift(int[] coor, int dir, int orientation)
 	{
 		int[] shiftedCoordinate = coor.clone();
 
