@@ -42,9 +42,9 @@ public class Particle3DPanel extends AnimationPanel {
 
 	private boolean drawFields = false;
 
-	/** Whether to combine x- and y-components of the fields into a single vector
+	/** Whether to combine the spatial components of the fields into a single vector
 	 * or whether to keep them separate. */
-	private boolean combinefields = false;
+	private boolean combinefields = true;
 
 	public boolean showinfo = false;
 
@@ -192,34 +192,39 @@ public class Particle3DPanel extends AnimationPanel {
 		
 		if(drawCurrentGrid) {
 			for(int i = 0; i < s.grid.getNumCells(0); i += gridstep) {
-				for(int k = 0; k < s.grid.getNumCells(1); k += gridstep) {
-					for(int j = 0; j < s.grid.getNumCells(2); j += gridstep) {
-						double xstart = s.grid.getLatticeSpacing() * (i + 0.5);
-						double ystart = s.grid.getLatticeSpacing() * (k + 0.5);
-						double zstart = s.grid.getLatticeSpacing() * (j + 0.5);
+				for(int j = 0; j < s.grid.getNumCells(1); j += gridstep) {
+					for(int k = 0; k < s.grid.getNumCells(2); k += gridstep) {
+						double xstart = s.grid.getLatticeSpacing() * i;
+						double ystart = s.grid.getLatticeSpacing() * j;
+						double zstart = s.grid.getLatticeSpacing() * k;
 						
 						pos[0] = i;
-						pos[1] = k;
-						pos[2] = j;
+						pos[1] = j;
+						pos[2] = k;
 						double jx = scale * s.grid.getJ(pos, 0).get(colorIndex);
 						double jy = scale * s.grid.getJ(pos, 1).get(colorIndex);
 						double jz = scale * s.grid.getJ(pos, 2).get(colorIndex);
 						if (combinefields) {
-							// Combine x- and y-components of current
+							// Combine spatial components of current
+							// Current vectors are placed on the grid points.
 							fields.addLineDelta(xstart, ystart, zstart,
 									jx, jy, jz,
 									Color.BLACK);
 						} else {
-							// Show x- and y-components of current separately
-							double xstart2 = s.grid.getLatticeSpacing() * i;
-							double ystart2 = s.grid.getLatticeSpacing() * k;
-							fields.addLineDelta(xstart, ystart2, zstart,
+							// Show spatial components of current separately
+							// Assume that field components are placed on the lattice links.
+							double xstartCenter = s.grid.getLatticeSpacing() * (i + 0.5);
+							double ystartCenter = s.grid.getLatticeSpacing() * (j + 0.5);
+							double zstartCenter = s.grid.getLatticeSpacing() * (k + 0.5);
+							fields.addLineDelta(xstartCenter, ystart, zstart,
 									jx, 0, 0,
 									Color.BLACK);
-							fields.addLineDelta(xstart2, ystart, zstart,
+							fields.addLineDelta(xstart, ystartCenter, zstart,
 									0, jy, 0,
 									Color.BLACK);
-							// TODO: Add z-component
+							fields.addLineDelta(xstart, ystart, zstartCenter,
+									0, 0, jz,
+									Color.BLACK);
 						}
 					}
 				}
@@ -230,34 +235,43 @@ public class Particle3DPanel extends AnimationPanel {
 		{
 			graph.setColor(Color.black);
 			for(int i = 0; i < s.grid.getNumCells(0); i += gridstep) {
-				for(int k = 0; k < s.grid.getNumCells(1); k += gridstep) {
-					for(int j = 0; j < s.grid.getNumCells(2); j += gridstep) {
-						double xstart = s.grid.getLatticeSpacing() * (i + 0.5);
-						double ystart = s.grid.getLatticeSpacing() * (k + 0.5);
-						double zstart = s.grid.getLatticeSpacing() * (j + 0.5);
+				for(int j = 0; j < s.grid.getNumCells(1); j += gridstep) {
+					for(int k = 0; k < s.grid.getNumCells(2); k += gridstep) {
+						double xstart = s.grid.getLatticeSpacing() * i;
+						double ystart = s.grid.getLatticeSpacing() * j;
+						double zstart = s.grid.getLatticeSpacing() * k;
 						
 						pos[0] = i;
-						pos[1] = k;
-						pos[2] = j;
+						pos[1] = j;
+						pos[2] = k;
+
 						double ex = scale * s.grid.getE(pos, 0).get(colorIndex);
 						double ey = scale * s.grid.getE(pos, 1).get(colorIndex);
 						double ez = scale * s.grid.getE(pos, 2).get(colorIndex);
 
 						if (combinefields) {
 							// Draw combined E- and B-fields
+							// Electric fields are placed on the grid points.
 							fields.addLineDelta(xstart, ystart, zstart,
 									ex, ey, ez,
 									Color.green);
+							//TODO: Draw magnetic fields.
 						} else {
-							// Draw x- and y-components of E- and B-fields separately
-							double xstart2 = s.grid.getLatticeSpacing() * i;
-							double ystart2 = s.grid.getLatticeSpacing() * k;
-							fields.addLineDelta(xstart, ystart2, zstart,
+							// Draw spatial components of E- and B-fields separately.
+							// Assume that field components are placed on the lattice links.
+							double xstartCenter = s.grid.getLatticeSpacing() * (i + 0.5);
+							double ystartCenter = s.grid.getLatticeSpacing() * (j + 0.5);
+							double zstartCenter = s.grid.getLatticeSpacing() * (k + 0.5);
+							fields.addLineDelta(xstartCenter, ystart, zstart,
 									ex, 0, 0,
 									Color.green);
-							fields.addLineDelta(xstart2, ystart, zstart,
+							fields.addLineDelta(xstart, ystartCenter, zstart,
 									0, ey, 0,
 									Color.green);
+							fields.addLineDelta(xstart, ystart, zstartCenter,
+									0, 0, ez,
+									Color.green);
+							//TODO: Draw magnetic fields.
 						}
 					}
 				}
