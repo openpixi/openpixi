@@ -8,6 +8,7 @@ import org.openpixi.pixi.physics.Settings;
 import org.openpixi.pixi.physics.fields.EmptyPoissonSolver;
 import org.openpixi.pixi.physics.fields.FieldGenerators.IFieldGenerator;
 import org.openpixi.pixi.physics.fields.FieldSolver;
+import org.openpixi.pixi.physics.fields.GeneralYangMillsSolver;
 import org.openpixi.pixi.physics.fields.YangMillsSolver;
 import org.openpixi.pixi.physics.grid.EmptyInterpolator;
 import org.openpixi.pixi.physics.solver.relativistic.LeapFrogRelativistic;
@@ -36,7 +37,7 @@ public class YamlSettings {
 		// Default settings:
 		settings.setRelativistic(false);
 		settings.setBoundary(GeneralBoundaryType.Periodic);
-		settings.setGridSolver(new YangMillsSolver());
+		settings.setGridSolver(new GeneralYangMillsSolver());
 		settings.useGrid(true);
 		settings.setInterpolator(new EmptyInterpolator());
         settings.setSpeedOfLight(1.0);

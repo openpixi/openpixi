@@ -42,6 +42,7 @@ public class SU2PlanePulse implements IFieldGenerator {
 		this.s = s;
 		this.g = s.grid;
 		this.timeStep = s.getTimeStep();
+		double c = s.getSpeedOfLight();
 
 		/*
 			Setup the field amplitude for the plane pulse.
@@ -66,9 +67,9 @@ public class SU2PlanePulse implements IFieldGenerator {
 		/*
 			Cycle through each cell and apply the plane pulse configuration to the links and electric fields.
 		 */
-		for (int c = 0; c < numberOfCells; c++)
+		for (int ci = 0; ci < numberOfCells; ci++)
 		{
-			int[] cellPosition = getCellPosition(c);
+			int[] cellPosition = g.getCellPos(ci);
 			double[] currentPosition =  getPosition(cellPosition);
 
 			/*
@@ -81,11 +82,12 @@ public class SU2PlanePulse implements IFieldGenerator {
 			}
 
 			//Multiplicative factor for the plane pulse at t = - dt/2 (for electric fields)
-			double phaseE = scalarProduct + s.getTimeStep()/2.0;
-			double factorForE = - Math.exp(-1.0 / (2.0 * sigma * sigma) * Math.pow(phaseE, 2.0)) *
-								phaseE / (sigma * sigma);
+			double phaseE = scalarProduct + c*timeStep/2.0;
+			double factorForE =  c * phaseE / Math.pow(sigma, 2.0) *
+					Math.exp(- Math.pow(phaseE / this.sigma, 2.0) / 2.0);
 			//Multiplicative factor for the plane pulse at t = 0 (for links)
-			double factorForU = Math.exp(-1.0 / (2.0 * this.sigma * this.sigma) * Math.pow(scalarProduct, 2.0));
+			double phaseU = scalarProduct;
+			double factorForU = Math.exp(- Math.pow(phaseU / this.sigma, 2.0) / 2.0);
 
 
 
@@ -94,8 +96,8 @@ public class SU2PlanePulse implements IFieldGenerator {
 			for(int i = 0; i < this.numberOfDimensions; i++)
 			{
 				//Setup the gauge links
-				SU2Matrix U = (SU2Matrix) amplitudeYMField[i].mult(factorForU).getLinkExact();
-				currentCell.getU(i).mult(U);
+				SU2Matrix U = (SU2Matrix) currentCell.getU(i).mult(amplitudeYMField[i].mult(factorForU).getLinkExact());
+				currentCell.setU(i, U);
 
 				//Setup the electric fields
 				currentCell.addE(i, amplitudeYMField[i].mult(factorForE));
@@ -118,38 +120,6 @@ public class SU2PlanePulse implements IFieldGenerator {
 			output[i] = vector[i] / norm;
 		}
 		return output;
-	}
-
-	private int getCellIndex(int[] pos)
-	{
-
-		for(int i = 0; i < this.numberOfDimensions; i++)
-		{
-			pos[i] = (pos[i] % this.g.getNumCells(i) + this.g.getNumCells(i)) % this.g.getNumCells(i);
-		}
-
-		int cellPos = pos[0];
-
-		for(int i = 1; i < pos.length; i++)
-		{
-			cellPos *= this.g.getNumCells(i);
-			cellPos += pos[i];
-		}
-		return  cellPos;
-	}
-
-	private int[] getCellPosition(int cellIndex)
-	{
-		int[] pos = new int[this.numberOfDimensions];
-
-		for(int i = this.numberOfDimensions-1; i >= 0; i--)
-		{
-			pos[i] = cellIndex % this.g.getNumCells(i);
-			cellIndex -= pos[i];
-			cellIndex /= this.g.getNumCells(i);
-		}
-
-		return pos;
 	}
 
 	private double[] getPosition(int[] cellPosition)

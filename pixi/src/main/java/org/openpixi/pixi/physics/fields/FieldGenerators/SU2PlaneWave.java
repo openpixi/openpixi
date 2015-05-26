@@ -60,7 +60,7 @@ public class SU2PlaneWave implements IFieldGenerator {
 		 */
         for (int c = 0; c < numberOfCells; c++)
         {
-            int[] cellPosition = getCellPosition(c);
+            int[] cellPosition = g.getCellPos(c);
             double[] position =  getPosition(cellPosition);
 
 			/*
@@ -73,12 +73,12 @@ public class SU2PlaneWave implements IFieldGenerator {
                 kx += this.k[i] * position[i];
                 omega += this.k[i] * this.k[i];
             }
-            omega = Math.sqrt(omega);
+            omega = s.getSpeedOfLight() * Math.sqrt(omega);
 
-            //Phase of the plane wave at t = - dt/2 (for electric fields)
-            double phase0 = Math.sin(omega * (this.timeStep / 2.0) + kx);
+            //Factor of the plane wave at t = - dt/2 (for electric fields)
+            double factorForE = omega * Math.sin(omega * (this.timeStep / 2.0) + kx);
             //Phase of the plane wave at t = 0 (for links)
-            double phase1 = Math.cos(kx);
+            double factorForU = Math.cos(kx);
 
 
 
@@ -87,11 +87,12 @@ public class SU2PlaneWave implements IFieldGenerator {
             for(int i = 0; i < this.numberOfDimensions; i++)
             {
                 //Setup the gauge links
-                SU2Matrix U = (SU2Matrix) amplitudeYMField[i].mult(phase1).getLinkExact();
-                currentCell.getU(i).mult(U);
+                SU2Matrix U = (SU2Matrix) currentCell.getU(i).mult(amplitudeYMField[i].mult(factorForU).getLinkExact());
+				currentCell.setU(i, U);
+				//System.out.println(currentCell.getU(i).get(0));
 
                 //Setup the electric fields
-                currentCell.addE(i, amplitudeYMField[i].mult(omega * phase0));
+                currentCell.addE(i, amplitudeYMField[i].mult(factorForE));
             }
         }
 
@@ -112,38 +113,6 @@ public class SU2PlaneWave implements IFieldGenerator {
 		}
 		return output;
 	}
-
-    private int getCellIndex(int[] pos)
-    {
-
-        for(int i = 0; i < this.numberOfDimensions; i++)
-        {
-            pos[i] = (pos[i] % this.g.getNumCells(i) + this.g.getNumCells(i)) % this.g.getNumCells(i);
-        }
-
-        int cellPos = pos[0];
-
-        for(int i = 1; i < pos.length; i++)
-        {
-            cellPos *= this.g.getNumCells(i);
-            cellPos += pos[i];
-        }
-        return  cellPos;
-    }
-
-    private int[] getCellPosition(int cellIndex)
-    {
-        int[] pos = new int[this.numberOfDimensions];
-
-        for(int i = this.numberOfDimensions-1; i >= 0; i--)
-        {
-            pos[i] = cellIndex % this.g.getNumCells(i);
-            cellIndex -= pos[i];
-            cellIndex /= this.g.getNumCells(i);
-        }
-
-        return pos;
-    }
 
     private double[] getPosition(int[] cellPosition)
     {
