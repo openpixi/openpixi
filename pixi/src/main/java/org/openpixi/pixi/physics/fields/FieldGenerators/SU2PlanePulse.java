@@ -14,7 +14,7 @@ public class SU2PlanePulse implements IFieldGenerator {
 	private double sigma;
 
 	private Simulation s;
-	private Grid g;
+	private Grid grid;
 	private double timeStep;
 
 	public SU2PlanePulse(double[] direction,
@@ -40,9 +40,12 @@ public class SU2PlanePulse implements IFieldGenerator {
 
 	public void applyFieldConfiguration(Simulation s) {
 		this.s = s;
-		this.g = s.grid;
+		this.grid = s.grid;
 		this.timeStep = s.getTimeStep();
 		double c = s.getSpeedOfLight();
+
+		double as = grid.getLatticeSpacing();
+		double g = s.getCouplingConstant();
 
 		/*
 			Setup the field amplitude for the plane pulse.
@@ -60,7 +63,7 @@ public class SU2PlanePulse implements IFieldGenerator {
 		 */
 		int numberOfCells = 1;
 		for (int i = 0; i < this.numberOfDimensions; i++) {
-			numberOfCells *= g.getNumCells(i);
+			numberOfCells *= grid.getNumCells(i);
 		}
 
 
@@ -69,7 +72,7 @@ public class SU2PlanePulse implements IFieldGenerator {
 		 */
 		for (int ci = 0; ci < numberOfCells; ci++)
 		{
-			int[] cellPosition = g.getCellPos(ci);
+			int[] cellPosition = grid.getCellPos(ci);
 			double[] currentPosition =  getPosition(cellPosition);
 
 			/*
@@ -83,24 +86,24 @@ public class SU2PlanePulse implements IFieldGenerator {
 
 			//Multiplicative factor for the plane pulse at t = - dt/2 (for electric fields)
 			double phaseE = scalarProduct + c*timeStep/2.0;
-			double factorForE =  c * phaseE / Math.pow(sigma, 2.0) *
+			double electricFieldFactor =  g * as * c * phaseE / Math.pow(sigma, 2.0) *
 					Math.exp(- Math.pow(phaseE / this.sigma, 2.0) / 2.0);
 			//Multiplicative factor for the plane pulse at t = 0 (for links)
 			double phaseU = scalarProduct;
-			double factorForU = Math.exp(- Math.pow(phaseU / this.sigma, 2.0) / 2.0);
+			double gaugeFieldFactor = g* as * Math.exp(- Math.pow(phaseU / this.sigma, 2.0) / 2.0);
 
 
 
-			Cell currentCell = g.getCell(cellPosition);
+			Cell currentCell = grid.getCell(cellPosition);
 
 			for(int i = 0; i < this.numberOfDimensions; i++)
 			{
 				//Setup the gauge links
-				SU2Matrix U = (SU2Matrix) currentCell.getU(i).mult(amplitudeYMField[i].mult(factorForU).getLinkExact());
+				SU2Matrix U = (SU2Matrix) currentCell.getU(i).mult(amplitudeYMField[i].mult(gaugeFieldFactor).getLinkExact());
 				currentCell.setU(i, U);
 
 				//Setup the electric fields
-				currentCell.addE(i, amplitudeYMField[i].mult(factorForE));
+				currentCell.addE(i, amplitudeYMField[i].mult(electricFieldFactor));
 			}
 		}
 
@@ -127,7 +130,7 @@ public class SU2PlanePulse implements IFieldGenerator {
 		double[] position =  new double[this.numberOfDimensions];
 		for(int i = 0; i < this.numberOfDimensions; i++)
 		{
-			position[i] =  cellPosition[i] * g.getLatticeSpacing();
+			position[i] =  cellPosition[i] * grid.getLatticeSpacing();
 		}
 		return position;
 	}

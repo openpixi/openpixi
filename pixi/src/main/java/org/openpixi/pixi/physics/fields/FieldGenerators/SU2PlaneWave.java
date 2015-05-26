@@ -11,7 +11,7 @@ public class SU2PlaneWave implements IFieldGenerator {
     private double[] amplitudeColorDirection;
     private double amplitudeMagnitude;
     private Simulation s;
-    private Grid g;
+    private Grid grid;
     private double timeStep;
 
     public SU2PlaneWave(double[] k, double[] amplitudeSpatialDirection, double[] amplitudeColorDirection, double amplitudeMagnitude)
@@ -32,8 +32,12 @@ public class SU2PlaneWave implements IFieldGenerator {
 
     public void applyFieldConfiguration(Simulation s) {
         this.s = s;
-        this.g = s.grid;
+        this.grid = s.grid;
         this.timeStep = s.getTimeStep();
+
+
+		double as = grid.getLatticeSpacing();
+		double g = s.getCouplingConstant();
 
 		/*
 			Setup the field amplitude for the plane wave.
@@ -51,7 +55,7 @@ public class SU2PlaneWave implements IFieldGenerator {
 		 */
         int numberOfCells = 1;
         for (int i = 0; i < this.numberOfDimensions; i++) {
-            numberOfCells *= g.getNumCells(i);
+            numberOfCells *= grid.getNumCells(i);
         }
 
 
@@ -60,7 +64,7 @@ public class SU2PlaneWave implements IFieldGenerator {
 		 */
         for (int c = 0; c < numberOfCells; c++)
         {
-            int[] cellPosition = g.getCellPos(c);
+            int[] cellPosition = grid.getCellPos(c);
             double[] position =  getPosition(cellPosition);
 
 			/*
@@ -76,13 +80,13 @@ public class SU2PlaneWave implements IFieldGenerator {
             omega = s.getSpeedOfLight() * Math.sqrt(omega);
 
             //Factor of the plane wave at t = - dt/2 (for electric fields)
-            double factorForE = omega * Math.sin(omega * (this.timeStep / 2.0) + kx);
+            double factorForE = g * as * omega * Math.sin(omega * (this.timeStep / 2.0) + kx);
             //Phase of the plane wave at t = 0 (for links)
-            double factorForU = Math.cos(kx);
+            double factorForU = g * as * Math.cos(kx);
 
 
 
-            Cell currentCell = g.getCell(cellPosition);
+            Cell currentCell = grid.getCell(cellPosition);
 
             for(int i = 0; i < this.numberOfDimensions; i++)
             {
@@ -119,7 +123,7 @@ public class SU2PlaneWave implements IFieldGenerator {
         double[] position =  new double[this.numberOfDimensions];
         for(int i = 0; i < this.numberOfDimensions; i++)
         {
-            position[i] =  cellPosition[i] * g.getLatticeSpacing();
+            position[i] =  cellPosition[i] * grid.getLatticeSpacing();
         }
         return position;
     }
