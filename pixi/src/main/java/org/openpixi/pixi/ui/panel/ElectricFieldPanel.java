@@ -24,6 +24,14 @@ public class ElectricFieldPanel extends AnimationPanel {
 	public void paintComponent(Graphics graph1) {
 		Graphics2D graph = (Graphics2D) graph1;
 		setBackground(Color.white);
+
+		/*
+			Note:
+			These two commands set the origin of the coordinate system to the lower-left corner of the panel and flip
+			the y-axis. The system is now as follows:
+			Let (x,y0 denote a point on the panel. (0,0) is the lower-left corner. The x-component increases to the
+			right. The y-component increases downwards.
+		 */
 		graph.translate(0, this.getHeight());
 		graph.scale(1, -1);
 
@@ -36,6 +44,10 @@ public class ElectricFieldPanel extends AnimationPanel {
 		double sy = getHeight() / s.getHeight();
 
 		double panelHeight = getHeight();
+
+		// Lattice spacing and coupling constant
+		double as = s.grid.getLatticeSpacing();
+		double g = s.getCouplingConstant();
 
 		// Draw particles on a central line:
 		for (int i = 0; i < s.particles.size(); i++) {
@@ -55,17 +67,12 @@ public class ElectricFieldPanel extends AnimationPanel {
 		int colorIndex = getSimulationAnimation().getColorIndex();
 		int dirIndex = getSimulationAnimation().getDirectionIndex();
 
-
-		/*
-			Note: The Java 2D API coordinate system is as follows:
-			Let (x,y) denote a point. (0,0) is in the upper-left corner of the drawing area.
-			The x component increases to the right, the y component increases downward.
-		 */
-
 		// Draw electric field:
 		graph.setColor(Color.black);
 		// Scale factor for electric field
 		double scaleE = 1;
+		// Scale factor for gauge field
+		double scaleA = 1;
 		
 		int[] pos = new int[s.getNumberOfDimensions()];
 		for(int w = 2; w < s.getNumberOfDimensions(); w++) {
@@ -87,9 +94,13 @@ public class ElectricFieldPanel extends AnimationPanel {
 				// Electric fields are placed at the lattice points.
 				newPosition = (int) (s.grid.getLatticeSpacing() * (i) * sx);
 
-				// The y-component in the Java 2D API increases downward. Positive field components should point upward.
-				double electricField = s.grid.getE(pos, dirIndex).get(colorIndex);
-				newValue = (int) (((0.5 - scaleE * electricField) * panelHeight));
+				/*
+					Expectation: Positive fields should point upwards.
+					In the flipped and translated coordinate system defined above we have to add the fields to the
+					center of the panel in order to get the expected result.
+				*/
+				double electricField = s.grid.getE(pos, dirIndex).get(colorIndex) / (as * g);
+				newValue = (int) (((0.5 + scaleE * electricField) * panelHeight));
 
 				if (i > 0) {
 					graph.drawLine(oldPosition, oldValue,newPosition, newValue);
@@ -115,9 +126,13 @@ public class ElectricFieldPanel extends AnimationPanel {
 				// Gauge fields are placed at the lattice points.
 				newPosition = (int) (s.grid.getLatticeSpacing() * i * sx);
 
-				// The y-component in the Java 2D API increases downward. Positive fields should point upward.
-				double gaugeField = s.grid.getU(pos, dirIndex).getLinearizedAlgebraElement().get(colorIndex);
-				newValue = (int) (((0.5 - scaleE * gaugeField) * panelHeight));
+				/*
+					Expectation: Positive fields should point upwards.
+					In the flipped and translated coordinate system defined above we have to add the fields to the
+					center of the panel in order to get the expected result.
+				*/
+				double gaugeField = s.grid.getU(pos, dirIndex).getLinearizedAlgebraElement().get(colorIndex) / (as * g);
+				newValue = (int) (((0.5 + scaleA * gaugeField) * panelHeight));
 
 				if (i > 0) {
 					graph.drawLine(oldPosition, oldValue,newPosition, newValue);
