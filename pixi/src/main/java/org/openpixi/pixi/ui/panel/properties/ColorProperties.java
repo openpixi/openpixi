@@ -1,4 +1,4 @@
-package org.openpixi.pixi.ui.panel;
+package org.openpixi.pixi.ui.panel.properties;
 
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;

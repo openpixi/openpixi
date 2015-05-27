@@ -15,6 +15,7 @@ import javax.swing.JLabel;
 import org.openpixi.pixi.physics.Simulation;
 import org.openpixi.pixi.physics.particles.IParticle;
 import org.openpixi.pixi.ui.SimulationAnimation;
+import org.openpixi.pixi.ui.panel.properties.ColorProperties;
 
 /**
  * This panel shows the one-dimensional electric field along the x-direction.
