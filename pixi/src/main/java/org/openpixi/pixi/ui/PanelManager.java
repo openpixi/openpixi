@@ -181,9 +181,7 @@ public class PanelManager {
 		private void splitPanel(int orientation) {
 			Component parent = clickComponent.getParent();
 
-			particlePanel = new Particle2DPanel(mainControlApplet.simulationAnimation);
-			Component newcomponent = particlePanel;
-			newcomponent.addMouseListener(popupClickListener);
+			Component newcomponent = getDefaultPanel();
 
 			if (parent != null) {
 				if (parent instanceof JSplitPane) {
