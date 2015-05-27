@@ -1,8 +1,16 @@
 package org.openpixi.pixi.ui.panel;
 
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
+import javax.swing.Box;
+import javax.swing.JButton;
+import javax.swing.JComboBox;
+import javax.swing.JLabel;
 
 import org.openpixi.pixi.physics.Simulation;
 import org.openpixi.pixi.physics.particles.IParticle;
@@ -14,6 +22,21 @@ import org.openpixi.pixi.ui.SimulationAnimation;
  * superimposed.
  */
 public class ElectricFieldPanel extends AnimationPanel {
+
+	private int colorIndex = 0;
+
+	private int directionIndex = 1;
+
+	String[] colorString = {
+			"1",
+			"2",
+			"3"};
+
+	String[] directionString = {
+			"x",
+			"y",
+			"z"};
+
 
 	/** Constructor */
 	public ElectricFieldPanel(SimulationAnimation simulationAnimation) {
@@ -64,9 +87,6 @@ public class ElectricFieldPanel extends AnimationPanel {
 			}
 		}
 
-		int colorIndex = getSimulationAnimation().getColorIndex();
-		int dirIndex = getSimulationAnimation().getDirectionIndex();
-
 		// Draw electric field:
 		graph.setColor(Color.black);
 		// Scale factor for electric field
@@ -99,7 +119,7 @@ public class ElectricFieldPanel extends AnimationPanel {
 					In the flipped and translated coordinate system defined above we have to add the fields to the
 					center of the panel in order to get the expected result.
 				*/
-				double electricField = s.grid.getE(pos, dirIndex).get(colorIndex) / (as * g);
+				double electricField = s.grid.getE(pos, directionIndex).get(colorIndex) / (as * g);
 				newValue = (int) (((0.5 + scaleE * electricField) * panelHeight));
 
 				if (i > 0) {
@@ -131,7 +151,7 @@ public class ElectricFieldPanel extends AnimationPanel {
 					In the flipped and translated coordinate system defined above we have to add the fields to the
 					center of the panel in order to get the expected result.
 				*/
-				double gaugeField = s.grid.getU(pos, dirIndex).getLinearizedAlgebraElement().get(colorIndex) / (as * g);
+				double gaugeField = s.grid.getU(pos, directionIndex).getLinearizedAlgebraElement().get(colorIndex) / (as * g);
 				newValue = (int) (((0.5 + scaleA * gaugeField) * panelHeight));
 
 				if (i > 0) {
@@ -142,4 +162,68 @@ public class ElectricFieldPanel extends AnimationPanel {
 
 	}
 
+	public int getColorIndex() {
+		return colorIndex;
+	}
+
+	public int getDirectionIndex() {
+		return directionIndex;
+	}
+
+	public void colorIndexSet(int id)
+	{
+		this.colorIndex = id;
+	}
+
+	public void directionSet(int id)
+	{
+		this.directionIndex = id;
+	}
+
+	public void addComponents(Box panel) {
+		Box settingControls = Box.createVerticalBox();
+
+		JComboBox colorIndexComboBox;
+		colorIndexComboBox = new JComboBox(colorString);
+		colorIndexComboBox.addActionListener(new ColorListener());
+		colorIndexComboBox.setSelectedIndex(colorIndex);
+		colorIndexComboBox.setPreferredSize(new Dimension(colorIndexComboBox.getPreferredSize().width, 5));
+		JLabel colorLabel = new JLabel("Color index");
+		Box colorBox = Box.createVerticalBox();
+		colorBox.add(colorLabel);
+		colorBox.add(colorIndexComboBox);
+
+		JComboBox directionIndexComboBox;
+		directionIndexComboBox = new JComboBox(directionString);
+		directionIndexComboBox.addActionListener(new DirectionListener());
+		directionIndexComboBox.setSelectedIndex(directionIndex);
+		directionIndexComboBox.setPreferredSize(new Dimension(directionIndexComboBox.getPreferredSize().width, 5));
+		JLabel directionLabel = new JLabel("Field direction");
+		Box directionBox = Box.createVerticalBox();
+		directionBox.add(directionLabel);
+		directionBox.add(directionIndexComboBox);
+
+		settingControls.add(Box.createVerticalGlue());
+		settingControls.add(colorBox);
+		settingControls.add(Box.createVerticalGlue());
+		settingControls.add(directionBox);
+
+		panel.add(settingControls);
+	}
+
+	class ColorListener implements ActionListener {
+		public void actionPerformed(ActionEvent eve) {
+			JComboBox cbox = (JComboBox) eve.getSource();
+			int id = cbox.getSelectedIndex();
+			ElectricFieldPanel.this.colorIndex = id;
+		}
+	}
+
+	class DirectionListener implements ActionListener {
+		public void actionPerformed(ActionEvent eve) {
+			JComboBox cbox = (JComboBox) eve.getSource();
+			int id = cbox.getSelectedIndex();
+			ElectricFieldPanel.this.directionIndex = id;
+		}
+	}
 }

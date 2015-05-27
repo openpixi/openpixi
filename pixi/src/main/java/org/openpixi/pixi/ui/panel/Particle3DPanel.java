@@ -187,8 +187,8 @@ public class Particle3DPanel extends AnimationPanel {
 			pos[w] = s.grid.getNumCells(w)/2;
 		}
 		
-		int colorIndex = getSimulationAnimation().getColorIndex();
-		int dirIndex = getSimulationAnimation().getDirectionIndex();
+		int colorIndex = 1; //getSimulationAnimation().getColorIndex();
+		int dirIndex = 1; //getSimulationAnimation().getDirectionIndex();
 		
 		if(drawCurrentGrid) {
 			for(int i = 0; i < s.grid.getNumCells(0); i += gridstep) {

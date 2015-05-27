@@ -119,8 +119,8 @@ public class Particle2DPanel extends AnimationPanel {
 			pos[w] = s.grid.getNumCells(w)/2;
 		}
 		
-		int colorIndex = getSimulationAnimation().getColorIndex();
-		int dirIndex = getSimulationAnimation().getDirectionIndex();
+		int colorIndex = 1; //getSimulationAnimation().getColorIndex();
+		int dirIndex = 1; //getSimulationAnimation().getDirectionIndex();
 		
 		if(drawCurrentGrid)
 		{

@@ -44,10 +44,6 @@ public class SimulationAnimation {
 	private FrameRateDetector frameratedetector;
 
 	private ArrayList<SimulationAnimationListener> listeners = new ArrayList<SimulationAnimationListener>();
-	
-	private int colorIndex;
-	
-	private int directionIndex;
 
 	/** Constructor */
 	public SimulationAnimation() {
@@ -91,14 +87,6 @@ public class SimulationAnimation {
 
 	public Timer getTimer() {
 		return timer;
-	}
-	
-	public int getColorIndex() {
-		return colorIndex;
-	}
-	
-	public int getDirectionIndex() {
-		return directionIndex;
 	}
 
 	/**
@@ -189,16 +177,6 @@ public class SimulationAnimation {
 		}
 
 		s.prepareAllParticles();
-	}
-
-	public void colorIndexSet(int id)
-	{
-		this.colorIndex = id;
-	}
-
-	public void directionSet(int id)
-	{
-		this.directionIndex = id;
 	}
 
 	public void relativisticEffects(int i) {

@@ -24,5 +24,6 @@ public class PropertiesTab extends Box {
 	public void refreshContent(AnimationPanel panel) {
 		this.removeAll();
 		panel.addComponents(this);
+		this.repaint();
 	}
 }
