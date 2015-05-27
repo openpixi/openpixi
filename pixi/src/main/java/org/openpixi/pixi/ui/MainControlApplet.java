@@ -63,12 +63,8 @@ public class MainControlApplet extends JApplet
 
 	private JTabbedPane tabs;
 
-	private SimulationAnimation simulationAnimation;
-
-	private Particle2DPanel particlePanel;
-	private Particle3DPanel particle3DPanel;
-	private PhaseSpacePanel phaseSpacePanel;
-	private ElectricFieldPanel electricFieldPanel;
+	protected SimulationAnimation simulationAnimation;
+	private PanelManager panelManager;
 
 	private FileTab fileTab;
 
@@ -165,7 +161,7 @@ public class MainControlApplet extends JApplet
 
 	class CheckListener implements ItemListener {
 		public void itemStateChanged(ItemEvent eve){
-				particlePanel.checkTrace();
+//				particlePanel.checkTrace();
 		}
 	}
 
@@ -178,23 +174,23 @@ public class MainControlApplet extends JApplet
 
 	class DrawCurrentGridListener implements ItemListener {
 		public void itemStateChanged(ItemEvent eve){
-			if (particlePanel != null) {
-				particlePanel.drawCurrentGrid();
-			}
-			if (particle3DPanel != null) {
-				particle3DPanel.drawCurrentGrid();
-			}
+//			if (particlePanel != null) {
+//				particlePanel.drawCurrentGrid();
+//			}
+//			if (particle3DPanel != null) {
+//				particle3DPanel.drawCurrentGrid();
+//			}
 		}
 	}
 
 	class DrawFieldsListener implements ItemListener {
 		public void itemStateChanged(ItemEvent eve){
-			if (particlePanel != null) {
-				particlePanel.drawFields();
-			}
-			if (particle3DPanel != null) {
-				particle3DPanel.drawFields();
-			}
+//			if (particlePanel != null) {
+//				particlePanel.drawFields();
+//			}
+//			if (particle3DPanel != null) {
+//				particle3DPanel.drawFields();
+//			}
 		}
 	}
 
@@ -215,9 +211,9 @@ public class MainControlApplet extends JApplet
 	class FrameListener implements ItemListener {
 		public void itemStateChanged(ItemEvent eve) {
 			if(eve.getStateChange() == ItemEvent.SELECTED) {
-				particlePanel.showinfo = true;
+//				particlePanel.showinfo = true;
 			} else if(eve.getStateChange() == ItemEvent.DESELECTED) {
-				particlePanel.showinfo = false;
+//				particlePanel.showinfo = false;
 			}
 		}
 	}
@@ -241,7 +237,7 @@ public class MainControlApplet extends JApplet
 		Debug.checkAssertsEnabled();
 
 		simulationAnimation = new SimulationAnimation();
-		particlePanel = new Particle2DPanel(simulationAnimation);
+		panelManager = new PanelManager(this);
 		Simulation s = simulationAnimation.getSimulation();
 
 		startButton = new JButton("start");
@@ -387,227 +383,13 @@ public class MainControlApplet extends JApplet
 		tabs.addTab("Cell", cellSettings);
 		tabs.addTab("File", fileTab);
 
+		Component mainPanel = panelManager.getDefaultPanel();
+
 		this.setLayout(new BorderLayout());
 		this.add(panelBox, BorderLayout.SOUTH);
-		this.add(particlePanel, BorderLayout.CENTER);
+		this.add(mainPanel, BorderLayout.CENTER);
 		this.add(tabs, BorderLayout.EAST);
 
-		popupClickListener = new PopupClickListener();
-		particlePanel.addMouseListener(popupClickListener);
-	}
-
-	PopupClickListener popupClickListener;
-
-	JMenuItem itemSplitHorizontally;
-	JMenuItem itemSplitVertically;
-	JMenuItem itemClosePanel;
-	JMenuItem itemParticle2DPanel;
-	JMenuItem itemParticle3DPanel;
-	JMenuItem itemPhaseSpacePanel;
-	JMenuItem itemElectricFieldPanel;
-
-	class PopupMenu extends JPopupMenu {
-
-		public PopupMenu() {
-			itemSplitHorizontally = new JMenuItem("Split horizontally");
-			itemSplitHorizontally.addActionListener(new MenuSelected());
-			add(itemSplitHorizontally);
-
-			itemSplitVertically = new JMenuItem("Split vertically");
-			itemSplitVertically.addActionListener(new MenuSelected());
-			add(itemSplitVertically);
-
-			if (clickComponent != null && clickComponent.getParent() instanceof JSplitPane) {
-				itemClosePanel = new JMenuItem("Close panel");
-				itemClosePanel.addActionListener(new MenuSelected());
-				add(itemClosePanel);
-			}
-
-			add(new JSeparator());
-
-			itemParticle2DPanel = new JMenuItem("Particles");
-			itemParticle2DPanel.addActionListener(new MenuSelected());
-			add(itemParticle2DPanel);
-
-			itemParticle3DPanel = new JMenuItem("Particles 3D");
-			itemParticle3DPanel.addActionListener(new MenuSelected());
-			add(itemParticle3DPanel);
-
-			itemPhaseSpacePanel = new JMenuItem("Phase space");
-			itemPhaseSpacePanel.addActionListener(new MenuSelected());
-			add(itemPhaseSpacePanel);
-
-			itemElectricFieldPanel = new JMenuItem("Electric field");
-			itemElectricFieldPanel.addActionListener(new MenuSelected());
-			add(itemElectricFieldPanel);
-		}
-	}
-
-	Component clickComponent;
-
-	class PopupClickListener extends MouseAdapter {
-		public void mousePressed(MouseEvent e) {
-			if (e.isPopupTrigger())
-				doPop(e);
-		}
-
-		public void mouseReleased(MouseEvent e) {
-			if (e.isPopupTrigger())
-				doPop(e);
-		}
-
-		private void doPop(MouseEvent e) {
-			clickComponent = e.getComponent();
-			PopupMenu menu = new PopupMenu();
-			menu.show(e.getComponent(), e.getX(), e.getY());
-		}
-	}
-
-	class MenuSelected implements ActionListener {
-
-		@Override
-		public void actionPerformed(ActionEvent event) {
-			// TODO: This method creates new instances of the panels
-			// (which is nice so there can be two identical panels next
-			// to each other), but it does not delete previous panels.
-			// They should be unregistered in simulationAnimation if not
-			// in use anymore.
-
-			Component component = null;
-
-			if (event.getSource() == itemSplitHorizontally) {
-				splitPanel(JSplitPane.HORIZONTAL_SPLIT);
-			} else if (event.getSource() == itemSplitVertically) {
-				splitPanel(JSplitPane.VERTICAL_SPLIT);
-			} else if (event.getSource() == itemClosePanel) {
-				closePanel();
-			} else if (event.getSource() == itemParticle2DPanel) {
-				particlePanel = new Particle2DPanel(simulationAnimation);
-				component = particlePanel;
-			} else if (event.getSource() == itemParticle3DPanel) {
-				particle3DPanel = new Particle3DPanel(simulationAnimation);
-				component = particle3DPanel;
-			} else if (event.getSource() == itemPhaseSpacePanel) {
-				phaseSpacePanel = new PhaseSpacePanel(simulationAnimation);
-				component = phaseSpacePanel;
-			} else if (event.getSource() == itemElectricFieldPanel) {
-				electricFieldPanel = new ElectricFieldPanel(simulationAnimation);
-				component = electricFieldPanel;
-			}
-			if (component != null) {
-				replacePanel(component);
-			}
-		}
-
-		private void replacePanel(Component component) {
-			component.addMouseListener(popupClickListener);
-			Component parent = clickComponent.getParent();
-			if (parent != null) {
-				if (parent instanceof JSplitPane) {
-					JSplitPane parentsplitpane = (JSplitPane) parent;
-					Component parentleft = parentsplitpane.getLeftComponent();
-
-					int dividerLocation = parentsplitpane.getDividerLocation();
-					if (parentleft == clickComponent) {
-						parentsplitpane.setLeftComponent(component);
-					} else {
-						parentsplitpane.setRightComponent(component);
-					}
-					parentsplitpane.setDividerLocation(dividerLocation);
-				} else if (parent instanceof JPanel) {
-					// top level
-					MainControlApplet.this.remove(clickComponent);
-					MainControlApplet.this.add(component, BorderLayout.CENTER);
-					MainControlApplet.this.validate();
-				}
-			}
-		}
-
-		/**
-		 * Split current panel either horizontally or vertically
-		 *
-		 * @param orientation
-		 *            Either JSplitPane.HORIZONTAL_SPLIT or
-		 *            JSplitPane.VERTICAL_SPLIT.
-		 */
-		private void splitPanel(int orientation) {
-			Component parent = clickComponent.getParent();
-
-			particlePanel = new Particle2DPanel(simulationAnimation);
-			Component newcomponent = particlePanel;
-			newcomponent.addMouseListener(popupClickListener);
-
-			if (parent != null) {
-				if (parent instanceof JSplitPane) {
-					JSplitPane parentsplitpane = (JSplitPane) parent;
-					Component parentleft = parentsplitpane.getLeftComponent();
-
-					int dividerLocation = parentsplitpane.getDividerLocation();
-
-					JSplitPane s = new JSplitPane(orientation,
-								clickComponent, newcomponent);
-					s.setOneTouchExpandable(true);
-					s.setContinuousLayout(true);
-					s.setResizeWeight(0.5);
-
-					if (parentleft == clickComponent) {
-						parentsplitpane.setLeftComponent(s);
-					} else {
-						parentsplitpane.setRightComponent(s);
-					}
-					parentsplitpane.setDividerLocation(dividerLocation);
-				} else if (parent instanceof JPanel) {
-					// top level
-					JSplitPane s = new JSplitPane(orientation,
-							clickComponent, newcomponent);
-					s.setOneTouchExpandable(true);
-					s.setContinuousLayout(true);
-					s.setResizeWeight(0.5);
-
-					MainControlApplet.this.remove(clickComponent);
-					MainControlApplet.this.add(s, BorderLayout.CENTER);
-					MainControlApplet.this.validate();
-				}
-			}
-		}
-
-		private void closePanel() {
-			Component parent = clickComponent.getParent();
-			if (parent != null) {
-				if (parent instanceof JSplitPane) {
-					JSplitPane parentsplitpane = (JSplitPane) parent;
-					Component parentleft = parentsplitpane.getLeftComponent();
-					Component parentright = parentsplitpane.getRightComponent();
-					Component grandparent = parent.getParent();
-
-					Component othercomponent = parentleft;
-					if (parentleft == clickComponent) {
-						othercomponent = parentright;
-					}
-
-					if (grandparent != null) {
-						if (grandparent instanceof JSplitPane) {
-							JSplitPane grandparentsplitpane = (JSplitPane) grandparent;
-							Component left = grandparentsplitpane.getLeftComponent();
-							if (left == parentsplitpane) {
-								grandparentsplitpane.setLeftComponent(othercomponent);
-							} else {
-								grandparentsplitpane.setRightComponent(othercomponent);
-							}
-						} else if (grandparent instanceof JPanel) {
-							parentsplitpane.removeAll();
-							MainControlApplet.this.remove(parentsplitpane);
-							MainControlApplet.this.add(othercomponent, BorderLayout.CENTER);
-							MainControlApplet.this.validate();
-						}
-						clickComponent.removeMouseListener(popupClickListener);
-						if (clickComponent instanceof AnimationPanel) {
-							((AnimationPanel) clickComponent).destruct();
-						}
-					}
-				}
-			}
-		}
 	}
 
 	public void setText(JTextArea text, String str, boolean onoff)
