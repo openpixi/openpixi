@@ -41,9 +41,7 @@ import org.openpixi.pixi.ui.util.projection.SphereObject;
  */
 public class Particle3DPanel extends AnimationPanel {
 
-	private boolean drawCurrentGrid = false;
-
-	private boolean drawFields = false;
+	FieldProperties fieldProperties = new FieldProperties();
 
 	/** Whether to combine the spatial components of the fields into a single vector
 	 * or whether to keep them separate. */
@@ -94,14 +92,6 @@ public class Particle3DPanel extends AnimationPanel {
 	public void checkTrace() {
 		paint_trace =! paint_trace;
 		//startAnimation();
-	}
-
-	public void drawCurrentGrid() {
-		drawCurrentGrid =! drawCurrentGrid;
-	}
-
-	public void drawFields() {
-		drawFields =! drawFields;
 	}
 
 	/** Display the particles */
@@ -195,7 +185,7 @@ public class Particle3DPanel extends AnimationPanel {
 		int colorIndex = colorProperties.getColorIndex();
 		int directionIndex = colorProperties.getDirectionIndex();
 		
-		if(drawCurrentGrid) {
+		if(fieldProperties.getDrawCurrentGrid()) {
 			for(int i = 0; i < s.grid.getNumCells(0); i += gridstep) {
 				for(int j = 0; j < s.grid.getNumCells(1); j += gridstep) {
 					for(int k = 0; k < s.grid.getNumCells(2); k += gridstep) {
@@ -236,7 +226,7 @@ public class Particle3DPanel extends AnimationPanel {
 			}
 		}
 
-		if(drawFields)
+		if(fieldProperties.getDrawFields())
 		{
 			graph.setColor(Color.black);
 			for(int i = 0; i < s.grid.getNumCells(0); i += gridstep) {
@@ -338,6 +328,7 @@ public class Particle3DPanel extends AnimationPanel {
 
 	public void addComponents(Box box) {
 		colorProperties.addComponents(box);
+		fieldProperties.addComponents(box);
 	}
 
 }

@@ -51,8 +51,6 @@ public class MainControlApplet extends JApplet
 	private JSlider stepSlider;
 
 	private JCheckBox framerateCheck;
-	private JCheckBox currentgridCheck;
-	private JCheckBox drawFieldsCheck;
 	private JCheckBox calculateFieldsCheck;
 	private JCheckBox relativisticCheck;
 
@@ -144,39 +142,17 @@ public class MainControlApplet extends JApplet
 		}
 	}
 
-	class DrawCurrentGridListener implements ItemListener {
-		public void itemStateChanged(ItemEvent eve){
-//			if (particlePanel != null) {
-//				particlePanel.drawCurrentGrid();
-//			}
-//			if (particle3DPanel != null) {
-//				particle3DPanel.drawCurrentGrid();
-//			}
-		}
-	}
-
-	class DrawFieldsListener implements ItemListener {
-		public void itemStateChanged(ItemEvent eve){
-//			if (particlePanel != null) {
-//				particlePanel.drawFields();
-//			}
-//			if (particle3DPanel != null) {
-//				particle3DPanel.drawFields();
-//			}
-		}
-	}
-
 	class CalculateFieldsListener implements ItemListener {
 		public void itemStateChanged(ItemEvent eve){
 				simulationAnimation.calculateFields();
-				if(eve.getStateChange() == ItemEvent.SELECTED) {
-					currentgridCheck.setEnabled(true);
-					drawFieldsCheck.setEnabled(true);
-				}
-				if(eve.getStateChange() == ItemEvent.DESELECTED) {
-					currentgridCheck.setEnabled(false);
-					drawFieldsCheck.setEnabled(false);
-				}
+//				if(eve.getStateChange() == ItemEvent.SELECTED) {
+//					currentgridCheck.setEnabled(true);
+//					drawFieldsCheck.setEnabled(true);
+//				}
+//				if(eve.getStateChange() == ItemEvent.DESELECTED) {
+//					currentgridCheck.setEnabled(false);
+//					drawFieldsCheck.setEnabled(false);
+//				}
 		}
 	}
 
@@ -271,14 +247,6 @@ public class MainControlApplet extends JApplet
 		traceCheck = new JCheckBox("Trace");
 		traceCheck.addItemListener(new CheckListener());
 
-		currentgridCheck = new JCheckBox("Current");
-		currentgridCheck.addItemListener(new DrawCurrentGridListener());
-		currentgridCheck.setEnabled(false);
-
-		drawFieldsCheck = new JCheckBox("Draw fields");
-		drawFieldsCheck.addItemListener(new DrawFieldsListener());
-		drawFieldsCheck.setEnabled(false);
-
 		calculateFieldsCheck = new JCheckBox("Calculate Fields");
 		calculateFieldsCheck.addItemListener(new CalculateFieldsListener());
 		calculateFieldsCheck.setEnabled(true);
@@ -319,10 +287,6 @@ public class MainControlApplet extends JApplet
 		Box cellSettings = Box.createVerticalBox();
 		cellSettings.add(Box.createVerticalStrut(20));
 		cellSettings.add(calculateFieldsCheck);
-		cellSettings.add(Box.createVerticalGlue());
-		cellSettings.add(currentgridCheck);
-		cellSettings.add(Box.createVerticalGlue());
-		cellSettings.add(drawFieldsCheck);
 		cellSettings.add(Box.createVerticalStrut(200));
 
 		this.propertiesTab = new PropertiesTab(MainControlApplet.this, panelManager);

@@ -40,9 +40,7 @@ import org.openpixi.pixi.ui.util.FrameRateDetector;
  */
 public class Particle2DPanel extends AnimationPanel {
 
-	private boolean drawCurrentGrid = false;
-
-	private boolean drawFields = false;
+	FieldProperties fieldProperties = new FieldProperties();
 
 	public boolean showinfo = false;
 
@@ -67,14 +65,6 @@ public class Particle2DPanel extends AnimationPanel {
 	public void checkTrace() {
 		paint_trace =! paint_trace;
 		//startAnimation();
-	}
-
-	public void drawCurrentGrid() {
-		drawCurrentGrid =! drawCurrentGrid;
-	}
-
-	public void drawFields() {
-		drawFields =! drawFields;
 	}
 
 	/** Display the particles */
@@ -124,7 +114,7 @@ public class Particle2DPanel extends AnimationPanel {
 		int colorIndex = colorProperties.getColorIndex();
 		int directionIndex = colorProperties.getDirectionIndex();
 		
-		if(drawCurrentGrid)
+		if(fieldProperties.getDrawCurrentGrid())
 		{
 			graph.setColor(Color.black);
 			
@@ -147,7 +137,7 @@ public class Particle2DPanel extends AnimationPanel {
 			//return;
 		}
 
-		if(drawFields)
+		if(fieldProperties.getDrawFields())
 		{
 			graph.setColor(Color.black);
 			for(int i = 0; i < s.grid.getNumCells(0); i++)
@@ -223,5 +213,6 @@ public class Particle2DPanel extends AnimationPanel {
 
 	public void addComponents(Box box) {
 		colorProperties.addComponents(box);
+		fieldProperties.addComponents(box);
 	}
 }
