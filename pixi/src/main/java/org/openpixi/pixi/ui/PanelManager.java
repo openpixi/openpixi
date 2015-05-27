@@ -18,6 +18,7 @@ import org.openpixi.pixi.ui.panel.ElectricFieldPanel;
 import org.openpixi.pixi.ui.panel.Particle2DPanel;
 import org.openpixi.pixi.ui.panel.Particle3DPanel;
 import org.openpixi.pixi.ui.panel.PhaseSpacePanel;
+import org.openpixi.pixi.ui.tab.PropertiesTab;
 
 /**
  * Manage various types of panels, including horizontal and vertical splitting of panels.
@@ -33,6 +34,7 @@ public class PanelManager {
 	private ElectricFieldPanel electricFieldPanel;
 
 	private AnimationPanel lastFocusPanel;
+	private PropertiesTab propertiesTab;
 
 	PopupClickListener popupClickListener;
 
@@ -58,6 +60,14 @@ public class PanelManager {
 	}
 
 	/**
+	 * Set properties tab which should replace content upon focus.
+	 * @param propertiesTab
+	 */
+	public void setPropertiesTab(PropertiesTab propertiesTab) {
+		this.propertiesTab = propertiesTab;
+	}
+
+	/**
 	 * Set focus to particular panel and remove focus from
 	 * previously focused panel.
 	 * @param component
@@ -70,6 +80,7 @@ public class PanelManager {
 					lastFocusPanel.setFocus(false);
 				}
 				panel.setFocus(true);
+				propertiesTab.refreshContent(panel);
 				lastFocusPanel = panel;
 			}
 		}

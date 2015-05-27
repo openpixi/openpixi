@@ -34,6 +34,7 @@ import org.openpixi.pixi.ui.panel.Particle3DPanel;
 import org.openpixi.pixi.ui.panel.PhaseSpacePanel;
 import org.openpixi.pixi.ui.panel.ElectricFieldPanel;
 import org.openpixi.pixi.ui.tab.FileTab;
+import org.openpixi.pixi.ui.tab.PropertiesTab;
 
 /**
  * Displays the animation of particles.
@@ -66,6 +67,7 @@ public class MainControlApplet extends JApplet
 	protected SimulationAnimation simulationAnimation;
 	private PanelManager panelManager;
 
+	protected PropertiesTab propertiesTab;
 	private FileTab fileTab;
 
 	private static final double speedSliderScaling = 0.07;
@@ -375,12 +377,14 @@ public class MainControlApplet extends JApplet
 		cellSettings.add(drawFieldsCheck);
 		cellSettings.add(Box.createVerticalStrut(200));
 
+		this.propertiesTab = new PropertiesTab(MainControlApplet.this, panelManager);
 		this.fileTab = new FileTab(MainControlApplet.this, simulationAnimation);
 
 		settingControls.setPreferredSize(new Dimension (300, 100));
 
 		tabs.addTab("Settings", settingControls);
 		tabs.addTab("Cell", cellSettings);
+		tabs.addTab("Properties", propertiesTab);
 		tabs.addTab("File", fileTab);
 
 		Component mainPanel = panelManager.getDefaultPanel();

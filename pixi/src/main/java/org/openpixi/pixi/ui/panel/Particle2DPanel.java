@@ -26,6 +26,9 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.geom.AffineTransform;
 
+import javax.swing.Box;
+import javax.swing.JButton;
+
 import org.openpixi.pixi.physics.Simulation;
 import org.openpixi.pixi.physics.particles.IParticle;
 import org.openpixi.pixi.ui.SimulationAnimation;
@@ -216,4 +219,8 @@ public class Particle2DPanel extends AnimationPanel {
         g.setTransform(old);
      }
 
+	public void addComponents(Box panel) {
+		JButton openButton = new JButton("Open...");
+		panel.add(openButton);
+	}
 }

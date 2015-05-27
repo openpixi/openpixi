@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 
+import javax.swing.Box;
 import javax.swing.JPanel;
 
 import org.openpixi.pixi.ui.SimulationAnimation;
@@ -65,5 +66,9 @@ public class AnimationPanel extends JPanel {
 			graph.setColor(Color.gray);
 			graph.drawRect(0, 1, getWidth() - 1, getHeight() - 2);
 		}
+	}
+
+	public void addComponents(Box panel) {
+
 	}
 }
