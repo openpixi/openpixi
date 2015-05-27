@@ -23,6 +23,9 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+
+import javax.swing.Box;
+
 import org.openpixi.pixi.physics.Simulation;
 import org.openpixi.pixi.physics.particles.IParticle;
 import org.openpixi.pixi.ui.SimulationAnimation;
@@ -58,6 +61,8 @@ public class Particle3DPanel extends AnimationPanel {
 	private long currentrendertime = 0;
 
 	Color darkGreen = new Color(0x00, 0x80, 0x00);
+
+	ColorProperties colorProperties = new ColorProperties();
 
 	private Projection projection = new Projection();
 	private LineObject cuboid = new LineObject();
@@ -187,8 +192,8 @@ public class Particle3DPanel extends AnimationPanel {
 			pos[w] = s.grid.getNumCells(w)/2;
 		}
 		
-		int colorIndex = 1; //getSimulationAnimation().getColorIndex();
-		int dirIndex = 1; //getSimulationAnimation().getDirectionIndex();
+		int colorIndex = colorProperties.getColorIndex();
+		int directionIndex = colorProperties.getDirectionIndex();
 		
 		if(drawCurrentGrid) {
 			for(int i = 0; i < s.grid.getNumCells(0); i += gridstep) {
@@ -330,4 +335,9 @@ public class Particle3DPanel extends AnimationPanel {
 			super.mouseReleased(e);
 		}
 	}
+
+	public void addComponents(Box box) {
+		colorProperties.addComponents(box);
+	}
+
 }

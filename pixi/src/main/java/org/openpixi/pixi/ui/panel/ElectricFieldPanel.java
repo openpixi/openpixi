@@ -23,12 +23,11 @@ import org.openpixi.pixi.ui.SimulationAnimation;
  */
 public class ElectricFieldPanel extends AnimationPanel {
 
-	ColorProperties colorProperties;
+	ColorProperties colorProperties = new ColorProperties();
 
 	/** Constructor */
 	public ElectricFieldPanel(SimulationAnimation simulationAnimation) {
 		super(simulationAnimation);
-		colorProperties = new ColorProperties();
 	}
 
 	/** Display the particles */

@@ -53,6 +53,8 @@ public class Particle2DPanel extends AnimationPanel {
 
 	Color darkGreen = new Color(0x00, 0x80, 0x00);
 
+	ColorProperties colorProperties = new ColorProperties();
+
 	/** Constructor */
 	public Particle2DPanel(SimulationAnimation simulationAnimation) {
 		super(simulationAnimation);
@@ -119,8 +121,8 @@ public class Particle2DPanel extends AnimationPanel {
 			pos[w] = s.grid.getNumCells(w)/2;
 		}
 		
-		int colorIndex = 1; //getSimulationAnimation().getColorIndex();
-		int dirIndex = 1; //getSimulationAnimation().getDirectionIndex();
+		int colorIndex = colorProperties.getColorIndex();
+		int directionIndex = colorProperties.getDirectionIndex();
 		
 		if(drawCurrentGrid)
 		{
@@ -219,8 +221,7 @@ public class Particle2DPanel extends AnimationPanel {
         g.setTransform(old);
      }
 
-	public void addComponents(Box panel) {
-		JButton openButton = new JButton("Open...");
-		panel.add(openButton);
+	public void addComponents(Box box) {
+		colorProperties.addComponents(box);
 	}
 }
