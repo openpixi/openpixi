@@ -6,7 +6,6 @@ import javax.swing.Box;
 import javax.swing.BoxLayout;
 
 import org.openpixi.pixi.ui.PanelManager;
-import org.openpixi.pixi.ui.SimulationAnimation;
 import org.openpixi.pixi.ui.panel.AnimationPanel;
 
 public class PropertiesTab extends Box {

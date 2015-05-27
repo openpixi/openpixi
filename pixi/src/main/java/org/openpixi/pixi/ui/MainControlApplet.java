@@ -20,6 +20,7 @@ package org.openpixi.pixi.ui;
 
 import java.awt.*;
 import javax.swing.*;
+
 import java.awt.event.*;
 
 import javax.swing.event.*;
@@ -28,11 +29,6 @@ import org.openpixi.pixi.physics.Debug;
 import org.openpixi.pixi.physics.Simulation;
 import org.openpixi.pixi.physics.solver.*;
 import org.openpixi.pixi.physics.solver.relativistic.*;
-import org.openpixi.pixi.ui.panel.AnimationPanel;
-import org.openpixi.pixi.ui.panel.Particle2DPanel;
-import org.openpixi.pixi.ui.panel.Particle3DPanel;
-import org.openpixi.pixi.ui.panel.PhaseSpacePanel;
-import org.openpixi.pixi.ui.panel.ElectricFieldPanel;
 import org.openpixi.pixi.ui.tab.FileTab;
 import org.openpixi.pixi.ui.tab.PropertiesTab;
 
@@ -53,7 +49,6 @@ public class MainControlApplet extends JApplet
 	private JCheckBox relativisticCheck;
 
 	private JComboBox algorithmComboBox;
-	private JCheckBox traceCheck;
 
 	private JTabbedPane tabs;
 
@@ -124,12 +119,6 @@ public class MainControlApplet extends JApplet
 			fileTab.applyTextAreaSettings();
 
 			setSlidersValue();
-		}
-	}
-
-	class CheckListener implements ItemListener {
-		public void itemStateChanged(ItemEvent eve){
-//				particlePanel.checkTrace();
 		}
 	}
 
@@ -218,9 +207,6 @@ public class MainControlApplet extends JApplet
 		relativisticCheck.addItemListener(new RelativisticEffects());
 		relativisticCheck.setEnabled(false);
 
-		traceCheck = new JCheckBox("Trace");
-		traceCheck.addItemListener(new CheckListener());
-
 		JPanel controlPanelUp = new JPanel();
 		controlPanelUp.setLayout(new FlowLayout());
 		controlPanelUp.add(startButton);
@@ -239,7 +225,6 @@ public class MainControlApplet extends JApplet
 		settingControls.add(Box.createVerticalGlue());
 		settingControls.add(step);
 		settingControls.add(Box.createVerticalGlue());
-		settingControls.add(traceCheck);
 
 		Box panelBox = Box.createVerticalBox();
 		panelBox.add(controlPanelUp);

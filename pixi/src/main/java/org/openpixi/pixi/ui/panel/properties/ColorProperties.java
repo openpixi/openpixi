@@ -74,6 +74,8 @@ public class ColorProperties {
 		settingControls.add(colorBox);
 		settingControls.add(Box.createVerticalGlue());
 		settingControls.add(directionBox);
+		settingControls.add(Box.createVerticalGlue());
+		//settingControls.add(Box.createVerticalStrut(20));
 
 		box.add(settingControls);
 	}

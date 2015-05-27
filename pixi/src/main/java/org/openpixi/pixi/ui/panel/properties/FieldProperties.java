@@ -34,11 +34,13 @@ public class FieldProperties {
 		drawFieldsCheck.setSelected(drawFields);
 
 		Box cellSettings = Box.createVerticalBox();
-		cellSettings.add(Box.createVerticalStrut(20));
+		cellSettings.add(Box.createVerticalGlue());
+		//cellSettings.add(Box.createVerticalStrut(20));
 		cellSettings.add(currentgridCheck);
 		cellSettings.add(Box.createVerticalGlue());
 		cellSettings.add(drawFieldsCheck);
-		cellSettings.add(Box.createVerticalStrut(200));
+		cellSettings.add(Box.createVerticalGlue());
+		//cellSettings.add(Box.createVerticalStrut(20));
 
 		box.add(cellSettings);
 	}

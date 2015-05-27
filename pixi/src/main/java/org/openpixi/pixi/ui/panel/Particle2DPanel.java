@@ -35,6 +35,7 @@ import org.openpixi.pixi.ui.SimulationAnimation;
 import org.openpixi.pixi.ui.panel.properties.ColorProperties;
 import org.openpixi.pixi.ui.panel.properties.FieldProperties;
 import org.openpixi.pixi.ui.panel.properties.InfoProperties;
+import org.openpixi.pixi.ui.panel.properties.TraceProperties;
 import org.openpixi.pixi.ui.util.FrameRateDetector;
 
 
@@ -46,11 +47,7 @@ public class Particle2DPanel extends AnimationPanel {
 	ColorProperties colorProperties = new ColorProperties();
 	FieldProperties fieldProperties = new FieldProperties();
 	InfoProperties infoProperties = new InfoProperties();
-
-	/** A state for the trace */
-	public boolean paint_trace = false;
-
-	private boolean reset_trace;
+	TraceProperties traceProperties = new TraceProperties();
 
 	/** Constructor */
 	public Particle2DPanel(SimulationAnimation simulationAnimation) {
@@ -58,12 +55,7 @@ public class Particle2DPanel extends AnimationPanel {
 	}
 
 	public void clear() {
-		reset_trace = true;
-	}
-
-	public void checkTrace() {
-		paint_trace =! paint_trace;
-		//startAnimation();
+		traceProperties.clear();
 	}
 
 	/** Display the particles */
@@ -74,15 +66,10 @@ public class Particle2DPanel extends AnimationPanel {
 		graph.scale(1, -1);
 		double scale = 10;
 
-		if(!paint_trace)
-		{
+		if (traceProperties.getCallSuper()) {
 			super.paintComponent(graph1);
 		}
-		if(reset_trace)
-		{
-			super.paintComponent(graph1);
-			reset_trace = false;
-		}
+
 
 		Simulation s = getSimulationAnimation().getSimulation();
 
@@ -97,7 +84,7 @@ public class Particle2DPanel extends AnimationPanel {
 			double radius = par.getRadius();//double radius = par.getRadius()*(2 - 1.9*par.getZ()/s.getDepth());
 			int width = (int) (2*sx*radius);
 			int height = (int) (2*sy*radius);
-			if(width > 2 && height > 2 && !paint_trace) {
+			if(width > 2 && height > 2 && !traceProperties.getPaintTrace()) {
 				graph.fillOval((int) (par.getPosition(0)*sx) - width/2, (int) (par.getPosition(1)*sy) - height/2,  width,  height);
 			}
 			else {
@@ -192,5 +179,6 @@ public class Particle2DPanel extends AnimationPanel {
 		colorProperties.addComponents(box);
 		fieldProperties.addComponents(box);
 		infoProperties.addComponents(box);
+		traceProperties.addComponents(box);
 	}
 }
