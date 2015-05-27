@@ -32,6 +32,8 @@ public class PanelManager {
 	private PhaseSpacePanel phaseSpacePanel;
 	private ElectricFieldPanel electricFieldPanel;
 
+	private AnimationPanel lastFocusPanel;
+
 	PopupClickListener popupClickListener;
 
 	JMenuItem itemSplitHorizontally;
@@ -51,7 +53,26 @@ public class PanelManager {
 		particlePanel = new Particle2DPanel(mainControlApplet.simulationAnimation);
 		popupClickListener = new PopupClickListener();
 		particlePanel.addMouseListener(popupClickListener);
+		setFocus(particlePanel);
 		return particlePanel;
+	}
+
+	/**
+	 * Set focus to particular panel and remove focus from
+	 * previously focused panel.
+	 * @param component
+	 */
+	private void setFocus(Component component) {
+		if (component instanceof AnimationPanel) {
+			AnimationPanel panel = (AnimationPanel) component;
+			if (!panel.isFocused()) {
+				if (lastFocusPanel != null) {
+					lastFocusPanel.setFocus(false);
+				}
+				panel.setFocus(true);
+				lastFocusPanel = panel;
+			}
+		}
 	}
 
 	class PopupMenu extends JPopupMenu {
@@ -95,6 +116,10 @@ public class PanelManager {
 
 	class PopupClickListener extends MouseAdapter {
 		public void mousePressed(MouseEvent e) {
+			// Set focus
+			setFocus(e.getComponent());
+
+			// Check for right mouse button
 			if (e.isPopupTrigger())
 				doPop(e);
 		}
@@ -169,6 +194,7 @@ public class PanelManager {
 					mainControlApplet.validate();
 				}
 			}
+			setFocus(component);
 		}
 
 		/**
@@ -246,6 +272,7 @@ public class PanelManager {
 							mainControlApplet.add(othercomponent, BorderLayout.CENTER);
 							mainControlApplet.validate();
 						}
+						setFocus(othercomponent);
 						clickComponent.removeMouseListener(popupClickListener);
 						if (clickComponent instanceof AnimationPanel) {
 							((AnimationPanel) clickComponent).destruct();
