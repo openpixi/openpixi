@@ -23,24 +23,12 @@ import org.openpixi.pixi.ui.SimulationAnimation;
  */
 public class ElectricFieldPanel extends AnimationPanel {
 
-	private int colorIndex = 0;
-
-	private int directionIndex = 1;
-
-	String[] colorString = {
-			"1",
-			"2",
-			"3"};
-
-	String[] directionString = {
-			"x",
-			"y",
-			"z"};
-
+	ColorProperties colorProperties;
 
 	/** Constructor */
 	public ElectricFieldPanel(SimulationAnimation simulationAnimation) {
 		super(simulationAnimation);
+		colorProperties = new ColorProperties();
 	}
 
 	/** Display the particles */
@@ -71,6 +59,9 @@ public class ElectricFieldPanel extends AnimationPanel {
 		// Lattice spacing and coupling constant
 		double as = s.grid.getLatticeSpacing();
 		double g = s.getCouplingConstant();
+
+		int colorIndex = colorProperties.getColorIndex();
+		int directionIndex = colorProperties.getDirectionIndex();
 
 		// Draw particles on a central line:
 		for (int i = 0; i < s.particles.size(); i++) {
@@ -162,68 +153,7 @@ public class ElectricFieldPanel extends AnimationPanel {
 
 	}
 
-	public int getColorIndex() {
-		return colorIndex;
-	}
-
-	public int getDirectionIndex() {
-		return directionIndex;
-	}
-
-	public void colorIndexSet(int id)
-	{
-		this.colorIndex = id;
-	}
-
-	public void directionSet(int id)
-	{
-		this.directionIndex = id;
-	}
-
-	public void addComponents(Box panel) {
-		Box settingControls = Box.createVerticalBox();
-
-		JComboBox colorIndexComboBox;
-		colorIndexComboBox = new JComboBox(colorString);
-		colorIndexComboBox.addActionListener(new ColorListener());
-		colorIndexComboBox.setSelectedIndex(colorIndex);
-		colorIndexComboBox.setPreferredSize(new Dimension(colorIndexComboBox.getPreferredSize().width, 5));
-		JLabel colorLabel = new JLabel("Color index");
-		Box colorBox = Box.createVerticalBox();
-		colorBox.add(colorLabel);
-		colorBox.add(colorIndexComboBox);
-
-		JComboBox directionIndexComboBox;
-		directionIndexComboBox = new JComboBox(directionString);
-		directionIndexComboBox.addActionListener(new DirectionListener());
-		directionIndexComboBox.setSelectedIndex(directionIndex);
-		directionIndexComboBox.setPreferredSize(new Dimension(directionIndexComboBox.getPreferredSize().width, 5));
-		JLabel directionLabel = new JLabel("Field direction");
-		Box directionBox = Box.createVerticalBox();
-		directionBox.add(directionLabel);
-		directionBox.add(directionIndexComboBox);
-
-		settingControls.add(Box.createVerticalGlue());
-		settingControls.add(colorBox);
-		settingControls.add(Box.createVerticalGlue());
-		settingControls.add(directionBox);
-
-		panel.add(settingControls);
-	}
-
-	class ColorListener implements ActionListener {
-		public void actionPerformed(ActionEvent eve) {
-			JComboBox cbox = (JComboBox) eve.getSource();
-			int id = cbox.getSelectedIndex();
-			ElectricFieldPanel.this.colorIndex = id;
-		}
-	}
-
-	class DirectionListener implements ActionListener {
-		public void actionPerformed(ActionEvent eve) {
-			JComboBox cbox = (JComboBox) eve.getSource();
-			int id = cbox.getSelectedIndex();
-			ElectricFieldPanel.this.directionIndex = id;
-		}
+	public void addComponents(Box box) {
+		colorProperties.addComponents(box);
 	}
 }
