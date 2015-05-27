@@ -34,6 +34,7 @@ import org.openpixi.pixi.physics.particles.IParticle;
 import org.openpixi.pixi.ui.SimulationAnimation;
 import org.openpixi.pixi.ui.panel.properties.ColorProperties;
 import org.openpixi.pixi.ui.panel.properties.FieldProperties;
+import org.openpixi.pixi.ui.panel.properties.InfoProperties;
 import org.openpixi.pixi.ui.util.FrameRateDetector;
 
 
@@ -42,18 +43,14 @@ import org.openpixi.pixi.ui.util.FrameRateDetector;
  */
 public class Particle2DPanel extends AnimationPanel {
 
+	ColorProperties colorProperties = new ColorProperties();
 	FieldProperties fieldProperties = new FieldProperties();
-
-	public boolean showinfo = false;
+	InfoProperties infoProperties = new InfoProperties();
 
 	/** A state for the trace */
 	public boolean paint_trace = false;
 
 	private boolean reset_trace;
-
-	Color darkGreen = new Color(0x00, 0x80, 0x00);
-
-	ColorProperties colorProperties = new ColorProperties();
 
 	/** Constructor */
 	public Particle2DPanel(SimulationAnimation simulationAnimation) {
@@ -161,30 +158,8 @@ public class Particle2DPanel extends AnimationPanel {
 			//return;
 		}
 
-		FrameRateDetector frameratedetector = getSimulationAnimation().getFrameRateDetector();
-
-		if (showinfo) {
-			graph.translate(0.0, this.getHeight());
-			graph.scale(1.0, -1.0);
-			graph.setColor(darkGreen);
-			graph.drawString("Frame rate: " + frameratedetector.getRateString() + " fps", 30, 30);
-			graph.drawString("Time step: " + (float) s.tstep, 30, 50);
-			graph.drawString("Total time: " + (float) s.tottime, 30, 70);
-
-			Runtime runtime = Runtime.getRuntime();
-			long maxMemory = runtime.maxMemory();
-			long allocatedMemory = runtime.totalMemory();
-			long freeMemory = runtime.freeMemory();
-
-			int bottom = getHeight();
-			graph.drawString("free memory: " + freeMemory / 1024, 30, bottom - 90);
-			graph.drawString("allocated memory: " + allocatedMemory / 1024, 30, bottom - 70);
-			graph.drawString("max memory: " + maxMemory /1024, 30, bottom - 50);
-			graph.drawString("total free memory: " +
-				(freeMemory + (maxMemory - allocatedMemory)) / 1024, 30, bottom - 30);
-		}
+		infoProperties.showInfo(graph, this);
 	}
-
 
 	private void drawArrow(Graphics2D g, int x1, int y1, int x2, int y2, Color col) {
 
@@ -216,5 +191,6 @@ public class Particle2DPanel extends AnimationPanel {
 	public void addComponents(Box box) {
 		colorProperties.addComponents(box);
 		fieldProperties.addComponents(box);
+		infoProperties.addComponents(box);
 	}
 }

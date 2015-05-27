@@ -31,6 +31,7 @@ import org.openpixi.pixi.physics.particles.IParticle;
 import org.openpixi.pixi.ui.SimulationAnimation;
 import org.openpixi.pixi.ui.panel.properties.ColorProperties;
 import org.openpixi.pixi.ui.panel.properties.FieldProperties;
+import org.openpixi.pixi.ui.panel.properties.InfoProperties;
 import org.openpixi.pixi.ui.util.FrameRateDetector;
 import org.openpixi.pixi.ui.util.projection.LineObject;
 import org.openpixi.pixi.ui.util.projection.Projection;
@@ -43,13 +44,13 @@ import org.openpixi.pixi.ui.util.projection.SphereObject;
  */
 public class Particle3DPanel extends AnimationPanel {
 
+	ColorProperties colorProperties = new ColorProperties();
 	FieldProperties fieldProperties = new FieldProperties();
+	InfoProperties infoProperties = new InfoProperties();
 
 	/** Whether to combine the spatial components of the fields into a single vector
 	 * or whether to keep them separate. */
 	private boolean combinefields = true;
-
-	public boolean showinfo = false;
 
 	/** A state for the trace */
 	public boolean paint_trace = false;
@@ -59,10 +60,6 @@ public class Particle3DPanel extends AnimationPanel {
 	private int gridstep = 1;
 	private int gridstepadjusted = 0;
 	private long currentrendertime = 0;
-
-	Color darkGreen = new Color(0x00, 0x80, 0x00);
-
-	ColorProperties colorProperties = new ColorProperties();
 
 	private Projection projection = new Projection();
 	private LineObject cuboid = new LineObject();
@@ -277,28 +274,7 @@ public class Particle3DPanel extends AnimationPanel {
 
 		scene.paint(projection, graph);
 
-		FrameRateDetector frameratedetector = getSimulationAnimation().getFrameRateDetector();
-
-		if (showinfo) {
-			graph.translate(0.0, this.getHeight());
-			graph.scale(1.0, -1.0);
-			graph.setColor(darkGreen);
-			graph.drawString("Frame rate: " + frameratedetector.getRateString() + " fps", 30, 30);
-			graph.drawString("Time step: " + (float) s.tstep, 30, 50);
-			graph.drawString("Total time: " + (float) s.tottime, 30, 70);
-
-			Runtime runtime = Runtime.getRuntime();
-			long maxMemory = runtime.maxMemory();
-			long allocatedMemory = runtime.totalMemory();
-			long freeMemory = runtime.freeMemory();
-
-			int bottom = getHeight();
-			graph.drawString("free memory: " + freeMemory / 1024, 30, bottom - 90);
-			graph.drawString("allocated memory: " + allocatedMemory / 1024, 30, bottom - 70);
-			graph.drawString("max memory: " + maxMemory /1024, 30, bottom - 50);
-			graph.drawString("total free memory: " +
-				(freeMemory + (maxMemory - allocatedMemory)) / 1024, 30, bottom - 30);
-		}
+		infoProperties.showInfo(graph, this);
 	}
 
 	private int mouseOldX, mouseOldY;
@@ -331,6 +307,7 @@ public class Particle3DPanel extends AnimationPanel {
 	public void addComponents(Box box) {
 		colorProperties.addComponents(box);
 		fieldProperties.addComponents(box);
+		infoProperties.addComponents(box);
 	}
 
 }

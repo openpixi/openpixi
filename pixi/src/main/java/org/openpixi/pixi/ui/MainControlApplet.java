@@ -50,7 +50,6 @@ public class MainControlApplet extends JApplet
 	private JSlider speedSlider;
 	private JSlider stepSlider;
 
-	private JCheckBox framerateCheck;
 	private JCheckBox calculateFieldsCheck;
 	private JCheckBox relativisticCheck;
 
@@ -156,16 +155,6 @@ public class MainControlApplet extends JApplet
 		}
 	}
 
-	class FrameListener implements ItemListener {
-		public void itemStateChanged(ItemEvent eve) {
-			if(eve.getStateChange() == ItemEvent.SELECTED) {
-//				particlePanel.showinfo = true;
-			} else if(eve.getStateChange() == ItemEvent.DESELECTED) {
-//				particlePanel.showinfo = false;
-			}
-		}
-	}
-
 	class StepListener implements ChangeListener{
 		public void stateChanged(ChangeEvent eve) {
 			Simulation s = simulationAnimation.getSimulation();
@@ -251,9 +240,6 @@ public class MainControlApplet extends JApplet
 		calculateFieldsCheck.addItemListener(new CalculateFieldsListener());
 		calculateFieldsCheck.setEnabled(true);
 
-		framerateCheck = new JCheckBox("Info");
-		framerateCheck.addItemListener(new FrameListener());
-
 		JPanel controlPanelUp = new JPanel();
 		controlPanelUp.setLayout(new FlowLayout());
 		controlPanelUp.add(startButton);
@@ -273,7 +259,6 @@ public class MainControlApplet extends JApplet
 		settingControls.add(step);
 		settingControls.add(Box.createVerticalGlue());
 		settingControls.add(traceCheck);
-		settingControls.add(framerateCheck);
 
 		Box panelBox = Box.createVerticalBox();
 		panelBox.add(controlPanelUp);
