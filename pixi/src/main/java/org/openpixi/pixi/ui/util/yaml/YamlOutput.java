@@ -1,19 +1,31 @@
 package org.openpixi.pixi.ui.util.yaml;
 
+import java.util.ArrayList;
 import org.openpixi.pixi.physics.Settings;
+import org.openpixi.pixi.ui.util.yaml.FileGenerators.YamlParticlesInTime;
+import org.openpixi.pixi.ui.util.yaml.FileGenerators.YamlBulkQuantitiesInTime;
 
 public class YamlOutput {
-	public String path;
-	public Integer daniil;
-	public Integer daniilspectrum;
+	/**
+	 * List of output file generators.
+	 */
+	public ArrayList<YamlParticlesInTime> particlesInTime = new ArrayList<YamlParticlesInTime>();
+	
+	public ArrayList<YamlBulkQuantitiesInTime> bulkQuantitiesInTime = new ArrayList<YamlBulkQuantitiesInTime>();
 
-	public void applyTo(Settings settings) {
-		if (path != null) {
-			settings.setFilePath(path);
+	/**
+	 * Creates FileGenerator instances and applies them to the Settings instance.
+	 * @param s
+	 */
+
+	public void applyTo(Settings s) {
+		for (YamlParticlesInTime output1 : particlesInTime) {
+			s.addDiagnostics(output1.getFileGenerator());
 		}
 
-		if (daniilspectrum != null) {
-			settings.setSpectrumStep(daniilspectrum);
+		for (YamlBulkQuantitiesInTime output2 : bulkQuantitiesInTime) {
+			s.addDiagnostics(output2.getFileGenerator());
 		}
 	}
+	
 }
