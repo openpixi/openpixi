@@ -50,7 +50,6 @@ public class MainControlApplet extends JApplet
 	private JSlider speedSlider;
 	private JSlider stepSlider;
 
-	private JCheckBox calculateFieldsCheck;
 	private JCheckBox relativisticCheck;
 
 	private JComboBox algorithmComboBox;
@@ -141,20 +140,6 @@ public class MainControlApplet extends JApplet
 		}
 	}
 
-	class CalculateFieldsListener implements ItemListener {
-		public void itemStateChanged(ItemEvent eve){
-				simulationAnimation.calculateFields();
-//				if(eve.getStateChange() == ItemEvent.SELECTED) {
-//					currentgridCheck.setEnabled(true);
-//					drawFieldsCheck.setEnabled(true);
-//				}
-//				if(eve.getStateChange() == ItemEvent.DESELECTED) {
-//					currentgridCheck.setEnabled(false);
-//					drawFieldsCheck.setEnabled(false);
-//				}
-		}
-	}
-
 	class StepListener implements ChangeListener{
 		public void stateChanged(ChangeEvent eve) {
 			Simulation s = simulationAnimation.getSimulation();
@@ -236,10 +221,6 @@ public class MainControlApplet extends JApplet
 		traceCheck = new JCheckBox("Trace");
 		traceCheck.addItemListener(new CheckListener());
 
-		calculateFieldsCheck = new JCheckBox("Calculate Fields");
-		calculateFieldsCheck.addItemListener(new CalculateFieldsListener());
-		calculateFieldsCheck.setEnabled(true);
-
 		JPanel controlPanelUp = new JPanel();
 		controlPanelUp.setLayout(new FlowLayout());
 		controlPanelUp.add(startButton);
@@ -269,18 +250,12 @@ public class MainControlApplet extends JApplet
 
 		tabs = new JTabbedPane();
 
-		Box cellSettings = Box.createVerticalBox();
-		cellSettings.add(Box.createVerticalStrut(20));
-		cellSettings.add(calculateFieldsCheck);
-		cellSettings.add(Box.createVerticalStrut(200));
-
 		this.propertiesTab = new PropertiesTab(MainControlApplet.this, panelManager);
 		this.fileTab = new FileTab(MainControlApplet.this, simulationAnimation);
 
 		settingControls.setPreferredSize(new Dimension (300, 100));
 
 		tabs.addTab("Settings", settingControls);
-		tabs.addTab("Cell", cellSettings);
 		tabs.addTab("Properties", propertiesTab);
 		tabs.addTab("File", fileTab);
 
