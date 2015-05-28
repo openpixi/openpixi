@@ -8,6 +8,7 @@ import java.io.IOException;
 import org.openpixi.pixi.diagnostics.Diagnostics;
 import org.openpixi.pixi.physics.grid.Grid;
 import org.openpixi.pixi.physics.particles.IParticle;
+import org.openpixi.pixi.physics.measurements.FieldMeasurements;
 
 public class BulkQuantitiesInTime implements Diagnostics {
 
@@ -20,22 +21,18 @@ public class BulkQuantitiesInTime implements Diagnostics {
 			
 			File file = getOutputFile(path);
 			FileWriter pw = new FileWriter(file, true);
+			FieldMeasurements fieldMeasurements = new FieldMeasurements();
 			
 			if(time == 0) {
-				pw.write("#time \t XXX");
+				pw.write("#time \t E^2 \t B^2");
 				pw.write("\n");
 			} else {}
 			
 			pw.write(time + "\t");
-			/*
-			for (int i = 0; i < particles.size(); i++) {
-				pw.write(particles.get(i).getPosition(0) + "\t");
-				pw.write(particles.get(i).getPosition(1) + "\t");
-				pw.write(particles.get(i).getPosition(2) + "\t");
-				pw.write(particles.get(i).getVelocity(0) + "\t");
-				pw.write(particles.get(i).getVelocity(1) + "\t");
-				pw.write(particles.get(i).getVelocity(2) + "\t");
-			}*/
+			
+			pw.write(fieldMeasurements.calculateEsquared(grid) + "\t");
+			pw.write(fieldMeasurements.calculateBsquared(grid) + "\t");
+				
 			pw.write("\n");
 			
 			pw.close();

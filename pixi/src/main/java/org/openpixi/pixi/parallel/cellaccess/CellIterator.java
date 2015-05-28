@@ -12,6 +12,8 @@ public abstract class CellIterator {
 	protected IntBox dimensions;
 
 	public abstract void execute(Grid grid, CellAction action);
+	
+	public abstract double calculate(Grid grid, CellAction action);
 
 	/**
 	 * In this mode the iterator does not calculate the extra cells.

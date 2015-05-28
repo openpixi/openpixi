@@ -95,6 +95,8 @@ public class YangMillsSolver extends FieldSolver {
 				}
 			} else {System.out.println("Yang-Mills solver only available for 3 spatial dimensions!");}	
 		}
+		
+		public double calculate(Grid grid, int[] coor) {return 0;}
 	}
 
 	private class UpdateLinks implements CellAction {
@@ -115,6 +117,8 @@ public class YangMillsSolver extends FieldSolver {
 				
 			}
 		}
+		
+		public double calculate(Grid grid, int[] coor) {return 0;}
 	}
 
 }

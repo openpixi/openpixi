@@ -68,6 +68,8 @@ public class GeneralYangMillsSolver extends FieldSolver
 				grid.setE(coor, i, currentE);
 			}
 		}
+		
+		public double calculate(Grid grid, int[] coor) {return 0;}
 	}
 
 	private class UpdateLinks implements CellAction {
@@ -91,5 +93,7 @@ public class GeneralYangMillsSolver extends FieldSolver
 
 			}
 		}
+		
+		public double calculate(Grid grid, int[] coor) {return 0;}
 	}
 }

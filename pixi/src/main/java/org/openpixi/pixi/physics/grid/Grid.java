@@ -153,7 +153,6 @@ public class Grid {
 		cells[getCellIndex(coor)].addE(dir, field);
 	}
 
-
 	/**
 	 * Returns the (dir1, dir2)-component of the field strength tensor at a certain lattice coordinate.
 	 * @param coor      Lattice coordinate of the field strength tensor
@@ -239,6 +238,22 @@ public class Grid {
 	 */
 	public double getLatticeSpacing() {
 		return as;
+	}
+	
+	/**
+	 * Returns the gauge coupling.
+	 * @return  Gauge coupling.
+	 */
+	public double getGaugeCoupling() {
+		return gaugeCoupling;
+	}
+	
+	/**
+	 * Returns the cell iterator.
+	 * @return  Cell iterator.
+	 */
+	public CellIterator getCellIterator() {
+		return cellIterator;
 	}
 
 	/**
@@ -532,6 +547,8 @@ public class Grid {
 		public void execute(Grid grid, int[] coor) {
 			grid.getCell(coor).resetCurrent();
 		}
+		
+		public double calculate(Grid grid, int[] coor) {return 0;}
 	}
 
 	/**
@@ -542,6 +559,8 @@ public class Grid {
 		public void execute(Grid grid, int[] coor) {
 			grid.resetCharge(coor);
 		}
+		
+		public double calculate(Grid grid, int[] coor) {return 0;}
 	}
 
 	/**
@@ -553,6 +572,8 @@ public class Grid {
 		public void execute(Grid grid, int[] coor) {
 			grid.getCell(coor).reassignLinks();
 		}
+		
+		public double calculate(Grid grid, int[] coor) {return 0;}
 	}
 	
 	/**
