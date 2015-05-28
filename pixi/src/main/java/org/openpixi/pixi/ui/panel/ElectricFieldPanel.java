@@ -8,6 +8,7 @@ import org.openpixi.pixi.physics.Simulation;
 import org.openpixi.pixi.physics.particles.IParticle;
 import org.openpixi.pixi.ui.SimulationAnimation;
 import org.openpixi.pixi.ui.panel.properties.ColorProperties;
+import org.openpixi.pixi.ui.panel.properties.ScaleProperties;
 
 /**
  * This panel shows the one-dimensional electric field along the x-direction.
@@ -17,6 +18,7 @@ import org.openpixi.pixi.ui.panel.properties.ColorProperties;
 public class ElectricFieldPanel extends AnimationPanel {
 
 	ColorProperties colorProperties = new ColorProperties();
+	ScaleProperties scaleProperties = new ScaleProperties();
 
 	/** Constructor */
 	public ElectricFieldPanel(SimulationAnimation simulationAnimation) {
@@ -73,10 +75,13 @@ public class ElectricFieldPanel extends AnimationPanel {
 		// Draw electric field:
 		graph.setColor(Color.black);
 		// Scale factor for electric field
-		double scaleE = 1;
+		double scaleE = scaleProperties.getScale();
+
 		// Scale factor for gauge field
-		double scaleA = 1;
-		
+		double scaleA = scaleProperties.getScale();
+
+		scaleProperties.resetAutomaticScale();
+
 		int[] pos = new int[s.getNumberOfDimensions()];
 		for(int w = 2; w < s.getNumberOfDimensions(); w++) {
 			pos[w] = s.grid.getNumCells(w)/2;
@@ -103,6 +108,7 @@ public class ElectricFieldPanel extends AnimationPanel {
 					center of the panel in order to get the expected result.
 				*/
 				double electricField = s.grid.getE(pos, directionIndex).get(colorIndex) / (as * g);
+				scaleProperties.putValue(electricField);
 				newValue = (int) (((0.5 + scaleE * electricField) * panelHeight));
 
 				if (i > 0) {
@@ -135,6 +141,7 @@ public class ElectricFieldPanel extends AnimationPanel {
 					center of the panel in order to get the expected result.
 				*/
 				double gaugeField = s.grid.getU(pos, directionIndex).getLinearizedAlgebraElement().get(colorIndex) / (as * g);
+				scaleProperties.putValue(gaugeField);
 				newValue = (int) (((0.5 + scaleA * gaugeField) * panelHeight));
 
 				if (i > 0) {
@@ -142,11 +149,13 @@ public class ElectricFieldPanel extends AnimationPanel {
 				}
 			}
 		}
+		scaleProperties.calculateAutomaticScale(0.5);
 
 	}
 
 	public void addComponents(Box box) {
 		addLabel(box, "Electric field panel");
 		colorProperties.addComponents(box);
+		scaleProperties.addComponents(box);
 	}
 }
