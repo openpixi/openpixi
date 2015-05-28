@@ -13,14 +13,6 @@ import javax.swing.Timer;
 import org.openpixi.pixi.physics.InitialConditions;
 import org.openpixi.pixi.physics.Settings;
 import org.openpixi.pixi.physics.Simulation;
-import org.openpixi.pixi.physics.force.CombinedForce;
-import org.openpixi.pixi.physics.force.ConstantForce;
-import org.openpixi.pixi.physics.force.Force;
-import org.openpixi.pixi.physics.force.SimpleGridForce;
-import org.openpixi.pixi.physics.force.relativistic.ConstantForceRelativistic;
-import org.openpixi.pixi.physics.force.relativistic.SimpleGridForceRelativistic;
-import org.openpixi.pixi.physics.solver.LeapFrog;
-import org.openpixi.pixi.physics.solver.relativistic.LeapFrogRelativistic;
 import org.openpixi.pixi.ui.panel.Particle2DPanel;
 import org.openpixi.pixi.ui.util.FrameRateDetector;
 
@@ -31,9 +23,9 @@ public class SimulationAnimation {
 
 	private Simulation s;
 
-	private boolean relativistic = true;
+//	private boolean relativistic = true;
 
-	private boolean calculateFields = false;
+//	private boolean calculateFields = false;
 
 	/** Milliseconds between updates */
 	private int interval = 30;
@@ -128,7 +120,7 @@ public class SimulationAnimation {
 				s = InitialConditions.initEmptySimulation();
 				break;
 		}
-		updateFieldForce();
+//		updateFieldForce();
 		s.prepareAllParticles();
 		s.turnGridForceOn();
 		timer.start();
@@ -150,80 +142,80 @@ public class SimulationAnimation {
 		timer.start();
 	}
 
-	public void calculateFields() {
-		calculateFields =! calculateFields;
-		updateFieldForce();
-	}
+//	public void calculateFields() {
+//		calculateFields =! calculateFields;
+//		updateFieldForce();
+//	}
 
-	private void updateFieldForce() {
+//	private void updateFieldForce() {
+//
+//		if(calculateFields) {
+//			s.turnGridForceOn();
+//		}
+//		else {
+//			s.turnGridForceOff();
+//		}
+//	}
 
-		if(calculateFields) {
-			s.turnGridForceOn();
-		}
-		else {
-			s.turnGridForceOff();
-		}
-	}
+//	public void algorithmChange(int id)
+//	{
+//		s.completeAllParticles();
+//
+//		switch(id)
+//		{
+//			case 0:
+//				s.getParticleMover().setSolver(new LeapFrog());
+//				break;
+//		}
+//
+//		s.prepareAllParticles();
+//	}
 
-	public void algorithmChange(int id)
-	{
-		s.completeAllParticles();
-
-		switch(id)
-		{
-			case 0:
-				s.getParticleMover().setSolver(new LeapFrog());
-				break;
-		}
-
-		s.prepareAllParticles();
-	}
-
-	public void relativisticEffects(int i) {
-		relativistic =! relativistic;
-
-		if(relativistic == false) {
-			s.relativistic = false;
-			if (s.f instanceof CombinedForce) {
-				ArrayList<Force> forces = s.f.forces;
-				for (int j = 0; j < forces.size(); j++) {
-					if (forces.get(j) instanceof ConstantForceRelativistic){
-						forces.set(j, new ConstantForce());
-					}
-					if (forces.get(j) instanceof SimpleGridForceRelativistic){
-						forces.set(j, new SimpleGridForce());
-					}
-				}
-			}
-			switch(i) {
-			case 0:
-				s.getParticleMover().setSolver(new LeapFrog());
-				break;
-			}
-		}
-
-		if(relativistic == true) {
-			s.relativistic = true;
-			//System.out.println("relativistic version on");
-			if (s.f instanceof CombinedForce) {
-				ArrayList<Force> forces = s.f.forces;
-				for (int j = 0; j < forces.size(); j++) {
-					if (forces.get(j) instanceof ConstantForce){
-						forces.set(j, new ConstantForceRelativistic(s));
-					}
-					if (forces.get(j) instanceof SimpleGridForce){
-						forces.set(j, new SimpleGridForceRelativistic(s));
-					}
-				}
-			}
-			switch(i)
-			{
-				case 0:
-					s.getParticleMover().setSolver(new LeapFrogRelativistic(s));
-					break;
-			}
-		}
-
-	}
+//	public void relativisticEffects(int i) {
+//		relativistic =! relativistic;
+//
+//		if(relativistic == false) {
+//			s.relativistic = false;
+//			if (s.f instanceof CombinedForce) {
+//				ArrayList<Force> forces = s.f.forces;
+//				for (int j = 0; j < forces.size(); j++) {
+//					if (forces.get(j) instanceof ConstantForceRelativistic){
+//						forces.set(j, new ConstantForce());
+//					}
+//					if (forces.get(j) instanceof SimpleGridForceRelativistic){
+//						forces.set(j, new SimpleGridForce());
+//					}
+//				}
+//			}
+//			switch(i) {
+//			case 0:
+//				s.getParticleMover().setSolver(new LeapFrog());
+//				break;
+//			}
+//		}
+//
+//		if(relativistic == true) {
+//			s.relativistic = true;
+//			//System.out.println("relativistic version on");
+//			if (s.f instanceof CombinedForce) {
+//				ArrayList<Force> forces = s.f.forces;
+//				for (int j = 0; j < forces.size(); j++) {
+//					if (forces.get(j) instanceof ConstantForce){
+//						forces.set(j, new ConstantForceRelativistic(s));
+//					}
+//					if (forces.get(j) instanceof SimpleGridForce){
+//						forces.set(j, new SimpleGridForceRelativistic(s));
+//					}
+//				}
+//			}
+//			switch(i)
+//			{
+//				case 0:
+//					s.getParticleMover().setSolver(new LeapFrogRelativistic(s));
+//					break;
+//			}
+//		}
+//
+//	}
 
 }

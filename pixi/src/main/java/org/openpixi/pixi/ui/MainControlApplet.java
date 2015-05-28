@@ -44,11 +44,11 @@ public class MainControlApplet extends JApplet
 	private JButton resetButton;
 
 	private JSlider speedSlider;
-	private JSlider stepSlider;
+//	private JSlider stepSlider;
 
-	private JCheckBox relativisticCheck;
+//	private JCheckBox relativisticCheck;
 
-	private JComboBox algorithmComboBox;
+//	private JComboBox algorithmComboBox;
 
 	private JTabbedPane tabs;
 
@@ -78,19 +78,19 @@ public class MainControlApplet extends JApplet
 		}
 	}
 
-	class AlgorithmListener implements ActionListener {
-		public void actionPerformed(ActionEvent eve) {
-			JComboBox cbox = (JComboBox) eve.getSource();
-			int id = cbox.getSelectedIndex();
-			simulationAnimation.algorithmChange(id);
-			if (id == 0) {
-				relativisticCheck.setEnabled(true);
-			}
-			else {
-				relativisticCheck.setEnabled(false);
-			}
-		}
-	}
+//	class AlgorithmListener implements ActionListener {
+//		public void actionPerformed(ActionEvent eve) {
+//			JComboBox cbox = (JComboBox) eve.getSource();
+//			int id = cbox.getSelectedIndex();
+//			simulationAnimation.algorithmChange(id);
+//			if (id == 0) {
+//				relativisticCheck.setEnabled(true);
+//			}
+//			else {
+//				relativisticCheck.setEnabled(false);
+//			}
+//		}
+//	}
 
 	/**
 	 * Listener for start button.
@@ -122,12 +122,12 @@ public class MainControlApplet extends JApplet
 		}
 	}
 
-	class RelativisticEffects implements ItemListener {
-		public void itemStateChanged(ItemEvent eve){
-			int i = algorithmComboBox.getSelectedIndex();
-			simulationAnimation.relativisticEffects(i);
-		}
-	}
+//	class RelativisticEffects implements ItemListener {
+//		public void itemStateChanged(ItemEvent eve){
+//			int i = algorithmComboBox.getSelectedIndex();
+//			simulationAnimation.relativisticEffects(i);
+//		}
+//	}
 
 	class StepListener implements ChangeListener{
 		public void stateChanged(ChangeEvent eve) {
@@ -177,35 +177,35 @@ public class MainControlApplet extends JApplet
 		speed.add(speedLabel);
 		speed.add(speedSlider);
 
-		stepSlider = new JSlider();
-		stepSlider.addChangeListener(new StepListener());
-		stepSlider.setMinimum(1);
-		stepSlider.setMaximum(100);
-		stepSlider.setValue((int)(s.tstep / stepSliderScaling));
-		stepSlider.setMajorTickSpacing(10);
-		stepSlider.setMinorTickSpacing(2);
-		stepSlider.setPaintTicks(true);
-		JLabel stepLabel = new JLabel("Size of time step");
-		Box step = Box.createVerticalBox();
-		step.add(stepLabel);
-		step.add(stepSlider);
+//		stepSlider = new JSlider();
+//		stepSlider.addChangeListener(new StepListener());
+//		stepSlider.setMinimum(1);
+//		stepSlider.setMaximum(100);
+//		stepSlider.setValue((int)(s.tstep / stepSliderScaling));
+//		stepSlider.setMajorTickSpacing(10);
+//		stepSlider.setMinorTickSpacing(2);
+//		stepSlider.setPaintTicks(true);
+//		JLabel stepLabel = new JLabel("Size of time step");
+//		Box step = Box.createVerticalBox();
+//		step.add(stepLabel);
+//		step.add(stepSlider);
 
-		algorithmComboBox = new JComboBox(solverString);
-		algorithmComboBox.setSelectedIndex(0);
-		algorithmComboBox.addActionListener(new AlgorithmListener());
-		algorithmComboBox.setPreferredSize(new Dimension(algorithmComboBox.getPreferredSize().width, 5));
-		JLabel algorithmLabel = new JLabel("Algorithm");
-		Box algorithmBox = Box.createVerticalBox();
-		algorithmBox.add(algorithmLabel);
-		algorithmBox.add(algorithmComboBox);
+//		algorithmComboBox = new JComboBox(solverString);
+//		algorithmComboBox.setSelectedIndex(0);
+//		algorithmComboBox.addActionListener(new AlgorithmListener());
+//		algorithmComboBox.setPreferredSize(new Dimension(algorithmComboBox.getPreferredSize().width, 5));
+//		JLabel algorithmLabel = new JLabel("Algorithm");
+//		Box algorithmBox = Box.createVerticalBox();
+//		algorithmBox.add(algorithmLabel);
+//		algorithmBox.add(algorithmComboBox);
 
 		startButton.addActionListener(new StartListener());
 		stopButton.addActionListener(new StopListener());
 		resetButton.addActionListener(new ResetListener());
 
-		relativisticCheck = new JCheckBox("Relativistic Version");
-		relativisticCheck.addItemListener(new RelativisticEffects());
-		relativisticCheck.setEnabled(false);
+//		relativisticCheck = new JCheckBox("Relativistic Version");
+//		relativisticCheck.addItemListener(new RelativisticEffects());
+//		relativisticCheck.setEnabled(false);
 
 		JPanel controlPanelUp = new JPanel();
 		controlPanelUp.setLayout(new FlowLayout());
@@ -217,14 +217,14 @@ public class MainControlApplet extends JApplet
 		Box settingControls = Box.createVerticalBox();
 		JPanel controlPanelDown = new JPanel();
 		controlPanelDown.setLayout(new FlowLayout());
-		settingControls.add(algorithmBox);
-		settingControls.add(Box.createVerticalGlue());
-		settingControls.add(relativisticCheck);
+//		settingControls.add(algorithmBox);
+//		settingControls.add(Box.createVerticalGlue());
+//		settingControls.add(relativisticCheck);
 		settingControls.add(Box.createVerticalGlue());
 		settingControls.add(speed);
 		settingControls.add(Box.createVerticalGlue());
-		settingControls.add(step);
-		settingControls.add(Box.createVerticalGlue());
+//		settingControls.add(step);
+//		settingControls.add(Box.createVerticalGlue());
 
 		Box panelBox = Box.createVerticalBox();
 		panelBox.add(controlPanelUp);
@@ -266,22 +266,22 @@ public class MainControlApplet extends JApplet
 		Simulation s = simulationAnimation.getSimulation();
 		Timer timer = simulationAnimation.getTimer();
 
-		stepSlider.setValue((int)(s.tstep / stepSliderScaling));
+//		stepSlider.setValue((int)(s.tstep / stepSliderScaling));
 		speedSlider.setValue(50);
 		timer.setDelay((int) (1000 * Math.exp(-50 * speedSliderScaling)));
 
 
-		// Set algorithm UI according to current setting
-		Solver solver = s.getParticleMover().getSolver();
-		if (solver instanceof LeapFrog)
-		{
-			algorithmComboBox.setSelectedIndex(0);
-			relativisticCheck.setSelected(false);
-		} else if (solver instanceof LeapFrogRelativistic)
-		{
-			algorithmComboBox.setSelectedIndex(0);
-			relativisticCheck.setSelected(true);
-		}
+//		// Set algorithm UI according to current setting
+//		Solver solver = s.getParticleMover().getSolver();
+//		if (solver instanceof LeapFrog)
+//		{
+//			algorithmComboBox.setSelectedIndex(0);
+//			relativisticCheck.setSelected(false);
+//		} else if (solver instanceof LeapFrogRelativistic)
+//		{
+//			algorithmComboBox.setSelectedIndex(0);
+//			relativisticCheck.setSelected(true);
+//		}
 	}
 
 	@Override
