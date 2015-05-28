@@ -46,7 +46,7 @@ public class YamlSettings {
         settings.setNumberOfColors(1);
         settings.setCouplingConstant(1.0);
         settings.setParticleSolver(new LeapFrogRelativistic(settings.getNumberOfDimensions(), settings.getSpeedOfLight()));
-        settings.setNumOfThreads(4);
+        settings.setNumOfThreads(1);
         settings.setFieldGenerators(new ArrayList<IFieldGenerator>());
         settings.setDiagnostics(new ArrayList<Diagnostics>());
 
