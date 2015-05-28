@@ -207,16 +207,14 @@ public class MainControlApplet extends JApplet
 //		relativisticCheck.addItemListener(new RelativisticEffects());
 //		relativisticCheck.setEnabled(false);
 
-		JPanel controlPanelUp = new JPanel();
-		controlPanelUp.setLayout(new FlowLayout());
-		controlPanelUp.add(startButton);
-		controlPanelUp.add(stopButton);
-		controlPanelUp.add(resetButton);
-		controlPanelUp.add(Box.createHorizontalStrut(25));
-		controlPanelUp.add(Box.createHorizontalStrut(25));
+		JPanel controlPanel = new JPanel();
+		controlPanel.setLayout(new FlowLayout());
+		controlPanel.add(startButton);
+		controlPanel.add(stopButton);
+		controlPanel.add(resetButton);
+		controlPanel.add(Box.createHorizontalStrut(50));
+
 		Box settingControls = Box.createVerticalBox();
-		JPanel controlPanelDown = new JPanel();
-		controlPanelDown.setLayout(new FlowLayout());
 //		settingControls.add(algorithmBox);
 //		settingControls.add(Box.createVerticalGlue());
 //		settingControls.add(relativisticCheck);
@@ -225,10 +223,6 @@ public class MainControlApplet extends JApplet
 		settingControls.add(Box.createVerticalGlue());
 //		settingControls.add(step);
 //		settingControls.add(Box.createVerticalGlue());
-
-		Box panelBox = Box.createVerticalBox();
-		panelBox.add(controlPanelUp);
-		panelBox.add(controlPanelDown);
 
 		// Change background color of tab from blue to system gray
 		UIManager.put("TabbedPane.contentAreaColor", new Color(238, 238, 238));
@@ -247,7 +241,7 @@ public class MainControlApplet extends JApplet
 		Component mainPanel = panelManager.getDefaultPanel();
 
 		this.setLayout(new BorderLayout());
-		this.add(panelBox, BorderLayout.SOUTH);
+		this.add(controlPanel, BorderLayout.SOUTH);
 		this.add(mainPanel, BorderLayout.CENTER);
 		this.add(tabs, BorderLayout.EAST);
 
