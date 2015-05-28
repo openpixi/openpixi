@@ -27,6 +27,7 @@ public class InfoProperties {
 		framerateCheck.setSelected(showinfo);
 
 		settingControls.add(framerateCheck);
+		settingControls.add(Box.createVerticalGlue());
 
 		box.add(settingControls);
 	}

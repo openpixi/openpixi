@@ -30,9 +30,8 @@ public class TraceProperties {
 		traceCheck.addItemListener(new CheckListener());
 		traceCheck.setSelected(paint_trace);
 
-		settingControls.add(Box.createVerticalGlue());
 		settingControls.add(traceCheck);
-		settingControls.add(Box.createVerticalStrut(20));
+		settingControls.add(Box.createVerticalGlue());
 
 		box.add(settingControls);
 	}

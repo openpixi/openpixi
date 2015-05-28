@@ -27,8 +27,6 @@ import javax.swing.event.*;
 
 import org.openpixi.pixi.physics.Debug;
 import org.openpixi.pixi.physics.Simulation;
-import org.openpixi.pixi.physics.solver.*;
-import org.openpixi.pixi.physics.solver.relativistic.*;
 import org.openpixi.pixi.ui.tab.FileTab;
 import org.openpixi.pixi.ui.tab.PropertiesTab;
 
@@ -215,6 +213,9 @@ public class MainControlApplet extends JApplet
 		controlPanel.add(Box.createHorizontalStrut(50));
 
 		Box settingControls = Box.createVerticalBox();
+		JLabel controlLabel = new JLabel("Global settings", SwingConstants.CENTER);
+		settingControls.add(Box.createVerticalStrut(20));
+		settingControls.add(controlLabel);
 //		settingControls.add(algorithmBox);
 //		settingControls.add(Box.createVerticalGlue());
 //		settingControls.add(relativisticCheck);

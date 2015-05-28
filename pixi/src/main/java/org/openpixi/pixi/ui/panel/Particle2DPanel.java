@@ -27,8 +27,6 @@ import java.awt.Graphics2D;
 import java.awt.geom.AffineTransform;
 
 import javax.swing.Box;
-import javax.swing.JButton;
-
 import org.openpixi.pixi.physics.Simulation;
 import org.openpixi.pixi.physics.particles.IParticle;
 import org.openpixi.pixi.ui.SimulationAnimation;
@@ -36,7 +34,6 @@ import org.openpixi.pixi.ui.panel.properties.ColorProperties;
 import org.openpixi.pixi.ui.panel.properties.FieldProperties;
 import org.openpixi.pixi.ui.panel.properties.InfoProperties;
 import org.openpixi.pixi.ui.panel.properties.TraceProperties;
-import org.openpixi.pixi.ui.util.FrameRateDetector;
 
 
 /**
@@ -176,6 +173,7 @@ public class Particle2DPanel extends AnimationPanel {
      }
 
 	public void addComponents(Box box) {
+		addLabel(box, "Particle panel");
 		colorProperties.addComponents(box);
 		fieldProperties.addComponents(box);
 		infoProperties.addComponents(box);

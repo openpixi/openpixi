@@ -32,7 +32,6 @@ import org.openpixi.pixi.ui.SimulationAnimation;
 import org.openpixi.pixi.ui.panel.properties.ColorProperties;
 import org.openpixi.pixi.ui.panel.properties.FieldProperties;
 import org.openpixi.pixi.ui.panel.properties.InfoProperties;
-import org.openpixi.pixi.ui.util.FrameRateDetector;
 import org.openpixi.pixi.ui.util.projection.LineObject;
 import org.openpixi.pixi.ui.util.projection.Projection;
 import org.openpixi.pixi.ui.util.projection.Scene;
@@ -305,6 +304,7 @@ public class Particle3DPanel extends AnimationPanel {
 	}
 
 	public void addComponents(Box box) {
+		addLabel(box, "Particle 3D panel");
 		colorProperties.addComponents(box);
 		fieldProperties.addComponents(box);
 		infoProperties.addComponents(box);

@@ -1,17 +1,9 @@
 package org.openpixi.pixi.ui.panel;
 
 import java.awt.Color;
-import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-
 import javax.swing.Box;
-import javax.swing.JButton;
-import javax.swing.JComboBox;
-import javax.swing.JLabel;
-
 import org.openpixi.pixi.physics.Simulation;
 import org.openpixi.pixi.physics.particles.IParticle;
 import org.openpixi.pixi.ui.SimulationAnimation;
@@ -154,6 +146,7 @@ public class ElectricFieldPanel extends AnimationPanel {
 	}
 
 	public void addComponents(Box box) {
+		addLabel(box, "Electric field panel");
 		colorProperties.addComponents(box);
 	}
 }

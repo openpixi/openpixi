@@ -5,7 +5,9 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 
 import javax.swing.Box;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.SwingConstants;
 
 import org.openpixi.pixi.ui.SimulationAnimation;
 import org.openpixi.pixi.ui.SimulationAnimationListener;
@@ -68,7 +70,23 @@ public class AnimationPanel extends JPanel {
 		}
 	}
 
-	public void addComponents(Box panel) {
+	/**
+	 * Add a component to the property panel.
+	 * @param box Property panel.
+	 */
+	public void addComponents(Box box) {
 
+	}
+
+	/**
+	 * Add a label to the property panel
+	 * @param box Property panel.
+	 * @param label Label of property panel.
+	 */
+	public void addLabel(Box box, String label) {
+		JLabel jlabel = new JLabel(label, SwingConstants.CENTER);
+		box.add(Box.createVerticalStrut(20));
+		box.add(jlabel);
+		box.add(Box.createVerticalGlue());
 	}
 }

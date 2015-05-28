@@ -70,12 +70,10 @@ public class ColorProperties {
 		directionBox.add(directionLabel);
 		directionBox.add(directionIndexComboBox);
 
-		settingControls.add(Box.createVerticalGlue());
 		settingControls.add(colorBox);
 		settingControls.add(Box.createVerticalGlue());
 		settingControls.add(directionBox);
 		settingControls.add(Box.createVerticalGlue());
-		//settingControls.add(Box.createVerticalStrut(20));
 
 		box.add(settingControls);
 	}
