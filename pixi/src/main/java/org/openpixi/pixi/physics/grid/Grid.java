@@ -547,8 +547,6 @@ public class Grid {
 		public void execute(Grid grid, int[] coor) {
 			grid.getCell(coor).resetCurrent();
 		}
-		
-		public double calculate(Grid grid, int[] coor) {return 0;}
 	}
 
 	/**
@@ -559,8 +557,6 @@ public class Grid {
 		public void execute(Grid grid, int[] coor) {
 			grid.resetCharge(coor);
 		}
-		
-		public double calculate(Grid grid, int[] coor) {return 0;}
 	}
 
 	/**
@@ -572,8 +568,6 @@ public class Grid {
 		public void execute(Grid grid, int[] coor) {
 			grid.getCell(coor).reassignLinks();
 		}
-		
-		public double calculate(Grid grid, int[] coor) {return 0;}
 	}
 	
 	/**

@@ -42,8 +42,6 @@ public class ParallelCellIterator extends CellIterator {
 			throw new RuntimeException(e);
 		}
 	}
-	
-	public double calculate(Grid grid, CellAction action) {return 0;}
 
 
 	@Override

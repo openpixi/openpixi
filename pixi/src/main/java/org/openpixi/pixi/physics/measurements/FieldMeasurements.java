@@ -10,16 +10,30 @@ public class FieldMeasurements {
 	BFieldSquared Bsquared = new BFieldSquared();
 	
 	public double calculateEsquared(Grid grid) {
-		return grid.getCellIterator().calculate(grid, Esquared);
+		Esquared.reset();
+		grid.getCellIterator().execute(grid, Esquared);
+        return Esquared.getSum();
 	}
 	
 	public double calculateBsquared(Grid grid) {
-		return grid.getCellIterator().calculate(grid, Bsquared);
+		Bsquared.reset();
+		grid.getCellIterator().execute(grid, Bsquared);
+        return Bsquared.getSum();
 	}
 
 	private class EFieldSquared implements CellAction {
 
-		public double calculate(Grid grid, int[] coor) {
+		private double sum;
+
+        public void reset() {
+        	sum = 0;
+        }
+        
+        public double getSum() {
+        	return sum;
+        }
+
+        public void execute(Grid grid, int[] coor) {
 			int numDir = grid.getNumberOfDimensions();
 			double norm = grid.getLatticeSpacing()*grid.getLatticeSpacing()*grid.getGaugeCoupling()*grid.getGaugeCoupling();
 			double res = 0.0;
@@ -27,15 +41,27 @@ public class FieldMeasurements {
 				norm *= grid.getNumCells(i);
 				res += grid.getE(coor, i).square();
 			}
-			return res/norm;
+			
+			double result = res/norm;
+			synchronized(this) {
+			       sum += result;   // Synchronisierte Summenbildung
+			}
 		}
-		
-		public void execute(Grid grid, int[] coor) {}
 	}
 
 	private class BFieldSquared implements CellAction {
 
-		public double calculate(Grid grid, int[] coor) {
+		private double sum;
+
+        public void reset() {
+        	sum = 0;
+        }
+        
+        public double getSum() {
+        	return sum;
+        }
+        
+        public void execute(Grid grid, int[] coor) {
 			int numDir = grid.getNumberOfDimensions();
 			double norm = grid.getLatticeSpacing()*grid.getLatticeSpacing()*grid.getGaugeCoupling()*grid.getGaugeCoupling();
 			double res = 0;
@@ -44,10 +70,11 @@ public class FieldMeasurements {
 				//TODO Implement the calculation of color magnetic fields!!
 				//res += grid.getB(coor, i).square();
 			}
-			return res/norm;
+			double result = res/norm;
+			synchronized(this) {
+			       sum += result;   // Synchronisierte Summenbildung
+			}
 		}
-		
-		public void execute(Grid grid, int[] coor) {}
 	}
 	
 }

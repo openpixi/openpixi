@@ -16,15 +16,4 @@ public class SequentialCellIterator extends CellIterator {
 			action.execute(grid, pos);
 		}
 	}
-
-	public double calculate(Grid grid, CellAction action) {
-			
-		int numOfCells = dimensions.getNumCells();
-		double res = 0;
-		for (int cellIdx = 0; cellIdx < numOfCells; cellIdx++) {
-	        int[] pos = grid.getCellPos(cellIdx);
-			res += action.calculate(grid, pos);
-		}
-		return res;
-	}
 }
