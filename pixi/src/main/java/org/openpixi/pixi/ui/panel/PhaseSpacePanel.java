@@ -4,6 +4,8 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 
+import javax.swing.Box;
+
 import org.openpixi.pixi.physics.Simulation;
 import org.openpixi.pixi.physics.particles.IParticle;
 import org.openpixi.pixi.ui.SimulationAnimation;
@@ -55,5 +57,8 @@ public class PhaseSpacePanel extends AnimationPanel {
 
 	}
 
+	public void addComponents(Box box) {
+		addLabel(box, "Phase space panel");
+	}
 
 }

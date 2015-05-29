@@ -23,10 +23,15 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+
+import javax.swing.Box;
+
 import org.openpixi.pixi.physics.Simulation;
 import org.openpixi.pixi.physics.particles.IParticle;
 import org.openpixi.pixi.ui.SimulationAnimation;
-import org.openpixi.pixi.ui.util.FrameRateDetector;
+import org.openpixi.pixi.ui.panel.properties.ColorProperties;
+import org.openpixi.pixi.ui.panel.properties.FieldProperties;
+import org.openpixi.pixi.ui.panel.properties.InfoProperties;
 import org.openpixi.pixi.ui.util.projection.LineObject;
 import org.openpixi.pixi.ui.util.projection.Projection;
 import org.openpixi.pixi.ui.util.projection.Scene;
@@ -38,15 +43,13 @@ import org.openpixi.pixi.ui.util.projection.SphereObject;
  */
 public class Particle3DPanel extends AnimationPanel {
 
-	private boolean drawCurrentGrid = false;
-
-	private boolean drawFields = false;
+	ColorProperties colorProperties = new ColorProperties();
+	FieldProperties fieldProperties = new FieldProperties();
+	InfoProperties infoProperties = new InfoProperties();
 
 	/** Whether to combine the spatial components of the fields into a single vector
 	 * or whether to keep them separate. */
 	private boolean combinefields = true;
-
-	public boolean showinfo = false;
 
 	/** A state for the trace */
 	public boolean paint_trace = false;
@@ -56,8 +59,6 @@ public class Particle3DPanel extends AnimationPanel {
 	private int gridstep = 1;
 	private int gridstepadjusted = 0;
 	private long currentrendertime = 0;
-
-	Color darkGreen = new Color(0x00, 0x80, 0x00);
 
 	private Projection projection = new Projection();
 	private LineObject cuboid = new LineObject();
@@ -89,14 +90,6 @@ public class Particle3DPanel extends AnimationPanel {
 	public void checkTrace() {
 		paint_trace =! paint_trace;
 		//startAnimation();
-	}
-
-	public void drawCurrentGrid() {
-		drawCurrentGrid =! drawCurrentGrid;
-	}
-
-	public void drawFields() {
-		drawFields =! drawFields;
 	}
 
 	/** Display the particles */
@@ -187,10 +180,10 @@ public class Particle3DPanel extends AnimationPanel {
 			pos[w] = s.grid.getNumCells(w)/2;
 		}
 		
-		int colorIndex = getSimulationAnimation().getColorIndex();
-		int dirIndex = getSimulationAnimation().getDirectionIndex();
+		int colorIndex = colorProperties.getColorIndex();
+		int directionIndex = colorProperties.getDirectionIndex();
 		
-		if(drawCurrentGrid) {
+		if(fieldProperties.getDrawCurrentGrid()) {
 			for(int i = 0; i < s.grid.getNumCells(0); i += gridstep) {
 				for(int j = 0; j < s.grid.getNumCells(1); j += gridstep) {
 					for(int k = 0; k < s.grid.getNumCells(2); k += gridstep) {
@@ -231,7 +224,7 @@ public class Particle3DPanel extends AnimationPanel {
 			}
 		}
 
-		if(drawFields)
+		if(fieldProperties.getDrawFields())
 		{
 			graph.setColor(Color.black);
 			for(int i = 0; i < s.grid.getNumCells(0); i += gridstep) {
@@ -280,28 +273,7 @@ public class Particle3DPanel extends AnimationPanel {
 
 		scene.paint(projection, graph);
 
-		FrameRateDetector frameratedetector = getSimulationAnimation().getFrameRateDetector();
-
-		if (showinfo) {
-			graph.translate(0.0, this.getHeight());
-			graph.scale(1.0, -1.0);
-			graph.setColor(darkGreen);
-			graph.drawString("Frame rate: " + frameratedetector.getRateString() + " fps", 30, 30);
-			graph.drawString("Time step: " + (float) s.tstep, 30, 50);
-			graph.drawString("Total time: " + (float) s.tottime, 30, 70);
-
-			Runtime runtime = Runtime.getRuntime();
-			long maxMemory = runtime.maxMemory();
-			long allocatedMemory = runtime.totalMemory();
-			long freeMemory = runtime.freeMemory();
-
-			int bottom = getHeight();
-			graph.drawString("free memory: " + freeMemory / 1024, 30, bottom - 90);
-			graph.drawString("allocated memory: " + allocatedMemory / 1024, 30, bottom - 70);
-			graph.drawString("max memory: " + maxMemory /1024, 30, bottom - 50);
-			graph.drawString("total free memory: " +
-				(freeMemory + (maxMemory - allocatedMemory)) / 1024, 30, bottom - 30);
-		}
+		infoProperties.showInfo(graph, this);
 	}
 
 	private int mouseOldX, mouseOldY;
@@ -330,4 +302,12 @@ public class Particle3DPanel extends AnimationPanel {
 			super.mouseReleased(e);
 		}
 	}
+
+	public void addComponents(Box box) {
+		addLabel(box, "Particle 3D panel");
+		colorProperties.addComponents(box);
+		fieldProperties.addComponents(box);
+		infoProperties.addComponents(box);
+	}
+
 }

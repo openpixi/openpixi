@@ -26,10 +26,14 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.geom.AffineTransform;
 
+import javax.swing.Box;
 import org.openpixi.pixi.physics.Simulation;
 import org.openpixi.pixi.physics.particles.IParticle;
 import org.openpixi.pixi.ui.SimulationAnimation;
-import org.openpixi.pixi.ui.util.FrameRateDetector;
+import org.openpixi.pixi.ui.panel.properties.ColorProperties;
+import org.openpixi.pixi.ui.panel.properties.FieldProperties;
+import org.openpixi.pixi.ui.panel.properties.InfoProperties;
+import org.openpixi.pixi.ui.panel.properties.TraceProperties;
 
 
 /**
@@ -37,18 +41,10 @@ import org.openpixi.pixi.ui.util.FrameRateDetector;
  */
 public class Particle2DPanel extends AnimationPanel {
 
-	private boolean drawCurrentGrid = false;
-
-	private boolean drawFields = false;
-
-	public boolean showinfo = false;
-
-	/** A state for the trace */
-	public boolean paint_trace = false;
-
-	private boolean reset_trace;
-
-	Color darkGreen = new Color(0x00, 0x80, 0x00);
+	ColorProperties colorProperties = new ColorProperties();
+	FieldProperties fieldProperties = new FieldProperties();
+	InfoProperties infoProperties = new InfoProperties();
+	TraceProperties traceProperties = new TraceProperties();
 
 	/** Constructor */
 	public Particle2DPanel(SimulationAnimation simulationAnimation) {
@@ -56,20 +52,7 @@ public class Particle2DPanel extends AnimationPanel {
 	}
 
 	public void clear() {
-		reset_trace = true;
-	}
-
-	public void checkTrace() {
-		paint_trace =! paint_trace;
-		//startAnimation();
-	}
-
-	public void drawCurrentGrid() {
-		drawCurrentGrid =! drawCurrentGrid;
-	}
-
-	public void drawFields() {
-		drawFields =! drawFields;
+		traceProperties.clear();
 	}
 
 	/** Display the particles */
@@ -80,15 +63,10 @@ public class Particle2DPanel extends AnimationPanel {
 		graph.scale(1, -1);
 		double scale = 10;
 
-		if(!paint_trace)
-		{
+		if (traceProperties.getCallSuper()) {
 			super.paintComponent(graph1);
 		}
-		if(reset_trace)
-		{
-			super.paintComponent(graph1);
-			reset_trace = false;
-		}
+
 
 		Simulation s = getSimulationAnimation().getSimulation();
 
@@ -103,7 +81,7 @@ public class Particle2DPanel extends AnimationPanel {
 			double radius = par.getRadius();//double radius = par.getRadius()*(2 - 1.9*par.getZ()/s.getDepth());
 			int width = (int) (2*sx*radius);
 			int height = (int) (2*sy*radius);
-			if(width > 2 && height > 2 && !paint_trace) {
+			if(width > 2 && height > 2 && !traceProperties.getPaintTrace()) {
 				graph.fillOval((int) (par.getPosition(0)*sx) - width/2, (int) (par.getPosition(1)*sy) - height/2,  width,  height);
 			}
 			else {
@@ -116,10 +94,10 @@ public class Particle2DPanel extends AnimationPanel {
 			pos[w] = s.grid.getNumCells(w)/2;
 		}
 		
-		int colorIndex = getSimulationAnimation().getColorIndex();
-		int dirIndex = getSimulationAnimation().getDirectionIndex();
+		int colorIndex = colorProperties.getColorIndex();
+		int directionIndex = colorProperties.getDirectionIndex();
 		
-		if(drawCurrentGrid)
+		if(fieldProperties.getDrawCurrentGrid())
 		{
 			graph.setColor(Color.black);
 			
@@ -142,7 +120,7 @@ public class Particle2DPanel extends AnimationPanel {
 			//return;
 		}
 
-		if(drawFields)
+		if(fieldProperties.getDrawFields())
 		{
 			graph.setColor(Color.black);
 			for(int i = 0; i < s.grid.getNumCells(0); i++)
@@ -164,30 +142,8 @@ public class Particle2DPanel extends AnimationPanel {
 			//return;
 		}
 
-		FrameRateDetector frameratedetector = getSimulationAnimation().getFrameRateDetector();
-
-		if (showinfo) {
-			graph.translate(0.0, this.getHeight());
-			graph.scale(1.0, -1.0);
-			graph.setColor(darkGreen);
-			graph.drawString("Frame rate: " + frameratedetector.getRateString() + " fps", 30, 30);
-			graph.drawString("Time step: " + (float) s.tstep, 30, 50);
-			graph.drawString("Total time: " + (float) s.tottime, 30, 70);
-
-			Runtime runtime = Runtime.getRuntime();
-			long maxMemory = runtime.maxMemory();
-			long allocatedMemory = runtime.totalMemory();
-			long freeMemory = runtime.freeMemory();
-
-			int bottom = getHeight();
-			graph.drawString("free memory: " + freeMemory / 1024, 30, bottom - 90);
-			graph.drawString("allocated memory: " + allocatedMemory / 1024, 30, bottom - 70);
-			graph.drawString("max memory: " + maxMemory /1024, 30, bottom - 50);
-			graph.drawString("total free memory: " +
-				(freeMemory + (maxMemory - allocatedMemory)) / 1024, 30, bottom - 30);
-		}
+		infoProperties.showInfo(graph, this);
 	}
-
 
 	private void drawArrow(Graphics2D g, int x1, int y1, int x2, int y2, Color col) {
 
@@ -216,4 +172,11 @@ public class Particle2DPanel extends AnimationPanel {
         g.setTransform(old);
      }
 
+	public void addComponents(Box box) {
+		addLabel(box, "Particle panel");
+		colorProperties.addComponents(box);
+		fieldProperties.addComponents(box);
+		infoProperties.addComponents(box);
+		traceProperties.addComponents(box);
+	}
 }
