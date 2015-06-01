@@ -16,6 +16,4 @@ public class SequentialCellIterator extends CellIterator {
 			action.execute(grid, pos);
 		}
 	}
-
-	//test
 }

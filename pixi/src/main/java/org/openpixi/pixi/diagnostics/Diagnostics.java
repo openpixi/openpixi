@@ -17,31 +17,28 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-package org.openpixi.pixi.diagnostics.methods;
+package org.openpixi.pixi.diagnostics;
 
 import java.util.ArrayList;
+import java.io.IOException;
 import org.openpixi.pixi.physics.grid.Grid;
 import org.openpixi.pixi.physics.particles.IParticle;
 
-import org.openpixi.pixi.diagnostics.DataOutput;
-
 /**
- * Every diagnostics method that needs the particles should implement this.
+ * Every diagnostics method should implement this.
  */
 public interface Diagnostics {
 	
 	/** Performes the desired diagnostics*/
-	public void calculate(Grid grid, ArrayList<IParticle> particles);
+	public void calculate(Grid grid, ArrayList<IParticle> particles, double time) throws IOException;
 	
-	/** The next iteration when this diagnostic should be performed */
-	public int getNextIteration();
+	/** Sets the file path*/
+	public void setPath(String path);
 	
-	/** Determines whether there is new data. I.e. whether calculate was called but the
-	 * new data not yet extracted with getData.
-	 */
-	public boolean checkIfNewData();
+	/** Sets the measurement interval*/
+	public void setInterval(double interval);
 	
-	/** Provides a way how other classes can access its information*/
-	public void getData(DataOutput out);
+	/** Checks if the files are already existent and deletes them*/
+	public void clear();
 
 }
