@@ -34,36 +34,69 @@ public class ParticlesInTime implements Diagnostics {
 		this.s = s;
 		stepInterval =  (int) (this.timeInterval / s.getTimeStep());
 
+		// Create/delete file.
 		clear();
-	}
 
-	/** Performes the desired diagnostics*/
-	public void calculate(Grid grid, ArrayList<IParticle> particles, int steps) throws IOException {
-		if(steps % stepInterval == 0) {
-			
-			File file = getOutputFile(path);
+		// Write first line.
+		String[] directionNames = new String[] {"x", "y", "z"};
+		File file = getOutputFile(path);
+		try {
 			FileWriter pw = new FileWriter(file, true);
-			
-			if(steps == 0) {
-				pw.write("#time \t x \t y \t z \t px \t py \t pz");
-				pw.write("\n");
-			} else {}
-			
-			pw.write(steps * s.getTimeStep() + "\t");
-			
-			for (int i = 0; i < particles.size(); i++) {
-				pw.write(particles.get(i).getPosition(0) + "\t");
-				pw.write(particles.get(i).getPosition(1) + "\t");
-				pw.write(particles.get(i).getPosition(2) + "\t");
-				pw.write(particles.get(i).getVelocity(0) + "\t");
-				pw.write(particles.get(i).getVelocity(1) + "\t");
-				pw.write(particles.get(i).getVelocity(2) + "\t");
+			pw.write("#time\t");
+			for(int i = 0; i < s.getNumberOfDimensions(); i++) {
+				if(i < 3) {
+					pw.write(directionNames[i] + "\t");
+				} else {
+					pw.write("d" + i + "\t");
+				}
+			}
+
+			for(int i = 0; i < s.getNumberOfDimensions(); i++) {
+				if(i < 3) {
+					pw.write("p" + directionNames[i] + "\t");
+				} else {
+					pw.write("pd" + i + "\t");
+				}
 			}
 			pw.write("\n");
-			
 			pw.close();
-			
-		} else {}
+		} catch (IOException ex) {
+			System.out.println("ParticlesInTime Error: Could not write to file '" + path + "'.");
+		}
+	}
+
+	/**
+	 * Writes the positions and velocites
+	 *
+	 * @param grid		Reference to the Grid instance.
+	 * @param particles	Reference to the list of particles.
+	 * @param steps		Total simulation steps so far.
+	 * @throws IOException
+	 */
+	public void calculate(Grid grid, ArrayList<IParticle> particles, int steps) throws IOException {
+		if(steps % stepInterval == 0) {
+
+			File file = getOutputFile(path);
+			FileWriter pw = new FileWriter(file, true);
+			pw.write(steps * s.getTimeStep() + "\t");
+
+			for (int i = 0; i < particles.size(); i++) {
+				IParticle p = particles.get(i);
+				for (int j = 0; j < s.getNumberOfDimensions(); j++) {
+					pw.write(p.getPosition(j) + "\t");
+				}
+				for (int j = 0; j < s.getNumberOfDimensions(); j++) {
+					/*
+						Since positions and velocities are not evaluated at the same time we have to take the average
+						of the two velocities to get something which we can compare to the particle position.
+					*/
+					double averagedVelocity = 0.5 * (p.getPrevPosition(i) + p.getVelocity(i));
+					pw.write(averagedVelocity + "\t");
+				}
+			}
+			pw.write("\n");
+			pw.close();
+		}
 	}
 	
 	/** Checks if the files are already existent and deletes them*/
