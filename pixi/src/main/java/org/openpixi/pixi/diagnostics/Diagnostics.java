@@ -32,7 +32,7 @@ import org.openpixi.pixi.physics.particles.IParticle;
 public interface Diagnostics {
 
 	/**
-	 * Initializes the diagnostic object, i.e. creates new files, sets measurement time intervalls etc.
+	 * Initializes the diagnostic object, e.g. creates new files, sets measurement time intervalls etc.
 	 * @param s	Instance of the simulation object
 	 */
 	void initialize(Simulation s);
