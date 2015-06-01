@@ -79,14 +79,6 @@ public class Simulation {
 	public double totalSimulationTime;
 
 	/**
-	 * Total number of steps between spectral measurements.
-	 */
-	public int specstep;
-	/**
-	 * File path to output files.
-	 */
-	private String filePath;
-	/**
 	 * Contains all Particle2D objects
 	 */
 	public ArrayList<IParticle> particles;
@@ -180,8 +172,6 @@ public class Simulation {
 		totalSimulationTime = 0.0;
 		totalSimulationSteps = 0;
 
-		specstep = settings.getSpectrumStep();
-		filePath = settings.getFilePath();
 		relativistic = settings.getRelativistic();
 
 		// TODO make particles a generic list
@@ -282,7 +272,7 @@ public class Simulation {
 	 * @return
 	 */
 	public boolean continues() {
-		return totalSimulationTime <= iterations;
+		return totalSimulationSteps <= iterations;
 	}
 
 	/**
