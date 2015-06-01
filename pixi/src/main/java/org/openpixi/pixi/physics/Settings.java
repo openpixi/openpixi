@@ -1,6 +1,6 @@
 package org.openpixi.pixi.physics;
 
-import org.openpixi.pixi.diagnostics.methods.Diagnostics;
+import org.openpixi.pixi.diagnostics.Diagnostics;
 import org.openpixi.pixi.parallel.cellaccess.*;
 import org.openpixi.pixi.parallel.particleaccess.*;
 import org.openpixi.pixi.physics.fields.*;
@@ -53,7 +53,7 @@ public class Settings {
 	// Grid related settings
 	private int[] gridCells;
 	private double[] simulationWidth;
-	private FieldSolver gridSolver = new GeneralYangMillsSolver();//new FieldSolver();
+	private FieldSolver gridSolver = new FieldSolver();
 	private PoissonSolver poissonSolver = new EmptyPoissonSolver();
 	private boolean useGrid = true;
 	private boolean relativistic = true;
@@ -76,7 +76,7 @@ public class Settings {
 	 * Used to mark output files
 	 */
 	private String runid = "default-run";
-	private List<Diagnostics> diagnostics = new ArrayList<Diagnostics>();
+	private ArrayList<Diagnostics> diagnostics = new ArrayList<Diagnostics>();
 	// Batch version settings
 	private int iterations = (int) Math.ceil(tMax/timeStep);
 	// Parallel (threaded) version settings
@@ -188,7 +188,7 @@ public class Settings {
 	}
 
 
-	public List<Diagnostics> getDiagnostics() {
+	public ArrayList<Diagnostics> getDiagnostics() {
 		return diagnostics;
 	}
 
@@ -363,8 +363,12 @@ public class Settings {
 		this.interpolator = interpolator;
 	}
 
-	public void setDiagnostics(List<Diagnostics> diagnostics) {
+	public void setDiagnostics(ArrayList<Diagnostics> diagnostics) {
 		this.diagnostics = diagnostics;
+	}
+	
+	public void addDiagnostics(Diagnostics newDiagnostic) {
+		this.diagnostics.add(newDiagnostic);
 	}
 
 	public void setForces(List<Force> forces) {

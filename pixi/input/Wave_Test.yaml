@@ -21,3 +21,11 @@ fields:
 
       # magnitude of the wave amplitude
       a: 0.1
+
+output:
+  particlesInTime:
+      # File path
+    - path: "particles.txt"
+
+      # Measurement interval
+      interval: 1.0

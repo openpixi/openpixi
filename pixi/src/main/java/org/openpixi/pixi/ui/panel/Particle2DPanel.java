@@ -145,6 +145,7 @@ public class Particle2DPanel extends AnimationPanel {
 		infoProperties.showInfo(graph, this);
 	}
 
+
 	private void drawArrow(Graphics2D g, int x1, int y1, int x2, int y2, Color col) {
 
 		int ARR_SIZE = 5;

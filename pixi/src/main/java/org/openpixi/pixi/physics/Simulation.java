@@ -37,6 +37,7 @@ import org.openpixi.pixi.physics.movement.boundary.IParticleBoundaryConditions;
 import org.openpixi.pixi.physics.movement.boundary.PeriodicParticleBoundaryConditions;
 import org.openpixi.pixi.physics.particles.IParticle;
 import org.openpixi.pixi.physics.util.DoubleBox;
+import org.openpixi.pixi.diagnostics.Diagnostics;
 
 import java.util.ArrayList;
 
@@ -71,7 +72,7 @@ public class Simulation {
 	/**
 	 * Total number of steps simulated so far.
 	 */
-	public int tottime;
+	public double tottime;
 	/**
 	 * Total number of steps between spectral measurements.
 	 */
@@ -109,6 +110,11 @@ public class Simulation {
      * List of field generators which are applied when the simulation starts.
      */
     private ArrayList<IFieldGenerator>  fieldGenerators;
+    
+    /**
+     * List of output file generators which are applied during the runtime of the simulation.
+     */
+    private ArrayList<Diagnostics>  diagnostics;
 
 	public Interpolation getInterpolation() {
 		return interpolation;
@@ -214,10 +220,15 @@ public class Simulation {
 			TODO After running through each field generator we should check if the intial state is consistent.
 			(e.g. check if Gauss law is fulfilled.)
 		 */
+        
+        diagnostics = settings.getDiagnostics();
 
 		prepareAllParticles();
 		
-		clearFile();
+		for (int f = 0; f < diagnostics.size(); f++)
+        {
+			diagnostics.get(f).clear();
+        }
 	}
 
 	public void turnGridForceOn() {
@@ -247,12 +258,13 @@ public class Simulation {
 	 */
 	public void step() throws FileNotFoundException,IOException {
 
+		dataOutput(tottime);
 		interpolation.interpolateToParticle(particles, grid);
 		particlePush();
 		interpolation.interpolateToGrid(particles, grid, tstep);
 		grid.updateGrid(tstep);
 
-		tottime++;
+		tottime+=tstep;
 	}
 
 	/**
@@ -271,40 +283,13 @@ public class Simulation {
 			step();
 		}
 	}
+	
+	public void dataOutput(double time) throws IOException {
 
-	/**
-	 * Checks if the files are already existent and deletes them.
-	 */
-	public void clearFile() {
-		File particlesfile = getOutputFile("particles_seq.txt");
-		boolean fileExists1 = particlesfile.exists();
-		if(fileExists1 == true) {
-			particlesfile.delete();
-		}
-
-		File gridfile = getOutputFile("cells_seq.txt");
-		boolean fileExists2 = gridfile.exists();
-		if(fileExists2 == true) {
-			gridfile.delete();
-		}
-	}
-
-	/**
-	 * Get output file in correct subdirectory.
-	 * Create subdirectories if necessary.
-	 * @param filename
-	 * @return file
-	 */
-	public File getOutputFile(String filename) {
-		// Default output path is
-		// 'output/' + filePath + '/' + filename
-		File fullpath = new File("output");
-		if(!fullpath.exists()) fullpath.mkdir();
-
-		fullpath = new File(fullpath, filePath);
-		if(!fullpath.exists()) fullpath.mkdir();
-
-		return new File(fullpath, filename);
+		for (int f = 0; f < diagnostics.size(); f++)
+        {
+			diagnostics.get(f).calculate(grid, particles, time);
+        }
 	}
 	
 	public void particlePush() {

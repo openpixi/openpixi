@@ -23,7 +23,6 @@ import java.io.FileNotFoundException;
 import org.openpixi.pixi.physics.Debug;
 import org.openpixi.pixi.physics.Settings;
 import org.openpixi.pixi.physics.Simulation;
-import org.openpixi.pixi.diagnostics.DiagnosticsScheduler;
 import org.openpixi.pixi.ui.util.*;
 import org.openpixi.pixi.ui.util.yaml.YamlParser;
 
