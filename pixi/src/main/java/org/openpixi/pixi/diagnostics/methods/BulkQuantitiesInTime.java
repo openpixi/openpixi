@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.io.IOException;
 
 import org.openpixi.pixi.diagnostics.Diagnostics;
+import org.openpixi.pixi.physics.Simulation;
 import org.openpixi.pixi.physics.grid.Grid;
 import org.openpixi.pixi.physics.particles.IParticle;
 import org.openpixi.pixi.physics.measurements.FieldMeasurements;
@@ -13,22 +14,45 @@ import org.openpixi.pixi.physics.measurements.FieldMeasurements;
 public class BulkQuantitiesInTime implements Diagnostics {
 
 	private String path;
-	private double interval;
+	private double timeInterval;
+	private int stepInterval;
+	private Simulation s;
+	private FieldMeasurements fieldMeasurements;
+
+	public BulkQuantitiesInTime(String path, double timeInterval)
+	{
+		this.path = path;
+		this.timeInterval = timeInterval;
+	}
+
+	/**
+	 * Initializes the BulkQuantitiesInTime object.
+	 * It sets the step interval and creates/deletes the output file.
+	 *
+	 * @param s    Instance of the simulation object
+	 */
+	public void initialize(Simulation s)
+	{
+		this.s = s;
+		this.stepInterval = (int) (timeInterval / this.s.getTimeStep());
+		this.fieldMeasurements = new FieldMeasurements();
+
+		clear();
+	}
 
 	/** Performes the desired diagnostics*/
-	public void calculate(Grid grid, ArrayList<IParticle> particles, double time) throws IOException {
-		if(time % interval == 0) {
+	public void calculate(Grid grid, ArrayList<IParticle> particles, int steps) throws IOException {
+		if(steps % stepInterval == 0) {
 			
 			File file = getOutputFile(path);
 			FileWriter pw = new FileWriter(file, true);
-			FieldMeasurements fieldMeasurements = new FieldMeasurements();
 			
-			if(time == 0) {
+			if(steps == 0) {
 				pw.write("#time \t E^2 \t B^2");
 				pw.write("\n");
 			} else {}
 			
-			pw.write(time + "\t");
+			pw.write(steps * s.getTimeStep() + "\t");
 			
 			pw.write(fieldMeasurements.calculateEsquared(grid) + "\t");
 			pw.write(fieldMeasurements.calculateBsquared(grid) + "\t");
@@ -38,16 +62,6 @@ public class BulkQuantitiesInTime implements Diagnostics {
 			pw.close();
 			
 		} else {}
-	}
-	
-	/** Sets the file path*/
-	public void setPath(String path) {
-		this.path = path;
-	}
-	
-	/** Sets the measurement interval*/
-	public void setInterval(double interval) {
-		this.interval = interval;
 	}
 	
 	/** Checks if the files are already existent and deletes them*/

@@ -21,6 +21,8 @@ package org.openpixi.pixi.diagnostics;
 
 import java.util.ArrayList;
 import java.io.IOException;
+
+import org.openpixi.pixi.physics.Simulation;
 import org.openpixi.pixi.physics.grid.Grid;
 import org.openpixi.pixi.physics.particles.IParticle;
 
@@ -28,17 +30,22 @@ import org.openpixi.pixi.physics.particles.IParticle;
  * Every diagnostics method should implement this.
  */
 public interface Diagnostics {
-	
-	/** Performes the desired diagnostics*/
-	public void calculate(Grid grid, ArrayList<IParticle> particles, double time) throws IOException;
-	
-	/** Sets the file path*/
-	public void setPath(String path);
-	
-	/** Sets the measurement interval*/
-	public void setInterval(double interval);
-	
-	/** Checks if the files are already existent and deletes them*/
-	public void clear();
+
+	/**
+	 * Initializes the diagnostic object, i.e. creates new files, sets measurement time intervalls etc.
+	 * @param s	Instance of the simulation object
+	 */
+	void initialize(Simulation s);
+
+	/**
+	 * Performs the desired diagnostics.
+	 *
+	 * @param grid		Reference to the Grid instance.
+	 * @param particles	Reference to the list of particles.
+	 * @param steps		Total simulation steps so far.
+	 * @throws IOException
+	 */
+	void calculate(Grid grid, ArrayList<IParticle> particles, int steps) throws IOException;
+
 
 }

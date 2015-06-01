@@ -18,12 +18,10 @@
  */
 package org.openpixi.pixi.physics;
 
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
 import org.openpixi.pixi.physics.fields.FieldGenerators.IFieldGenerator;
-import org.openpixi.pixi.physics.fields.FieldGenerators.SU2PlaneWave;
 import org.openpixi.pixi.physics.fields.PoissonSolver;
 import org.openpixi.pixi.physics.force.Force;
 import org.openpixi.pixi.physics.force.CombinedForce;
@@ -69,10 +67,17 @@ public class Simulation {
 	 * Number of iterations in the non-interactive simulation.
 	 */
 	private int iterations;
+
 	/**
 	 * Total number of steps simulated so far.
 	 */
-	public double tottime;
+	public int totalSimulationSteps;
+
+	/**
+	 * Simulation running time so far.
+	 */
+	public double totalSimulationTime;
+
 	/**
 	 * Total number of steps between spectral measurements.
 	 */
@@ -171,7 +176,10 @@ public class Simulation {
         couplingConstant = settings.getCouplingConstant();
 
 		iterations = settings.getIterations();
-		tottime = 0;
+
+		totalSimulationTime = 0.0;
+		totalSimulationSteps = 0;
+
 		specstep = settings.getSpectrumStep();
 		filePath = settings.getFilePath();
 		relativistic = settings.getRelativistic();
@@ -210,7 +218,7 @@ public class Simulation {
 				settings.getInterpolator(), settings.getParticleIterator());
 		particleGridInitializer.initialize(interpolation, poisolver, particles, grid);
 
-        //Cycle through field generators and apply field configurations to the Grid.
+        // Cycle through field generators and apply field configurations to the Grid.
         fieldGenerators = settings.getFieldGenerators();
         for (int f = 0; f < fieldGenerators.size(); f++)
         {
@@ -220,14 +228,15 @@ public class Simulation {
 			TODO After running through each field generator we should check if the intial state is consistent.
 			(e.g. check if Gauss law is fulfilled.)
 		 */
-        
-        diagnostics = settings.getDiagnostics();
+
 
 		prepareAllParticles();
-		
+
+		// Cycle through diagnostic objects and initialize them.
+		diagnostics = settings.getDiagnostics();
 		for (int f = 0; f < diagnostics.size(); f++)
         {
-			diagnostics.get(f).clear();
+			diagnostics.get(f).initialize(this);
         }
 	}
 
@@ -258,13 +267,14 @@ public class Simulation {
 	 */
 	public void step() throws FileNotFoundException,IOException {
 
-		dataOutput(tottime);
+		runDiagnostics();
 		interpolation.interpolateToParticle(particles, grid);
 		particlePush();
 		interpolation.interpolateToGrid(particles, grid, tstep);
 		grid.updateGrid(tstep);
 
-		tottime+=tstep;
+		totalSimulationSteps++;
+		totalSimulationTime =  totalSimulationSteps * tstep;
 	}
 
 	/**
@@ -272,7 +282,7 @@ public class Simulation {
 	 * @return
 	 */
 	public boolean continues() {
-		return tottime <= iterations;
+		return totalSimulationTime <= iterations;
 	}
 
 	/**
@@ -284,11 +294,11 @@ public class Simulation {
 		}
 	}
 	
-	public void dataOutput(double time) throws IOException {
+	public void runDiagnostics() throws IOException {
 
 		for (int f = 0; f < diagnostics.size(); f++)
         {
-			diagnostics.get(f).calculate(grid, particles, time);
+			diagnostics.get(f).calculate(grid, particles, this.totalSimulationSteps);
         }
 	}
 	
