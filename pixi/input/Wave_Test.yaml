@@ -23,9 +23,9 @@ fields:
       a: 0.1
 
 output:
-  particlesInTime:
+  bulkQuantitiesInTime:
       # File path
-    - path: "particles.txt"
+    - path: "bulk.txt"
 
       # Measurement interval
       interval: 1.0
