@@ -82,16 +82,17 @@ public class ParticlesInTime implements Diagnostics {
 
 			for (int i = 0; i < particles.size(); i++) {
 				IParticle p = particles.get(i);
+				/*
+					This writes the particles position and velocity via the getters Particle.getPosition() and
+					Particle.getVelocity(). Depending on the particle solver this can lead to quantities evaluated at
+					different times, e.g. in the leap frog algorithm positions are evaluated at even time steps and
+					velocities at odd time steps in between the even ones.
+				 */
 				for (int j = 0; j < s.getNumberOfDimensions(); j++) {
-					pw.write(p.getPosition(j) + "\t");
+					pw.write(p.getPosition() + "\t");
 				}
 				for (int j = 0; j < s.getNumberOfDimensions(); j++) {
-					/*
-						Since positions and velocities are not evaluated at the same time we have to take the average
-						of the two velocities to get something which we can compare to the particle position.
-					*/
-					double averagedVelocity = 0.5 * (p.getPrevPosition(i) + p.getVelocity(i));
-					pw.write(averagedVelocity + "\t");
+					pw.write(p.getVelocity() + "\t");
 				}
 			}
 			pw.write("\n");
