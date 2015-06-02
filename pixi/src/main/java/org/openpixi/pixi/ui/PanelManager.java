@@ -2,7 +2,6 @@ package org.openpixi.pixi.ui;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
-import java.awt.LayoutManager;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
@@ -29,17 +28,12 @@ public class PanelManager {
 
 	private MainControlApplet mainControlApplet;
 
-	private Particle2DPanel particlePanel;
-	private Particle3DPanel particle3DPanel;
-	private PhaseSpacePanel phaseSpacePanel;
-	private ElectricFieldPanel electricFieldPanel;
-
 	private AnimationPanel lastFocusPanel;
 	private PropertiesTab propertiesTab;
 
 	private Component previousMainComponent;
 
-	PopupClickListener popupClickListener;
+	PopupClickListener popupClickListener = new PopupClickListener();
 
 	JMenuItem itemSplitHorizontally;
 	JMenuItem itemSplitVertically;
@@ -55,11 +49,9 @@ public class PanelManager {
 
 	/* Create default panel */
 	Component getDefaultPanel() {
-		particlePanel = new Particle2DPanel(mainControlApplet.simulationAnimation);
-		popupClickListener = new PopupClickListener();
-		particlePanel.addMouseListener(popupClickListener);
-		setFocus(particlePanel);
-		return particlePanel;
+		Component component = new Particle2DPanel(mainControlApplet.simulationAnimation);
+		setFocus(component);
+		return component;
 	}
 
 	/**
@@ -70,6 +62,10 @@ public class PanelManager {
 		this.propertiesTab = propertiesTab;
 	}
 
+	public SimulationAnimation getSimulationAnimation() {
+		return mainControlApplet.simulationAnimation;
+	}
+
 	/**
 	 * Replace the main content area by a new component.
 	 * @param component
@@ -78,9 +74,24 @@ public class PanelManager {
 		if (previousMainComponent != null) {
 			mainControlApplet.remove(previousMainComponent);
 		}
+		attachMouseListener(component);
 		mainControlApplet.add(component, BorderLayout.CENTER);
 		mainControlApplet.validate();
 		previousMainComponent = component;
+	}
+
+	/**
+	 * Attaching the default right mouse button listener,
+	 * unless it is a split pane.
+	 * @param component
+	 */
+	void attachMouseListener(Component component) {
+		if (!(component instanceof JSplitPane)) {
+			// Only attache mouse listener to "real" panels.
+			// Remove listener first, so that it does not get attached twice.
+			component.removeMouseListener(popupClickListener);
+			component.addMouseListener(popupClickListener);
+		}
 	}
 
 	/**
@@ -182,17 +193,13 @@ public class PanelManager {
 			} else if (event.getSource() == itemClosePanel) {
 				closePanel();
 			} else if (event.getSource() == itemParticle2DPanel) {
-				particlePanel = new Particle2DPanel(mainControlApplet.simulationAnimation);
-				component = particlePanel;
+				component = new Particle2DPanel(mainControlApplet.simulationAnimation);
 			} else if (event.getSource() == itemParticle3DPanel) {
-				particle3DPanel = new Particle3DPanel(mainControlApplet.simulationAnimation);
-				component = particle3DPanel;
+				component = new Particle3DPanel(mainControlApplet.simulationAnimation);
 			} else if (event.getSource() == itemPhaseSpacePanel) {
-				phaseSpacePanel = new PhaseSpacePanel(mainControlApplet.simulationAnimation);
-				component = phaseSpacePanel;
+				component = new PhaseSpacePanel(mainControlApplet.simulationAnimation);
 			} else if (event.getSource() == itemElectricFieldPanel) {
-				electricFieldPanel = new ElectricFieldPanel(mainControlApplet.simulationAnimation);
-				component = electricFieldPanel;
+				component = new ElectricFieldPanel(mainControlApplet.simulationAnimation);
 			}
 			if (component != null) {
 				replacePanel(component);
@@ -200,7 +207,7 @@ public class PanelManager {
 		}
 
 		private void replacePanel(Component component) {
-			component.addMouseListener(popupClickListener);
+			attachMouseListener(component);
 			Component parent = clickComponent.getParent();
 			if (parent != null) {
 				if (parent instanceof JSplitPane) {
@@ -233,6 +240,7 @@ public class PanelManager {
 			Component parent = clickComponent.getParent();
 
 			Component newcomponent = getDefaultPanel();
+			attachMouseListener(newcomponent);
 
 			if (parent != null) {
 				if (parent instanceof JSplitPane) {
