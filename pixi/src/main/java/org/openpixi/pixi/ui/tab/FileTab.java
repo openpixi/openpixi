@@ -154,7 +154,9 @@ public class FileTab extends Box {
 			YamlPanels panels = settings.getYamlPanels();
 			if (panels != null) {
 				Component component = panels.inflate(panelManager);
-				panelManager.replaceMainPanel(component);
+				if (component != null) {
+					panelManager.replaceMainPanel(component);
+				}
 			} else {
 				// ToDo: Warning message? No panel specification provided in Yaml file.
 			}

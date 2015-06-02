@@ -81,11 +81,32 @@ public class PanelManager {
 	}
 
 	/**
+	 * Split current panel either horizontally or vertically
+	 *
+	 * @param orientation
+	 *            Either JSplitPane.HORIZONTAL_SPLIT or
+	 *            JSplitPane.VERTICAL_SPLIT.
+	 */
+	public Component getSplitPanel(Component leftPanel, Component rightPanel, Integer orientation, Integer dividerLocation) {
+		Component parent = clickComponent.getParent();
+
+		JSplitPane splitpane = new JSplitPane(orientation,
+				leftPanel, rightPanel);
+		splitpane.setOneTouchExpandable(true);
+		splitpane.setContinuousLayout(true);
+		splitpane.setResizeWeight(0.5);
+		if (dividerLocation != null) {
+			splitpane.setDividerLocation(dividerLocation);
+		}
+		return splitpane;
+	}
+
+	/**
 	 * Attaching the default right mouse button listener,
 	 * unless it is a split pane.
 	 * @param component
 	 */
-	void attachMouseListener(Component component) {
+	private void attachMouseListener(Component component) {
 		if (!(component instanceof JSplitPane)) {
 			// Only attache mouse listener to "real" panels.
 			// Remove listener first, so that it does not get attached twice.
@@ -249,27 +270,19 @@ public class PanelManager {
 
 					int dividerLocation = parentsplitpane.getDividerLocation();
 
-					JSplitPane s = new JSplitPane(orientation,
-								clickComponent, newcomponent);
-					s.setOneTouchExpandable(true);
-					s.setContinuousLayout(true);
-					s.setResizeWeight(0.5);
+					Component splitpane = getSplitPanel(clickComponent, newcomponent, orientation, null);
 
 					if (parentleft == clickComponent) {
-						parentsplitpane.setLeftComponent(s);
+						parentsplitpane.setLeftComponent(splitpane);
 					} else {
-						parentsplitpane.setRightComponent(s);
+						parentsplitpane.setRightComponent(splitpane);
 					}
 					parentsplitpane.setDividerLocation(dividerLocation);
 				} else if (parent instanceof JPanel) {
 					// top level
-					JSplitPane s = new JSplitPane(orientation,
-							clickComponent, newcomponent);
-					s.setOneTouchExpandable(true);
-					s.setContinuousLayout(true);
-					s.setResizeWeight(0.5);
+					Component splitpane = getSplitPanel(clickComponent, newcomponent, orientation, null);
 
-					replaceMainPanel(s);
+					replaceMainPanel(splitpane);
 				}
 			}
 		}
