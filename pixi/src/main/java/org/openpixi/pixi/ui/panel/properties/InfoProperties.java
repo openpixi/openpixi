@@ -50,7 +50,7 @@ public class InfoProperties {
 			graph.setColor(darkGreen);
 			graph.drawString("Frame rate: " + frameratedetector.getRateString() + " fps", 30, 30);
 			graph.drawString("Time step: " + (float) s.tstep, 30, 50);
-			graph.drawString("Total time: " + (float) s.tottime, 30, 70);
+			graph.drawString("Total time: " + (float) s.totalSimulationTime, 30, 70);
 
 			Runtime runtime = Runtime.getRuntime();
 			long maxMemory = runtime.maxMemory();

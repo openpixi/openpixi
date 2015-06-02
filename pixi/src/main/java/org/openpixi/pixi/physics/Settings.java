@@ -46,8 +46,6 @@ public class Settings {
 	private double timeStep = 0.1;
 	private double gridStep = 1;
 	private double tMax = 1000;
-	private int spectrumStep = 300;
-	private String filePath = "default";
 	private GeneralBoundaryType boundaryType = GeneralBoundaryType.Periodic;
 	private InterpolatorAlgorithm interpolator = new EmptyInterpolator();
 
@@ -63,7 +61,6 @@ public class Settings {
 	private int numOfParticles = 0;
 
 	private int simulationType = 0;
-	private int writeToFile = 0;
 	private List<IParticle> particles = new ArrayList<IParticle>();
 	private Solver particleSolver = new EmptyParticleSolver();
 	private List<Force> forces = new ArrayList<Force>();
@@ -95,10 +92,6 @@ public class Settings {
 	//----------------------------------------------------------------------------------------------
 	public int getSimulationType() {
 		return this.simulationType;
-	}
-
-	public int getWriteToFile() {
-		return this.writeToFile;
 	}
 	
 	public double getSimulationWidth(int i) {
@@ -136,14 +129,6 @@ public class Settings {
 	
 	public double getGridStep() {
 		return gridStep;
-	}
-	
-	public int getSpectrumStep() {
-		return spectrumStep;
-	}
-	
-	public String getFilePath() {
-		return filePath;
 	}
 
 	public boolean getRelativistic() {
@@ -286,10 +271,6 @@ public class Settings {
 		this.simulationType = simulationType;
 	}
 
-	public void setWriteToFile(int writeTo) {
-		this.writeToFile = writeTo;
-	}
-
 	public void setGridCells(int i, int num) {
 		gridCells[i] = num;
 		simulationWidth[i] = gridStep*num;
@@ -341,14 +322,6 @@ public class Settings {
 	
 	public void setGridStep(double gridstep) {
 		this.gridStep = gridstep;
-	}
-	
-	public void setSpectrumStep(int spectrumstep) {
-		this.spectrumStep = spectrumstep;
-	}
-
-	public void setFilePath(String filepath) {
-		this.filePath = filepath;
 	}
 
 	public void setRelativistic(boolean rel) {

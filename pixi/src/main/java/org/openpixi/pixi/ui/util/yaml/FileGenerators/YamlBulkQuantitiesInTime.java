@@ -1,9 +1,6 @@
 package org.openpixi.pixi.ui.util.yaml.FileGenerators;
 
-import org.openpixi.pixi.physics.Settings;
 import org.openpixi.pixi.diagnostics.methods.BulkQuantitiesInTime;
-
-import java.util.List;
 
 /**
  * Yaml wrapper for the YamlParticlesInTime FileGenerator.
@@ -27,12 +24,7 @@ public class YamlBulkQuantitiesInTime {
 	 * @return Instance of BulkQuantitiesInTime.
 	 */
 	public BulkQuantitiesInTime getFileGenerator() {
-		BulkQuantitiesInTime fileGen = new BulkQuantitiesInTime();
-
-        fileGen.setPath(path);
-        
-        fileGen.setInterval(interval);
-
+		BulkQuantitiesInTime fileGen = new BulkQuantitiesInTime(path, interval);
 		return fileGen;
 	}
 }
