@@ -89,10 +89,10 @@ public class ParticlesInTime implements Diagnostics {
 					velocities at odd time steps in between the even ones.
 				 */
 				for (int j = 0; j < s.getNumberOfDimensions(); j++) {
-					pw.write(p.getPosition() + "\t");
+					pw.write(p.getPosition(j) + "\t");
 				}
 				for (int j = 0; j < s.getNumberOfDimensions(); j++) {
-					pw.write(p.getVelocity() + "\t");
+					pw.write(p.getVelocity(j) + "\t");
 				}
 			}
 			pw.write("\n");
