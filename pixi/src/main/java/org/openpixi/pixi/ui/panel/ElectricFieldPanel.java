@@ -158,4 +158,12 @@ public class ElectricFieldPanel extends AnimationPanel {
 		colorProperties.addComponents(box);
 		scaleProperties.addComponents(box);
 	}
+
+	public ColorProperties getColorProperties() {
+		return colorProperties;
+	}
+
+	public ScaleProperties getScaleProperties() {
+		return scaleProperties;
+	}
 }

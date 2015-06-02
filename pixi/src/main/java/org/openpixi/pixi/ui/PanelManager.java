@@ -13,6 +13,7 @@ import javax.swing.JPopupMenu;
 import javax.swing.JSeparator;
 import javax.swing.JSplitPane;
 
+import org.apache.maven.project.artifact.AttachedArtifact;
 import org.openpixi.pixi.ui.panel.AnimationPanel;
 import org.openpixi.pixi.ui.panel.ElectricFieldPanel;
 import org.openpixi.pixi.ui.panel.Particle2DPanel;
@@ -88,8 +89,8 @@ public class PanelManager {
 	 *            JSplitPane.VERTICAL_SPLIT.
 	 */
 	public Component getSplitPanel(Component leftPanel, Component rightPanel, Integer orientation, Integer dividerLocation) {
-		Component parent = clickComponent.getParent();
-
+		attachMouseListener(leftPanel);
+		attachMouseListener(rightPanel);
 		JSplitPane splitpane = new JSplitPane(orientation,
 				leftPanel, rightPanel);
 		splitpane.setOneTouchExpandable(true);

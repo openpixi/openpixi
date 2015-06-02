@@ -3,16 +3,19 @@ package org.openpixi.pixi.ui.util.yaml.panels;
 import java.awt.Component;
 
 import org.openpixi.pixi.ui.PanelManager;
-import org.openpixi.pixi.ui.panel.Particle2DPanel;
+import org.openpixi.pixi.ui.panel.ElectricFieldPanel;
 
-public class YamlParticle2DPanel {
+public class YamlElectricFieldPanel {
+
 
 	public Integer colorIndex;
 	public Integer directionIndex;
+	public Double scaleFactor;
+	public Boolean automaticScaling;
 
 	public Component inflate(PanelManager panelManager) {
 
-		Particle2DPanel panel = new Particle2DPanel(panelManager.getSimulationAnimation());
+		ElectricFieldPanel panel = new ElectricFieldPanel(panelManager.getSimulationAnimation());
 
 		if (colorIndex != null) {
 			panel.getColorProperties().setColorIndex(colorIndex);
@@ -22,6 +25,13 @@ public class YamlParticle2DPanel {
 			panel.getColorProperties().setDirectionIndex(directionIndex);
 		}
 
+		if (scaleFactor != null) {
+			panel.getScaleProperties().setScaleFactor(scaleFactor);
+		}
+
+		if (automaticScaling != null) {
+			panel.getScaleProperties().setAutomaticScaling(automaticScaling);
+		}
 		return panel;
 	}
 }
