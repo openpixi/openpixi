@@ -29,3 +29,9 @@ output:
 
       # Measurement interval
       interval: 1.0
+
+panels:
+  electricFieldPanel:
+    colorIndex: 0
+    directionIndex: 1
+    scaleFactor: 2
