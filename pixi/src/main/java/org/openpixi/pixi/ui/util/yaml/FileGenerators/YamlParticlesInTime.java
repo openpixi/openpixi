@@ -1,9 +1,6 @@
 package org.openpixi.pixi.ui.util.yaml.FileGenerators;
 
-import org.openpixi.pixi.physics.Settings;
 import org.openpixi.pixi.diagnostics.methods.ParticlesInTime;
-
-import java.util.List;
 
 /**
  * Yaml wrapper for the YamlParticlesInTime FileGenerator.
@@ -27,12 +24,7 @@ public class YamlParticlesInTime {
 	 * @return Instance of ParticlesInTime.
 	 */
 	public ParticlesInTime getFileGenerator() {
-		ParticlesInTime fileGen = new ParticlesInTime();
-
-        fileGen.setPath(path);
-        
-        fileGen.setInterval(interval);
-
+		ParticlesInTime fileGen = new ParticlesInTime(path, interval);
 		return fileGen;
 	}
 }
