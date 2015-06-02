@@ -2,6 +2,7 @@ package org.openpixi.pixi.ui;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
+import java.awt.LayoutManager;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
@@ -36,6 +37,8 @@ public class PanelManager {
 	private AnimationPanel lastFocusPanel;
 	private PropertiesTab propertiesTab;
 
+	private Component previousMainComponent;
+
 	PopupClickListener popupClickListener;
 
 	JMenuItem itemSplitHorizontally;
@@ -65,6 +68,19 @@ public class PanelManager {
 	 */
 	public void setPropertiesTab(PropertiesTab propertiesTab) {
 		this.propertiesTab = propertiesTab;
+	}
+
+	/**
+	 * Replace the main content area by a new component.
+	 * @param component
+	 */
+	public void replaceMainPanel(Component component) {
+		if (previousMainComponent != null) {
+			mainControlApplet.remove(previousMainComponent);
+		}
+		mainControlApplet.add(component, BorderLayout.CENTER);
+		mainControlApplet.validate();
+		previousMainComponent = component;
 	}
 
 	/**
@@ -200,9 +216,7 @@ public class PanelManager {
 					parentsplitpane.setDividerLocation(dividerLocation);
 				} else if (parent instanceof JPanel) {
 					// top level
-					mainControlApplet.remove(clickComponent);
-					mainControlApplet.add(component, BorderLayout.CENTER);
-					mainControlApplet.validate();
+					replaceMainPanel(component);
 				}
 			}
 			setFocus(component);
@@ -247,9 +261,7 @@ public class PanelManager {
 					s.setContinuousLayout(true);
 					s.setResizeWeight(0.5);
 
-					mainControlApplet.remove(clickComponent);
-					mainControlApplet.add(s, BorderLayout.CENTER);
-					mainControlApplet.validate();
+					replaceMainPanel(s);
 				}
 			}
 		}
@@ -279,9 +291,7 @@ public class PanelManager {
 							}
 						} else if (grandparent instanceof JPanel) {
 							parentsplitpane.removeAll();
-							mainControlApplet.remove(parentsplitpane);
-							mainControlApplet.add(othercomponent, BorderLayout.CENTER);
-							mainControlApplet.validate();
+							replaceMainPanel(othercomponent);
 						}
 						setFocus(othercomponent);
 						clickComponent.removeMouseListener(popupClickListener);

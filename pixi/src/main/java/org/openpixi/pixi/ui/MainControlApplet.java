@@ -231,7 +231,7 @@ public class MainControlApplet extends JApplet
 		tabs = new JTabbedPane();
 
 		this.propertiesTab = new PropertiesTab(MainControlApplet.this, panelManager);
-		this.fileTab = new FileTab(MainControlApplet.this, simulationAnimation);
+		this.fileTab = new FileTab(MainControlApplet.this, simulationAnimation, panelManager);
 
 		settingControls.setPreferredSize(new Dimension (300, 100));
 
@@ -245,6 +245,8 @@ public class MainControlApplet extends JApplet
 		this.add(controlPanel, BorderLayout.SOUTH);
 		this.add(mainPanel, BorderLayout.CENTER);
 		this.add(tabs, BorderLayout.EAST);
+
+		panelManager.replaceMainPanel(mainPanel);
 
 	}
 

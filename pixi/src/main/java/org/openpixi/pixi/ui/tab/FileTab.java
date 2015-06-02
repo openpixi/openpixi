@@ -15,24 +15,28 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 
 import org.openpixi.pixi.physics.Settings;
+import org.openpixi.pixi.ui.PanelManager;
 import org.openpixi.pixi.ui.SimulationAnimation;
 import org.openpixi.pixi.ui.util.FileIO;
+import org.openpixi.pixi.ui.util.yaml.YamlPanels;
 import org.openpixi.pixi.ui.util.yaml.YamlParser;
 
 public class FileTab extends Box {
 
 	private Component parent;
 	private SimulationAnimation simulationAnimation;
+	private PanelManager panelManager;
 	private JFileChooser fc;
 	private JButton openButton;
 	private JButton saveButton;
 	private JButton applyButton;
 	private JTextArea fileTextArea;
 
-	public FileTab(Component parent, SimulationAnimation simulationAnimation) {
+	public FileTab(Component parent, SimulationAnimation simulationAnimation, PanelManager panelManager) {
 		super(BoxLayout.PAGE_AXIS);
 		this.parent = parent;
 		this.simulationAnimation = simulationAnimation;
+		this.panelManager = panelManager;
 
 		fc = new JFileChooser();
 		File workingDirectory = new File(System.getProperty("user.dir"));
@@ -72,6 +76,7 @@ public class FileTab extends Box {
 					String content = FileIO.readFile(file);
 					fileTextArea.setText(content);
 					applyTextAreaSettings();
+					applyTextAreaPanelSettings();
 				} catch (IOException e) {
 					// TODO Error message
 				}
@@ -118,6 +123,7 @@ public class FileTab extends Box {
 	class ApplyButtonListener implements ActionListener {
 		public void actionPerformed(ActionEvent event) {
 			applyTextAreaSettings();
+			applyTextAreaPanelSettings();
 		}
 	}
 
@@ -132,6 +138,26 @@ public class FileTab extends Box {
 			YamlParser parser = new YamlParser(settings);
 			parser.parseString(string);
 			simulationAnimation.resetAnimation(settings);
+		}
+	}
+
+	/**
+	 * Apply the panel settings from the text area and restart the simulation.
+	 */
+	public void applyTextAreaPanelSettings() {
+		String string = fileTextArea.getText();
+		if(string.length() > 0)
+		{
+			Settings settings = new Settings();
+			YamlParser parser = new YamlParser(settings);
+			parser.parseString(string);
+			YamlPanels panels = settings.getYamlPanels();
+			if (panels != null) {
+				Component component = panels.inflate(simulationAnimation);
+				panelManager.replaceMainPanel(component);
+			} else {
+				// ToDo: Warning message? No panel specification provided in Yaml file.
+			}
 		}
 	}
 

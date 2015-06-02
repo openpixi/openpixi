@@ -180,4 +180,20 @@ public class Particle2DPanel extends AnimationPanel {
 		infoProperties.addComponents(box);
 		traceProperties.addComponents(box);
 	}
+
+	public ColorProperties getColorProperties() {
+		return colorProperties;
+	}
+
+	public FieldProperties getFieldProperties() {
+		return fieldProperties;
+	}
+
+	public InfoProperties getInfoProperties() {
+		return infoProperties;
+	}
+
+	public TraceProperties getTraceProperties() {
+		return traceProperties;
+	}
 }
