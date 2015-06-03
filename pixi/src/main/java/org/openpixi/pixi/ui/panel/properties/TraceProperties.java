@@ -10,7 +10,7 @@ import javax.swing.JCheckBox;
 public class TraceProperties {
 
 	/** A state for the trace */
-	public boolean paint_trace = false;
+	public boolean showTrace = false;
 
 	private boolean reset_trace;
 
@@ -18,8 +18,12 @@ public class TraceProperties {
 		reset_trace = true;
 	}
 
-	public boolean getPaintTrace() {
-		return paint_trace;
+	public boolean isShowTrace() {
+		return showTrace;
+	}
+
+	public void setShowTrace(boolean showTrace) {
+		this.showTrace = showTrace;
 	}
 
 	public void addComponents(Box box) {
@@ -28,7 +32,7 @@ public class TraceProperties {
 		JCheckBox traceCheck;
 		traceCheck = new JCheckBox("Trace");
 		traceCheck.addItemListener(new CheckListener());
-		traceCheck.setSelected(paint_trace);
+		traceCheck.setSelected(showTrace);
 
 		settingControls.add(traceCheck);
 		settingControls.add(Box.createVerticalGlue());
@@ -38,7 +42,7 @@ public class TraceProperties {
 
 	public boolean getCallSuper() {
 		boolean callsuper = false;
-		if(!paint_trace)
+		if(!showTrace)
 		{
 			callsuper = true;
 		}
@@ -52,7 +56,7 @@ public class TraceProperties {
 
 	class CheckListener implements ItemListener {
 		public void itemStateChanged(ItemEvent event){
-			TraceProperties.this.paint_trace = 
+			TraceProperties.this.showTrace = 
 					(event.getStateChange() == ItemEvent.SELECTED);
 		}
 	}

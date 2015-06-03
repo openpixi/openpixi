@@ -81,7 +81,7 @@ public class Particle2DPanel extends AnimationPanel {
 			double radius = par.getRadius();//double radius = par.getRadius()*(2 - 1.9*par.getZ()/s.getDepth());
 			int width = (int) (2*sx*radius);
 			int height = (int) (2*sy*radius);
-			if(width > 2 && height > 2 && !traceProperties.getPaintTrace()) {
+			if(width > 2 && height > 2 && !traceProperties.isShowTrace()) {
 				graph.fillOval((int) (par.getPosition(0)*sx) - width/2, (int) (par.getPosition(1)*sy) - height/2,  width,  height);
 			}
 			else {
@@ -97,7 +97,7 @@ public class Particle2DPanel extends AnimationPanel {
 		int colorIndex = colorProperties.getColorIndex();
 		int directionIndex = colorProperties.getDirectionIndex();
 		
-		if(fieldProperties.getDrawCurrentGrid())
+		if(fieldProperties.isDrawCurrent())
 		{
 			graph.setColor(Color.black);
 			
@@ -120,7 +120,7 @@ public class Particle2DPanel extends AnimationPanel {
 			//return;
 		}
 
-		if(fieldProperties.getDrawFields())
+		if(fieldProperties.isDrawFields())
 		{
 			graph.setColor(Color.black);
 			for(int i = 0; i < s.grid.getNumCells(0); i++)

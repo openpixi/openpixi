@@ -14,9 +14,17 @@ import org.openpixi.pixi.ui.util.FrameRateDetector;
 
 public class InfoProperties {
 
-	public boolean showinfo = false;
+	public boolean showInfo = false;
 
 	Color darkGreen = new Color(0x00, 0x80, 0x00);
+
+	public boolean isShowInfo() {
+		return showInfo;
+	}
+
+	public void setShowInfo(boolean showInfo) {
+		this.showInfo = showInfo;
+	}
 
 	public void addComponents(Box box) {
 		Box settingControls = Box.createVerticalBox();
@@ -24,7 +32,7 @@ public class InfoProperties {
 		JCheckBox framerateCheck;
 		framerateCheck = new JCheckBox("Info");
 		framerateCheck.addItemListener(new FrameListener());
-		framerateCheck.setSelected(showinfo);
+		framerateCheck.setSelected(showInfo);
 
 		settingControls.add(framerateCheck);
 		settingControls.add(Box.createVerticalGlue());
@@ -34,14 +42,14 @@ public class InfoProperties {
 
 	class FrameListener implements ItemListener {
 		public void itemStateChanged(ItemEvent event) {
-			InfoProperties.this.showinfo = 
+			InfoProperties.this.showInfo =
 					(event.getStateChange() == ItemEvent.SELECTED);
 		}
 	}
 
 	public void showInfo(Graphics2D graph, AnimationPanel panel) {
 
-		if (showinfo) {
+		if (showInfo) {
 			FrameRateDetector frameratedetector = panel.getSimulationAnimation().getFrameRateDetector();
 			Simulation s = panel.getSimulationAnimation().getSimulation();
 

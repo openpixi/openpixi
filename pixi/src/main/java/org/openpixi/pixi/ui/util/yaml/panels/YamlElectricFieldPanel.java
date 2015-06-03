@@ -7,9 +7,11 @@ import org.openpixi.pixi.ui.panel.ElectricFieldPanel;
 
 public class YamlElectricFieldPanel {
 
-
+	// Color properties
 	public Integer colorIndex;
 	public Integer directionIndex;
+
+	// Scale properties
 	public Double scaleFactor;
 	public Boolean automaticScaling;
 

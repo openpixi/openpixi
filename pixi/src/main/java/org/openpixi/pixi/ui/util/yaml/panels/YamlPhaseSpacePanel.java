@@ -7,6 +7,7 @@ import org.openpixi.pixi.ui.panel.PhaseSpacePanel;
 
 public class YamlPhaseSpacePanel {
 
+	// Scale properties
 	public Double scaleFactor;
 	public Boolean automaticScaling;
 

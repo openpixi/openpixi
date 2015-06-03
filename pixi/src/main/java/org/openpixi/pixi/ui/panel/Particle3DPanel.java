@@ -182,7 +182,7 @@ public class Particle3DPanel extends AnimationPanel {
 		int colorIndex = colorProperties.getColorIndex();
 		int directionIndex = colorProperties.getDirectionIndex();
 		
-		if(fieldProperties.getDrawCurrentGrid()) {
+		if(fieldProperties.isDrawCurrent()) {
 			for(int i = 0; i < s.grid.getNumCells(0); i += gridstep) {
 				for(int j = 0; j < s.grid.getNumCells(1); j += gridstep) {
 					for(int k = 0; k < s.grid.getNumCells(2); k += gridstep) {
@@ -223,7 +223,7 @@ public class Particle3DPanel extends AnimationPanel {
 			}
 		}
 
-		if(fieldProperties.getDrawFields())
+		if(fieldProperties.isDrawFields())
 		{
 			graph.setColor(Color.black);
 			for(int i = 0; i < s.grid.getNumCells(0); i += gridstep) {
