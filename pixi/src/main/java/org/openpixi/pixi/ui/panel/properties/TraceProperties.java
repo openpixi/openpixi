@@ -1,6 +1,5 @@
 package org.openpixi.pixi.ui.panel.properties;
 
-import java.awt.Graphics;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 
@@ -12,10 +11,10 @@ public class TraceProperties {
 	/** A state for the trace */
 	public boolean showTrace = false;
 
-	private boolean reset_trace;
+	private boolean resetTrace;
 
 	public void clear() {
-		reset_trace = true;
+		resetTrace = true;
 	}
 
 	public boolean isShowTrace() {
@@ -40,16 +39,16 @@ public class TraceProperties {
 		box.add(settingControls);
 	}
 
-	public boolean getCallSuper() {
+	public boolean isCallSuper() {
 		boolean callsuper = false;
 		if(!showTrace)
 		{
 			callsuper = true;
 		}
-		if(reset_trace)
+		if(resetTrace)
 		{
 			callsuper = true;
-			reset_trace = false;
+			resetTrace = false;
 		}
 		return callsuper;
 	}

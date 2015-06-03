@@ -51,11 +51,6 @@ public class Particle3DPanel extends AnimationPanel {
 	 * or whether to keep them separate. */
 	private boolean combinefields = true;
 
-	/** A state for the trace */
-	public boolean paint_trace = false;
-
-	private boolean reset_trace;
-
 	private int gridstep = 1;
 	private int gridstepadjusted = 0;
 	private long currentrendertime = 0;
@@ -82,15 +77,6 @@ public class Particle3DPanel extends AnimationPanel {
 		addMouseMotionListener(l);
 	}
 
-	public void clear() {
-		reset_trace = true;
-	}
-
-	public void checkTrace() {
-		paint_trace =! paint_trace;
-		//startAnimation();
-	}
-
 	/** Display the particles */
 	public void paintComponent(Graphics graph1) {
 		Graphics2D graph = (Graphics2D) graph1;
@@ -99,15 +85,7 @@ public class Particle3DPanel extends AnimationPanel {
 		graph.scale(1, -1);
 		double scale = 10;
 
-		if(!paint_trace)
-		{
-			super.paintComponent(graph1);
-		}
-		if(reset_trace)
-		{
-			super.paintComponent(graph1);
-			reset_trace = false;
-		}
+		super.paintComponent(graph1);
 
 		Simulation s = getSimulationAnimation().getSimulation();
 
