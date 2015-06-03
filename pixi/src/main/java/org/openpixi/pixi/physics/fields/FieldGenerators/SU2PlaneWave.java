@@ -80,9 +80,9 @@ public class SU2PlaneWave implements IFieldGenerator {
             omega = s.getSpeedOfLight() * Math.sqrt(omega);
 
             //Factor of the plane wave at t = - dt/2 (for electric fields)
-            double factorForE = g * as * omega * Math.sin(omega * (this.timeStep / 2.0) + kx);
+            double factorForE = - g * as * omega * Math.sin(kx);
             //Phase of the plane wave at t = 0 (for links)
-            double factorForU = g * as * Math.cos(kx);
+            double factorForU = g * as * Math.cos(omega * timeStep /2.0  - kx);
 
 
 

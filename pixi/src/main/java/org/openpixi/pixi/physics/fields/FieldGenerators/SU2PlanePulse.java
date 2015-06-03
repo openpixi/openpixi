@@ -84,13 +84,13 @@ public class SU2PlanePulse implements IFieldGenerator {
 				scalarProduct += this.direction[i] * (currentPosition[i] - this.position[i]);
 			}
 
-			//Multiplicative factor for the plane pulse at t = - dt/2 (for electric fields)
-			double phaseE = scalarProduct + c*timeStep/2.0;
-			double electricFieldFactor =  g * as * c * phaseE / Math.pow(sigma, 2.0) *
+			//Multiplicative factor for the plane pulse at t = 0 (for electric fields)
+			double phaseE = scalarProduct;
+			double electricFieldFactor =  - g * as * c * phaseE / Math.pow(sigma, 2.0) *
 					Math.exp(- Math.pow(phaseE / this.sigma, 2.0) / 2.0);
-			//Multiplicative factor for the plane pulse at t = 0 (for links)
-			double phaseU = scalarProduct;
-			double gaugeFieldFactor = g* as * Math.exp(- Math.pow(phaseU / this.sigma, 2.0) / 2.0);
+			//Multiplicative factor for the plane pulse at t = dt/2 (for links)
+			double phaseU = scalarProduct - c * timeStep / 2.0;
+			double gaugeFieldFactor = g * as * Math.exp(- Math.pow(phaseU / this.sigma, 2.0) / 2.0);
 
 
 
