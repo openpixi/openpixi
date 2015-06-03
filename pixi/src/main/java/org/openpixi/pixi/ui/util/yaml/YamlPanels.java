@@ -2,7 +2,13 @@ package org.openpixi.pixi.ui.util.yaml;
 
 import java.awt.Component;
 
+import javax.swing.JSplitPane;
+
 import org.openpixi.pixi.ui.PanelManager;
+import org.openpixi.pixi.ui.panel.ElectricFieldPanel;
+import org.openpixi.pixi.ui.panel.Particle2DPanel;
+import org.openpixi.pixi.ui.panel.Particle3DPanel;
+import org.openpixi.pixi.ui.panel.PhaseSpacePanel;
 import org.openpixi.pixi.ui.util.yaml.panels.YamlElectricFieldPanel;
 import org.openpixi.pixi.ui.util.yaml.panels.YamlParticle2DPanel;
 import org.openpixi.pixi.ui.util.yaml.panels.YamlParticle3DPanel;
@@ -20,6 +26,40 @@ public class YamlPanels {
 	public YamlParticle3DPanel particle3DPanel;
 	public YamlPhaseSpacePanel phaseSpacePanel;
 
+	/** Empty constructor called by SnakeYaml */
+	public YamlPanels() {
+	}
+
+	/**
+	 * Constructor which fills the values of this class according to
+	 * the component attached.
+	 * @param component Java swing component from which to extract the parameters.
+	 */
+	public YamlPanels(Component component) {
+		if (component instanceof JSplitPane) {
+			JSplitPane splitpane = (JSplitPane) component;
+			Component leftComponent = splitpane.getLeftComponent();
+			Component rightComponent = splitpane.getRightComponent();
+			orientation = splitpane.getOrientation();
+			dividerLocation = splitpane.getDividerLocation();
+			leftPanel = new YamlPanels(leftComponent);
+			rightPanel = new YamlPanels(rightComponent);
+		} else if (component instanceof ElectricFieldPanel) {
+			electricFieldPanel = new YamlElectricFieldPanel(component);
+		} else if (component instanceof Particle2DPanel) {
+			particle2DPanel = new YamlParticle2DPanel(component);
+		} else if (component instanceof Particle3DPanel) {
+			particle3DPanel = new YamlParticle3DPanel(component);
+		} else if (component instanceof PhaseSpacePanel) {
+			phaseSpacePanel = new YamlPhaseSpacePanel(component);
+		}
+	}
+
+	/**
+	 * Inflate the values into Java components that can be displayed by the PanelManager.
+	 * @param panelManager
+	 * @return
+	 */
 	public Component inflate(PanelManager panelManager) {
 		Component component = null;
 		if (leftPanel != null && rightPanel != null) {

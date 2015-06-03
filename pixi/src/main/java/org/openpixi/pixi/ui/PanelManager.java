@@ -31,7 +31,7 @@ public class PanelManager {
 	private AnimationPanel lastFocusPanel;
 	private PropertiesTab propertiesTab;
 
-	private Component previousMainComponent;
+	private Component mainComponent;
 
 	PopupClickListener popupClickListener = new PopupClickListener();
 
@@ -54,6 +54,10 @@ public class PanelManager {
 		return component;
 	}
 
+	public Component getMainComponent() {
+		return mainComponent;
+	}
+
 	/**
 	 * Set properties tab which should replace content upon focus.
 	 * @param propertiesTab
@@ -71,13 +75,13 @@ public class PanelManager {
 	 * @param component
 	 */
 	public void replaceMainPanel(Component component) {
-		if (previousMainComponent != null) {
-			mainControlApplet.remove(previousMainComponent);
+		if (mainComponent != null) {
+			mainControlApplet.remove(mainComponent);
 		}
 		attachMouseListener(component);
 		mainControlApplet.add(component, BorderLayout.CENTER);
 		mainControlApplet.validate();
-		previousMainComponent = component;
+		mainComponent = component;
 	}
 
 	/**

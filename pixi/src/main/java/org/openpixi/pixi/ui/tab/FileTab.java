@@ -210,15 +210,11 @@ public class FileTab extends Box {
 	 * Append the current panel settings to the text area.
 	 */
 	public void writeTextAreaPanelSettings() {
-		String string = fileTextArea.getText();
-		if(string.length() > 0)
-		{
-			Settings settings = new Settings();
-			YamlParser parser = new YamlParser(settings);
-			YamlPanelWriter panelWriter = new YamlPanelWriter();
-			String yamlString = panelWriter.getYamlString(settings.getYamlPanels());
-			yamlString = "\n\n# Generated panel code:\n" + yamlString;
-			fileTextArea.append(yamlString);
-		}
+		Component component = panelManager.getMainComponent();
+		YamlPanels yamlPanels = new YamlPanels(component);
+		YamlPanelWriter panelWriter = new YamlPanelWriter();
+		String yamlString = panelWriter.getYamlString(yamlPanels);
+		yamlString = "\n\n# Generated panel code:\n" + yamlString;
+		fileTextArea.append(yamlString);
 	}
 }

@@ -15,6 +15,20 @@ public class YamlElectricFieldPanel {
 	public Double scaleFactor;
 	public Boolean automaticScaling;
 
+	/** Empty constructor called by SnakeYaml */
+	public YamlElectricFieldPanel() {
+	}
+
+	public YamlElectricFieldPanel(Component component) {
+		if (component instanceof ElectricFieldPanel) {
+			ElectricFieldPanel panel = (ElectricFieldPanel) component;
+			colorIndex = panel.getColorProperties().getColorIndex();
+			directionIndex = panel.getColorProperties().getDirectionIndex();
+			scaleFactor = panel.getScaleProperties().getScaleFactor();
+			automaticScaling = panel.getScaleProperties().getAutomaticScaling();
+		}
+	}
+
 	public Component inflate(PanelManager panelManager) {
 
 		ElectricFieldPanel panel = new ElectricFieldPanel(panelManager.getSimulationAnimation());

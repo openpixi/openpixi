@@ -21,6 +21,22 @@ public class YamlParticle2DPanel {
 	// Trace properties
 	public Boolean showTrace;
 
+	/** Empty constructor called by SnakeYaml */
+	public YamlParticle2DPanel() {
+	}
+
+	public YamlParticle2DPanel(Component component) {
+		if (component instanceof Particle2DPanel) {
+			Particle2DPanel panel = (Particle2DPanel) component;
+			colorIndex = panel.getColorProperties().getColorIndex();
+			directionIndex = panel.getColorProperties().getDirectionIndex();
+			drawCurrent = panel.getFieldProperties().isDrawCurrent();
+			drawFields = panel.getFieldProperties().isDrawFields();
+			showInfo = panel.getInfoProperties().isShowInfo();
+			showTrace = panel.getTraceProperties().isShowTrace();
+		}
+	}
+
 	public Component inflate(PanelManager panelManager) {
 
 		Particle2DPanel panel = new Particle2DPanel(panelManager.getSimulationAnimation());

@@ -31,7 +31,7 @@ public class YamlPanelWriter {
 			} else if (line.startsWith("!!org.openpixi")) {
 				// omit
 			} else {
-				result = result + line + "\r";
+				result = result + line + "\n";
 			}
 		}
 		return result;

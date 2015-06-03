@@ -11,6 +11,18 @@ public class YamlPhaseSpacePanel {
 	public Double scaleFactor;
 	public Boolean automaticScaling;
 
+	/** Empty constructor called by SnakeYaml */
+	public YamlPhaseSpacePanel() {
+	}
+
+	public YamlPhaseSpacePanel(Component component) {
+		if (component instanceof PhaseSpacePanel) {
+			PhaseSpacePanel panel = (PhaseSpacePanel) component;
+			scaleFactor = panel.getScaleProperties().getScaleFactor();
+			automaticScaling = panel.getScaleProperties().getAutomaticScaling();
+		}
+	}
+
 	public Component inflate(PanelManager panelManager) {
 
 		PhaseSpacePanel panel = new PhaseSpacePanel(panelManager.getSimulationAnimation());

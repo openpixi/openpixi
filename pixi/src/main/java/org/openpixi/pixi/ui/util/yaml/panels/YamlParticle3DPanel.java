@@ -18,6 +18,21 @@ public class YamlParticle3DPanel {
 	// Info properties
 	public Boolean showInfo;
 
+	/** Empty constructor called by SnakeYaml */
+	public YamlParticle3DPanel() {
+	}
+
+	public YamlParticle3DPanel(Component component) {
+		if (component instanceof Particle3DPanel) {
+			Particle3DPanel panel = (Particle3DPanel) component;
+			colorIndex = panel.getColorProperties().getColorIndex();
+			directionIndex = panel.getColorProperties().getDirectionIndex();
+			drawCurrent = panel.getFieldProperties().isDrawCurrent();
+			drawFields = panel.getFieldProperties().isDrawFields();
+			showInfo = panel.getInfoProperties().isShowInfo();
+		}
+	}
+
 	public Component inflate(PanelManager panelManager) {
 
 		Particle3DPanel panel = new Particle3DPanel(panelManager.getSimulationAnimation());
