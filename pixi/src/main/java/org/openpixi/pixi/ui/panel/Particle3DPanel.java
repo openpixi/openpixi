@@ -70,7 +70,6 @@ public class Particle3DPanel extends AnimationPanel {
 	public Particle3DPanel(SimulationAnimation simulationAnimation) {
 		super(simulationAnimation);
 
-		Simulation s = simulationAnimation.getSimulation();
 		projection.phi = 0;
 		projection.theta = 0;
 
@@ -310,4 +309,15 @@ public class Particle3DPanel extends AnimationPanel {
 		infoProperties.addComponents(box);
 	}
 
+	public ColorProperties getColorProperties() {
+		return colorProperties;
+	}
+
+	public FieldProperties getFieldProperties() {
+		return fieldProperties;
+	}
+
+	public InfoProperties getInfoProperties() {
+		return infoProperties;
+	}
 }
