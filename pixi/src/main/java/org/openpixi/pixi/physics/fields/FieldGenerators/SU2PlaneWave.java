@@ -79,9 +79,9 @@ public class SU2PlaneWave implements IFieldGenerator {
             }
             omega = s.getSpeedOfLight() * Math.sqrt(omega);
 
-            //Factor of the plane wave at t = - dt/2 (for electric fields)
+            //Factor of the plane wave at t = 0 (for electric fields)
             double factorForE = - g * as * omega * Math.sin(kx);
-            //Phase of the plane wave at t = 0 (for links)
+            //Phase of the plane wave at t = dt/2 (for links)
             double factorForU = g * as * Math.cos(omega * timeStep /2.0  - kx);
 
 
@@ -93,7 +93,6 @@ public class SU2PlaneWave implements IFieldGenerator {
                 //Setup the gauge links
                 SU2Matrix U = (SU2Matrix) currentCell.getU(i).mult(amplitudeYMField[i].mult(factorForU).getLinkExact());
 				currentCell.setU(i, U);
-				//System.out.println(currentCell.getU(i).get(0));
 
                 //Setup the electric fields
                 currentCell.addE(i, amplitudeYMField[i].mult(factorForE));

@@ -11,19 +11,19 @@ public class Cell implements Serializable {
 	/**Local electric current in d directions*/
 	private YMField[] J;
 
-	/**Local charge density*/
+	/**Local charge density at time */
 	private YMField rho;
 
-	/**Electric fields in d directions at time t+dt*/
+	/**Electric fields in d directions at time t */
 	private YMField[] E;
 	
-	/**Purely spatial components of the field-strength tensor*/
+	/**Purely spatial components of the field-strength tensor at time*/
 	private YMField[][] F;
 	
-	/**Link matrices at time t*/
+	/**Link matrices at time t - dt/2 */
 	private LinkMatrix[] U;
 	
-	/**Link matrices at time t+dt*/
+	/**Link matrices at time t + dt/2 */
 	private LinkMatrix[] Unext;
 
 	
