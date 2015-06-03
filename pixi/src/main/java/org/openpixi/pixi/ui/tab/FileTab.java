@@ -156,6 +156,7 @@ public class FileTab extends Box {
 				Component component = panels.inflate(panelManager);
 				if (component != null) {
 					panelManager.replaceMainPanel(component);
+					panelManager.setFocus(component);
 				}
 			} else {
 				// ToDo: Warning message? No panel specification provided in Yaml file.

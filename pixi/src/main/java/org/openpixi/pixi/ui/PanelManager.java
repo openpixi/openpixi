@@ -120,8 +120,13 @@ public class PanelManager {
 	 * previously focused panel.
 	 * @param component
 	 */
-	private void setFocus(Component component) {
-		if (component instanceof AnimationPanel) {
+	public void setFocus(Component component) {
+		if (component instanceof JSplitPane) {
+			// Set focus on left descendant:
+			JSplitPane splitpanel = (JSplitPane) component;
+			Component leftComponent = splitpanel.getLeftComponent();
+			setFocus(leftComponent);
+		} else if (component instanceof AnimationPanel) {
 			AnimationPanel panel = (AnimationPanel) component;
 			if (!panel.isFocused()) {
 				if (lastFocusPanel != null) {
