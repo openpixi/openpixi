@@ -370,7 +370,7 @@ public class Grid {
 	/**
 	 * Calculates the plaquette starting at lattice coordinate coor in the plane of d1 and d2 with orientations o1, o2.
 	 * This method implements the following definition of the plaquette:
-	 *      U_{x, ij} = U_{x+j, -j} U_{x+i+j, -i} U_{x+i, j} U_{x, i}
+	 *      U_{x, ij} = U_{x, i} U_{x+i, j} U_{x+i+j, -i} U_{x+j, -j}
 	 *
 	 *
 	 * @param coor  Lattice coordinate from where the plaquette starts
@@ -403,7 +403,7 @@ public class Grid {
 			Plaquette calculation
 		 */
 
-		return U4.mult(U3).mult(U2).mult(U1);
+		return U1.mult(U2.mult(U3.mult(U4)));
 	}
 
 	/**
