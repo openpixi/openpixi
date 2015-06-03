@@ -13,7 +13,6 @@ public class YamlPanelWriter {
 		PanelWrapper wrapper = new PanelWrapper(panels);
 		String output = yaml.dump(wrapper);
 		output = removeLines(output);
-		System.out.println(output);
 		return output;
 	}
 

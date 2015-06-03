@@ -132,7 +132,6 @@ public class FileTab extends Box {
 	class ApplyButtonListener implements ActionListener {
 		public void actionPerformed(ActionEvent event) {
 			applyTextAreaSettings();
-			applyTextAreaPanelSettings();
 		}
 	}
 

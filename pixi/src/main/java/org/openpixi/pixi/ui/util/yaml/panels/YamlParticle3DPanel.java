@@ -18,6 +18,10 @@ public class YamlParticle3DPanel {
 	// Info properties
 	public Boolean showInfo;
 
+	// Projection properties
+	public Double phi;
+	public Double theta;
+
 	/** Empty constructor called by SnakeYaml */
 	public YamlParticle3DPanel() {
 	}
@@ -30,6 +34,8 @@ public class YamlParticle3DPanel {
 			drawCurrent = panel.getFieldProperties().isDrawCurrent();
 			drawFields = panel.getFieldProperties().isDrawFields();
 			showInfo = panel.getInfoProperties().isShowInfo();
+			phi = panel.getProjection().phi;
+			theta = panel.getProjection().theta;
 		}
 	}
 
@@ -57,6 +63,13 @@ public class YamlParticle3DPanel {
 			panel.getInfoProperties().setShowInfo(showInfo);
 		}
 
+		if (phi != null) {
+			panel.getProjection().phi = phi;
+		}
+
+		if (theta != null) {
+			panel.getProjection().theta = theta;
+		}
 		return panel;
 	}
 }

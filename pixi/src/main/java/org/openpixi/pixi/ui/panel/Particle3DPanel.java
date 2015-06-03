@@ -56,6 +56,7 @@ public class Particle3DPanel extends AnimationPanel {
 	private long currentrendertime = 0;
 
 	private Projection projection = new Projection();
+
 	private LineObject cuboid = new LineObject();
 	private LineObject fields = new LineObject();
 	private SphereObject spheres = new SphereObject();
@@ -297,5 +298,9 @@ public class Particle3DPanel extends AnimationPanel {
 
 	public InfoProperties getInfoProperties() {
 		return infoProperties;
+	}
+
+	public Projection getProjection() {
+		return projection;
 	}
 }
