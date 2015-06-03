@@ -18,6 +18,7 @@ import org.openpixi.pixi.physics.Settings;
 import org.openpixi.pixi.ui.PanelManager;
 import org.openpixi.pixi.ui.SimulationAnimation;
 import org.openpixi.pixi.ui.util.FileIO;
+import org.openpixi.pixi.ui.util.yaml.YamlPanelWriter;
 import org.openpixi.pixi.ui.util.yaml.YamlPanels;
 import org.openpixi.pixi.ui.util.yaml.YamlParser;
 
@@ -161,6 +162,8 @@ public class FileTab extends Box {
 			} else {
 				// ToDo: Warning message? No panel specification provided in Yaml file.
 			}
+			YamlPanelWriter panelWriter = new YamlPanelWriter();
+			panelWriter.writeYaml(settings.getYamlPanels());
 		}
 	}
 
