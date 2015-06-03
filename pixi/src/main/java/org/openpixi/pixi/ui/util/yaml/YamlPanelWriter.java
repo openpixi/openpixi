@@ -5,7 +5,7 @@ import org.yaml.snakeyaml.Yaml;
 
 public class YamlPanelWriter {
 
-	public String writeYaml(YamlPanels panels) {
+	public String getYamlString(YamlPanels panels) {
 		DumperOptions options = new DumperOptions();
 		options.setIndent(2);
 		options.setDefaultFlowStyle(DumperOptions.FlowStyle.BLOCK);
@@ -13,7 +13,6 @@ public class YamlPanelWriter {
 		PanelWrapper wrapper = new PanelWrapper(panels);
 		String output = yaml.dump(wrapper);
 		output = removeLines(output);
-		output = "# Generated code:\r" + output;
 		System.out.println(output);
 		return output;
 	}
