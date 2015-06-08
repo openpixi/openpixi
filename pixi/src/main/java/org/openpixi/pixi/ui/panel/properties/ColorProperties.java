@@ -36,12 +36,12 @@ public class ColorProperties {
 		return directionIndex;
 	}
 
-	public void colorIndexSet(int id)
+	public void setColorIndex(int id)
 	{
 		this.colorIndex = id;
 	}
 
-	public void directionSet(int id)
+	public void setDirectionIndex(int id)
 	{
 		this.directionIndex = id;
 	}

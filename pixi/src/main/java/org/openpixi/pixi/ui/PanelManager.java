@@ -28,15 +28,12 @@ public class PanelManager {
 
 	private MainControlApplet mainControlApplet;
 
-	private Particle2DPanel particlePanel;
-	private Particle3DPanel particle3DPanel;
-	private PhaseSpacePanel phaseSpacePanel;
-	private ElectricFieldPanel electricFieldPanel;
-
 	private AnimationPanel lastFocusPanel;
 	private PropertiesTab propertiesTab;
 
-	PopupClickListener popupClickListener;
+	private Component mainComponent;
+
+	PopupClickListener popupClickListener = new PopupClickListener();
 
 	JMenuItem itemSplitHorizontally;
 	JMenuItem itemSplitVertically;
@@ -52,11 +49,13 @@ public class PanelManager {
 
 	/* Create default panel */
 	Component getDefaultPanel() {
-		particlePanel = new Particle2DPanel(mainControlApplet.simulationAnimation);
-		popupClickListener = new PopupClickListener();
-		particlePanel.addMouseListener(popupClickListener);
-		setFocus(particlePanel);
-		return particlePanel;
+		Component component = new Particle2DPanel(mainControlApplet.simulationAnimation);
+		setFocus(component);
+		return component;
+	}
+
+	public Component getMainComponent() {
+		return mainComponent;
 	}
 
 	/**
@@ -67,13 +66,71 @@ public class PanelManager {
 		this.propertiesTab = propertiesTab;
 	}
 
+	public SimulationAnimation getSimulationAnimation() {
+		return mainControlApplet.simulationAnimation;
+	}
+
+	/**
+	 * Replace the main content area by a new component.
+	 * @param component
+	 */
+	public void replaceMainPanel(Component component) {
+		if (mainComponent != null) {
+			mainControlApplet.remove(mainComponent);
+		}
+		attachMouseListener(component);
+		mainControlApplet.add(component, BorderLayout.CENTER);
+		mainControlApplet.validate();
+		mainComponent = component;
+	}
+
+	/**
+	 * Split current panel either horizontally or vertically
+	 *
+	 * @param orientation
+	 *            Either JSplitPane.HORIZONTAL_SPLIT or
+	 *            JSplitPane.VERTICAL_SPLIT.
+	 */
+	public Component getSplitPanel(Component leftPanel, Component rightPanel, Integer orientation, Integer dividerLocation) {
+		attachMouseListener(leftPanel);
+		attachMouseListener(rightPanel);
+		JSplitPane splitpane = new JSplitPane(orientation,
+				leftPanel, rightPanel);
+		splitpane.setOneTouchExpandable(true);
+		splitpane.setContinuousLayout(true);
+		splitpane.setResizeWeight(0.5);
+		if (dividerLocation != null) {
+			splitpane.setDividerLocation(dividerLocation);
+		}
+		return splitpane;
+	}
+
+	/**
+	 * Attaching the default right mouse button listener,
+	 * unless it is a split pane.
+	 * @param component
+	 */
+	private void attachMouseListener(Component component) {
+		if (!(component instanceof JSplitPane)) {
+			// Only attache mouse listener to "real" panels.
+			// Remove listener first, so that it does not get attached twice.
+			component.removeMouseListener(popupClickListener);
+			component.addMouseListener(popupClickListener);
+		}
+	}
+
 	/**
 	 * Set focus to particular panel and remove focus from
 	 * previously focused panel.
 	 * @param component
 	 */
-	private void setFocus(Component component) {
-		if (component instanceof AnimationPanel) {
+	public void setFocus(Component component) {
+		if (component instanceof JSplitPane) {
+			// Set focus on left descendant:
+			JSplitPane splitpanel = (JSplitPane) component;
+			Component leftComponent = splitpanel.getLeftComponent();
+			setFocus(leftComponent);
+		} else if (component instanceof AnimationPanel) {
 			AnimationPanel panel = (AnimationPanel) component;
 			if (!panel.isFocused()) {
 				if (lastFocusPanel != null) {
@@ -166,17 +223,13 @@ public class PanelManager {
 			} else if (event.getSource() == itemClosePanel) {
 				closePanel();
 			} else if (event.getSource() == itemParticle2DPanel) {
-				particlePanel = new Particle2DPanel(mainControlApplet.simulationAnimation);
-				component = particlePanel;
+				component = new Particle2DPanel(mainControlApplet.simulationAnimation);
 			} else if (event.getSource() == itemParticle3DPanel) {
-				particle3DPanel = new Particle3DPanel(mainControlApplet.simulationAnimation);
-				component = particle3DPanel;
+				component = new Particle3DPanel(mainControlApplet.simulationAnimation);
 			} else if (event.getSource() == itemPhaseSpacePanel) {
-				phaseSpacePanel = new PhaseSpacePanel(mainControlApplet.simulationAnimation);
-				component = phaseSpacePanel;
+				component = new PhaseSpacePanel(mainControlApplet.simulationAnimation);
 			} else if (event.getSource() == itemElectricFieldPanel) {
-				electricFieldPanel = new ElectricFieldPanel(mainControlApplet.simulationAnimation);
-				component = electricFieldPanel;
+				component = new ElectricFieldPanel(mainControlApplet.simulationAnimation);
 			}
 			if (component != null) {
 				replacePanel(component);
@@ -184,7 +237,7 @@ public class PanelManager {
 		}
 
 		private void replacePanel(Component component) {
-			component.addMouseListener(popupClickListener);
+			attachMouseListener(component);
 			Component parent = clickComponent.getParent();
 			if (parent != null) {
 				if (parent instanceof JSplitPane) {
@@ -200,9 +253,7 @@ public class PanelManager {
 					parentsplitpane.setDividerLocation(dividerLocation);
 				} else if (parent instanceof JPanel) {
 					// top level
-					mainControlApplet.remove(clickComponent);
-					mainControlApplet.add(component, BorderLayout.CENTER);
-					mainControlApplet.validate();
+					replaceMainPanel(component);
 				}
 			}
 			setFocus(component);
@@ -219,6 +270,7 @@ public class PanelManager {
 			Component parent = clickComponent.getParent();
 
 			Component newcomponent = getDefaultPanel();
+			attachMouseListener(newcomponent);
 
 			if (parent != null) {
 				if (parent instanceof JSplitPane) {
@@ -227,29 +279,19 @@ public class PanelManager {
 
 					int dividerLocation = parentsplitpane.getDividerLocation();
 
-					JSplitPane s = new JSplitPane(orientation,
-								clickComponent, newcomponent);
-					s.setOneTouchExpandable(true);
-					s.setContinuousLayout(true);
-					s.setResizeWeight(0.5);
+					Component splitpane = getSplitPanel(clickComponent, newcomponent, orientation, null);
 
 					if (parentleft == clickComponent) {
-						parentsplitpane.setLeftComponent(s);
+						parentsplitpane.setLeftComponent(splitpane);
 					} else {
-						parentsplitpane.setRightComponent(s);
+						parentsplitpane.setRightComponent(splitpane);
 					}
 					parentsplitpane.setDividerLocation(dividerLocation);
 				} else if (parent instanceof JPanel) {
 					// top level
-					JSplitPane s = new JSplitPane(orientation,
-							clickComponent, newcomponent);
-					s.setOneTouchExpandable(true);
-					s.setContinuousLayout(true);
-					s.setResizeWeight(0.5);
+					Component splitpane = getSplitPanel(clickComponent, newcomponent, orientation, null);
 
-					mainControlApplet.remove(clickComponent);
-					mainControlApplet.add(s, BorderLayout.CENTER);
-					mainControlApplet.validate();
+					replaceMainPanel(splitpane);
 				}
 			}
 		}
@@ -279,9 +321,7 @@ public class PanelManager {
 							}
 						} else if (grandparent instanceof JPanel) {
 							parentsplitpane.removeAll();
-							mainControlApplet.remove(parentsplitpane);
-							mainControlApplet.add(othercomponent, BorderLayout.CENTER);
-							mainControlApplet.validate();
+							replaceMainPanel(othercomponent);
 						}
 						setFocus(othercomponent);
 						clickComponent.removeMouseListener(popupClickListener);

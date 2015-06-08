@@ -23,3 +23,16 @@ fields:
       aColor: [0.0, 1.0, 0.0]
       a: 1
       sigma: 8
+
+panels:
+  orientation: 0
+  leftPanel:
+    electricFieldPanel:
+      colorIndex: 0
+      directionIndex: 1
+      scaleFactor: 0.5
+  rightPanel:
+    electricFieldPanel:
+      colorIndex: 1
+      directionIndex: 1
+      scaleFactor: 0.5

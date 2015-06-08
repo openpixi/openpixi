@@ -51,16 +51,12 @@ public class Particle3DPanel extends AnimationPanel {
 	 * or whether to keep them separate. */
 	private boolean combinefields = true;
 
-	/** A state for the trace */
-	public boolean paint_trace = false;
-
-	private boolean reset_trace;
-
 	private int gridstep = 1;
 	private int gridstepadjusted = 0;
 	private long currentrendertime = 0;
 
 	private Projection projection = new Projection();
+
 	private LineObject cuboid = new LineObject();
 	private LineObject fields = new LineObject();
 	private SphereObject spheres = new SphereObject();
@@ -70,7 +66,6 @@ public class Particle3DPanel extends AnimationPanel {
 	public Particle3DPanel(SimulationAnimation simulationAnimation) {
 		super(simulationAnimation);
 
-		Simulation s = simulationAnimation.getSimulation();
 		projection.phi = 0;
 		projection.theta = 0;
 
@@ -83,15 +78,6 @@ public class Particle3DPanel extends AnimationPanel {
 		addMouseMotionListener(l);
 	}
 
-	public void clear() {
-		reset_trace = true;
-	}
-
-	public void checkTrace() {
-		paint_trace =! paint_trace;
-		//startAnimation();
-	}
-
 	/** Display the particles */
 	public void paintComponent(Graphics graph1) {
 		Graphics2D graph = (Graphics2D) graph1;
@@ -100,15 +86,7 @@ public class Particle3DPanel extends AnimationPanel {
 		graph.scale(1, -1);
 		double scale = 10;
 
-		if(!paint_trace)
-		{
-			super.paintComponent(graph1);
-		}
-		if(reset_trace)
-		{
-			super.paintComponent(graph1);
-			reset_trace = false;
-		}
+		super.paintComponent(graph1);
 
 		Simulation s = getSimulationAnimation().getSimulation();
 
@@ -183,7 +161,7 @@ public class Particle3DPanel extends AnimationPanel {
 		int colorIndex = colorProperties.getColorIndex();
 		int directionIndex = colorProperties.getDirectionIndex();
 		
-		if(fieldProperties.getDrawCurrentGrid()) {
+		if(fieldProperties.isDrawCurrent()) {
 			for(int i = 0; i < s.grid.getNumCells(0); i += gridstep) {
 				for(int j = 0; j < s.grid.getNumCells(1); j += gridstep) {
 					for(int k = 0; k < s.grid.getNumCells(2); k += gridstep) {
@@ -224,7 +202,7 @@ public class Particle3DPanel extends AnimationPanel {
 			}
 		}
 
-		if(fieldProperties.getDrawFields())
+		if(fieldProperties.isDrawFields())
 		{
 			graph.setColor(Color.black);
 			for(int i = 0; i < s.grid.getNumCells(0); i += gridstep) {
@@ -310,4 +288,19 @@ public class Particle3DPanel extends AnimationPanel {
 		infoProperties.addComponents(box);
 	}
 
+	public ColorProperties getColorProperties() {
+		return colorProperties;
+	}
+
+	public FieldProperties getFieldProperties() {
+		return fieldProperties;
+	}
+
+	public InfoProperties getInfoProperties() {
+		return infoProperties;
+	}
+
+	public Projection getProjection() {
+		return projection;
+	}
 }

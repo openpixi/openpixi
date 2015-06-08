@@ -10,6 +10,7 @@ import org.openpixi.pixi.physics.grid.*;
 import org.openpixi.pixi.physics.particles.*;
 import org.openpixi.pixi.physics.solver.*;
 import org.openpixi.pixi.physics.solver.relativistic.LeapFrogRelativistic;
+import org.openpixi.pixi.ui.util.yaml.YamlPanels;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -82,6 +83,9 @@ public class Settings {
 	 * simulation we use ExecutorService which is maintaining a fixed number of threads running
 	 * all the time and assigns work to the threads on the fly according to demand. */
 	private ExecutorService threadsExecutor;
+
+	// Panel management
+	private YamlPanels yamlPanels;
 
 	//----------------------------------------------------------------------------------------------
 	// SIMPLE GETTERS
@@ -193,6 +197,10 @@ public class Settings {
     {
         return this.fieldGenerators;
     }
+
+	public YamlPanels getYamlPanels() {
+		return yamlPanels;
+	}
 
 	//----------------------------------------------------------------------------------------------
 	// MORE COMPLEX GETTERS / BUILDERS
@@ -394,6 +402,10 @@ public class Settings {
     {
         this.fieldGenerators.add(generator);
     }
+
+	public void setYamlPanels(YamlPanels yamlPanels) {
+		this.yamlPanels = yamlPanels;
+	}
 
 	//----------------------------------------------------------------------------------------------
 	// VARIOUS

@@ -8,25 +8,31 @@ import javax.swing.JCheckBox;
 
 public class FieldProperties {
 
-	private boolean drawCurrentGrid = false;
-
+	private boolean drawCurrent = false;
 	private boolean drawFields = false;
 
-	public boolean getDrawCurrentGrid() {
-		return drawCurrentGrid;
+	public boolean isDrawCurrent() {
+		return drawCurrent;
 	}
 
-	public boolean getDrawFields() {
+	public boolean isDrawFields() {
 		return drawFields;
 	}
 
+	public void setDrawCurrent(boolean drawCurrent) {
+		this.drawCurrent = drawCurrent;
+	}
+
+	public void setDrawFields(boolean drawFields) {
+		this.drawFields = drawFields;
+	}
 
 	public void addComponents(Box box) {
 
 		JCheckBox currentgridCheck;
 		currentgridCheck = new JCheckBox("Current");
-		currentgridCheck.addItemListener(new DrawCurrentGridListener());
-		currentgridCheck.setSelected(drawCurrentGrid);
+		currentgridCheck.addItemListener(new DrawCurrentListener());
+		currentgridCheck.setSelected(drawCurrent);
 
 		JCheckBox drawFieldsCheck;
 		drawFieldsCheck = new JCheckBox("Draw fields");
@@ -42,9 +48,9 @@ public class FieldProperties {
 		box.add(cellSettings);
 	}
 
-	class DrawCurrentGridListener implements ItemListener {
+	class DrawCurrentListener implements ItemListener {
 		public void itemStateChanged(ItemEvent event){
-			FieldProperties.this.drawCurrentGrid = 
+			FieldProperties.this.drawCurrent = 
 					(event.getStateChange() == ItemEvent.SELECTED);
 		}
 	}

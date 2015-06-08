@@ -22,6 +22,22 @@ public class ScaleProperties {
 	private JLabel label;
 	private JTextField textField;
 
+	public double getScaleFactor() {
+		return scaleFactor;
+	}
+
+	public boolean getAutomaticScaling() {
+		return automaticScaling;
+	}
+
+	public void setScaleFactor(double scaleFactor) {
+		this.scaleFactor = scaleFactor;
+	}
+
+	public void setAutomaticScaling(boolean automaticScaling) {
+		this.automaticScaling = automaticScaling;
+	}
+
 	public double getScale() {
 		if (automaticScaling) {
 			return automaticScaleFactor;
@@ -46,7 +62,9 @@ public class ScaleProperties {
 	public void calculateAutomaticScale(double maxsize) {
 		if (automaticScaling && currentMaxValue > 0) {
 			automaticScaleFactor = maxsize / currentMaxValue;
-			textField.setText(Double.toString(automaticScaleFactor));
+			if (textField != null) {
+				textField.setText(Double.toString(automaticScaleFactor));
+			}
 		}
 	}
 
@@ -79,12 +97,14 @@ public class ScaleProperties {
 	}
 
 	void updateTextFieldStatus() {
-		textField.setEnabled(!automaticScaling);
-		label.setEnabled(!automaticScaling);
-		if (automaticScaling) {
-			textField.setText(Double.toString(automaticScaleFactor));
-		} else {
-			textField.setText(Double.toString(scaleFactor));
+		if (textField != null) {
+			textField.setEnabled(!automaticScaling);
+			label.setEnabled(!automaticScaling);
+			if (automaticScaling) {
+				textField.setText(Double.toString(automaticScaleFactor));
+			} else {
+				textField.setText(Double.toString(scaleFactor));
+			}
 		}
 	}
 

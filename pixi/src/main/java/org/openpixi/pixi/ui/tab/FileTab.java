@@ -10,29 +10,39 @@ import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
+import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
+import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 
 import org.openpixi.pixi.physics.Settings;
+import org.openpixi.pixi.ui.PanelManager;
 import org.openpixi.pixi.ui.SimulationAnimation;
 import org.openpixi.pixi.ui.util.FileIO;
+import org.openpixi.pixi.ui.util.yaml.YamlPanelWriter;
+import org.openpixi.pixi.ui.util.yaml.YamlPanels;
 import org.openpixi.pixi.ui.util.yaml.YamlParser;
 
 public class FileTab extends Box {
 
 	private Component parent;
 	private SimulationAnimation simulationAnimation;
+	private PanelManager panelManager;
 	private JFileChooser fc;
 	private JButton openButton;
 	private JButton saveButton;
 	private JButton applyButton;
+	private JButton moreButton;
 	private JTextArea fileTextArea;
+	JMenuItem itemApplyPanelSettings;
+	JMenuItem itemWritePanelSettings;
 
-	public FileTab(Component parent, SimulationAnimation simulationAnimation) {
+	public FileTab(Component parent, SimulationAnimation simulationAnimation, PanelManager panelManager) {
 		super(BoxLayout.PAGE_AXIS);
 		this.parent = parent;
 		this.simulationAnimation = simulationAnimation;
+		this.panelManager = panelManager;
 
 		fc = new JFileChooser();
 		File workingDirectory = new File(System.getProperty("user.dir"));
@@ -49,6 +59,8 @@ public class FileTab extends Box {
 		saveButton.addActionListener(new SaveButtonListener());
 		applyButton = new JButton("Apply");
 		applyButton.addActionListener(new ApplyButtonListener());
+		moreButton = new JButton("More...");
+		moreButton.addActionListener(new MoreButtonListener());
 		fileTextArea = new JTextArea();
 		JScrollPane scrollpane = new JScrollPane(fileTextArea);
 
@@ -56,6 +68,7 @@ public class FileTab extends Box {
 		buttonBox.add(openButton);
 		buttonBox.add(saveButton);
 		buttonBox.add(applyButton);
+		buttonBox.add(moreButton);
 
 		this.add(buttonBox);
 		this.add(scrollpane);
@@ -72,6 +85,7 @@ public class FileTab extends Box {
 					String content = FileIO.readFile(file);
 					fileTextArea.setText(content);
 					applyTextAreaSettings();
+					applyTextAreaPanelSettings();
 				} catch (IOException e) {
 					// TODO Error message
 				}
@@ -121,6 +135,39 @@ public class FileTab extends Box {
 		}
 	}
 
+	class MoreButtonListener implements ActionListener {
+		public void actionPerformed(ActionEvent event) {
+			PopupMenu menu = new PopupMenu();
+			menu.show(moreButton, 0, moreButton.getHeight());
+		}
+	}
+
+	class PopupMenu extends JPopupMenu {
+
+		public PopupMenu() {
+			itemApplyPanelSettings = new JMenuItem("Apply panel settings");
+			itemApplyPanelSettings.addActionListener(new MenuSelected());
+			add(itemApplyPanelSettings);
+
+			itemWritePanelSettings = new JMenuItem("Write panel settings");
+			itemWritePanelSettings.addActionListener(new MenuSelected());
+			add(itemWritePanelSettings);
+		}
+	}
+
+	class MenuSelected implements ActionListener {
+
+		@Override
+		public void actionPerformed(ActionEvent event) {
+
+			if (event.getSource() == itemApplyPanelSettings) {
+				applyTextAreaPanelSettings();
+			} else if (event.getSource() == itemWritePanelSettings) {
+				writeTextAreaPanelSettings();
+			}
+		}
+	}
+
 	/**
 	 * Apply the settings from the text area and restart the simulation.
 	 */
@@ -135,4 +182,38 @@ public class FileTab extends Box {
 		}
 	}
 
+	/**
+	 * Apply the panel settings from the text area and restart the simulation.
+	 */
+	public void applyTextAreaPanelSettings() {
+		String string = fileTextArea.getText();
+		if(string.length() > 0)
+		{
+			Settings settings = new Settings();
+			YamlParser parser = new YamlParser(settings);
+			parser.parseString(string);
+			YamlPanels panels = settings.getYamlPanels();
+			if (panels != null) {
+				Component component = panels.inflate(panelManager);
+				if (component != null) {
+					panelManager.replaceMainPanel(component);
+					panelManager.setFocus(component);
+				}
+			} else {
+				// ToDo: Warning message? No panel specification provided in Yaml file.
+			}
+		}
+	}
+
+	/**
+	 * Append the current panel settings to the text area.
+	 */
+	public void writeTextAreaPanelSettings() {
+		Component component = panelManager.getMainComponent();
+		YamlPanels yamlPanels = new YamlPanels(component);
+		YamlPanelWriter panelWriter = new YamlPanelWriter();
+		String yamlString = panelWriter.getYamlString(yamlPanels);
+		yamlString = "\n\n# Generated panel code:\n" + yamlString;
+		fileTextArea.append(yamlString);
+	}
 }

@@ -32,6 +32,7 @@ public class YamlSettings {
 	public List<YamlParticleStream> streams;
     public YamlFields fields;
 	public YamlOutput output;
+	public YamlPanels panels;
 
 	public void applyTo(Settings settings) {
 
@@ -117,6 +118,10 @@ public class YamlSettings {
 
 		if (output != null) {
 			output.applyTo(settings);
+		}
+
+		if (panels != null) {
+			settings.setYamlPanels(panels);
 		}
 	}
 }

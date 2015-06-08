@@ -1,6 +1,5 @@
 package org.openpixi.pixi.ui.panel.properties;
 
-import java.awt.Graphics;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 
@@ -10,16 +9,20 @@ import javax.swing.JCheckBox;
 public class TraceProperties {
 
 	/** A state for the trace */
-	public boolean paint_trace = false;
+	public boolean showTrace = false;
 
-	private boolean reset_trace;
+	private boolean resetTrace;
 
 	public void clear() {
-		reset_trace = true;
+		resetTrace = true;
 	}
 
-	public boolean getPaintTrace() {
-		return paint_trace;
+	public boolean isShowTrace() {
+		return showTrace;
+	}
+
+	public void setShowTrace(boolean showTrace) {
+		this.showTrace = showTrace;
 	}
 
 	public void addComponents(Box box) {
@@ -28,7 +31,7 @@ public class TraceProperties {
 		JCheckBox traceCheck;
 		traceCheck = new JCheckBox("Trace");
 		traceCheck.addItemListener(new CheckListener());
-		traceCheck.setSelected(paint_trace);
+		traceCheck.setSelected(showTrace);
 
 		settingControls.add(traceCheck);
 		settingControls.add(Box.createVerticalGlue());
@@ -36,23 +39,23 @@ public class TraceProperties {
 		box.add(settingControls);
 	}
 
-	public boolean getCallSuper() {
+	public boolean isCallSuper() {
 		boolean callsuper = false;
-		if(!paint_trace)
+		if(!showTrace)
 		{
 			callsuper = true;
 		}
-		if(reset_trace)
+		if(resetTrace)
 		{
 			callsuper = true;
-			reset_trace = false;
+			resetTrace = false;
 		}
 		return callsuper;
 	}
 
 	class CheckListener implements ItemListener {
 		public void itemStateChanged(ItemEvent event){
-			TraceProperties.this.paint_trace = 
+			TraceProperties.this.showTrace = 
 					(event.getStateChange() == ItemEvent.SELECTED);
 		}
 	}

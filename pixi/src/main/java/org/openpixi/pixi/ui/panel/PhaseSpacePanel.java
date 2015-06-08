@@ -9,11 +9,14 @@ import javax.swing.Box;
 import org.openpixi.pixi.physics.Simulation;
 import org.openpixi.pixi.physics.particles.IParticle;
 import org.openpixi.pixi.ui.SimulationAnimation;
+import org.openpixi.pixi.ui.panel.properties.ScaleProperties;
 
 /**
  * This panel shows the one-dimensional phase space (x vs. vx).
  */
 public class PhaseSpacePanel extends AnimationPanel {
+
+	ScaleProperties scaleProperties = new ScaleProperties();
 
 	/** Constructor */
 	public PhaseSpacePanel(SimulationAnimation simulationAnimation) {
@@ -30,7 +33,7 @@ public class PhaseSpacePanel extends AnimationPanel {
 		super.paintComponent(graph1);
 
 		// scale factor for velocity
-		double scaleV = .5;
+		double scaleV = scaleProperties.getScale();
 
 		Simulation s = getSimulationAnimation().getSimulation();
 		/** Scaling factor for the displayed panel in x-direction*/
@@ -40,13 +43,17 @@ public class PhaseSpacePanel extends AnimationPanel {
 
 		double panelHeight = getHeight();
 
+		scaleProperties.resetAutomaticScale();
+
 		for (int i = 0; i < s.particles.size(); i++) {
 			IParticle par = (IParticle) s.particles.get(i);
 			graph.setColor(par.getColor());
 			double radius = par.getRadius();
 			int width = (int) (2*sx*radius);
 			int height = (int) (2*sx*radius);
-			double position = (0.5 + scaleV * par.getVelocity(0) ) * panelHeight;
+			double velocity = par.getVelocity(0);
+			scaleProperties.putValue(velocity);
+			double position = (0.5 + scaleV * velocity) * panelHeight;
 			if(width > 2 && height > 2) {
 				graph.fillOval((int) (par.getPosition(0)*sx) - width/2, (int) position - height/2,  width,  height);
 			}
@@ -54,11 +61,16 @@ public class PhaseSpacePanel extends AnimationPanel {
 				graph.drawRect((int) (par.getPosition(0)*sx), (int) position, 0, 0);
 			}
 		}
+		scaleProperties.calculateAutomaticScale(0.5);
 
 	}
 
 	public void addComponents(Box box) {
 		addLabel(box, "Phase space panel");
+		scaleProperties.addComponents(box);
 	}
 
+	public ScaleProperties getScaleProperties() {
+		return scaleProperties;
+	}
 }
