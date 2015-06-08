@@ -17,6 +17,9 @@ particles:
     color: blue
 
 output:
-  path: oneparticletest
-  daniil: 1
-  daniilspectrum: 300
+  particlesInTime:
+      # File path
+    - path: "particles.txt"
+
+      # Measurement interval
+      interval: 1.0

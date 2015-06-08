@@ -370,7 +370,7 @@ public class Grid {
 	/**
 	 * Calculates the plaquette starting at lattice coordinate coor in the plane of d1 and d2 with orientations o1, o2.
 	 * This method implements the following definition of the plaquette:
-	 *      U_{x, ij} = U_{x+j, -j} U_{x+i+j, -i} U_{x+i, j} U_{x, i}
+	 *      U_{x, ij} = U_{x, i} U_{x+i, j} U_{x+i+j, -i} U_{x+j, -j}
 	 *
 	 *
 	 * @param coor  Lattice coordinate from where the plaquette starts
@@ -403,7 +403,7 @@ public class Grid {
 			Plaquette calculation
 		 */
 
-		return U4.mult(U3).mult(U2).mult(U1);
+		return U1.mult(U2.mult(U3.mult(U4)));
 	}
 
 	/**
@@ -478,7 +478,7 @@ public class Grid {
 	 * @param coor  lattice coordinate vector
 	 * @return      cell id
 	 */
-	private int index(int[] coor) {
+	public int index(int[] coor) {
 		
 		int[] modCoor = periodic(coor);
 		int res = modCoor[0];
@@ -498,7 +498,7 @@ public class Grid {
 	 * @param coor  lattice coordinate vector
 	 * @return      shifted lattice coordinate vector
 	 */
-	private int[] periodic(int[] coor) {
+	public int[] periodic(int[] coor) {
 		
 		int[] res = new int[numDim];
 		for (int i = 0; i < numDim; ++i) {
@@ -522,7 +522,7 @@ public class Grid {
 	 * @param orientation   Orientation of the direction (1 or -1)
 	 * @return              Shifted coordinate with respect to periodic boundary conditions.
 	 */
-	private int[] shift(int[] coor, int dir, int orientation)
+	public int[] shift(int[] coor, int dir, int orientation)
 	{
 		int[] shiftedCoordinate = coor.clone();
 

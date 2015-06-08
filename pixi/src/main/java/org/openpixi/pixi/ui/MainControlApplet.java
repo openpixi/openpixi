@@ -20,20 +20,15 @@ package org.openpixi.pixi.ui;
 
 import java.awt.*;
 import javax.swing.*;
+
 import java.awt.event.*;
 
 import javax.swing.event.*;
 
 import org.openpixi.pixi.physics.Debug;
 import org.openpixi.pixi.physics.Simulation;
-import org.openpixi.pixi.physics.solver.*;
-import org.openpixi.pixi.physics.solver.relativistic.*;
-import org.openpixi.pixi.ui.panel.AnimationPanel;
-import org.openpixi.pixi.ui.panel.Particle2DPanel;
-import org.openpixi.pixi.ui.panel.Particle3DPanel;
-import org.openpixi.pixi.ui.panel.PhaseSpacePanel;
-import org.openpixi.pixi.ui.panel.ElectricFieldPanel;
 import org.openpixi.pixi.ui.tab.FileTab;
+import org.openpixi.pixi.ui.tab.PropertiesTab;
 
 /**
  * Displays the animation of particles.
@@ -47,29 +42,18 @@ public class MainControlApplet extends JApplet
 	private JButton resetButton;
 
 	private JSlider speedSlider;
-	private JSlider stepSlider;
+//	private JSlider stepSlider;
 
-	private JCheckBox framerateCheck;
-	private JCheckBox currentgridCheck;
-	private JCheckBox drawFieldsCheck;
-	private JCheckBox calculateFieldsCheck;
-	private JCheckBox relativisticCheck;
+//	private JCheckBox relativisticCheck;
 
-	private JComboBox algorithmComboBox;
-	private JCheckBox traceCheck;
-	
-	private JComboBox colorIndexComboBox;
-	private JComboBox directionIndexComboBox;
+//	private JComboBox algorithmComboBox;
 
 	private JTabbedPane tabs;
 
-	private SimulationAnimation simulationAnimation;
+	protected SimulationAnimation simulationAnimation;
+	private PanelManager panelManager;
 
-	private Particle2DPanel particlePanel;
-	private Particle3DPanel particle3DPanel;
-	private PhaseSpacePanel phaseSpacePanel;
-	private ElectricFieldPanel electricFieldPanel;
-
+	protected PropertiesTab propertiesTab;
 	private FileTab fileTab;
 
 	private static final double speedSliderScaling = 0.07;
@@ -77,17 +61,6 @@ public class MainControlApplet extends JApplet
 
 	String[] solverString = {
 			"LeapFrog"};
-	
-	String[] colorString = {
-			"1",
-			"2",
-			"3"};
-	
-	String[] directionString = {
-			"x",
-			"y",
-			"z"};
-
 	/**
 	 * Listener for slider.
 	 */
@@ -103,35 +76,19 @@ public class MainControlApplet extends JApplet
 		}
 	}
 
-	class AlgorithmListener implements ActionListener {
-		public void actionPerformed(ActionEvent eve) {
-			JComboBox cbox = (JComboBox) eve.getSource();
-			int id = cbox.getSelectedIndex();
-			simulationAnimation.algorithmChange(id);
-			if (id == 0) {
-				relativisticCheck.setEnabled(true);
-			}
-			else {
-				relativisticCheck.setEnabled(false);
-			}
-		}
-	}
-	
-	class ColorListener implements ActionListener {
-		public void actionPerformed(ActionEvent eve) {
-			JComboBox cbox = (JComboBox) eve.getSource();
-			int id = cbox.getSelectedIndex();
-			simulationAnimation.colorIndexSet(id);
-		}
-	}
-	
-	class DirectionListener implements ActionListener {
-		public void actionPerformed(ActionEvent eve) {
-			JComboBox cbox = (JComboBox) eve.getSource();
-			int id = cbox.getSelectedIndex();
-			simulationAnimation.directionSet(id);
-		}
-	}
+//	class AlgorithmListener implements ActionListener {
+//		public void actionPerformed(ActionEvent eve) {
+//			JComboBox cbox = (JComboBox) eve.getSource();
+//			int id = cbox.getSelectedIndex();
+//			simulationAnimation.algorithmChange(id);
+//			if (id == 0) {
+//				relativisticCheck.setEnabled(true);
+//			}
+//			else {
+//				relativisticCheck.setEnabled(false);
+//			}
+//		}
+//	}
 
 	/**
 	 * Listener for start button.
@@ -163,64 +120,12 @@ public class MainControlApplet extends JApplet
 		}
 	}
 
-	class CheckListener implements ItemListener {
-		public void itemStateChanged(ItemEvent eve){
-				particlePanel.checkTrace();
-		}
-	}
-
-	class RelativisticEffects implements ItemListener {
-		public void itemStateChanged(ItemEvent eve){
-			int i = algorithmComboBox.getSelectedIndex();
-			simulationAnimation.relativisticEffects(i);
-		}
-	}
-
-	class DrawCurrentGridListener implements ItemListener {
-		public void itemStateChanged(ItemEvent eve){
-			if (particlePanel != null) {
-				particlePanel.drawCurrentGrid();
-			}
-			if (particle3DPanel != null) {
-				particle3DPanel.drawCurrentGrid();
-			}
-		}
-	}
-
-	class DrawFieldsListener implements ItemListener {
-		public void itemStateChanged(ItemEvent eve){
-			if (particlePanel != null) {
-				particlePanel.drawFields();
-			}
-			if (particle3DPanel != null) {
-				particle3DPanel.drawFields();
-			}
-		}
-	}
-
-	class CalculateFieldsListener implements ItemListener {
-		public void itemStateChanged(ItemEvent eve){
-				simulationAnimation.calculateFields();
-				if(eve.getStateChange() == ItemEvent.SELECTED) {
-					currentgridCheck.setEnabled(true);
-					drawFieldsCheck.setEnabled(true);
-				}
-				if(eve.getStateChange() == ItemEvent.DESELECTED) {
-					currentgridCheck.setEnabled(false);
-					drawFieldsCheck.setEnabled(false);
-				}
-		}
-	}
-
-	class FrameListener implements ItemListener {
-		public void itemStateChanged(ItemEvent eve) {
-			if(eve.getStateChange() == ItemEvent.SELECTED) {
-				particlePanel.showinfo = true;
-			} else if(eve.getStateChange() == ItemEvent.DESELECTED) {
-				particlePanel.showinfo = false;
-			}
-		}
-	}
+//	class RelativisticEffects implements ItemListener {
+//		public void itemStateChanged(ItemEvent eve){
+//			int i = algorithmComboBox.getSelectedIndex();
+//			simulationAnimation.relativisticEffects(i);
+//		}
+//	}
 
 	class StepListener implements ChangeListener{
 		public void stateChanged(ChangeEvent eve) {
@@ -241,7 +146,7 @@ public class MainControlApplet extends JApplet
 		Debug.checkAssertsEnabled();
 
 		simulationAnimation = new SimulationAnimation();
-		particlePanel = new Particle2DPanel(simulationAnimation);
+		panelManager = new PanelManager(this);
 		Simulation s = simulationAnimation.getSimulation();
 
 		startButton = new JButton("start");
@@ -270,344 +175,79 @@ public class MainControlApplet extends JApplet
 		speed.add(speedLabel);
 		speed.add(speedSlider);
 
-		stepSlider = new JSlider();
-		stepSlider.addChangeListener(new StepListener());
-		stepSlider.setMinimum(1);
-		stepSlider.setMaximum(100);
-		stepSlider.setValue((int)(s.tstep / stepSliderScaling));
-		stepSlider.setMajorTickSpacing(10);
-		stepSlider.setMinorTickSpacing(2);
-		stepSlider.setPaintTicks(true);
-		JLabel stepLabel = new JLabel("Size of time step");
-		Box step = Box.createVerticalBox();
-		step.add(stepLabel);
-		step.add(stepSlider);
+//		stepSlider = new JSlider();
+//		stepSlider.addChangeListener(new StepListener());
+//		stepSlider.setMinimum(1);
+//		stepSlider.setMaximum(100);
+//		stepSlider.setValue((int)(s.tstep / stepSliderScaling));
+//		stepSlider.setMajorTickSpacing(10);
+//		stepSlider.setMinorTickSpacing(2);
+//		stepSlider.setPaintTicks(true);
+//		JLabel stepLabel = new JLabel("Size of time step");
+//		Box step = Box.createVerticalBox();
+//		step.add(stepLabel);
+//		step.add(stepSlider);
 
-		algorithmComboBox = new JComboBox(solverString);
-		algorithmComboBox.setSelectedIndex(0);
-		algorithmComboBox.addActionListener(new AlgorithmListener());
-		algorithmComboBox.setPreferredSize(new Dimension(algorithmComboBox.getPreferredSize().width, 5));
-		JLabel algorithmLabel = new JLabel("Algorithm");
-		Box algorithmBox = Box.createVerticalBox();
-		algorithmBox.add(algorithmLabel);
-		algorithmBox.add(algorithmComboBox);
-		
-		colorIndexComboBox = new JComboBox(colorString);
-		colorIndexComboBox.setSelectedIndex(0);
-		colorIndexComboBox.addActionListener(new ColorListener());
-		colorIndexComboBox.setPreferredSize(new Dimension(colorIndexComboBox.getPreferredSize().width, 5));
-		JLabel colorLabel = new JLabel("Color index");
-		Box colorBox = Box.createVerticalBox();
-		colorBox.add(colorLabel);
-		colorBox.add(colorIndexComboBox);
-		
-		directionIndexComboBox = new JComboBox(directionString);
-		directionIndexComboBox.setSelectedIndex(1);
-		directionIndexComboBox.addActionListener(new DirectionListener());
-		directionIndexComboBox.setPreferredSize(new Dimension(directionIndexComboBox.getPreferredSize().width, 5));
-		JLabel directionLabel = new JLabel("Field direction");
-		Box directionBox = Box.createVerticalBox();
-		directionBox.add(directionLabel);
-		directionBox.add(directionIndexComboBox);
+//		algorithmComboBox = new JComboBox(solverString);
+//		algorithmComboBox.setSelectedIndex(0);
+//		algorithmComboBox.addActionListener(new AlgorithmListener());
+//		algorithmComboBox.setPreferredSize(new Dimension(algorithmComboBox.getPreferredSize().width, 5));
+//		JLabel algorithmLabel = new JLabel("Algorithm");
+//		Box algorithmBox = Box.createVerticalBox();
+//		algorithmBox.add(algorithmLabel);
+//		algorithmBox.add(algorithmComboBox);
 
 		startButton.addActionListener(new StartListener());
 		stopButton.addActionListener(new StopListener());
 		resetButton.addActionListener(new ResetListener());
 
-		relativisticCheck = new JCheckBox("Relativistic Version");
-		relativisticCheck.addItemListener(new RelativisticEffects());
-		relativisticCheck.setEnabled(false);
+//		relativisticCheck = new JCheckBox("Relativistic Version");
+//		relativisticCheck.addItemListener(new RelativisticEffects());
+//		relativisticCheck.setEnabled(false);
 
-		traceCheck = new JCheckBox("Trace");
-		traceCheck.addItemListener(new CheckListener());
+		JPanel controlPanel = new JPanel();
+		controlPanel.setLayout(new FlowLayout());
+		controlPanel.add(startButton);
+		controlPanel.add(stopButton);
+		controlPanel.add(resetButton);
+		controlPanel.add(Box.createHorizontalStrut(50));
 
-		currentgridCheck = new JCheckBox("Current");
-		currentgridCheck.addItemListener(new DrawCurrentGridListener());
-		currentgridCheck.setEnabled(false);
-
-		drawFieldsCheck = new JCheckBox("Draw fields");
-		drawFieldsCheck.addItemListener(new DrawFieldsListener());
-		drawFieldsCheck.setEnabled(false);
-
-		calculateFieldsCheck = new JCheckBox("Calculate Fields");
-		calculateFieldsCheck.addItemListener(new CalculateFieldsListener());
-		calculateFieldsCheck.setEnabled(true);
-
-		framerateCheck = new JCheckBox("Info");
-		framerateCheck.addItemListener(new FrameListener());
-
-		JPanel controlPanelUp = new JPanel();
-		controlPanelUp.setLayout(new FlowLayout());
-		controlPanelUp.add(startButton);
-		controlPanelUp.add(stopButton);
-		controlPanelUp.add(resetButton);
-		controlPanelUp.add(Box.createHorizontalStrut(25));
-		controlPanelUp.add(Box.createHorizontalStrut(25));
 		Box settingControls = Box.createVerticalBox();
-		JPanel controlPanelDown = new JPanel();
-		controlPanelDown.setLayout(new FlowLayout());
-		settingControls.add(algorithmBox);
-		settingControls.add(Box.createVerticalGlue());
-		settingControls.add(colorBox);
-		settingControls.add(Box.createVerticalGlue());
-		settingControls.add(directionBox);
-		settingControls.add(Box.createVerticalGlue());
-		settingControls.add(relativisticCheck);
+		JLabel controlLabel = new JLabel("Global settings", SwingConstants.CENTER);
+		settingControls.add(Box.createVerticalStrut(20));
+		settingControls.add(controlLabel);
+//		settingControls.add(algorithmBox);
+//		settingControls.add(Box.createVerticalGlue());
+//		settingControls.add(relativisticCheck);
 		settingControls.add(Box.createVerticalGlue());
 		settingControls.add(speed);
 		settingControls.add(Box.createVerticalGlue());
-		settingControls.add(step);
-		settingControls.add(Box.createVerticalGlue());
-		settingControls.add(traceCheck);
-		settingControls.add(framerateCheck);
-
-		Box panelBox = Box.createVerticalBox();
-		panelBox.add(controlPanelUp);
-		panelBox.add(controlPanelDown);
+//		settingControls.add(step);
+//		settingControls.add(Box.createVerticalGlue());
 
 		// Change background color of tab from blue to system gray
 		UIManager.put("TabbedPane.contentAreaColor", new Color(238, 238, 238));
 
 		tabs = new JTabbedPane();
 
-		Box cellSettings = Box.createVerticalBox();
-		cellSettings.add(Box.createVerticalStrut(20));
-		cellSettings.add(calculateFieldsCheck);
-		cellSettings.add(Box.createVerticalGlue());
-		cellSettings.add(currentgridCheck);
-		cellSettings.add(Box.createVerticalGlue());
-		cellSettings.add(drawFieldsCheck);
-		cellSettings.add(Box.createVerticalStrut(200));
-
-		this.fileTab = new FileTab(MainControlApplet.this, simulationAnimation);
+		this.propertiesTab = new PropertiesTab(MainControlApplet.this, panelManager);
+		this.fileTab = new FileTab(MainControlApplet.this, simulationAnimation, panelManager);
 
 		settingControls.setPreferredSize(new Dimension (300, 100));
 
 		tabs.addTab("Settings", settingControls);
-		tabs.addTab("Cell", cellSettings);
+		tabs.addTab("Properties", propertiesTab);
 		tabs.addTab("File", fileTab);
 
+		Component mainPanel = panelManager.getDefaultPanel();
+
 		this.setLayout(new BorderLayout());
-		this.add(panelBox, BorderLayout.SOUTH);
-		this.add(particlePanel, BorderLayout.CENTER);
+		this.add(controlPanel, BorderLayout.SOUTH);
+		this.add(mainPanel, BorderLayout.CENTER);
 		this.add(tabs, BorderLayout.EAST);
 
-		popupClickListener = new PopupClickListener();
-		particlePanel.addMouseListener(popupClickListener);
-	}
+		panelManager.replaceMainPanel(mainPanel);
 
-	PopupClickListener popupClickListener;
-
-	JMenuItem itemSplitHorizontally;
-	JMenuItem itemSplitVertically;
-	JMenuItem itemClosePanel;
-	JMenuItem itemParticle2DPanel;
-	JMenuItem itemParticle3DPanel;
-	JMenuItem itemPhaseSpacePanel;
-	JMenuItem itemElectricFieldPanel;
-
-	class PopupMenu extends JPopupMenu {
-
-		public PopupMenu() {
-			itemSplitHorizontally = new JMenuItem("Split horizontally");
-			itemSplitHorizontally.addActionListener(new MenuSelected());
-			add(itemSplitHorizontally);
-
-			itemSplitVertically = new JMenuItem("Split vertically");
-			itemSplitVertically.addActionListener(new MenuSelected());
-			add(itemSplitVertically);
-
-			if (clickComponent != null && clickComponent.getParent() instanceof JSplitPane) {
-				itemClosePanel = new JMenuItem("Close panel");
-				itemClosePanel.addActionListener(new MenuSelected());
-				add(itemClosePanel);
-			}
-
-			add(new JSeparator());
-
-			itemParticle2DPanel = new JMenuItem("Particles");
-			itemParticle2DPanel.addActionListener(new MenuSelected());
-			add(itemParticle2DPanel);
-
-			itemParticle3DPanel = new JMenuItem("Particles 3D");
-			itemParticle3DPanel.addActionListener(new MenuSelected());
-			add(itemParticle3DPanel);
-
-			itemPhaseSpacePanel = new JMenuItem("Phase space");
-			itemPhaseSpacePanel.addActionListener(new MenuSelected());
-			add(itemPhaseSpacePanel);
-
-			itemElectricFieldPanel = new JMenuItem("Electric field");
-			itemElectricFieldPanel.addActionListener(new MenuSelected());
-			add(itemElectricFieldPanel);
-		}
-	}
-
-	Component clickComponent;
-
-	class PopupClickListener extends MouseAdapter {
-		public void mousePressed(MouseEvent e) {
-			if (e.isPopupTrigger())
-				doPop(e);
-		}
-
-		public void mouseReleased(MouseEvent e) {
-			if (e.isPopupTrigger())
-				doPop(e);
-		}
-
-		private void doPop(MouseEvent e) {
-			clickComponent = e.getComponent();
-			PopupMenu menu = new PopupMenu();
-			menu.show(e.getComponent(), e.getX(), e.getY());
-		}
-	}
-
-	class MenuSelected implements ActionListener {
-
-		@Override
-		public void actionPerformed(ActionEvent event) {
-			// TODO: This method creates new instances of the panels
-			// (which is nice so there can be two identical panels next
-			// to each other), but it does not delete previous panels.
-			// They should be unregistered in simulationAnimation if not
-			// in use anymore.
-
-			Component component = null;
-
-			if (event.getSource() == itemSplitHorizontally) {
-				splitPanel(JSplitPane.HORIZONTAL_SPLIT);
-			} else if (event.getSource() == itemSplitVertically) {
-				splitPanel(JSplitPane.VERTICAL_SPLIT);
-			} else if (event.getSource() == itemClosePanel) {
-				closePanel();
-			} else if (event.getSource() == itemParticle2DPanel) {
-				particlePanel = new Particle2DPanel(simulationAnimation);
-				component = particlePanel;
-			} else if (event.getSource() == itemParticle3DPanel) {
-				particle3DPanel = new Particle3DPanel(simulationAnimation);
-				component = particle3DPanel;
-			} else if (event.getSource() == itemPhaseSpacePanel) {
-				phaseSpacePanel = new PhaseSpacePanel(simulationAnimation);
-				component = phaseSpacePanel;
-			} else if (event.getSource() == itemElectricFieldPanel) {
-				electricFieldPanel = new ElectricFieldPanel(simulationAnimation);
-				component = electricFieldPanel;
-			}
-			if (component != null) {
-				replacePanel(component);
-			}
-		}
-
-		private void replacePanel(Component component) {
-			component.addMouseListener(popupClickListener);
-			Component parent = clickComponent.getParent();
-			if (parent != null) {
-				if (parent instanceof JSplitPane) {
-					JSplitPane parentsplitpane = (JSplitPane) parent;
-					Component parentleft = parentsplitpane.getLeftComponent();
-
-					int dividerLocation = parentsplitpane.getDividerLocation();
-					if (parentleft == clickComponent) {
-						parentsplitpane.setLeftComponent(component);
-					} else {
-						parentsplitpane.setRightComponent(component);
-					}
-					parentsplitpane.setDividerLocation(dividerLocation);
-				} else if (parent instanceof JPanel) {
-					// top level
-					MainControlApplet.this.remove(clickComponent);
-					MainControlApplet.this.add(component, BorderLayout.CENTER);
-					MainControlApplet.this.validate();
-				}
-			}
-		}
-
-		/**
-		 * Split current panel either horizontally or vertically
-		 *
-		 * @param orientation
-		 *            Either JSplitPane.HORIZONTAL_SPLIT or
-		 *            JSplitPane.VERTICAL_SPLIT.
-		 */
-		private void splitPanel(int orientation) {
-			Component parent = clickComponent.getParent();
-
-			particlePanel = new Particle2DPanel(simulationAnimation);
-			Component newcomponent = particlePanel;
-			newcomponent.addMouseListener(popupClickListener);
-
-			if (parent != null) {
-				if (parent instanceof JSplitPane) {
-					JSplitPane parentsplitpane = (JSplitPane) parent;
-					Component parentleft = parentsplitpane.getLeftComponent();
-
-					int dividerLocation = parentsplitpane.getDividerLocation();
-
-					JSplitPane s = new JSplitPane(orientation,
-								clickComponent, newcomponent);
-					s.setOneTouchExpandable(true);
-					s.setContinuousLayout(true);
-					s.setResizeWeight(0.5);
-
-					if (parentleft == clickComponent) {
-						parentsplitpane.setLeftComponent(s);
-					} else {
-						parentsplitpane.setRightComponent(s);
-					}
-					parentsplitpane.setDividerLocation(dividerLocation);
-				} else if (parent instanceof JPanel) {
-					// top level
-					JSplitPane s = new JSplitPane(orientation,
-							clickComponent, newcomponent);
-					s.setOneTouchExpandable(true);
-					s.setContinuousLayout(true);
-					s.setResizeWeight(0.5);
-
-					MainControlApplet.this.remove(clickComponent);
-					MainControlApplet.this.add(s, BorderLayout.CENTER);
-					MainControlApplet.this.validate();
-				}
-			}
-		}
-
-		private void closePanel() {
-			Component parent = clickComponent.getParent();
-			if (parent != null) {
-				if (parent instanceof JSplitPane) {
-					JSplitPane parentsplitpane = (JSplitPane) parent;
-					Component parentleft = parentsplitpane.getLeftComponent();
-					Component parentright = parentsplitpane.getRightComponent();
-					Component grandparent = parent.getParent();
-
-					Component othercomponent = parentleft;
-					if (parentleft == clickComponent) {
-						othercomponent = parentright;
-					}
-
-					if (grandparent != null) {
-						if (grandparent instanceof JSplitPane) {
-							JSplitPane grandparentsplitpane = (JSplitPane) grandparent;
-							Component left = grandparentsplitpane.getLeftComponent();
-							if (left == parentsplitpane) {
-								grandparentsplitpane.setLeftComponent(othercomponent);
-							} else {
-								grandparentsplitpane.setRightComponent(othercomponent);
-							}
-						} else if (grandparent instanceof JPanel) {
-							parentsplitpane.removeAll();
-							MainControlApplet.this.remove(parentsplitpane);
-							MainControlApplet.this.add(othercomponent, BorderLayout.CENTER);
-							MainControlApplet.this.validate();
-						}
-						clickComponent.removeMouseListener(popupClickListener);
-						if (clickComponent instanceof AnimationPanel) {
-							((AnimationPanel) clickComponent).destruct();
-						}
-					}
-				}
-			}
-		}
 	}
 
 	public void setText(JTextArea text, String str, boolean onoff)
@@ -623,22 +263,22 @@ public class MainControlApplet extends JApplet
 		Simulation s = simulationAnimation.getSimulation();
 		Timer timer = simulationAnimation.getTimer();
 
-		stepSlider.setValue((int)(s.tstep / stepSliderScaling));
+//		stepSlider.setValue((int)(s.tstep / stepSliderScaling));
 		speedSlider.setValue(50);
 		timer.setDelay((int) (1000 * Math.exp(-50 * speedSliderScaling)));
 
 
-		// Set algorithm UI according to current setting
-		Solver solver = s.getParticleMover().getSolver();
-		if (solver instanceof LeapFrog)
-		{
-			algorithmComboBox.setSelectedIndex(0);
-			relativisticCheck.setSelected(false);
-		} else if (solver instanceof LeapFrogRelativistic)
-		{
-			algorithmComboBox.setSelectedIndex(0);
-			relativisticCheck.setSelected(true);
-		}
+//		// Set algorithm UI according to current setting
+//		Solver solver = s.getParticleMover().getSolver();
+//		if (solver instanceof LeapFrog)
+//		{
+//			algorithmComboBox.setSelectedIndex(0);
+//			relativisticCheck.setSelected(false);
+//		} else if (solver instanceof LeapFrogRelativistic)
+//		{
+//			algorithmComboBox.setSelectedIndex(0);
+//			relativisticCheck.setSelected(true);
+//		}
 	}
 
 	@Override

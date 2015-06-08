@@ -23,10 +23,15 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+
+import javax.swing.Box;
+
 import org.openpixi.pixi.physics.Simulation;
 import org.openpixi.pixi.physics.particles.IParticle;
 import org.openpixi.pixi.ui.SimulationAnimation;
-import org.openpixi.pixi.ui.util.FrameRateDetector;
+import org.openpixi.pixi.ui.panel.properties.ColorProperties;
+import org.openpixi.pixi.ui.panel.properties.FieldProperties;
+import org.openpixi.pixi.ui.panel.properties.InfoProperties;
 import org.openpixi.pixi.ui.util.projection.LineObject;
 import org.openpixi.pixi.ui.util.projection.Projection;
 import org.openpixi.pixi.ui.util.projection.Scene;
@@ -38,28 +43,20 @@ import org.openpixi.pixi.ui.util.projection.SphereObject;
  */
 public class Particle3DPanel extends AnimationPanel {
 
-	private boolean drawCurrentGrid = false;
+	ColorProperties colorProperties = new ColorProperties();
+	FieldProperties fieldProperties = new FieldProperties();
+	InfoProperties infoProperties = new InfoProperties();
 
-	private boolean drawFields = false;
-
-	/** Whether to combine x- and y-components of the fields into a single vector
+	/** Whether to combine the spatial components of the fields into a single vector
 	 * or whether to keep them separate. */
-	private boolean combinefields = false;
-
-	public boolean showinfo = false;
-
-	/** A state for the trace */
-	public boolean paint_trace = false;
-
-	private boolean reset_trace;
+	private boolean combinefields = true;
 
 	private int gridstep = 1;
 	private int gridstepadjusted = 0;
 	private long currentrendertime = 0;
 
-	Color darkGreen = new Color(0x00, 0x80, 0x00);
-
 	private Projection projection = new Projection();
+
 	private LineObject cuboid = new LineObject();
 	private LineObject fields = new LineObject();
 	private SphereObject spheres = new SphereObject();
@@ -69,7 +66,6 @@ public class Particle3DPanel extends AnimationPanel {
 	public Particle3DPanel(SimulationAnimation simulationAnimation) {
 		super(simulationAnimation);
 
-		Simulation s = simulationAnimation.getSimulation();
 		projection.phi = 0;
 		projection.theta = 0;
 
@@ -82,23 +78,6 @@ public class Particle3DPanel extends AnimationPanel {
 		addMouseMotionListener(l);
 	}
 
-	public void clear() {
-		reset_trace = true;
-	}
-
-	public void checkTrace() {
-		paint_trace =! paint_trace;
-		//startAnimation();
-	}
-
-	public void drawCurrentGrid() {
-		drawCurrentGrid =! drawCurrentGrid;
-	}
-
-	public void drawFields() {
-		drawFields =! drawFields;
-	}
-
 	/** Display the particles */
 	public void paintComponent(Graphics graph1) {
 		Graphics2D graph = (Graphics2D) graph1;
@@ -107,15 +86,7 @@ public class Particle3DPanel extends AnimationPanel {
 		graph.scale(1, -1);
 		double scale = 10;
 
-		if(!paint_trace)
-		{
-			super.paintComponent(graph1);
-		}
-		if(reset_trace)
-		{
-			super.paintComponent(graph1);
-			reset_trace = false;
-		}
+		super.paintComponent(graph1);
 
 		Simulation s = getSimulationAnimation().getSimulation();
 
@@ -187,79 +158,91 @@ public class Particle3DPanel extends AnimationPanel {
 			pos[w] = s.grid.getNumCells(w)/2;
 		}
 		
-		int colorIndex = getSimulationAnimation().getColorIndex();
-		int dirIndex = getSimulationAnimation().getDirectionIndex();
-		double eFactor = s.grid.getLatticeSpacing()*s.getCouplingConstant();//s.grid.getLatticeSpacing()*s.getTimeStep()*s.getCouplingConstant();
-		double aFactor = s.grid.getLatticeSpacing()*s.getCouplingConstant();
+		int colorIndex = colorProperties.getColorIndex();
+		int directionIndex = colorProperties.getDirectionIndex();
 		
-		if(drawCurrentGrid) {
+		if(fieldProperties.isDrawCurrent()) {
 			for(int i = 0; i < s.grid.getNumCells(0); i += gridstep) {
-				for(int k = 0; k < s.grid.getNumCells(1); k += gridstep) {
-					for(int j = 0; j < s.grid.getNumCells(2); j += gridstep) {
-						double xstart = s.grid.getLatticeSpacing() * (i + 0.5);
-						double ystart = s.grid.getLatticeSpacing() * (k + 0.5);
-						double zstart = s.grid.getLatticeSpacing() * (j + 0.5);
+				for(int j = 0; j < s.grid.getNumCells(1); j += gridstep) {
+					for(int k = 0; k < s.grid.getNumCells(2); k += gridstep) {
+						double xstart = s.grid.getLatticeSpacing() * i;
+						double ystart = s.grid.getLatticeSpacing() * j;
+						double zstart = s.grid.getLatticeSpacing() * k;
 						
 						pos[0] = i;
-						pos[1] = k;
-						pos[2] = j;
+						pos[1] = j;
+						pos[2] = k;
 						double jx = scale * s.grid.getJ(pos, 0).get(colorIndex);
 						double jy = scale * s.grid.getJ(pos, 1).get(colorIndex);
 						double jz = scale * s.grid.getJ(pos, 2).get(colorIndex);
 						if (combinefields) {
-							// Combine x- and y-components of current
+							// Combine spatial components of current
+							// Current vectors are placed on the grid points.
 							fields.addLineDelta(xstart, ystart, zstart,
 									jx, jy, jz,
 									Color.BLACK);
 						} else {
-							// Show x- and y-components of current separately
-							double xstart2 = s.grid.getLatticeSpacing() * i;
-							double ystart2 = s.grid.getLatticeSpacing() * k;
-							fields.addLineDelta(xstart, ystart2, zstart,
+							// Show spatial components of current separately
+							// Assume that field components are placed on the lattice links.
+							double xstartCenter = s.grid.getLatticeSpacing() * (i + 0.5);
+							double ystartCenter = s.grid.getLatticeSpacing() * (j + 0.5);
+							double zstartCenter = s.grid.getLatticeSpacing() * (k + 0.5);
+							fields.addLineDelta(xstartCenter, ystart, zstart,
 									jx, 0, 0,
 									Color.BLACK);
-							fields.addLineDelta(xstart2, ystart, zstart,
+							fields.addLineDelta(xstart, ystartCenter, zstart,
 									0, jy, 0,
 									Color.BLACK);
-							// TODO: Add z-component
+							fields.addLineDelta(xstart, ystart, zstartCenter,
+									0, 0, jz,
+									Color.BLACK);
 						}
 					}
 				}
 			}
 		}
 
-		if(drawFields)
+		if(fieldProperties.isDrawFields())
 		{
 			graph.setColor(Color.black);
 			for(int i = 0; i < s.grid.getNumCells(0); i += gridstep) {
-				for(int k = 0; k < s.grid.getNumCells(1); k += gridstep) {
-					for(int j = 0; j < s.grid.getNumCells(2); j += gridstep) {
-						double xstart = s.grid.getLatticeSpacing() * (i + 0.5);
-						double ystart = s.grid.getLatticeSpacing() * (k + 0.5);
-						double zstart = s.grid.getLatticeSpacing() * (j + 0.5);
+				for(int j = 0; j < s.grid.getNumCells(1); j += gridstep) {
+					for(int k = 0; k < s.grid.getNumCells(2); k += gridstep) {
+						double xstart = s.grid.getLatticeSpacing() * i;
+						double ystart = s.grid.getLatticeSpacing() * j;
+						double zstart = s.grid.getLatticeSpacing() * k;
 						
 						pos[0] = i;
-						pos[1] = k;
-						pos[2] = j;
-						double ex = scale * s.grid.getE(pos, 0).get(colorIndex)/eFactor;
-						double ey = scale * s.grid.getE(pos, 1).get(colorIndex)/eFactor;
-						double ez = scale * s.grid.getE(pos, 2).get(colorIndex)/eFactor;
+						pos[1] = j;
+						pos[2] = k;
+
+						double ex = scale * s.grid.getE(pos, 0).get(colorIndex);
+						double ey = scale * s.grid.getE(pos, 1).get(colorIndex);
+						double ez = scale * s.grid.getE(pos, 2).get(colorIndex);
 
 						if (combinefields) {
 							// Draw combined E- and B-fields
+							// Electric fields are placed on the grid points.
 							fields.addLineDelta(xstart, ystart, zstart,
 									ex, ey, ez,
 									Color.green);
+							//TODO: Draw magnetic fields.
 						} else {
-							// Draw x- and y-components of E- and B-fields separately
-							double xstart2 = s.grid.getLatticeSpacing() * i;
-							double ystart2 = s.grid.getLatticeSpacing() * k;
-							fields.addLineDelta(xstart, ystart2, zstart,
+							// Draw spatial components of E- and B-fields separately.
+							// Assume that field components are placed on the lattice links.
+							double xstartCenter = s.grid.getLatticeSpacing() * (i + 0.5);
+							double ystartCenter = s.grid.getLatticeSpacing() * (j + 0.5);
+							double zstartCenter = s.grid.getLatticeSpacing() * (k + 0.5);
+							fields.addLineDelta(xstartCenter, ystart, zstart,
 									ex, 0, 0,
 									Color.green);
-							fields.addLineDelta(xstart2, ystart, zstart,
+							fields.addLineDelta(xstart, ystartCenter, zstart,
 									0, ey, 0,
 									Color.green);
+							fields.addLineDelta(xstart, ystart, zstartCenter,
+									0, 0, ez,
+									Color.green);
+							//TODO: Draw magnetic fields.
 						}
 					}
 				}
@@ -268,28 +251,7 @@ public class Particle3DPanel extends AnimationPanel {
 
 		scene.paint(projection, graph);
 
-		FrameRateDetector frameratedetector = getSimulationAnimation().getFrameRateDetector();
-
-		if (showinfo) {
-			graph.translate(0.0, this.getHeight());
-			graph.scale(1.0, -1.0);
-			graph.setColor(darkGreen);
-			graph.drawString("Frame rate: " + frameratedetector.getRateString() + " fps", 30, 30);
-			graph.drawString("Time step: " + (float) s.tstep, 30, 50);
-			graph.drawString("Total time: " + (float) s.tottime, 30, 70);
-
-			Runtime runtime = Runtime.getRuntime();
-			long maxMemory = runtime.maxMemory();
-			long allocatedMemory = runtime.totalMemory();
-			long freeMemory = runtime.freeMemory();
-
-			int bottom = getHeight();
-			graph.drawString("free memory: " + freeMemory / 1024, 30, bottom - 90);
-			graph.drawString("allocated memory: " + allocatedMemory / 1024, 30, bottom - 70);
-			graph.drawString("max memory: " + maxMemory /1024, 30, bottom - 50);
-			graph.drawString("total free memory: " +
-				(freeMemory + (maxMemory - allocatedMemory)) / 1024, 30, bottom - 30);
-		}
+		infoProperties.showInfo(graph, this);
 	}
 
 	private int mouseOldX, mouseOldY;
@@ -317,5 +279,28 @@ public class Particle3DPanel extends AnimationPanel {
 		public void mouseReleased(MouseEvent e) {
 			super.mouseReleased(e);
 		}
+	}
+
+	public void addComponents(Box box) {
+		addLabel(box, "Particle 3D panel");
+		colorProperties.addComponents(box);
+		fieldProperties.addComponents(box);
+		infoProperties.addComponents(box);
+	}
+
+	public ColorProperties getColorProperties() {
+		return colorProperties;
+	}
+
+	public FieldProperties getFieldProperties() {
+		return fieldProperties;
+	}
+
+	public InfoProperties getInfoProperties() {
+		return infoProperties;
+	}
+
+	public Projection getProjection() {
+		return projection;
 	}
 }

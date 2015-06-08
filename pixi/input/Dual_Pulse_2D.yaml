@@ -1,0 +1,65 @@
+# Dual pulse test
+
+gridStep: 1
+numberOfDimensions: 3
+numberOfColors: 2
+gridCells: [32, 32, 1]
+poissonsolver: empty
+timeStep: 0.1
+duration: 1000
+
+fields:
+  SU2PlanePulses:
+    - dir: [1.0, 0., 0.]
+      pos: [8, 0.0, 0.0]
+      aSpatial: [0.0, 1.0, 0.0]
+      aColor: [1.0, 0.0, 0.0]
+      a: 1
+      sigma: 2
+
+    - dir: [-1.0, 0.0, 0.0]
+      pos: [24, 0.0, 0.0]
+      aSpatial: [0.0,1.0, 0.0]
+      aColor: [0.0, 1.0, 0.0]
+      a: 1
+      sigma: 2
+
+panels:
+  dividerLocation: 236
+  leftPanel:
+    dividerLocation: 226
+    leftPanel:
+      particle3DPanel:
+        colorIndex: 0
+        directionIndex: 1
+        drawCurrent: false
+        drawFields: true
+        phi: 0.0
+        showInfo: false
+        theta: 0.9
+    orientation: 1
+    rightPanel:
+      particle3DPanel:
+        colorIndex: 1
+        directionIndex: 1
+        drawCurrent: false
+        drawFields: true
+        phi: 0.0
+        showInfo: false
+        theta: 0.9
+  orientation: 0
+  rightPanel:
+    dividerLocation: 226
+    leftPanel:
+      electricFieldPanel:
+        automaticScaling: false
+        colorIndex: 0
+        directionIndex: 1
+        scaleFactor: 0.5
+    orientation: 1
+    rightPanel:
+      electricFieldPanel:
+        automaticScaling: false
+        colorIndex: 1
+        directionIndex: 1
+        scaleFactor: 0.5
