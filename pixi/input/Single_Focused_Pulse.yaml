@@ -1,4 +1,4 @@
-# Single pulse test
+# Single focused pulse test
 
 gridStep: 1
 numberOfDimensions: 3
@@ -6,7 +6,7 @@ numberOfColors: 2
 numberOfThreads: 6
 gridCells: [64, 64, 1]
 poissonsolver: empty
-timeStep: 0.03
+timeStep: 0.1
 duration: 1000
 
 fields:
@@ -15,45 +15,25 @@ fields:
       pos: [32, 32, 0.0]
       aSpatial: [0.0, 0.0, 1.0]
       aColor: [1.0, 0.0, 0.0]
-      a: 1
+      a: 2
       sigma: [2, 4, 4]
 
 # Generated panel code:
 panels:
-  dividerLocation: 452
+  dividerLocation: 591
   leftPanel:
-    dividerLocation: 362
-    leftPanel:
-      electricFieldPanel:
-        automaticScaling: true
-        colorIndex: 0
-        directionIndex: 1
-        scaleFactor: 1.0
-    orientation: 0
-    rightPanel:
-      particle2DPanel:
-        colorIndex: 0
-        directionIndex: 0
-        drawCurrent: false
-        drawFields: true
-        showInfo: false
-        showTrace: false
+    electricFieldPanel:
+      automaticScaling: false
+      colorIndex: 0
+      directionIndex: 2
+      scaleFactor: 0.5
   orientation: 1
   rightPanel:
-    dividerLocation: 362
-    leftPanel:
-      electricFieldPanel:
-        automaticScaling: true
-        colorIndex: 0
-        directionIndex: 0
-        scaleFactor: 1.0
-    orientation: 0
-    rightPanel:
-      particle3DPanel:
-        colorIndex: 0
-        directionIndex: 1
-        drawCurrent: false
-        drawFields: true
-        phi: 0.0
-        showInfo: true
-        theta: 0.0
+    particle3DPanel:
+      colorIndex: 0
+      directionIndex: 1
+      drawCurrent: false
+      drawFields: true
+      phi: 0.009999999999999959
+      showInfo: false
+      theta: 0.8100000000000006
