@@ -40,6 +40,7 @@ public class FieldMeasurements {
 			for (int i = 0; i < numDir; i++) {
 				norm *= grid.getNumCells(i);
 				res += grid.getE(coor, i).square();
+				//res += grid.getEsquaredFromLinks(coor, i);
 			}
 			
 			double result = res/norm;

@@ -137,7 +137,7 @@ public class Cell implements Serializable {
 	    U = Unext;
 	    Unext = temp;
 	}
-
+	 
 	/**
 	 * Copies the values from other cell.
 	 * A safer way would be to copy the fields through reflection

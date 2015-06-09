@@ -49,6 +49,11 @@ public class Grid {
 	 * Spatial lattice spacing
 	 */
 	private double as;
+	
+	/**
+	 * Temporal lattice spacing
+	 */
+	private double at;
 
 	/**
 	 * Gauge coupling strength
@@ -241,6 +246,14 @@ public class Grid {
 	}
 	
 	/**
+	 * Returns the temporal lattice spacing.
+	 * @return  Temporal lattice spacing.
+	 */
+	public double getTemporalSpacing() {
+		return at;
+	}
+	
+	/**
 	 * Returns the gauge coupling.
 	 * @return  Gauge coupling.
 	 */
@@ -292,6 +305,7 @@ public class Grid {
 
 		gaugeCoupling = settings.getCouplingConstant();
 		as = settings.getGridStep();
+		at = settings.getTimeStep();
 		numCol = settings.getNumberOfColors();
 		numDim = settings.getNumberOfDimensions();
 		numCells = new int[numDim];
@@ -619,6 +633,22 @@ public class Grid {
 		coor2[k]--;
 
 		res.FieldFromBackwardPlaquette(cells[getCellIndex(coor)].getU(j), cells[getCellIndex(coor1)].getU(k), cells[getCellIndex(coor2)].getU(j), cells[getCellIndex(coor2)].getU(k));
+
+		return res;
+	}
+	
+	/**
+	 * Calculates the square of the electric field from the temporal plaquette starting at lattice coordinate coor in the direction dir.
+	 *
+	 * @param coor  Lattice coordinate from where the plaquette starts
+	 * @param dir    Index of the direction
+	 * @return      E^2 calculated from the temporal plaquette
+	 */
+	public double getEsquaredFromLinks(int[] coor, int dir) {
+		
+		double norm = at*at;
+		//double res = 1.0 - cells[getCellIndex(coor)].getUnext(dir).mult(cells[getCellIndex(coor)].getU(dir).adj()).getTrace()/numCol;
+		double res = cells[getCellIndex(coor)].getUnext(dir).mult(cells[getCellIndex(coor)].getU(dir).adj()).getLinearizedAlgebraElement().square()/norm;
 
 		return res;
 	}
