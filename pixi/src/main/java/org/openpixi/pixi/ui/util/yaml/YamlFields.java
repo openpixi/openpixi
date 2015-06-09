@@ -1,7 +1,7 @@
 package org.openpixi.pixi.ui.util.yaml;
 
 import org.openpixi.pixi.physics.Settings;
-import org.openpixi.pixi.ui.util.yaml.FieldGenerators.*;
+import org.openpixi.pixi.ui.util.yaml.fieldgenerators.*;
 
 import java.util.ArrayList;
 

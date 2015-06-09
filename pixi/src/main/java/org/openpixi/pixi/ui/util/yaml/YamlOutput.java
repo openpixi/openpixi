@@ -2,8 +2,8 @@ package org.openpixi.pixi.ui.util.yaml;
 
 import java.util.ArrayList;
 import org.openpixi.pixi.physics.Settings;
-import org.openpixi.pixi.ui.util.yaml.FileGenerators.YamlParticlesInTime;
-import org.openpixi.pixi.ui.util.yaml.FileGenerators.YamlBulkQuantitiesInTime;
+import org.openpixi.pixi.ui.util.yaml.filegenerators.YamlParticlesInTime;
+import org.openpixi.pixi.ui.util.yaml.filegenerators.YamlBulkQuantitiesInTime;
 
 public class YamlOutput {
 	/**

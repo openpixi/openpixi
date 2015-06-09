@@ -1,7 +1,7 @@
-package org.openpixi.pixi.ui.util.yaml.FieldGenerators;
+package org.openpixi.pixi.ui.util.yaml.fieldgenerators;
 
 import org.openpixi.pixi.physics.Settings;
-import org.openpixi.pixi.physics.fields.FieldGenerators.SU2PlaneWave;
+import org.openpixi.pixi.physics.fields.fieldgenerators.SU2PlaneWave;
 
 import java.util.List;
 
