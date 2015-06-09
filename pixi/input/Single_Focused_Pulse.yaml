@@ -1,0 +1,59 @@
+# Single pulse test
+
+gridStep: 1
+numberOfDimensions: 3
+numberOfColors: 2
+numberOfThreads: 6
+gridCells: [64, 64, 1]
+poissonsolver: empty
+timeStep: 0.03
+duration: 1000
+
+fields:
+  SU2FocusedPulses:
+    - dir: [1.0, 0.0, 0.0]
+      pos: [32, 32, 0.0]
+      aSpatial: [0.0, 0.0, 1.0]
+      aColor: [1.0, 0.0, 0.0]
+      a: 1
+      sigma: [2, 4, 4]
+
+# Generated panel code:
+panels:
+  dividerLocation: 452
+  leftPanel:
+    dividerLocation: 362
+    leftPanel:
+      electricFieldPanel:
+        automaticScaling: true
+        colorIndex: 0
+        directionIndex: 1
+        scaleFactor: 1.0
+    orientation: 0
+    rightPanel:
+      particle2DPanel:
+        colorIndex: 0
+        directionIndex: 0
+        drawCurrent: false
+        drawFields: true
+        showInfo: false
+        showTrace: false
+  orientation: 1
+  rightPanel:
+    dividerLocation: 362
+    leftPanel:
+      electricFieldPanel:
+        automaticScaling: true
+        colorIndex: 0
+        directionIndex: 0
+        scaleFactor: 1.0
+    orientation: 0
+    rightPanel:
+      particle3DPanel:
+        colorIndex: 0
+        directionIndex: 1
+        drawCurrent: false
+        drawFields: true
+        phi: 0.0
+        showInfo: true
+        theta: 0.0
