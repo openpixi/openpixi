@@ -246,6 +246,14 @@ public class Grid {
 	}
 	
 	/**
+	 * Returns the number of colors.
+	 * @return  Number of colors.
+	 */
+	public double getNumberOfColors() {
+		return numCol;
+	}
+	
+	/**
 	 * Returns the temporal lattice spacing.
 	 * @return  Temporal lattice spacing.
 	 */
@@ -649,6 +657,25 @@ public class Grid {
 		double norm = at*at;
 		//double res = 1.0 - cells[getCellIndex(coor)].getUnext(dir).mult(cells[getCellIndex(coor)].getU(dir).adj()).getTrace()/numCol;
 		double res = cells[getCellIndex(coor)].getUnext(dir).mult(cells[getCellIndex(coor)].getU(dir).adj()).getLinearizedAlgebraElement().square()/norm;
+
+		return res;
+	}
+	
+	public double getBsquaredFromLinks(int[] coor, int dir) {
+		
+		double norm = as*as;
+		int j=0, k=0;
+		switch (dir) {
+        	case 0:  j = 1;  k = 2;
+            break;
+            
+        	case 1:  j = 0;  k = 2;
+            break;
+            
+        	case 2:  j = 0;  k = 1;
+            break;
+		}
+		double res = getPlaquette(coor, j, k, 1, 1).getLinearizedAlgebraElement().square()/norm;
 
 		return res;
 	}

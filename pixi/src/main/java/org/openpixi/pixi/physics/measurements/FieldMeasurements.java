@@ -68,8 +68,8 @@ public class FieldMeasurements {
 			double res = 0;
 			for (int i = 0; i < numDir; i++) {
 				norm *= grid.getNumCells(i);
-				//TODO Implement the calculation of color magnetic fields!!
 				//res += grid.getB(coor, i).square();
+				res += grid.getBsquaredFromLinks(coor, i);
 			}
 			double result = res/norm;
 			synchronized(this) {
