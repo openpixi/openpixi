@@ -44,7 +44,7 @@ public class BulkQuantitiesInTime implements Diagnostics {
 		File file = getOutputFile(path);
 		try {
 			FileWriter pw = new FileWriter(file, true);
-			pw.write("#time \t E^2 \t B^2");
+			pw.write("#time \t E^2 \t B^2 \t P_x \t P_y \t P_z");
 			pw.write("\n");
 			pw.close();
 		} catch (IOException ex) {
@@ -53,7 +53,7 @@ public class BulkQuantitiesInTime implements Diagnostics {
 	}
 
 	/**
-	 * Computes the average of E^2 and B^2 over the lattice and writes them to the output file.
+	 * Computes the average of the diagonal components of the stress-energy tensor over the lattice and writes them to the output file.
 	 *
 	 * @param grid		Reference to the Grid instance.
 	 * @param particles	Reference to the list of particles.
@@ -65,10 +65,20 @@ public class BulkQuantitiesInTime implements Diagnostics {
 			
 			File file = getOutputFile(path);
 			FileWriter pw = new FileWriter(file, true);
+														//TODO Make this method d-dimensional!!
+			double[] esquares = new double [3];
+			double[] bsquares = new double [3];
+			for (int i = 0; i < 3; i++) {
+				esquares[i] = fieldMeasurements.calculateEsquared(grid, i);
+				bsquares[i] = fieldMeasurements.calculateBsquared(grid, i);
+			}
 
 			pw.write(steps * s.getTimeStep() + "\t");
-			pw.write(fieldMeasurements.calculateEsquared(grid) + "\t");
-			pw.write(fieldMeasurements.calculateBsquared(grid) + "\t");
+			pw.write(esquares[0] + esquares[1] + esquares[2] + "\t");
+			pw.write(bsquares[0] + bsquares[1] + bsquares[2] + "\t");
+			pw.write(- esquares[0] + esquares[1] + esquares[2] - bsquares[0] + bsquares[1] + bsquares[2] + "\t");
+			pw.write(+ esquares[0] - esquares[1] + esquares[2] + bsquares[0] - bsquares[1] + bsquares[2] + "\t");
+			pw.write(+ esquares[0] + esquares[1] - esquares[2] + bsquares[0] + bsquares[1] - bsquares[2] + "\t");
 			pw.write("\n");
 			
 			pw.close();

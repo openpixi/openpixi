@@ -661,6 +661,13 @@ public class Grid {
 		return res;
 	}
 	
+	/**
+	 * Calculates the square of the magnetic field from the spatial plaquette starting at lattice coordinate coor in the direction dir.
+	 *
+	 * @param coor  Lattice coordinate from where the plaquette starts
+	 * @param dir    Index of the direction
+	 * @return      B^2 calculated from the spatial plaquette
+	 */
 	public double getBsquaredFromLinks(int[] coor, int dir) {
 		
 		double norm = as*as;
