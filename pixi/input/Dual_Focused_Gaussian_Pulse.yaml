@@ -17,7 +17,7 @@ fields:
       aColor: [1.0, 0.0, 0.0]
       a: 4
       sigma: 3
-      angle: 2.0
+      angle: 1.0
       distance: 32.0
     - dir: [-1.0, 0.0, 0.0]
       pos: [64, 56, 0.0]
@@ -25,10 +25,8 @@ fields:
       aColor: [0.0, 1.0, 0.0]
       a: 4
       sigma: 3
-      angle: 2.0
+      angle: 1.0
       distance: 32.0
-
-
 
 # Generated panel code:
 panels:
