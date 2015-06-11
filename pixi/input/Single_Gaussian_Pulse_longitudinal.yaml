@@ -1,4 +1,4 @@
-# Single focused pulse test with longitudinal amplitude
+# Single gaussian pulse test with longitudinal amplitude
 
 gridStep: 1
 numberOfDimensions: 3
@@ -10,7 +10,7 @@ timeStep: 0.1
 duration: 1000
 
 fields:
-  SU2FocusedPulses:
+  SU2GaussianPulses:
     - dir: [1.0, 0.0, 0.0]
       pos: [32, 32, 0.0]
       aSpatial: [1.0, 0.0, 0.0]

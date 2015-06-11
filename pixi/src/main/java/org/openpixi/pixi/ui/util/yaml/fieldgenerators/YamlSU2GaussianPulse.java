@@ -1,14 +1,14 @@
 package org.openpixi.pixi.ui.util.yaml.fieldgenerators;
 
 import org.openpixi.pixi.physics.Settings;
-import org.openpixi.pixi.physics.fields.fieldgenerators.SU2FocusedPulse;
+import org.openpixi.pixi.physics.fields.fieldgenerators.SU2GaussianPulse;
 
 import java.util.List;
 
 /**
  * Yaml wrapper for the SU2PlanePulse FieldGenerator.
  */
-public class YamlSU2FocusedPulse {
+public class YamlSU2GaussianPulse {
 
 	/**
 	 * Direction vector of the plane pulse.
@@ -80,7 +80,7 @@ public class YamlSU2FocusedPulse {
 	 *
 	 * @return Instance of SU2PlanePulse.
 	 */
-	public SU2FocusedPulse getFieldGenerator() {
+	public SU2GaussianPulse getFieldGenerator() {
 		int numberOfDimensions = dir.size();
 		int numberOfComponents = aColor.size();
 
@@ -106,6 +106,6 @@ public class YamlSU2FocusedPulse {
 			aColorArray[c] = aColor.get(c);
 		}
 
-		return new SU2FocusedPulse(dirArray, posArray, aSpatialArray, aColorArray, a, sigmaArray);
+		return new SU2GaussianPulse(dirArray, posArray, aSpatialArray, aColorArray, a, sigmaArray);
 	}
 }

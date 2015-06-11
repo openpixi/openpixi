@@ -1,4 +1,4 @@
-# Dual focused pulse test with impact parameter 
+# Dual gaussian pulse test with impact parameter
 
 gridStep: 1
 numberOfDimensions: 3
@@ -10,7 +10,7 @@ timeStep: 0.3
 duration: 1000
 
 fields:
-  SU2FocusedPulses:
+  SU2GaussianPulses:
     - dir: [1.0, 0.0, 0.0]
       pos: [32, 72, 0.0]
       aSpatial: [0.0, 0.0, 1.0]

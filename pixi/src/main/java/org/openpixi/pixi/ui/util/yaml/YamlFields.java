@@ -14,7 +14,7 @@ public class YamlFields {
 
 	public ArrayList<YamlSU2PlanePulse> SU2PlanePulses = new ArrayList<YamlSU2PlanePulse>();
 
-	public ArrayList<YamlSU2FocusedPulse> SU2FocusedPulses = new ArrayList<YamlSU2FocusedPulse>();
+	public ArrayList<YamlSU2GaussianPulse> SU2GaussianPulses = new ArrayList<YamlSU2GaussianPulse>();
 
 	/**
 	 * Creates FieldGenerator instances and applies them to the Settings instance.
@@ -33,7 +33,7 @@ public class YamlFields {
 			}
 		}
 
-		for (YamlSU2FocusedPulse pulse : SU2FocusedPulses) {
+		for (YamlSU2GaussianPulse pulse : SU2GaussianPulses) {
 			if (pulse.checkConsistency(s)) {
 				s.addFieldGenerator(pulse.getFieldGenerator());
 			}

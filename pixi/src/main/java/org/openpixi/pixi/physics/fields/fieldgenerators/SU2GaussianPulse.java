@@ -6,7 +6,7 @@ import org.openpixi.pixi.physics.grid.Grid;
 import org.openpixi.pixi.physics.grid.SU2Field;
 import org.openpixi.pixi.physics.grid.SU2Matrix;
 
-public class SU2FocusedPulse implements IFieldGenerator {
+public class SU2GaussianPulse implements IFieldGenerator {
 
 	private int numberOfDimensions;
 	private int numberOfComponents;
@@ -21,12 +21,12 @@ public class SU2FocusedPulse implements IFieldGenerator {
 	private Grid grid;
 	private double timeStep;
 
-	public SU2FocusedPulse(double[] direction,
-						   double[] position,
-						   double[] amplitudeSpatialDirection,
-						   double[] amplitudeColorDirection,
-						   double amplitudeMagnitude,
-						   double[] sigma)
+	public SU2GaussianPulse(double[] direction,
+							double[] position,
+							double[] amplitudeSpatialDirection,
+							double[] amplitudeColorDirection,
+							double amplitudeMagnitude,
+							double[] sigma)
 	{
 		this.numberOfDimensions = direction.length;
 		this.numberOfComponents = amplitudeColorDirection.length;
