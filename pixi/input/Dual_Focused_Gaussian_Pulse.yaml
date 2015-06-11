@@ -1,0 +1,49 @@
+# Dual focused gaussian pulse test with impact parameter
+
+gridStep: 1
+numberOfDimensions: 3
+numberOfColors: 2
+numberOfThreads: 6
+gridCells: [128, 128, 1]
+poissonsolver: empty
+timeStep: 0.3
+duration: 1000
+
+fields:
+  SU2FocusedGaussianPulses:
+    - dir: [1.0, 0.0, 0.0]
+      pos: [64, 74, 0.0]
+      aSpatial: [0.0, 0.0, 1.0]
+      aColor: [1.0, 0.0, 0.0]
+      a: 4
+      sigma: 3
+      angle: 2.0
+      distance: 32.0
+    - dir: [-1.0, 0.0, 0.0]
+      pos: [64, 56, 0.0]
+      aSpatial: [0.0, 0.0, 1.0]
+      aColor: [0.0, 1.0, 0.0]
+      a: 4
+      sigma: 3
+      angle: 2.0
+      distance: 32.0
+
+# Generated panel code:
+panels:
+  dividerLocation: 591
+  leftPanel:
+    electricFieldPanel:
+      automaticScaling: false
+      colorIndex: 0
+      directionIndex: 2
+      scaleFactor: 0.5
+  orientation: 1
+  rightPanel:
+    particle3DPanel:
+      colorIndex: 0
+      directionIndex: 1
+      drawCurrent: false
+      drawFields: true
+      phi: 0.009999999999999959
+      showInfo: false
+      theta: 0.8100000000000006
