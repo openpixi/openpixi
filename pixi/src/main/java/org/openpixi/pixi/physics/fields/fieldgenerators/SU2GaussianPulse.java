@@ -52,7 +52,7 @@ public class SU2GaussianPulse implements IFieldGenerator {
 		double g = s.getCouplingConstant();
 
 		/*
-			Setup the field amplitude for the plane pulse.
+			Setup the field amplitude for the gaussian pulse.
 		 */
 		SU2Field[] amplitudeYMField = new SU2Field[this.numberOfDimensions];
 		for (int i = 0; i < this.numberOfDimensions; i++) {
@@ -72,7 +72,7 @@ public class SU2GaussianPulse implements IFieldGenerator {
 
 
 		/*
-			Cycle through each cell and apply the plane pulse configuration to the links and electric fields.
+			Cycle through each cell and apply the gaussian pulse configuration to the links and electric fields.
 		 */
 		for (int ci = 0; ci < numberOfCells; ci++)
 		{
@@ -83,7 +83,7 @@ public class SU2GaussianPulse implements IFieldGenerator {
 			 *  Compute the phase at t = 0  and t = -dt/2
 			 */
 
-			// Multiplicative factor for the plane pulse at t = 0 (for electric fields)
+			// Multiplicative factor for the gaussian pulse at t = 0 (for electric fields)
 			double tmp = 0.0;
 			for(int i = 0; i < numberOfDimensions; i++)
 			{
@@ -95,7 +95,7 @@ public class SU2GaussianPulse implements IFieldGenerator {
 			}
 			double electricFieldFactor =  - g * as * tmp;
 
-			// Multiplicative factor for the plane pulse at t = dt/2 (for links)
+			// Multiplicative factor for the gaussian pulse at t = dt/2 (for links)
 			tmp = 1.0;
 			for(int i = 0; i < numberOfDimensions; i++)
 			{
