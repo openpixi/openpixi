@@ -26,8 +26,7 @@ public class SU2GaussianPulse implements IFieldGenerator {
 							double[] amplitudeSpatialDirection,
 							double[] amplitudeColorDirection,
 							double amplitudeMagnitude,
-							double[] sigma)
-	{
+							double[] sigma) {
 		this.numberOfDimensions = direction.length;
 		this.numberOfComponents = amplitudeColorDirection.length;
 
@@ -74,41 +73,31 @@ public class SU2GaussianPulse implements IFieldGenerator {
 		/*
 			Cycle through each cell and apply the gaussian pulse configuration to the links and electric fields.
 		 */
-		for (int ci = 0; ci < numberOfCells; ci++)
-		{
+		for (int ci = 0; ci < numberOfCells; ci++) {
 			int[] cellPosition = grid.getCellPos(ci);
-			double[] currentPosition =  getPosition(cellPosition);
-
-			/*
-			 *  Compute the phase at t = 0  and t = -dt/2
-			 */
+			double[] currentPosition = getPosition(cellPosition);
 
 			// Multiplicative factor for the gaussian pulse at t = 0 (for electric fields)
 			double tmp = 0.0;
-			for(int i = 0; i < numberOfDimensions; i++)
-			{
-				tmp += c * this.direction[i] * (currentPosition[i] - this.position[i]) /  Math.pow(this.sigma[i], 2);
+			for (int i = 0; i < numberOfDimensions; i++) {
+				tmp += c * this.direction[i] * (currentPosition[i] - this.position[i]) / Math.pow(this.sigma[i], 2);
 			}
-			for(int i = 0; i < numberOfDimensions; i++)
-			{
+			for (int i = 0; i < numberOfDimensions; i++) {
 				tmp *= gaussian(currentPosition[i], this.position[i], this.sigma[i]);
 			}
-			double electricFieldFactor =  - g * as * tmp;
+			double electricFieldFactor = -g * as * tmp;
 
 			// Multiplicative factor for the gaussian pulse at t = dt/2 (for links)
 			tmp = 1.0;
-			for(int i = 0; i < numberOfDimensions; i++)
-			{
-				tmp *= gaussian(currentPosition[i], this.position[i]+ c * timeStep / 2.0 * this.direction[i], this.sigma[i]);
+			for (int i = 0; i < numberOfDimensions; i++) {
+				tmp *= gaussian(currentPosition[i], this.position[i] + c * timeStep / 2.0 * this.direction[i], this.sigma[i]);
 			}
 			double gaugeFieldFactor = g * as * tmp;
 
 
-
 			Cell currentCell = grid.getCell(cellPosition);
 
-			for(int i = 0; i < this.numberOfDimensions; i++)
-			{
+			for (int i = 0; i < this.numberOfDimensions; i++) {
 				//Setup the gauge links
 				SU2Matrix U = (SU2Matrix) currentCell.getU(i).mult(amplitudeYMField[i].mult(gaugeFieldFactor).getLinkExact());
 				currentCell.setU(i, U);
@@ -119,33 +108,27 @@ public class SU2GaussianPulse implements IFieldGenerator {
 		}
 	}
 
-	private double gaussian(double x, double x0, double sx)
-	{
-		return Math.exp(-0.5 * Math.pow((x - x0)/sx ,2));
+	private double gaussian(double x, double x0, double sx) {
+		return Math.exp(-0.5 * Math.pow((x - x0) / sx, 2));
 	}
 
-	private double[] normalizeVector(double[] vector)
-	{
+	private double[] normalizeVector(double[] vector) {
 		double norm = 0.0;
 		double[] output = new double[vector.length];
-		for(int i = 0; i < vector.length; i++)
-		{
+		for (int i = 0; i < vector.length; i++) {
 			norm += vector[i] * vector[i];
 		}
 		norm = Math.sqrt(norm);
-		for(int i = 0; i < vector.length; i++)
-		{
+		for (int i = 0; i < vector.length; i++) {
 			output[i] = vector[i] / norm;
 		}
 		return output;
 	}
 
-	private double[] getPosition(int[] cellPosition)
-	{
-		double[] position =  new double[this.numberOfDimensions];
-		for(int i = 0; i < this.numberOfDimensions; i++)
-		{
-			position[i] =  cellPosition[i] * grid.getLatticeSpacing();
+	private double[] getPosition(int[] cellPosition) {
+		double[] position = new double[this.numberOfDimensions];
+		for (int i = 0; i < this.numberOfDimensions; i++) {
+			position[i] = cellPosition[i] * grid.getLatticeSpacing();
 		}
 		return position;
 	}

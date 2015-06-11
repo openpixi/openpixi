@@ -1,6 +1,10 @@
 package org.openpixi.pixi.physics.fields.fieldgenerators;
+
 import org.openpixi.pixi.physics.Simulation;
-import org.openpixi.pixi.physics.grid.*;
+import org.openpixi.pixi.physics.grid.Cell;
+import org.openpixi.pixi.physics.grid.Grid;
+import org.openpixi.pixi.physics.grid.SU2Field;
+import org.openpixi.pixi.physics.grid.SU2Matrix;
 
 public class SU2PlanePulse implements IFieldGenerator {
 
@@ -22,8 +26,7 @@ public class SU2PlanePulse implements IFieldGenerator {
 						 double[] amplitudeSpatialDirection,
 						 double[] amplitudeColorDirection,
 						 double amplitudeMagnitude,
-						 double sigma)
-	{
+						 double sigma) {
 		this.numberOfDimensions = direction.length;
 		this.numberOfComponents = amplitudeColorDirection.length;
 
@@ -70,34 +73,27 @@ public class SU2PlanePulse implements IFieldGenerator {
 		/*
 			Cycle through each cell and apply the plane pulse configuration to the links and electric fields.
 		 */
-		for (int ci = 0; ci < numberOfCells; ci++)
-		{
+		for (int ci = 0; ci < numberOfCells; ci++) {
 			int[] cellPosition = grid.getCellPos(ci);
-			double[] currentPosition =  getPosition(cellPosition);
+			double[] currentPosition = getPosition(cellPosition);
 
-			/*
-			 *  Compute the phase at t = 0  and t = -dt/2
-			 */
 			double scalarProduct = 0.0;
-			for(int i = 0; i < this.numberOfDimensions; i++)
-			{
+			for (int i = 0; i < this.numberOfDimensions; i++) {
 				scalarProduct += this.direction[i] * (currentPosition[i] - this.position[i]);
 			}
 
-			//Multiplicative factor for the plane pulse at t = 0 (for electric fields)
+			// Multiplicative factor for the plane pulse at t = 0 (for electric fields)
 			double phaseE = scalarProduct;
-			double electricFieldFactor =  - g * as * c * phaseE / Math.pow(sigma, 2.0) *
-					Math.exp(- Math.pow(phaseE / this.sigma, 2.0) / 2.0);
-			//Multiplicative factor for the plane pulse at t = dt/2 (for links)
+			double electricFieldFactor = -g * as * c * phaseE / Math.pow(sigma, 2.0) *
+					Math.exp(-Math.pow(phaseE / this.sigma, 2.0) / 2.0);
+			// Multiplicative factor for the plane pulse at t = dt/2 (for links)
 			double phaseU = scalarProduct - c * timeStep / 2.0;
-			double gaugeFieldFactor = g * as * Math.exp(- Math.pow(phaseU / this.sigma, 2.0) / 2.0);
-
+			double gaugeFieldFactor = g * as * Math.exp(-Math.pow(phaseU / this.sigma, 2.0) / 2.0);
 
 
 			Cell currentCell = grid.getCell(cellPosition);
 
-			for(int i = 0; i < this.numberOfDimensions; i++)
-			{
+			for (int i = 0; i < this.numberOfDimensions; i++) {
 				//Setup the gauge links
 				SU2Matrix U = (SU2Matrix) currentCell.getU(i).mult(amplitudeYMField[i].mult(gaugeFieldFactor).getLinkExact());
 				currentCell.setU(i, U);
@@ -109,28 +105,23 @@ public class SU2PlanePulse implements IFieldGenerator {
 
 	}
 
-	private double[] normalizeVector(double[] vector)
-	{
+	private double[] normalizeVector(double[] vector) {
 		double norm = 0.0;
 		double[] output = new double[vector.length];
-		for(int i = 0; i < vector.length; i++)
-		{
+		for (int i = 0; i < vector.length; i++) {
 			norm += vector[i] * vector[i];
 		}
 		norm = Math.sqrt(norm);
-		for(int i = 0; i < vector.length; i++)
-		{
+		for (int i = 0; i < vector.length; i++) {
 			output[i] = vector[i] / norm;
 		}
 		return output;
 	}
 
-	private double[] getPosition(int[] cellPosition)
-	{
-		double[] position =  new double[this.numberOfDimensions];
-		for(int i = 0; i < this.numberOfDimensions; i++)
-		{
-			position[i] =  cellPosition[i] * grid.getLatticeSpacing();
+	private double[] getPosition(int[] cellPosition) {
+		double[] position = new double[this.numberOfDimensions];
+		for (int i = 0; i < this.numberOfDimensions; i++) {
+			position[i] = cellPosition[i] * grid.getLatticeSpacing();
 		}
 		return position;
 	}

@@ -17,7 +17,7 @@ public class YamlSU2FocusedGaussianPulse {
 	public List<Double> dir;
 
 	/**
-	 * Focal point of the pulse.
+	 * Focal point of the pulse (where to pulse converges).
 	 */
 	public List<Double> pos;
 
@@ -37,7 +37,7 @@ public class YamlSU2FocusedGaussianPulse {
 	public Double a;
 
 	/**
-	 * Width of the pulse.
+	 * Radial width of the pulse.
 	 */
 	public Double sigma;
 
