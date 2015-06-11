@@ -21,7 +21,7 @@ package org.openpixi.pixi.physics;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
-import org.openpixi.pixi.physics.fields.FieldGenerators.IFieldGenerator;
+import org.openpixi.pixi.physics.fields.fieldgenerators.IFieldGenerator;
 import org.openpixi.pixi.physics.fields.PoissonSolver;
 import org.openpixi.pixi.physics.force.Force;
 import org.openpixi.pixi.physics.force.CombinedForce;

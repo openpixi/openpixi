@@ -1,0 +1,53 @@
+# Dual gaussian pulse test with impact parameter
+
+gridStep: 1
+numberOfDimensions: 3
+numberOfColors: 2
+numberOfThreads: 6
+gridCells: [128, 128, 1]
+poissonsolver: empty
+timeStep: 0.3
+duration: 1000
+
+fields:
+  SU2GaussianPulses:
+    - dir: [1.0, 0.0, 0.0]
+      pos: [32, 72, 0.0]
+      aSpatial: [0.0, 0.0, 1.0]
+      aColor: [1.0, 0.0, 0.0]
+      a: 1
+      sigma: [4, 8, 8]
+    - dir: [-1.0, 0.0, 0.0]
+      pos: [96, 58, 0.0]
+      aSpatial: [0.0, 0.0, 1.0]
+      aColor: [0.0, 1.0, 0.0]
+      a: 1
+      sigma: [4, 8, 8]
+
+# Generated panel code:
+panels:
+  dividerLocation: 590
+  leftPanel:
+    particle2DPanel:
+      colorIndex: 2
+      directionIndex: 2
+      drawCurrent: false
+      drawFields: true
+      showInfo: false
+      showTrace: false
+  orientation: 1
+  rightPanel:
+    dividerLocation: 292
+    leftPanel:
+      electricFieldPanel:
+        automaticScaling: false
+        colorIndex: 1
+        directionIndex: 2
+        scaleFactor: 0.5
+    orientation: 0
+    rightPanel:
+      electricFieldPanel:
+        automaticScaling: false
+        colorIndex: 0
+        directionIndex: 2
+        scaleFactor: 0.5

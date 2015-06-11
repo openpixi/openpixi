@@ -4,12 +4,11 @@ import org.openpixi.pixi.diagnostics.Diagnostics;
 import org.openpixi.pixi.parallel.cellaccess.*;
 import org.openpixi.pixi.parallel.particleaccess.*;
 import org.openpixi.pixi.physics.fields.*;
-import org.openpixi.pixi.physics.fields.FieldGenerators.IFieldGenerator;
+import org.openpixi.pixi.physics.fields.fieldgenerators.IFieldGenerator;
 import org.openpixi.pixi.physics.force.*;
 import org.openpixi.pixi.physics.grid.*;
 import org.openpixi.pixi.physics.particles.*;
 import org.openpixi.pixi.physics.solver.*;
-import org.openpixi.pixi.physics.solver.relativistic.LeapFrogRelativistic;
 import org.openpixi.pixi.ui.util.yaml.YamlPanels;
 
 import java.util.ArrayList;

@@ -5,7 +5,7 @@ import org.junit.Test;
 import org.openpixi.pixi.physics.GeneralBoundaryType;
 import org.openpixi.pixi.physics.Settings;
 import org.openpixi.pixi.physics.Simulation;
-import org.openpixi.pixi.physics.fields.FieldGenerators.SU2RandomFields;
+import org.openpixi.pixi.physics.fields.fieldgenerators.SU2RandomFields;
 import org.openpixi.pixi.physics.fields.GeneralYangMillsSolver;
 import org.openpixi.pixi.physics.solver.relativistic.LeapFrogRelativistic;
 
