@@ -1,0 +1,41 @@
+# Single gaussian pulse test
+
+gridStep: 1
+numberOfDimensions: 3
+numberOfColors: 2
+numberOfThreads: 6
+gridCells: [64, 64, 1]
+poissonsolver: empty
+timeStep: 0.1
+duration: 1000
+
+fields:
+  SU2FocusedGaussianPulses:
+    - dir: [1.0, 0.0, 0.0]
+      pos: [32, 32, 0.0]
+      aSpatial: [0.0, 0.0, 1.0]
+      aColor: [1.0, 0.0, 0.0]
+      a: 2
+      sigma: 2
+      angle: 2.0
+      distance: 16.0
+
+# Generated panel code:
+panels:
+  dividerLocation: 591
+  leftPanel:
+    electricFieldPanel:
+      automaticScaling: false
+      colorIndex: 0
+      directionIndex: 2
+      scaleFactor: 0.5
+  orientation: 1
+  rightPanel:
+    particle3DPanel:
+      colorIndex: 0
+      directionIndex: 1
+      drawCurrent: false
+      drawFields: true
+      phi: 0.009999999999999959
+      showInfo: false
+      theta: 0.8100000000000006

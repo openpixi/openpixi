@@ -1,4 +1,4 @@
-package org.openpixi.pixi.ui.util.yaml.FileGenerators;
+package org.openpixi.pixi.ui.util.yaml.filegenerators;
 
 import org.openpixi.pixi.diagnostics.methods.ParticlesInTime;
 
