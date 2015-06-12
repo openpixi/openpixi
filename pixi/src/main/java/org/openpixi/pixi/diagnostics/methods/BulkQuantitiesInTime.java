@@ -72,6 +72,8 @@ public class BulkQuantitiesInTime implements Diagnostics {
 				esquares[i] = fieldMeasurements.calculateEsquared(grid, i);
 				bsquares[i] = fieldMeasurements.calculateBsquared(grid, i);
 			}
+			
+			double gaussViolation = fieldMeasurements.calculateGaussConstraint(grid);
 
 			pw.write(steps * s.getTimeStep() + "\t");
 			pw.write(esquares[0] + esquares[1] + esquares[2] + "\t");
@@ -79,6 +81,7 @@ public class BulkQuantitiesInTime implements Diagnostics {
 			pw.write(- esquares[0] + esquares[1] + esquares[2] - bsquares[0] + bsquares[1] + bsquares[2] + "\t");
 			pw.write(+ esquares[0] - esquares[1] + esquares[2] + bsquares[0] - bsquares[1] + bsquares[2] + "\t");
 			pw.write(+ esquares[0] + esquares[1] - esquares[2] + bsquares[0] + bsquares[1] - bsquares[2] + "\t");
+			pw.write(gaussViolation + "\t");
 			pw.write("\n");
 			
 			pw.close();

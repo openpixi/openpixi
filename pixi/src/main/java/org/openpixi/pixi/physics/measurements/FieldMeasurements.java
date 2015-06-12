@@ -8,6 +8,7 @@ public class FieldMeasurements {
 	
 	EFieldSquared Esquared = new EFieldSquared();
 	BFieldSquared Bsquared = new BFieldSquared();
+	GaussLaw GaussConstraint = new GaussLaw();
 	
 	public double calculateEsquared(Grid grid) {
 		Esquared.reset();
@@ -31,6 +32,12 @@ public class FieldMeasurements {
 		Bsquared.reset();
 		grid.getCellIterator().execute(grid, Bsquared);
         return Bsquared.getSum(dir);
+	}
+	
+	public double calculateGaussConstraint(Grid grid) {
+		GaussConstraint.reset();
+		grid.getCellIterator().execute(grid, GaussConstraint);
+        return GaussConstraint.getSum();
 	}
 
 	private class EFieldSquared implements CellAction {
@@ -103,6 +110,31 @@ public class FieldMeasurements {
 				for (int i = 0; i < numDir; i++) {
 					sum[i] += res[i];   	// Synchronisierte Summenbildung
 				}
+			}
+		}
+	}
+	
+	private class GaussLaw implements CellAction {
+
+		private double sum;
+
+        public void reset() {
+        	sum = 0.0;
+        }
+        
+        public double getSum() {
+        	return sum;
+        }
+        
+        public void execute(Grid grid, int[] coor) {
+			int numDir = grid.getNumberOfDimensions();
+			double norm = 1.0;
+			for (int i = 0; i < numDir; i++) {
+				norm *= grid.getNumCells(i);
+			}
+			double result = grid.getGaussConstraintSquared(coor)/norm;
+			synchronized(this) {
+			       sum += result;   // Synchronisierte Summenbildung
 			}
 		}
 	}

@@ -686,5 +686,25 @@ public class Grid {
 
 		return res;
 	}
+	
+	public double getGaussConstraintSquared(int[] coor) {
+		
+		YMField gauss = cells[getCellIndex(coor)].getEmptyField(numCol);
+		YMField temp = cells[getCellIndex(coor)].getEmptyField(numCol);
+		double norm = 1.0/(at*as*gaugeCoupling);
+		int[] coor1 = new int[numDim];
+		int[] coor2 = new int[numDim];
+		System.arraycopy(coor, 0, coor1, 0, coor.length);
+		System.arraycopy(coor, 0, coor2, 0, coor.length);
+		
+		for (int i = 0; i < numDim; i++) {
+			coor1[i]++;
+			coor2[i]--;
+			temp.set(getU(coor1, i).adj().mult(getUnext(coor2, i)).getLinearizedAlgebraElement());//if(i == 1){System.out.println(coor1[i]);System.out.println(getE(coor, i).square());System.out.println(temp.mult(norm).square());}
+			gauss.addequate(getE(coor, i).sub(temp.mult(norm)));
+			//gauss.addequate(getE(coor, i).sub(getE(coor2, i)));
+		}
+		return gauss.square();
+	}
 
 }
