@@ -295,6 +295,10 @@ public class Grid {
 		return numDim;
 	}
 
+	public int getNumberOfColors() {
+		return numCol;
+	}
+
 	/**
 	 * Main constructor for the Grid class. Given a settings file it initializes the lattice and sets up the FieldSolver
 	 * and the CellIterator.
@@ -320,6 +324,29 @@ public class Grid {
 		this.cellIterator = settings.getCellIterator();
 		this.cellIterator.setNormalMode(numCells);
 		
+	}
+
+	/**
+	 * Constructor for the Grid class.
+	 * It creates an empty grid of the same size.
+	 * @param grid  Grid from which to copy dimensions
+	 */
+	public Grid(Grid grid) {
+		gaugeCoupling = grid.gaugeCoupling;
+		as = grid.as;
+		numCol = grid.numCol;
+		numDim = grid.numDim;
+		numCells = new int[numDim];
+
+		for(int i = 0; i < numDim; i++) {
+			numCells[i] = grid.numCells[i];
+		}
+
+		createGrid();
+
+		// TODO: Share iterators is ok?
+		this.fsolver = grid.fsolver;
+		this.cellIterator = grid.cellIterator;
 	}
 
 	/**

@@ -5,9 +5,12 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import javax.swing.Box;
 import org.openpixi.pixi.physics.Simulation;
+import org.openpixi.pixi.physics.fields.CoulombGauge;
+import org.openpixi.pixi.physics.grid.Grid;
 import org.openpixi.pixi.physics.particles.IParticle;
 import org.openpixi.pixi.ui.SimulationAnimation;
 import org.openpixi.pixi.ui.panel.properties.ColorProperties;
+import org.openpixi.pixi.ui.panel.properties.GaugeProperties;
 import org.openpixi.pixi.ui.panel.properties.ScaleProperties;
 
 /**
@@ -19,6 +22,7 @@ public class ElectricFieldPanel extends AnimationPanel {
 
 	ColorProperties colorProperties = new ColorProperties();
 	ScaleProperties scaleProperties = new ScaleProperties();
+	GaugeProperties gaugeProperties = new GaugeProperties();
 
 	/** Constructor */
 	public ElectricFieldPanel(SimulationAnimation simulationAnimation) {
@@ -56,6 +60,14 @@ public class ElectricFieldPanel extends AnimationPanel {
 
 		int colorIndex = colorProperties.getColorIndex();
 		int directionIndex = colorProperties.getDirectionIndex();
+
+		boolean useCoulombGauge = gaugeProperties.isCoulombGauge();
+		Grid drawGrid = s.grid;
+		if (useCoulombGauge) {
+			CoulombGauge coulombGauge = new CoulombGauge(s.grid);
+			coulombGauge.fixGauge(s.grid);
+			drawGrid = coulombGauge.getGaugedGrid();
+		}
 
 		// Draw particles on a central line:
 		for (int i = 0; i < s.particles.size(); i++) {
@@ -107,7 +119,7 @@ public class ElectricFieldPanel extends AnimationPanel {
 					In the flipped and translated coordinate system defined above we have to add the fields to the
 					center of the panel in order to get the expected result.
 				*/
-				double electricField = s.grid.getE(pos, directionIndex).get(colorIndex) / (as * g);
+				double electricField = drawGrid.getE(pos, directionIndex).get(colorIndex) / (as * g);
 				scaleProperties.putValue(electricField);
 				newValue = (int) (((0.5 + scaleE * electricField) * panelHeight));
 
@@ -140,7 +152,7 @@ public class ElectricFieldPanel extends AnimationPanel {
 					In the flipped and translated coordinate system defined above we have to add the fields to the
 					center of the panel in order to get the expected result.
 				*/
-				double gaugeField = s.grid.getU(pos, directionIndex).getLinearizedAlgebraElement().get(colorIndex) / (as * g);
+				double gaugeField = drawGrid.getU(pos, directionIndex).getLinearizedAlgebraElement().get(colorIndex) / (as * g);
 				scaleProperties.putValue(gaugeField);
 				newValue = (int) (((0.5 + scaleA * gaugeField) * panelHeight));
 
@@ -157,6 +169,7 @@ public class ElectricFieldPanel extends AnimationPanel {
 		addLabel(box, "Electric field panel");
 		colorProperties.addComponents(box);
 		scaleProperties.addComponents(box);
+		gaugeProperties.addComponents(box);
 	}
 
 	public ColorProperties getColorProperties() {
@@ -165,5 +178,9 @@ public class ElectricFieldPanel extends AnimationPanel {
 
 	public ScaleProperties getScaleProperties() {
 		return scaleProperties;
+	}
+
+	public GaugeProperties getGaugeProperties() {
+		return gaugeProperties;
 	}
 }
