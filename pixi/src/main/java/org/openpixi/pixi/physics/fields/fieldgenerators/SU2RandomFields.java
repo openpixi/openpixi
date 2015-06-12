@@ -19,12 +19,7 @@ public class SU2RandomFields implements IFieldGenerator {
 		this.numberOfDimensions = s.getNumberOfDimensions();
 		this.numberOfComponents = 3;
 
-		// Calculate number of cells in the grid.
-
-		int numberOfCells = 1;
-		for (int i = 0; i < this.numberOfDimensions; i++) {
-			numberOfCells *= g.getNumCells(i);
-		}
+		int numberOfCells = g.getNumberOfCells();
 
 		double magnitude = 10.0;
 

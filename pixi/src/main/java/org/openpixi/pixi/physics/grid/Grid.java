@@ -233,6 +233,18 @@ public class Grid {
 	}
 
 	/**
+	 * Calculate total number of cells in the grid.
+	 * @return Total number of cells in the grid.
+	 */
+	public int getNumberOfCells() {
+		int numberOfCells = 1;
+		for (int i = 0; i < numDim; i++) {
+			numberOfCells *= getNumCells(i);
+		}
+		return numberOfCells;
+	}
+
+	/**
 	 * Returns the lattice spacing of the grid.
 	 * @return  Lattice spacing of the grid.
 	 */
