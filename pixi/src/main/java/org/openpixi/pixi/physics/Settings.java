@@ -270,6 +270,17 @@ public class Settings {
 		this.simulationType = simulationType;
 	}
 
+	/**
+	 * Set dimension and number of grid cells in each direction.
+	 * @param gridCells
+	 */
+	public void setGridCells(int[] gridCells) {
+		setNumberOfDimensions(gridCells.length);
+		for (int i=0; i<gridCells.length; i++) {
+			setGridCells(i, gridCells[i]);
+		}
+	}
+
 	public void setGridCells(int i, int num) {
 		gridCells[i] = num;
 		simulationWidth[i] = gridStep*num;

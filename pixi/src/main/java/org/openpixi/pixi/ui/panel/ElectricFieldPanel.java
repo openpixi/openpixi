@@ -5,7 +5,7 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import javax.swing.Box;
 import org.openpixi.pixi.physics.Simulation;
-import org.openpixi.pixi.physics.fields.CoulombGauge;
+import org.openpixi.pixi.physics.gauge.CoulombGauge;
 import org.openpixi.pixi.physics.grid.Grid;
 import org.openpixi.pixi.physics.particles.IParticle;
 import org.openpixi.pixi.ui.SimulationAnimation;

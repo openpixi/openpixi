@@ -1,4 +1,4 @@
-package org.openpixi.pixi.physics.fields;
+package org.openpixi.pixi.physics.gauge;
 
 import org.openpixi.pixi.parallel.cellaccess.CellAction;
 import org.openpixi.pixi.physics.grid.Grid;
@@ -11,14 +11,10 @@ import edu.emory.mathcs.jtransforms.fft.DoubleFFT_3D;
 
 public class CoulombGauge {
 
-	GaugeTransform gaugeTransform = new GaugeTransform();
 	CalculateDivergence calculateDivergence = new CalculateDivergence();
 	InverseLaplaceOperator inverseLaplaceOperator = new InverseLaplaceOperator();
 
-	Grid gaugedGrid;
-
-	/** Gauge transformation */
-	private LinkMatrix[] g;
+	GaugeTransformation transformation;
 
 	private double[][][] fftArray;
 	private DoubleFFT_3D fft;
@@ -27,8 +23,8 @@ public class CoulombGauge {
 	 * Constructor. Obtain size of required grid from other grid.
 	 * @param grid Grid that should be duplicated in size.
 	 */
-	public CoulombGauge (Grid grid) {
-		gaugedGrid = new Grid(grid);
+	public CoulombGauge(Grid grid) {
+		transformation = new GaugeTransformation(grid);
 
 		if(grid.getNumberOfDimensions() != 3) {
 			System.out.println("Coulomb gauge transformation currently only available for 3 dimensions!");
@@ -41,37 +37,10 @@ public class CoulombGauge {
 	}
 
 	public void fixGauge(Grid grid) {
-
-		// Copy grid
-		int numberOfCells = grid.getNumberOfCells();
-
-		int colors = grid.getNumberOfColors();
-		if (colors != 2) {System.out.println("Coulomb gauge for SU(" + colors + ") not defined.\n");
-			return;
-		}
-
-		g = new SU2Matrix[numberOfCells];
-
-		// Reset the gauge transformation
-		for (int i = 0; i < g.length; i++) {
-			g[i] = new SU2Matrix(1, 0, 0, 0);
-		}
-
-		/*
-			Copy the U-field.
-		 */
-		for (int ci = 0; ci < numberOfCells; ci++) {
-			int[] cellPosition = grid.getCellPos(ci);
-			for (int d = 0; d < grid.getNumberOfDimensions(); d++) {
-				LinkMatrix U = grid.getU(cellPosition, d);
-				gaugedGrid.setU(cellPosition, d, U);
-				YMField E = grid.getE(cellPosition, d);
-				gaugedGrid.setE(cellPosition, d, E);
-			}
-		}
+		transformation.copyGrid(grid);
 
 		// TODO: Iterate until required accuracy is reached.
-		for (int j = 0; j < 3; j++) {
+		for (int j = 0; j < 1; j++) {
 			double divergenceSquaredSum = iterateCoulombGauge();
 			System.out.println("Iteration " + j + " - Divergence U: " + divergenceSquaredSum);
 		}
@@ -84,70 +53,50 @@ public class CoulombGauge {
 	private double iterateCoulombGauge() {
 		double divergenceSquaredSum = 0;
 
-		for (int color = 0; color < gaugedGrid.getNumberOfColors(); color++) {
+		int colors = transformation.gaugedGrid.getNumberOfColors();
+		for (int color = 0; color < colors; color++) {
 			// Calculate Divergence and put into fftArray
 			calculateDivergence.setColorAndResetSum(0);
-			gaugedGrid.getCellIterator().execute(gaugedGrid, calculateDivergence);
+			transformation.gaugedGrid.getCellIterator().execute(transformation.gaugedGrid, calculateDivergence);
 			divergenceSquaredSum += calculateDivergence.getDivergenceSquaredSum();
 
 			// Solve Poisson's equation by applying the inverse Laplace operator
 			// for discrete lattice derivatives in Fourier space:
 			fft.complexForward(fftArray);
-			gaugedGrid.getCellIterator().execute(gaugedGrid, inverseLaplaceOperator);
+			transformation.gaugedGrid.getCellIterator().execute(transformation.gaugedGrid, inverseLaplaceOperator);
 			fft.complexInverse(fftArray, true);
 
 			// Add result to gauge transformation
-			for (int i = 0; i < g.length; i++) {
-				int[] coor = gaugedGrid.getCellPos(i);
+			for (int i = 0; i < transformation.g.length; i++) {
+				int[] coor = transformation.gaugedGrid.getCellPos(i);
 
 				// real part:
 				double value = fftArray[coor[0]][coor[1]][2 * coor[2]];
-				g[i].set(color, value);
+				transformation.g[i].set(color, value);
 			}
 		}
 
 		// Calculate g(x) = exp(i g psi^\dagger)
-		for (int i = 0; i < g.length; i++) {
+		for (int i = 0; i < transformation.g.length; i++) {
 			// psi is stored in g for convenience:
-			SU2Field psidagger = (SU2Field) g[i].adj().proj();
-			g[i] = psidagger.getLinkExact();
+			SU2Field psidagger = (SU2Field) transformation.g[i].adj().proj();
+			transformation.g[i] = psidagger.getLinkExact();
 		}
 
 		/*
 			Cycle through each cell and apply the gauge transformation
 		 */
-		gaugedGrid.getCellIterator().execute(gaugedGrid, gaugeTransform);
+		transformation.applyGaugeTransformation();
+
 		return divergenceSquaredSum;
 	}
 
 	public Grid getGaugedGrid() {
-		return gaugedGrid;
+		return transformation.gaugedGrid;
 	}
 
-	private class GaugeTransform implements CellAction {
-		public void execute(Grid grid, int[] coor) {
-			int cellIndex = grid.getCellIndex(coor);
-			for (int dir = 0; dir < grid.getNumberOfDimensions(); dir++) {
-				/*
-				 * U_i(x) -> g(x) U_i(x) g^\dagger(x+i)
-				 */
-				LinkMatrix U = grid.getU(coor, dir);
-				int shiftedCellIndex = grid.getCellIndex(grid.shift(coor, dir, 1));
-				LinkMatrix gdaggershifted = g[shiftedCellIndex].adj();
-				U = g[cellIndex].mult(U).mult(gdaggershifted);
-				grid.setU(coor, dir, U);
-
-				/*
-				 * E_i(x) -> g(x) E_i(x) g^\dagger(x)
-				 */
-				YMField E = grid.getE(coor, dir);
-				LinkMatrix gdagger = g[cellIndex].adj();
-				E = (g[cellIndex].mult(E.getLink()).mult(gdagger)).getLinearizedAlgebraElement();
-				// TODO: rather work with exact mapping?
-				//E = (g[cellIndex].mult(E.getLinkExact()).mult(gdagger)).getAlgebraElement();
-				grid.setE(coor, dir, E);
-			}
-		}
+	public LinkMatrix[] getGaugeTransformation() {
+		return transformation.g;
 	}
 
 	private class CalculateDivergence implements CellAction {
