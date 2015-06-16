@@ -11,9 +11,9 @@ public class RandomGauge extends GaugeTransformation {
 	private RandomGaugeTransformationAction randomGaugeTransformationAction = new RandomGaugeTransformationAction();
 
 	/**
-	 * Accuracy goal for the transformation.
+	 * Random vector in color space.
 	 */
-	private double[] randomVector = new double[] {0, 0, 0};
+	private double[] randomVector;
 
 	public void setRandomVector(double[] randomVector) {
 		this.randomVector = randomVector;
@@ -25,6 +25,7 @@ public class RandomGauge extends GaugeTransformation {
 	 */
 	public RandomGauge(Grid grid) {
 		super(grid);
+		setRandomVector(new double[] {0, 0, 0});
 	}
 
 	public void applyGaugeTransformation(Grid grid) {
