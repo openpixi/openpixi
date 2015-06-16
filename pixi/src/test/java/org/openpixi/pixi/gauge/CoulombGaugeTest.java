@@ -16,76 +16,44 @@ import org.openpixi.pixi.physics.grid.SU2Matrix;
 
 public class CoulombGaugeTest {
 
+	private boolean printDebugOutput = false;
+
 	@Test
-	public void testAbelianCoulombGauge() {
-		// Initialize simulation
-
-		Settings settings = new Settings();
-		settings.setNumberOfColors(2);
-		settings.setGridCells(new int[] {2, 2, 2});
-
-		double[] k = new double[] {0, 0, 0};
-		double[] amplitudeSpatialDirection = new double[] {1, 0, 0};
-		double[] amplitudeColorDirection = new double[] {1, 0, 0};
-		double amplitudeMagnitude = 1;
-		SU2PlaneWave constantfield = new SU2PlaneWave(k, amplitudeSpatialDirection, amplitudeColorDirection, amplitudeMagnitude);
-
-		settings.addFieldGenerator(constantfield);
-
-		Simulation s = new Simulation(settings);
-		Grid grid = s.grid;
-
-		GaugeTransformation transformation = new GaugeTransformation(grid);
-		transformation.copyGrid(grid);
-
-//		printU("Start: ", transformation.gaugedGrid);
-
-		CoulombGauge coulomb = new CoulombGauge(transformation.gaugedGrid);
-		coulomb.fixGauge(transformation.gaugedGrid);
-
-		Double[] convergenceList = coulomb.getLastConvergence();
-//		printConvergence(convergenceList);
-
-		Assert.assertEquals(convergenceList.length, 1);
-		Assert.assertTrue(convergenceList[convergenceList.length -1] < coulomb.getAccuracyGoal());
-
-//		printU("Coulomb gauge: ", coulomb.getGaugedGrid());
-//		printg("Coulomb g:", coulomb.getGaugeTransformation());
-
-		// Apply gauge transformation
-		LinkMatrix g1 = (new SU2Field(.1, 0, 0)).getLinkExact();
-		transformation.g[0] = transformation.g[0].mult(g1);
-
-		transformation.applyGaugeTransformation();
-
-		// Apply Coulomb gauge transformation:
-		coulomb = new CoulombGauge(transformation.gaugedGrid);
-		coulomb.fixGauge(transformation.gaugedGrid);
-
-		convergenceList = coulomb.getLastConvergence();
-		Assert.assertEquals(convergenceList.length, 2);
-		Assert.assertTrue(convergenceList[convergenceList.length -1] < coulomb.getAccuracyGoal());
-
-//		printConvergence(convergenceList);
-/*
-		printU("Test transformation: ", transformation.gaugedGrid);
-		printg("Test g:", transformation.g);
-
-		for (int i = 0; i < 3; i++) {
-			System.out.println("Iteration: " + i);
-			coulomb = new CoulombGauge(transformation.gaugedGrid);
-			coulomb.fixGauge(transformation.gaugedGrid);
-
-			printU("Coulomb gauge: ", coulomb.getGaugedGrid());
-			printg("Coulomb g:", coulomb.getGaugeTransformation());
-
-			transformation.copyGrid(coulomb.getGaugedGrid());
+	public void testTrivialCoulombConfiguration() {
+		if (printDebugOutput) {
+			System.out.println("Trivial Coulomb Configuration");
 		}
-*/
+		Double[] convergenceList = testForSU2Fields(new SU2Field(0, 0, 0), new SU2Field(0, 0, 0));
+
+		// Trivial Coulomb configurations can be recognized
+		// after 1 iteration:
+		Assert.assertEquals(convergenceList.length, 1);
 	}
 
 	@Test
-	public void testNonAbelianCoulombGauge() {
+	public void testAbelianCoulombConfiguration() {
+		if (printDebugOutput) {
+			System.out.println("Abelian Coulomb Configuration");
+		}
+		Double[] convergenceList = testForSU2Fields(new SU2Field(.1, 0, 0), new SU2Field(0, 0, 0));
+
+		// Abelian configurations should be Coulomb gauge transformed
+		// in exact 2 iterations:
+		Assert.assertEquals(convergenceList.length, 2);
+	}
+
+	@Test
+	public void testNonAbelianCoulombConfiguration() {
+		if (printDebugOutput) {
+			System.out.println("NonAbelian Coulomb Configuration");
+		}
+		Double[] convergenceList = testForSU2Fields(new SU2Field(.1, 0, 0), new SU2Field(0, .1, 0));
+
+		// NonAblian configurations require more than 2 steps:
+		Assert.assertTrue(convergenceList.length > 2);
+	}
+
+	private Double[] testForSU2Fields(SU2Field field1, SU2Field field2) {
 		// Initialize simulation
 
 		Settings settings = new Settings();
@@ -95,7 +63,7 @@ public class CoulombGaugeTest {
 		double[] k = new double[] {0, 0, 0};
 		double[] amplitudeSpatialDirection = new double[] {1, 0, 0};
 		double[] amplitudeColorDirection = new double[] {1, 0, 0};
-		double amplitudeMagnitude = 1;
+		double amplitudeMagnitude = 0;
 		SU2PlaneWave constantfield = new SU2PlaneWave(k, amplitudeSpatialDirection, amplitudeColorDirection, amplitudeMagnitude);
 
 		settings.addFieldGenerator(constantfield);
@@ -104,73 +72,42 @@ public class CoulombGaugeTest {
 		Grid grid = s.grid;
 
 		GaugeTransformation transformation = new GaugeTransformation(grid);
-		transformation.copyGrid(grid);
 
-//		printU("Start: ", transformation.gaugedGrid);
+		// Apply some test gauge transformation
+		LinkMatrix g1 = field1.getLinkExact();
+		transformation.getG()[0] = transformation.getG()[0].mult(g1);
 
-		CoulombGauge coulomb = new CoulombGauge(transformation.gaugedGrid);
-		coulomb.fixGauge(transformation.gaugedGrid);
+		LinkMatrix g2 = field2.getLinkExact();
+		transformation.getG()[0] = transformation.getG()[0].mult(g2);
+
+		transformation.applyGaugeTransformation(grid);
+
+		// Apply Coulomb gauge transformation:
+		CoulombGauge coulomb = new CoulombGauge(grid);
+		coulomb.applyGaugeTransformation(grid);
 
 		Double[] convergenceList = coulomb.getLastConvergence();
-//		printConvergence(convergenceList);
-
-		Assert.assertEquals(convergenceList.length, 1);
 		Assert.assertTrue(convergenceList[convergenceList.length -1] < coulomb.getAccuracyGoal());
 
-//		printU("Coulomb gauge: ", coulomb.getGaugedGrid());
-//		printg("Coulomb g:", coulomb.getGaugeTransformation());
-
-		// Apply gauge transformation
-		LinkMatrix g1 = (new SU2Field(.1, 0, 0)).getLinkExact();
-		transformation.g[0] = transformation.g[0].mult(g1);
-
-		transformation.applyGaugeTransformation();
-
-		// Apply Coulomb gauge transformation:
-		coulomb = new CoulombGauge(transformation.gaugedGrid);
-		coulomb.fixGauge(transformation.gaugedGrid);
-
-		Assert.assertEquals(convergenceList.length, 1);
-		Assert.assertTrue(convergenceList[convergenceList.length -1] < coulomb.getAccuracyGoal());
-
-		LinkMatrix g2 = (new SU2Field(0, 0, .1)).getLinkExact();
-		transformation.g[1] = transformation.g[1].mult(g2);
-
-		transformation.applyGaugeTransformation();
-
-		// Apply Coulomb gauge transformation:
-		coulomb = new CoulombGauge(transformation.gaugedGrid);
-		coulomb.fixGauge(transformation.gaugedGrid);
-
-		convergenceList = coulomb.getLastConvergence();
-		Assert.assertTrue(convergenceList.length > 3); // Need a few iterations
-		Assert.assertTrue(convergenceList[convergenceList.length -1] < coulomb.getAccuracyGoal());
-
-//		printConvergence(convergenceList);
-/*
-		printU("Test transformation: ", transformation.gaugedGrid);
-		printg("Test g:", transformation.g);
-
-		for (int i = 0; i < 3; i++) {
-			System.out.println("Iteration: " + i);
-			coulomb = new CoulombGauge(transformation.gaugedGrid);
-			coulomb.fixGauge(transformation.gaugedGrid);
-
-			printU("Coulomb gauge: ", coulomb.getGaugedGrid());
-			printg("Coulomb g:", coulomb.getGaugeTransformation());
-
-			transformation.copyGrid(coulomb.getGaugedGrid());
+		if (printDebugOutput) {
+			printConvergence(convergenceList);
+			printU("Coulomb gauge: ", grid);
+			printg("Coulomb g:", coulomb.getG());
+			System.out.println();
 		}
-*/
+		return convergenceList;
 	}
 
 	/**
 	 * Output for debugging
 	 */
 	private void printConvergence(Double[] convergenceList) {
+		System.out.println("Number of iterations: " + convergenceList.length);
+		System.out.print("Convergance: ");
 		for (Double convergence : convergenceList) {
-			System.out.println("convergence: " + convergence);
+			System.out.print("" + convergence + ", ");
 		}
+		System.out.println();
 	}
 	/**
 	 * Output for debugging

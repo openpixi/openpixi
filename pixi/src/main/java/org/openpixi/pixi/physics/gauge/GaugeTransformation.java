@@ -8,62 +8,52 @@ import org.openpixi.pixi.physics.grid.YMField;
 
 public class GaugeTransformation {
 
-	GaugeTransform gaugeTransform = new GaugeTransform();
-
-	public Grid gaugedGrid;
+	private GaugeTransformationAction gaugeTransformationAction = new GaugeTransformationAction();
 
 	/** Gauge transformation */
-	public LinkMatrix[] g;
+	private LinkMatrix[] g;
 
+	/** Get gauge transformation array */
+	public LinkMatrix[] getG() {
+		return g;
+	}
 
 	/**
 	 * Constructor. Obtain size of required grid from other grid.
 	 * @param grid Grid that should be duplicated in size.
 	 */
 	public GaugeTransformation(Grid grid) {
-		gaugedGrid = new Grid(grid);
+		resetGaugeTransformation(grid);
 	}
 
 	/**
-	 * Copy grid and reset gauge transformation
+	 * Reset gauge transformation
+	 * @param grid
 	 */
-	public void copyGrid(Grid grid) {
-
-
-		// Copy grid
+	private void resetGaugeTransformation(Grid grid) {
 		int numberOfCells = grid.getNumberOfCells();
 
 		int colors = grid.getNumberOfColors();
-		if (colors != 2) {System.out.println("Coulomb gauge for SU(" + colors + ") not defined.\n");
-			return;
-		}
-
-		g = new SU2Matrix[numberOfCells];
-
-		// Reset the gauge transformation
-		for (int i = 0; i < g.length; i++) {
-			g[i] = new SU2Matrix(1, 0, 0, 0);
-		}
-
-		/*
-			Copy the U-field.
-		 */
-		for (int ci = 0; ci < numberOfCells; ci++) {
-			int[] cellPosition = grid.getCellPos(ci);
-			for (int d = 0; d < grid.getNumberOfDimensions(); d++) {
-				LinkMatrix U = grid.getU(cellPosition, d);
-				gaugedGrid.setU(cellPosition, d, U);
-				YMField E = grid.getE(cellPosition, d);
-				gaugedGrid.setE(cellPosition, d, E);
+		if (colors == 2) {
+			g = new SU2Matrix[numberOfCells];
+			for (int i = 0; i < g.length; i++) {
+				g[i] = new SU2Matrix(1, 0, 0, 0);
 			}
+		} else {
+			System.out.println("Gauge transformation for SU(" + colors + ") not defined.\n");
 		}
 	}
 
-	public void applyGaugeTransformation() {
-		gaugedGrid.getCellIterator().execute(gaugedGrid, gaugeTransform);
+	/**
+	 * Apply the current gauge transformation to the grid
+	 *
+	 * @param grid
+	 */
+	public void applyGaugeTransformation(Grid grid) {
+		grid.getCellIterator().execute(grid, gaugeTransformationAction);
 	}
 
-	private class GaugeTransform implements CellAction {
+	private class GaugeTransformationAction implements CellAction {
 		public void execute(Grid grid, int[] coor) {
 			int cellIndex = grid.getCellIndex(coor);
 			for (int dir = 0; dir < grid.getNumberOfDimensions(); dir++) {

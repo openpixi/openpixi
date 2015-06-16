@@ -5,19 +5,15 @@ import java.util.List;
 
 import org.openpixi.pixi.parallel.cellaccess.CellAction;
 import org.openpixi.pixi.physics.grid.Grid;
-import org.openpixi.pixi.physics.grid.LinkMatrix;
 import org.openpixi.pixi.physics.grid.SU2Field;
-import org.openpixi.pixi.physics.grid.SU2Matrix;
 import org.openpixi.pixi.physics.grid.YMField;
 
 import edu.emory.mathcs.jtransforms.fft.DoubleFFT_3D;
 
-public class CoulombGauge {
+public class CoulombGauge extends GaugeTransformation {
 
 	CalculateDivergence calculateDivergence = new CalculateDivergence();
 	InverseLaplaceOperator inverseLaplaceOperator = new InverseLaplaceOperator();
-
-	GaugeTransformation transformation;
 
 	private double[][][] fftArray;
 	private DoubleFFT_3D fft;
@@ -50,7 +46,7 @@ public class CoulombGauge {
 	 * @param grid Grid that should be duplicated in size.
 	 */
 	public CoulombGauge(Grid grid) {
-		transformation = new GaugeTransformation(grid);
+		super(grid);
 
 		if(grid.getNumberOfDimensions() != 3) {
 			System.out.println("Coulomb gauge transformation currently only available for 3 dimensions!");
@@ -62,14 +58,12 @@ public class CoulombGauge {
 		fft = new DoubleFFT_3D(grid.getNumCells(0), grid.getNumCells(1), grid.getNumCells(2));
 	}
 
-	public void fixGauge(Grid grid) {
-		transformation.copyGrid(grid);
-
+	public void applyGaugeTransformation(Grid grid) {
 		int iteration = 0;
 		double divergenceSquaredSum = 0;
 		lastConvergence = new ArrayList<Double>(maxIteration);
 		while (iteration < maxIteration) {
-			divergenceSquaredSum = iterateCoulombGauge();
+			divergenceSquaredSum = iterateCoulombGauge(grid);
 			lastConvergence.add(divergenceSquaredSum);
 			iteration++;
 			//System.out.println("Iteration " + iteration + " - Divergence U: " + divergenceSquaredSum);
@@ -87,55 +81,47 @@ public class CoulombGauge {
 	 * Performs a single iteration step.
 	 * @return previous divergence
 	 */
-	private double iterateCoulombGauge() {
+	private double iterateCoulombGauge(Grid grid) {
 		double divergenceSquaredSum = 0;
 
-		int colors = transformation.gaugedGrid.getNumberOfColors();
+		int colors = grid.getNumberOfColors();
 		for (int color = 0; color < colors; color++) {
 			// Calculate Divergence and put into fftArray
 			calculateDivergence.setColorAndResetSum(color);
-			transformation.gaugedGrid.getCellIterator().execute(transformation.gaugedGrid, calculateDivergence);
+			grid.getCellIterator().execute(grid, calculateDivergence);
 			divergenceSquaredSum += calculateDivergence.getDivergenceSquaredSum();
 
 			// Solve Poisson's equation by applying the inverse Laplace operator
 			// for discrete lattice derivatives in Fourier space:
 			fft.complexForward(fftArray);
-			transformation.gaugedGrid.getCellIterator().execute(transformation.gaugedGrid, inverseLaplaceOperator);
+			grid.getCellIterator().execute(grid, inverseLaplaceOperator);
 			fft.complexInverse(fftArray, true);
 
 			// Add result to gauge transformation
-			for (int i = 0; i < transformation.g.length; i++) {
-				int[] coor = transformation.gaugedGrid.getCellPos(i);
+			for (int i = 0; i < getG().length; i++) {
+				int[] coor = grid.getCellPos(i);
 
 				// real part:
 				double value = fftArray[coor[0]][coor[1]][2 * coor[2]];
 
 				// Store values temporarily in SU2Matrix instead of SU2Field:
-				transformation.g[i].set(color + 1, value);
+				getG()[i].set(color + 1, value);
 			}
 		}
 
 		// Calculate g(x) = exp(i g psi^\dagger)
-		for (int i = 0; i < transformation.g.length; i++) {
+		for (int i = 0; i < getG().length; i++) {
 			// psi is stored in g for convenience:
-			SU2Field psidagger = (SU2Field) transformation.g[i].adj().proj();
-			transformation.g[i] = psidagger.getLinkExact();
+			SU2Field psidagger = (SU2Field) getG()[i].adj().proj();
+			getG()[i] = psidagger.getLinkExact();
 		}
 
 		/*
 			Cycle through each cell and apply the gauge transformation
 		 */
-		transformation.applyGaugeTransformation();
+		super.applyGaugeTransformation(grid);
 
 		return divergenceSquaredSum;
-	}
-
-	public Grid getGaugedGrid() {
-		return transformation.gaugedGrid;
-	}
-
-	public LinkMatrix[] getGaugeTransformation() {
-		return transformation.g;
 	}
 
 	private class CalculateDivergence implements CellAction {

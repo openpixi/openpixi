@@ -65,8 +65,9 @@ public class ElectricFieldPanel extends AnimationPanel {
 		Grid drawGrid = s.grid;
 		if (useCoulombGauge) {
 			CoulombGauge coulombGauge = new CoulombGauge(s.grid);
-			coulombGauge.fixGauge(s.grid);
-			drawGrid = coulombGauge.getGaugedGrid();
+			Grid gridCopy = new Grid(s.grid);
+			coulombGauge.applyGaugeTransformation(gridCopy);
+			drawGrid = gridCopy;
 		}
 
 		// Draw particles on a central line:

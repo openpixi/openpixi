@@ -328,7 +328,7 @@ public class Grid {
 
 	/**
 	 * Constructor for the Grid class.
-	 * It creates an empty grid of the same size.
+	 * It creates a grid of the same size and deep copies U and E fields.
 	 * @param grid  Grid from which to copy dimensions
 	 */
 	public Grid(Grid grid) {
@@ -344,9 +344,29 @@ public class Grid {
 
 		createGrid();
 
+		copyValuesFrom(grid);
+
 		// TODO: Share iterators is ok?
 		this.fsolver = grid.fsolver;
 		this.cellIterator = grid.cellIterator;
+	}
+
+	/**
+	 * Copy U and E field values from one grid to another.
+	 * @param grid
+	 */
+	private void copyValuesFrom(Grid grid) {
+		int numberOfCells = grid.getNumberOfCells();
+		for (int ci = 0; ci < numberOfCells; ci++) {
+			int[] cellPosition = grid.getCellPos(ci);
+			for (int d = 0; d < numDim; d++) {
+				LinkMatrix U = grid.getU(cellPosition, d);
+				this.setU(cellPosition, d, U);
+				YMField E = grid.getE(cellPosition, d);
+				this.setE(cellPosition, d, E);
+				// TODO: if desired: Copy other fields as well.
+			}
+		}
 	}
 
 	/**
