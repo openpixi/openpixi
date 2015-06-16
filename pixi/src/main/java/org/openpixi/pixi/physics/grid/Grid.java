@@ -245,7 +245,7 @@ public class Grid {
 	 * Calculate total number of cells in the grid.
 	 * @return Total number of cells in the grid.
 	 */
-	public int getNumberOfCells() {
+	public int getTotalNumberOfCells() {
 		int numberOfCells = 1;
 		for (int i = 0; i < numDim; i++) {
 			numberOfCells *= getNumCells(i);
@@ -365,7 +365,7 @@ public class Grid {
 	 * @param grid
 	 */
 	private void copyValuesFrom(Grid grid) {
-		int numberOfCells = grid.getNumberOfCells();
+		int numberOfCells = grid.getTotalNumberOfCells();
 		for (int ci = 0; ci < numberOfCells; ci++) {
 			int[] cellPosition = grid.getCellPos(ci);
 			for (int d = 0; d < numDim; d++) {

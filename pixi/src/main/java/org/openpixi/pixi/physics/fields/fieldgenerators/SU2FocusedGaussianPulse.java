@@ -78,7 +78,7 @@ public class SU2FocusedGaussianPulse implements IFieldGenerator {
 					this.amplitudeMagnitude * this.amplitudeSpatialDirection[i] * this.amplitudeColorDirection[2]);
 		}
 
-		int numberOfCells = grid.getNumberOfCells();
+		int numberOfCells = grid.getTotalNumberOfCells();
 
 		/*
 			Cycle through each cell and apply the focused gaussian pulse configuration to the links and electric fields.

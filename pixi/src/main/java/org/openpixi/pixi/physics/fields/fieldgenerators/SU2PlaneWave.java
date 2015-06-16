@@ -53,7 +53,7 @@ public class SU2PlaneWave implements IFieldGenerator {
 					this.amplitudeMagnitude * this.amplitudeSpatialDirection[i] * this.amplitudeColorDirection[2]);
 		}
 
-		int numberOfCells = grid.getNumberOfCells();
+		int numberOfCells = grid.getTotalNumberOfCells();
 
 		/*
 			Cycle through each cell and apply the plane wave configuration to the links and electric fields.

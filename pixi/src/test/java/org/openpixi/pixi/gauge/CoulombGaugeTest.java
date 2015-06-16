@@ -116,7 +116,7 @@ public class CoulombGaugeTest {
 	 */
 	private void printU(String string, Grid grid) {
 		System.out.print(string + ": ");
-		for (int i = 0; i < grid.getNumberOfCells(); i++) {
+		for (int i = 0; i < grid.getTotalNumberOfCells(); i++) {
 			int[] coor = grid.getCellPos(i);
 			System.out.print("" + grid.getCell(coor).getU(0).get(0) + "|" + grid.getCell(coor).getU(0).get(1) + ", ");
 		}

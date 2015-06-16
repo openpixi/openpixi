@@ -61,7 +61,7 @@ public class SU2PlanePulse implements IFieldGenerator {
 					this.amplitudeMagnitude * this.amplitudeSpatialDirection[i] * this.amplitudeColorDirection[2]);
 		}
 
-		int numberOfCells = grid.getNumberOfCells();
+		int numberOfCells = grid.getTotalNumberOfCells();
 
 		/*
 			Cycle through each cell and apply the plane pulse configuration to the links and electric fields.

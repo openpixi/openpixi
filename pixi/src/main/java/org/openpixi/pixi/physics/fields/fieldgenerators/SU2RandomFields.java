@@ -19,7 +19,7 @@ public class SU2RandomFields implements IFieldGenerator {
 		this.numberOfDimensions = s.getNumberOfDimensions();
 		this.numberOfComponents = 3;
 
-		int numberOfCells = g.getNumberOfCells();
+		int numberOfCells = g.getTotalNumberOfCells();
 
 		double magnitude = 10.0;
 

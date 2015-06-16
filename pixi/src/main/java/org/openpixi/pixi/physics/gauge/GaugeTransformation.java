@@ -31,7 +31,7 @@ public class GaugeTransformation {
 	 * @param grid
 	 */
 	private void resetGaugeTransformation(Grid grid) {
-		int numberOfCells = grid.getNumberOfCells();
+		int numberOfCells = grid.getTotalNumberOfCells();
 
 		int colors = grid.getNumberOfColors();
 		if (colors == 2) {
