@@ -6,6 +6,7 @@ import java.awt.Graphics2D;
 import javax.swing.Box;
 import org.openpixi.pixi.physics.Simulation;
 import org.openpixi.pixi.physics.gauge.CoulombGauge;
+import org.openpixi.pixi.physics.gauge.RandomGauge;
 import org.openpixi.pixi.physics.grid.Grid;
 import org.openpixi.pixi.physics.particles.IParticle;
 import org.openpixi.pixi.ui.SimulationAnimation;
@@ -68,6 +69,13 @@ public class ElectricFieldPanel extends AnimationPanel {
 			Grid gridCopy = new Grid(s.grid);
 			coulombGauge.applyGaugeTransformation(gridCopy);
 			drawGrid = gridCopy;
+
+//			// Test random gauge:
+//			RandomGauge randomGauge = new RandomGauge(s.grid);
+//			randomGauge.setRandomVector(new double[] {0, 1, 0});
+//			Grid gridCopy = new Grid(s.grid);
+//			randomGauge.applyGaugeTransformation(gridCopy);
+//			drawGrid = gridCopy;
 		}
 
 		// Draw particles on a central line:

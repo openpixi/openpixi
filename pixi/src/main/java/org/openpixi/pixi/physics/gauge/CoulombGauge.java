@@ -8,6 +8,9 @@ import org.openpixi.pixi.physics.grid.Grid;
 import org.openpixi.pixi.physics.grid.SU2Field;
 import org.openpixi.pixi.physics.grid.YMField;
 
+/**
+ * Appy the Coulomb gauge transformation to a grid.
+ */
 public class CoulombGauge extends GaugeTransformation {
 
 	CalculateDivergence calculateDivergence = new CalculateDivergence();
