@@ -146,7 +146,11 @@ public class CoulombGauge {
 				double Ny = grid.getNumCells(1);
 				double Nz = grid.getNumCells(2);
 
-				double inverseLaplace = -0.5 / ((Math.cos(2 * Math.PI * kx / Nx)
+//				double inverseLaplace = -0.5 / ((Math.cos(2 * Math.PI * kx / Nx)
+//						+ Math.cos(2 * Math.PI * ky / Ny)
+//						+ Math.cos(2 * Math.PI * kz / Nz) - 3.));
+
+				double inverseLaplace = +3.25 / ((Math.cos(2 * Math.PI * kx / Nx)
 						+ Math.cos(2 * Math.PI * ky / Ny)
 						+ Math.cos(2 * Math.PI * kz / Nz) - 3.));
 

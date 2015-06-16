@@ -20,7 +20,7 @@ public class CoulombGaugeTest {
 
 		Settings settings = new Settings();
 		settings.setNumberOfColors(2);
-		settings.setGridCells(new int[] {2, 2, 2});
+		settings.setGridCells(new int[] {3, 3, 3});
 
 		double[] k = new double[] {0, 0, 0};
 		double[] amplitudeSpatialDirection = new double[] {1, 0, 0};
@@ -44,19 +44,23 @@ public class CoulombGaugeTest {
 		printU("Coulomb gauge: ", coulomb.getGaugedGrid());
 		printg("Coulomb g:", coulomb.getGaugeTransformation());
 
-		LinkMatrix g1 = (new SU2Field(-1, 0, 0)).getLinkExact();
+		LinkMatrix g1 = (new SU2Field(.001, 0, 0)).getLinkExact();
 		transformation.g[0] = transformation.g[0].mult(g1);
 		transformation.applyGaugeTransformation();
 
 		printU("Test transformation: ", transformation.gaugedGrid);
 		printg("Test g:", transformation.g);
 
-		coulomb = new CoulombGauge(transformation.gaugedGrid);
-		coulomb.fixGauge(transformation.gaugedGrid);
+		for (int i = 0; i < 3; i++) {
+			System.out.println("Iteration: " + i);
+			coulomb = new CoulombGauge(transformation.gaugedGrid);
+			coulomb.fixGauge(transformation.gaugedGrid);
 
-		printU("Coulomb gauge: ", coulomb.getGaugedGrid());
-		printg("Coulomb g:", coulomb.getGaugeTransformation());
+			printU("Coulomb gauge: ", coulomb.getGaugedGrid());
+			printg("Coulomb g:", coulomb.getGaugeTransformation());
 
+			transformation.copyGrid(coulomb.getGaugedGrid());
+		}
 	}
 
 	private void printU(String string, Grid grid) {
