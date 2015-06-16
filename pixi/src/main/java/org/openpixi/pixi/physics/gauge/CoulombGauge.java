@@ -1,5 +1,8 @@
 package org.openpixi.pixi.physics.gauge;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.openpixi.pixi.parallel.cellaccess.CellAction;
 import org.openpixi.pixi.physics.grid.Grid;
 import org.openpixi.pixi.physics.grid.LinkMatrix;
@@ -18,6 +21,29 @@ public class CoulombGauge {
 
 	private double[][][] fftArray;
 	private DoubleFFT_3D fft;
+
+	/**
+	 * Maximum number of interations.
+	 */
+	private int maxIteration = 100;
+
+	/**
+	 * Accuracy goal for the transformation.
+	 */
+	private double accuracyGoal = 1e-18;
+
+	/**
+	 * Remember a list of divergence.
+	 */
+	private List<Double> lastConvergence = null;
+
+	public double getAccuracyGoal() {
+		return accuracyGoal;
+	}
+
+	public Double[] getLastConvergence() {
+		return lastConvergence.toArray(new Double[0]);
+	}
 
 	/**
 	 * Constructor. Obtain size of required grid from other grid.
@@ -39,10 +65,21 @@ public class CoulombGauge {
 	public void fixGauge(Grid grid) {
 		transformation.copyGrid(grid);
 
-		// TODO: Iterate until required accuracy is reached.
-		for (int j = 0; j < 1; j++) {
-			double divergenceSquaredSum = iterateCoulombGauge();
-			System.out.println("Iteration " + j + " - Divergence U: " + divergenceSquaredSum);
+		int iteration = 0;
+		double divergenceSquaredSum = 0;
+		lastConvergence = new ArrayList<Double>(maxIteration);
+		while (iteration < maxIteration) {
+			divergenceSquaredSum = iterateCoulombGauge();
+			lastConvergence.add(divergenceSquaredSum);
+			iteration++;
+			//System.out.println("Iteration " + iteration + " - Divergence U: " + divergenceSquaredSum);
+			if (divergenceSquaredSum < accuracyGoal) {
+				break;
+			}
+		}
+		//System.out.println("Accuracy goal reached after " + iteration + " iterations.");
+		if (divergenceSquaredSum >= accuracyGoal) {
+			System.out.println("Warning: accuracy goal NOT reached within " + iteration + " iterations.");
 		}
 	}
 
