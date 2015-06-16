@@ -8,15 +8,13 @@ import org.openpixi.pixi.physics.grid.Grid;
 import org.openpixi.pixi.physics.grid.SU2Field;
 import org.openpixi.pixi.physics.grid.YMField;
 
-import edu.emory.mathcs.jtransforms.fft.DoubleFFT_3D;
-
 public class CoulombGauge extends GaugeTransformation {
 
 	CalculateDivergence calculateDivergence = new CalculateDivergence();
 	InverseLaplaceOperator inverseLaplaceOperator = new InverseLaplaceOperator();
 
 	private double[] fftArray;
-	private DoubleFFT_3D fft;
+	private DoubleFFTWrapper fft;
 
 	/**
 	 * Maximum number of interations.
@@ -47,15 +45,8 @@ public class CoulombGauge extends GaugeTransformation {
 	 */
 	public CoulombGauge(Grid grid) {
 		super(grid);
-
-		if(grid.getNumberOfDimensions() != 3) {
-			System.out.println("Coulomb gauge transformation currently only available for 3 dimensions!");
-		}
-		// JTransform requires twice as many rows in the last column,
-		// for real and imaginary parts
-		fftArray = new double[grid.getNumCells(0) * grid.getNumCells(1) * grid.getNumCells(2) * 2];
-
-		fft = new DoubleFFT_3D(grid.getNumCells(0), grid.getNumCells(1), grid.getNumCells(2));
+		fft = new DoubleFFTWrapper(grid.getNumCells());
+		fftArray = new double[fft.getFFTArraySize()];
 	}
 
 	public void applyGaugeTransformation(Grid grid) {
@@ -98,13 +89,12 @@ public class CoulombGauge extends GaugeTransformation {
 			fft.complexInverse(fftArray, true);
 
 			// Add result to gauge transformation
-			int sliceStride = 2 * grid.getNumCells(1) * grid.getNumCells(2);
-			int rowStride = 2 * grid.getNumCells(2);
 			for (int i = 0; i < getG().length; i++) {
 				int[] coor = grid.getCellPos(i);
 
 				// real part:
-				double value = fftArray[coor[0] * sliceStride + coor[1] * rowStride + 2 * coor[2]];
+				int index = fft.getFFTArrayIndex(coor);
+				double value = fftArray[index];
 
 				// Store values temporarily in SU2Matrix instead of SU2Field:
 				getG()[i].set(color + 1, value);
@@ -150,9 +140,7 @@ public class CoulombGauge extends GaugeTransformation {
 
 				divergenceU += U.get(color) - Ushifted.get(color);
 			}
-			int sliceStride = 2 * grid.getNumCells(1) * grid.getNumCells(2);
-			int rowStride = 2 * grid.getNumCells(2);
-			int index = coor[0] * sliceStride + coor[1] * rowStride + 2 * coor[2];
+			int index = fft.getFFTArrayIndex(coor);
 			fftArray[index] = divergenceU; // real part
 			fftArray[index + 1] = 0; // imaginary part
 			double divergenceUSquared = divergenceU * divergenceU;
@@ -181,9 +169,7 @@ public class CoulombGauge extends GaugeTransformation {
 						+ Math.cos(2 * Math.PI * ky / Ny)
 						+ Math.cos(2 * Math.PI * kz / Nz) - 3.));
 
-				int sliceStride = 2 * grid.getNumCells(1) * grid.getNumCells(2);
-				int rowStride = 2 * grid.getNumCells(2);
-				int index = coor[0] * sliceStride + coor[1] * rowStride + 2 * coor[2];
+				int index = fft.getFFTArrayIndex(coor);
 				fftArray[index] *= inverseLaplace; // real part
 				fftArray[index + 1] *= inverseLaplace; // imaginary part
 			}

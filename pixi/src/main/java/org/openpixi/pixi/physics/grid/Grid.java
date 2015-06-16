@@ -224,6 +224,15 @@ public class Grid {
 	}
 
 	/**
+	 * Returns an array of the number of cells in the grid
+	 * in a given direction.
+	 * @return      Array of number of cells in given direction.
+	 */
+	public int[] getNumCells() {
+		return numCells;
+	}
+
+	/**
 	 * Returns the number of cells in the grid in a given direction.
 	 * @param dir   Index of the direction
 	 * @return      Number of cells in given direction.
