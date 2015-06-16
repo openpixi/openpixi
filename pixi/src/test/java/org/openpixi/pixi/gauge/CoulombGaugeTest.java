@@ -20,12 +20,12 @@ public class CoulombGaugeTest {
 
 		Settings settings = new Settings();
 		settings.setNumberOfColors(2);
-		settings.setGridCells(new int[] {3, 3, 3});
+		settings.setGridCells(new int[] {2, 2, 2});
 
 		double[] k = new double[] {0, 0, 0};
 		double[] amplitudeSpatialDirection = new double[] {1, 0, 0};
 		double[] amplitudeColorDirection = new double[] {1, 0, 0};
-		double amplitudeMagnitude = 1.0;
+		double amplitudeMagnitude = 0;
 		SU2PlaneWave constantfield = new SU2PlaneWave(k, amplitudeSpatialDirection, amplitudeColorDirection, amplitudeMagnitude);
 
 		settings.addFieldGenerator(constantfield);
@@ -44,8 +44,9 @@ public class CoulombGaugeTest {
 		printU("Coulomb gauge: ", coulomb.getGaugedGrid());
 		printg("Coulomb g:", coulomb.getGaugeTransformation());
 
-		LinkMatrix g1 = (new SU2Field(.001, 0, 0)).getLinkExact();
+		LinkMatrix g1 = (new SU2Field(.1, 0, 0)).getLinkExact();
 		transformation.g[0] = transformation.g[0].mult(g1);
+		//transformation.g[1] = transformation.g[1].mult(g1);
 		transformation.applyGaugeTransformation();
 
 		printU("Test transformation: ", transformation.gaugedGrid);
@@ -67,7 +68,7 @@ public class CoulombGaugeTest {
 		System.out.print(string + ": ");
 		for (int i = 0; i < grid.getNumberOfCells(); i++) {
 			int[] coor = grid.getCellPos(i);
-			System.out.print("" + grid.getCell(coor).getU(0).get(0) + ", ");
+			System.out.print("" + grid.getCell(coor).getU(0).get(0) + "|" + grid.getCell(coor).getU(0).get(1) + ", ");
 		}
 		System.out.println();
 	}

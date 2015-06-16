@@ -56,7 +56,7 @@ public class CoulombGauge {
 		int colors = transformation.gaugedGrid.getNumberOfColors();
 		for (int color = 0; color < colors; color++) {
 			// Calculate Divergence and put into fftArray
-			calculateDivergence.setColorAndResetSum(0);
+			calculateDivergence.setColorAndResetSum(color);
 			transformation.gaugedGrid.getCellIterator().execute(transformation.gaugedGrid, calculateDivergence);
 			divergenceSquaredSum += calculateDivergence.getDivergenceSquaredSum();
 
@@ -72,7 +72,9 @@ public class CoulombGauge {
 
 				// real part:
 				double value = fftArray[coor[0]][coor[1]][2 * coor[2]];
-				transformation.g[i].set(color, value);
+
+				// Store values temporarily in SU2Matrix instead of SU2Field:
+				transformation.g[i].set(color + 1, value);
 			}
 		}
 
@@ -118,8 +120,9 @@ public class CoulombGauge {
 				/*
 				 * U_i(x) - U_i(x-i)
 				 */
-				LinkMatrix U = grid.getU(coor, dir);
-				LinkMatrix Ushifted = grid.getU(grid.shift(coor, dir, -1), dir);
+				YMField U = grid.getU(coor, dir).getAlgebraElement();
+				YMField Ushifted = grid.getU(grid.shift(coor, dir, -1), dir).getAlgebraElement();
+
 				divergenceU += U.get(color) - Ushifted.get(color);
 			}
 			fftArray[coor[0]][coor[1]][2 * coor[2]] = divergenceU; // real part
@@ -146,11 +149,7 @@ public class CoulombGauge {
 				double Ny = grid.getNumCells(1);
 				double Nz = grid.getNumCells(2);
 
-//				double inverseLaplace = -0.5 / ((Math.cos(2 * Math.PI * kx / Nx)
-//						+ Math.cos(2 * Math.PI * ky / Ny)
-//						+ Math.cos(2 * Math.PI * kz / Nz) - 3.));
-
-				double inverseLaplace = +3.25 / ((Math.cos(2 * Math.PI * kx / Nx)
+				double inverseLaplace = -0.5 / ((Math.cos(2 * Math.PI * kx / Nx)
 						+ Math.cos(2 * Math.PI * ky / Ny)
 						+ Math.cos(2 * Math.PI * kz / Nz) - 3.));
 
