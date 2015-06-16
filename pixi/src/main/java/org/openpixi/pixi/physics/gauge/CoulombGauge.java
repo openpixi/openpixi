@@ -15,7 +15,7 @@ public class CoulombGauge extends GaugeTransformation {
 	CalculateDivergence calculateDivergence = new CalculateDivergence();
 	InverseLaplaceOperator inverseLaplaceOperator = new InverseLaplaceOperator();
 
-	private double[][][] fftArray;
+	private double[] fftArray;
 	private DoubleFFT_3D fft;
 
 	/**
@@ -53,7 +53,7 @@ public class CoulombGauge extends GaugeTransformation {
 		}
 		// JTransform requires twice as many rows in the last column,
 		// for real and imaginary parts
-		fftArray = new double[grid.getNumCells(0)][grid.getNumCells(1)][2 * grid.getNumCells(2)];
+		fftArray = new double[grid.getNumCells(0) * grid.getNumCells(1) * grid.getNumCells(2) * 2];
 
 		fft = new DoubleFFT_3D(grid.getNumCells(0), grid.getNumCells(1), grid.getNumCells(2));
 	}
@@ -98,11 +98,13 @@ public class CoulombGauge extends GaugeTransformation {
 			fft.complexInverse(fftArray, true);
 
 			// Add result to gauge transformation
+			int sliceStride = 2 * grid.getNumCells(1) * grid.getNumCells(2);
+			int rowStride = 2 * grid.getNumCells(2);
 			for (int i = 0; i < getG().length; i++) {
 				int[] coor = grid.getCellPos(i);
 
 				// real part:
-				double value = fftArray[coor[0]][coor[1]][2 * coor[2]];
+				double value = fftArray[coor[0] * sliceStride + coor[1] * rowStride + 2 * coor[2]];
 
 				// Store values temporarily in SU2Matrix instead of SU2Field:
 				getG()[i].set(color + 1, value);
@@ -148,8 +150,11 @@ public class CoulombGauge extends GaugeTransformation {
 
 				divergenceU += U.get(color) - Ushifted.get(color);
 			}
-			fftArray[coor[0]][coor[1]][2 * coor[2]] = divergenceU; // real part
-			fftArray[coor[0]][coor[1]][2 * coor[2] + 1] = 0; // imaginary part
+			int sliceStride = 2 * grid.getNumCells(1) * grid.getNumCells(2);
+			int rowStride = 2 * grid.getNumCells(2);
+			int index = coor[0] * sliceStride + coor[1] * rowStride + 2 * coor[2];
+			fftArray[index] = divergenceU; // real part
+			fftArray[index + 1] = 0; // imaginary part
 			double divergenceUSquared = divergenceU * divergenceU;
 			synchronized(this) {
 				divergenceSquaredSum += divergenceUSquared;
@@ -164,8 +169,8 @@ public class CoulombGauge extends GaugeTransformation {
 			int kz = coor[2];
 			if (kx == 0 && ky == 0 && kz == 0) {
 				// zero vector component does not contribute:
-				fftArray[0][0][0] = 0; // real part
-				fftArray[0][0][1] = 0; // imaginary part
+				fftArray[0] = 0; // real part
+				fftArray[1] = 0; // imaginary part
 			} else {
 				// Calculate inverse Laplace operator on the lattice for discrete derivatives:
 				double Nx = grid.getNumCells(0);
@@ -176,11 +181,11 @@ public class CoulombGauge extends GaugeTransformation {
 						+ Math.cos(2 * Math.PI * ky / Ny)
 						+ Math.cos(2 * Math.PI * kz / Nz) - 3.));
 
-				// Real part:
-				fftArray[coor[0]][coor[1]][2 * coor[2]] *= inverseLaplace;
-
-				// Imaginary part:
-				fftArray[coor[0]][coor[1]][2 * coor[2] + 1] *= inverseLaplace;
+				int sliceStride = 2 * grid.getNumCells(1) * grid.getNumCells(2);
+				int rowStride = 2 * grid.getNumCells(2);
+				int index = coor[0] * sliceStride + coor[1] * rowStride + 2 * coor[2];
+				fftArray[index] *= inverseLaplace; // real part
+				fftArray[index + 1] *= inverseLaplace; // imaginary part
 			}
 		}
 	}
