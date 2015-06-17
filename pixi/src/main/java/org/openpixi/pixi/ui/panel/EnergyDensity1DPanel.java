@@ -95,7 +95,7 @@ public class EnergyDensity1DPanel extends AnimationPanel {
 					EfieldSquared += s.grid.getEsquaredFromLinks(pos, w) / (as * g * as * g) / 2;
 				}
 				scaleProperties.putValue(EfieldSquared);
-				newValue = (int) (((0.5 + scaleE * EfieldSquared) * panelHeight));
+				newValue = (int) (((scaleE * EfieldSquared) * panelHeight));
 
 				if (i > 0) {
 					graph.drawLine(oldPosition, oldValue,newPosition, newValue);
@@ -131,7 +131,7 @@ public class EnergyDensity1DPanel extends AnimationPanel {
 					BfieldSquared += s.grid.getBsquaredFromLinks(pos, w) / (as * g * as * g) / 2;
 				}
 				scaleProperties.putValue(BfieldSquared);
-				newValue = (int) (((0.5 + scaleB * BfieldSquared) * panelHeight));
+				newValue = (int) (((scaleB * BfieldSquared) * panelHeight));
 
 				if (i > 0) {
 					graph.drawLine(oldPosition, oldValue,newPosition, newValue);
@@ -167,7 +167,7 @@ public class EnergyDensity1DPanel extends AnimationPanel {
 					totalEnergy += (s.grid.getBsquaredFromLinks(pos, w) + s.grid.getEsquaredFromLinks(pos, w)) / (as * g * as * g) / 2;
 				}
 				scaleProperties.putValue(totalEnergy);
-				newValue = (int) (((0.5 + scaleTotal * totalEnergy) * panelHeight));
+				newValue = (int) (((scaleTotal * totalEnergy) * panelHeight));
 
 				if (i > 0) {
 					graph.drawLine(oldPosition, oldValue,newPosition, newValue);
@@ -181,6 +181,7 @@ public class EnergyDensity1DPanel extends AnimationPanel {
 
 	public void addComponents(Box box) {
 		addLabel(box, "Energy density panel");
+		scaleProperties.addComponents(box);
 	}
 	
 	public ScaleProperties getScaleProperties() {
