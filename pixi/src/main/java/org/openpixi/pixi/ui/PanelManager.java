@@ -19,6 +19,7 @@ import org.openpixi.pixi.ui.panel.Particle2DPanel;
 import org.openpixi.pixi.ui.panel.Particle3DPanel;
 import org.openpixi.pixi.ui.panel.PhaseSpacePanel;
 import org.openpixi.pixi.ui.panel.EnergyDensity1DPanel;
+import org.openpixi.pixi.ui.panel.EnergyDensity2DPanel;
 import org.openpixi.pixi.ui.tab.PropertiesTab;
 
 /**
@@ -44,6 +45,7 @@ public class PanelManager {
 	JMenuItem itemPhaseSpacePanel;
 	JMenuItem itemElectricFieldPanel;
 	JMenuItem itemEnergyDensity1DPanel;
+	JMenuItem itemEnergyDensity2DPanel;
 
 	PanelManager(MainControlApplet m) {
 		mainControlApplet = m;
@@ -183,6 +185,10 @@ public class PanelManager {
 			itemEnergyDensity1DPanel = new JMenuItem("Energy density");
 			itemEnergyDensity1DPanel.addActionListener(new MenuSelected());
 			add(itemEnergyDensity1DPanel);
+
+			itemEnergyDensity2DPanel = new JMenuItem("Energy density 2D");
+			itemEnergyDensity2DPanel.addActionListener(new MenuSelected());
+			add(itemEnergyDensity2DPanel);
 		}
 	}
 
@@ -238,6 +244,8 @@ public class PanelManager {
 				component = new ElectricFieldPanel(mainControlApplet.simulationAnimation);
 			} else if (event.getSource() == itemEnergyDensity1DPanel) {
 				component = new EnergyDensity1DPanel(mainControlApplet.simulationAnimation);
+			} else if (event.getSource() == itemEnergyDensity2DPanel) {
+				component = new EnergyDensity2DPanel(mainControlApplet.simulationAnimation);
 			}
 			if (component != null) {
 				replacePanel(component);
