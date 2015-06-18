@@ -224,12 +224,33 @@ public class Grid {
 	}
 
 	/**
+	 * Returns an array of the number of cells in the grid
+	 * in a given direction.
+	 * @return      Array of number of cells in given direction.
+	 */
+	public int[] getNumCells() {
+		return numCells;
+	}
+
+	/**
 	 * Returns the number of cells in the grid in a given direction.
 	 * @param dir   Index of the direction
 	 * @return      Number of cells in given direction.
 	 */
 	public int getNumCells(int dir) {
 		return numCells[dir];
+	}
+
+	/**
+	 * Calculate total number of cells in the grid.
+	 * @return Total number of cells in the grid.
+	 */
+	public int getTotalNumberOfCells() {
+		int numberOfCells = 1;
+		for (int i = 0; i < numDim; i++) {
+			numberOfCells *= getNumCells(i);
+		}
+		return numberOfCells;
 	}
 
 	/**
@@ -283,6 +304,10 @@ public class Grid {
 		return numDim;
 	}
 
+	public int getNumberOfColors() {
+		return numCol;
+	}
+
 	/**
 	 * Main constructor for the Grid class. Given a settings file it initializes the lattice and sets up the FieldSolver
 	 * and the CellIterator.
@@ -308,6 +333,49 @@ public class Grid {
 		this.cellIterator = settings.getCellIterator();
 		this.cellIterator.setNormalMode(numCells);
 		
+	}
+
+	/**
+	 * Constructor for the Grid class.
+	 * It creates a grid of the same size and deep copies U and E fields.
+	 * @param grid  Grid from which to copy dimensions
+	 */
+	public Grid(Grid grid) {
+		gaugeCoupling = grid.gaugeCoupling;
+		as = grid.as;
+		numCol = grid.numCol;
+		numDim = grid.numDim;
+		numCells = new int[numDim];
+
+		for(int i = 0; i < numDim; i++) {
+			numCells[i] = grid.numCells[i];
+		}
+
+		createGrid();
+
+		copyValuesFrom(grid);
+
+		// TODO: Share iterators is ok?
+		this.fsolver = grid.fsolver;
+		this.cellIterator = grid.cellIterator;
+	}
+
+	/**
+	 * Copy U and E field values from one grid to another.
+	 * @param grid
+	 */
+	private void copyValuesFrom(Grid grid) {
+		int numberOfCells = grid.getTotalNumberOfCells();
+		for (int ci = 0; ci < numberOfCells; ci++) {
+			int[] cellPosition = grid.getCellPos(ci);
+			for (int d = 0; d < numDim; d++) {
+				LinkMatrix U = grid.getU(cellPosition, d);
+				this.setU(cellPosition, d, U);
+				YMField E = grid.getE(cellPosition, d);
+				this.setE(cellPosition, d, E);
+				// TODO: if desired: Copy other fields as well.
+			}
+		}
 	}
 
 	/**

@@ -26,7 +26,11 @@ public class Cell implements Serializable {
 	/**Link matrices at time t + dt/2 */
 	private LinkMatrix[] Unext;
 
-	
+	/**
+	 * Constructor for Cell.
+	 * @param dimensions Number of spatial dimensions (e.g. 3)
+	 * @param colors Number of colors N for the gauge group SU(N)
+	 */
 	public Cell(int dimensions, int colors) {
 		if(colors == 2) {
 			F = new SU2Field[dimensions][dimensions];
@@ -48,7 +52,9 @@ public class Cell implements Serializable {
 				}
 			}
 		}
-		else {}
+		else {
+			System.out.println("Cell constructor for SU(" + colors + ") not defined.\n");
+		}
 	}
 
 	/**
