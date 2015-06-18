@@ -1,9 +1,12 @@
 package org.openpixi.pixi.ui.util.yaml;
 
 import java.util.ArrayList;
+
 import org.openpixi.pixi.physics.Settings;
+import org.openpixi.pixi.ui.util.yaml.filegenerators.YamlCoulombGaugeInTime;
 import org.openpixi.pixi.ui.util.yaml.filegenerators.YamlParticlesInTime;
 import org.openpixi.pixi.ui.util.yaml.filegenerators.YamlBulkQuantitiesInTime;
+import org.openpixi.pixi.ui.util.yaml.filegenerators.YamlRandomGaugeInTime;
 
 public class YamlOutput {
 	/**
@@ -13,18 +16,30 @@ public class YamlOutput {
 	
 	public ArrayList<YamlBulkQuantitiesInTime> bulkQuantitiesInTime = new ArrayList<YamlBulkQuantitiesInTime>();
 
+	public ArrayList<YamlCoulombGaugeInTime> coulombGaugeInTime = new ArrayList<YamlCoulombGaugeInTime>();
+
+	public ArrayList<YamlRandomGaugeInTime> randomGaugeInTime = new ArrayList<YamlRandomGaugeInTime>();
+
 	/**
 	 * Creates FileGenerator instances and applies them to the Settings instance.
 	 * @param s
 	 */
 
 	public void applyTo(Settings s) {
-		for (YamlParticlesInTime output1 : particlesInTime) {
-			s.addDiagnostics(output1.getFileGenerator());
+		for (YamlParticlesInTime output : particlesInTime) {
+			s.addDiagnostics(output.getFileGenerator());
 		}
 
-		for (YamlBulkQuantitiesInTime output2 : bulkQuantitiesInTime) {
-			s.addDiagnostics(output2.getFileGenerator());
+		for (YamlBulkQuantitiesInTime output : bulkQuantitiesInTime) {
+			s.addDiagnostics(output.getFileGenerator());
+		}
+
+		for (YamlCoulombGaugeInTime output : coulombGaugeInTime) {
+			s.addDiagnostics(output.getFileGenerator());
+		}
+
+		for (YamlRandomGaugeInTime output : randomGaugeInTime) {
+			s.addDiagnostics(output.getFileGenerator());
 		}
 	}
 	
