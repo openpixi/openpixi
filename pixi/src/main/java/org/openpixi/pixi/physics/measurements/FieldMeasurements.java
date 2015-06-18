@@ -8,6 +8,7 @@ public class FieldMeasurements {
 	
 	EFieldSquared Esquared = new EFieldSquared();
 	BFieldSquared Bsquared = new BFieldSquared();
+	GaussLaw GaussConstraint = new GaussLaw();
 	
 	public double calculateEsquared(Grid grid) {
 		Esquared.reset();
@@ -20,41 +21,105 @@ public class FieldMeasurements {
 		grid.getCellIterator().execute(grid, Bsquared);
         return Bsquared.getSum();
 	}
+	
+	public double calculateEsquared(Grid grid, int dir) {
+		Esquared.reset();
+		grid.getCellIterator().execute(grid, Esquared);
+        return Esquared.getSum(dir);
+	}
+	
+	public double calculateBsquared(Grid grid, int dir) {
+		Bsquared.reset();
+		grid.getCellIterator().execute(grid, Bsquared);
+        return Bsquared.getSum(dir);
+	}
+	
+	public double calculateGaussConstraint(Grid grid) {
+		GaussConstraint.reset();
+		grid.getCellIterator().execute(grid, GaussConstraint);
+        return GaussConstraint.getSum();
+	}
 
 	private class EFieldSquared implements CellAction {
 
-		private double sum;
+		private double[] sum;
 
         public void reset() {
-        	sum = 0;
+        	sum = new double[3];//TODO Make this method d-dimensional!!
         }
         
         public double getSum() {
-        	return sum;
+        	return sum[0]+sum[1]+sum[2];
+        }
+        
+        public double getSum(int dir) {
+        	return sum[dir];
         }
 
         public void execute(Grid grid, int[] coor) {
 			int numDir = grid.getNumberOfDimensions();
 			double norm = grid.getLatticeSpacing()*grid.getLatticeSpacing()*grid.getGaugeCoupling()*grid.getGaugeCoupling();
-			double res = 0.0;
+			double[] res = new double[numDir];
 			for (int i = 0; i < numDir; i++) {
 				norm *= grid.getNumCells(i);
-				res += grid.getE(coor, i).square();
+				res[i] += grid.getE(coor, i).square();
+				//res += grid.getEsquaredFromLinks(coor, i);
 			}
 			
-			double result = res/norm;
+			for (int i = 0; i < numDir; i++) {
+				res[i] /= norm;
+			}
 			synchronized(this) {
-			       sum += result;   // Synchronisierte Summenbildung
+				for (int i = 0; i < numDir; i++) {
+					sum[i] += res[i];   	// Synchronisierte Summenbildung
+				}
 			}
 		}
 	}
 
 	private class BFieldSquared implements CellAction {
 
+		private double[] sum;
+
+        public void reset() {
+        	sum = new double[3];
+        }
+        
+        public double getSum() {
+        	return sum[0]+sum[1]+sum[2];
+        }
+        
+        public double getSum(int dir) {
+        	return sum[dir];
+        }
+        
+        public void execute(Grid grid, int[] coor) {
+			int numDir = grid.getNumberOfDimensions();
+			double norm = grid.getLatticeSpacing()*grid.getLatticeSpacing()*grid.getGaugeCoupling()*grid.getGaugeCoupling();
+			double[] res = new double[numDir];
+			for (int i = 0; i < numDir; i++) {
+				norm *= grid.getNumCells(i);
+				//res += grid.getB(coor, i).square();
+				res[i] += grid.getBsquaredFromLinks(coor, i);
+			}
+			
+			for (int i = 0; i < numDir; i++) {
+				res[i] /= norm;
+			}
+			synchronized(this) {
+				for (int i = 0; i < numDir; i++) {
+					sum[i] += res[i];   	// Synchronisierte Summenbildung
+				}
+			}
+		}
+	}
+	
+	private class GaussLaw implements CellAction {
+
 		private double sum;
 
         public void reset() {
-        	sum = 0;
+        	sum = 0.0;
         }
         
         public double getSum() {
@@ -63,14 +128,11 @@ public class FieldMeasurements {
         
         public void execute(Grid grid, int[] coor) {
 			int numDir = grid.getNumberOfDimensions();
-			double norm = grid.getLatticeSpacing()*grid.getLatticeSpacing()*grid.getGaugeCoupling()*grid.getGaugeCoupling();
-			double res = 0;
+			double norm = 1.0;
 			for (int i = 0; i < numDir; i++) {
 				norm *= grid.getNumCells(i);
-				//TODO Implement the calculation of color magnetic fields!!
-				//res += grid.getB(coor, i).square();
 			}
-			double result = res/norm;
+			double result = grid.getGaussConstraintSquared(coor)/norm;
 			synchronized(this) {
 			       sum += result;   // Synchronisierte Summenbildung
 			}

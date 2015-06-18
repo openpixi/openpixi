@@ -30,29 +30,21 @@ import javax.swing.Box;
 import org.openpixi.pixi.physics.Simulation;
 import org.openpixi.pixi.physics.particles.IParticle;
 import org.openpixi.pixi.ui.SimulationAnimation;
-import org.openpixi.pixi.ui.panel.properties.ColorProperties;
-import org.openpixi.pixi.ui.panel.properties.FieldProperties;
+import org.openpixi.pixi.ui.panel.properties.ScaleProperties;
 import org.openpixi.pixi.ui.panel.properties.InfoProperties;
-import org.openpixi.pixi.ui.panel.properties.TraceProperties;
 
 
 /**
- * Displays 2D particles.
+ * Displays 2D energy density.
  */
-public class Particle2DPanel extends AnimationPanel {
+public class EnergyDensity2DPanel extends AnimationPanel {
 
-	ColorProperties colorProperties = new ColorProperties();
-	FieldProperties fieldProperties = new FieldProperties();
+	ScaleProperties scaleProperties = new ScaleProperties();	
 	InfoProperties infoProperties = new InfoProperties();
-	TraceProperties traceProperties = new TraceProperties();
-
+	
 	/** Constructor */
-	public Particle2DPanel(SimulationAnimation simulationAnimation) {
+	public EnergyDensity2DPanel(SimulationAnimation simulationAnimation) {
 		super(simulationAnimation);
-	}
-
-	public void clear() {
-		traceProperties.clear();
 	}
 
 	/** Display the particles */
@@ -61,12 +53,11 @@ public class Particle2DPanel extends AnimationPanel {
 		setBackground(Color.white);
 		graph.translate(0, this.getHeight());
 		graph.scale(1, -1);
-		double scale = 10;
 
-		if (traceProperties.isCallSuper()) {
-			super.paintComponent(graph1);
-		}
-
+		super.paintComponent(graph1);
+		
+		double scale = scaleProperties.getScale();
+		scaleProperties.resetAutomaticScale();
 
 		Simulation s = getSimulationAnimation().getSimulation();
 
@@ -74,54 +65,16 @@ public class Particle2DPanel extends AnimationPanel {
 		double sx = getWidth() / s.getWidth();
 		/** Scaling factor for the displayed panel in y-direction*/
 		double sy = getHeight() / s.getHeight();
-
-		for (int i = 0; i < s.particles.size(); i++) {
-			IParticle par = (IParticle) s.particles.get(i);
-			graph.setColor(par.getColor());
-			double radius = par.getRadius();//double radius = par.getRadius()*(2 - 1.9*par.getZ()/s.getDepth());
-			int width = (int) (2*sx*radius);
-			int height = (int) (2*sy*radius);
-			if(width > 2 && height > 2 && !traceProperties.isShowTrace()) {
-				graph.fillOval((int) (par.getPosition(0)*sx) - width/2, (int) (par.getPosition(1)*sy) - height/2,  width,  height);
-			}
-			else {
-				graph.drawRect((int) (par.getPosition(0)*sx), (int) (par.getPosition(1)*sy), 0, 0);
-			}
-		}
+		
+		// Lattice spacing and coupling constant
+		double as = s.grid.getLatticeSpacing();
+		double g = s.getCouplingConstant();
 		
 		int[] pos = new int[s.getNumberOfDimensions()];
 		for(int w = 2; w < s.getNumberOfDimensions(); w++) {
 			pos[w] = s.grid.getNumCells(w)/2;
 		}
-		
-		int colorIndex = colorProperties.getColorIndex();
-		int directionIndex = colorProperties.getDirectionIndex();
-		
-		if(fieldProperties.isDrawCurrent())
-		{
-			graph.setColor(Color.black);
-			
-			
-			
-			for(int i = 0; i < s.grid.getNumCells(0); i++)
-				for(int k = 0; k < s.grid.getNumCells(1); k++)
-				{
-					int xstart = (int) (s.grid.getLatticeSpacing() * (i + 0.5) * sx);
-					int xstart2 = (int)(s.grid.getLatticeSpacing() * i * sx);
-					int ystart = (int) (s.grid.getLatticeSpacing() * (k + 0.5) * sy);
-					int ystart2 = (int) (s.grid.getLatticeSpacing() * k * sy);
-					
-					pos[0] = i;
-					pos[1] = k;
-					//drawArrow(graph, xstart, ystart, (int) Math.round(s.grid.getJx(i,k)*sx + xstart), (int) Math.round(s.grid.getJy(i,k)*sy + ystart));
-                                        drawArrow(graph, xstart, ystart2, (int) Math.round(s.grid.getJ(pos, 0).get(colorIndex)*sx+xstart), ystart2, Color.BLACK);
-                                        drawArrow(graph, xstart2, ystart, xstart2, (int) Math.round(s.grid.getJ(pos, 1).get(colorIndex)*sy+ystart),Color.BLACK);
-				}
-			//return;
-		}
 
-		if(fieldProperties.isDrawFields())
-		{
 			graph.setColor(Color.black);
 			for(int i = 0; i < s.grid.getNumCells(0); i++)
 				for(int k = 0; k < s.grid.getNumCells(1); k++)
@@ -134,15 +87,22 @@ public class Particle2DPanel extends AnimationPanel {
                     pos[0] = i;
 					pos[1] = k;
 					
-//drawArrow(graph, xstart, ystart, (int) Math.round(scale * s.grid.getEx(i,k)*sx + xstart), (int) Math.round(scale* s.grid.getEy(i,k)*sy + ystart));
-                    drawArrow(graph, xstart, ystart2, (int) Math.round(scale*s.grid.getE(pos, 0).get(colorIndex)*sx+xstart),ystart2, Color.BLACK);
-                    drawArrow(graph, xstart2, ystart, xstart2, (int) Math.round(scale*s.grid.getE(pos, 1).get(colorIndex)*sy+ystart), Color.GREEN);
-                    //drawArrow(graph, xstart, ystart, xstart, (int) Math.round(scale*s.grid.getBz(i,k)*sy+ystart), Color.RED);
+					double EfieldSquared = 0.0;
+					double BfieldSquared = 0.0;
+					for(int w = 0; w < s.getNumberOfDimensions(); w++) {
+						EfieldSquared += s.grid.getEsquaredFromLinks(pos, w) / (as * g * as * g) / 2;
+						BfieldSquared += s.grid.getBsquaredFromLinks(pos, w) / (as * g * as * g) / 2;
+					}
+					scaleProperties.putValue(EfieldSquared + BfieldSquared);
+					
+                    drawArrow(graph, xstart2, ystart2, (int) Math.round(scale*EfieldSquared*sx+xstart2),ystart2, Color.BLACK);
+                    drawArrow(graph, xstart2, ystart2, xstart2, (int) Math.round(scale*BfieldSquared*sy+ystart2), Color.GREEN);
+                    drawArrow(graph, xstart2, ystart2, xstart2, (int) Math.round(scale*(EfieldSquared + BfieldSquared)*sy+ystart2), Color.RED);
 				}
-			//return;
-		}
 
-		infoProperties.showInfo(graph, this);
+			scaleProperties.calculateAutomaticScale(1.0);
+			
+			infoProperties.showInfo(graph, this);
 	}
 
 
@@ -174,26 +134,16 @@ public class Particle2DPanel extends AnimationPanel {
      }
 
 	public void addComponents(Box box) {
-		addLabel(box, "Particle panel");
-		colorProperties.addComponents(box);
-		fieldProperties.addComponents(box);
+		addLabel(box, "Energy density 2D panel");
+		scaleProperties.addComponents(box);
 		infoProperties.addComponents(box);
-		traceProperties.addComponents(box);
 	}
 
-	public ColorProperties getColorProperties() {
-		return colorProperties;
+	public ScaleProperties getScaleProperties() {
+		return scaleProperties;
 	}
-
-	public FieldProperties getFieldProperties() {
-		return fieldProperties;
-	}
-
+	
 	public InfoProperties getInfoProperties() {
 		return infoProperties;
-	}
-
-	public TraceProperties getTraceProperties() {
-		return traceProperties;
 	}
 }

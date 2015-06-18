@@ -49,6 +49,11 @@ public class Grid {
 	 * Spatial lattice spacing
 	 */
 	private double as;
+	
+	/**
+	 * Temporal lattice spacing
+	 */
+	private double at;
 
 	/**
 	 * Gauge coupling strength
@@ -262,6 +267,22 @@ public class Grid {
 	}
 	
 	/**
+	 * Returns the number of colors.
+	 * @return  Number of colors.
+	 */
+	public int getNumberOfColors() {
+		return numCol;
+	}
+	
+	/**
+	 * Returns the temporal lattice spacing.
+	 * @return  Temporal lattice spacing.
+	 */
+	public double getTemporalSpacing() {
+		return at;
+	}
+	
+	/**
 	 * Returns the gauge coupling.
 	 * @return  Gauge coupling.
 	 */
@@ -304,10 +325,6 @@ public class Grid {
 		return numDim;
 	}
 
-	public int getNumberOfColors() {
-		return numCol;
-	}
-
 	/**
 	 * Main constructor for the Grid class. Given a settings file it initializes the lattice and sets up the FieldSolver
 	 * and the CellIterator.
@@ -317,6 +334,7 @@ public class Grid {
 
 		gaugeCoupling = settings.getCouplingConstant();
 		as = settings.getGridStep();
+		at = settings.getTimeStep();
 		numCol = settings.getNumberOfColors();
 		numDim = settings.getNumberOfDimensions();
 		numCells = new int[numDim];
@@ -689,6 +707,68 @@ public class Grid {
 		res.FieldFromBackwardPlaquette(cells[getCellIndex(coor)].getU(j), cells[getCellIndex(coor1)].getU(k), cells[getCellIndex(coor2)].getU(j), cells[getCellIndex(coor2)].getU(k));
 
 		return res;
+	}
+	
+	/**
+	 * Calculates the square of the electric field from the temporal plaquette starting at lattice coordinate coor in the direction dir.
+	 *
+	 * @param coor  Lattice coordinate from where the plaquette starts
+	 * @param dir    Index of the direction
+	 * @return      E^2 calculated from the temporal plaquette
+	 */
+	public double getEsquaredFromLinks(int[] coor, int dir) {
+		
+		double norm = at*at;
+		//double res = 1.0 - cells[getCellIndex(coor)].getUnext(dir).mult(cells[getCellIndex(coor)].getU(dir).adj()).getTrace()/numCol;
+		double res = cells[getCellIndex(coor)].getUnext(dir).mult(cells[getCellIndex(coor)].getU(dir).adj()).getLinearizedAlgebraElement().square()/norm;
+
+		return res;
+	}
+	
+	/**
+	 * Calculates the square of the magnetic field from the spatial plaquette starting at lattice coordinate coor in the direction dir.
+	 *
+	 * @param coor  Lattice coordinate from where the plaquette starts
+	 * @param dir    Index of the direction
+	 * @return      B^2 calculated from the spatial plaquette
+	 */
+	public double getBsquaredFromLinks(int[] coor, int dir) {
+		
+		double norm = as*as;
+		int j=0, k=0;
+		switch (dir) {
+        	case 0:  j = 1;  k = 2;
+            break;
+            
+        	case 1:  j = 0;  k = 2;
+            break;
+            
+        	case 2:  j = 0;  k = 1;
+            break;
+		}
+		double res = getPlaquette(coor, j, k, 1, 1).getLinearizedAlgebraElement().square()/norm;
+
+		return res;
+	}
+	
+	public double getGaussConstraintSquared(int[] coor) {
+		
+		YMField gauss = cells[getCellIndex(coor)].getEmptyField(numCol);
+		YMField temp = cells[getCellIndex(coor)].getEmptyField(numCol);
+		double norm = 1.0/(at*as*gaugeCoupling);
+		int[] coor1 = new int[numDim];
+		int[] coor2 = new int[numDim];
+		System.arraycopy(coor, 0, coor1, 0, coor.length);
+		System.arraycopy(coor, 0, coor2, 0, coor.length);
+		
+		for (int i = 0; i < numDim; i++) {
+			coor1[i]++;
+			coor2[i]--;
+			temp.set(getU(coor1, i).adj().mult(getUnext(coor2, i)).getLinearizedAlgebraElement());//if(i == 1){System.out.println(coor1[i]);System.out.println(getE(coor, i).square());System.out.println(temp.mult(norm).square());}
+			gauss.addequate(getE(coor, i).sub(temp.mult(norm)));
+			//gauss.addequate(getE(coor, i).sub(getE(coor2, i)));
+		}
+		return gauss.square();
 	}
 
 }
