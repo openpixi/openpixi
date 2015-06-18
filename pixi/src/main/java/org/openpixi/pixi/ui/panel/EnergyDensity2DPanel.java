@@ -56,9 +56,8 @@ public class EnergyDensity2DPanel extends AnimationPanel {
 
 		super.paintComponent(graph1);
 		
-		double scale = 10;
-		double scale2 = 1;
-
+		double scale = scaleProperties.getScale();
+		scaleProperties.resetAutomaticScale();
 
 		Simulation s = getSimulationAnimation().getSimulation();
 
@@ -94,13 +93,16 @@ public class EnergyDensity2DPanel extends AnimationPanel {
 						EfieldSquared += s.grid.getEsquaredFromLinks(pos, w) / (as * g * as * g) / 2;
 						BfieldSquared += s.grid.getBsquaredFromLinks(pos, w) / (as * g * as * g) / 2;
 					}
+					scaleProperties.putValue(EfieldSquared + BfieldSquared);
 					
                     drawArrow(graph, xstart2, ystart2, (int) Math.round(scale*EfieldSquared*sx+xstart2),ystart2, Color.BLACK);
                     drawArrow(graph, xstart2, ystart2, xstart2, (int) Math.round(scale*BfieldSquared*sy+ystart2), Color.GREEN);
                     drawArrow(graph, xstart2, ystart2, xstart2, (int) Math.round(scale*(EfieldSquared + BfieldSquared)*sy+ystart2), Color.RED);
 				}
 
-		infoProperties.showInfo(graph, this);
+			scaleProperties.calculateAutomaticScale(1.0);
+			
+			infoProperties.showInfo(graph, this);
 	}
 
 
