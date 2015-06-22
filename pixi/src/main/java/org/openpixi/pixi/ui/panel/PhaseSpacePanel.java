@@ -65,7 +65,7 @@ public class PhaseSpacePanel extends AnimationPanel {
 
 	}
 
-	public void addComponents(Box box) {
+	public void addPropertyComponents(Box box) {
 		addLabel(box, "Phase space panel");
 		scaleProperties.addComponents(box);
 	}

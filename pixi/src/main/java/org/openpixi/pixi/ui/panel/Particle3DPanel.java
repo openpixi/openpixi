@@ -281,7 +281,7 @@ public class Particle3DPanel extends AnimationPanel {
 		}
 	}
 
-	public void addComponents(Box box) {
+	public void addPropertyComponents(Box box) {
 		addLabel(box, "Particle 3D panel");
 		colorProperties.addComponents(box);
 		fieldProperties.addComponents(box);
