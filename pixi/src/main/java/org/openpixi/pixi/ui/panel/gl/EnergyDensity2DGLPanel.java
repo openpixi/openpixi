@@ -42,6 +42,8 @@ public class EnergyDensity2DGLPanel extends AnimationGLPanel {
 	/** Constructor */
 	public EnergyDensity2DGLPanel(SimulationAnimation simulationAnimation) {
 		super(simulationAnimation);
+
+		scaleProperties.setAutomaticScaling(true);
 	}
 
 	@Override

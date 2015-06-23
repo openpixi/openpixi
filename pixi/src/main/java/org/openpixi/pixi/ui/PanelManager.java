@@ -212,6 +212,9 @@ public class PanelManager {
 			// Set focus
 			setFocus(e.getComponent());
 
+			// For convenience, select the properties tab:
+			mainControlApplet.tabs.setSelectedComponent(mainControlApplet.propertiesTab);
+
 			// Check for right mouse button
 			if (e.isPopupTrigger())
 				doPop(e);
