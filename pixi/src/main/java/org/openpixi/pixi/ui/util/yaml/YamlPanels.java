@@ -11,12 +11,16 @@ import org.openpixi.pixi.ui.panel.Particle3DPanel;
 import org.openpixi.pixi.ui.panel.PhaseSpacePanel;
 import org.openpixi.pixi.ui.panel.EnergyDensity1DPanel;
 import org.openpixi.pixi.ui.panel.EnergyDensity2DPanel;
+import org.openpixi.pixi.ui.panel.gl.EnergyDensity2DGLPanel;
+import org.openpixi.pixi.ui.panel.gl.EnergyDensity3DGLPanel;
 import org.openpixi.pixi.ui.util.yaml.panels.YamlElectricFieldPanel;
 import org.openpixi.pixi.ui.util.yaml.panels.YamlParticle2DPanel;
 import org.openpixi.pixi.ui.util.yaml.panels.YamlParticle3DPanel;
 import org.openpixi.pixi.ui.util.yaml.panels.YamlPhaseSpacePanel;
 import org.openpixi.pixi.ui.util.yaml.panels.YamlEnergyDensity1DPanel;
 import org.openpixi.pixi.ui.util.yaml.panels.YamlEnergyDensity2DPanel;
+import org.openpixi.pixi.ui.util.yaml.panels.YamlEnergyDensity2DGLPanel;
+import org.openpixi.pixi.ui.util.yaml.panels.YamlEnergyDensity3DGLPanel;
 
 public class YamlPanels {
 
@@ -31,6 +35,8 @@ public class YamlPanels {
 	public YamlPhaseSpacePanel phaseSpacePanel;
 	public YamlEnergyDensity1DPanel energyDensity1DPanel;
 	public YamlEnergyDensity2DPanel energyDensity2DPanel;
+	public YamlEnergyDensity2DGLPanel energyDensity2DGLPanel;
+	public YamlEnergyDensity3DGLPanel energyDensity3DGLPanel;
 
 	/** Empty constructor called by SnakeYaml */
 	public YamlPanels() {
@@ -62,6 +68,10 @@ public class YamlPanels {
 			energyDensity1DPanel = new YamlEnergyDensity1DPanel(component);
 		} else if (component instanceof EnergyDensity2DPanel) {
 			energyDensity2DPanel = new YamlEnergyDensity2DPanel(component);
+		} else if (component instanceof EnergyDensity2DGLPanel) {
+			energyDensity2DGLPanel = new YamlEnergyDensity2DGLPanel(component);
+		} else if (component instanceof EnergyDensity3DGLPanel) {
+			energyDensity3DGLPanel = new YamlEnergyDensity3DGLPanel(component);
 		}
 	}
 
@@ -90,6 +100,10 @@ public class YamlPanels {
 			component = energyDensity1DPanel.inflate(panelManager);
 		} else if (energyDensity2DPanel != null) {
 			component = energyDensity2DPanel.inflate(panelManager);
+		} else if (energyDensity2DGLPanel != null) {
+			component = energyDensity2DGLPanel.inflate(panelManager);
+		} else if (energyDensity3DGLPanel != null) {
+			component = energyDensity3DGLPanel.inflate(panelManager);
 		}
 		return component;
 	}

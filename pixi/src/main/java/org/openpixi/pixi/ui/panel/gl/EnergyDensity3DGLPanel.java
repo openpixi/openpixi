@@ -50,7 +50,7 @@ public class EnergyDensity3DGLPanel extends AnimationGLPanel {
 		addMouseListener(l);
 		addMouseMotionListener(l);
 
-		phi = Math.PI * 0.25;
+		phi = - 0.5 * Math.PI;
 		theta = Math.PI * 0.25;
 
 		scaleProperties.setAutomaticScaling(true);
