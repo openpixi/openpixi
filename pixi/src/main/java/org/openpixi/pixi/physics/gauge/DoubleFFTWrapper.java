@@ -110,15 +110,10 @@ public class DoubleFFTWrapper {
 	 * Takes into account factor 2 for real and imaginary parts.
 	 * Add 0 to obtain index for real part.
 	 * Add 1 to obtain index for imaginary part.
-	 * @param coordinates
-	 * @return
+	 * @param cellIndex  Index within grid.
+	 * @return           Index within FFT array.
 	 */
-	public int getFFTArrayIndex(int[] coordinates) {
-		int index = coordinates[0];
-		for (int i = 1; i < dimensions.length; i++) {
-			index *= dimensions[i];
-			index += coordinates[i];
-		}
-		return 2 * index; // factor 2 for real and imaginary parts
+	public int getFFTArrayIndex(int cellIndex) {
+		return 2 * cellIndex; // factor 2 for real and imaginary parts
 	}
 }

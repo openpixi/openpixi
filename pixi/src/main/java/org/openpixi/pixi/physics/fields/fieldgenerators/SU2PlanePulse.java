@@ -84,7 +84,7 @@ public class SU2PlanePulse implements IFieldGenerator {
 			double gaugeFieldFactor = g * as * Math.exp(-Math.pow(phaseU / this.sigma, 2.0) / 2.0);
 
 
-			Cell currentCell = grid.getCell(cellPosition);
+			Cell currentCell = grid.getCell(ci);
 
 			for (int i = 0; i < this.numberOfDimensions; i++) {
 				//Setup the gauge links

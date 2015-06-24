@@ -26,7 +26,7 @@ public class Grid {
 	private StoreFieldsAction storeFields = new StoreFieldsAction();
 	/**
 	 * Cell array. This one dimensional array is used to represent the d-dimensional grid. The cells are indexed by
-	 * their cell ids. Cell ids can be computed from lattice coordinates with the index() method.
+	 * their cell ids. Cell ids can be computed from lattice coordinates with the {@link #getCellIndex(int[])} method.
 	 */
 	private Cell[] cells;
 
@@ -63,7 +63,18 @@ public class Grid {
 	/**
 	 * Unit vectors to be used for the shift method.
 	 */
+	@Deprecated
 	private int[][] unitVectors;
+
+	/**
+	 * Holds the cummulated cell count. This array is used by {@link #shift(int, int, int)}
+	 * to quickly calculate index shifts in various directions.
+	 * <pre>
+	 * cummulatedCellCount[numDim] = 1;
+	 * cummulatedCellCount[i] = cummulatedCellCount[i + 1] * numCells[i];
+	 * </pre>
+	 */
+	private int cummulatedCellCount[];
 
 	/**
 	 * Returns the FieldSolver instance currently used.
@@ -83,149 +94,149 @@ public class Grid {
 
 	/**
 	 * Returns the YMField instance of the (dir)-component of the current.
-	 * @param coor      Lattice coordinate of the current
+	 * @param index     Lattice index of the current
 	 * @param dir       Index of the component
 	 * @return          YMField instance of the (dir)-component of the current.
 	 */
-	public YMField getJ(int[] coor, int dir) {
-		return cells[getCellIndex(coor)].getJ(dir);
+	public YMField getJ(int index, int dir) {
+		return cells[index].getJ(dir);
 	}
 
 	/**
 	 * Adds a YMField instance to the (dir)-component of the current.
-	 * @param coor      Lattice coordinate of the current
+	 * @param index     Lattice index of the current
 	 * @param dir       Index of the component
 	 * @param field     YMField to be added to the (dir)-component of the current.
 	 */
-	public void addJ(int[] coor, int dir, YMField field) {
-		cells[getCellIndex(coor)].addJ(dir, field);
+	public void addJ(int index, int dir, YMField field) {
+		cells[index].addJ(dir, field);
 	}
 
 	/**
 	 * Returns the YMField instance of the charge density.
-	 * @param coor      Lattice coordinate of the charge density
+	 * @param index     Lattice index of the charge density
 	 * @return          YMField instance of the charge density
 	 */
-	public YMField getRho(int[] coor) {
-		return cells[getCellIndex(coor)].getRho();
+	public YMField getRho(int index) {
+		return cells[index].getRho();
 	}
 
 	/**
 	 * Sets the YMField instance of the charge density.
-	 * @param coor      Lattice coordinate of the charge density
+	 * @param index     Lattice index of the charge density
 	 * @param field     YMField instance which the electric field should be set to.
 	 */
-	public void setRho(int[] coor, YMField field) {
-		cells[getCellIndex(coor)].setRho(field);
+	public void setRho(int index, YMField field) {
+		cells[index].setRho(field);
 	}
 
 	/**
 	 * Adds a YMField to the charge density.
-	 * @param coor      Lattice coordinate of the charge density
+	 * @param index     Lattice index of the charge density
 	 * @param field     YMField instance which should be added.
 	 */
-	public void addRho(int[] coor, YMField field) {
-		cells[getCellIndex(coor)].addRho(field);
+	public void addRho(int index, YMField field) {
+		cells[index].addRho(field);
 	}
 
 	/**
 	 * Returns the YMField instance of the (dir)-component of the electric field.
-	 * @param coor      Lattice coordinate of the electric field
+	 * @param index     Lattice index of the electric field
 	 * @param dir       Index of the component
 	 * @return          YMField instance of the (dir)-component
 	 */
-	public YMField getE(int[] coor, int dir) {
-		return cells[getCellIndex(coor)].getE(dir);
+	public YMField getE(int index, int dir) {
+		return cells[index].getE(dir);
 	}
 
 	/**
 	 * Sets the YMField instance of the (dir)-component of the electric field.
-	 * @param coor      Lattice coordinate of the electric field
+	 * @param index     Lattice index of the electric field
 	 * @param dir       Index of the component
 	 * @param field     YMField instance which the electric field should be set to.
 	 */
-	public void setE(int[] coor, int dir, YMField field) {
-		cells[getCellIndex(coor)].setE(dir, field);
+	public void setE(int index, int dir, YMField field) {
+		cells[index].setE(dir, field);
 	}
 
 	/**
 	 * Adds a YMField to the (dir)-component of the electric field.
-	 * @param coor      Lattice coordinate of the electric field
+	 * @param index     Lattice index of the electric field
 	 * @param dir       Index of the component
 	 * @param field     YMField instance which should be added.
 	 */
-	public void addE(int[] coor, int dir, YMField field) {
-		cells[getCellIndex(coor)].addE(dir, field);
+	public void addE(int index, int dir, YMField field) {
+		cells[index].addE(dir, field);
 	}
 
 	/**
-	 * Returns the (dir1, dir2)-component of the field strength tensor at a certain lattice coordinate.
-	 * @param coor      Lattice coordinate of the field strength tensor
+	 * Returns the (dir1, dir2)-component of the field strength tensor at a certain lattice index.
+	 * @param index     Lattice index of the field strength tensor
 	 * @param dir1      First spatial component (0 - (numberOfDimensions-1))
 	 * @param dir2      Second spatial component (0 - (numberOfDimensions-1))
 	 * @return          YMField instance of the (dir1, dir2)-component
 	 */
-	public YMField getFTensor(int[] coor, int dir1, int dir2) {
-		return cells[getCellIndex(coor)].getFieldStrength(dir1, dir2);
+	public YMField getFTensor(int index, int dir1, int dir2) {
+		return cells[index].getFieldStrength(dir1, dir2);
 	}
 
 	/**
-	 * Sets the (dir1, dir2)-component of the field strength tensor at a certain lattice coordinate.
-	 * @param coor      Lattice coordinate of the field strength tensor
+	 * Sets the (dir1, dir2)-component of the field strength tensor at a certain lattice index.
+	 * @param index     Lattice index of the field strength tensor
 	 * @param dir1      First space component (0 - (numberOfDimensions-1))
 	 * @param dir2      Second space component (0 - (numberOfDimensions-1))
 	 * @param field     YMField instance which the field strength tensor should be set to.
 	 */
-	public void setFTensor(int[] coor, int dir1, int dir2, YMField field) {
-		cells[getCellIndex(coor)].setFieldStrength(dir1, dir2, field);
+	public void setFTensor(int index, int dir1, int dir2, YMField field) {
+		cells[index].setFieldStrength(dir1, dir2, field);
 	}
 
 	/**
-	 * Returns the gauge link at time (t) at a given lattice coordinate in a given direction.
-	 * @param coor  Lattice coordinate of the gauge link
+	 * Returns the gauge link at time (t) at a given lattice index in a given direction.
+	 * @param index Lattice index of the gauge link
 	 * @param dir   Direction of the gauge link
 	 * @return      Instance of the gauge link
 	 */
-	public LinkMatrix getU(int[] coor, int dir) {
-		return cells[getCellIndex(coor)].getU(dir);
+	public LinkMatrix getU(int index, int dir) {
+		return cells[index].getU(dir);
 	}
 
 	/**
-	 * Sets the gauge link at time (t) at given lattice coordinate in given direction to a new value.
-	 * @param coor  Lattice coordinate of the gauge link
+	 * Sets the gauge link at time (t) at given lattice index in given direction to a new value.
+	 * @param index Lattice index of the gauge link
 	 * @param dir   Direction of the gauge link
 	 * @param mat   LinkMatrix instance
 	 */
-	public void setU(int[] coor, int dir, LinkMatrix mat) {
-		cells[getCellIndex(coor)].setU(dir, mat);
+	public void setU(int index, int dir, LinkMatrix mat) {
+		cells[index].setU(dir, mat);
 	}
 
 	/**
-	 * Returns the gauge link at time (t+dt) at a given lattice coordinate in a given direction.
-	 * @param coor  Lattice coordinate of the gauge link
+	 * Returns the gauge link at time (t+dt) at a given lattice index in a given direction.
+	 * @param index Lattice index of the gauge link
 	 * @param dir   Direction of the gauge link
 	 * @return      Instance of the gauge link
 	 */
-	public LinkMatrix getUnext(int[] coor, int dir) {
-		return cells[getCellIndex(coor)].getUnext(dir);
+	public LinkMatrix getUnext(int index, int dir) {
+		return cells[index].getUnext(dir);
 	}
 
 	/**
-	 * Sets the gauge link at time (t+dt) at given lattice coordinate in given direction to a new value.
-	 * @param coor  Lattice coordinate of the gauge link
+	 * Sets the gauge link at time (t+dt) at given lattice index in given direction to a new value.
+	 * @param index Lattice index of the gauge link
 	 * @param dir   Direction of the gauge link
 	 * @param mat   LinkMatrix instance
 	 */
-	public void setUnext(int[] coor, int dir, LinkMatrix mat) {
-		cells[getCellIndex(coor)].setUnext(dir, mat);
+	public void setUnext(int index, int dir, LinkMatrix mat) {
+		cells[index].setUnext(dir, mat);
 	}
 
 	/**
-	 * Resets charge in a cell at a given lattice coordinate.
-	 * @param coor  Lattice coordinate of the cell
+	 * Resets charge in a cell at a given lattice index.
+	 * @param index  Lattice index of the cell
 	 */
-	public void resetCharge(int[] coor) {
-		cells[getCellIndex(coor)].resetCharge();
+	public void resetCharge(int index) {
+		cells[index].resetCharge();
 	}
 
 	/**
@@ -299,13 +310,13 @@ public class Grid {
 	}
 
 	/**
-	 * Returns the Cell instance at given lattice coordinates with respect to periodic boundary conditions.
+	 * Returns the Cell instance at given lattice index.
 	 *
-	 * @param coor  Lattice coordinate of the cell
-	 * @return      Cell instance at lattice coordinates with respect to periodic boundary conditions
+	 * @param index  Index of the cell
+	 * @return       Cell instance at lattice index
 	 */
-	public Cell getCell(int[] coor) {
-		return cells[getCellIndex(coor)];
+	public Cell getCell(int index) {
+		return cells[index];
 	}
 
 	/**
@@ -385,12 +396,11 @@ public class Grid {
 	private void copyValuesFrom(Grid grid) {
 		int numberOfCells = grid.getTotalNumberOfCells();
 		for (int ci = 0; ci < numberOfCells; ci++) {
-			int[] cellPosition = grid.getCellPos(ci);
 			for (int d = 0; d < numDim; d++) {
-				LinkMatrix U = grid.getU(cellPosition, d);
-				this.setU(cellPosition, d, U);
-				YMField E = grid.getE(cellPosition, d);
-				this.setE(cellPosition, d, E);
+				LinkMatrix U = grid.getU(ci, d);
+				this.setU(ci, d, U);
+				YMField E = grid.getE(ci, d);
+				this.setE(ci, d, E);
 				// TODO: if desired: Copy other fields as well.
 			}
 		}
@@ -412,6 +422,13 @@ public class Grid {
 			 */
 			unitVectors[i][i] = 1;
 		}
+
+		cummulatedCellCount = new int[numDim + 1];
+		cummulatedCellCount[numDim] = 1;
+		for (int i = numDim - 1; i >= 0; i--) {
+			cummulatedCellCount[i] = cummulatedCellCount[i + 1] * numCells[i];
+		}
+
 		cells = new Cell[length];
 
 		for(int i = 0; i < length; i++) {
@@ -454,27 +471,27 @@ public class Grid {
 	}
 
 	/**
-	 * Calculates the plaquette starting at lattice coordinate coor in the plane of d1 and d2 with orientations o1, o2.
+	 * Calculates the plaquette starting at lattice index in the plane of d1 and d2 with orientations o1, o2.
 	 * This method implements the following definition of the plaquette:
-	 *      U_{x, ij} = U_{x, i} U_{x+i, j} U_{x+i+j, -i} U_{x+j, -j}
+	 * <pre>     U_{x, ij} = U_{x, i} U_{x+i, j} U_{x+i+j, -i} U_{x+j, -j}</pre>
 	 *
 	 *
-	 * @param coor  Lattice coordinate from where the plaquette starts
+	 * @param index Lattice index from where the plaquette starts
 	 * @param d1    Index of the first direction
 	 * @param d2    Index of the second direction
 	 * @param o1    Orientation of the first direction
 	 * @param o2    Orientation of the second direction
 	 * @return      Plaquette as LinkMatrix with correct orientation
 	 */
-	public LinkMatrix getPlaquette(int[] coor, int d1, int d2, int o1, int o2)
+	public LinkMatrix getPlaquette(int index, int d1, int d2, int o1, int o2)
 	{
 		/*
-			The four lattice coordinates associated with the plaquette.
+			The four lattice indices associated with the plaquette.
 		 */
-		int[] x1 = coor.clone();
-		int[] x2 = shift(x1, d1, o1);
-		int[] x3 = shift(x2, d2, o2);
-		int[] x4 = shift(x3, d1, -o1);
+		int x1 = index;
+		int x2 = shift(x1, d1, o1);
+		int x3 = shift(x2, d2, o2);
+		int x4 = shift(x3, d1, -o1);
 
 		/*
 			The four gauge links associated with the plaquette.
@@ -493,25 +510,25 @@ public class Grid {
 	}
 
 	/**
-	 * Getter for gauge links. Returns a link starting from a certain lattice coordinate with the right direction and
+	 * Getter for gauge links. Returns a link starting from a certain lattice index with the right direction and
 	 * orientation.
-	 *
+	 * <br>
 	 * Examples:
-	 * Link starting at coor in positive x-direction: getLink(coor, 0, 1)
-	 * Link starting at coor in negative x-direction: getLink(coor, 0, -1)
+	 * <ul><li>Link starting at index in positive x-direction: getLink(index, 0, 1)</li>
+	 * <li>Link starting at index in negative x-direction: getLink(index, 0, -1)</li></ul>
 	 *
-	 * @param coor          Lattice coordinate from which the link starts from
-	 * @param dir           Direction of the link (0 - (numberOfDimensions-1))
+	 * @param index         Lattice index from which the link starts from
+	 * @param direction     Direction of the link (0 - (numberOfDimensions-1))
 	 * @param orientation   Orientation of the link (-1 or 1)
 	 * @return              Gauge link in certain direction with correct orientation
 	 */
-	public LinkMatrix getLink(int[] coor, int dir, int orientation)
+	public LinkMatrix getLink(int index, int direction, int orientation)
 	{
 		if(orientation < 0)
 		{
-			return getCell(shift(coor, dir, orientation)).getU(dir).adj();
+			return getCell(shift(index, direction, orientation)).getU(direction).adj();
 		}
-		return getCell(coor).getU(dir);
+		return getCell(index).getU(direction);
 	}
 
 	/**
@@ -539,86 +556,104 @@ public class Grid {
 	 * This method translates a lattice coordinate vector to the corresponding cell id with respect to periodic boundary
 	 * conditions.
 	 *
-	 * @param coor  lattice coordinate vector
-	 * @return      cell id
+	 * @param coordinates  lattice coordinate vector
+	 * @return             cell id
 	 */
-	public int getCellIndex(int[] coor)
+	public int getCellIndex(int[] coordinates)
 	{
 		//ensure periodicity
-		int[] periodicCoor = periodic(coor);
+		int[] periodicCoordinates = periodic(coordinates);
 
-		int cellIndex = periodicCoor[0];
+		int cellIndex = periodicCoordinates[0];
 
-		for(int i = 1; i < coor.length; i++)
+		for(int i = 1; i < coordinates.length; i++)
 		{
 			cellIndex *= numCells[i];
-			cellIndex += periodicCoor[i];
+			cellIndex += periodicCoordinates[i];
 		}
 		return  cellIndex;
-	}
-
-	/**
-	 * This method translates a lattice coordinate vector to the corresponding cell id with respect to periodic boundary
-	 * conditions.
-	 *
-	 * @param coor  lattice coordinate vector
-	 * @return      cell id
-	 */
-	public int index(int[] coor) {
-		
-		int[] modCoor = periodic(coor);
-		int res = modCoor[0];
-		int dim = 1;
-		
-		for (int i = 1; i < numDim; ++i) {
-			dim *= numCells[i-1];
-			res += modCoor[i]*dim;
-		}
-		return res;
 	}
 
 	/**
 	 * This method implements periodic boundary conditions on the lattice. If the lattice coordinate vector is outside
 	 * the bounds of the simulation box it gets shifted appropriately.
 	 *
-	 * @param coor  lattice coordinate vector
-	 * @return      shifted lattice coordinate vector
+	 * @param coordinates  lattice coordinate vector
+	 * @return             shifted lattice coordinate vector
 	 */
-	public int[] periodic(int[] coor) {
+	@Deprecated
+	protected int[] periodic(int[] coordinates) {
 		
 		int[] res = new int[numDim];
 		for (int i = 0; i < numDim; ++i) {
-			res[i] = (coor[i] + numCells[i]) % numCells[i];
-			//if(coor[i] != res[i]) {System.out.println(coor[i]);System.out.println(numCells[i]);System.out.println(res[i]);System.out.println("/");}
+			res[i] = (coordinates[i] + numCells[i]) % numCells[i];
 		}
 		return res;
 	}
 
 	/**
-	 * Shifts a lattice coorindate vector by one unit step in a certain direction. The direction is passed as an integer
+	 * Shifts a lattice coordinate vector by one unit step in a certain direction. The direction is passed as an integer
 	 * for the direction and an orientation.
-	 *
+	 * <br>
 	 * Examples:
-	 * Shift by one in negative x-direction: shift(coor, 0, -1)
-	 * Shift by one in positive x-direction: shift(coor, 0, 1)
-	 * Shift by one in positive z-direction: shift(coor, 2, 1)
+	 * <ul><li>Shift by one in negative x-direction: shift(coor, 0, -1)</li>
+	 * <li>Shift by one in positive x-direction: shift(coor, 0, 1)</li>
+	 * <li>Shift by one in positive z-direction: shift(coor, 2, 1)</li></ul>
 	 *
-	 * @param coor          Input lattice coordinate vector
-	 * @param dir           Direction of the shift (0 - (numberOfDirections-1))
+	 * @param coordinates   Input lattice coordinate vector
+	 * @param direction     Direction of the shift (0 - (numberOfDirections-1))
 	 * @param orientation   Orientation of the direction (1 or -1)
 	 * @return              Shifted coordinate with respect to periodic boundary conditions.
 	 */
-	public int[] shift(int[] coor, int dir, int orientation)
+	@Deprecated
+	protected int[] shift(int[] coordinates, int direction, int orientation)
 	{
-		int[] shiftedCoordinate = coor.clone();
+		int[] shiftedCoordinate = coordinates.clone();
 
 		for(int i = 0; i < numDim; i++)
 		{
-			shiftedCoordinate[i] += orientation * unitVectors[dir][i];
+			shiftedCoordinate[i] += orientation * unitVectors[direction][i];
 		}
 
 
 		return periodic(shiftedCoordinate);
+	}
+
+	/**
+	 * Shifts a lattice index by one unit step in a certain direction. The direction is passed as an integer
+	 * for the direction and an orientation.
+	 * <br>
+	 * Examples:
+	 * <ul><li>Shift by one in negative x-direction: shift(index, 0, -1)</li>
+	 * <li>Shift by one in positive x-direction: shift(index, 0, 1)</li>
+	 * <li>Shift by one in positive z-direction: shift(index, 2, 1)</li></ul>
+	 *
+	 * @param index         Valid input index of lattice coordinate
+	 * @param direction     Direction of the shift (0 - (numberOfDirections-1))
+	 * @param orientation   Orientation of the direction (1 or -1)
+	 * @return              Index of shifted coordinate with respect to periodic boundary conditions.
+	 */
+	public int shift(int index, int direction, int orientation)
+	{
+		int result = index;
+		int directionIndex = index / cummulatedCellCount[direction + 1];
+		int withinDirectionIndex = directionIndex % numCells[direction];
+		if (orientation > 0) {
+			if (withinDirectionIndex == numCells[direction] - 1) {
+				// wrap around along positive direction
+				result -= cummulatedCellCount[direction];
+			}
+			result += cummulatedCellCount[direction + 1];
+		} else if (orientation < 0) {
+			if (withinDirectionIndex == 0) {
+				// wrap around along negative direction
+				result += cummulatedCellCount[direction];
+			}
+			result -= cummulatedCellCount[direction + 1];
+		} else {
+			// do nothing if orientation == 0
+		}
+		return result;
 	}
 
 	/*
@@ -630,8 +665,8 @@ public class Grid {
 	 */
 	private class ResetCurrentAction implements CellAction {
 
-		public void execute(Grid grid, int[] coor) {
-			grid.getCell(coor).resetCurrent();
+		public void execute(Grid grid, int index) {
+			grid.getCell(index).resetCurrent();
 		}
 	}
 
@@ -640,8 +675,8 @@ public class Grid {
 	 */
 	private class ResetChargeAction implements CellAction {
 
-		public void execute(Grid grid, int[] coor) {
-			grid.resetCharge(coor);
+		public void execute(Grid grid, int index) {
+			grid.resetCharge(index);
 		}
 	}
 
@@ -651,122 +686,115 @@ public class Grid {
 	 */
 	private class StoreFieldsAction implements CellAction {
 
-		public void execute(Grid grid, int[] coor) {
-			grid.getCell(coor).reassignLinks();
+		public void execute(Grid grid, int index) {
+			grid.getCell(index).reassignLinks();
 		}
 	}
-	
+
 	/**
-	 * Calculates the field from the forward plaquette starting at lattice coordinate coor in the directions j and k.
+	 * Calculates the field from the forward plaquette starting at a lattice index in the directions j and k.
 	 * The matrix multiplication is done in the concrete field class.
 	 * The forward plaquette is defined as follows:
-	 *      U_{x, jk} = U_{x, j} U_{x+j, k} U^adj_{x+k, j} U^adj_{x, k}
+	 * <pre>     U_{x, jk} = U_{x, j} U_{x+j, k} U^adj_{x+k, j} U^adj_{x, k}</pre>
 	 *
-	 * @param coor  Lattice coordinate from where the plaquette starts
-	 * @param j    Index of the first direction
-	 * @param k    Index of the second direction
-	 * @return      Field from the forward plaquette
+	 * @param index  Lattice index from where the plaquette starts
+	 * @param j      Index of the first direction
+	 * @param k      Index of the second direction
+	 * @return       Field from the forward plaquette
 	 */
-	public YMField FieldFromForwardPlaquette(int[] coor, int j, int k) {
+	public YMField FieldFromForwardPlaquette(int index, int j, int k) {
 		
-		YMField res = cells[getCellIndex(coor)].getEmptyField(numCol);
-		int[] coor1 = new int[numDim];
-		int[] coor2 = new int[numDim];
-		System.arraycopy(coor, 0, coor1, 0, coor.length);
-		System.arraycopy(coor, 0, coor2, 0, coor.length);
-		coor1[j]++;
-		coor2[k]++;
+		YMField res = cells[index].getEmptyField(numCol);
+		int id1 = shift(index, j, 1);
+		int id2 = shift(index, k, 1);
 
-		res.FieldFromForwardPlaquette(cells[getCellIndex(coor)].getU(j), cells[getCellIndex(coor1)].getU(k), cells[getCellIndex(coor2)].getU(j), cells[getCellIndex(coor)].getU(k));
+		res.FieldFromForwardPlaquette(cells[index].getU(j), cells[id1].getU(k), cells[id2].getU(j), cells[index].getU(k));
 
 		return res;
 	}
-	
+
 	/**
-	 * Calculates the field from the backward plaquette starting at lattice coordinate coor in the directions j and k.
+	 * Calculates the field from the backward plaquette starting at a lattice index in the directions j and k.
 	 * The matrix multiplication is done in the concrete field class.
 	 * The backward plaquette is defined as follows:
-	 *      U_{x, jk} = U_{x, j} U^adj_{x+j-k, k} U^adj_{x-k, j} U_{x, k}
+	 * <pre>     U_{x, jk} = U_{x, j} U^adj_{x+j-k, k} U^adj_{x-k, j} U_{x, k}</pre>
 	 *
-	 * @param coor  Lattice coordinate from where the plaquette starts
-	 * @param j    Index of the first direction
-	 * @param k    Index of the second direction
-	 * @return      Field from the backward plaquette
+	 * @param index  Lattice index from where the plaquette starts
+	 * @param j      Index of the first direction
+	 * @param k      Index of the second direction
+	 * @return       Field from the backward plaquette
 	 */
-	public YMField FieldFromBackwardPlaquette(int[] coor, int j, int k) {
-		
-		YMField res = cells[getCellIndex(coor)].getEmptyField(numCol);
-		int[] coor1 = new int[numDim];
-		int[] coor2 = new int[numDim];
-		System.arraycopy(coor, 0, coor1, 0, coor.length);
-		System.arraycopy(coor, 0, coor2, 0, coor.length);
-		coor1[j]++;
-		coor1[k]--;
-		coor2[k]--;
+	public YMField FieldFromBackwardPlaquette(int index, int j, int k) {
 
-		res.FieldFromBackwardPlaquette(cells[getCellIndex(coor)].getU(j), cells[getCellIndex(coor1)].getU(k), cells[getCellIndex(coor2)].getU(j), cells[getCellIndex(coor2)].getU(k));
+		YMField res = cells[index].getEmptyField(numCol);
+		int id1 = shift(shift(index, j, 1), k, -1);
+		int id2 = shift(index, k, -1);
+
+		res.FieldFromBackwardPlaquette(cells[index].getU(j), cells[id1].getU(k), cells[id2].getU(j), cells[id2].getU(k));
 
 		return res;
 	}
-	
+
 	/**
-	 * Calculates the square of the electric field from the temporal plaquette starting at lattice coordinate coor in the direction dir.
+	 * Calculates the square of the electric field from the temporal plaquette starting at a lattice index in a direction.
 	 *
-	 * @param coor  Lattice coordinate from where the plaquette starts
-	 * @param dir    Index of the direction
-	 * @return      E^2 calculated from the temporal plaquette
+	 * @param index      Lattice index from where the plaquette starts
+	 * @param direction  Index of the direction
+	 * @return           E^2 calculated from the temporal plaquette
 	 */
-	public double getEsquaredFromLinks(int[] coor, int dir) {
+	public double getEsquaredFromLinks(int index, int direction) {
 		
 		double norm = at*at;
-		//double res = 1.0 - cells[getCellIndex(coor)].getUnext(dir).mult(cells[getCellIndex(coor)].getU(dir).adj()).getTrace()/numCol;
-		double res = cells[getCellIndex(coor)].getUnext(dir).mult(cells[getCellIndex(coor)].getU(dir).adj()).getLinearizedAlgebraElement().square()/norm;
+		//double res = 1.0 - cells[index].getUnext(direction).mult(cells[index].getU(direction).adj()).getTrace()/numCol;
+		double res = cells[index].getUnext(direction).mult(cells[index].getU(direction).adj()).getLinearizedAlgebraElement().square()/norm;
 
 		return res;
 	}
-	
+
 	/**
-	 * Calculates the square of the magnetic field from the spatial plaquette starting at lattice coordinate coor in the direction dir.
+	 * Calculates the square of the magnetic field from the spatial plaquette starting at a lattice index in a direction.
 	 *
-	 * @param coor  Lattice coordinate from where the plaquette starts
-	 * @param dir    Index of the direction
-	 * @return      B^2 calculated from the spatial plaquette
+	 * @param index      Lattice index from where the plaquette starts
+	 * @param direction  Index of the direction
+	 * @return           B^2 calculated from the spatial plaquette
 	 */
-	public double getBsquaredFromLinks(int[] coor, int dir) {
+	public double getBsquaredFromLinks(int index, int direction) {
 		
 		double norm = as*as;
 		int j=0, k=0;
-		switch (dir) {
-        	case 0:  j = 1;  k = 2;
-            break;
-            
-        	case 1:  j = 0;  k = 2;
-            break;
-            
-        	case 2:  j = 0;  k = 1;
-            break;
+		switch (direction) {
+		case 0:
+			j = 1;
+			k = 2;
+			break;
+
+		case 1:
+			j = 0;
+			k = 2;
+			break;
+
+		case 2:
+			j = 0;
+			k = 1;
+			break;
 		}
-		double res = getPlaquette(coor, j, k, 1, 1).getLinearizedAlgebraElement().square()/norm;
+		double res = getPlaquette(index, j, k, 1, 1).getLinearizedAlgebraElement().square()/norm;
 
 		return res;
 	}
-	
-	public double getGaussConstraintSquared(int[] coor) {
+
+	public double getGaussConstraintSquared(int index) {
 		
-		YMField gauss = cells[getCellIndex(coor)].getEmptyField(numCol);
-		YMField temp = cells[getCellIndex(coor)].getEmptyField(numCol);
+		YMField gauss = cells[index].getEmptyField(numCol);
+		YMField temp = cells[index].getEmptyField(numCol);
 		double norm = 1.0/(at*as*gaugeCoupling);
-		int[] coor1 = new int[numDim];
-		int[] coor2 = new int[numDim];
-		System.arraycopy(coor, 0, coor1, 0, coor.length);
-		System.arraycopy(coor, 0, coor2, 0, coor.length);
 		
 		for (int i = 0; i < numDim; i++) {
-			coor1[i]++;
-			coor2[i]--;
-			temp.set(getU(coor1, i).adj().mult(getUnext(coor2, i)).getLinearizedAlgebraElement());//if(i == 1){System.out.println(coor1[i]);System.out.println(getE(coor, i).square());System.out.println(temp.mult(norm).square());}
-			gauss.addequate(getE(coor, i).sub(temp.mult(norm)));
-			//gauss.addequate(getE(coor, i).sub(getE(coor2, i)));
+			int id1 = shift(index, i, 1);
+			int id2 = shift(index, i, -1);
+			temp.set(getU(id1, i).adj().mult(getUnext(id2, i)).getLinearizedAlgebraElement());
+			gauss.addequate(getE(index, i).sub(temp.mult(norm)));
+			//gauss.addequate(getE(index, i).sub(getE(index, i)));
 		}
 		return gauss.square();
 	}

@@ -25,8 +25,7 @@ public class SU2RandomFields implements IFieldGenerator {
 
 		// Cycle through each cell and apply the plane wave configuration to the links and electric fields.
 		for (int c = 0; c < numberOfCells; c++) {
-			int[] cellPosition = g.getCellPos(c);
-			Cell currentCell = g.getCell(cellPosition);
+			Cell currentCell = g.getCell(c);
 
 			for (int i = 0; i < numberOfDimensions; i++) {
 				SU2Field efield = new SU2Field();

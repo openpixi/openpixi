@@ -45,52 +45,52 @@ public class YangMillsSolver extends FieldSolver {
 		/**
 		 * Updates the electric fields at a given coordinate
 		 *
-		 * @param coor  Lattice coordinate
+		 * @param index  Lattice index
 		 */
-		public void execute(Grid grid, int[] coor) {
+		public void execute(Grid grid, int index) {
 			
-			if(coor.length == 3) {
+			if(grid.getNumberOfDimensions() == 3) {
 				
-				for(int k=0;k<coor.length;k++) {
+				for(int k=0;k<grid.getNumberOfDimensions();k++) {
 	
 					switch (k)
-					      {
-		
-					      case 0: 
-						      a1 = grid.FieldFromForwardPlaquette(coor, 0, 1).mult(factor);
-						  	
-						      a2 = grid.FieldFromBackwardPlaquette(coor, 0, 1).mult(factor);
-					
-						      a3 = grid.FieldFromForwardPlaquette(coor, 0, 2).mult(factor);
-					
-						      a4 = grid.FieldFromBackwardPlaquette(coor, 0, 2).mult(factor);
-					      break;
-					      
-					      case 1:
-						      a1 = grid.FieldFromForwardPlaquette(coor, 1, 2).mult(factor);
-							  	
-						      a2 = grid.FieldFromBackwardPlaquette(coor, 1, 2).mult(factor);
-					
-						      a3 = grid.FieldFromForwardPlaquette(coor, 1, 0).mult(factor);
-					
-						      a4 = grid.FieldFromBackwardPlaquette(coor, 1, 0).mult(factor);
-					      break;
-					      
-					      case 2:
-						      a1 = grid.FieldFromForwardPlaquette(coor, 2, 0).mult(factor);
-							  	
-						      a2 = grid.FieldFromBackwardPlaquette(coor, 2, 0).mult(factor);
-					
-						      a3 = grid.FieldFromForwardPlaquette(coor, 2, 1).mult(factor);
-					
-						      a4 = grid.FieldFromBackwardPlaquette(coor, 2, 1).mult(factor);
-					      break;
-		
-					      }	
+					{
+
+					case 0:
+						a1 = grid.FieldFromForwardPlaquette(index, 0, 1).mult(factor);
+
+						a2 = grid.FieldFromBackwardPlaquette(index, 0, 1).mult(factor);
+
+						a3 = grid.FieldFromForwardPlaquette(index, 0, 2).mult(factor);
+
+						a4 = grid.FieldFromBackwardPlaquette(index, 0, 2).mult(factor);
+						break;
+
+					case 1:
+						a1 = grid.FieldFromForwardPlaquette(index, 1, 2).mult(factor);
+
+						a2 = grid.FieldFromBackwardPlaquette(index, 1, 2).mult(factor);
+
+						a3 = grid.FieldFromForwardPlaquette(index, 1, 0).mult(factor);
+
+						a4 = grid.FieldFromBackwardPlaquette(index, 1, 0).mult(factor);
+						break;
+
+					case 2:
+						a1 = grid.FieldFromForwardPlaquette(index, 2, 0).mult(factor);
+
+						a2 = grid.FieldFromBackwardPlaquette(index, 2, 0).mult(factor);
+
+						a3 = grid.FieldFromForwardPlaquette(index, 2, 1).mult(factor);
+
+						a4 = grid.FieldFromBackwardPlaquette(index, 2, 1).mult(factor);
+						break;
+
+					}
 	
-					res = grid.getE(coor, k);
+					res = grid.getE(index, k);
 					res.addfour(a1, a2, a3, a4);
-					grid.setE(coor, k, res);
+					grid.setE(index, k, res);
 				
 				}
 			} else {System.out.println("Yang-Mills solver only available for 3 spatial dimensions!");}	
@@ -101,17 +101,17 @@ public class YangMillsSolver extends FieldSolver {
 		/**
 		 * Updates the links matrices at a given coordinate
 		 *
-		 * @param coor  Lattice coordinate
+		 * @param index  Lattice coordinate
 		 */
-		public void execute(Grid grid, int[] coor) {
+		public void execute(Grid grid, int index) {
 			
 			LinkMatrix V;
 				
-			for(int k=0;k<coor.length;k++) {
+			for(int k=0;k<grid.getNumberOfDimensions();k++) {
 				
-				V = grid.getE(coor, k).getLinkExact();
+				V = grid.getE(index, k).getLinkExact();
 				V.selfadj();
-				grid.setUnext( coor, k, V.mult( grid.getU(coor, k) ) );
+				grid.setUnext( index, k, V.mult( grid.getU(index, k) ) );
 				
 			}
 		}

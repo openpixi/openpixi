@@ -8,7 +8,7 @@ import org.openpixi.pixi.physics.grid.Grid;
  */
 public interface CellAction {
 	/**
-	 * Executes the action on a cell with coordinates coor[] and direction dir.
+	 * Executes the action on a cell with particular index.
 	 */
-	void execute(Grid grid, int[] coor);
+	void execute(Grid grid, int index);
 }

@@ -1,5 +1,7 @@
 package org.openpixi.pixi.physics.grid;
 
+import java.util.Random;
+
 import org.junit.Assert;
 import org.junit.Test;
 import org.openpixi.pixi.physics.GeneralBoundaryType;
@@ -27,15 +29,16 @@ public class GridTest {
 		for (int t = 0; t < numberOfTests; t++) {
 			// Create random lattice position
 			int[] pos = getRandomLatticePosition(s);
+			int index = g.getCellIndex(pos);
 
 			// Choose random direction
 			int dir = (int) (Math.random() * s.getNumberOfDimensions());
 
 			// Shift position
-			int[] shiftedPos = g.shift(pos, dir, 1);
+			int shiftedIndex = g.shift(index, dir, 1);
 
-			LinkMatrix l1 = g.getLink(pos, dir, 1);
-			LinkMatrix l2 = g.getLink(shiftedPos, dir, -1);
+			LinkMatrix l1 = g.getLink(index, dir, 1);
+			LinkMatrix l2 = g.getLink(shiftedIndex, dir, -1);
 			l2.selfadj();
 
 			// This code is specific to SU2
@@ -49,14 +52,15 @@ public class GridTest {
 		for (int t = 0; t < numberOfTests; t++) {
 			// Create random lattice position
 			int[] pos = getRandomLatticePosition(s);
+			int index = g.getCellIndex(pos);
 
 			// Choose random directions
 			int d1 = (int) (Math.random() * s.getNumberOfDimensions());
 			int d2 = (int) (Math.random() * s.getNumberOfDimensions());
 
 			// These two plaquettes should be the inverse of each other.
-			LinkMatrix plaq1 = g.getPlaquette(pos, d1, d2, 1, 1);
-			LinkMatrix plaq2 = g.getPlaquette(pos, d2, d1, 1, 1);
+			LinkMatrix plaq1 = g.getPlaquette(index, d1, d2, 1, 1);
+			LinkMatrix plaq2 = g.getPlaquette(index, d2, d1, 1, 1);
 
 			LinkMatrix result = plaq1.mult(plaq2);
 
@@ -67,9 +71,9 @@ public class GridTest {
 			Assert.assertEquals(0.0, result.get(3), accuracy);
 
 			// Forward and backward plaquette around the same rectangle should have the same trace.
-			int[] shiftedPos = g.shift(pos, d1, 1);
+			int shiftedIndex = g.shift(index, d1, 1);
 
-			LinkMatrix plaq3 = g.getPlaquette(shiftedPos, d1, d2, -1, 1);
+			LinkMatrix plaq3 = g.getPlaquette(shiftedIndex, d1, d2, -1, 1);
 
 			Assert.assertEquals(plaq1.getTrace(), plaq3.getTrace(), accuracy);
 		}
@@ -143,6 +147,86 @@ public class GridTest {
 
 			// Test if equal
 			Assert.assertArrayEquals(pos0, pos3);
+
+			// Test the same using indices:
+			int index0 = g.getCellIndex(pos0);
+			int index2 = g.shift(index0, d, 1);
+			int index3 = g.shift(index2, d, -1);
+			int index2B = g.getCellIndex(pos2);
+			int index3B = g.getCellIndex(pos3);
+
+			// Tests
+			Assert.assertEquals(index0, index3);
+			Assert.assertEquals(index2, index2B);
+			Assert.assertEquals(index3, index3B);
+		}
+	}
+
+	@Test
+	public void testShiftSpeed()
+	{
+		int numberOfTests = 10;
+
+		Settings settings = getStandardSettings();
+		settings.addFieldGenerator(new SU2RandomFields());
+		Simulation s = new Simulation(settings);
+		Grid g = s.grid;
+
+		// Create random lattice position
+		int[] pos = getRandomLatticePosition(s);
+		int index = g.getCellIndex(pos);
+
+		// Start random generators with exactly the same seed (for comparability)
+		long seed = System.currentTimeMillis();
+		Random generator1 = new Random(seed);
+		Random generator2 = new Random(seed);
+		Random generator3 = new Random(seed);
+
+		// Test shift() using position vectors
+		long time1 = -System.currentTimeMillis();
+		for (int t = 0; t < numberOfTests; t++) {
+
+			// Choose random direction and orientation
+			int d = generator1.nextInt(s.getNumberOfDimensions());
+			int o = generator1.nextInt(2) * 2 - 1;
+
+			pos = g.shift(pos, d, o);
+		}
+		time1 += System.currentTimeMillis();
+
+		// Test shift() using indices
+		long time2 = -System.currentTimeMillis();
+		for (int t = 0; t < numberOfTests; t++) {
+
+			// Choose random direction
+			int d = generator2.nextInt(s.getNumberOfDimensions());
+			int o = generator2.nextInt(2) * 2 - 1;
+
+			index = g.shift(index, d, o);
+		}
+		time2 += System.currentTimeMillis();
+
+		// Test duration of random seed creation:
+		long time3 = -System.currentTimeMillis();
+		for (int t = 0; t < numberOfTests; t++) {
+
+			// Choose random direction and orientation
+			int d = generator3.nextInt(s.getNumberOfDimensions());
+			int o = generator3.nextInt(2) * 2 - 1;
+		}
+		time3 += System.currentTimeMillis();
+
+		// Test the same using indices:
+		int index2 = g.getCellIndex(pos);
+
+		// Tests
+		Assert.assertEquals(index, index2);
+
+		if (numberOfTests > 1000) {
+			// Compare times
+			System.out.println("Shift test: Time1: " + time1 + " vs. Time2: " + time2);
+			System.out.println("Generation of random numbers: " + time3);
+			System.out.println("Shift test without random number generation: Time1: " + (time1 - time3) + " vs. Time2: " + (time2 - time3));
 		}
 	}
 

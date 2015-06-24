@@ -125,6 +125,7 @@ public class EnergyDensity3DGLPanel extends AnimationGLPanel {
 
 				pos[0] = i;
 				pos[1] = k;
+				int index = s.grid.getCellIndex(pos);
 
 				double EfieldSquared = 0.0;
 				double BfieldSquared = 0.0;
@@ -132,14 +133,14 @@ public class EnergyDensity3DGLPanel extends AnimationGLPanel {
 				float green = 0;
 				float blue = 0;
 				for(int w = 0; w < s.getNumberOfDimensions(); w++) {
-					EfieldSquared += s.grid.getEsquaredFromLinks(pos, w) / (as * g * as * g) / 2;
-					BfieldSquared += s.grid.getBsquaredFromLinks(pos, w) / (as * g * as * g) / 2;
+					EfieldSquared += s.grid.getEsquaredFromLinks(index, w) / (as * g * as * g) / 2;
+					BfieldSquared += s.grid.getBsquaredFromLinks(index, w) / (as * g * as * g) / 2;
 					// get color:
-					double color = s.grid.getE(pos, w).get(0);
+					double color = s.grid.getE(index, w).get(0);
 					red += color * color;
-					color = s.grid.getE(pos, w).get(1);
+					color = s.grid.getE(index, w).get(1);
 					green += color * color;
-					color = s.grid.getE(pos, w).get(2);
+					color = s.grid.getE(index, w).get(2);
 					blue += color * color;
 				}
 				// Normalize

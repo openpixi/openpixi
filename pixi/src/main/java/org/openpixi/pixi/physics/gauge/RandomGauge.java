@@ -37,12 +37,11 @@ public class RandomGauge extends GaugeTransformation {
 	}
 
 	private class RandomGaugeTransformationAction implements CellAction {
-		public void execute(Grid grid, int[] coor) {
+		public void execute(Grid grid, int index) {
 			double a = 2 * (Math.random() - 0.5) * randomVector[0];
 			double b = 2 * (Math.random() - 0.5) * randomVector[1];
 			double c = 2 * (Math.random() - 0.5) * randomVector[2];
 			SU2Field field = new SU2Field(a, b, c);
-			int index = grid.getCellIndex(coor);
 			getG()[index] = field.getLinkExact();
 		}
 	}

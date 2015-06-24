@@ -103,7 +103,7 @@ public class SU2FocusedGaussianPulse implements IFieldGenerator {
 			double gaugeFieldFactor = g * as * pulseFunction(spherical[0], spherical[1], spherical[2], this.timeStep / 2.0);
 
 
-			Cell currentCell = grid.getCell(cellPosition);
+			Cell currentCell = grid.getCell(ci);
 
 			for (int i = 0; i < this.numberOfDimensions; i++) {
 				//Setup the gauge links

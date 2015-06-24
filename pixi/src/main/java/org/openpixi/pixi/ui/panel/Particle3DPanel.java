@@ -172,9 +172,10 @@ public class Particle3DPanel extends AnimationPanel {
 						pos[0] = i;
 						pos[1] = j;
 						pos[2] = k;
-						double jx = scale * s.grid.getJ(pos, 0).get(colorIndex);
-						double jy = scale * s.grid.getJ(pos, 1).get(colorIndex);
-						double jz = scale * s.grid.getJ(pos, 2).get(colorIndex);
+						int index = s.grid.getCellIndex(pos);
+						double jx = scale * s.grid.getJ(index, 0).get(colorIndex);
+						double jy = scale * s.grid.getJ(index, 1).get(colorIndex);
+						double jz = scale * s.grid.getJ(index, 2).get(colorIndex);
 						if (combinefields) {
 							// Combine spatial components of current
 							// Current vectors are placed on the grid points.
@@ -215,10 +216,11 @@ public class Particle3DPanel extends AnimationPanel {
 						pos[0] = i;
 						pos[1] = j;
 						pos[2] = k;
+						int index = s.grid.getCellIndex(pos);
 
-						double ex = scale * s.grid.getE(pos, 0).get(colorIndex);
-						double ey = scale * s.grid.getE(pos, 1).get(colorIndex);
-						double ez = scale * s.grid.getE(pos, 2).get(colorIndex);
+						double ex = scale * s.grid.getE(index, 0).get(colorIndex);
+						double ey = scale * s.grid.getE(index, 1).get(colorIndex);
+						double ez = scale * s.grid.getE(index, 2).get(colorIndex);
 
 						if (combinefields) {
 							// Draw combined E- and B-fields

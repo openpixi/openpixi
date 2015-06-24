@@ -88,7 +88,7 @@ public class SU2GaussianPulse implements IFieldGenerator {
 			double gaugeFieldFactor = g * as * tmp;
 
 
-			Cell currentCell = grid.getCell(cellPosition);
+			Cell currentCell = grid.getCell(ci);
 
 			for (int i = 0; i < this.numberOfDimensions; i++) {
 				//Setup the gauge links
