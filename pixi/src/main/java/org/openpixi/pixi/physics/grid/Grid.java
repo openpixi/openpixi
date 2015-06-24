@@ -66,6 +66,13 @@ public class Grid {
 	private int[][] unitVectors;
 
 	/**
+	 * Cummulated cell count.
+	 * cummulatedCellCount[numDim] = 1;
+	 * cummulatedCellCount[i] = cummulatedCellCount[i + 1] * numCells[i];
+	 */
+	private int cummulatedCellCount[];
+
+	/**
 	 * Returns the FieldSolver instance currently used.
 	 * @return  Instance of the FieldSolver
 	 */
@@ -412,6 +419,13 @@ public class Grid {
 			 */
 			unitVectors[i][i] = 1;
 		}
+
+		cummulatedCellCount = new int[numDim + 1];
+		cummulatedCellCount[numDim] = 1;
+		for (int i = numDim - 1; i >= 0; i--) {
+			cummulatedCellCount[i] = cummulatedCellCount[i + 1] * numCells[i];
+		}
+
 		cells = new Cell[length];
 
 		for(int i = 0; i < length; i++) {
@@ -619,6 +633,43 @@ public class Grid {
 
 
 		return periodic(shiftedCoordinate);
+	}
+
+	/**
+	 * Shifts a lattice coordinate vector by one unit step in a certain direction. The direction is passed as an integer
+	 * for the direction and an orientation.
+	 *
+	 * Examples:
+	 * Shift by one in negative x-direction: shift(coor, 0, -1)
+	 * Shift by one in positive x-direction: shift(coor, 0, 1)
+	 * Shift by one in positive z-direction: shift(coor, 2, 1)
+	 *
+	 * @param index         Valid input index of lattice coordinate
+	 * @param direction     Direction of the shift (0 - (numberOfDirections-1))
+	 * @param orientation   Orientation of the direction (1 or -1)
+	 * @return              Index of shifted coordinate with respect to periodic boundary conditions.
+	 */
+	public int shift(int index, int direction, int orientation)
+	{
+		int result = index;
+		int directionIndex = index / cummulatedCellCount[direction + 1];
+		int withinDirectionIndex = directionIndex % numCells[direction];
+		if (orientation > 0) {
+			if (withinDirectionIndex == numCells[direction] - 1) {
+				// wrap around along positive direction
+				result -= cummulatedCellCount[direction];
+			}
+			result += cummulatedCellCount[direction + 1];
+		} else if (orientation < 0) {
+			if (withinDirectionIndex == 0) {
+				// wrap around along negative direction
+				result += cummulatedCellCount[direction];
+			}
+			result -= cummulatedCellCount[direction + 1];
+		} else {
+			// do nothing if orientation == 0
+		}
+		return result;
 	}
 
 	/*

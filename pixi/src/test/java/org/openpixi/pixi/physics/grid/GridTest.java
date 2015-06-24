@@ -143,6 +143,18 @@ public class GridTest {
 
 			// Test if equal
 			Assert.assertArrayEquals(pos0, pos3);
+
+			// Test the same using indices:
+			int index0 = g.getCellIndex(pos0);
+			int index2 = g.shift(index0, d, 1);
+			int index3 = g.shift(index2, d, -1);
+			int index2B = g.getCellIndex(pos2);
+			int index3B = g.getCellIndex(pos3);
+
+			// Tests
+			Assert.assertEquals(index0, index3);
+			Assert.assertEquals(index2, index2B);
+			Assert.assertEquals(index3, index3B);
 		}
 	}
 
