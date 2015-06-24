@@ -173,7 +173,7 @@ public class Particle2DPanel extends AnimationPanel {
         g.setTransform(old);
      }
 
-	public void addComponents(Box box) {
+	public void addPropertyComponents(Box box) {
 		addLabel(box, "Particle panel");
 		colorProperties.addComponents(box);
 		fieldProperties.addComponents(box);

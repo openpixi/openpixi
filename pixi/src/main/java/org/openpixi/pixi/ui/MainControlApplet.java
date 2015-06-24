@@ -48,7 +48,7 @@ public class MainControlApplet extends JApplet
 
 //	private JComboBox algorithmComboBox;
 
-	private JTabbedPane tabs;
+	protected JTabbedPane tabs;
 
 	protected SimulationAnimation simulationAnimation;
 	private PanelManager panelManager;
@@ -235,9 +235,9 @@ public class MainControlApplet extends JApplet
 
 		settingControls.setPreferredSize(new Dimension (300, 100));
 
-		tabs.addTab("Settings", settingControls);
-		tabs.addTab("Properties", propertiesTab);
 		tabs.addTab("File", fileTab);
+		tabs.addTab("Properties", propertiesTab);
+		tabs.addTab("Settings", settingControls);
 
 		Component mainPanel = panelManager.getDefaultPanel();
 

@@ -179,7 +179,7 @@ public class EnergyDensity1DPanel extends AnimationPanel {
 
 	}
 
-	public void addComponents(Box box) {
+	public void addPropertyComponents(Box box) {
 		addLabel(box, "Energy density panel");
 		scaleProperties.addComponents(box);
 	}

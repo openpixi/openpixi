@@ -133,7 +133,7 @@ public class EnergyDensity2DPanel extends AnimationPanel {
         g.setTransform(old);
      }
 
-	public void addComponents(Box box) {
+	public void addPropertyComponents(Box box) {
 		addLabel(box, "Energy density 2D panel");
 		scaleProperties.addComponents(box);
 		infoProperties.addComponents(box);

@@ -6,7 +6,7 @@ import javax.swing.Box;
 import javax.swing.BoxLayout;
 
 import org.openpixi.pixi.ui.PanelManager;
-import org.openpixi.pixi.ui.panel.AnimationPanel;
+import org.openpixi.pixi.ui.panel.FocusablePanel;
 
 public class PropertiesTab extends Box {
 
@@ -20,9 +20,9 @@ public class PropertiesTab extends Box {
 		this.panelManager.setPropertiesTab(this);
 	}
 
-	public void refreshContent(AnimationPanel panel) {
+	public void refreshContent(FocusablePanel panel) {
 		this.removeAll();
-		panel.addComponents(this);
+		panel.addPropertyComponents(this);
 		this.repaint();
 	}
 }

@@ -15,11 +15,14 @@ import javax.swing.JSplitPane;
 
 import org.openpixi.pixi.ui.panel.AnimationPanel;
 import org.openpixi.pixi.ui.panel.ElectricFieldPanel;
+import org.openpixi.pixi.ui.panel.EnergyDensity1DPanel;
+import org.openpixi.pixi.ui.panel.EnergyDensity2DPanel;
+import org.openpixi.pixi.ui.panel.FocusablePanel;
 import org.openpixi.pixi.ui.panel.Particle2DPanel;
 import org.openpixi.pixi.ui.panel.Particle3DPanel;
 import org.openpixi.pixi.ui.panel.PhaseSpacePanel;
-import org.openpixi.pixi.ui.panel.EnergyDensity1DPanel;
-import org.openpixi.pixi.ui.panel.EnergyDensity2DPanel;
+import org.openpixi.pixi.ui.panel.gl.EnergyDensity2DGLPanel;
+import org.openpixi.pixi.ui.panel.gl.EnergyDensity3DGLPanel;
 import org.openpixi.pixi.ui.tab.PropertiesTab;
 
 /**
@@ -30,7 +33,7 @@ public class PanelManager {
 
 	private MainControlApplet mainControlApplet;
 
-	private AnimationPanel lastFocusPanel;
+	private FocusablePanel lastFocusPanel;
 	private PropertiesTab propertiesTab;
 
 	private Component mainComponent;
@@ -46,6 +49,8 @@ public class PanelManager {
 	JMenuItem itemElectricFieldPanel;
 	JMenuItem itemEnergyDensity1DPanel;
 	JMenuItem itemEnergyDensity2DPanel;
+	JMenuItem itemEnergyDensity2DGLPanel;
+	JMenuItem itemEnergyDensity3DGLPanel;
 
 	PanelManager(MainControlApplet m) {
 		mainControlApplet = m;
@@ -134,8 +139,8 @@ public class PanelManager {
 			JSplitPane splitpanel = (JSplitPane) component;
 			Component leftComponent = splitpanel.getLeftComponent();
 			setFocus(leftComponent);
-		} else if (component instanceof AnimationPanel) {
-			AnimationPanel panel = (AnimationPanel) component;
+		} else if (component instanceof FocusablePanel) {
+			FocusablePanel panel = (FocusablePanel) component;
 			if (!panel.isFocused()) {
 				if (lastFocusPanel != null) {
 					lastFocusPanel.setFocus(false);
@@ -189,6 +194,14 @@ public class PanelManager {
 			itemEnergyDensity2DPanel = new JMenuItem("Energy density 2D");
 			itemEnergyDensity2DPanel.addActionListener(new MenuSelected());
 			add(itemEnergyDensity2DPanel);
+
+			itemEnergyDensity2DGLPanel = new JMenuItem("Energy density 2D (Open GL)");
+			itemEnergyDensity2DGLPanel.addActionListener(new MenuSelected());
+			add(itemEnergyDensity2DGLPanel);
+
+			itemEnergyDensity3DGLPanel = new JMenuItem("Energy density 3D (Open GL)");
+			itemEnergyDensity3DGLPanel.addActionListener(new MenuSelected());
+			add(itemEnergyDensity3DGLPanel);
 		}
 	}
 
@@ -198,6 +211,9 @@ public class PanelManager {
 		public void mousePressed(MouseEvent e) {
 			// Set focus
 			setFocus(e.getComponent());
+
+			// For convenience, select the properties tab:
+			mainControlApplet.tabs.setSelectedComponent(mainControlApplet.propertiesTab);
 
 			// Check for right mouse button
 			if (e.isPopupTrigger())
@@ -246,6 +262,10 @@ public class PanelManager {
 				component = new EnergyDensity1DPanel(mainControlApplet.simulationAnimation);
 			} else if (event.getSource() == itemEnergyDensity2DPanel) {
 				component = new EnergyDensity2DPanel(mainControlApplet.simulationAnimation);
+			} else if (event.getSource() == itemEnergyDensity2DGLPanel) {
+				component = new EnergyDensity2DGLPanel(mainControlApplet.simulationAnimation);
+			} else if (event.getSource() == itemEnergyDensity3DGLPanel) {
+				component = new EnergyDensity3DGLPanel(mainControlApplet.simulationAnimation);
 			}
 			if (component != null) {
 				replacePanel(component);

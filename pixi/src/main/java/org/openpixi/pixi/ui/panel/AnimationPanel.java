@@ -12,7 +12,7 @@ import javax.swing.SwingConstants;
 import org.openpixi.pixi.ui.SimulationAnimation;
 import org.openpixi.pixi.ui.SimulationAnimationListener;
 
-public class AnimationPanel extends JPanel {
+public class AnimationPanel extends JPanel implements FocusablePanel {
 
 	private SimulationAnimation simulationAnimation;
 	private MyAnimationListener listener;
@@ -71,10 +71,10 @@ public class AnimationPanel extends JPanel {
 	}
 
 	/**
-	 * Add a component to the property panel.
+	 * Add components to the property panel.
 	 * @param box Property panel.
 	 */
-	public void addComponents(Box box) {
+	public void addPropertyComponents(Box box) {
 
 	}
 

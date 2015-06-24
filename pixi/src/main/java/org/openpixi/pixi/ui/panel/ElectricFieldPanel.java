@@ -174,7 +174,7 @@ public class ElectricFieldPanel extends AnimationPanel {
 
 	}
 
-	public void addComponents(Box box) {
+	public void addPropertyComponents(Box box) {
 		addLabel(box, "Electric field panel");
 		colorProperties.addComponents(box);
 		scaleProperties.addComponents(box);
