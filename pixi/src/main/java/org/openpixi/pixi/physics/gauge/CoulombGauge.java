@@ -132,20 +132,20 @@ public class CoulombGauge extends GaugeTransformation {
 			return divergenceSquaredSum;
 		}
 
-		public void execute(Grid grid, int[] coor) {
+		public void execute(Grid grid, int index) {
 			double divergenceU = 0;
 			for (int dir = 0; dir < grid.getNumberOfDimensions(); dir++) {
 				/*
 				 * U_i(x) - U_i(x-i)
 				 */
-				YMField U = grid.getU(coor, dir).getAlgebraElement();
-				YMField Ushifted = grid.getU(grid.shift(coor, dir, -1), dir).getAlgebraElement();
+				YMField U = grid.getU(index, dir).getAlgebraElement();
+				YMField Ushifted = grid.getU(grid.shift(index, dir, -1), dir).getAlgebraElement();
 
 				divergenceU += U.get(color) - Ushifted.get(color);
 			}
-			int index = fft.getFFTArrayIndex(coor);
-			fftArray[index] = divergenceU; // real part
-			fftArray[index + 1] = 0; // imaginary part
+			int fftIndex = fft.getFFTArrayIndex(grid.getCellPos(index));
+			fftArray[fftIndex] = divergenceU; // real part
+			fftArray[fftIndex + 1] = 0; // imaginary part
 			double divergenceUSquared = divergenceU * divergenceU;
 			synchronized(this) {
 				divergenceSquaredSum += divergenceUSquared;
@@ -154,7 +154,8 @@ public class CoulombGauge extends GaugeTransformation {
 	}
 
 	private class InverseLaplaceOperator implements CellAction {
-		public void execute(Grid grid, int[] coor) {
+		public void execute(Grid grid, int index) {
+			int[] coor = grid.getCellPos(index);
 			int kx = coor[0];
 			int ky = coor[1];
 			int kz = coor[2];
@@ -172,9 +173,9 @@ public class CoulombGauge extends GaugeTransformation {
 						+ Math.cos(2 * Math.PI * ky / Ny)
 						+ Math.cos(2 * Math.PI * kz / Nz) - 3.));
 
-				int index = fft.getFFTArrayIndex(coor);
-				fftArray[index] *= inverseLaplace; // real part
-				fftArray[index + 1] *= inverseLaplace; // imaginary part
+				int fftIndex = fft.getFFTArrayIndex(coor);
+				fftArray[fftIndex] *= inverseLaplace; // real part
+				fftArray[fftIndex + 1] *= inverseLaplace; // imaginary part
 			}
 		}
 	}

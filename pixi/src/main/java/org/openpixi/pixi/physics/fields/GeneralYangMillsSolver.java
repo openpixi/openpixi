@@ -43,9 +43,9 @@ public class GeneralYangMillsSolver extends FieldSolver
 		/**
 		 * Updates the electric fields at a given coordinate
 		 *
-		 * @param coor  Lattice coordinate
+		 * @param index  Lattice index
 		 */
-		public void execute(Grid grid, int[] coor) {
+		public void execute(Grid grid, int index) {
 			for(int i = 0; i < grid.getNumberOfDimensions(); i++)
 			{
 				LinkMatrix[] plaquettes =  new LinkMatrix[grid.getNumberOfDimensions()-1];
@@ -54,7 +54,7 @@ public class GeneralYangMillsSolver extends FieldSolver
 				{
 					if(j != i)
 					{
-						plaquettes[c] = grid.getPlaquette(coor, i, j, 1 , 1).add(grid.getPlaquette(coor, i, j, 1 , -1));
+						plaquettes[c] = grid.getPlaquette(index, i, j, 1 , 1).add(grid.getPlaquette(index, i, j, 1 , -1));
 						c++;
 					}
 				}
@@ -64,8 +64,8 @@ public class GeneralYangMillsSolver extends FieldSolver
 					plaquettes[0] = plaquettes[0].add(plaquettes[p]);
 				}
 
-				YMField currentE = grid.getE(coor, i).add(plaquettes[0].proj().mult(2 * at / (as * as )));
-				grid.setE(coor, i, currentE);
+				YMField currentE = grid.getE(index, i).add(plaquettes[0].proj().mult(2 * at / (as * as )));
+				grid.setE(index, i, currentE);
 			}
 		}
 	}
@@ -80,14 +80,14 @@ public class GeneralYangMillsSolver extends FieldSolver
 		 *
 		 * @param coor  Lattice coordinate
 		 */
-		public void execute(Grid grid, int[] coor) {
+		public void execute(Grid grid, int index) {
 
 			LinkMatrix V;
 
-			for(int k=0;k<coor.length;k++) {
+			for(int k=0;k<grid.getNumberOfDimensions();k++) {
 
-				V = grid.getE(coor, k).mult(-at).getLinkExact();	//minus sign takes take of conjugation
-				grid.setUnext( coor, k, V.mult(grid.getU(coor, k)) );
+				V = grid.getE(index, k).mult(-at).getLinkExact();	//minus sign takes take of conjugation
+				grid.setUnext( index, k, V.mult(grid.getU(index, k)) );
 
 			}
 		}

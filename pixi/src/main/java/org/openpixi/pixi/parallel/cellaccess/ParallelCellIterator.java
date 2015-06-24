@@ -62,8 +62,7 @@ public class ParallelCellIterator extends CellIterator {
 
 		public Object call() throws Exception {
 			for (int cellIdx = threadIdx; cellIdx < numOfCells; cellIdx += numOfThreads) {
-                int[] pos = grid.getCellPos(cellIdx);
-				action.execute(grid, pos);
+				action.execute(grid, cellIdx);
 			}
 			return null;
 		}

@@ -56,13 +56,13 @@ public class FieldMeasurements {
         	return sum[dir];
         }
 
-        public void execute(Grid grid, int[] coor) {
+        public void execute(Grid grid, int index) {
 			int numDir = grid.getNumberOfDimensions();
 			double norm = grid.getLatticeSpacing()*grid.getLatticeSpacing()*grid.getGaugeCoupling()*grid.getGaugeCoupling();
 			double[] res = new double[numDir];
 			for (int i = 0; i < numDir; i++) {
 				norm *= grid.getNumCells(i);
-				res[i] += grid.getE(coor, i).square();
+				res[i] += grid.getE(index, i).square();
 				//res += grid.getEsquaredFromLinks(coor, i);
 			}
 			
@@ -93,14 +93,14 @@ public class FieldMeasurements {
         	return sum[dir];
         }
         
-        public void execute(Grid grid, int[] coor) {
+        public void execute(Grid grid, int index) {
 			int numDir = grid.getNumberOfDimensions();
 			double norm = grid.getLatticeSpacing()*grid.getLatticeSpacing()*grid.getGaugeCoupling()*grid.getGaugeCoupling();
 			double[] res = new double[numDir];
 			for (int i = 0; i < numDir; i++) {
 				norm *= grid.getNumCells(i);
 				//res += grid.getB(coor, i).square();
-				res[i] += grid.getBsquaredFromLinks(coor, i);
+				res[i] += grid.getBsquaredFromLinks(index, i);
 			}
 			
 			for (int i = 0; i < numDir; i++) {
@@ -126,13 +126,13 @@ public class FieldMeasurements {
         	return sum;
         }
         
-        public void execute(Grid grid, int[] coor) {
+        public void execute(Grid grid, int index) {
 			int numDir = grid.getNumberOfDimensions();
 			double norm = 1.0;
 			for (int i = 0; i < numDir; i++) {
 				norm *= grid.getNumCells(i);
 			}
-			double result = grid.getGaussConstraintSquared(coor)/norm;
+			double result = grid.getGaussConstraintSquared(index)/norm;
 			synchronized(this) {
 			       sum += result;   // Synchronisierte Summenbildung
 			}

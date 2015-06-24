@@ -54,27 +54,26 @@ public class GaugeTransformation {
 	}
 
 	private class GaugeTransformationAction implements CellAction {
-		public void execute(Grid grid, int[] coor) {
-			int cellIndex = grid.getCellIndex(coor);
+		public void execute(Grid grid, int index) {
 			for (int dir = 0; dir < grid.getNumberOfDimensions(); dir++) {
 				/*
 				 * U_i(x) -> g(x) U_i(x) g^\dagger(x+i)
 				 */
-				LinkMatrix U = grid.getU(coor, dir);
-				int shiftedCellIndex = grid.getCellIndex(grid.shift(coor, dir, 1));
+				LinkMatrix U = grid.getU(index, dir);
+				int shiftedCellIndex = grid.shift(index, dir, 1);
 				LinkMatrix gdaggershifted = g[shiftedCellIndex].adj();
-				U = g[cellIndex].mult(U).mult(gdaggershifted);
-				grid.setU(coor, dir, U);
+				U = g[index].mult(U).mult(gdaggershifted);
+				grid.setU(index, dir, U);
 
 				/*
 				 * E_i(x) -> g(x) E_i(x) g^\dagger(x)
 				 */
-				YMField E = grid.getE(coor, dir);
-				LinkMatrix gdagger = g[cellIndex].adj();
-				E = (g[cellIndex].mult(E.getLink()).mult(gdagger)).getLinearizedAlgebraElement();
+				YMField E = grid.getE(index, dir);
+				LinkMatrix gdagger = g[index].adj();
+				E = (g[index].mult(E.getLink()).mult(gdagger)).getLinearizedAlgebraElement();
 				// TODO: rather work with exact mapping?
 				//E = (g[cellIndex].mult(E.getLinkExact()).mult(gdagger)).getAlgebraElement();
-				grid.setE(coor, dir, E);
+				grid.setE(index, dir, E);
 			}
 		}
 	}

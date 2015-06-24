@@ -29,15 +29,16 @@ public class GridTest {
 		for (int t = 0; t < numberOfTests; t++) {
 			// Create random lattice position
 			int[] pos = getRandomLatticePosition(s);
+			int index = g.getCellIndex(pos);
 
 			// Choose random direction
 			int dir = (int) (Math.random() * s.getNumberOfDimensions());
 
 			// Shift position
-			int[] shiftedPos = g.shift(pos, dir, 1);
+			int shiftedIndex = g.shift(index, dir, 1);
 
-			LinkMatrix l1 = g.getLink(pos, dir, 1);
-			LinkMatrix l2 = g.getLink(shiftedPos, dir, -1);
+			LinkMatrix l1 = g.getLink(index, dir, 1);
+			LinkMatrix l2 = g.getLink(shiftedIndex, dir, -1);
 			l2.selfadj();
 
 			// This code is specific to SU2
@@ -51,14 +52,15 @@ public class GridTest {
 		for (int t = 0; t < numberOfTests; t++) {
 			// Create random lattice position
 			int[] pos = getRandomLatticePosition(s);
+			int index = g.getCellIndex(pos);
 
 			// Choose random directions
 			int d1 = (int) (Math.random() * s.getNumberOfDimensions());
 			int d2 = (int) (Math.random() * s.getNumberOfDimensions());
 
 			// These two plaquettes should be the inverse of each other.
-			LinkMatrix plaq1 = g.getPlaquette(pos, d1, d2, 1, 1);
-			LinkMatrix plaq2 = g.getPlaquette(pos, d2, d1, 1, 1);
+			LinkMatrix plaq1 = g.getPlaquette(index, d1, d2, 1, 1);
+			LinkMatrix plaq2 = g.getPlaquette(index, d2, d1, 1, 1);
 
 			LinkMatrix result = plaq1.mult(plaq2);
 
@@ -69,9 +71,9 @@ public class GridTest {
 			Assert.assertEquals(0.0, result.get(3), accuracy);
 
 			// Forward and backward plaquette around the same rectangle should have the same trace.
-			int[] shiftedPos = g.shift(pos, d1, 1);
+			int shiftedIndex = g.shift(index, d1, 1);
 
-			LinkMatrix plaq3 = g.getPlaquette(shiftedPos, d1, d2, -1, 1);
+			LinkMatrix plaq3 = g.getPlaquette(shiftedIndex, d1, d2, -1, 1);
 
 			Assert.assertEquals(plaq1.getTrace(), plaq3.getTrace(), accuracy);
 		}

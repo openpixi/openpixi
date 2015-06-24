@@ -76,7 +76,7 @@ public class SU2PlaneWave implements IFieldGenerator {
 			double factorForU = g * as * Math.cos(omega * timeStep / 2.0 - kx);
 
 
-			Cell currentCell = grid.getCell(cellPosition);
+			Cell currentCell = grid.getCell(c);
 
 			for (int i = 0; i < this.numberOfDimensions; i++) {
 				//Setup the gauge links
