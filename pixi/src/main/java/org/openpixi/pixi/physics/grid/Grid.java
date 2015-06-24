@@ -63,12 +63,16 @@ public class Grid {
 	/**
 	 * Unit vectors to be used for the shift method.
 	 */
+	@Deprecated
 	private int[][] unitVectors;
 
 	/**
-	 * Cummulated cell count.
+	 * Holds the cummulated cell count. This array is used by {@link #shift(int, int, int)}
+	 * to quickly calculate index shifts in various directions.
+	 * <pre>
 	 * cummulatedCellCount[numDim] = 1;
 	 * cummulatedCellCount[i] = cummulatedCellCount[i + 1] * numCells[i];
+	 * </pre>
 	 */
 	private int cummulatedCellCount[];
 
@@ -571,33 +575,14 @@ public class Grid {
 	}
 
 	/**
-	 * This method translates a lattice coordinate vector to the corresponding cell id with respect to periodic boundary
-	 * conditions.
-	 *
-	 * @param coor  lattice coordinate vector
-	 * @return      cell id
-	 */
-	public int index(int[] coor) {
-		
-		int[] modCoor = periodic(coor);
-		int res = modCoor[0];
-		int dim = 1;
-		
-		for (int i = 1; i < numDim; ++i) {
-			dim *= numCells[i-1];
-			res += modCoor[i]*dim;
-		}
-		return res;
-	}
-
-	/**
 	 * This method implements periodic boundary conditions on the lattice. If the lattice coordinate vector is outside
 	 * the bounds of the simulation box it gets shifted appropriately.
 	 *
 	 * @param coor  lattice coordinate vector
 	 * @return      shifted lattice coordinate vector
 	 */
-	public int[] periodic(int[] coor) {
+	@Deprecated
+	protected int[] periodic(int[] coor) {
 		
 		int[] res = new int[numDim];
 		for (int i = 0; i < numDim; ++i) {
@@ -621,7 +606,8 @@ public class Grid {
 	 * @param orientation   Orientation of the direction (1 or -1)
 	 * @return              Shifted coordinate with respect to periodic boundary conditions.
 	 */
-	public int[] shift(int[] coor, int dir, int orientation)
+	@Deprecated
+	protected int[] shift(int[] coor, int dir, int orientation)
 	{
 		int[] shiftedCoordinate = coor.clone();
 
