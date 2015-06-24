@@ -93,11 +93,9 @@ public class CoulombGauge extends GaugeTransformation {
 
 			// Add result to gauge transformation
 			for (int i = 0; i < getG().length; i++) {
-				int[] coor = grid.getCellPos(i);
-
 				// real part:
-				int index = fft.getFFTArrayIndex(coor);
-				double value = fftArray[index];
+				int fftIndex = fft.getFFTArrayIndex(i);
+				double value = fftArray[fftIndex];
 
 				// Store values temporarily in SU2Matrix instead of SU2Field:
 				getG()[i].set(color + 1, value);
@@ -143,7 +141,7 @@ public class CoulombGauge extends GaugeTransformation {
 
 				divergenceU += U.get(color) - Ushifted.get(color);
 			}
-			int fftIndex = fft.getFFTArrayIndex(grid.getCellPos(index));
+			int fftIndex = fft.getFFTArrayIndex(index);
 			fftArray[fftIndex] = divergenceU; // real part
 			fftArray[fftIndex + 1] = 0; // imaginary part
 			double divergenceUSquared = divergenceU * divergenceU;
@@ -173,7 +171,7 @@ public class CoulombGauge extends GaugeTransformation {
 						+ Math.cos(2 * Math.PI * ky / Ny)
 						+ Math.cos(2 * Math.PI * kz / Nz) - 3.));
 
-				int fftIndex = fft.getFFTArrayIndex(coor);
+				int fftIndex = fft.getFFTArrayIndex(index);
 				fftArray[fftIndex] *= inverseLaplace; // real part
 				fftArray[fftIndex + 1] *= inverseLaplace; // imaginary part
 			}
