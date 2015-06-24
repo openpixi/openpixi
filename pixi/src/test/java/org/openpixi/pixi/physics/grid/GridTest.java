@@ -1,5 +1,7 @@
 package org.openpixi.pixi.physics.grid;
 
+import java.util.Random;
+
 import org.junit.Assert;
 import org.junit.Test;
 import org.openpixi.pixi.physics.GeneralBoundaryType;
@@ -155,6 +157,74 @@ public class GridTest {
 			Assert.assertEquals(index0, index3);
 			Assert.assertEquals(index2, index2B);
 			Assert.assertEquals(index3, index3B);
+		}
+	}
+
+	@Test
+	public void testShiftSpeed()
+	{
+		int numberOfTests = 10;
+
+		Settings settings = getStandardSettings();
+		settings.addFieldGenerator(new SU2RandomFields());
+		Simulation s = new Simulation(settings);
+		Grid g = s.grid;
+
+		// Create random lattice position
+		int[] pos = getRandomLatticePosition(s);
+		int index = g.getCellIndex(pos);
+
+		// Start random generators with exactly the same seed (for comparability)
+		long seed = System.currentTimeMillis();
+		Random generator1 = new Random(seed);
+		Random generator2 = new Random(seed);
+		Random generator3 = new Random(seed);
+
+		// Test shift() using position vectors
+		long time1 = -System.currentTimeMillis();
+		for (int t = 0; t < numberOfTests; t++) {
+
+			// Choose random direction and orientation
+			int d = generator1.nextInt(s.getNumberOfDimensions());
+			int o = generator1.nextInt(2) * 2 - 1;
+
+			pos = g.shift(pos, d, o);
+		}
+		time1 += System.currentTimeMillis();
+
+		// Test shift() using indices
+		long time2 = -System.currentTimeMillis();
+		for (int t = 0; t < numberOfTests; t++) {
+
+			// Choose random direction
+			int d = generator2.nextInt(s.getNumberOfDimensions());
+			int o = generator2.nextInt(2) * 2 - 1;
+
+			index = g.shift(index, d, o);
+		}
+		time2 += System.currentTimeMillis();
+
+		// Test duration of random seed creation:
+		long time3 = -System.currentTimeMillis();
+		for (int t = 0; t < numberOfTests; t++) {
+
+			// Choose random direction and orientation
+			int d = generator3.nextInt(s.getNumberOfDimensions());
+			int o = generator3.nextInt(2) * 2 - 1;
+		}
+		time3 += System.currentTimeMillis();
+
+		// Test the same using indices:
+		int index2 = g.getCellIndex(pos);
+
+		// Tests
+		Assert.assertEquals(index, index2);
+
+		if (numberOfTests > 1000) {
+			// Compare times
+			System.out.println("Shift test: Time1: " + time1 + " vs. Time2: " + time2);
+			System.out.println("Generation of random numbers: " + time3);
+			System.out.println("Shift test without random number generation: Time1: " + (time1 - time3) + " vs. Time2: " + (time2 - time3));
 		}
 	}
 
