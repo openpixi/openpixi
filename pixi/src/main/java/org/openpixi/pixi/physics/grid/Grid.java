@@ -26,7 +26,7 @@ public class Grid {
 	private StoreFieldsAction storeFields = new StoreFieldsAction();
 	/**
 	 * Cell array. This one dimensional array is used to represent the d-dimensional grid. The cells are indexed by
-	 * their cell ids. Cell ids can be computed from lattice coordinates with the index() method.
+	 * their cell ids. Cell ids can be computed from lattice coordinates with the {@link #getCellIndex(int[])} method.
 	 */
 	private Cell[] cells;
 
@@ -94,7 +94,7 @@ public class Grid {
 
 	/**
 	 * Returns the YMField instance of the (dir)-component of the current.
-	 * @param coor      Lattice coordinate of the current
+	 * @param index     Lattice index of the current
 	 * @param dir       Index of the component
 	 * @return          YMField instance of the (dir)-component of the current.
 	 */
@@ -104,7 +104,7 @@ public class Grid {
 
 	/**
 	 * Adds a YMField instance to the (dir)-component of the current.
-	 * @param coor      Lattice coordinate of the current
+	 * @param index     Lattice index of the current
 	 * @param dir       Index of the component
 	 * @param field     YMField to be added to the (dir)-component of the current.
 	 */
@@ -114,7 +114,7 @@ public class Grid {
 
 	/**
 	 * Returns the YMField instance of the charge density.
-	 * @param coor      Lattice coordinate of the charge density
+	 * @param index     Lattice index of the charge density
 	 * @return          YMField instance of the charge density
 	 */
 	public YMField getRho(int index) {
@@ -123,7 +123,7 @@ public class Grid {
 
 	/**
 	 * Sets the YMField instance of the charge density.
-	 * @param index     Lattice coordinate of the charge density
+	 * @param index     Lattice index of the charge density
 	 * @param field     YMField instance which the electric field should be set to.
 	 */
 	public void setRho(int index, YMField field) {
@@ -132,7 +132,7 @@ public class Grid {
 
 	/**
 	 * Adds a YMField to the charge density.
-	 * @param index     Lattice coordinate of the charge density
+	 * @param index     Lattice index of the charge density
 	 * @param field     YMField instance which should be added.
 	 */
 	public void addRho(int index, YMField field) {
@@ -141,7 +141,7 @@ public class Grid {
 
 	/**
 	 * Returns the YMField instance of the (dir)-component of the electric field.
-	 * @param index     Lattice coordinate of the electric field
+	 * @param index     Lattice index of the electric field
 	 * @param dir       Index of the component
 	 * @return          YMField instance of the (dir)-component
 	 */
@@ -151,7 +151,7 @@ public class Grid {
 
 	/**
 	 * Sets the YMField instance of the (dir)-component of the electric field.
-	 * @param index     Lattice coordinate of the electric field
+	 * @param index     Lattice index of the electric field
 	 * @param dir       Index of the component
 	 * @param field     YMField instance which the electric field should be set to.
 	 */
@@ -161,7 +161,7 @@ public class Grid {
 
 	/**
 	 * Adds a YMField to the (dir)-component of the electric field.
-	 * @param index     Lattice coordinate of the electric field
+	 * @param index     Lattice index of the electric field
 	 * @param dir       Index of the component
 	 * @param field     YMField instance which should be added.
 	 */
@@ -170,8 +170,8 @@ public class Grid {
 	}
 
 	/**
-	 * Returns the (dir1, dir2)-component of the field strength tensor at a certain lattice coordinate.
-	 * @param index     Lattice coordinate of the field strength tensor
+	 * Returns the (dir1, dir2)-component of the field strength tensor at a certain lattice index.
+	 * @param index     Lattice index of the field strength tensor
 	 * @param dir1      First spatial component (0 - (numberOfDimensions-1))
 	 * @param dir2      Second spatial component (0 - (numberOfDimensions-1))
 	 * @return          YMField instance of the (dir1, dir2)-component
@@ -181,8 +181,8 @@ public class Grid {
 	}
 
 	/**
-	 * Sets the (dir1, dir2)-component of the field strength tensor at a certain lattice coordinate.
-	 * @param index     Lattice coordinate of the field strength tensor
+	 * Sets the (dir1, dir2)-component of the field strength tensor at a certain lattice index.
+	 * @param index     Lattice index of the field strength tensor
 	 * @param dir1      First space component (0 - (numberOfDimensions-1))
 	 * @param dir2      Second space component (0 - (numberOfDimensions-1))
 	 * @param field     YMField instance which the field strength tensor should be set to.
@@ -192,8 +192,8 @@ public class Grid {
 	}
 
 	/**
-	 * Returns the gauge link at time (t) at a given lattice coordinate in a given direction.
-	 * @param index Lattice coordinate of the gauge link
+	 * Returns the gauge link at time (t) at a given lattice index in a given direction.
+	 * @param index Lattice index of the gauge link
 	 * @param dir   Direction of the gauge link
 	 * @return      Instance of the gauge link
 	 */
@@ -202,8 +202,8 @@ public class Grid {
 	}
 
 	/**
-	 * Sets the gauge link at time (t) at given lattice coordinate in given direction to a new value.
-	 * @param index Lattice coordinate of the gauge link
+	 * Sets the gauge link at time (t) at given lattice index in given direction to a new value.
+	 * @param index Lattice index of the gauge link
 	 * @param dir   Direction of the gauge link
 	 * @param mat   LinkMatrix instance
 	 */
@@ -212,8 +212,8 @@ public class Grid {
 	}
 
 	/**
-	 * Returns the gauge link at time (t+dt) at a given lattice coordinate in a given direction.
-	 * @param index Lattice coordinate of the gauge link
+	 * Returns the gauge link at time (t+dt) at a given lattice index in a given direction.
+	 * @param index Lattice index of the gauge link
 	 * @param dir   Direction of the gauge link
 	 * @return      Instance of the gauge link
 	 */
@@ -222,8 +222,8 @@ public class Grid {
 	}
 
 	/**
-	 * Sets the gauge link at time (t+dt) at given lattice coordinate in given direction to a new value.
-	 * @param index Lattice coordinate of the gauge link
+	 * Sets the gauge link at time (t+dt) at given lattice index in given direction to a new value.
+	 * @param index Lattice index of the gauge link
 	 * @param dir   Direction of the gauge link
 	 * @param mat   LinkMatrix instance
 	 */
@@ -233,7 +233,7 @@ public class Grid {
 
 	/**
 	 * Resets charge in a cell at a given lattice index.
-	 * @param coor  Lattice coordinate of the cell
+	 * @param index  Lattice index of the cell
 	 */
 	public void resetCharge(int index) {
 		cells[index].resetCharge();
@@ -310,10 +310,10 @@ public class Grid {
 	}
 
 	/**
-	 * Returns the Cell instance at given lattice coordinates with respect to periodic boundary conditions.
+	 * Returns the Cell instance at given lattice index.
 	 *
 	 * @param index  Index of the cell
-	 * @return       Cell instance at lattice coordinates with respect to periodic boundary conditions
+	 * @return       Cell instance at lattice index
 	 */
 	public Cell getCell(int index) {
 		return cells[index];
@@ -471,12 +471,12 @@ public class Grid {
 	}
 
 	/**
-	 * Calculates the plaquette starting at lattice coordinate coor in the plane of d1 and d2 with orientations o1, o2.
+	 * Calculates the plaquette starting at lattice index in the plane of d1 and d2 with orientations o1, o2.
 	 * This method implements the following definition of the plaquette:
-	 *      U_{x, ij} = U_{x, i} U_{x+i, j} U_{x+i+j, -i} U_{x+j, -j}
+	 * <pre>     U_{x, ij} = U_{x, i} U_{x+i, j} U_{x+i+j, -i} U_{x+j, -j}</pre>
 	 *
 	 *
-	 * @param coor  Lattice coordinate from where the plaquette starts
+	 * @param index Lattice index from where the plaquette starts
 	 * @param d1    Index of the first direction
 	 * @param d2    Index of the second direction
 	 * @param o1    Orientation of the first direction
@@ -486,7 +486,7 @@ public class Grid {
 	public LinkMatrix getPlaquette(int index, int d1, int d2, int o1, int o2)
 	{
 		/*
-			The four lattice coordinates associated with the plaquette.
+			The four lattice indices associated with the plaquette.
 		 */
 		int x1 = index;
 		int x2 = shift(x1, d1, o1);
@@ -510,14 +510,14 @@ public class Grid {
 	}
 
 	/**
-	 * Getter for gauge links. Returns a link starting from a certain lattice coordinate with the right direction and
+	 * Getter for gauge links. Returns a link starting from a certain lattice index with the right direction and
 	 * orientation.
-	 *
+	 * <br>
 	 * Examples:
-	 * Link starting at coor in positive x-direction: getLink(coor, 0, 1)
-	 * Link starting at coor in negative x-direction: getLink(coor, 0, -1)
+	 * <ul><li>Link starting at index in positive x-direction: getLink(index, 0, 1)</li>
+	 * <li>Link starting at index in negative x-direction: getLink(index, 0, -1)</li></ul>
 	 *
-	 * @param coor          Lattice coordinate from which the link starts from
+	 * @param index         Lattice index from which the link starts from
 	 * @param direction     Direction of the link (0 - (numberOfDimensions-1))
 	 * @param orientation   Orientation of the link (-1 or 1)
 	 * @return              Gauge link in certain direction with correct orientation
@@ -556,20 +556,20 @@ public class Grid {
 	 * This method translates a lattice coordinate vector to the corresponding cell id with respect to periodic boundary
 	 * conditions.
 	 *
-	 * @param coor  lattice coordinate vector
-	 * @return      cell id
+	 * @param coordinates  lattice coordinate vector
+	 * @return             cell id
 	 */
-	public int getCellIndex(int[] coor)
+	public int getCellIndex(int[] coordinates)
 	{
 		//ensure periodicity
-		int[] periodicCoor = periodic(coor);
+		int[] periodicCoordinates = periodic(coordinates);
 
-		int cellIndex = periodicCoor[0];
+		int cellIndex = periodicCoordinates[0];
 
-		for(int i = 1; i < coor.length; i++)
+		for(int i = 1; i < coordinates.length; i++)
 		{
 			cellIndex *= numCells[i];
-			cellIndex += periodicCoor[i];
+			cellIndex += periodicCoordinates[i];
 		}
 		return  cellIndex;
 	}
@@ -578,42 +578,41 @@ public class Grid {
 	 * This method implements periodic boundary conditions on the lattice. If the lattice coordinate vector is outside
 	 * the bounds of the simulation box it gets shifted appropriately.
 	 *
-	 * @param coor  lattice coordinate vector
-	 * @return      shifted lattice coordinate vector
+	 * @param coordinates  lattice coordinate vector
+	 * @return             shifted lattice coordinate vector
 	 */
 	@Deprecated
-	protected int[] periodic(int[] coor) {
+	protected int[] periodic(int[] coordinates) {
 		
 		int[] res = new int[numDim];
 		for (int i = 0; i < numDim; ++i) {
-			res[i] = (coor[i] + numCells[i]) % numCells[i];
-			//if(coor[i] != res[i]) {System.out.println(coor[i]);System.out.println(numCells[i]);System.out.println(res[i]);System.out.println("/");}
+			res[i] = (coordinates[i] + numCells[i]) % numCells[i];
 		}
 		return res;
 	}
 
 	/**
-	 * Shifts a lattice coorindate vector by one unit step in a certain direction. The direction is passed as an integer
+	 * Shifts a lattice coordinate vector by one unit step in a certain direction. The direction is passed as an integer
 	 * for the direction and an orientation.
-	 *
+	 * <br>
 	 * Examples:
-	 * Shift by one in negative x-direction: shift(coor, 0, -1)
-	 * Shift by one in positive x-direction: shift(coor, 0, 1)
-	 * Shift by one in positive z-direction: shift(coor, 2, 1)
+	 * <ul><li>Shift by one in negative x-direction: shift(coor, 0, -1)</li>
+	 * <li>Shift by one in positive x-direction: shift(coor, 0, 1)</li>
+	 * <li>Shift by one in positive z-direction: shift(coor, 2, 1)</li></ul>
 	 *
-	 * @param coor          Input lattice coordinate vector
-	 * @param dir           Direction of the shift (0 - (numberOfDirections-1))
+	 * @param coordinates   Input lattice coordinate vector
+	 * @param direction     Direction of the shift (0 - (numberOfDirections-1))
 	 * @param orientation   Orientation of the direction (1 or -1)
 	 * @return              Shifted coordinate with respect to periodic boundary conditions.
 	 */
 	@Deprecated
-	protected int[] shift(int[] coor, int dir, int orientation)
+	protected int[] shift(int[] coordinates, int direction, int orientation)
 	{
-		int[] shiftedCoordinate = coor.clone();
+		int[] shiftedCoordinate = coordinates.clone();
 
 		for(int i = 0; i < numDim; i++)
 		{
-			shiftedCoordinate[i] += orientation * unitVectors[dir][i];
+			shiftedCoordinate[i] += orientation * unitVectors[direction][i];
 		}
 
 
@@ -621,13 +620,13 @@ public class Grid {
 	}
 
 	/**
-	 * Shifts a lattice coordinate vector by one unit step in a certain direction. The direction is passed as an integer
+	 * Shifts a lattice index by one unit step in a certain direction. The direction is passed as an integer
 	 * for the direction and an orientation.
-	 *
+	 * <br>
 	 * Examples:
-	 * Shift by one in negative x-direction: shift(coor, 0, -1)
-	 * Shift by one in positive x-direction: shift(coor, 0, 1)
-	 * Shift by one in positive z-direction: shift(coor, 2, 1)
+	 * <ul><li>Shift by one in negative x-direction: shift(index, 0, -1)</li>
+	 * <li>Shift by one in positive x-direction: shift(index, 0, 1)</li>
+	 * <li>Shift by one in positive z-direction: shift(index, 2, 1)</li></ul>
 	 *
 	 * @param index         Valid input index of lattice coordinate
 	 * @param direction     Direction of the shift (0 - (numberOfDirections-1))
@@ -691,14 +690,14 @@ public class Grid {
 			grid.getCell(index).reassignLinks();
 		}
 	}
-	
+
 	/**
-	 * Calculates the field from the forward plaquette starting at lattice coordinate coor in the directions j and k.
+	 * Calculates the field from the forward plaquette starting at a lattice index in the directions j and k.
 	 * The matrix multiplication is done in the concrete field class.
 	 * The forward plaquette is defined as follows:
-	 *      U_{x, jk} = U_{x, j} U_{x+j, k} U^adj_{x+k, j} U^adj_{x, k}
+	 * <pre>     U_{x, jk} = U_{x, j} U_{x+j, k} U^adj_{x+k, j} U^adj_{x, k}</pre>
 	 *
-	 * @param index  Lattice coordinate from where the plaquette starts
+	 * @param index  Lattice index from where the plaquette starts
 	 * @param j      Index of the first direction
 	 * @param k      Index of the second direction
 	 * @return       Field from the forward plaquette
@@ -713,20 +712,20 @@ public class Grid {
 
 		return res;
 	}
-	
+
 	/**
-	 * Calculates the field from the backward plaquette starting at lattice coordinate coor in the directions j and k.
+	 * Calculates the field from the backward plaquette starting at a lattice index in the directions j and k.
 	 * The matrix multiplication is done in the concrete field class.
 	 * The backward plaquette is defined as follows:
-	 *      U_{x, jk} = U_{x, j} U^adj_{x+j-k, k} U^adj_{x-k, j} U_{x, k}
+	 * <pre>     U_{x, jk} = U_{x, j} U^adj_{x+j-k, k} U^adj_{x-k, j} U_{x, k}</pre>
 	 *
-	 * @param index  Lattice coordinate from where the plaquette starts
+	 * @param index  Lattice index from where the plaquette starts
 	 * @param j      Index of the first direction
 	 * @param k      Index of the second direction
 	 * @return       Field from the backward plaquette
 	 */
 	public YMField FieldFromBackwardPlaquette(int index, int j, int k) {
-		
+
 		YMField res = cells[index].getEmptyField(numCol);
 		int id1 = shift(shift(index, j, 1), k, -1);
 		int id2 = shift(index, k, -1);
@@ -735,27 +734,27 @@ public class Grid {
 
 		return res;
 	}
-	
+
 	/**
-	 * Calculates the square of the electric field from the temporal plaquette starting at lattice coordinate coor in the direction dir.
+	 * Calculates the square of the electric field from the temporal plaquette starting at a lattice index in a direction.
 	 *
-	 * @param index  Lattice coordinate from where the plaquette starts
-	 * @param dir    Index of the direction
-	 * @return       E^2 calculated from the temporal plaquette
+	 * @param index      Lattice index from where the plaquette starts
+	 * @param direction  Index of the direction
+	 * @return           E^2 calculated from the temporal plaquette
 	 */
-	public double getEsquaredFromLinks(int index, int dir) {
+	public double getEsquaredFromLinks(int index, int direction) {
 		
 		double norm = at*at;
-		//double res = 1.0 - cells[getCellIndex(coor)].getUnext(dir).mult(cells[getCellIndex(coor)].getU(dir).adj()).getTrace()/numCol;
-		double res = cells[index].getUnext(dir).mult(cells[index].getU(dir).adj()).getLinearizedAlgebraElement().square()/norm;
+		//double res = 1.0 - cells[index].getUnext(direction).mult(cells[index].getU(direction).adj()).getTrace()/numCol;
+		double res = cells[index].getUnext(direction).mult(cells[index].getU(direction).adj()).getLinearizedAlgebraElement().square()/norm;
 
 		return res;
 	}
-	
+
 	/**
-	 * Calculates the square of the magnetic field from the spatial plaquette starting at lattice coordinate coor in the direction dir.
+	 * Calculates the square of the magnetic field from the spatial plaquette starting at a lattice index in a direction.
 	 *
-	 * @param index      Lattice coordinate from where the plaquette starts
+	 * @param index      Lattice index from where the plaquette starts
 	 * @param direction  Index of the direction
 	 * @return           B^2 calculated from the spatial plaquette
 	 */
@@ -764,20 +763,26 @@ public class Grid {
 		double norm = as*as;
 		int j=0, k=0;
 		switch (direction) {
-        	case 0:  j = 1;  k = 2;
-            break;
-            
-        	case 1:  j = 0;  k = 2;
-            break;
-            
-        	case 2:  j = 0;  k = 1;
-            break;
+		case 0:
+			j = 1;
+			k = 2;
+			break;
+
+		case 1:
+			j = 0;
+			k = 2;
+			break;
+
+		case 2:
+			j = 0;
+			k = 1;
+			break;
 		}
 		double res = getPlaquette(index, j, k, 1, 1).getLinearizedAlgebraElement().square()/norm;
 
 		return res;
 	}
-	
+
 	public double getGaussConstraintSquared(int index) {
 		
 		YMField gauss = cells[index].getEmptyField(numCol);
@@ -787,9 +792,9 @@ public class Grid {
 		for (int i = 0; i < numDim; i++) {
 			int id1 = shift(index, i, 1);
 			int id2 = shift(index, i, -1);
-			temp.set(getU(id1, i).adj().mult(getUnext(id2, i)).getLinearizedAlgebraElement());//if(i == 1){System.out.println(coor1[i]);System.out.println(getE(coor, i).square());System.out.println(temp.mult(norm).square());}
+			temp.set(getU(id1, i).adj().mult(getUnext(id2, i)).getLinearizedAlgebraElement());
 			gauss.addequate(getE(index, i).sub(temp.mult(norm)));
-			//gauss.addequate(getE(coor, i).sub(getE(coor2, i)));
+			//gauss.addequate(getE(index, i).sub(getE(index, i)));
 		}
 		return gauss.square();
 	}
