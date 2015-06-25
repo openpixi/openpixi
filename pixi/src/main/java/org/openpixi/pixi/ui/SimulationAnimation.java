@@ -44,6 +44,15 @@ public class SimulationAnimation {
 		s = InitialConditions.initEmptySimulation();
 	}
 
+	/**
+	 * Alternative Constructor to create a dummy SimulationAnimation object as a wrapper for a panel.
+	 *
+	 * @param simulation  The simulation object.
+	 */
+	public SimulationAnimation(Simulation simulation) {
+		this.s = simulation;
+	}
+
 	/** Listener for timer */
 	public class TimerListener implements ActionListener {
 

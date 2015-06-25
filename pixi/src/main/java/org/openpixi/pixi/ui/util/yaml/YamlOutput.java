@@ -7,6 +7,7 @@ import org.openpixi.pixi.ui.util.yaml.filegenerators.YamlCoulombGaugeInTime;
 import org.openpixi.pixi.ui.util.yaml.filegenerators.YamlParticlesInTime;
 import org.openpixi.pixi.ui.util.yaml.filegenerators.YamlBulkQuantitiesInTime;
 import org.openpixi.pixi.ui.util.yaml.filegenerators.YamlRandomGaugeInTime;
+import org.openpixi.pixi.ui.util.yaml.filegenerators.YamlScreenshotInTime;
 
 public class YamlOutput {
 	/**
@@ -19,6 +20,8 @@ public class YamlOutput {
 	public ArrayList<YamlCoulombGaugeInTime> coulombGaugeInTime = new ArrayList<YamlCoulombGaugeInTime>();
 
 	public ArrayList<YamlRandomGaugeInTime> randomGaugeInTime = new ArrayList<YamlRandomGaugeInTime>();
+
+	public ArrayList<YamlScreenshotInTime> screenshotInTime = new ArrayList<YamlScreenshotInTime>();
 
 	/**
 	 * Creates FileGenerator instances and applies them to the Settings instance.
@@ -39,6 +42,10 @@ public class YamlOutput {
 		}
 
 		for (YamlRandomGaugeInTime output : randomGaugeInTime) {
+			s.addDiagnostics(output.getFileGenerator());
+		}
+
+		for (YamlScreenshotInTime output : screenshotInTime) {
 			s.addDiagnostics(output.getFileGenerator());
 		}
 	}
