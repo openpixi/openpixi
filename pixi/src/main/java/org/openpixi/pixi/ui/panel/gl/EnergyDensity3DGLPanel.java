@@ -42,6 +42,12 @@ public class EnergyDensity3DGLPanel extends AnimationGLPanel {
 	public double phi;
 	public double theta;
 
+	/** Distance of viewer */
+	public double distanceFactor;
+
+	/** Maximum height of values */
+	public double heightFactor;
+
 	/** Constructor */
 	public EnergyDensity3DGLPanel(SimulationAnimation simulationAnimation) {
 		super(simulationAnimation);
@@ -52,8 +58,12 @@ public class EnergyDensity3DGLPanel extends AnimationGLPanel {
 
 		phi = - 0.5 * Math.PI;
 		theta = Math.PI * 0.25;
+		distanceFactor = .5; // 1
+		heightFactor = .125; // .25
 
 		scaleProperties.setAutomaticScaling(true);
+		scaleProperties.setAutomaticScaling(false);
+		scaleProperties.setScaleFactor(10);
 	}
 
 	@Override
@@ -80,15 +90,19 @@ public class EnergyDensity3DGLPanel extends AnimationGLPanel {
 
 		// Perspective.
 		float size = (float) Math.max(s.getWidth(), s.getHeight());
-		float distance = size;
+		float distance = (float) distanceFactor * size;
 		float widthHeightRatio = (float) width / (float) height;
 
 		// Scaling for height:
-		float heightfactor = 0.25f * size;
+		float heightScale = (float) heightFactor * size;
 
 		gl2.glMatrixMode( GL2.GL_PROJECTION );
 		gl2.glLoadIdentity();
-		glu.gluPerspective(45, widthHeightRatio, 1, 2.5 * distance);
+		glu.gluPerspective(
+				45, // field of view angle, in degrees
+				widthHeightRatio, // aspect ratio of field of view
+				1, // distance to near clipping plane
+				2.5 * size); // distance to far clipping plane
 		glu.gluLookAt(
 				s.getWidth() / 2 + distance * Math.cos(phi) * Math.sin(theta), s.getHeight() / 2 + distance * Math.sin(phi) * Math.sin(theta), distance * Math.cos(theta), // where we stand
 				s.getWidth() / 2, s.getHeight() / 2, 0, // where we are viewing at
@@ -157,9 +171,9 @@ public class EnergyDensity3DGLPanel extends AnimationGLPanel {
 
 				if (k > 0) {
 					gl2.glColor3f( previousRed[k], previousGreen[k], previousBlue[k]);
-					gl2.glVertex3f( xstart2, ystart2, heightfactor * previousValue[k]);
+					gl2.glVertex3f( xstart2, ystart2, heightScale * previousValue[k]);
 					gl2.glColor3f( red, green, blue);
-					gl2.glVertex3f( xstart3, ystart2, heightfactor * (float) value);
+					gl2.glVertex3f( xstart3, ystart2, heightScale * (float) value);
 				}
 				previousValue[k] = (float) value;
 				previousRed[k] = (float) red;
