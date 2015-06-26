@@ -62,8 +62,6 @@ public class EnergyDensity3DGLPanel extends AnimationGLPanel {
 		heightFactor = .125; // .25
 
 		scaleProperties.setAutomaticScaling(true);
-		scaleProperties.setAutomaticScaling(false);
-		scaleProperties.setScaleFactor(10);
 	}
 
 	@Override

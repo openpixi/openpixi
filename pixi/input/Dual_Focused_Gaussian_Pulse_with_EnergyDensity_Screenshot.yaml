@@ -39,6 +39,12 @@ output:
       offset : 0
       width: 1280
       height: 720
+      panel:
+        energyDensity3DGLPanel:
+          automaticScaling: false
+          phi: -1.5707963267948966
+          scaleFactor: 20
+          theta: 0.7853981633974483
 
 # Generated panel code:
 panels:

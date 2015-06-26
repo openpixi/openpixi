@@ -21,7 +21,7 @@ import org.openpixi.pixi.ui.util.FrameRateDetector;
  */
 public class SimulationAnimation {
 
-	private Simulation s;
+	protected Simulation s;
 
 //	private boolean relativistic = true;
 
@@ -42,15 +42,6 @@ public class SimulationAnimation {
 		timer = new Timer(interval, new TimerListener());
 		frameratedetector = new FrameRateDetector(500);
 		s = InitialConditions.initEmptySimulation();
-	}
-
-	/**
-	 * Alternative Constructor to create a dummy SimulationAnimation object as a wrapper for a panel.
-	 *
-	 * @param simulation  The simulation object.
-	 */
-	public SimulationAnimation(Simulation simulation) {
-		this.s = simulation;
 	}
 
 	/** Listener for timer */

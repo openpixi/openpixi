@@ -1,5 +1,6 @@
 package org.openpixi.pixi.diagnostics.methods;
 
+import java.awt.Component;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -14,11 +15,14 @@ import javax.media.opengl.GLProfile;
 
 import org.openpixi.pixi.diagnostics.Diagnostics;
 import org.openpixi.pixi.physics.Simulation;
-import org.openpixi.pixi.physics.gauge.CoulombGauge;
 import org.openpixi.pixi.physics.grid.Grid;
 import org.openpixi.pixi.physics.particles.IParticle;
+import org.openpixi.pixi.ui.MainControlApplet;
+import org.openpixi.pixi.ui.PanelManager;
 import org.openpixi.pixi.ui.SimulationAnimation;
-import org.openpixi.pixi.ui.panel.gl.EnergyDensity3DGLPanel;
+import org.openpixi.pixi.ui.panel.AnimationPanel;
+import org.openpixi.pixi.ui.panel.gl.AnimationGLPanel;
+import org.openpixi.pixi.ui.util.yaml.YamlPanels;
 
 import com.jogamp.opengl.util.awt.AWTGLReadBufferUtil;
 
@@ -33,22 +37,22 @@ public class ScreenshotInTime implements Diagnostics {
 	private double timeOffset;
 	private int stepOffset;
 	private int stepIterations;
-	private int timeout;
 	private int width;
 	private int height;
+	private YamlPanels panel;
 	private boolean finished;
 
-	private Simulation simulation;
-	private SimulationAnimation simulationAnimation;
-	private EnergyDensity3DGLPanel energyDensity3DGLPanel;
+	private AnimationGLPanel animationGLPanel;
+	private Component component;
 
 	GLAutoDrawable glautodrawable;
 
-	public ScreenshotInTime(String path, double timeInterval, double timeOffset, int width, int height) {
+	public ScreenshotInTime(String path, double timeInterval, double timeOffset, int width, int height, YamlPanels panel) {
 		this.path = path;
 		this.timeInterval = timeInterval;
 		this.timeOffset = timeOffset;
 		this.width = width;
+		this.panel = panel;
 		this.height = height;
 	}
 
@@ -58,27 +62,34 @@ public class ScreenshotInTime implements Diagnostics {
 		this.stepOffset = (int) (timeOffset / s.getTimeStep());
 		this.stepIterations = s.getIterations();
 		finished = false;
-		this.simulation = s;
-		this.simulationAnimation = new SimulationAnimation(s);
-		this.energyDensity3DGLPanel = new EnergyDensity3DGLPanel(simulationAnimation);
 
-		// TODO: Supply parameters from YAML
-		energyDensity3DGLPanel.getScaleProperties().setScaleFactor(15);
+		SimulationAnimationDummy simulationAnimationDummy = new SimulationAnimationDummy(s);
 
-		// Prepare offscreen OpenGL drawable
-		GLProfile glp = GLProfile.getDefault();
-		GLCapabilities caps = new GLCapabilities(glp);
-		caps.setHardwareAccelerated(true);
-		caps.setDoubleBuffered(false);
-		//caps.setAlphaBits(8);
-		caps.setRedBits(8);
-		caps.setBlueBits(8);
-		caps.setGreenBits(8);
-		caps.setOnscreen(false);
-		GLDrawableFactory factory = GLDrawableFactory.getFactory(glp);
+		if (panel != null) {
+			PanelManagerDummy panelManagerDummy = new PanelManagerDummy(null, simulationAnimationDummy);
+			component = panel.inflate(panelManagerDummy);
 
-		glautodrawable = factory.createGLPbuffer(factory.getDefaultDevice(), caps, new DefaultGLCapabilitiesChooser(), width, height, null);
-		glautodrawable.display();
+			if (component instanceof AnimationGLPanel) {
+				animationGLPanel = (AnimationGLPanel) component;
+
+				// Prepare offscreen OpenGL drawable
+				GLProfile glp = GLProfile.getDefault();
+				GLCapabilities caps = new GLCapabilities(glp);
+				caps.setHardwareAccelerated(true);
+				caps.setDoubleBuffered(false);
+				//caps.setAlphaBits(8);
+				caps.setRedBits(8);
+				caps.setBlueBits(8);
+				caps.setGreenBits(8);
+				caps.setOnscreen(false);
+				GLDrawableFactory factory = GLDrawableFactory.getFactory(glp);
+
+				glautodrawable = factory.createGLPbuffer(factory.getDefaultDevice(), caps, new DefaultGLCapabilitiesChooser(), width, height, null);
+				glautodrawable.display();
+			} else if (component instanceof AnimationPanel) {
+				// TODO: Can not yet draw non-OpenGL panels.
+			}
+		}
 	}
 
 	@Override
@@ -89,18 +100,19 @@ public class ScreenshotInTime implements Diagnostics {
 		}
 		if ((stepInterval > 0) && ((steps - stepOffset) % stepInterval == 0)) {
 
-			glautodrawable.getContext().makeCurrent();
+			if (animationGLPanel != null) {
+				glautodrawable.getContext().makeCurrent();
 
-			energyDensity3DGLPanel.display(glautodrawable);
+				animationGLPanel.display(glautodrawable);
 
-			BufferedImage im = new AWTGLReadBufferUtil(glautodrawable.getGLProfile(), true).readPixelsToBufferedImage(glautodrawable.getGL(), 0, 0, width, height, true); 
+				BufferedImage im = new AWTGLReadBufferUtil(glautodrawable.getGLProfile(), true).readPixelsToBufferedImage(glautodrawable.getGL(), 0, 0, width, height, true); 
 
-			int counter = steps / stepInterval;
-			String counterString = String.format("%05d", counter);
-			String pathWithNumber = path.replace("{counter}", counterString);
-			File file = getOutputFile(pathWithNumber);
-			ImageIO.write(im, "png", file);
-
+				int counter = steps / stepInterval;
+				String counterString = String.format("%05d", counter);
+				String pathWithNumber = path.replace("{counter}", counterString);
+				File file = getOutputFile(pathWithNumber);
+				ImageIO.write(im, "png", file);
+			}
 		}
 		if (steps >= stepIterations - 1) {
 			finished = true;
@@ -119,5 +131,30 @@ public class ScreenshotInTime implements Diagnostics {
 		if(!fullpath.exists()) fullpath.mkdir();
 
 		return new File(fullpath, filename);
+	}
+
+	class SimulationAnimationDummy extends SimulationAnimation {
+
+		/**
+		 * Alternative Constructor to create a dummy SimulationAnimation object as a wrapper for a panel.
+		 *
+		 * @param simulation  The simulation object.
+		 */
+		public SimulationAnimationDummy(Simulation simulation) {
+			this.s = simulation;
+		}
+	}
+
+	class PanelManagerDummy extends PanelManager {
+		private SimulationAnimation simulationAnimation;
+
+		PanelManagerDummy(MainControlApplet m, SimulationAnimation s) {
+			super(m);
+			simulationAnimation = s;
+		}
+
+		public SimulationAnimation getSimulationAnimation() {
+			return simulationAnimation;
+		}
 	}
 }
