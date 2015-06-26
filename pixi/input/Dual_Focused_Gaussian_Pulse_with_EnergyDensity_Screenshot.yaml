@@ -45,6 +45,8 @@ output:
           phi: -1.5707963267948966
           scaleFactor: 20
           theta: 0.7853981633974483
+          distanceFactor: 1
+          heightFactor: 0.250
 
 # Generated panel code:
 panels:

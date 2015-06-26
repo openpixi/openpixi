@@ -58,8 +58,8 @@ public class EnergyDensity3DGLPanel extends AnimationGLPanel {
 
 		phi = - 0.5 * Math.PI;
 		theta = Math.PI * 0.25;
-		distanceFactor = .5; // 1
-		heightFactor = .125; // .25
+		distanceFactor = 1;
+		heightFactor = .25;
 
 		scaleProperties.setAutomaticScaling(true);
 	}
