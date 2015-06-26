@@ -102,7 +102,7 @@ public class ScreenshotInTime implements Diagnostics {
 		if (finished) {
 			return;
 		}
-		if ((stepInterval > 0) && ((steps - stepOffset) % stepInterval == 0)) {
+		if ((stepInterval > 0) && (steps - stepOffset >= 0) && ((steps - stepOffset) % stepInterval == 0)) {
 
 			if (animationGLPanel != null) {
 				glautodrawable.getContext().makeCurrent();
