@@ -148,7 +148,8 @@ public class SimulationAnimation {
 		//updateFieldForce();
 		//s.prepareAllParticles();
 		//s.turnGridForceOn();
-		timer.start();
+//		timer.start();
+		repaint();
 	}
 
 //	public void calculateFields() {
