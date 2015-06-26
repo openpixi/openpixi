@@ -32,8 +32,11 @@ public class ScreenshotInTime implements Diagnostics {
 	private int stepInterval;
 	private double timeOffset;
 	private int stepOffset;
+	private int stepIterations;
+	private int timeout;
 	private int width;
 	private int height;
+	private boolean finished;
 
 	private Simulation simulation;
 	private SimulationAnimation simulationAnimation;
@@ -53,6 +56,8 @@ public class ScreenshotInTime implements Diagnostics {
 	public void initialize(Simulation s) {
 		this.stepInterval = (int) (timeInterval / s.getTimeStep());
 		this.stepOffset = (int) (timeOffset / s.getTimeStep());
+		this.stepIterations = s.getIterations();
+		finished = false;
 		this.simulation = s;
 		this.simulationAnimation = new SimulationAnimation(s);
 		this.energyDensity3DGLPanel = new EnergyDensity3DGLPanel(simulationAnimation);
@@ -79,7 +84,10 @@ public class ScreenshotInTime implements Diagnostics {
 	@Override
 	public void calculate(Grid grid, ArrayList<IParticle> particles, int steps)
 			throws IOException {
-		if ((steps - stepOffset) % stepInterval == 0) {
+		if (finished) {
+			return;
+		}
+		if ((stepInterval > 0) && ((steps - stepOffset) % stepInterval == 0)) {
 
 			glautodrawable.getContext().makeCurrent();
 
@@ -93,6 +101,11 @@ public class ScreenshotInTime implements Diagnostics {
 			File file = getOutputFile(pathWithNumber);
 			ImageIO.write(im, "png", file);
 
+		}
+		if (steps >= stepIterations - 1) {
+			finished = true;
+
+			System.out.println("use: ffmpeg -r 25 -sameq -i img-%05d.png test_1.mov");
 			// Create movie using e.g.
 			// ffmpeg -r 25 -sameq -i img-%05d.png test_1.mov
 		}
