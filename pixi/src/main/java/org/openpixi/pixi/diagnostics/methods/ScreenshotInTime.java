@@ -86,6 +86,10 @@ public class ScreenshotInTime implements Diagnostics {
 
 				glautodrawable = factory.createGLPbuffer(factory.getDefaultDevice(), caps, new DefaultGLCapabilitiesChooser(), width, height, null);
 				glautodrawable.display();
+				glautodrawable.getContext().makeCurrent();
+
+				animationGLPanel.reshape(glautodrawable, 0, 0, width, height);
+
 			} else if (component instanceof AnimationPanel) {
 				// TODO: Can not yet draw non-OpenGL panels.
 			}

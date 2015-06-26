@@ -31,10 +31,8 @@ fields:
 
 output:
   screenshotInTime:
-      # File path
-    - path: "img-{counter}.png"
-
-      # Measurement interval
+    # 3D screenshot
+    - path: "img3D-{counter}.png"
       interval: 1.0
       offset : 0
       width: 1280
@@ -47,6 +45,17 @@ output:
           theta: 0.7853981633974483
           distanceFactor: 1
           heightFactor: 0.250
+
+    # 2D screenshot
+    - path: "img2D-{counter}.png"
+      interval: 1.0
+      offset : 0
+      width: 1280
+      height: 720
+      panel:
+        energyDensity2DGLPanel:
+          automaticScaling: false
+          scaleFactor: 20
 
 # Generated panel code:
 panels:
