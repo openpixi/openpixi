@@ -1,6 +1,7 @@
 package org.openpixi.pixi.diagnostics;
 
 import org.junit.Test;
+import org.openpixi.pixi.diagnostics.methods.BulkQuantitiesInTime;
 import org.openpixi.pixi.diagnostics.methods.OccupationNumbersInTime;
 import org.openpixi.pixi.physics.Settings;
 import org.openpixi.pixi.physics.Simulation;
@@ -20,7 +21,7 @@ public class OccupationNumbersTest
 	@Test
 	public void test()
 	{
-		OccupationNumbersInTime occupationNumbers = new OccupationNumbersInTime(1.0);
+		OccupationNumbersInTime occupationNumbers = new OccupationNumbersInTime(1.0, "csv", "occ2.csv");
 
 		int size = (int) Math.pow(2, 10);
 
@@ -38,6 +39,9 @@ public class OccupationNumbersTest
 		settings.setGridSolver(new GeneralYangMillsSolver());
 		settings.addDiagnostics(occupationNumbers);
 
+		/*
+			Plane wave tests.
+		 */
 		double n = 8.0;
 		double[] k 	= new double[]{n * 2.0 * Math.PI / ((double) size), 0.0, 0.0};
 		double[] ac	= new double[]{0.0, 1.0, 0.0};
@@ -45,14 +49,39 @@ public class OccupationNumbersTest
 		SU2PlaneWave waveGenerator = new SU2PlaneWave(k, as, ac, 10.0);
 		//settings.addFieldGenerator(waveGenerator);
 
+		/*
+			Single pulse tests.
+		 */
 		double[] dir = new double[]{1.0, 0.0, 0.0};
 		double[] pos = new double[]{size / 2.0, 0, 0};
-		SU2PlanePulse pulseGenerator = new SU2PlanePulse(dir, pos, as, ac, 0.2, 4.0);
-		settings.addFieldGenerator(pulseGenerator);
+		SU2PlanePulse pulseGenerator = new SU2PlanePulse(dir, pos, as, ac, 1.0, 2.0);
+		//settings.addFieldGenerator(pulseGenerator);
+
+		/*
+			Colliding pulse tests.
+		 */
+		double[] dir1 	= new double[]{1.0, 0.0, 0.0};
+		double[] pos1 	= new double[]{size / 4.0, 0, 0};
+		double[] dir2 	= new double[]{-1.0, 0.0, 0.0};
+		double[] pos2 	= new double[]{3.0 * size / 4.0, 0, 0};
+		double[] ac1	= new double[]{1.0, 1.0, 0.0};
+		double[] as1 	= new double[]{0.0, 0.0, 1.0};
+		double[] ac2	= new double[]{0.0, 1.0, 0.0};
+		double[] as2 	= new double[]{0.0, 0.0, 1.0};
+		SU2PlanePulse pulseGenerator1 = new SU2PlanePulse(dir1, pos1, as1, ac1, 1.41421, 8.0);
+		SU2PlanePulse pulseGenerator2 = new SU2PlanePulse(dir2, pos2, as2, ac2, 1.41421, 8.0);
+		settings.addFieldGenerator(pulseGenerator1);
+		settings.addFieldGenerator(pulseGenerator2);
+
+		/*
+			Bulk quantities.
+		 */
+		BulkQuantitiesInTime bulk = new BulkQuantitiesInTime("test2.dat", 1.0);
+		settings.addDiagnostics(bulk);
 
 		Simulation s = new Simulation(settings);
 
-		int steps = 100;
+		int steps = (int) (512.0 / s.getTimeStep());
 		for(int step = 0; step < steps; step++)
 		{
 			try {
