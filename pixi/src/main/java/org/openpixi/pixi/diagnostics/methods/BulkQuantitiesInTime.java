@@ -44,7 +44,7 @@ public class BulkQuantitiesInTime implements Diagnostics {
 		File file = getOutputFile(path);
 		try {
 			FileWriter pw = new FileWriter(file, true);
-			pw.write("#time \t E^2 \t B^2 \t P_x \t P_y \t P_z");
+			pw.write("#time \t E^2 \t B^2 \t e \t P_x \t P_y \t P_z");
 			pw.write("\n");
 			pw.close();
 		} catch (IOException ex) {
