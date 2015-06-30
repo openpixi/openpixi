@@ -30,11 +30,11 @@ public class OccupationNumbersTest
 		settings.setGridStep(1.0);
 		settings.setNumberOfColors(2);
 		settings.setNumberOfDimensions(3);
-		settings.setGridCells(new int[]{size, 1, 1});
+		settings.setGridCells(new int[]{size, 2, 1});
 		settings.setRelativistic(true);
 		settings.setNumOfThreads(6);
 		settings.setSpeedOfLight(1.0);
-		settings.setTimeStep(0.1);
+		settings.setTimeStep(0.4);
 		settings.setPoissonSolver(new EmptyPoissonSolver());
 		settings.setGridSolver(new GeneralYangMillsSolver());
 		settings.addDiagnostics(occupationNumbers);
@@ -54,7 +54,7 @@ public class OccupationNumbersTest
 		 */
 		double[] dir = new double[]{1.0, 0.0, 0.0};
 		double[] pos = new double[]{size / 2.0, 0, 0};
-		SU2PlanePulse pulseGenerator = new SU2PlanePulse(dir, pos, as, ac, 1.0, 2.0);
+		SU2PlanePulse pulseGenerator = new SU2PlanePulse(dir, pos, as, ac, 1.0, 1.0);
 		//settings.addFieldGenerator(pulseGenerator);
 
 		/*
@@ -81,6 +81,13 @@ public class OccupationNumbersTest
 
 		Simulation s = new Simulation(settings);
 
+		for(int i = 0; i < s.grid.getTotalNumberOfCells(); i++)
+		{
+			int [] c = s.grid.getCellPos(i);
+			System.out.println(i + " @ [" + c[0] + " " + c[1] + " " + c[2] + "]");
+		}
+
+
 		int steps = (int) (512.0 / s.getTimeStep());
 		for(int step = 0; step < steps; step++)
 		{
@@ -91,6 +98,7 @@ public class OccupationNumbersTest
 
 			}
 		}
+
 
 	}
 }

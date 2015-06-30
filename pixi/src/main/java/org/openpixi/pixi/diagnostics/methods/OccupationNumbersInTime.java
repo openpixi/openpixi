@@ -105,7 +105,7 @@ public class OccupationNumbersInTime implements Diagnostics {
 			for(int i = 0; i < s.getNumberOfDimensions(); i++) {
 				volume *= s.getSimulationBoxSize(i);
 			}
-			double prefactor = 1.0 / (2.0 * volume * Math.pow(2.0 * Math.PI, 3));
+			double prefactor = 1.0 / (2.0 * Math.pow(2.0 * Math.PI, 3));
 			occupationNumbers[0] = 0.0; // Zero modes of the electric field have divergent occupation number.
 			energy = 0.0;
 			for (int i = 1; i < grid.getTotalNumberOfCells(); i++) {
@@ -131,14 +131,14 @@ public class OccupationNumbersInTime implements Diagnostics {
 
 				double[] k = computeMomentumVectorFromLatticeIndex(i);
 				double w = Math.sqrt(this.computeDispersionRelationSquared(k));
-				occupationNumbers[i] = prefactor * (eSquared / w +  w * aSquared + mixed);
-				energy += occupationNumbers[i] * w;
+				occupationNumbers[i] = prefactor * (eSquared +  Math.pow(w, 2.0) * aSquared + w * mixed);
+				energy += occupationNumbers[i];
 			}
 
 			/* The summation above sums over the whole spectrum found by the FFT. Since this spectrum contains two times
 			the actual spectrum we have to divide the energy by a factor of two. This is fishy will almost certainly not
 			work for more than one dimension. */
-			energy *= 0.5;
+			//energy *= 0.5;
 
 			computationCounter++;
 
