@@ -21,7 +21,7 @@ import org.openpixi.pixi.ui.util.FrameRateDetector;
  */
 public class SimulationAnimation {
 
-	private Simulation s;
+	protected Simulation s;
 
 //	private boolean relativistic = true;
 
@@ -50,6 +50,10 @@ public class SimulationAnimation {
 		public void actionPerformed(ActionEvent eve) {
 			try {
 				s.step();
+				if (s.totalSimulationSteps == s.getIterations()) {
+					// Stop simulation (the user can continue by hand)
+					stopAnimation();
+				}
 			} catch (FileNotFoundException ex) {
 				Logger.getLogger(Particle2DPanel.class.getName()).log(Level.SEVERE, null, ex);
 			} catch (IOException ex2) {
@@ -139,7 +143,8 @@ public class SimulationAnimation {
 		//updateFieldForce();
 		//s.prepareAllParticles();
 		//s.turnGridForceOn();
-		timer.start();
+//		timer.start();
+		repaint();
 	}
 
 //	public void calculateFields() {

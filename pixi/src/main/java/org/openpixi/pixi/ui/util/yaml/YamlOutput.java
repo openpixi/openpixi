@@ -19,11 +19,15 @@ public class YamlOutput {
 
 	public ArrayList<YamlOccupationNumbersInTime> occupationNumbersInTime = new ArrayList<YamlOccupationNumbersInTime>();
 
+	public ArrayList<YamlScreenshotInTime> screenshotInTime = new ArrayList<YamlScreenshotInTime>();
+
+	public ArrayList<YamlScreenshotInTime> screenshotInTime = new ArrayList<YamlScreenshotInTime>();
+
+
 	/**
 	 * Creates FileGenerator instances and applies them to the Settings instance.
 	 * @param s
 	 */
-
 	public void applyTo(Settings s) {
 		for (YamlParticlesInTime output : particlesInTime) {
 			s.addDiagnostics(output.getFileGenerator());
@@ -42,6 +46,10 @@ public class YamlOutput {
 		}
 
 		for (YamlOccupationNumbersInTime output : occupationNumbersInTime) {
+			s.addDiagnostics(output.getFileGenerator());
+		}
+
+		for (YamlScreenshotInTime output : screenshotInTime) {
 			s.addDiagnostics(output.getFileGenerator());
 		}
 	}

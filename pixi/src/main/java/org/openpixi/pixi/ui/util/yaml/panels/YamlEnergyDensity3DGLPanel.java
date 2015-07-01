@@ -15,6 +15,12 @@ public class YamlEnergyDensity3DGLPanel {
 	public Double phi;
 	public Double theta;
 
+	/** Distance of viewer */
+	public Double distanceFactor;
+
+	/** Maximum height of values */
+	public Double heightFactor;
+
 	/** Empty constructor called by SnakeYaml */
 	public YamlEnergyDensity3DGLPanel() {
 	}
@@ -26,6 +32,8 @@ public class YamlEnergyDensity3DGLPanel {
 			automaticScaling = panel.getScaleProperties().getAutomaticScaling();
 			phi = panel.phi;
 			theta = panel.theta;
+			distanceFactor = panel.distanceFactor;
+			heightFactor = panel.heightFactor;
 		}
 	}
 
@@ -47,6 +55,14 @@ public class YamlEnergyDensity3DGLPanel {
 
 		if (theta != null) {
 			panel.theta = theta;
+		}
+
+		if (distanceFactor != null) {
+			panel.distanceFactor = distanceFactor;
+		}
+
+		if (heightFactor != null) {
+			panel.heightFactor = heightFactor;
 		}
 
 		return panel;

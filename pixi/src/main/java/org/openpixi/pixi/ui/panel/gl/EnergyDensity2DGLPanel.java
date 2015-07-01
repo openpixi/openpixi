@@ -59,9 +59,9 @@ public class EnergyDensity2DGLPanel extends AnimationGLPanel {
 		Simulation s = getSimulationAnimation().getSimulation();
 
 		/** Scaling factor for the displayed panel in x-direction*/
-		double sx = getWidth() / s.getWidth();
+		double sx = width / s.getWidth();
 		/** Scaling factor for the displayed panel in y-direction*/
-		double sy = getHeight() / s.getHeight();
+		double sy = height / s.getHeight();
 
 		// Lattice spacing and coupling constant
 		double as = s.grid.getLatticeSpacing();

@@ -132,6 +132,9 @@ public class FileTab extends Box {
 	class ApplyButtonListener implements ActionListener {
 		public void actionPerformed(ActionEvent event) {
 			applyTextAreaSettings();
+
+			// Also start animation immediately:
+			simulationAnimation.startAnimation();
 		}
 	}
 
@@ -169,7 +172,7 @@ public class FileTab extends Box {
 	}
 
 	/**
-	 * Apply the settings from the text area and restart the simulation.
+	 * Apply the settings from the text area and reset the simulation.
 	 */
 	public void applyTextAreaSettings() {
 		String string = fileTextArea.getText();
@@ -183,7 +186,7 @@ public class FileTab extends Box {
 	}
 
 	/**
-	 * Apply the panel settings from the text area and restart the simulation.
+	 * Apply the panel settings from the text area (without resetting the simulation).
 	 */
 	public void applyTextAreaPanelSettings() {
 		String string = fileTextArea.getText();
