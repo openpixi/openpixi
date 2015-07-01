@@ -52,7 +52,7 @@ public class PanelManager {
 	JMenuItem itemEnergyDensity2DGLPanel;
 	JMenuItem itemEnergyDensity3DGLPanel;
 
-	PanelManager(MainControlApplet m) {
+	public PanelManager(MainControlApplet m) {
 		mainControlApplet = m;
 	}
 
