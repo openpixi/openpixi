@@ -21,8 +21,6 @@ public class YamlOutput {
 
 	public ArrayList<YamlScreenshotInTime> screenshotInTime = new ArrayList<YamlScreenshotInTime>();
 
-	public ArrayList<YamlScreenshotInTime> screenshotInTime = new ArrayList<YamlScreenshotInTime>();
-
 
 	/**
 	 * Creates FileGenerator instances and applies them to the Settings instance.
