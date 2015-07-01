@@ -11,7 +11,7 @@ couplingConstant: 2.0
 fields:
   SU2FocusedGaussianPulses:
     - dir: [1.0, 0.0, 0.0]
-      pos: [64, 64, 0.0]
+      pos: [64, 62, 0.0]
       aSpatial: [0.0, 0.0, 1.0]
       aColor: [1.0, 0.0, 0.0]
       a: 1
@@ -19,7 +19,7 @@ fields:
       angle: 1.0
       distance: 32.0
     - dir: [-1.0, 0.0, 0.0]
-      pos: [64, 64, 0.0]
+      pos: [64, 66, 0.0]
       aSpatial: [0.0, 0.0, 1.0]
       aColor: [0.0, 1.0, 0.0]
       a: 1
@@ -29,7 +29,7 @@ fields:
 
 output:
   occupationNumbersInTime:
-    - path: occ_b0_g2.csv
+    - path: occ_b4_g2.csv
       outputType: csv
       interval: 10.0
 

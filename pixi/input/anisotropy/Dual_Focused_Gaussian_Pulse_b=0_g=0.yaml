@@ -29,7 +29,7 @@ fields:
 
 output:
   occupationNumbersInTime:
-    - path: occ_b0_g0.dat
+    - path: occ_b0_g0.csv
       outputType: csv
       interval: 10.0
 
