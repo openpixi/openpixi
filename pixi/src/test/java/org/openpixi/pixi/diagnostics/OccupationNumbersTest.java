@@ -1,5 +1,6 @@
 package org.openpixi.pixi.diagnostics;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.openpixi.pixi.diagnostics.methods.BulkQuantitiesInTime;
 import org.openpixi.pixi.diagnostics.methods.OccupationNumbersInTime;
@@ -19,6 +20,7 @@ import java.io.IOException;
  */
 public class OccupationNumbersTest
 {
+	@Ignore
 	@Test
 	public void test()
 	{
