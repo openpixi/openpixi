@@ -18,7 +18,7 @@ import java.util.Locale;
 public class OccupationNumbersInTime implements Diagnostics {
 
 	private Simulation s;
-	private double timeInterval;
+	public double timeInterval;
 	private int stepInterval;
 	private String outputType;
 	private String outputFileName;
@@ -27,7 +27,6 @@ public class OccupationNumbersInTime implements Diagnostics {
 		Supported output types.
 	 */
 	private static final String OUTPUT_CSV = "csv";
-
 	private String[] supportedOutputTypes = {OUTPUT_CSV};
 
 	private DoubleFFTWrapper fft;
@@ -61,6 +60,13 @@ public class OccupationNumbersInTime implements Diagnostics {
 		occupationNumbers = new double[s.grid.getTotalNumberOfCells()];
 	}
 
+	/**
+	 * Computes the occupation numbers in momentum space and field energy from the occupation numbers.
+	 *
+	 * @param grid        Reference to the Grid instance.
+	 * @param particles    Reference to the list of particles.
+	 * @param steps        Total simulation steps so far.
+	 */
 	public void calculate(Grid grid, ArrayList<IParticle> particles, int steps) {
 		if (steps % stepInterval == 0) {
 			// Apply Coulomb gauge.
@@ -101,10 +107,6 @@ public class OccupationNumbersInTime implements Diagnostics {
 			}
 
 			// Compute occupation numbers and energy
-			double volume = 1.0;
-			for(int i = 0; i < s.getNumberOfDimensions(); i++) {
-				volume *= s.getSimulationBoxSize(i);
-			}
 			double prefactor = 1.0 / (2.0 * Math.pow(2.0 * Math.PI, 3));
 			occupationNumbers[0] = 0.0; // Zero modes of the electric field have divergent occupation number.
 			energy = 0.0;
@@ -134,16 +136,13 @@ public class OccupationNumbersInTime implements Diagnostics {
 				occupationNumbers[i] = prefactor * (eSquared +  Math.pow(w, 2.0) * aSquared + w * mixed);
 				energy += occupationNumbers[i];
 			}
-
-			/* The summation above sums over the whole spectrum found by the FFT. Since this spectrum contains two times
-			the actual spectrum we have to divide the energy by a factor of two. This is fishy will almost certainly not
-			work for more than one dimension. */
-			//energy *= 0.5;
+			// This factor is needed for the energy. Check the CPIC notes if in doubt.
+			energy *= 0.5;
 
 			computationCounter++;
 
 			// Generate output (write to file, terminal, etc..)
-			if(this.outputType == OUTPUT_CSV) {
+			if(this.outputType.equals(OUTPUT_CSV)) {
 				this.writeCSVFile(this.outputFileName);
 			}
 

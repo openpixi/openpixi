@@ -7,6 +7,7 @@ import org.openpixi.pixi.physics.Settings;
 import org.openpixi.pixi.physics.Simulation;
 import org.openpixi.pixi.physics.fields.EmptyPoissonSolver;
 import org.openpixi.pixi.physics.fields.GeneralYangMillsSolver;
+import org.openpixi.pixi.physics.fields.fieldgenerators.SU2FocusedGaussianPulse;
 import org.openpixi.pixi.physics.fields.fieldgenerators.SU2PlanePulse;
 import org.openpixi.pixi.physics.fields.fieldgenerators.SU2PlaneWave;
 import org.openpixi.pixi.physics.fields.fieldgenerators.SU2RandomFields;
@@ -21,20 +22,20 @@ public class OccupationNumbersTest
 	@Test
 	public void test()
 	{
-		OccupationNumbersInTime occupationNumbers = new OccupationNumbersInTime(1.0, "csv", "occ2.csv");
+		OccupationNumbersInTime occupationNumbers = new OccupationNumbersInTime(2.0, "csv", "occ3.csv");
 
-		int size = (int) Math.pow(2, 10);
+		int size = (int) Math.pow(2, 7);
 
 		Settings settings = new Settings();
 		settings.setCouplingConstant(1.0);
 		settings.setGridStep(1.0);
 		settings.setNumberOfColors(2);
 		settings.setNumberOfDimensions(3);
-		settings.setGridCells(new int[]{size, 2, 1});
+		settings.setGridCells(new int[]{size, size, 1});
 		settings.setRelativistic(true);
-		settings.setNumOfThreads(6);
+		settings.setNumOfThreads(12);
 		settings.setSpeedOfLight(1.0);
-		settings.setTimeStep(0.4);
+		settings.setTimeStep(0.05);
 		settings.setPoissonSolver(new EmptyPoissonSolver());
 		settings.setGridSolver(new GeneralYangMillsSolver());
 		settings.addDiagnostics(occupationNumbers);
@@ -58,7 +59,7 @@ public class OccupationNumbersTest
 		//settings.addFieldGenerator(pulseGenerator);
 
 		/*
-			Colliding pulse tests.
+			Colliding plane pulse tests.
 		 */
 		double[] dir1 	= new double[]{1.0, 0.0, 0.0};
 		double[] pos1 	= new double[]{size / 4.0, 0, 0};
@@ -68,30 +69,41 @@ public class OccupationNumbersTest
 		double[] as1 	= new double[]{0.0, 0.0, 1.0};
 		double[] ac2	= new double[]{0.0, 1.0, 0.0};
 		double[] as2 	= new double[]{0.0, 0.0, 1.0};
-		SU2PlanePulse pulseGenerator1 = new SU2PlanePulse(dir1, pos1, as1, ac1, 1.41421, 8.0);
-		SU2PlanePulse pulseGenerator2 = new SU2PlanePulse(dir2, pos2, as2, ac2, 1.41421, 8.0);
-		settings.addFieldGenerator(pulseGenerator1);
-		settings.addFieldGenerator(pulseGenerator2);
+		SU2PlanePulse pulseGenerator1 = new SU2PlanePulse(dir1, pos1, as1, ac1, 1.0, 4.0);
+		SU2PlanePulse pulseGenerator2 = new SU2PlanePulse(dir2, pos2, as2, ac2, 1.0, 4.0);
+
+
+		//settings.addFieldGenerator(pulseGenerator1);
+		//settings.addFieldGenerator(pulseGenerator2);
+
+		/*
+			Colliding focused pulse tests.
+		 */
+
+		double[] focalPoint1 = new double[]{size/2.0, size/2.0 - 4.0, 0};
+		double[] focalPoint2 = new double[]{size/2.0, size/2.0 + 4.0, 0};
+		double amplitude = 1.0;
+		double sigma = 8.0;
+		double angle = 1.0;
+		double dist = size / 4;
+		SU2FocusedGaussianPulse pg1 = new SU2FocusedGaussianPulse(dir1, focalPoint1, as1, ac1, amplitude, sigma, angle, dist);
+		SU2FocusedGaussianPulse pg2 = new SU2FocusedGaussianPulse(dir2, focalPoint2, as2, ac2, amplitude, sigma, angle, dist);
+		settings.addFieldGenerator(pg1);
+		settings.addFieldGenerator(pg2);
 
 		/*
 			Bulk quantities.
 		 */
 		BulkQuantitiesInTime bulk = new BulkQuantitiesInTime("test2.dat", 1.0);
-		settings.addDiagnostics(bulk);
+		//settings.addDiagnostics(bulk);
 
 		Simulation s = new Simulation(settings);
 
-		for(int i = 0; i < s.grid.getTotalNumberOfCells(); i++)
-		{
-			int [] c = s.grid.getCellPos(i);
-			System.out.println(i + " @ [" + c[0] + " " + c[1] + " " + c[2] + "]");
-		}
-
-
-		int steps = (int) (512.0 / s.getTimeStep());
+		int steps = (int) ( 128 * occupationNumbers.timeInterval /  s.getTimeStep());
 		for(int step = 0; step < steps; step++)
 		{
 			try {
+				System.out.println(step + "/" + steps);
 				s.step();
 			} catch(IOException ex)
 			{
