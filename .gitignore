@@ -18,6 +18,9 @@
 *~
 *.swp
 
+# JOGL workaround library files
+*.so
+
 target/
 lib/
 
