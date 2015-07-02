@@ -23,12 +23,22 @@ public class YamlOccupationNumbersInTime {
 	public String path;
 
 	/**
+	 * True/False. Decides whether to output 'colored' occupation numbers or ouput the sum over all colors.
+	 */
+	public Boolean colorful = false;
+
+	/**
 	 * Returns an instance of CoulombGaugeInTime according to the parameters in the YAML file.
 	 *
 	 * @return Instance of BulkQuantitiesInTime.
 	 */
 	public OccupationNumbersInTime getFileGenerator() {
-		OccupationNumbersInTime fileGen = new OccupationNumbersInTime(interval, outputType, path);
+		OccupationNumbersInTime fileGen;
+		if(colorful != null) {
+			fileGen = new OccupationNumbersInTime(interval, outputType, path, colorful);
+		} else {
+			fileGen = new OccupationNumbersInTime(interval, outputType, path, false);
+		}
 		return fileGen;
 	}
 }

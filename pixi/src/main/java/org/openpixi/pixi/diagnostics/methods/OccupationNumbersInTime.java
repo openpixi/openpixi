@@ -22,24 +22,37 @@ public class OccupationNumbersInTime implements Diagnostics {
 	private int stepInterval;
 	private String outputType;
 	private String outputFileName;
+	private boolean colorful;
 
 	/*
 		Supported output types.
 	 */
 	private static final String OUTPUT_CSV = "csv";
-	private String[] supportedOutputTypes = {OUTPUT_CSV};
+	private static final String OUTPUT_NONE = "none";
+	private String[] supportedOutputTypes = {OUTPUT_CSV, OUTPUT_NONE};
 
 	private DoubleFFTWrapper fft;
-	public double[] occupationNumbers;
+	public double[][] occupationNumbers;
 	public double	energy;
 
 	private int computationCounter;
+	private int numberOfComponents;
 
-	public OccupationNumbersInTime(double timeInterval, String outputType, String filename) {
+
+	/**
+	 * Constructor for the occupation numbers diagnostic.
+	 *
+	 * @param timeInterval	simulation time between measurements
+	 * @param outputType	type of output (e.g. csv files)
+	 * @param filename		filename for output
+	 * @param colorful		true/false if output should distinguish between color components or sum over them.
+	 */
+	public OccupationNumbersInTime(double timeInterval, String outputType, String filename, boolean colorful) {
 		this.timeInterval = timeInterval;
 		this.computationCounter = 0;
 		this.outputType = outputType;
 		this.outputFileName = filename;
+		this.colorful = colorful;
 
 		this.clear(filename);
 
@@ -56,8 +69,9 @@ public class OccupationNumbersInTime implements Diagnostics {
 		this.s = s;
 		this.stepInterval = (int) (this.timeInterval / s.getTimeStep());
 		this.fft = new DoubleFFTWrapper(s.grid.getNumCells());
+		this.numberOfComponents = s.getNumberOfColors() * s.getNumberOfColors() - 1;
 
-		occupationNumbers = new double[s.grid.getTotalNumberOfCells()];
+		occupationNumbers = new double[s.grid.getTotalNumberOfCells()][numberOfComponents];
 	}
 
 	/**
@@ -74,7 +88,6 @@ public class OccupationNumbersInTime implements Diagnostics {
 			coulombGauge.applyGaugeTransformation(grid);
 
 			// Fill arrays for FFT.
-			int numberOfComponents = grid.getNumberOfColors() * grid.getNumberOfColors() - 1;
 			double gainv = 1.0 / (grid.getLatticeSpacing() * grid.getGaugeCoupling());
 			double[][][] eFFTdata = new double[grid.getNumberOfDimensions()][numberOfComponents][fft.getFFTArraySize()];
 			double[][][] aFFTdata = new double[grid.getNumberOfDimensions()][numberOfComponents][fft.getFFTArraySize()];
@@ -108,15 +121,15 @@ public class OccupationNumbersInTime implements Diagnostics {
 
 			// Compute occupation numbers and energy
 			double prefactor = 1.0 / (2.0 * Math.pow(2.0 * Math.PI, 3));
-			occupationNumbers[0] = 0.0; // Zero modes of the electric field have divergent occupation number.
-			energy = 0.0;
-			for (int i = 1; i < grid.getTotalNumberOfCells(); i++) {
-				int fftIndex = fft.getFFTArrayIndex(i);
-				double eSquared = 0.0;
-				double aSquared = 0.0;
-				double mixed = 0.0;
-				for (int j = 0; j < grid.getNumberOfDimensions(); j++) {
-					for (int k = 0; k < numberOfComponents; k++) {
+			for(int k = 0; k < this.numberOfComponents; k++) {
+				occupationNumbers[0][k] = 0.0; // Zero modes of the electric field have divergent occupation number.
+				energy = 0.0;
+				for (int i = 1; i < grid.getTotalNumberOfCells(); i++) {
+					int fftIndex = fft.getFFTArrayIndex(i);
+					double eSquared = 0.0;
+					double aSquared = 0.0;
+					double mixed = 0.0;
+					for (int j = 0; j < grid.getNumberOfDimensions(); j++) {
 						// Electric part
 						eSquared += eFFTdata[j][k][fftIndex] * eFFTdata[j][k][fftIndex]
 								+ eFFTdata[j][k][fftIndex + 1] * eFFTdata[j][k][fftIndex + 1];
@@ -126,15 +139,15 @@ public class OccupationNumbersInTime implements Diagnostics {
 								+ aFFTdata[j][k][fftIndex + 1] * aFFTdata[j][k][fftIndex + 1]);
 
 						// Mixed part
-						mixed -= 2.0 * (- aFFTdata[j][k][fftIndex+1] * eFFTdata[j][k][fftIndex]
+						mixed -= 2.0 * (-aFFTdata[j][k][fftIndex + 1] * eFFTdata[j][k][fftIndex]
 								+ aFFTdata[j][k][fftIndex] * eFFTdata[j][k][fftIndex + 1]);
 					}
-				}
 
-				double[] k = computeMomentumVectorFromLatticeIndex(i);
-				double w = Math.sqrt(this.computeDispersionRelationSquared(k));
-				occupationNumbers[i] = prefactor * (eSquared +  Math.pow(w, 2.0) * aSquared + w * mixed);
-				energy += occupationNumbers[i];
+					double[] kvec = computeMomentumVectorFromLatticeIndex(i);
+					double w = Math.sqrt(this.computeDispersionRelationSquared(kvec));
+					occupationNumbers[i][k] = prefactor * (eSquared + Math.pow(w, 2.0) * aSquared + w * mixed);
+					energy += occupationNumbers[i][k];
+				}
 			}
 			// This factor is needed for the energy. Check the CPIC notes if in doubt.
 			energy *= 0.5;
@@ -217,7 +230,9 @@ public class OccupationNumbersInTime implements Diagnostics {
 	 *
 	 * The format is as follows: Each time the diagnostic is called two lines are appended to the output file.
 	 * 	Time, Energy
-	 * 	n0, n1, n2, ....
+	 * 	n0_0, n1_0, n2_0, ....
+	 * 	n0_1, n1_1, n2_1, ....
+	 * where nk_c defines the occupation number of momentum k with color component c.
 	 *
 	 * @param path	Path to the output file
 	 */
@@ -239,20 +254,39 @@ public class OccupationNumbersInTime implements Diagnostics {
 	 * Generates a CSV formatted String based on the computed occupation numbers and the energy.
 	 * The format is as follows:
 	 * 	Time, Energy
-	 * 	n0, n1, n2, ....
+	 * 	n0_0, n1_0, n2_0, ....
+	 * 	n0_1, n1_1, n2_1, ....
+	 * where nk_c defines the occupation number of momentum k with color component c.
 	 *
 	 * @return	a csv formatted string containing time, energy and the occupation numbers.
 	 */
 	private String generateCSVString() {
 		String outputString = "";
-		for (int i = 0; i < s.grid.getTotalNumberOfCells(); i++)
-		{
-			outputString += occupationNumbers[i];
-			if(i < s.grid.getTotalNumberOfCells() - 1) {
-				outputString += ", ";
+		if(colorful) {
+			for (int k = 0; k < numberOfComponents; k++) {
+				for (int i = 0; i < s.grid.getTotalNumberOfCells(); i++) {
+					outputString += occupationNumbers[i][k];
+					if (i < s.grid.getTotalNumberOfCells() - 1) {
+						outputString += ", ";
+					}
+				}
+				outputString += "\n";
 			}
+		} else {
+			for (int i = 0; i < s.grid.getTotalNumberOfCells(); i++)
+			{
+				double value = 0.0;
+				for(int k = 0; k < numberOfComponents; k++)
+				{
+					value += occupationNumbers[i][k];
+				}
+				outputString += value;
+				if (i < s.grid.getTotalNumberOfCells() - 1) {
+					outputString += ", ";
+				}
+			}
+			outputString += "\n";
 		}
-		outputString += "\n";
 		return outputString;
 	}
 
