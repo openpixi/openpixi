@@ -13,14 +13,8 @@ import org.openpixi.pixi.ui.panel.EnergyDensity1DPanel;
 import org.openpixi.pixi.ui.panel.EnergyDensity2DPanel;
 import org.openpixi.pixi.ui.panel.gl.EnergyDensity2DGLPanel;
 import org.openpixi.pixi.ui.panel.gl.EnergyDensity3DGLPanel;
-import org.openpixi.pixi.ui.util.yaml.panels.YamlElectricFieldPanel;
-import org.openpixi.pixi.ui.util.yaml.panels.YamlParticle2DPanel;
-import org.openpixi.pixi.ui.util.yaml.panels.YamlParticle3DPanel;
-import org.openpixi.pixi.ui.util.yaml.panels.YamlPhaseSpacePanel;
-import org.openpixi.pixi.ui.util.yaml.panels.YamlEnergyDensity1DPanel;
-import org.openpixi.pixi.ui.util.yaml.panels.YamlEnergyDensity2DPanel;
-import org.openpixi.pixi.ui.util.yaml.panels.YamlEnergyDensity2DGLPanel;
-import org.openpixi.pixi.ui.util.yaml.panels.YamlEnergyDensity3DGLPanel;
+import org.openpixi.pixi.ui.panel.gl.OccupationNumbers2DGLPanel;
+import org.openpixi.pixi.ui.util.yaml.panels.*;
 
 public class YamlPanels {
 
@@ -37,6 +31,7 @@ public class YamlPanels {
 	public YamlEnergyDensity2DPanel energyDensity2DPanel;
 	public YamlEnergyDensity2DGLPanel energyDensity2DGLPanel;
 	public YamlEnergyDensity3DGLPanel energyDensity3DGLPanel;
+	public YamlOccupationNumbers2DGLPanel occupationNumbers2DGLPanel;
 
 	/** Empty constructor called by SnakeYaml */
 	public YamlPanels() {
@@ -72,6 +67,8 @@ public class YamlPanels {
 			energyDensity2DGLPanel = new YamlEnergyDensity2DGLPanel(component);
 		} else if (component instanceof EnergyDensity3DGLPanel) {
 			energyDensity3DGLPanel = new YamlEnergyDensity3DGLPanel(component);
+		} else if (component instanceof OccupationNumbers2DGLPanel) {
+			occupationNumbers2DGLPanel = new YamlOccupationNumbers2DGLPanel(component);
 		}
 	}
 
@@ -104,7 +101,10 @@ public class YamlPanels {
 			component = energyDensity2DGLPanel.inflate(panelManager);
 		} else if (energyDensity3DGLPanel != null) {
 			component = energyDensity3DGLPanel.inflate(panelManager);
+		} else if (occupationNumbers2DGLPanel != null) {
+			component = occupationNumbers2DGLPanel.inflate(panelManager);
 		}
+
 		return component;
 	}
 }
