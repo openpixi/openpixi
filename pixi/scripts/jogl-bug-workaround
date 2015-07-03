@@ -30,3 +30,9 @@ cp $JOGAMPDIR/jogl/jogl-all/$JOGLVERSION/jogl-all-$JOGLVERSION-natives-$PLATFORM
 unzip -o $CURRENTDIR/jogl-all-$JOGLVERSION-natives-$PLATFORM.jar *.so
 rm $CURRENTDIR/jogl-all-$JOGLVERSION-natives-$PLATFORM.jar
 
+if [ -z ${LD_LIBRARY_PATH+x} ]
+then
+  echo ""
+  echo "Please execute the following line:"
+  echo "export LD_LIBRARY_PATH=."
+fi
