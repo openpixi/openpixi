@@ -29,8 +29,15 @@ fields:
 
 # Generated panel code:
 panels:
-  occupationNumbers2DGLPanel:
-    automaticScaling: true
-    colorful: true
-    frameSkip: 2
-    scaleFactor: 100.0
+  dividerLocation: 788
+  leftPanel:
+    occupationNumbers2DGLPanel:
+      automaticScaling: true
+      colorful: true
+      frameSkip: 2
+      scaleFactor: 100.0
+  orientation: 1
+  rightPanel:
+    energyDensity2DGLPanel:
+      automaticScaling: true
+      scaleFactor: 1.0

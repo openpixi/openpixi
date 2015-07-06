@@ -32,6 +32,7 @@ output:
     - path: occ_b4_g0.csv
       outputType: csv
       interval: 10.0
+      colorful: false
 
 # Generated panel code:
 panels:
