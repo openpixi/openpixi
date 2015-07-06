@@ -787,16 +787,14 @@ public class Grid {
 		
 		YMField gauss = cells[index].getEmptyField(numCol);
 		YMField temp = cells[index].getEmptyField(numCol);
-		double norm = 1.0/(at*as*gaugeCoupling);
-		
+		double norm = 2.0/(at);
+
 		for (int i = 0; i < numDim; i++) {
-			int id1 = shift(index, i, 1);
 			int id2 = shift(index, i, -1);
-			temp.set(getU(id1, i).adj().mult(getUnext(id2, i)).getLinearizedAlgebraElement());
+			temp.set(getU(id2, i).adj().mult(getUnext(id2, i)).proj());
 			gauss.addequate(getE(index, i).sub(temp.mult(norm)));
-			//gauss.addequate(getE(index, i).sub(getE(index, i)));
 		}
-		return gauss.square();
+		return gauss.square() / Math.pow( as * as * gaugeCoupling, 2.0);
 	}
 
 }
