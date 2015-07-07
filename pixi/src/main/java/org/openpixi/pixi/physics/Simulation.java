@@ -22,6 +22,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 
 import org.openpixi.pixi.physics.fields.fieldgenerators.IFieldGenerator;
+import org.openpixi.pixi.physics.fields.currentgenerators.ICurrentGenerator;
 import org.openpixi.pixi.physics.fields.PoissonSolver;
 import org.openpixi.pixi.physics.force.Force;
 import org.openpixi.pixi.physics.force.CombinedForce;
@@ -112,6 +113,11 @@ public class Simulation {
      * List of output file generators which are applied during the runtime of the simulation.
      */
     private ArrayList<Diagnostics>  diagnostics;
+
+	/**
+	 * List of external current generators which are applied during the whole runtime of the simulation.
+	 */
+	private ArrayList<ICurrentGenerator>  currentGenerators;
 
 	public Interpolation getInterpolation() {
 		return interpolation;
@@ -219,6 +225,9 @@ public class Simulation {
 			(e.g. check if Gauss law is fulfilled.)
 		 */
 
+		// Copy current generators from Settings.
+		currentGenerators = settings.getCurrentGenerators();
+
 
 		prepareAllParticles();
 
@@ -261,6 +270,13 @@ public class Simulation {
 		interpolation.interpolateToParticle(particles, grid);
 		particlePush();
 		interpolation.interpolateToGrid(particles, grid, tstep);
+
+		// Generate external currents on the grid!!
+		for (int c = 0; c < currentGenerators.size(); c++)
+		{
+			currentGenerators.get(c).applyCurrent(this);
+		}
+
 		grid.updateGrid(tstep);
 
 		totalSimulationSteps++;
