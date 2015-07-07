@@ -257,11 +257,13 @@ public class Simulation {
 	 */
 	public void step() throws FileNotFoundException,IOException {
 
-		runDiagnostics();
 		interpolation.interpolateToParticle(particles, grid);
 		particlePush();
 		interpolation.interpolateToGrid(particles, grid, tstep);
+
 		grid.updateGrid(tstep);
+		runDiagnostics();
+		grid.storeFields();
 
 		totalSimulationSteps++;
 		totalSimulationTime =  totalSimulationSteps * tstep;

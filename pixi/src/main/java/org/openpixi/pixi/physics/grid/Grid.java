@@ -439,14 +439,13 @@ public class Grid {
 
 	/**
 	 * This method advances the grid by one time step:
-	 * It stores the fields, i.e. sets (t+dt) fields from the last grid update to the old ones at time (t) and calls the
-	 * FieldSolver to solve the equations of motion for one time step.
+	 * It calls the FieldSolver to solve the equations of motion for one time step.
 	 *
 	 * @param tstep size of the time step
 	 */
 	public void updateGrid(double tstep) {
 		getFsolver().step(this, tstep);
-		storeFields();
+
 	}
 
 	/**
@@ -787,7 +786,7 @@ public class Grid {
 		
 		YMField gauss = cells[index].getEmptyField(numCol);
 		YMField temp = cells[index].getEmptyField(numCol);
-		double norm = 2.0/(at);
+		double norm = -2.0/(at);
 
 		for (int i = 0; i < numDim; i++) {
 			int id2 = shift(index, i, -1);
