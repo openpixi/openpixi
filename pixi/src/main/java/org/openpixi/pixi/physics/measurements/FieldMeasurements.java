@@ -9,7 +9,8 @@ public class FieldMeasurements {
 	EFieldSquared Esquared = new EFieldSquared();
 	BFieldSquared Bsquared = new BFieldSquared();
 	GaussLaw GaussConstraint = new GaussLaw();
-	
+	EnergyDensityCompuation energyDensityCompuation = new EnergyDensityCompuation();
+
 	public double calculateEsquared(Grid grid) {
 		Esquared.reset();
 		grid.getCellIterator().execute(grid, Esquared);
@@ -38,6 +39,12 @@ public class FieldMeasurements {
 		GaussConstraint.reset();
 		grid.getCellIterator().execute(grid, GaussConstraint);
         return GaussConstraint.getSum();
+	}
+
+	public double calculateEnergyDensity(Grid grid) {
+		energyDensityCompuation.reset();
+		grid.getCellIterator().execute(grid, energyDensityCompuation);
+		return energyDensityCompuation.getSum();
 	}
 
 	private class EFieldSquared implements CellAction {
@@ -100,7 +107,8 @@ public class FieldMeasurements {
 			for (int i = 0; i < numDir; i++) {
 				norm *= grid.getNumCells(i);
 				//res += grid.getB(coor, i).square();
-				res[i] += grid.getBsquaredFromLinks(index, i);
+				// Averaging B(-dt/2) and B(dt/2) to approximate B(0).
+				res[i] += 0.5 * (grid.getBsquaredFromLinks(index, i, 0) + grid.getBsquaredFromLinks(index, i, 0));
 			}
 			
 			for (int i = 0; i < numDir; i++) {
@@ -135,6 +143,25 @@ public class FieldMeasurements {
 			double result = grid.getGaussConstraintSquared(index)/norm;
 			synchronized(this) {
 			       sum += result;   // Synchronisierte Summenbildung
+			}
+		}
+	}
+
+	private class EnergyDensityCompuation implements CellAction {
+		private double sum;
+
+		public void reset() {
+			sum = 0.0;
+		}
+
+		public double getSum() {
+			return sum;
+		}
+
+		public void execute(Grid grid, int index) {
+			double result = grid.computeEnergyDensity(index);
+			synchronized(this) {
+				sum += result;   // Synchronisierte Summenbildung
 			}
 		}
 	}
