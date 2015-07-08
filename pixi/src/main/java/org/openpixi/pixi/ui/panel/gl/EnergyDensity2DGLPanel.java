@@ -93,7 +93,9 @@ public class EnergyDensity2DGLPanel extends AnimationGLPanel {
 				double blue = 0;
 				for(int w = 0; w < s.getNumberOfDimensions(); w++) {
 					EfieldSquared += s.grid.getEsquaredFromLinks(index, w) / (as * g * as * g) / 2;
-					BfieldSquared += s.grid.getBsquaredFromLinks(index, w) / (as * g * as * g) / 2;
+					// Time averaging for B field.
+					BfieldSquared += s.grid.getBsquaredFromLinks(index, w, 0) / (as * g * as * g) / 4.0;
+					BfieldSquared += s.grid.getBsquaredFromLinks(index, w, 1) / (as * g * as * g) / 4.0;
 					// get color:
 					double color = s.grid.getE(index, w).get(0);
 					red += color * color;
