@@ -445,7 +445,16 @@ public class Grid {
 	 */
 	public void updateGrid(double tstep) {
 		getFsolver().step(this, tstep);
+	}
 
+	/**
+	 * This method advances the link variables on the grid by one time step:
+	 * It calls the FieldSolver to solve the equations of motion for the links only for one time step.
+	 *
+	 * @param tstep size of the time step
+	 */
+	public void updateLinks(double tstep) {
+		getFsolver().stepLinks(this, tstep);
 	}
 
 	/**
