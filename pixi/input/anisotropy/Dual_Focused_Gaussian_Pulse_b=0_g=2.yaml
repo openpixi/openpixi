@@ -4,7 +4,7 @@ numberOfColors: 2
 numberOfThreads: 12
 gridCells: [128, 128, 1]
 poissonsolver: empty
-timeStep: 0.1
+timeStep: 0.05
 duration: 128.0
 couplingConstant: 2.0
 
@@ -31,8 +31,11 @@ output:
   occupationNumbersInTime:
     - path: occ_b0_g2.csv
       outputType: csv
-      interval: 10.0
+      interval: 5.0
       colorful: false
+  bulkQuantitiesInTime:
+    - path: bulk_b0_g2.dat
+      interval: 1.0
 
 # Generated panel code:
 panels:
