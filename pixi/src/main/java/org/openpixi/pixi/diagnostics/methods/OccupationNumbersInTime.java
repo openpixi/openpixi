@@ -120,10 +120,9 @@ public class OccupationNumbersInTime implements Diagnostics {
 			}
 
 			// Compute occupation numbers and energy
-			double prefactor = 1.0 / (2.0 * Math.pow(2.0 * Math.PI, 3));
+			energy = 0.0;
 			for(int k = 0; k < this.numberOfComponents; k++) {
 				occupationNumbers[0][k] = 0.0; // Zero modes of the electric field have divergent occupation number.
-				energy = 0.0;
 				for (int i = 1; i < grid.getTotalNumberOfCells(); i++) {
 					int fftIndex = fft.getFFTArrayIndex(i);
 					double eSquared = 0.0;
@@ -145,12 +144,13 @@ public class OccupationNumbersInTime implements Diagnostics {
 
 					double[] kvec = computeMomentumVectorFromLatticeIndex(i);
 					double w = Math.sqrt(this.computeDispersionRelationSquared(kvec));
-					occupationNumbers[i][k] = prefactor * (eSquared + Math.pow(w, 2.0) * aSquared + w * mixed);
+					occupationNumbers[i][k] = (eSquared + Math.pow(w, 2.0) * aSquared + w * mixed);
 					energy += occupationNumbers[i][k];
 				}
 			}
 			// This factor is needed for the energy. Check the CPIC notes if in doubt.
-			energy *= 0.5;
+			double prefactor = 1.0 / (2.0 * Math.pow(2.0 * Math.PI, 3));
+			energy *= prefactor;
 
 			computationCounter++;
 
