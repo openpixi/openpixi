@@ -16,13 +16,27 @@ public class BulkQuantitiesInTime implements Diagnostics {
 	private String path;
 	private double timeInterval;
 	private int stepInterval;
+	private boolean supressOutput;
 	private Simulation s;
 	private FieldMeasurements fieldMeasurements;
 
+	public double eSquared;
+	public double bSquared;
+	public double px;
+	public double py;
+	public double pz;
+	public double gaussViolation;
+
 	public BulkQuantitiesInTime(String path, double timeInterval)
+	{
+		this(path, timeInterval, false);
+	}
+
+	public BulkQuantitiesInTime(String path, double timeInterval, boolean supressOutput)
 	{
 		this.path = path;
 		this.timeInterval = timeInterval;
+		this.supressOutput = supressOutput;
 	}
 
 	/**
@@ -37,18 +51,21 @@ public class BulkQuantitiesInTime implements Diagnostics {
 		this.stepInterval = (int) (timeInterval / this.s.getTimeStep());
 		this.fieldMeasurements = new FieldMeasurements();
 
-		// Create/delete file.
-		clear();
 
-		// Write first line.
-		File file = getOutputFile(path);
-		try {
-			FileWriter pw = new FileWriter(file, true);
-			pw.write("#time \t E^2 \t B^2 \t e \t P_x \t P_y \t P_z");
-			pw.write("\n");
-			pw.close();
-		} catch (IOException ex) {
-			System.out.println("BulkQuantitiesInTime Error: Could not write to file '" + path + "'.");
+		if(!supressOutput) {
+			// Create/delete file.
+			clear();
+
+			// Write first line.
+			File file = getOutputFile(path);
+			try {
+				FileWriter pw = new FileWriter(file, true);
+				pw.write("#time \t E^2 \t B^2 \t P_x \t P_y \t P_z");
+				pw.write("\n");
+				pw.close();
+			} catch (IOException ex) {
+				System.out.println("BulkQuantitiesInTime Error: Could not write to file '" + path + "'.");
+			}
 		}
 	}
 
@@ -62,29 +79,37 @@ public class BulkQuantitiesInTime implements Diagnostics {
 	 */
 	public void calculate(Grid grid, ArrayList<IParticle> particles, int steps) throws IOException {
 		if(steps % stepInterval == 0) {
-			
-			File file = getOutputFile(path);
-			FileWriter pw = new FileWriter(file, true);
-														//TODO Make this method d-dimensional!!
-			double[] esquares = new double [3];
-			double[] bsquares = new double [3];
+			//TODO Make this method d-dimensional!!
+			double[] esquares = new double[3];
+			double[] bsquares = new double[3];
 			for (int i = 0; i < 3; i++) {
 				esquares[i] = fieldMeasurements.calculateEsquared(grid, i);
 				bsquares[i] = fieldMeasurements.calculateBsquared(grid, i);
 			}
-			
-			double gaussViolation = fieldMeasurements.calculateGaussConstraint(grid);
 
-			pw.write(steps * s.getTimeStep() + "\t");
-			pw.write(esquares[0] + esquares[1] + esquares[2] + "\t");
-			pw.write(bsquares[0] + bsquares[1] + bsquares[2] + "\t");
-			pw.write(- esquares[0] + esquares[1] + esquares[2] - bsquares[0] + bsquares[1] + bsquares[2] + "\t");
-			pw.write(+ esquares[0] - esquares[1] + esquares[2] + bsquares[0] - bsquares[1] + bsquares[2] + "\t");
-			pw.write(+ esquares[0] + esquares[1] - esquares[2] + bsquares[0] + bsquares[1] - bsquares[2] + "\t");
-			pw.write(gaussViolation + "\t");
-			pw.write("\n");
-			
-			pw.close();
+			eSquared = esquares[0] + esquares[1] + esquares[2];
+			bSquared = bsquares[0] + bsquares[1] + bsquares[2];
+			px = -esquares[0] + esquares[1] + esquares[2] - bsquares[0] + bsquares[1] + bsquares[2];
+			py = +esquares[0] - esquares[1] + esquares[2] + bsquares[0] - bsquares[1] + bsquares[2];
+			pz = +esquares[0] + esquares[1] - esquares[2] + bsquares[0] + bsquares[1] - bsquares[2];
+
+			gaussViolation = fieldMeasurements.calculateGaussConstraint(grid);
+
+			if(!supressOutput) {
+				File file = getOutputFile(path);
+				FileWriter pw = new FileWriter(file, true);
+
+				pw.write(steps * s.getTimeStep() + "\t");
+				pw.write(eSquared+ "\t");
+				pw.write(bSquared + "\t");
+				pw.write(px + "\t");
+				pw.write(py + "\t");
+				pw.write(pz + "\t");
+				pw.write(gaussViolation + "\t");
+				pw.write("\n");
+
+				pw.close();
+			}
 			
 		}
 	}
