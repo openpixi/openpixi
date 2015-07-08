@@ -266,9 +266,10 @@ public class Simulation {
 	 */
 	public void step() throws FileNotFoundException,IOException {
 
-		runDiagnostics();
-		interpolation.interpolateToParticle(particles, grid);
-		particlePush();
+		grid.storeFields();
+
+		//reassignParticles(); TODO: Write this method!!
+
 		interpolation.interpolateToGrid(particles, grid, tstep);
 
 		// Generate external currents on the grid!!
@@ -278,9 +279,17 @@ public class Simulation {
 		}
 
 		grid.updateGrid(tstep);
+		
+		//updatePositions(); TODO: Write this method!!
+
+		interpolation.interpolateToParticle(particles, grid);
+
+		//updateVelocities(); TODO: Write this method!!
 
 		totalSimulationSteps++;
 		totalSimulationTime =  totalSimulationSteps * tstep;
+
+		runDiagnostics();
 	}
 
 	/**
