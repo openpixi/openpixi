@@ -23,6 +23,7 @@ import java.io.IOException;
 
 import org.openpixi.pixi.physics.fields.fieldgenerators.IFieldGenerator;
 import org.openpixi.pixi.physics.fields.PoissonSolver;
+import org.openpixi.pixi.physics.force.ConstantForce;
 import org.openpixi.pixi.physics.force.Force;
 import org.openpixi.pixi.physics.force.CombinedForce;
 import org.openpixi.pixi.physics.force.SimpleGridForce;
@@ -219,8 +220,13 @@ public class Simulation {
 			(e.g. check if Gauss law is fulfilled.)
 		 */
 
+		grid.updateLinks(tstep);
 
-		prepareAllParticles();
+		interpolation.interpolateToParticle(particles, grid);
+
+		interpolation.interpolateToGrid(particles, grid, tstep);
+
+		//updateVelocities(); TODO: Write this method!!
 
 		// Cycle through diagnostic objects and initialize them.
 		diagnostics = settings.getDiagnostics();
@@ -228,6 +234,13 @@ public class Simulation {
         {
 			diagnostics.get(f).initialize(this);
         }
+
+		try {
+			runDiagnostics();
+		} catch (IOException ex) {
+			//TODO: Take care of the exception!!
+		}
+
 	}
 
 	public void turnGridForceOn() {
@@ -257,16 +270,31 @@ public class Simulation {
 	 */
 	public void step() throws FileNotFoundException,IOException {
 
-		interpolation.interpolateToParticle(particles, grid);
-		particlePush();
+		grid.storeFields();
+
+		//reassignParticles(); TODO: Write this method!!
+
 		interpolation.interpolateToGrid(particles, grid, tstep);
 
+		// Generate external currents on the grid!!
+		/*
+		for (int c = 0; c < currentGenerators.size(); c++)
+		{
+			currentGenerators.get(c).applyCurrent(this);
+		}
+		*/
 		grid.updateGrid(tstep);
-		runDiagnostics();
-		grid.storeFields();
+
+		//updatePositions(); TODO: Write this method!!
+
+		interpolation.interpolateToParticle(particles, grid);
+
+		//updateVelocities(); TODO: Write this method!!
 
 		totalSimulationSteps++;
 		totalSimulationTime =  totalSimulationSteps * tstep;
+
+		runDiagnostics();
 	}
 
 	/**
