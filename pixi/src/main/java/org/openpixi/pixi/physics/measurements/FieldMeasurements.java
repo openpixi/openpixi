@@ -108,7 +108,7 @@ public class FieldMeasurements {
 				norm *= grid.getNumCells(i);
 				//res += grid.getB(coor, i).square();
 				// Averaging B(-dt/2) and B(dt/2) to approximate B(0).
-				res[i] += 0.5 * (grid.getBsquaredFromLinks(index, i, 0) + grid.getBsquaredFromLinks(index, i, 0));
+				res[i] += 0.5 * (grid.getBsquaredFromLinks(index, i, 0) + grid.getBsquaredFromLinks(index, i, 1));
 			}
 			
 			for (int i = 0; i < numDir; i++) {
@@ -159,7 +159,12 @@ public class FieldMeasurements {
 		}
 
 		public void execute(Grid grid, int index) {
-			double result = grid.computeEnergyDensity(index);
+			int numDir = grid.getNumberOfDimensions();
+			double norm = 1.0;
+			for (int i = 0; i < numDir; i++) {
+				norm *= grid.getNumCells(i);
+			}
+			double result = grid.computeEnergyDensity(index)/norm;
 			synchronized(this) {
 				sum += result;   // Synchronisierte Summenbildung
 			}
