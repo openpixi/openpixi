@@ -243,7 +243,7 @@ public class GaussConstraintTest {
 		double expectedResult = getVectorNormSquared(colorAmplitude) * Math.pow(getScalarProduct(spatialAmplitude, n), 2.0);
 		double actualResult = s.grid.getGaussConstraintSquared(cellIndex);
 		double delta = Math.pow(10.0, -4.0);
-		System.out.println(expectedResult + " " +  actualResult);
+		Assert.assertEquals(expectedResult, actualResult, delta);
 	}
 
 	/**
