@@ -13,6 +13,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Locale;
 
 public class OccupationNumbersInTime implements Diagnostics {
@@ -33,11 +34,12 @@ public class OccupationNumbersInTime implements Diagnostics {
 
 	private DoubleFFTWrapper fft;
 	public double[][] occupationNumbers;
-	public double	energy;
+	public double	energyDensity;
 
 	private int computationCounter;
 	private int numberOfComponents;
-
+	private int effectiveNumberOfDimensions;
+	private double simulationBoxVolume;
 
 	/**
 	 * Constructor for the occupation numbers diagnostic.
@@ -72,6 +74,15 @@ public class OccupationNumbersInTime implements Diagnostics {
 		this.numberOfComponents = s.getNumberOfColors() * s.getNumberOfColors() - 1;
 
 		occupationNumbers = new double[s.grid.getTotalNumberOfCells()][numberOfComponents];
+		effectiveNumberOfDimensions = getEffectiveNumberOfDimensions(s.grid.getNumCells());
+
+		simulationBoxVolume = 1.0;
+		for(int i = 0; i < s.getNumberOfDimensions(); i++) {
+			if(s.grid.getNumCells(i) > 1) {
+				simulationBoxVolume *= s.getSimulationBoxSize(i);
+			}
+		}
+
 	}
 
 	/**
@@ -118,9 +129,11 @@ public class OccupationNumbersInTime implements Diagnostics {
 					fft.complexForward(aFFTdata[j][k]);
 				}
 			}
+			//
+			double fftConversationFactorSquared = Math.pow(s.grid.getLatticeSpacing(), 2.0 * effectiveNumberOfDimensions);
 
-			// Compute occupation numbers and energy
-			energy = 0.0;
+			// Compute occupation numbers and averaged energy density
+			energyDensity = 0.0;
 			for(int k = 0; k < this.numberOfComponents; k++) {
 				occupationNumbers[0][k] = 0.0; // Zero modes of the electric field have divergent occupation number.
 				for (int i = 1; i < grid.getTotalNumberOfCells(); i++) {
@@ -140,17 +153,23 @@ public class OccupationNumbersInTime implements Diagnostics {
 						// Mixed part
 						mixed -= 2.0 * (-aFFTdata[j][k][fftIndex + 1] * eFFTdata[j][k][fftIndex]
 								+ aFFTdata[j][k][fftIndex] * eFFTdata[j][k][fftIndex + 1]);
+
+						eSquared *= fftConversationFactorSquared;
+						aSquared *= fftConversationFactorSquared;
+						mixed *= fftConversationFactorSquared;
+
+
 					}
 
 					double[] kvec = computeMomentumVectorFromLatticeIndex(i);
 					double w = Math.sqrt(this.computeDispersionRelationSquared(kvec));
-					occupationNumbers[i][k] = (eSquared + Math.pow(w, 2.0) * aSquared + w * mixed);
-					energy += occupationNumbers[i][k];
+					occupationNumbers[i][k] = (eSquared + w * w * aSquared + w * mixed);
+					energyDensity += occupationNumbers[i][k];
 				}
 			}
 			// This factor is needed for the energy. Check the CPIC notes if in doubt.
-			double prefactor = 1.0 / (2.0 * Math.pow(2.0 * Math.PI, 3));
-			energy *= prefactor;
+			double prefactor = 1.0 / (2.0 * simulationBoxVolume * simulationBoxVolume);
+			energyDensity *= prefactor;
 
 			computationCounter++;
 
@@ -174,7 +193,7 @@ public class OccupationNumbersInTime implements Diagnostics {
 		double a = s.grid.getLatticeSpacing();
 		for(int i = 0; i < s.getNumberOfDimensions(); i++)
 		{
-			w2 += 2.0 * (1.0 - Math.cos(k[i] * a) / (a * a));
+			w2 += 2.0 * (1.0 - Math.cos(k[i] * a)) / (a * a);
 		}
 		return w2;
 	}
@@ -214,7 +233,7 @@ public class OccupationNumbersInTime implements Diagnostics {
 		for(int i = 0; i < s.getNumberOfDimensions(); i++)
 		{
 			double delta = coordinate[i] / ((double) s.grid.getNumCells(i));
-			if(coordinate[i] < s.grid.getNumCells(i) / 2)
+			if(delta < 0.5)
 			{
 				k[i] = 2.0 * delta * Math.PI / s.grid.getLatticeSpacing();
 			} else {
@@ -241,7 +260,7 @@ public class OccupationNumbersInTime implements Diagnostics {
 		File file = this.getOutputFile(path);
 		try {
 			FileWriter pw = new FileWriter(file, true);
-			pw.write((computationCounter * timeInterval) + ", " + energy + "\n");
+			pw.write((computationCounter * timeInterval) + ", " + energyDensity + "\n");
 			pw.write(this.generateCSVString());
 			pw.close();
 		} catch (IOException ex) {
@@ -312,5 +331,23 @@ public class OccupationNumbersInTime implements Diagnostics {
 		if(!fullpath.exists()) fullpath.mkdir();
 
 		return new File(fullpath, filename);
+	}
+
+	/**
+	 * Return a list of dimensions whose size > 1.
+	 *
+	 * @param dimensions
+	 * @return
+	 */
+	private int getEffectiveNumberOfDimensions(int[] dimensions) {
+		int effectiveNumberOfDimensions = 0;
+		for (int d : dimensions) {
+			if (d > 1) {
+				effectiveNumberOfDimensions += 1;
+			} else if (d < 1) {
+				System.out.println("OccupationNumbersInTime: Dimension < 1 along a direction is not allowed");
+			}
+		}
+		return effectiveNumberOfDimensions;
 	}
 }
