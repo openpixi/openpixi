@@ -752,9 +752,8 @@ public class Grid {
 	 */
 	public double getEsquaredFromLinks(int index, int direction) {
 		
-		double norm = at*at;
-		//double res = 1.0 - cells[index].getUnext(direction).mult(cells[index].getU(direction).adj()).getTrace()/numCol;
-		double res = cells[index].getUnext(direction).mult(cells[index].getU(direction).adj()).getLinearizedAlgebraElement().square()/norm;
+		double norm = at * at / 4.0;
+		double res = cells[index].getUnext(direction).mult(cells[index].getU(direction).adj()).proj().square()/norm;
 
 		return res;
 	}
