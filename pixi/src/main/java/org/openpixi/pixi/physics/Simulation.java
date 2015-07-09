@@ -129,9 +129,9 @@ public class Simulation {
 		return simulationBoxSize[2];
 	}
 
-	public double[] getSimulationBoxSize() { return simulationBoxSize; };
+	public double[] getSimulationBoxSize() { return simulationBoxSize; }
 
-	public double getSimulationBoxSize(int i) { return simulationBoxSize[i]; };
+	public double getSimulationBoxSize(int i) { return simulationBoxSize[i]; }
 
 	public double getSpeedOfLight() {
 		return speedOfLight;
