@@ -223,8 +223,26 @@ public class Simulation {
 			(e.g. check if Gauss law is fulfilled.)
 		 */
 
+		/**
+		 * In order to read out the initial state without specifying the Unext(t = at/2) links by hand we calculate them
+		 * according to the equations of motion from the electric fields at t = 0 and gauge links U(t = -at/2). We also
+		 * compute both internal and external currents at t = -at/2 from the given particle velocities (specified also
+		 * at t = -at/2) and determine new velocities at t = at/2.
+		 */
+		grid.updateLinks(tstep);
 
-		prepareAllParticles();
+		interpolation.interpolateToParticle(particles, grid);
+
+		interpolation.interpolateToGrid(particles, grid, tstep);
+		// Generate external currents on the grid!!
+		/*
+		for (int c = 0; c < currentGenerators.size(); c++)
+		{
+			currentGenerators.get(c).applyCurrent(this);
+		}
+		*/
+
+		//updateVelocities(); TODO: Write this method!!
 
 		// Cycle through diagnostic objects and initialize them.
 		diagnostics = settings.getDiagnostics();
@@ -232,6 +250,14 @@ public class Simulation {
         {
 			diagnostics.get(f).initialize(this);
         }
+
+		//Here we run the diagnostics routines on the initial state!!
+		try {
+			runDiagnostics();
+		} catch (IOException ex) {
+			//TODO: Take care of the exception!!
+		}
+
 	}
 
 	public void turnGridForceOn() {
@@ -258,17 +284,54 @@ public class Simulation {
 
 	/**
 	 * Runs the simulation in steps. (for interactive simulations)
+	 * The algorithm goes as follows:
+	 * 1) The link fields U(t - at/2) and Unext(t + at/2) are reassigned, such that U(t - at/2) can be overwritten
+	 * with Unext(t + 3at/2).
+	 * 2) Particle velocities are reassigned.
+	 * 3) New currents at t = t + at/2 are generated from external ones and from new particle velocities
+	 * at t = t + at/2.
+	 * 4) Gauge links and electric fields are updated, Unext(t + 3at/2) and E(t + at) are dtermined from E(t),
+	 * U(t + at/2) and J(t + at/2).
+	 * 5) Particle positions at t = t + at are computed using their velocities at t = t + at/2.
+	 * 6) Electric and magnetic field values are interpolated to particle positions.
+	 * 7) Particle velocities at t + 3at/2 are determined using the interpolated fields at t = t + at.
+	 * 8) Simulation time is increased by at.
+	 * 9) Diagnostics routines are called in order to produce data output.
 	 */
 	public void step() throws FileNotFoundException,IOException {
 
-		runDiagnostics();
-		interpolation.interpolateToParticle(particles, grid);
-		particlePush();
+		//Link and particle reassignment
+		grid.storeFields();
+		//reassignParticles(); TODO: Write this method!!
+
+		//Generation of internal and external currents
 		interpolation.interpolateToGrid(particles, grid, tstep);
+		// Generate external currents on the grid!!
+		/*
+		for (int c = 0; c < currentGenerators.size(); c++)
+		{
+			currentGenerators.get(c).applyCurrent(this);
+		}
+		*/
+
+		//Combined update of gauge links and fields
 		grid.updateGrid(tstep);
 
+		//Particle positions are updated using their velocities
+		//updatePositions(); TODO: Write this method!!
+
+		// Field values are interpolated to particle positions
+		interpolation.interpolateToParticle(particles, grid);
+
+		//Particle velocities are updated using the interpolated fields
+		//updateVelocities(); TODO: Write this method!!
+
+		// Step counter
 		totalSimulationSteps++;
 		totalSimulationTime =  totalSimulationSteps * tstep;
+
+		//Output in text files
+		runDiagnostics();
 	}
 
 	/**

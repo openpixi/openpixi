@@ -31,6 +31,12 @@ public class YangMillsSolver extends FieldSolver {
 		cellIterator.execute(grid, linkUpdater);
 	}
 
+	@Override
+	public void stepLinks(Grid grid, double timeStep) {
+		this.timeStep = timeStep;
+		cellIterator.execute(grid, linkUpdater);
+	}
+
 	
 	private class UpdateFields implements CellAction {
                 

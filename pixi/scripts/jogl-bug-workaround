@@ -1,0 +1,38 @@
+#!/bin/bash
+# Apply a bug fix such that that package can use JOGL.
+#
+# The bug has been described here:
+# http://stackoverflow.com/questions/22213948/wrong-library-path-when-executing-from-maven-shaded-jar
+#
+# July 2, 2015
+
+# USAGE:
+# cd pixi
+# mvn clean package
+# scripts/jogl-bug-workaround
+# java -jar target/pixi-0.6-SNAPSHOT.jar
+
+PIXIVERSION=0.6-SNAPSHOT
+JOGLVERSION=2.0.2
+PLATFORM=linux-amd64
+
+MAVENDIR=~/.m2
+JOGAMPDIR=$MAVENDIR/repository/org/jogamp
+
+CURRENTDIR=.
+TARGETDIR=$CURRENTDIR/target
+
+# Create copy of gluegen-jar file in target directory with the right name
+cp $JOGAMPDIR/gluegen/gluegen-rt/$JOGLVERSION/gluegen-rt-$JOGLVERSION-natives-$PLATFORM.jar $TARGETDIR/pixi-$PIXIVERSION-natives-linux-amd64.jar
+
+# Extract other libraries
+cp $JOGAMPDIR/jogl/jogl-all/$JOGLVERSION/jogl-all-$JOGLVERSION-natives-$PLATFORM.jar $CURRENTDIR
+unzip -o $CURRENTDIR/jogl-all-$JOGLVERSION-natives-$PLATFORM.jar *.so
+rm $CURRENTDIR/jogl-all-$JOGLVERSION-natives-$PLATFORM.jar
+
+if [ -z ${LD_LIBRARY_PATH+x} ]
+then
+  echo ""
+  echo "Please execute the following line:"
+  echo "export LD_LIBRARY_PATH=."
+fi
