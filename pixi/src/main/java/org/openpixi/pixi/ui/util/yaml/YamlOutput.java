@@ -21,6 +21,8 @@ public class YamlOutput {
 
 	public ArrayList<YamlScreenshotInTime> screenshotInTime = new ArrayList<YamlScreenshotInTime>();
 
+	public ArrayList<YamlUnitarityTester> unitarityTester = new ArrayList<YamlUnitarityTester>();
+
 
 	/**
 	 * Creates FileGenerator instances and applies them to the Settings instance.
@@ -48,6 +50,10 @@ public class YamlOutput {
 		}
 
 		for (YamlScreenshotInTime output : screenshotInTime) {
+			s.addDiagnostics(output.getFileGenerator());
+		}
+
+		for (YamlUnitarityTester output : unitarityTester) {
 			s.addDiagnostics(output.getFileGenerator());
 		}
 	}
