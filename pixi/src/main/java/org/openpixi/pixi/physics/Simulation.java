@@ -270,6 +270,7 @@ public class Simulation {
 
 		//reassignParticles(); TODO: Write this method!!
 
+		grid.resetCurrent();
 		interpolation.interpolateToGrid(particles, grid, tstep);
 
 		// Generate external currents on the grid!!

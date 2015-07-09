@@ -9,8 +9,6 @@ import org.openpixi.pixi.physics.grid.SU2Matrix;
 
 public class SU2WireCurrent implements ICurrentGenerator {
 
-	private int numberOfDimensions;
-	private int numberOfComponents;
 	private int direction;
 	private int[] location;
 	private double[] amplitudeColorDirection;
@@ -19,8 +17,6 @@ public class SU2WireCurrent implements ICurrentGenerator {
 	private Grid grid;
 
 	public SU2WireCurrent(int direction, int[] location, double[] amplitudeColorDirection, double magnitude) {
-		this.numberOfDimensions = location.length;
-		this.numberOfComponents = amplitudeColorDirection.length;
 
 		this.direction = direction;
 		this.location = location;
@@ -37,8 +33,10 @@ public class SU2WireCurrent implements ICurrentGenerator {
 		this.s = s;
 		this.grid = s.grid;
 		double as = grid.getLatticeSpacing();
+		double at = s.getTimeStep();
 		double g = s.getCouplingConstant();
-		int numberOfCells = grid.getTotalNumberOfCells();
+		double normFactor = as/(Math.pow(as, grid.getNumberOfDimensions())*at);
+		int numberOfCells = grid.getNumCells(direction);
 
 		/*
 			Setup the field amplitude for the current.
@@ -48,38 +46,16 @@ public class SU2WireCurrent implements ICurrentGenerator {
 				this.magnitude * this.amplitudeColorDirection[1],
 				this.magnitude * this.amplitudeColorDirection[2]);
 
+		fieldAmplitude.mult(normFactor);	// This factor comes from the dimensionality of the current density
 
 		/*
 			Cycle through each cell and apply the current configuration to the cell currents.
 		 */
-		for (int c = 0; c < numberOfCells; c++) {
-			int[] cellPosition = grid.getCellPos(c);
-			double[] position = getPosition(cellPosition);
+		for (int i = 0; i < numberOfCells; i++) {
+			location[direction] = i;
+			int cellIndex = grid.getCellIndex(location);
 
-			double kx = 0.0;
-			double omega = 0.0;
-			for (int i = 0; i < this.numberOfDimensions; i++) {
-				kx += this.k[i] * position[i];
-				omega += this.k[i] * this.k[i];
-			}
-			omega = s.getSpeedOfLight() * Math.sqrt(omega);
-
-			//Factor of the plane wave at t = 0 (for electric fields)
-			double factorForE = -g * as * omega * Math.sin(kx);
-			//Phase of the plane wave at t = dt/2 (for links)
-			double factorForU = g * as * Math.cos(omega * timeStep / 2.0 - kx);
-
-
-			Cell currentCell = grid.getCell(c);
-
-			for (int i = 0; i < this.numberOfDimensions; i++) {
-				//Setup the gauge links
-				SU2Matrix U = (SU2Matrix) currentCell.getU(i).mult(amplitudeYMField[i].mult(factorForU).getLinkExact());
-				currentCell.setU(i, U);
-
-				//Setup the electric fields
-				currentCell.addE(i, amplitudeYMField[i].mult(factorForE));
-			}
+			grid.addJ(cellIndex, direction, fieldAmplitude.mult(g*as));	// The factor g*as comes from our definition of electric fields!!
 		}
 
 	}
@@ -95,13 +71,5 @@ public class SU2WireCurrent implements ICurrentGenerator {
 			output[i] = vector[i] / norm;
 		}
 		return output;
-	}
-
-	private double[] getPosition(int[] cellPosition) {
-		double[] position = new double[this.numberOfDimensions];
-		for (int i = 0; i < this.numberOfDimensions; i++) {
-			position[i] = cellPosition[i] * grid.getLatticeSpacing();
-		}
-		return position;
 	}
 }
