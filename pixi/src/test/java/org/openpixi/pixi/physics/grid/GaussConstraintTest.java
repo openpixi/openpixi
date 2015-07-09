@@ -1,7 +1,6 @@
 package org.openpixi.pixi.physics.grid;
 
 import org.junit.Assert;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.openpixi.pixi.diagnostics.methods.BulkQuantitiesInTime;
 import org.openpixi.pixi.physics.GeneralBoundaryType;
@@ -134,14 +133,13 @@ public class GaussConstraintTest {
 	}
 
 	@Test
-	@Ignore
 	/**
 	 * This method tests an explicit violation of the Gauss constraint.
 	 */
 	public void testGaussConstraintViolation() {
-		int gridSize = 256;
-		double timeStep = 0.05;
-		double gridStep = 1.0;
+		int gridSize = 64;
+		double timeStep = 0.0025;
+		double gridStep = 0.05;
 
 		Settings settings = new Settings();
 		settings.setRelativistic(true);
@@ -154,7 +152,7 @@ public class GaussConstraintTest {
 		settings.setNumberOfColors(2);
 		settings.setTimeStep(timeStep);
 		settings.setCouplingConstant(1.0);
-		settings.setTMax(1.0);
+		settings.setTMax(0.05);
 		settings.setNumOfThreads(12);
 		settings.setGridCells(0, gridSize);
 		settings.setGridCells(1, gridSize);
@@ -172,14 +170,14 @@ public class GaussConstraintTest {
 		 	color amplitude: e_i^a = A_i B^a.
 		 	The squared divergence of this field is
 				(\partial_i E_{x,i}^a)^2 = (A_i n_i)^2 (B^a)^2.
-			Averaged over the whole simulation box
 		*/
 		int numCells = simulation.grid.getTotalNumberOfCells();
 		int numberOfComponents = simulation.getNumberOfColors() * simulation.getNumberOfColors() - 1;
 
-		double[] spatialAmplitude = new double[]{1.0, 0.0, 0.0};
-		double[] colorAmplitude = new double[]{1.0, 0.0, 0.0};
-		double[] n = new double[]{1.0, 0.0, 0.0};
+		double[] spatialAmplitude = new double[]{0.345345, 0.0, 0.0};
+		double[] colorAmplitude = new double[]{0.2345245, 0.02343, -1.234};
+		double[] n = new double[]{1.567, 0.534, 0.0};
+
 		SU2Field[] amplitude = new SU2Field[simulation.getNumberOfDimensions()];
 		for(int j = 0; j < simulation.getNumberOfDimensions(); j++) {
 			amplitude[j] =  new SU2Field();
@@ -200,16 +198,54 @@ public class GaussConstraintTest {
 			}
 		}
 
+		//Manual updateLinks() call because simulation is initialized before the electric field is set.
+		simulation.grid.updateLinks(simulation.getTimeStep());
+
 		try {
+			int[] randomGridPos = new int[simulation.getNumberOfDimensions()];
+			for(int i = 0; i < simulation.getNumberOfDimensions(); i++) {
+				randomGridPos[i] = simulation.grid.getNumCells(i) / 4 +
+						(int ) (simulation.grid.getNumCells(i) / 2 * Math.random());
+			}
+
+			int randomGridIndex = simulation.grid.getCellIndex(randomGridPos);
+
+			checkGaussViolation(simulation, spatialAmplitude, colorAmplitude, n, randomGridIndex);
+
 			while(simulation.continues())
 			{
 				simulation.step();
+				checkGaussViolation(simulation, spatialAmplitude, colorAmplitude, n, randomGridIndex);
 			}
-			double expectedResult = Math.pow(gridSize * gridStep, 2.0) / 3.0;
-			Assert.assertEquals(expectedResult, bulk.gaussViolation, Math.pow(10.0, -10));
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		}
 
+	}
+
+	private void checkGaussViolation(Simulation s, double[] as, double[] ac, double[] n, int cellIndex) {
+		/* 	The initial field is given by
+				E_{x,i}^a = e_i^a n_j x_j,
+			where e_i^a is the amplitude and n_j is some normalized vector. The amplitude is split into a spatial and a
+			color amplitude: e_i^a = A_i B^a.
+			The squared divergence of this field is
+				(\partial_i E_{x,i}^a)^2 = (A_i n_i)^2 (B^a)^2.
+		*/
+		double expectedResult = getVectorNormSquared(ac) * Math.pow(getScalarProduct(as, n), 2.0);
+		double actualResult = s.grid.getGaussConstraintSquared(cellIndex);
+		double delta = Math.pow(10.0, -4.0);
+		Assert.assertEquals(expectedResult, actualResult, delta);
+	}
+
+	private double getVectorNormSquared(double[] v) {
+		return getScalarProduct(v, v);
+	}
+
+	private double getScalarProduct(double[] v1, double[] v2) {
+		double scalarProduct = 0.0;
+		for (int i = 0; i < v1.length; i++) {
+			scalarProduct += v1[i] * v2[i];
+		}
+		return scalarProduct;
 	}
 }
