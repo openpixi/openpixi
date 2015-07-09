@@ -114,22 +114,6 @@ public class SimulationAnimation {
 			l.clear();
 		}
 	}
-/*
-	public void resetAnimation(int id) {
-		// timer.restart();
-		timer.stop();
-		clear();
-		switch(id) {
-			case 0:
-				s = InitialConditions.initEmptySimulation();
-				break;
-		}
-//		updateFieldForce();
-		s.prepareAllParticles();
-		s.turnGridForceOn();
-		timer.start();
-	}
-*/
 	/**
 	 * Reset animation according to settings
 	 *

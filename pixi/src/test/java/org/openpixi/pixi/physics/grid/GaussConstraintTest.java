@@ -22,7 +22,7 @@ public class GaussConstraintTest {
 	public void testPlaneWaves() {
 		// Test Gauss law with varying grid step.
 		double[] gridSteps = new double[]{1.0, 0.5, 0.25, 0.125};
-		int initialGridSize = 256;
+		int initialGridSize = 32;
 		int[] gridSizes = new int[gridSteps.length];
 		for(int i = 0; i < gridSteps.length; i++) {
 			gridSizes[i] = (int) (initialGridSize / gridSteps[i]);
@@ -138,7 +138,7 @@ public class GaussConstraintTest {
 	 * This method tests an explicit violation of the Gauss constraint.
 	 */
 	public void testGaussConstraintViolation() {
-		int gridSize = 64;
+		int gridSize = 16;
 		double timeStep = 0.0025;
 		double gridStep = 0.05;
 
@@ -204,6 +204,7 @@ public class GaussConstraintTest {
 
 		// Apply random gauge transformation.
 		RandomGauge randomGauge = new RandomGauge(simulation.grid);
+		randomGauge.setRandomVector(new double[]{1,1,1});
 		randomGauge.applyGaugeTransformation(simulation.grid);
 
 
