@@ -66,6 +66,13 @@ public class GaugeTransformation {
 				grid.setU(index, dir, U);
 
 				/*
+				 * Unext_i(x) -> g(x) Unext_i(x) g^\dagger(x+i)
+				 */
+				LinkMatrix Unext = grid.getUnext(index, dir);
+				Unext = g[index].mult(Unext).mult(gdaggershifted);
+				grid.setUnext(index, dir, Unext);
+
+				/*
 				 * E_i(x) -> g(x) E_i(x) g^\dagger(x)
 				 */
 				YMField E = grid.getE(index, dir);
