@@ -36,7 +36,7 @@ public class SU2DeltaPulseCurrent implements ICurrentGenerator {
 		double time = s.totalSimulationTime;
 		double g = s.getCouplingConstant();
 		double normFactor = as/(Math.pow(as, grid.getNumberOfDimensions())*at);
-		int numberOfCells = grid.getNumCells(direction);
+		int initialPosition = location[direction];
 
 		/*
 			Setup the field amplitude for the current.
@@ -51,7 +51,7 @@ public class SU2DeltaPulseCurrent implements ICurrentGenerator {
 		/*
 			Find the nearest grid point and apply the current configuration to the cell current.
 		 */
-		int position = (int) Math.rint(speed*time/as);
+		int position = (int) Math.rint(initialPosition + speed*time/as);
 		location[direction] = position;
 		int cellIndex = grid.getCellIndex(location);
 

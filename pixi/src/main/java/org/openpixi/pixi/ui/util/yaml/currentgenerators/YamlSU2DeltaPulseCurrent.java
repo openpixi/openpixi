@@ -58,7 +58,7 @@ public class YamlSU2DeltaPulseCurrent {
 			return false;
 		}
 
-		if (Math.abs(v) >= settings.getSpeedOfLight()) {
+		if (Math.abs(v) > settings.getSpeedOfLight()) {
 			System.out.println("SU2DeltaPulseCurrent: v exceeds the chosen speed of light.");
 			return false;
 		}
