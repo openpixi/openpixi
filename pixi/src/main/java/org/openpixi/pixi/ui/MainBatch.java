@@ -27,7 +27,6 @@ import org.openpixi.pixi.ui.util.*;
 import org.openpixi.pixi.ui.util.yaml.YamlParser;
 
 import java.io.IOException;
-import org.openpixi.pixi.physics.InitialConditions;
 
 public class MainBatch {
 
@@ -75,7 +74,7 @@ public class MainBatch {
 		//simulation = new Simulation(settings);
 
 		//simulation = InitialConditions.initTwoStream(0.01,1,50);
-		simulation = InitialConditions.initEmptySimulation();
+		simulation = new Simulation(settings);
 		//simulation = InitialConditions.initOneTest(0.01,1);
 		//simulation = InitialConditions.initOneTest3D(0.01,1);
 		//simulation = InitialConditions.initInterpolationTest3D(0.01,1);

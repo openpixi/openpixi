@@ -10,7 +10,6 @@ import java.util.logging.Logger;
 
 import javax.swing.Timer;
 
-import org.openpixi.pixi.physics.InitialConditions;
 import org.openpixi.pixi.physics.Settings;
 import org.openpixi.pixi.physics.Simulation;
 import org.openpixi.pixi.ui.panel.Particle2DPanel;
@@ -41,7 +40,8 @@ public class SimulationAnimation {
 	public SimulationAnimation() {
 		timer = new Timer(interval, new TimerListener());
 		frameratedetector = new FrameRateDetector(500);
-		s = InitialConditions.initEmptySimulation();
+		Settings settings = new Settings();
+		s = new Simulation(settings);
 	}
 
 	/** Listener for timer */
@@ -114,22 +114,6 @@ public class SimulationAnimation {
 			l.clear();
 		}
 	}
-
-	public void resetAnimation(int id) {
-		// timer.restart();
-		timer.stop();
-		clear();
-		switch(id) {
-			case 0:
-				s = InitialConditions.initEmptySimulation();
-				break;
-		}
-//		updateFieldForce();
-		s.prepareAllParticles();
-		s.turnGridForceOn();
-		timer.start();
-	}
-
 	/**
 	 * Reset animation according to settings
 	 *

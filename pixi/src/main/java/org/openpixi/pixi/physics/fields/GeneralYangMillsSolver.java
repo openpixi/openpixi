@@ -33,6 +33,14 @@ public class GeneralYangMillsSolver extends FieldSolver
 		cellIterator.execute(grid, linkUpdater);
 	}
 
+	@Override
+	public void stepLinks(Grid grid, double timeStep) {
+		this.timeStep = timeStep;
+		linkUpdater.at = timeStep;
+		linkUpdater.as = grid.getLatticeSpacing();
+		cellIterator.execute(grid, linkUpdater);
+	}
+
 
 	private class UpdateFields implements CellAction
 	{

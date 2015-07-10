@@ -40,7 +40,7 @@ public class Settings {
 	// DEFAULT VALUES
 	//----------------------------------------------------------------------------------------------
 	private double speedOfLight = 1;
-	private int    numberOfColors = 1;
+	private int    numberOfColors = 2;
 	private int	   numberOfDimensions = 3;
     private double couplingConstant = 1.0;
 	private double timeStep = 0.1;
@@ -440,6 +440,15 @@ public class Settings {
 	// VARIOUS
 	//----------------------------------------------------------------------------------------------
 	public Settings() {
+		simulationWidth = new double[numberOfDimensions];
+		for (int i = 0; i < numberOfDimensions; i++) {
+			simulationWidth[i] = 1;
+		}
+
+		gridCells = new int[numberOfDimensions];
+		for (int i = 0; i < numberOfDimensions; i++) {
+			gridCells[i] = 1;
+		}
 	}
 
 	/**

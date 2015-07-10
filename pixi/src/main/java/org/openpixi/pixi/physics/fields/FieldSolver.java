@@ -64,4 +64,8 @@ public class FieldSolver {
 
 	}
 
+	public void stepLinks(Grid g, double timeStep) {
+
+	}
+
 }
