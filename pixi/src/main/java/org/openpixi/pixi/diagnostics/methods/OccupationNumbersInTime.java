@@ -98,6 +98,7 @@ public class OccupationNumbersInTime implements Diagnostics {
 			CoulombGauge coulombGauge = new CoulombGauge(grid);
 			coulombGauge.applyGaugeTransformation(grid);
 
+
 			// Fill arrays for FFT.
 			double gainv = 1.0 / (grid.getLatticeSpacing() * grid.getGaugeCoupling());
 			double[][][] eFFTdata = new double[grid.getNumberOfDimensions()][numberOfComponents][fft.getFFTArraySize()];
@@ -130,13 +131,12 @@ public class OccupationNumbersInTime implements Diagnostics {
 				}
 			}
 			//
-			double fftConversationFactorSquared = Math.pow(s.grid.getLatticeSpacing(), 2.0 * effectiveNumberOfDimensions);
+			double fftConversationFactorSquared = Math.pow(s.grid.getLatticeSpacing(), 2* effectiveNumberOfDimensions);
 
 			// Compute occupation numbers and averaged energy density
 			energyDensity = 0.0;
 			for(int k = 0; k < this.numberOfComponents; k++) {
-				occupationNumbers[0][k] = 0.0; // Zero modes of the electric field have divergent occupation number.
-				for (int i = 1; i < grid.getTotalNumberOfCells(); i++) {
+				for (int i = 0; i < grid.getTotalNumberOfCells(); i++) {
 					int fftIndex = fft.getFFTArrayIndex(i);
 					double eSquared = 0.0;
 					double aSquared = 0.0;
@@ -153,23 +153,17 @@ public class OccupationNumbersInTime implements Diagnostics {
 						// Mixed part
 						mixed -= 2.0 * (-aFFTdata[j][k][fftIndex + 1] * eFFTdata[j][k][fftIndex]
 								+ aFFTdata[j][k][fftIndex] * eFFTdata[j][k][fftIndex + 1]);
-
-						eSquared *= fftConversationFactorSquared;
-						aSquared *= fftConversationFactorSquared;
-						mixed *= fftConversationFactorSquared;
-
-
 					}
 
 					double[] kvec = computeMomentumVectorFromLatticeIndex(i);
 					double w = Math.sqrt(this.computeDispersionRelationSquared(kvec));
-					occupationNumbers[i][k] = (eSquared + w * w * aSquared + w * mixed);
+					occupationNumbers[i][k] = (eSquared + w * w * aSquared + w * mixed) * fftConversationFactorSquared;
 					energyDensity += occupationNumbers[i][k];
 				}
 			}
 			// This factor is needed for the energy. Check the CPIC notes if in doubt.
-			double prefactor = 1.0 / (2.0 * simulationBoxVolume * simulationBoxVolume);
-			energyDensity *= prefactor;
+			double normalizationConstant = 1.0 / (2.0 * simulationBoxVolume * simulationBoxVolume);
+			energyDensity *= normalizationConstant;
 
 			computationCounter++;
 
