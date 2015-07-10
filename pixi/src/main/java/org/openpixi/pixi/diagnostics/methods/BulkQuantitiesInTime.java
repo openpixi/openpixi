@@ -26,7 +26,6 @@ public class BulkQuantitiesInTime implements Diagnostics {
 	public double py;
 	public double pz;
 	public double gaussViolation;
-	public double energyDensity;
 
 	public BulkQuantitiesInTime(String path, double timeInterval)
 	{
@@ -61,7 +60,7 @@ public class BulkQuantitiesInTime implements Diagnostics {
 			File file = getOutputFile(path);
 			try {
 				FileWriter pw = new FileWriter(file, true);
-				pw.write("#time \t E^2 \t B^2 \t P_x \t P_y \t P_z \t G \t e \t");
+				pw.write("#time \t E^2 \t B^2 \t P_x \t P_y \t P_z \t G");
 				pw.write("\n");
 				pw.close();
 			} catch (IOException ex) {
@@ -96,9 +95,6 @@ public class BulkQuantitiesInTime implements Diagnostics {
 
 			gaussViolation = fieldMeasurements.calculateGaussConstraint(grid);
 
-			energyDensity = fieldMeasurements.calculateEnergyDensity(grid);
-
-
 
 			if(!supressOutput) {
 				File file = getOutputFile(path);
@@ -111,7 +107,6 @@ public class BulkQuantitiesInTime implements Diagnostics {
 				pw.write(py + "\t");
 				pw.write(pz + "\t");
 				pw.write(gaussViolation + "\t");
-				pw.write(energyDensity + "\t");
 				pw.write("\n");
 
 				pw.close();

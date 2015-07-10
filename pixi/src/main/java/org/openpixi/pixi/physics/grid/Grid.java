@@ -814,33 +814,4 @@ public class Grid {
 		}
 		return gauss.square() / Math.pow( as * as * gaugeCoupling, 2.0);
 	}
-
-	public double computeEnergyDensity(int index)
-	{
-		/*
-			Electric part of the energy density.
-
-			\varepsilon_{E}	= \sum_{i=1}^{d} tr(E_{x,i}^2)
-			 				= \sum_{i=1}^{d} \frac{1}{2} {E_{x,i}^{a}}^2
-		 */
-		double electricPart = 0.0;
-		Cell c = getCell(index);
-		for(int i = 0; i < numDim; i++) {
-			electricPart += c.getE(i).square();
-		}
-		electricPart *= 0.5;
-
-
-		double magneticPart = 0.0;
-		for(int i = 0; i < numDim; i++) {
-			for(int j = 0; j < i; j++) {
-				LinkMatrix P = getPlaquette(index, i, j, 1, 1, 0).add(getPlaquette(index, i, j, 1, 1, 1));
-				magneticPart += (2*numCol - P.getTrace());
-			}
-		}
-		magneticPart /= Math.pow(as, 2.0);
-
-		return (electricPart + magneticPart) / Math.pow(gaugeCoupling * as, 2.0);
-	}
-
 }
