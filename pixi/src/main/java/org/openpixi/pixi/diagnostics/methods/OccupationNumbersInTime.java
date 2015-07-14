@@ -29,8 +29,10 @@ public class OccupationNumbersInTime implements Diagnostics {
 		Supported output types.
 	 */
 	private static final String OUTPUT_CSV = "csv";
+	private static final String OUTPUT_CSV_WITH_VECTORS = "csv_with_vectors";
+	private static final String OUTPUT_CSV_ONLY_ENERGY = "csv_only_energy";
 	private static final String OUTPUT_NONE = "none";
-	private String[] supportedOutputTypes = {OUTPUT_CSV, OUTPUT_NONE};
+	private String[] supportedOutputTypes = {OUTPUT_CSV, OUTPUT_CSV_ONLY_ENERGY,OUTPUT_CSV_WITH_VECTORS, OUTPUT_NONE};
 
 	private DoubleFFTWrapper fft;
 	public double[][] occupationNumbers;
@@ -83,18 +85,23 @@ public class OccupationNumbersInTime implements Diagnostics {
 			}
 		}
 
+		if(outputType.equals(OUTPUT_CSV_WITH_VECTORS)) {
+			this.writeMomentumVectors(outputFileName);
+		}
+
 	}
 
 	/**
 	 * Computes the occupation numbers in momentum space and field energy from the occupation numbers.
 	 *
-	 * @param grid        Reference to the Grid instance.
-	 * @param particles    Reference to the list of particles.
-	 * @param steps        Total simulation steps so far.
+	 * @param grid_reference	Reference to the Grid instance.
+	 * @param particles    		Reference to the list of particles.
+	 * @param steps        		Total simulation steps so far.
 	 */
-	public void calculate(Grid grid, ArrayList<IParticle> particles, int steps) {
+	public void calculate(Grid grid_reference, ArrayList<IParticle> particles, int steps) {
 		if (steps % stepInterval == 0) {
 			// Apply Coulomb gauge.
+			Grid grid = new Grid(grid_reference);	// Copy grid.
 			CoulombGauge coulombGauge = new CoulombGauge(grid);
 			coulombGauge.applyGaugeTransformation(grid);
 
@@ -169,7 +176,15 @@ public class OccupationNumbersInTime implements Diagnostics {
 
 			// Generate output (write to file, terminal, etc..)
 			if(this.outputType.equals(OUTPUT_CSV)) {
-				this.writeCSVFile(this.outputFileName);
+				this.writeCSVFile(this.outputFileName, true);
+			}
+
+			if(this.outputType.equals(OUTPUT_CSV_WITH_VECTORS)) {
+				this.writeCSVFile(this.outputFileName, true);
+			}
+
+			if(this.outputType.equals(OUTPUT_CSV_ONLY_ENERGY)) {
+				this.writeCSVFile(this.outputFileName, false);
 			}
 
 		}
@@ -238,6 +253,34 @@ public class OccupationNumbersInTime implements Diagnostics {
 	}
 
 	/**
+	 * Writes the momentum vectors in order of the cell indices to the header of a file.
+	 * @param path	Path to the output file
+	 */
+	private void writeMomentumVectors(String path) {
+		File file = this.getOutputFile(path);
+		try {
+			FileWriter pw = new FileWriter(file, true);
+			for(int i = 0; i < s.grid.getTotalNumberOfCells(); i++) {
+				double[] k = this.computeMomentumVectorFromLatticeIndex(i);
+				String kString = "";
+				for (int j = 0; j < s.getNumberOfDimensions(); j++) {
+					kString += k[j];
+					if(j < s.getNumberOfDimensions()-1) {
+						kString += ", ";
+					}
+				}
+				pw.write(kString);
+				if(i < s.grid.getTotalNumberOfCells()-1) {
+					pw.write(", ");
+				}
+			}
+			pw.close();
+		} catch (IOException ex) {
+			System.out.println("OccupationNumbersInTime: Error writing to file.");
+		}
+	}
+
+	/**
 	 * Writes the output to a CSV formatted file. The output contains the measurement times, the energy computed
 	 * from the occupation numbers and the occupation numbers as a 1D array.
 	 *
@@ -249,13 +292,15 @@ public class OccupationNumbersInTime implements Diagnostics {
 	 *
 	 * @param path	Path to the output file
 	 */
-	private void writeCSVFile(String path)
+	private void writeCSVFile(String path, boolean includeOccupationNumbers)
 	{
 		File file = this.getOutputFile(path);
 		try {
 			FileWriter pw = new FileWriter(file, true);
 			pw.write((computationCounter * timeInterval) + ", " + energyDensity + "\n");
-			pw.write(this.generateCSVString());
+			if(includeOccupationNumbers) {
+				pw.write(this.generateCSVString());
+			}
 			pw.close();
 		} catch (IOException ex) {
 			System.out.println("OccupationNumbersInTime: Error writing to file.");
