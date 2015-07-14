@@ -399,6 +399,8 @@ public class Grid {
 			for (int d = 0; d < numDim; d++) {
 				LinkMatrix U = grid.getU(ci, d);
 				this.setU(ci, d, U);
+				LinkMatrix Unext = grid.getUnext(ci, d);
+				this.setUnext(ci, d, Unext);
 				YMField E = grid.getE(ci, d);
 				this.setE(ci, d, E);
 				// TODO: if desired: Copy other fields as well.
