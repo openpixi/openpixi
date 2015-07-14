@@ -31,6 +31,11 @@ public class YamlSU2WireCurrent {
 	public Double a;
 
 	/**
+	 * Speed of the current.
+	 */
+	public Double v;
+
+	/**
 	 * Checks input for errors.
 	 *
 	 * @param settings Settings class. Important: numberOfDimensions and numberOfColors must be defined.
@@ -50,6 +55,11 @@ public class YamlSU2WireCurrent {
 		int numberOfComponents = settings.getNumberOfColors() * settings.getNumberOfColors() - 1;
 		if (aColor.size() != numberOfComponents) {
 			System.out.println("SU2WireCurrent: aColor vector does not have the right dimensions.");
+			return false;
+		}
+
+		if (Math.abs(v) > settings.getSpeedOfLight()) {
+			System.out.println("SU2WireCurrent: v exceeds the chosen speed of light.");
 			return false;
 		}
 		return true;
@@ -80,6 +90,6 @@ public class YamlSU2WireCurrent {
 			aColorArray[c] = aColor.get(c);
 		}
 
-		return new SU2WireCurrent(direction, locationArray, aColorArray, a);
+		return new SU2WireCurrent(direction, locationArray, aColorArray, a, v);
 	}
 }

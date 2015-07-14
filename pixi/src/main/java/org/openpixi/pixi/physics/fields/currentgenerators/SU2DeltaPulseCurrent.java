@@ -36,6 +36,7 @@ public class SU2DeltaPulseCurrent implements ICurrentGenerator {
 		double time = s.totalSimulationTime;
 		double g = s.getCouplingConstant();
 		double normFactor = as/(Math.pow(as, grid.getNumberOfDimensions())*at);
+		double chargeNorm = 1.0/(Math.pow(as, grid.getNumberOfDimensions()));
 		int initialPosition = location[direction];
 
 		/*
@@ -46,7 +47,16 @@ public class SU2DeltaPulseCurrent implements ICurrentGenerator {
 				this.magnitude * this.speed * this.amplitudeColorDirection[1],
 				this.magnitude * this.speed * this.amplitudeColorDirection[2]);
 
+		/*
+			Setup the field amplitude for the charge.
+		 */
+		SU2Field chargeAmplitude = new SU2Field(
+				this.magnitude * this.amplitudeColorDirection[0],
+				this.magnitude * this.amplitudeColorDirection[1],
+				this.magnitude * this.amplitudeColorDirection[2]);
+
 		fieldAmplitude.mult(normFactor);	// This factor comes from the dimensionality of the current density
+		chargeAmplitude.mult(chargeNorm);
 
 		/*
 			Find the nearest grid point and apply the current configuration to the cell current.
@@ -56,7 +66,7 @@ public class SU2DeltaPulseCurrent implements ICurrentGenerator {
 		int cellIndex = grid.getCellIndex(location);
 
 		grid.addJ(cellIndex, direction, fieldAmplitude.mult(g*as));	// The factor g*as comes from our definition of electric fields!!
-
+		grid.setRho(cellIndex, chargeAmplitude.mult(g*as));
 
 	}
 
