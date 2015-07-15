@@ -13,7 +13,6 @@ import javax.swing.JPopupMenu;
 import javax.swing.JSeparator;
 import javax.swing.JSplitPane;
 
-import org.openpixi.pixi.ui.panel.AnimationPanel;
 import org.openpixi.pixi.ui.panel.ElectricFieldPanel;
 import org.openpixi.pixi.ui.panel.EnergyDensity1DPanel;
 import org.openpixi.pixi.ui.panel.EnergyDensity2DPanel;
@@ -21,6 +20,7 @@ import org.openpixi.pixi.ui.panel.FocusablePanel;
 import org.openpixi.pixi.ui.panel.Particle2DPanel;
 import org.openpixi.pixi.ui.panel.Particle3DPanel;
 import org.openpixi.pixi.ui.panel.PhaseSpacePanel;
+import org.openpixi.pixi.ui.panel.chart.Chart2DPanel;
 import org.openpixi.pixi.ui.panel.gl.EnergyDensity2DGLPanel;
 import org.openpixi.pixi.ui.panel.gl.EnergyDensity3DGLPanel;
 import org.openpixi.pixi.ui.tab.PropertiesTab;
@@ -51,6 +51,7 @@ public class PanelManager {
 	JMenuItem itemEnergyDensity2DPanel;
 	JMenuItem itemEnergyDensity2DGLPanel;
 	JMenuItem itemEnergyDensity3DGLPanel;
+	JMenuItem itemChart2DPanel;
 
 	public PanelManager(MainControlApplet m) {
 		mainControlApplet = m;
@@ -202,6 +203,10 @@ public class PanelManager {
 			itemEnergyDensity3DGLPanel = new JMenuItem("Energy density 3D (Open GL)");
 			itemEnergyDensity3DGLPanel.addActionListener(new MenuSelected());
 			add(itemEnergyDensity3DGLPanel);
+
+			itemChart2DPanel = new JMenuItem("Chart panel");
+			itemChart2DPanel.addActionListener(new MenuSelected());
+			add(itemChart2DPanel);
 		}
 	}
 
@@ -266,6 +271,8 @@ public class PanelManager {
 				component = new EnergyDensity2DGLPanel(mainControlApplet.simulationAnimation);
 			} else if (event.getSource() == itemEnergyDensity3DGLPanel) {
 				component = new EnergyDensity3DGLPanel(mainControlApplet.simulationAnimation);
+			} else if (event.getSource() == itemChart2DPanel) {
+				component = new Chart2DPanel(mainControlApplet.simulationAnimation);
 			}
 			if (component != null) {
 				replacePanel(component);
@@ -361,8 +368,8 @@ public class PanelManager {
 						}
 						setFocus(othercomponent);
 						clickComponent.removeMouseListener(popupClickListener);
-						if (clickComponent instanceof AnimationPanel) {
-							((AnimationPanel) clickComponent).destruct();
+						if (clickComponent instanceof FocusablePanel) {
+							((FocusablePanel) clickComponent).destruct();
 						}
 					}
 				}
