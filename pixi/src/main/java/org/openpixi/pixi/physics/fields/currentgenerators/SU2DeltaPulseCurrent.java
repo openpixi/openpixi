@@ -13,6 +13,7 @@ public class SU2DeltaPulseCurrent implements ICurrentGenerator {
 	private double speed;
 	private Simulation s;
 	private Grid grid;
+	private int initialPosition;
 
 	public SU2DeltaPulseCurrent(int direction, int[] location, double[] amplitudeColorDirection, double magnitude, double speed) {
 
@@ -26,6 +27,7 @@ public class SU2DeltaPulseCurrent implements ICurrentGenerator {
 
 		this.magnitude = magnitude;
 		this.speed = speed;
+		this.initialPosition = location[direction];
 	}
 
 	public void applyCurrent(Simulation s) {
@@ -37,7 +39,6 @@ public class SU2DeltaPulseCurrent implements ICurrentGenerator {
 		double g = s.getCouplingConstant();
 		double normFactor = as/(Math.pow(as, grid.getNumberOfDimensions())*at);
 		double chargeNorm = 1.0/(Math.pow(as, grid.getNumberOfDimensions()));
-		int initialPosition = location[direction];
 
 		/*
 			Setup the field amplitude for the current.
