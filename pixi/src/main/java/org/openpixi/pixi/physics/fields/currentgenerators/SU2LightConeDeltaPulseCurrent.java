@@ -14,6 +14,7 @@ public class SU2LightConeDeltaPulseCurrent implements ICurrentGenerator {
 	private Simulation s;
 	private Grid grid;
 	private int initialPosition;
+	private LightConePoissonSolver poisson;
 
 	public SU2LightConeDeltaPulseCurrent(int direction, int[] location, double[] amplitudeColorDirection, double magnitude) {
 
@@ -27,6 +28,7 @@ public class SU2LightConeDeltaPulseCurrent implements ICurrentGenerator {
 
 		this.magnitude = magnitude;
 		this.initialPosition = location[direction];
+		this.poisson = new LightConePoissonSolver(location, direction);
 	}
 
 	public void applyCurrent(Simulation s) {
@@ -66,9 +68,11 @@ public class SU2LightConeDeltaPulseCurrent implements ICurrentGenerator {
 		location[direction] = position;
 		int cellIndex = grid.getCellIndex(location);
 
-		grid.addJ(cellIndex, direction, fieldAmplitude.mult(g*as));	// The factor g*as comes from our definition of electric fields!!
+		grid.addJ(cellIndex, direction, fieldAmplitude.mult(g * as));	// The factor g*as comes from our definition of electric fields!!
 		grid.setRho(cellIndex, chargeAmplitude.mult(g*as));
-
+		if(time == 0.0) {
+			poisson.solve(grid);
+		}
 	}
 
 	private double[] normalizeVector(double[] vector) {
