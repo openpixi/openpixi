@@ -16,7 +16,7 @@ import org.openpixi.pixi.ui.panel.FocusablePanel;
 
 public class AnimationGLPanel extends GLJPanel implements GLEventListener, FocusablePanel {
 
-	private SimulationAnimation simulationAnimation;
+	protected SimulationAnimation simulationAnimation;
 	private MyAnimationListener listener;
 	boolean focus = false;
 

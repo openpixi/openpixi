@@ -46,18 +46,11 @@ public class Simulation {
 	 * Timestep
 	 */
 	public double tstep;
+
 	/**
-	 * Width of simulated area
+	 * Size of the simulation box
 	 */
-	private double width;
-	/**
-	 * Height of simulated area
-	 */
-	private double height;
-	/**
-	 * Depth of simulated area
-	 */
-	private double depth;
+	private double[] simulationBoxSize;
 
 
 	private int numberOfColors;
@@ -127,17 +120,24 @@ public class Simulation {
 		return iterations;
 	}
 
+	@Deprecated
 	public double getWidth() {
-		return width;
+		return simulationBoxSize[0];
 	}
 
+	@Deprecated
 	public double getHeight() {
-		return height;
+		return simulationBoxSize[1];
 	}
-	
+
+	@Deprecated
 	public double getDepth() {
-		return depth;
+		return simulationBoxSize[2];
 	}
+
+	public double[] getSimulationBoxSize() { return simulationBoxSize; }
+
+	public double getSimulationBoxSize(int i) { return simulationBoxSize[i]; }
 
 	public double getSpeedOfLight() {
 		return speedOfLight;
@@ -165,9 +165,12 @@ public class Simulation {
 	 */
 	public Simulation(Settings settings) {
 		tstep = settings.getTimeStep();
-		width = settings.getSimulationWidth();
-		height = settings.getSimulationHeight();
-		depth = settings.getSimulationDepth();
+
+		this.simulationBoxSize = new double[settings.getNumberOfDimensions()];
+		for(int i = 0; i < settings.getNumberOfDimensions(); i++) {
+			this.simulationBoxSize[i] = settings.getGridStep() * settings.getGridCells(i);
+		}
+
 		speedOfLight = settings.getSpeedOfLight();
 		numberOfColors = settings.getNumberOfColors();
 		numberOfDimensions = settings.getNumberOfDimensions();
@@ -184,7 +187,8 @@ public class Simulation {
 		particles = (ArrayList<IParticle>) settings.getParticles();
 		f = settings.getForce();
 
-		DoubleBox simulationBox = new DoubleBox(numberOfDimensions, new double[] {0, 0, 0}, new double[] {width, height, depth});
+		DoubleBox simulationBox = new DoubleBox(numberOfDimensions, new double[] {0, 0, 0},
+				new double[] {this.getWidth(), this.getHeight(), this.getDepth()});
 		IParticleBoundaryConditions particleBoundaryConditions;
 		switch (settings.getBoundaryType())
 		{

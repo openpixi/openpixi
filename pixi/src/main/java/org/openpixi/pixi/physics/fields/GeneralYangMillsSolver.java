@@ -62,7 +62,7 @@ public class GeneralYangMillsSolver extends FieldSolver
 				{
 					if(j != i)
 					{
-						plaquettes[c] = grid.getPlaquette(index, i, j, 1 , 1).add(grid.getPlaquette(index, i, j, 1 , -1));
+						plaquettes[c] = grid.getPlaquette(index, i, j, 1 , 1, 0).add(grid.getPlaquette(index, i, j, 1 , -1, 0));
 						c++;
 					}
 				}
@@ -85,9 +85,9 @@ public class GeneralYangMillsSolver extends FieldSolver
 		private double at;
 
 		/**
-		 * Updates the links matrices at a given coordinate
-		 *
-		 * @param coor  Lattice coordinate
+		 * Updates the links matrices in a given cell.
+		 * @param grid	Reference to the grid
+		 * @param index	Cell index
 		 */
 		public void execute(Grid grid, int index) {
 

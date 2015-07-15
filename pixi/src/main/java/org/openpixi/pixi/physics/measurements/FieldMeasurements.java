@@ -9,7 +9,7 @@ public class FieldMeasurements {
 	EFieldSquared Esquared = new EFieldSquared();
 	BFieldSquared Bsquared = new BFieldSquared();
 	GaussLaw GaussConstraint = new GaussLaw();
-	
+
 	public double calculateEsquared(Grid grid) {
 		Esquared.reset();
 		grid.getCellIterator().execute(grid, Esquared);
@@ -100,7 +100,8 @@ public class FieldMeasurements {
 			for (int i = 0; i < numDir; i++) {
 				norm *= grid.getNumCells(i);
 				//res += grid.getB(coor, i).square();
-				res[i] += grid.getBsquaredFromLinks(index, i);
+				// Averaging B(-dt/2) and B(dt/2) to approximate B(0).
+				res[i] += 0.5 * (grid.getBsquaredFromLinks(index, i, 0) + grid.getBsquaredFromLinks(index, i, 1));
 			}
 			
 			for (int i = 0; i < numDir; i++) {
