@@ -43,6 +43,9 @@ public class OccupationNumbersInTime implements Diagnostics {
 	private int effectiveNumberOfDimensions;
 	private double simulationBoxVolume;
 
+	private String separator = ", ";
+	private String linebreak = "\n";
+
 	/**
 	 * Constructor for the occupation numbers diagnostic.
 	 *
@@ -85,6 +88,10 @@ public class OccupationNumbersInTime implements Diagnostics {
 			}
 		}
 
+		// Write header
+		this.writeHeader(outputFileName);
+
+		// Include lattice momentum vectors (optional)
 		if(outputType.equals(OUTPUT_CSV_WITH_VECTORS)) {
 			this.writeMomentumVectors(outputFileName);
 		}
@@ -253,7 +260,36 @@ public class OccupationNumbersInTime implements Diagnostics {
 	}
 
 	/**
+	 * Writes the basic header of the csv file. The header includes the size of the grid.
+	 *
+	 * @param path	Path to output file
+	 */
+	public void writeHeader(String path) {
+		File file = this.getOutputFile(path);
+
+		try {
+			FileWriter pw = new FileWriter(file, true);
+			for (int i = 0; i < s.getNumberOfDimensions(); i++) {
+				pw.write(String.valueOf(s.grid.getNumCells(i)));
+				if(i < s.getNumberOfDimensions() -1) {
+					pw.write(separator);
+				}
+			}
+			pw.write(linebreak);
+			pw.close();
+
+		} catch (IOException ex) {
+			System.out.println("OccupationNumbersInTime: Error writing to file.");
+		}
+	}
+
+	/**
 	 * Writes the momentum vectors in order of the cell indices to the header of a file.
+	 * In 3D the output is as follows:
+	 * k0_x, k0_y, k0_z, k1_x, k1_y, k1_y, k2_x, k2_y, k2_z, ...
+	 *
+	 * The three numbers (kn_x, kn_y, kn_z) define the momentum vector associated with the index n.
+	 *
 	 * @param path	Path to the output file
 	 */
 	private void writeMomentumVectors(String path) {
@@ -266,14 +302,15 @@ public class OccupationNumbersInTime implements Diagnostics {
 				for (int j = 0; j < s.getNumberOfDimensions(); j++) {
 					kString += k[j];
 					if(j < s.getNumberOfDimensions()-1) {
-						kString += ", ";
+						kString += separator;
 					}
 				}
 				pw.write(kString);
 				if(i < s.grid.getTotalNumberOfCells()-1) {
-					pw.write(", ");
+					pw.write(separator);
 				}
 			}
+			pw.write(linebreak);
 			pw.close();
 		} catch (IOException ex) {
 			System.out.println("OccupationNumbersInTime: Error writing to file.");
@@ -288,7 +325,7 @@ public class OccupationNumbersInTime implements Diagnostics {
 	 * 	Time, Energy
 	 * 	n0_0, n1_0, n2_0, ....
 	 * 	n0_1, n1_1, n2_1, ....
-	 * where nk_c defines the occupation number of momentum k with color component c.
+	 * where nk_c defines the occupation number of momentum k (in terms of grid indices) with color component c.
 	 *
 	 * @param path	Path to the output file
 	 */
@@ -297,10 +334,7 @@ public class OccupationNumbersInTime implements Diagnostics {
 		File file = this.getOutputFile(path);
 		try {
 			FileWriter pw = new FileWriter(file, true);
-			pw.write((computationCounter * timeInterval) + ", " + energyDensity + "\n");
-			if(includeOccupationNumbers) {
-				pw.write(this.generateCSVString());
-			}
+			pw.write(this.generateCSVString(includeOccupationNumbers));
 			pw.close();
 		} catch (IOException ex) {
 			System.out.println("OccupationNumbersInTime: Error writing to file.");
@@ -318,34 +352,35 @@ public class OccupationNumbersInTime implements Diagnostics {
 	 *
 	 * @return	a csv formatted string containing time, energy and the occupation numbers.
 	 */
-	private String generateCSVString() {
-		String outputString = "";
-		if(colorful) {
-			for (int k = 0; k < numberOfComponents; k++) {
+	private String generateCSVString(boolean includeOccupationNumbers) {
+		StringBuilder outputStringBuilder = new StringBuilder();
+		outputStringBuilder.append((computationCounter * timeInterval) + separator + energyDensity + linebreak);
+		if(includeOccupationNumbers) {
+			if (colorful) {
+				for (int k = 0; k < numberOfComponents; k++) {
+					for (int i = 0; i < s.grid.getTotalNumberOfCells(); i++) {
+						outputStringBuilder.append(occupationNumbers[i][k]);
+						if (i < s.grid.getTotalNumberOfCells() - 1) {
+							outputStringBuilder.append(separator);
+						}
+					}
+					outputStringBuilder.append(linebreak);
+				}
+			} else {
 				for (int i = 0; i < s.grid.getTotalNumberOfCells(); i++) {
-					outputString += occupationNumbers[i][k];
+					double value = 0.0;
+					for (int k = 0; k < numberOfComponents; k++) {
+						value += occupationNumbers[i][k];
+					}
+					outputStringBuilder.append(value);
 					if (i < s.grid.getTotalNumberOfCells() - 1) {
-						outputString += ", ";
+						outputStringBuilder.append(separator);
 					}
 				}
-				outputString += "\n";
+				outputStringBuilder.append(linebreak);
 			}
-		} else {
-			for (int i = 0; i < s.grid.getTotalNumberOfCells(); i++)
-			{
-				double value = 0.0;
-				for(int k = 0; k < numberOfComponents; k++)
-				{
-					value += occupationNumbers[i][k];
-				}
-				outputString += value;
-				if (i < s.grid.getTotalNumberOfCells() - 1) {
-					outputString += ", ";
-				}
-			}
-			outputString += "\n";
 		}
-		return outputString;
+		return outputStringBuilder.toString();
 	}
 
 	/**
