@@ -109,6 +109,34 @@ public class MyAxisScalePolicyTransformation extends
 			val = axisTransformation.untransform(exp);
 		}
 
+		if (collect.size() < 2) {
+			// Not enough points, add manually
+
+			// Add min value
+			label = new LabeledValue();
+			label.setValue(axisMin);
+			// label.setLabel(axis.getFormatter().format(label.getValue()));
+			label.setLabel(new DecimalFormat("0.0E0").format(label
+					.getValue()));
+			label.setMajorTick(true);
+
+			label.setValue((axisTransformation.transform(label.getValue()) - min)
+					/ range);
+			collect.add(label);
+
+			// Add max value
+			label = new LabeledValue();
+			label.setValue(axisMax);
+			// label.setLabel(axis.getFormatter().format(label.getValue()));
+			label.setLabel(new DecimalFormat("0.0E0").format(label
+					.getValue()));
+			label.setMajorTick(true);
+
+			label.setValue((axisTransformation.transform(label.getValue()) - min)
+					/ range);
+			collect.add(label);
+		}
+
 		return collect;
 	}
 
