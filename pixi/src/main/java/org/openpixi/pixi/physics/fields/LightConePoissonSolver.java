@@ -2,10 +2,12 @@ package org.openpixi.pixi.physics.fields;
 
 import org.openpixi.pixi.physics.grid.Grid;
 import org.openpixi.pixi.physics.gauge.DoubleFFTWrapper;
+import edu.emory.mathcs.jtransforms.fft.*;
+import org.openpixi.pixi.physics.grid.YMField;
 
 public class LightConePoissonSolver {
 
-	private DoubleFFTWrapper fft;
+	//private DoubleFFTWrapper fft;
 	private int dir;
 	private int[] pos;
 
@@ -14,80 +16,92 @@ public class LightConePoissonSolver {
 		this.dir = direction;
 	}
 
-	private void solve(Grid g) {
+	public void solve(Grid g) {
 
 		int[] size = new int[g.getNumberOfDimensions() - 1];
+		int[] signature = new int[g.getNumberOfDimensions() - 1];
 		int k = 0;
 		for(int i = 0; i < g.getNumberOfDimensions(); i++) {
 			if(i != dir) {
 				size[k] = g.getNumCells(i);
+				signature[k] = i;
 				k++;
 			} else {}
 		}
-		fft = new DoubleFFTWrapper(size);
+		//fft = new DoubleFFTWrapper(size);
+		int numberOfComponents = g.getNumberOfColors() * g.getNumberOfColors() - 1;
 
 		double norm = Math.pow(g.getLatticeSpacing(), g.getNumberOfDimensions() - 1);
 
-		double[][][] trho = new double[columns][rows][2*depth];
-		double[][][] phi = new double[columns][rows][2*depth];
+		if (size.length != 1) {
+			double[][] charge = new double[size[0]][2 * size[1]];
+			double[][] current = new double[size[0]][2 * size[1]];
+			YMField[][] gaugeList = new YMField[size[0]][size[1]];
+			YMField[][] E0List = new YMField[size[0]][size[1]];
+			YMField[][] E1List = new YMField[size[0]][size[1]];
 
-		//prepare input for fft
-		for(int i = 0; i < columns; i++) {
-			for(int j = 0; j < rows; j++) {
-				for(int k = 0; k < depth; k++) {
-					trho[i][j][2*k] = g.getRho(i,j,k)/cellVolume;
-					trho[i][j][2*k+1] = 0;
-				}
-			}
-		}
-
-//perform Fourier transformation
-		fft.complexForward(trho);
-
-		for(int i = 0; i < columns; i++) {
-			for(int j = 0; j < rows; j++) {
-				for(int k = 0; k < depth; k++) {
-
-					double d = (6 - 2 * Math.cos((2 * Math.PI * i) / columns) - 2 * Math.cos((2 * Math.PI * j) / rows) - 2 * Math.cos((2 * Math.PI * k) / depth));
-					if( (i+j+k) != 0 ) {
-						phi[i][j][2*k] = (cellArea * trho[i][j][2*k]) / (d*eps0);
-						phi[i][j][2*k+1] = (cellArea * trho[i][j][2*k+1]) / (d*eps0);
+			for(int i = 0; i < numberOfComponents; i++) {
+				//prepare input for fft
+				for(int j = 0; j < size[0]; j++) {
+					for (int w = 0; w < size[1]; w++) {
+						pos[signature[0]] = j;
+						pos[signature[1]] = w;
+						charge[j][2*w] = g.getRho(g.getCellIndex(pos)).get(i);
+						charge[j][2*w + 1] = 0.0;
+						current[j][2*w] = g.getJ(g.getCellIndex(pos), dir).get(i);
+						current[j][2*w + 1] = 0.0;
 					}
-
+				}
+				//perform Fourier transformation
+				DoubleFFT_2D fft = new DoubleFFT_2D(size[0], size[1]);
+				fft.complexForward(charge);
+				fft.complexForward(current);
+				//perform computation in Fourier space
+				for(int j = 0; j < size[0]; j++) {
+					for (int w = 0; w < size[1]; w++) {
+						double psqr = (4 - 2 * Math.cos((2 * Math.PI * j) / size[0]) - 2 * Math.cos((2 * Math.PI * w) / size[1]))/norm;
+						if( (j+w) != 0 ) {
+							charge[j][2*w] = charge[j][2*w]/psqr;
+							charge[j][2*w + 1] = charge[j][2*w + 1]/psqr;
+							current[j][2*w] = current[j][2*w]/psqr;
+							current[j][2*w + 1] = current[j][2*w + 1]/psqr;
+						}
+					}
+				}
+				charge[0][0] = 0.0;
+				charge[0][1] = 0.0;
+				current[0][0] = 0.0;
+				current[0][1] = 0.0;
+				//perform inverse Fourier transform
+				fft.complexInverse(charge, true);
+				fft.complexInverse(current, true);
+				//compute the values of the gauge field in the direction of the current and the values of the electric field
+				for(int j = 0; j < size[0]; j++) {
+					for (int w = 0; w < size[1]; w++) {
+						pos[signature[0]] = j;
+						pos[signature[1]] = w;
+						gaugeList[j][w].set(i, current[j][2*w]);
+						E0List[j][w].set(i, -(charge[(j + 1) % size[0]][2 * w] - charge[j][2*w]) / g.getLatticeSpacing());
+						E1List[j][w].set(i, -(charge[j][ 2 * (w + 1) % size[1] ] - charge[j][2*w]) / g.getLatticeSpacing());
+					}
 				}
 			}
-		}
-		phi[0][0][0] = 0;
-
-		//perform inverse Fourier transform
-		fft.complexInverse(phi, true);
-
-
-		//Solve Poisson equation in Fourier space
-		//We omit the term with i,j=0 where d would become 0. This term only contributes a constant term
-		//to the potential and can therefore be chosen arbitrarily.
-		//the electric field in x direction is equal to the negative derivative of the
-		//potential in x direction, analogous for y direction
-		//using forward difference, since phi is located in the corner of the grid
-		//and the electric field in the edges of the grid
-		for(int i = 0; i < columns; i++) {
-			for(int j = 0; j < rows; j++) {
-				for(int k = 0; k < depth; k++) {
-					g.setEx(i, j, k, -(phi[(i+1)%g.getNumCellsX()][j][2*k] - phi[i][j][2*k]) / g.getCellWidth() );
-					g.setEy(i, j, k, -(phi[i][(j+1)%g.getNumCellsY()][2*k] - phi[i][j][2*k]) / g.getCellHeight() );
-					g.setEz(i, j, k, -(phi[i][j][2*((k+1)%g.getNumCellsZ())] - phi[i][j][2*k]) / g.getCellDepth() );
+			//set the values of the gauge field in the direction of the current and the values of the electric field
+			for(int j = 0; j < size[0]; j++) {
+				for (int w = 0; w < size[1]; w++) {
+					pos[signature[0]] = j;
+					pos[signature[1]] = w;
+					g.setU(g.getCellIndex(pos), dir, gaugeList[j][w].getLinkExact());
+					g.setE(g.getCellIndex(pos), signature[0], E0List[j][w]);
+					g.setE(g.getCellIndex(pos), signature[1], E1List[j][w]);
 				}
 			}
+
+		} else {
+			double[] charge = new double[2 * size[0]];
+			double[] current = new double[2 * size[0]];
 		}
 
-		//prepare output
-		for(int i = 0; i < columns; i++) {
-			for(int j = 0; j < rows; j++) {
-				for(int k = 0; k < depth; k++) {
-					g.setPhi(i, j, k, phi[i][j][2*k]);
-				}
-			}
-		}
 
 	}
 
