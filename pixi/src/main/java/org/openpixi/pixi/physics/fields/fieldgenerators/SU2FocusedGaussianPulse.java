@@ -99,8 +99,8 @@ public class SU2FocusedGaussianPulse implements IFieldGenerator {
 			double electricFieldFactor = g * as * c * (spherical[0] - this.distance) / (sigma * sigma)
 					* pulseFunction(spherical[0], spherical[1], spherical[2], 0);
 
-			// Multiplicative factor for the focused gaussian pulse at t = dt/2 (for links)
-			double gaugeFieldFactor = g * as * pulseFunction(spherical[0], spherical[1], spherical[2], this.timeStep / 2.0);
+			// Multiplicative factor for the focused gaussian pulse at t = -dt/2 (for links)
+			double gaugeFieldFactor = g * as * pulseFunction(spherical[0], spherical[1], spherical[2], - this.timeStep / 2.0);
 
 
 			Cell currentCell = grid.getCell(ci);

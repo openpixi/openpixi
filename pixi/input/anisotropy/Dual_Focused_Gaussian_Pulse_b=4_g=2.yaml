@@ -1,0 +1,46 @@
+gridStep: 1
+numberOfDimensions: 3
+numberOfColors: 2
+numberOfThreads: 12
+gridCells: [128, 128, 1]
+poissonsolver: empty
+timeStep: 0.1
+duration: 128.0
+couplingConstant: 2.0
+
+fields:
+  SU2FocusedGaussianPulses:
+    - dir: [1.0, 0.0, 0.0]
+      pos: [64, 62, 0.0]
+      aSpatial: [0.0, 0.0, 1.0]
+      aColor: [1.0, 0.0, 0.0]
+      a: 1
+      sigma: 3
+      angle: 1.0
+      distance: 32.0
+    - dir: [-1.0, 0.0, 0.0]
+      pos: [64, 66, 0.0]
+      aSpatial: [0.0, 0.0, 1.0]
+      aColor: [0.0, 1.0, 0.0]
+      a: 1
+      sigma: 3
+      angle: 1.0
+      distance: 32.0
+
+output:
+  occupationNumbersInTime:
+    - path: occ_b4_g2.csv
+      outputType: csv
+      interval: 5.0
+      colorful: false
+  bulkQuantitiesInTime:
+    - path: bulk_b4_g2.dat
+      interval: 1.0
+
+# Generated panel code:
+panels:
+  electricFieldPanel:
+    automaticScaling: false
+    colorIndex: 0
+    directionIndex: 2
+    scaleFactor: 1.0

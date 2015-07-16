@@ -72,8 +72,8 @@ public class SU2PlaneWave implements IFieldGenerator {
 
 			//Factor of the plane wave at t = 0 (for electric fields)
 			double factorForE = -g * as * omega * Math.sin(kx);
-			//Phase of the plane wave at t = dt/2 (for links)
-			double factorForU = g * as * Math.cos(omega * timeStep / 2.0 - kx);
+			//Phase of the plane wave at t = - dt/2 (for links)
+			double factorForU = g * as * Math.cos(- omega * timeStep / 2.0 - kx);
 
 
 			Cell currentCell = grid.getCell(c);
