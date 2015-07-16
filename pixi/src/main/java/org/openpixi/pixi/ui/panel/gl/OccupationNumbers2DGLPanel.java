@@ -51,6 +51,10 @@ public class OccupationNumbers2DGLPanel extends AnimationGLPanel {
 		super(simulationAnimation);
 		scaleProperties.setAutomaticScaling(true);
 		frameCounter = 0;
+
+		simulation = this.simulationAnimation.getSimulation();
+		diagnostic = new OccupationNumbersInTime(1.0, "none", "", true);
+		diagnostic.initialize(simulation);
 	}
 
 	@Override
@@ -58,9 +62,6 @@ public class OccupationNumbers2DGLPanel extends AnimationGLPanel {
 		frameSkip = (frameSkipProperties.getValue() > 1) ? frameSkipProperties.getValue() : 1;
 		if( frameCounter % frameSkip == 0)
 		{
-			simulation = this.simulationAnimation.getSimulation();
-			diagnostic = new OccupationNumbersInTime(1.0, "none", "", true);
-			diagnostic.initialize(simulation);
 
 			GL2 gl2 = glautodrawable.getGL().getGL2();
 			int width = glautodrawable.getWidth();
