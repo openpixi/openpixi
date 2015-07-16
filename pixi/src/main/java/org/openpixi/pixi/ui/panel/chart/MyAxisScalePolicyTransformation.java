@@ -33,13 +33,12 @@
 package org.openpixi.pixi.ui.panel.chart;
 
 import info.monitorenter.gui.chart.IAxis;
-import info.monitorenter.gui.chart.IAxisScalePolicy;
 import info.monitorenter.gui.chart.LabeledValue;
 import info.monitorenter.gui.chart.axis.AAxisTransformation;
 import info.monitorenter.gui.chart.axis.scalepolicy.AxisScalePolicyTransformation;
 import info.monitorenter.util.Range;
 
-import java.awt.Graphics2D;
+import java.awt.Graphics;
 import java.text.DecimalFormat;
 import java.util.LinkedList;
 import java.util.List;
@@ -66,8 +65,9 @@ public class MyAxisScalePolicyTransformation extends
 	 * scale transformed accordingly.
 	 * <p>
 	 */
+	@Override
 	@SuppressWarnings("unchecked")
-	public List<LabeledValue> getScaleValues(final Graphics2D g2d,
+	public List<LabeledValue> getScaleValues(final Graphics g2d,
 			final IAxis<?> axis) {
 
 		// Might give a class cast exception in case this was not called from
@@ -112,6 +112,7 @@ public class MyAxisScalePolicyTransformation extends
 		return collect;
 	}
 
+	@Override
 	public void initPaintIteration(IAxis<?> axis) {
 		// nop
 	}
