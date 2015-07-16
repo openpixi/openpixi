@@ -11,6 +11,7 @@ import org.openpixi.pixi.ui.panel.Particle3DPanel;
 import org.openpixi.pixi.ui.panel.PhaseSpacePanel;
 import org.openpixi.pixi.ui.panel.EnergyDensity1DPanel;
 import org.openpixi.pixi.ui.panel.EnergyDensity2DPanel;
+import org.openpixi.pixi.ui.panel.chart.Chart2DPanel;
 import org.openpixi.pixi.ui.panel.gl.EnergyDensity2DGLPanel;
 import org.openpixi.pixi.ui.panel.gl.EnergyDensity3DGLPanel;
 import org.openpixi.pixi.ui.panel.gl.OccupationNumbers2DGLPanel;
@@ -32,6 +33,7 @@ public class YamlPanels {
 	public YamlEnergyDensity2DGLPanel energyDensity2DGLPanel;
 	public YamlEnergyDensity3DGLPanel energyDensity3DGLPanel;
 	public YamlOccupationNumbers2DGLPanel occupationNumbers2DGLPanel;
+	public YamlChart2DPanel chartPanel;
 
 	/** Empty constructor called by SnakeYaml */
 	public YamlPanels() {
@@ -69,6 +71,8 @@ public class YamlPanels {
 			energyDensity3DGLPanel = new YamlEnergyDensity3DGLPanel(component);
 		} else if (component instanceof OccupationNumbers2DGLPanel) {
 			occupationNumbers2DGLPanel = new YamlOccupationNumbers2DGLPanel(component);
+		} else if (component instanceof Chart2DPanel) {
+			chartPanel = new YamlChart2DPanel(component);
 		}
 	}
 
@@ -103,6 +107,8 @@ public class YamlPanels {
 			component = energyDensity3DGLPanel.inflate(panelManager);
 		} else if (occupationNumbers2DGLPanel != null) {
 			component = occupationNumbers2DGLPanel.inflate(panelManager);
+		} else if (chartPanel != null) {
+			component = chartPanel.inflate(panelManager);
 		}
 
 		return component;

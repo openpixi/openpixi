@@ -25,12 +25,12 @@ public class Chart2DPanel extends AnimationChart2DPanel {
 
 	ITrace2D[] traces;
 
-	private final int INDEX_GAUSS_VIOLATION = 0;
-	private final int INDEX_E_SQUARED = 1;
-	private final int INDEX_B_SQUARED = 2;
+	public final int INDEX_GAUSS_VIOLATION = 0;
+	public final int INDEX_E_SQUARED = 1;
+	public final int INDEX_B_SQUARED = 2;
 
 	String[] chartLabel = new String[] {
-			"Gauss violation",
+			"Gauss law violation",
 			"E squared",
 			"B squared"
 	};
@@ -42,8 +42,9 @@ public class Chart2DPanel extends AnimationChart2DPanel {
 	};
 
 	public BooleanProperties logarithmicProperty;
-	BooleanProperties[] chartContentProperty;
-	boolean oldLogarithmicValue = false;
+	public BooleanProperties[] chartContentProperty;
+
+	private boolean oldLogarithmicValue = false;
 
 	private FieldMeasurements fieldMeasurements;
 
