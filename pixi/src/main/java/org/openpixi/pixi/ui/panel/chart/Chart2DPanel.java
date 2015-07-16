@@ -54,7 +54,8 @@ public class Chart2DPanel extends AnimationChart2DPanel {
 
 		traces = new ITrace2D[chartLabel.length];
 		for (int i = 0; i < chartLabel.length; i++) {
-			traces[i] = new Trace2DLtd(200);
+			// TODO: Set buffer size according to simulation duration:
+			traces[i] = new Trace2DLtd(2000);
 			traces[i].setColor(traceColors[i]);
 			traces[i].setName(chartLabel[i]);
 			addTrace(traces[i]);
