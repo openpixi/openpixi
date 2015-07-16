@@ -3,11 +3,7 @@ package org.openpixi.pixi.ui.util.yaml;
 import java.util.ArrayList;
 
 import org.openpixi.pixi.physics.Settings;
-import org.openpixi.pixi.ui.util.yaml.filegenerators.YamlCoulombGaugeInTime;
-import org.openpixi.pixi.ui.util.yaml.filegenerators.YamlParticlesInTime;
-import org.openpixi.pixi.ui.util.yaml.filegenerators.YamlBulkQuantitiesInTime;
-import org.openpixi.pixi.ui.util.yaml.filegenerators.YamlRandomGaugeInTime;
-import org.openpixi.pixi.ui.util.yaml.filegenerators.YamlScreenshotInTime;
+import org.openpixi.pixi.ui.util.yaml.filegenerators.*;
 
 public class YamlOutput {
 	/**
@@ -21,13 +17,17 @@ public class YamlOutput {
 
 	public ArrayList<YamlRandomGaugeInTime> randomGaugeInTime = new ArrayList<YamlRandomGaugeInTime>();
 
+	public ArrayList<YamlOccupationNumbersInTime> occupationNumbersInTime = new ArrayList<YamlOccupationNumbersInTime>();
+
 	public ArrayList<YamlScreenshotInTime> screenshotInTime = new ArrayList<YamlScreenshotInTime>();
+
+	public ArrayList<YamlUnitarityTester> unitarityTester = new ArrayList<YamlUnitarityTester>();
+
 
 	/**
 	 * Creates FileGenerator instances and applies them to the Settings instance.
 	 * @param s
 	 */
-
 	public void applyTo(Settings s) {
 		for (YamlParticlesInTime output : particlesInTime) {
 			s.addDiagnostics(output.getFileGenerator());
@@ -45,7 +45,15 @@ public class YamlOutput {
 			s.addDiagnostics(output.getFileGenerator());
 		}
 
+		for (YamlOccupationNumbersInTime output : occupationNumbersInTime) {
+			s.addDiagnostics(output.getFileGenerator());
+		}
+
 		for (YamlScreenshotInTime output : screenshotInTime) {
+			s.addDiagnostics(output.getFileGenerator());
+		}
+
+		for (YamlUnitarityTester output : unitarityTester) {
 			s.addDiagnostics(output.getFileGenerator());
 		}
 	}

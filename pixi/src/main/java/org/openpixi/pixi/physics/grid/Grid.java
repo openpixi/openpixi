@@ -399,6 +399,8 @@ public class Grid {
 			for (int d = 0; d < numDim; d++) {
 				LinkMatrix U = grid.getU(ci, d);
 				this.setU(ci, d, U);
+				LinkMatrix Unext = grid.getUnext(ci, d);
+				this.setUnext(ci, d, Unext);
 				YMField E = grid.getE(ci, d);
 				this.setE(ci, d, E);
 				// TODO: if desired: Copy other fields as well.
@@ -484,14 +486,15 @@ public class Grid {
 	 * <pre>     U_{x, ij} = U_{x, i} U_{x+i, j} U_{x+i+j, -i} U_{x+j, -j}</pre>
 	 *
 	 *
-	 * @param index Lattice index from where the plaquette starts
-	 * @param d1    Index of the first direction
-	 * @param d2    Index of the second direction
-	 * @param o1    Orientation of the first direction
-	 * @param o2    Orientation of the second direction
-	 * @return      Plaquette as LinkMatrix with correct orientation
+	 * @param index 	Lattice index from where the plaquette starts
+	 * @param d1    	Index of the first direction
+	 * @param d2    	Index of the second direction
+	 * @param o1    	Orientation of the first direction
+	 * @param o2    	Orientation of the second direction
+	 * @param timeIndex Option to select between U (timeIndex = 0) and Unext (timeIndex != 0).
+	 * @return      	Plaquette as LinkMatrix with correct orientation
 	 */
-	public LinkMatrix getPlaquette(int index, int d1, int d2, int o1, int o2)
+	public LinkMatrix getPlaquette(int index, int d1, int d2, int o1, int o2, int timeIndex)
 	{
 		/*
 			The four lattice indices associated with the plaquette.
@@ -505,10 +508,10 @@ public class Grid {
 			The four gauge links associated with the plaquette.
 		 */
 
-		LinkMatrix U1 = getLink(x1, d1, o1);
-		LinkMatrix U2 = getLink(x2, d2, o2);
-		LinkMatrix U3 = getLink(x3, d1, -o1);
-		LinkMatrix U4 = getLink(x4, d2, -o2);
+		LinkMatrix U1 = getLink(x1, d1, o1, timeIndex);
+		LinkMatrix U2 = getLink(x2, d2, o2, timeIndex);
+		LinkMatrix U3 = getLink(x3, d1, -o1, timeIndex);
+		LinkMatrix U4 = getLink(x4, d2, -o2, timeIndex);
 
 		/*
 			Plaquette calculation
@@ -528,15 +531,24 @@ public class Grid {
 	 * @param index         Lattice index from which the link starts from
 	 * @param direction     Direction of the link (0 - (numberOfDimensions-1))
 	 * @param orientation   Orientation of the link (-1 or 1)
+	 * @param timeIndex		Option to select between U (timeIndex = 0) and Unext (timeIndex != 0).
 	 * @return              Gauge link in certain direction with correct orientation
 	 */
-	public LinkMatrix getLink(int index, int direction, int orientation)
+	public LinkMatrix getLink(int index, int direction, int orientation, int timeIndex)
 	{
-		if(orientation < 0)
+		if(timeIndex == 0)
 		{
-			return getCell(shift(index, direction, orientation)).getU(direction).adj();
+			if(orientation < 0)
+			{
+				return getCell(shift(index, direction, orientation)).getU(direction).adj();
+			}
+			return getCell(index).getU(direction);
+		} else {
+			if(orientation < 0) {
+				return getCell(shift(index, direction, orientation)).getUnext(direction).adj();
+			}
+			return getCell(index).getUnext(direction);
 		}
-		return getCell(index).getU(direction);
 	}
 
 	/**
@@ -761,11 +773,12 @@ public class Grid {
 	/**
 	 * Calculates the square of the magnetic field from the spatial plaquette starting at a lattice index in a direction.
 	 *
-	 * @param index      Lattice index from where the plaquette starts
-	 * @param direction  Index of the direction
-	 * @return           B^2 calculated from the spatial plaquette
+	 * @param index    	Lattice index from where the plaquette starts
+	 * @param direction	Index of the direction
+	 * @param timeIndex	Option to compute B from U (timeIndex = 0) or Unext (timeIndex != 0)
+	 * @return          B^2 calculated from the spatial plaquette
 	 */
-	public double getBsquaredFromLinks(int index, int direction) {
+	public double getBsquaredFromLinks(int index, int direction, int timeIndex) {
 		
 		double norm = as*as;
 		int j=0, k=0;
@@ -785,7 +798,7 @@ public class Grid {
 			k = 1;
 			break;
 		}
-		double res = getPlaquette(index, j, k, 1, 1).getLinearizedAlgebraElement().square()/norm;
+		double res = getPlaquette(index, j, k, 1, 1, timeIndex).getLinearizedAlgebraElement().square()/norm;
 
 		return res;
 	}
@@ -803,5 +816,4 @@ public class Grid {
 		}
 		return gauss.square() / Math.pow( as * as * gaugeCoupling, 2.0);
 	}
-
 }

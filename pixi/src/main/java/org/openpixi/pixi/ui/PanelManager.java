@@ -23,6 +23,7 @@ import org.openpixi.pixi.ui.panel.Particle3DPanel;
 import org.openpixi.pixi.ui.panel.PhaseSpacePanel;
 import org.openpixi.pixi.ui.panel.gl.EnergyDensity2DGLPanel;
 import org.openpixi.pixi.ui.panel.gl.EnergyDensity3DGLPanel;
+import org.openpixi.pixi.ui.panel.gl.OccupationNumbers2DGLPanel;
 import org.openpixi.pixi.ui.tab.PropertiesTab;
 
 /**
@@ -51,6 +52,7 @@ public class PanelManager {
 	JMenuItem itemEnergyDensity2DPanel;
 	JMenuItem itemEnergyDensity2DGLPanel;
 	JMenuItem itemEnergyDensity3DGLPanel;
+	JMenuItem itemOccupationNumbers2DGLPanel;
 
 	public PanelManager(MainControlApplet m) {
 		mainControlApplet = m;
@@ -202,6 +204,10 @@ public class PanelManager {
 			itemEnergyDensity3DGLPanel = new JMenuItem("Energy density 3D (Open GL)");
 			itemEnergyDensity3DGLPanel.addActionListener(new MenuSelected());
 			add(itemEnergyDensity3DGLPanel);
+
+			itemOccupationNumbers2DGLPanel = new JMenuItem("Occupation numbers 2D (Open GL)");
+			itemOccupationNumbers2DGLPanel.addActionListener(new MenuSelected());
+			add(itemOccupationNumbers2DGLPanel);
 		}
 	}
 
@@ -266,7 +272,10 @@ public class PanelManager {
 				component = new EnergyDensity2DGLPanel(mainControlApplet.simulationAnimation);
 			} else if (event.getSource() == itemEnergyDensity3DGLPanel) {
 				component = new EnergyDensity3DGLPanel(mainControlApplet.simulationAnimation);
+			} else if (event.getSource() == itemOccupationNumbers2DGLPanel) {
+				component = new OccupationNumbers2DGLPanel(mainControlApplet.simulationAnimation);
 			}
+
 			if (component != null) {
 				replacePanel(component);
 			}
