@@ -14,9 +14,10 @@ public class SU2LightConeDeltaPulseCurrent implements ICurrentGenerator {
 	private Simulation s;
 	private Grid grid;
 	private int initialPosition;
+	private int orientation;
 	private LightConePoissonSolver poisson;
 
-	public SU2LightConeDeltaPulseCurrent(int direction, int[] location, double[] amplitudeColorDirection, double magnitude) {
+	public SU2LightConeDeltaPulseCurrent(int direction, int[] location, double[] amplitudeColorDirection, double magnitude, int orientation) {
 
 		this.direction = direction;
 		this.location = location;
@@ -28,6 +29,7 @@ public class SU2LightConeDeltaPulseCurrent implements ICurrentGenerator {
 
 		this.magnitude = magnitude;
 		this.initialPosition = location[direction];
+		this.orientation = orientation;
 		this.poisson = new LightConePoissonSolver(location, direction);
 	}
 
@@ -36,11 +38,11 @@ public class SU2LightConeDeltaPulseCurrent implements ICurrentGenerator {
 		this.grid = s.grid;
 		double as = grid.getLatticeSpacing();
 		double at = s.getTimeStep();
-		double time = s.totalSimulationTime;
+		int time = s.totalSimulationSteps;
 		double g = s.getCouplingConstant();
 		double normFactor = as/(Math.pow(as, grid.getNumberOfDimensions())*at);
 		double chargeNorm = 1.0/(Math.pow(as, grid.getNumberOfDimensions()));
-		double speed = s.getSpeedOfLight();
+		double speed = s.getSpeedOfLight()*Integer.signum(orientation);
 
 		/*
 			Setup the field amplitude for the current.
@@ -70,7 +72,7 @@ public class SU2LightConeDeltaPulseCurrent implements ICurrentGenerator {
 
 		grid.addJ(cellIndex, direction, fieldAmplitude.mult(g * as));	// The factor g*as comes from our definition of electric fields!!
 		grid.setRho(cellIndex, chargeAmplitude.mult(g*as));
-		if(time == 0.0) {
+		if(time == 0) {
 			poisson.solve(grid);
 		}
 	}

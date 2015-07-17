@@ -31,6 +31,11 @@ public class YamlSU2LightConeDeltaPulseCurrent {
 	public Double a;
 
 	/**
+	 * Orientation of the current.
+	 */
+	public Integer v;
+
+	/**
 	 * Checks input for errors.
 	 *
 	 * @param settings Settings class. Important: numberOfDimensions and numberOfColors must be defined.
@@ -50,6 +55,11 @@ public class YamlSU2LightConeDeltaPulseCurrent {
 		int numberOfComponents = settings.getNumberOfColors() * settings.getNumberOfColors() - 1;
 		if (aColor.size() != numberOfComponents) {
 			System.out.println("SU2LightConeDeltaPulseCurrent: aColor vector does not have the right dimensions.");
+			return false;
+		}
+
+		if (v == 0) {
+			System.out.println("SU2LightConeDeltaPulseCurrent: Orientation has to be non-zero.");
 			return false;
 		}
 		return true;
@@ -80,6 +90,6 @@ public class YamlSU2LightConeDeltaPulseCurrent {
 			aColorArray[c] = aColor.get(c);
 		}
 
-		return new SU2LightConeDeltaPulseCurrent(direction, locationArray, aColorArray, a);
+		return new SU2LightConeDeltaPulseCurrent(direction, locationArray, aColorArray, a, v);
 	}
 }
