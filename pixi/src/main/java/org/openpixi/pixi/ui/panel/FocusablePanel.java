@@ -16,4 +16,9 @@ public interface FocusablePanel {
 	 * @param box Property panel.
 	 */
 	public void addPropertyComponents(Box box);
+
+	/**
+	 * Unregister the panel.
+	 */
+	public void destruct();
 }
