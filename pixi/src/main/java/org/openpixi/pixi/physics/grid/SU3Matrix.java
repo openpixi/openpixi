@@ -173,31 +173,6 @@ public class SU3Matrix implements LinkMatrix {
 	}
 
 	/**
-	 * Returns real and imaginary parts of determinant
-	 * Should be one, since SU(n)
-	 * @return Re and Im parts as pair of doubles
-	 */
-	private double[] det() {
-		// computed in Mathematica
-		// not yet tested
-		double[] out = new double[2];
-
-		// real part
-		out[0] = e[13]*e[15]*e[2]-e[12]*e[16]*e[2]-e[11]*e[16]*e[3]+e[10]*e[17]*e[3]+e[11]*e[15]*e[4]-e[10]*e[15]*e[5]+
-				e[11]*e[13]*e[6]-e[10]*e[14]*e[6]-e[2]*e[4]*e[6]-e[11]*e[12]*e[7]+e[2]*e[3]*e[7]+e[10]*e[12]*e[8]+
-				e[1]*(-e[14]*e[15]+e[12]*e[17]+e[5]*e[6]-e[3]*e[8])+e[0]*(e[14]*e[16]-e[13]*e[17]-e[5]*e[7]+e[4]*e[8])-
-				e[17]*e[4]*e[9]+e[16]*e[5]*e[9]+e[14]*e[7]*e[9]-e[13]*e[8]*e[9];
-
-		// imag. part
-		out[1] = -e[1]*e[17]*e[3]+e[16]*e[2]*e[3]+e[0]*e[17]*e[4]-e[15]*e[2]*e[4]+e[1]*e[15]*e[5]-e[0]*e[16]*e[5]+
-				e[1]*e[14]*e[6]-e[13]*e[2]*e[6]-e[0]*e[14]*e[7]+e[12]*e[2]*e[7]+e[11]*(e[13]*e[15]-e[12]*e[16]-e[4]*e[6]+e[3]*e[7])-
-				e[1]*e[12]*e[8]+e[0]*e[13]*e[8]+e[10]*(-e[14]*e[15]+e[12]*e[17]+e[5]*e[6]-e[3]*e[8])+
-				(e[14]*e[16]-e[13]*e[17]-e[5]*e[7]+e[4]*e[8])*e[9];
-
-		return out;
-	}
-
-	/**
 	 * Normalizes (complex) vector in place
 	 * Vector is stored as three real components followed by three imag. components
 	 * @param vector to be normalized
@@ -365,13 +340,56 @@ public class SU3Matrix implements LinkMatrix {
 													-vector2[3],-vector2[4],-vector2[5],
 													-vector3[3],-vector3[4],-vector3[5]});
 
-		return ((SU3Matrix) ULnD.mult(UAdj)).get();
+		double[] values = ((SU3Matrix) ULnD.mult(UAdj)).get();
+		// now normalize to ensure hermiticity!
+		return hermiticize(values);
+	}
+
+	/**
+	 * (anti)symmetrizes matrix to ensure hermiticity
+	 * @param values list of 18 values as in SU3Matrix
+	 * @return list of 9 values as in SU3Field
+	 */
+	private double[] hermiticize(double[] values) {
+		double[] fieldValues = new double[9];
+		// diagonal is just the real diagonal of result
+		fieldValues[0] = values[0];
+		fieldValues[4] = values[4];
+		fieldValues[8] = values[8];
+		// off-diagonal real values are averages of symmetric pairs
+		fieldValues[1] = (values[1] + values[3])/2;
+		fieldValues[2] = (values[2] + values[6])/2;
+		fieldValues[5] = (values[5] + values[7])/2;
+		// off-diagonal imag. values are asymmetric averages of pairs
+		fieldValues[3] = (values[10] - values[12])/2;
+		fieldValues[6] = (values[11] - values[15])/2;
+		fieldValues[7] = (values[14] - values[16])/2;
+		return fieldValues;
 	}
 
 
-	// TODO: linearized element
+	// Mostly same as proj, but multiplies by 2 since tr(t_i t_j) = 1/2 \delta_ij
 	public YMField getLinearizedAlgebraElement() {
-		return getAlgebraElement();
+		double[] values = new double[]{(2*e[9]-e[13]-e[17])/3,
+				e[10],
+				e[11],
+				e[12],
+				(2*e[13]-e[17]-e[9])/3,
+				e[14],
+				e[15],
+				e[16],
+				(2*e[17]-e[9]-e[13])/3,
+				(e[4]+e[8]-2*e[0])/3,
+				-e[1],
+				-e[2],
+				-e[3],
+				(e[0]+e[8]-2*e[4])/3,
+				-e[5],
+				-e[6],
+				-e[7],
+				(e[0]+e[4]-2*e[8])/3};
+		double[] fieldValues = hermiticize(values);
+		return new SU3Field(fieldValues);
 	}
 
 	public YMField getAlgebraElement() {
@@ -385,14 +403,32 @@ public class SU3Matrix implements LinkMatrix {
 	 *
 	 * where U is the SU3Matrix, t_a is the a-th generator of the group and u_a is the a-th component of the YMField.
 	 *
+	 * Computed in Mathematica by calculating u_a and then finding explicit matrix
+	 * as sum of Gell-Mann matrices with weights u_a
+	 *
 	 * @return YMField instance of the projection
 	 */
 	public YMField proj() {
-
-
-
-		SU3Field field = new SU3Field();
-		return field;
+		double[] values = new double[]{(2*e[9]-e[13]-e[17])/6,
+				e[10]/2,
+				e[11]/2,
+				e[12]/2,
+				(2*e[13]-e[17]-e[9])/6,
+				e[14]/2,
+				e[15]/2,
+				e[16]/2,
+				(2*e[17]-e[9]-e[13])/6,
+				(e[4]+e[8]-2*e[0])/6,
+				-e[1]/2,
+				-e[2]/2,
+				-e[3]/2,
+				(e[0]+e[8]-2*e[4])/6,
+				-e[5]/2,
+				-e[6]/2,
+				-e[7]/2,
+				(e[0]+e[4]-2*e[8])/6};
+		double[] fieldValues = hermiticize(values);
+		return new SU3Field(fieldValues);
 	}
 
 	/**
@@ -405,18 +441,5 @@ public class SU3Matrix implements LinkMatrix {
 	 */
 	public double getTrace() {
 		return 0;
-	}
-
-	public static void main(String[] args) {
-		SU3Matrix m = new SU3Matrix(new double[]{-0.6363202628865725, -0.08657301619463224, -0.3681569784650003,
-				-0.602126637618181, -0.25120486977251777, 0.5095643078055176,
-		-0.4081489068448498, 0.529560271995442, 0.25274386503149954,
-		0.20509837933754874, 0.4681392669119956, 0.4368550751481074,
-		0.06741031870147784, -0.5532350796553309, 0.06380154743581472,
-		-0.1390863360564836, 0.3517722530381104, -0.5882280169876992});
-		double[] out = m.algebraElementDecompositionMethod();
-		for (int i = 0; i < out.length; i++) {
-			System.out.println(out[i]);
-		}
 	}
 }
