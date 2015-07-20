@@ -66,10 +66,10 @@ public class SU2LightConeDeltaPulseCurrent implements ICurrentGenerator {
 		/*
 			Find the nearest grid point and apply the current configuration to the cell current.
 		 */
-		int position = (int) Math.rint(initialPosition + speed*time/as);
+		int position = (int) Math.rint(initialPosition + speed*time*at/as);
 		location[direction] = position;
 		int cellIndex = grid.getCellIndex(location);
-
+		
 		grid.addJ(cellIndex, direction, fieldAmplitude.mult(g * as));	// The factor g*as comes from our definition of electric fields!!
 		grid.setRho(cellIndex, chargeAmplitude.mult(g*as));
 		if(time == 0) {
