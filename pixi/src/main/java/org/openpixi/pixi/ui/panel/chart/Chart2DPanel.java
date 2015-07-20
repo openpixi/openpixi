@@ -3,6 +3,7 @@ package org.openpixi.pixi.ui.panel.chart;
 import info.monitorenter.gui.chart.ITrace2D;
 import info.monitorenter.gui.chart.axis.AAxis;
 import info.monitorenter.gui.chart.axis.AxisLinear;
+import info.monitorenter.gui.chart.axis.scalepolicy.AxisScalePolicyAutomaticBestFit;
 import info.monitorenter.gui.chart.axis.scalepolicy.AxisScalePolicyTransformation;
 import info.monitorenter.gui.chart.labelformatters.LabelFormatterNumber;
 import info.monitorenter.gui.chart.labelformatters.LabelFormatterSimple;
@@ -69,6 +70,12 @@ public class Chart2DPanel extends AnimationChart2DPanel {
 		for (int i = 0; i < chartLabel.length; i++) {
 			chartContentProperty[i] = new BooleanProperties(chartLabel[i], false);
 		}
+
+		// Linear scale
+		AAxis<?> axisy = new AxisLinear<AxisScalePolicyAutomaticBestFit>(
+				new LabelFormatterSimple(),
+				new MyAxisScalePolicyAutomaticBestFit());
+		setAxisYLeft(axisy, 0);
 	}
 
 	public void update() {
@@ -82,7 +89,9 @@ public class Chart2DPanel extends AnimationChart2DPanel {
 				setAxisYLeft(axisy, 0);
 			} else {
 				// Linear scale
-				AAxis<?> axisy = new AxisLinear<AxisScalePolicyTransformation>();
+				AAxis<?> axisy = new AxisLinear<AxisScalePolicyAutomaticBestFit>(
+						new LabelFormatterSimple(),
+						new MyAxisScalePolicyAutomaticBestFit());
 				setAxisYLeft(axisy, 0);
 			}
 		}

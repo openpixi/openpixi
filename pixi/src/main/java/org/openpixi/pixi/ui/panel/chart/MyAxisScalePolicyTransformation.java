@@ -2,6 +2,8 @@
  * MODIFICATION:
  *
  * Allow for logarithmic values < 1.
+ *
+ * Also show min/max axis labels if no axis labels would be drawn otherwise.
  */
 
 /*
