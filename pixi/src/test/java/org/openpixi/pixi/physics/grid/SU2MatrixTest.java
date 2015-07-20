@@ -8,6 +8,8 @@ import org.apache.commons.math3.linear.Array2DRowFieldMatrix;
 import org.junit.Assert;
 import org.junit.Test;
 
+import org.apache.commons.math3.linear.EigenDecomposition;
+
 public class SU2MatrixTest {
 
 
