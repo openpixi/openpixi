@@ -13,7 +13,8 @@ public class LightConePoissonSolver {
 	private int[] pos;
 
 	public LightConePoissonSolver(int[] position, int direction) {
-		this.pos = position;
+		pos = new int[position.length];
+		System.arraycopy(position, 0, this.pos, 0, position.length);//this.pos = position;
 		this.dir = direction;
 	}
 
