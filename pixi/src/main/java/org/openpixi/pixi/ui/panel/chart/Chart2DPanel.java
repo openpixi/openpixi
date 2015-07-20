@@ -138,8 +138,8 @@ public class Chart2DPanel extends AnimationChart2DPanel {
 		traces[INDEX_GAUSS_VIOLATION].addPoint(time, gaussViolation);
 		traces[INDEX_ENERGY_DENSITY].addPoint(time, energyDensity);
 		traces[INDEX_PX].addPoint(time, px);
-		traces[INDEX_PX].addPoint(time, py);
-		traces[INDEX_PX].addPoint(time, pz);
+		traces[INDEX_PY].addPoint(time, py);
+		traces[INDEX_PZ].addPoint(time, pz);
 
 		if(showChartsProperty.getValue(INDEX_ENERGY_DENSITY_2)) {
 			occupationNumbers.initialize(s);
