@@ -132,7 +132,8 @@ public class MyAxisLog10<T extends AxisScalePolicyTransformation> extends
 		 * "while(true)" 100 % load effect. So everything is disallowed below
 		 * 1.0.
 		 */
-		if (toTransform < 0) {
+		/*
+		if (toTransform == 0) {
 			// allow to transform the input for empty traces or all traces with
 			// empty
 			// points:
@@ -161,8 +162,9 @@ public class MyAxisLog10<T extends AxisScalePolicyTransformation> extends
 				toTransform = 1.0;
 			}
 		}
+		*/
 		// TODO: change this to Math.log10 as soon as java 1.5 is used:
-		double result = Math.log(toTransform) / Math.log(10);
+		double result = Math.log(Math.abs(toTransform)) / Math.log(10);
 		if (Double.isInfinite(result)) {
 			result = Double.MAX_VALUE;
 		}

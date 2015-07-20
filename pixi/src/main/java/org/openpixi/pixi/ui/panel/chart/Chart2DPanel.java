@@ -31,19 +31,28 @@ public class Chart2DPanel extends AnimationChart2DPanel {
 	public final int INDEX_E_SQUARED = 1;
 	public final int INDEX_B_SQUARED = 2;
 	public final int INDEX_TOTAL_ENERGY = 3;
+	public final int INDEX_PX = 4;
+	public final int INDEX_PY = 5;
+	public final int INDEX_PZ = 6;
 
 	String[] chartLabel = new String[] {
 			"Gauss law violation",
 			"E squared",
 			"B squared",
-			"Total energy"
+			"Total energy",
+			"px",
+			"py",
+			"pz"
 	};
 
 	Color[] traceColors = new Color[] {
 			Color.red,
-			Color.blue,
 			Color.green,
-			Color.black
+			Color.blue,
+			Color.black,
+			Color.red,
+			Color.green,
+			Color.blue
 	};
 
 	public BooleanProperties logarithmicProperty;
@@ -121,6 +130,9 @@ public class Chart2DPanel extends AnimationChart2DPanel {
 		traces[INDEX_B_SQUARED].addPoint(time, bSquared);
 		traces[INDEX_GAUSS_VIOLATION].addPoint(time, gaussViolation);
 		traces[INDEX_TOTAL_ENERGY].addPoint(time, totalEnergy);
+		traces[INDEX_PX].addPoint(time, px);
+		traces[INDEX_PX].addPoint(time, py);
+		traces[INDEX_PX].addPoint(time, pz);
 
 		for (int i = 0; i < showChartsProperty.getSize(); i++) {
 			traces[i].setVisible(showChartsProperty.getValue(i));
