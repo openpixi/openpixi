@@ -1,6 +1,7 @@
 package org.openpixi.pixi.ui.util.yaml;
 
 import org.openpixi.pixi.physics.Settings;
+import org.openpixi.pixi.physics.fields.fieldgenerators.SUNFocusedGaussianPulse;
 import org.openpixi.pixi.ui.util.yaml.fieldgenerators.*;
 
 import java.util.ArrayList;
@@ -17,6 +18,8 @@ public class YamlFields {
 	public ArrayList<YamlSU2GaussianPulse> SU2GaussianPulses = new ArrayList<YamlSU2GaussianPulse>();
 
 	public ArrayList<YamlSU2FocusedGaussianPulse> SU2FocusedGaussianPulses = new ArrayList<YamlSU2FocusedGaussianPulse>();
+
+	public ArrayList<YamlSUNFocusedGaussianPulse> SUNFocusedGaussianPulses = new ArrayList<YamlSUNFocusedGaussianPulse>();
 
 	/**
 	 * Creates FieldGenerator instances and applies them to the Settings instance.
@@ -41,6 +44,11 @@ public class YamlFields {
 			}
 		}
 		for (YamlSU2FocusedGaussianPulse pulse : SU2FocusedGaussianPulses) {
+			if (pulse.checkConsistency(s)) {
+				s.addFieldGenerator(pulse.getFieldGenerator());
+			}
+		}
+		for (YamlSUNFocusedGaussianPulse pulse : SUNFocusedGaussianPulses) {
 			if (pulse.checkConsistency(s)) {
 				s.addFieldGenerator(pulse.getFieldGenerator());
 			}
