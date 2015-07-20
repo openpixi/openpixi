@@ -209,7 +209,7 @@ public class MyAxisScalePolicyAutomaticBestFit extends
 				label = new LabeledValue();
 				label.setValue(min);
 				// label.setLabel(axis.getFormatter().format(label.getValue()));
-				label.setLabel(new DecimalFormat("0.0E0").format(label
+				label.setLabel(new DecimalFormat("0.0##E0").format(label
 						.getValue()));
 				label.setMajorTick(true);
 
@@ -221,7 +221,7 @@ public class MyAxisScalePolicyAutomaticBestFit extends
 				label = new LabeledValue();
 				label.setValue(max);
 				// label.setLabel(axis.getFormatter().format(label.getValue()));
-				label.setLabel(new DecimalFormat("0.0E0").format(label
+				label.setLabel(new DecimalFormat("0.0##E0").format(label
 						.getValue()));
 				label.setMajorTick(true);
 
