@@ -39,6 +39,7 @@ panels:
         showCharts:
         - E squared
         - B squared
+        - Total energy
     orientation: 0
     rightPanel:
       chartPanel:

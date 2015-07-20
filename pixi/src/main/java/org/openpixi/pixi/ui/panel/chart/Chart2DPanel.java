@@ -122,7 +122,7 @@ public class Chart2DPanel extends AnimationChart2DPanel {
 		double px = -esquares[0] + esquares[1] + esquares[2] - bsquares[0] + bsquares[1] + bsquares[2];
 		double py = +esquares[0] - esquares[1] + esquares[2] + bsquares[0] - bsquares[1] + bsquares[2];
 		double pz = +esquares[0] + esquares[1] - esquares[2] + bsquares[0] + bsquares[1] - bsquares[2];
-		double totalEnergy = eSquared + bSquared;
+		double totalEnergy = (eSquared + bSquared) / 2;
 
 		double gaussViolation = fieldMeasurements.calculateGaussConstraint(s.grid);
 
