@@ -11,9 +11,7 @@ public class YamlChart2DPanel {
 	public Boolean logarithmicScale;
 
 	// Chart content properties
-	public Boolean gaussLaw;
-	public Boolean eSquared;
-	public Boolean bSquared;
+	public String[] showCharts;
 
 	/** Empty constructor called by SnakeYaml */
 	public YamlChart2DPanel() {
@@ -23,9 +21,7 @@ public class YamlChart2DPanel {
 		if (component instanceof Chart2DPanel) {
 			Chart2DPanel panel = (Chart2DPanel) component;
 			logarithmicScale = panel.logarithmicProperty.getValue();
-			gaussLaw = panel.chartContentProperty[panel.INDEX_GAUSS_VIOLATION].getValue();
-			eSquared = panel.chartContentProperty[panel.INDEX_E_SQUARED].getValue();
-			bSquared = panel.chartContentProperty[panel.INDEX_B_SQUARED].getValue();
+			showCharts = panel.showChartsProperty.getStringArrayFromValues();
 		}
 	}
 
@@ -37,16 +33,8 @@ public class YamlChart2DPanel {
 			panel.logarithmicProperty.setValue(logarithmicScale);
 		}
 
-		if (gaussLaw != null) {
-			panel.chartContentProperty[panel.INDEX_GAUSS_VIOLATION].setValue(gaussLaw);
-		}
-
-		if (eSquared != null) {
-			panel.chartContentProperty[panel.INDEX_E_SQUARED].setValue(eSquared);
-		}
-
-		if (bSquared != null) {
-			panel.chartContentProperty[panel.INDEX_B_SQUARED].setValue(bSquared);
+		if (showCharts != null) {
+			panel.showChartsProperty.setValuesFromStringArray(showCharts);
 		}
 
 		return panel;
