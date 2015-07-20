@@ -35,17 +35,17 @@ panels:
     dividerLocation: 348
     leftPanel:
       chartPanel:
-        bSquared: true
-        eSquared: true
-        gaussLaw: false
         logarithmicScale: false
+        showCharts:
+        - E squared
+        - B squared
+        - Energy density
     orientation: 0
     rightPanel:
       chartPanel:
-        bSquared: false
-        eSquared: false
-        gaussLaw: true
         logarithmicScale: true
+        showCharts:
+        - Gauss law violation
   orientation: 1
   rightPanel:
     dividerLocation: 348
