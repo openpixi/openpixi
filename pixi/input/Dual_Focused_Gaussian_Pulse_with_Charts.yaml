@@ -39,7 +39,7 @@ panels:
         showCharts:
         - E squared
         - B squared
-        - Total energy
+        - Energy density
     orientation: 0
     rightPanel:
       chartPanel:

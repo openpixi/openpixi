@@ -30,7 +30,7 @@ public class Chart2DPanel extends AnimationChart2DPanel {
 	public final int INDEX_GAUSS_VIOLATION = 0;
 	public final int INDEX_E_SQUARED = 1;
 	public final int INDEX_B_SQUARED = 2;
-	public final int INDEX_TOTAL_ENERGY = 3;
+	public final int INDEX_ENERGY_DENSITY = 3;
 	public final int INDEX_PX = 4;
 	public final int INDEX_PY = 5;
 	public final int INDEX_PZ = 6;
@@ -39,7 +39,7 @@ public class Chart2DPanel extends AnimationChart2DPanel {
 			"Gauss law violation",
 			"E squared",
 			"B squared",
-			"Total energy",
+			"Energy density",
 			"px",
 			"py",
 			"pz"
@@ -122,14 +122,14 @@ public class Chart2DPanel extends AnimationChart2DPanel {
 		double px = -esquares[0] + esquares[1] + esquares[2] - bsquares[0] + bsquares[1] + bsquares[2];
 		double py = +esquares[0] - esquares[1] + esquares[2] + bsquares[0] - bsquares[1] + bsquares[2];
 		double pz = +esquares[0] + esquares[1] - esquares[2] + bsquares[0] + bsquares[1] - bsquares[2];
-		double totalEnergy = (eSquared + bSquared) / 2;
+		double energyDensity = (eSquared + bSquared) / 2;
 
 		double gaussViolation = fieldMeasurements.calculateGaussConstraint(s.grid);
 
 		traces[INDEX_E_SQUARED].addPoint(time, eSquared);
 		traces[INDEX_B_SQUARED].addPoint(time, bSquared);
 		traces[INDEX_GAUSS_VIOLATION].addPoint(time, gaussViolation);
-		traces[INDEX_TOTAL_ENERGY].addPoint(time, totalEnergy);
+		traces[INDEX_ENERGY_DENSITY].addPoint(time, energyDensity);
 		traces[INDEX_PX].addPoint(time, px);
 		traces[INDEX_PX].addPoint(time, py);
 		traces[INDEX_PX].addPoint(time, pz);
