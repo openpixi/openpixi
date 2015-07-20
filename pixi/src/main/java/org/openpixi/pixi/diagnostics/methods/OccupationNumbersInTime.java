@@ -129,8 +129,8 @@ public class OccupationNumbersInTime implements Diagnostics {
 						eFFTdata[j][k][fftIndex + 1] = 0.0;
 
 						// Gauge fields need to be averaged over two time-steps.
-						YMField gaugeFieldAsAlgebraElement0 = grid.getU(i, j).getLinearizedAlgebraElement();
-						YMField gaugeFieldAsAlgebraElement1 = grid.getUnext(i, j).getLinearizedAlgebraElement();
+						YMField gaugeFieldAsAlgebraElement0 = grid.getU(i, j).getAlgebraElement();
+						YMField gaugeFieldAsAlgebraElement1 = grid.getUnext(i, j).getAlgebraElement();
 						double gaugeFieldComponent0 = 2.0 * gaugeFieldAsAlgebraElement0.proj(k) * gainv;
 						double gaugeFieldComponent1 = 2.0 * gaugeFieldAsAlgebraElement1.proj(k) * gainv;
 						aFFTdata[j][k][fftIndex] = 0.5 * (gaugeFieldComponent0 + gaugeFieldComponent1);
