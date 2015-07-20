@@ -14,6 +14,7 @@ import java.text.DecimalFormat;
 
 import javax.swing.Box;
 
+import org.openpixi.pixi.diagnostics.methods.OccupationNumbersInTime;
 import org.openpixi.pixi.physics.Simulation;
 import org.openpixi.pixi.physics.measurements.FieldMeasurements;
 import org.openpixi.pixi.ui.SimulationAnimation;
@@ -34,6 +35,7 @@ public class Chart2DPanel extends AnimationChart2DPanel {
 	public final int INDEX_PX = 4;
 	public final int INDEX_PY = 5;
 	public final int INDEX_PZ = 6;
+	public final int INDEX_ENERGY_DENSITY_2 = 7;
 
 	String[] chartLabel = new String[] {
 			"Gauss law violation",
@@ -42,7 +44,8 @@ public class Chart2DPanel extends AnimationChart2DPanel {
 			"Energy density",
 			"px",
 			"py",
-			"pz"
+			"pz",
+			"Energy density (occupation numbers)"
 	};
 
 	Color[] traceColors = new Color[] {
@@ -52,7 +55,8 @@ public class Chart2DPanel extends AnimationChart2DPanel {
 			Color.black,
 			Color.red,
 			Color.green,
-			Color.blue
+			Color.blue,
+			Color.magenta
 	};
 
 	public BooleanProperties logarithmicProperty;
@@ -61,6 +65,8 @@ public class Chart2DPanel extends AnimationChart2DPanel {
 	private boolean oldLogarithmicValue = false;
 
 	private FieldMeasurements fieldMeasurements;
+
+	private OccupationNumbersInTime occupationNumbers;
 
 	/** Constructor */
 	public Chart2DPanel(SimulationAnimation simulationAnimation) {
@@ -81,6 +87,7 @@ public class Chart2DPanel extends AnimationChart2DPanel {
 
 		showChartsProperty = new BooleanArrayProperties(chartLabel, new boolean[chartLabel.length]);
 
+		occupationNumbers = new OccupationNumbersInTime(1.0, "none", "", false);
 		// Linear scale
 		AAxis<?> axisy = new AxisLinear<AxisScalePolicyAutomaticBestFit>(
 				new LabelFormatterSimple(),
@@ -131,8 +138,14 @@ public class Chart2DPanel extends AnimationChart2DPanel {
 		traces[INDEX_GAUSS_VIOLATION].addPoint(time, gaussViolation);
 		traces[INDEX_ENERGY_DENSITY].addPoint(time, energyDensity);
 		traces[INDEX_PX].addPoint(time, px);
-		traces[INDEX_PX].addPoint(time, py);
-		traces[INDEX_PX].addPoint(time, pz);
+		traces[INDEX_PY].addPoint(time, py);
+		traces[INDEX_PZ].addPoint(time, pz);
+
+		if(showChartsProperty.getValue(INDEX_ENERGY_DENSITY_2)) {
+			occupationNumbers.initialize(s);
+			occupationNumbers.calculate(s.grid, s.particles, 0);
+			traces[INDEX_ENERGY_DENSITY_2].addPoint(time, occupationNumbers.energyDensity);
+		}
 
 		for (int i = 0; i < showChartsProperty.getSize(); i++) {
 			traces[i].setVisible(showChartsProperty.getValue(i));

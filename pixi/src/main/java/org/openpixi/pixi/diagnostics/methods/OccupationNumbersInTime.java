@@ -89,7 +89,9 @@ public class OccupationNumbersInTime implements Diagnostics {
 		}
 
 		// Write header
-		this.writeHeader(outputFileName);
+		if(!outputType.equals(OUTPUT_NONE)) {
+			this.writeHeader(outputFileName);
+		}
 
 		// Include lattice momentum vectors (optional)
 		if(outputType.equals(OUTPUT_CSV_WITH_VECTORS)) {
@@ -127,8 +129,8 @@ public class OccupationNumbersInTime implements Diagnostics {
 						eFFTdata[j][k][fftIndex + 1] = 0.0;
 
 						// Gauge fields need to be averaged over two time-steps.
-						YMField gaugeFieldAsAlgebraElement0 = grid.getU(i, j).getLinearizedAlgebraElement();
-						YMField gaugeFieldAsAlgebraElement1 = grid.getUnext(i, j).getLinearizedAlgebraElement();
+						YMField gaugeFieldAsAlgebraElement0 = grid.getU(i, j).getAlgebraElement();
+						YMField gaugeFieldAsAlgebraElement1 = grid.getUnext(i, j).getAlgebraElement();
 						double gaugeFieldComponent0 = 2.0 * gaugeFieldAsAlgebraElement0.proj(k) * gainv;
 						double gaugeFieldComponent1 = 2.0 * gaugeFieldAsAlgebraElement1.proj(k) * gainv;
 						aFFTdata[j][k][fftIndex] = 0.5 * (gaugeFieldComponent0 + gaugeFieldComponent1);
@@ -179,7 +181,6 @@ public class OccupationNumbersInTime implements Diagnostics {
 			double normalizationConstant = 1.0 / (2.0 * simulationBoxVolume * simulationBoxVolume);
 			energyDensity *= normalizationConstant;
 
-			computationCounter++;
 
 			// Generate output (write to file, terminal, etc..)
 			if(this.outputType.equals(OUTPUT_CSV)) {
@@ -194,6 +195,8 @@ public class OccupationNumbersInTime implements Diagnostics {
 				this.writeCSVFile(this.outputFileName, false);
 			}
 
+
+			computationCounter++;
 		}
 	}
 

@@ -181,6 +181,8 @@ public class Simulation {
 		particles = (ArrayList<IParticle>) settings.getParticles();
 		f = settings.getForce();
 
+		diagnostics = settings.getDiagnostics();
+
 		DoubleBox simulationBox = new DoubleBox(numberOfDimensions, new double[] {0, 0, 0},
 				new double[] {this.getWidth(), this.getHeight(), this.getDepth()});
 		IParticleBoundaryConditions particleBoundaryConditions;
@@ -242,21 +244,9 @@ public class Simulation {
 		}
 		*/
 
+
+
 		//updateVelocities(); TODO: Write this method!!
-
-		// Cycle through diagnostic objects and initialize them.
-		diagnostics = settings.getDiagnostics();
-		for (int f = 0; f < diagnostics.size(); f++)
-        {
-			diagnostics.get(f).initialize(this);
-        }
-
-		//Here we run the diagnostics routines on the initial state!!
-		try {
-			runDiagnostics();
-		} catch (IOException ex) {
-			//TODO: Take care of the exception!!
-		}
 
 	}
 
@@ -300,6 +290,13 @@ public class Simulation {
 	 */
 	public void step() throws FileNotFoundException,IOException {
 
+		// Initialize and run diagnostics before first simulation step.
+		if(totalSimulationSteps == 0) {
+			for (int f = 0; f < diagnostics.size(); f++) {
+				diagnostics.get(f).initialize(this);
+			}
+			runDiagnostics();
+		}
 		//Link and particle reassignment
 		grid.storeFields();
 		//reassignParticles(); TODO: Write this method!!
