@@ -1,7 +1,5 @@
 package org.openpixi.pixi.physics.grid;
 
-import java.util.zip.DataFormatException;
-
 public class SU3Matrix implements LinkMatrix {
 
 	/* 9 real entries, 9 imaginary entries */
