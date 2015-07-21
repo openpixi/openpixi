@@ -1,7 +1,6 @@
 package org.openpixi.pixi.physics.fields;
 
 import org.openpixi.pixi.physics.grid.Grid;
-import org.openpixi.pixi.physics.gauge.DoubleFFTWrapper;
 import edu.emory.mathcs.jtransforms.fft.*;
 import org.openpixi.pixi.physics.grid.SU2Field;
 import org.openpixi.pixi.physics.grid.YMField;
@@ -11,11 +10,13 @@ public class LightConePoissonSolver {
 	//private DoubleFFTWrapper fft;
 	private int dir;
 	private int[] pos;
+	private int orientation;
 
-	public LightConePoissonSolver(int[] position, int direction) {
+	public LightConePoissonSolver(int[] position, int direction, int orientation) {
 		pos = new int[position.length];
-		System.arraycopy(position, 0, this.pos, 0, position.length);//this.pos = position;
+		System.arraycopy(position, 0, this.pos, 0, position.length);
 		this.dir = direction;
+		this.orientation = orientation;
 	}
 
 	public void solve(Grid g) {
@@ -38,10 +39,12 @@ public class LightConePoissonSolver {
 		}
 		//fft = new DoubleFFTWrapper(size);
 		int numberOfComponents = g.getNumberOfColors() * g.getNumberOfColors() - 1;
+		int cellIndex;
+		int chargeIndex;
 
 		double norm = Math.pow(g.getLatticeSpacing(), g.getNumberOfDimensions() - 1);
 
-		if (size.length != 1) {
+		if (size.length > 1) {
 			double[][] charge = new double[size[0]][2 * size[1]];
 			double[][] current = new double[size[0]][2 * size[1]];
 			YMField[][] gaugeList = new YMField[size[0]][size[1]];
@@ -61,9 +64,15 @@ public class LightConePoissonSolver {
 					for (int w = 0; w < size[1]; w++) {
 						pos[signature[0]] = j;
 						pos[signature[1]] = w;
-						charge[j][2*w] = g.getRho(g.getCellIndex(pos)).get(i);
+
+						cellIndex = g.getCellIndex(pos);
+						chargeIndex = cellIndex;
+						if(orientation < 0) {
+							chargeIndex = g.shift(chargeIndex, dir, 1);
+						}
+						charge[j][2*w] = g.getRho(chargeIndex).get(i);
 						charge[j][2*w + 1] = 0.0;
-						current[j][2*w] = g.getJ(g.getCellIndex(pos), dir).get(i);
+						current[j][2*w] = g.getJ(cellIndex, dir).get(i);
 						current[j][2*w + 1] = 0.0;
 					}
 				}
@@ -106,13 +115,19 @@ public class LightConePoissonSolver {
 				for (int w = 0; w < size[1]; w++) {
 					pos[signature[0]] = j;
 					pos[signature[1]] = w;
-					g.setU(g.getCellIndex(pos), dir, gaugeList[j][w].getLinkExact());
-					g.setE(g.getCellIndex(pos), signature[0], E0List[j][w]);
-					g.setE(g.getCellIndex(pos), signature[1], E1List[j][w]);
+
+					cellIndex = g.getCellIndex(pos);
+					chargeIndex = cellIndex;
+					if(orientation < 0) {
+						chargeIndex = g.shift(chargeIndex, dir, 1);
+					}
+					g.setU(cellIndex, dir, gaugeList[j][w].getLinkExact());
+					g.setE(chargeIndex, signature[0], E0List[j][w]);
+					g.setE(chargeIndex, signature[1], E1List[j][w]);
 				}
 			}
 
-		} else {
+		} else if(size.length == 1) {
 			double[] charge = new double[2 * size[0]];
 			double[] current = new double[2 * size[0]];
 			YMField[] gaugeList = new YMField[size[0]];
@@ -126,9 +141,15 @@ public class LightConePoissonSolver {
 				//prepare input for fft
 				for(int j = 0; j < size[0]; j++) {
 					pos[signature[0]] = j;
-					charge[2*j] = g.getRho(g.getCellIndex(pos)).get(i);
+
+					cellIndex = g.getCellIndex(pos);
+					chargeIndex = cellIndex;
+					if(orientation < 0) {
+						chargeIndex = g.shift(chargeIndex, dir, 1);
+					}
+					charge[2*j] = g.getRho(chargeIndex).get(i);
 					charge[2*j + 1] = 0.0;
-					current[2*j] = g.getJ(g.getCellIndex(pos), dir).get(i);
+					current[2*j] = g.getJ(cellIndex, dir).get(i);
 					current[2*j + 1] = 0.0;
 				}
 				//perform Fourier transformation
@@ -162,9 +183,17 @@ public class LightConePoissonSolver {
 			//set the values of the gauge field in the direction of the current and the values of the electric field
 			for(int j = 0; j < size[0]; j++) {
 				pos[signature[0]] = j;
-				g.setU(g.getCellIndex(pos), dir, gaugeList[j].getLinkExact());
-				g.setE(g.getCellIndex(pos), signature[0], E0List[j]);
+
+				cellIndex = g.getCellIndex(pos);
+				chargeIndex = cellIndex;
+				if(orientation < 0) {
+					chargeIndex = g.shift(chargeIndex, dir, 1);
+				}
+				g.setU(cellIndex, dir, gaugeList[j].getLinkExact());
+				g.setE(chargeIndex, signature[0], E0List[j]);
 			}
+		} else {
+			System.out.println("LightConePoissonSolver: Poisson solver not applicable!");
 		}
 
 

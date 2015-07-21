@@ -11,7 +11,6 @@ public class SU2LightConeDeltaPulseCurrent implements ICurrentGenerator {
 	private int[] location;
 	private double[] amplitudeColorDirection;
 	private double magnitude;
-	private Simulation s;
 	private Grid grid;
 	private int initialPosition;
 	private int orientation;
@@ -30,11 +29,10 @@ public class SU2LightConeDeltaPulseCurrent implements ICurrentGenerator {
 		this.magnitude = magnitude;
 		this.initialPosition = location[direction];
 		this.orientation = orientation;
-		this.poisson = new LightConePoissonSolver(location, direction);
+		this.poisson = new LightConePoissonSolver(location, direction, orientation);
 	}
 
 	public void applyCurrent(Simulation s) {
-		this.s = s;
 		this.grid = s.grid;
 		double as = grid.getLatticeSpacing();
 		double at = s.getTimeStep();
@@ -66,12 +64,24 @@ public class SU2LightConeDeltaPulseCurrent implements ICurrentGenerator {
 		/*
 			Find the nearest grid point and apply the current configuration to the cell current.
 		 */
-		int position = (int) Math.rint(initialPosition + speed*time*at/as);
+		int position;
+		if(orientation < 0) {
+			position = (int) Math.ceil(initialPosition + speed * time * at / as);
+		} else {
+			position = (int) Math.floor(initialPosition + speed * time * at / as);
+		}
+		//int position = (int) Math.rint(initialPosition + speed*time*at/as);
+		//int position = (int) Math.floor(initialPosition + speed * time * at / as);
 		location[direction] = position;
 		int cellIndex = grid.getCellIndex(location);
-		
+
+		int chargeIndex = cellIndex;
+		if(orientation < 0) {
+			chargeIndex = grid.shift(chargeIndex, direction, 1);
+		}
+
 		grid.addJ(cellIndex, direction, fieldAmplitude.mult(g * as));	// The factor g*as comes from our definition of electric fields!!
-		grid.setRho(cellIndex, chargeAmplitude.mult(g*as));
+		grid.setRho(chargeIndex, chargeAmplitude.mult(g * as));
 		if(time == 0) {
 			poisson.solve(grid);
 		}
