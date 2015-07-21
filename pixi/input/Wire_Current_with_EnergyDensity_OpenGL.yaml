@@ -16,6 +16,7 @@ currents:
       location: [64, 64, 0]
       aColor: [1.0, 0.0, 0.0]
       a: 4
+      v: 0.5
 
 # Generated panel code:
 panels:
