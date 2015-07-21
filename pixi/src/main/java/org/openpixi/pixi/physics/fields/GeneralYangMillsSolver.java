@@ -73,6 +73,7 @@ public class GeneralYangMillsSolver extends FieldSolver
 				}
 
 				YMField currentE = grid.getE(index, i).add(plaquettes[0].proj().mult(2 * at / (as * as )));
+				currentE.addequate(grid.getJ(index,i).mult(-at));
 				grid.setE(index, i, currentE);
 			}
 		}
