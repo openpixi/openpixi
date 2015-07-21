@@ -1,10 +1,7 @@
 package org.openpixi.pixi.physics.gauge;
 
 import org.openpixi.pixi.parallel.cellaccess.CellAction;
-import org.openpixi.pixi.physics.grid.Grid;
-import org.openpixi.pixi.physics.grid.LinkMatrix;
-import org.openpixi.pixi.physics.grid.SU2Matrix;
-import org.openpixi.pixi.physics.grid.YMField;
+import org.openpixi.pixi.physics.grid.*;
 
 public class GaugeTransformation {
 
@@ -38,6 +35,12 @@ public class GaugeTransformation {
 			g = new SU2Matrix[numberOfCells];
 			for (int i = 0; i < g.length; i++) {
 				g[i] = new SU2Matrix(1, 0, 0, 0);
+			}
+		}
+		else if (colors == 3) {
+			g = new SU3Matrix[numberOfCells];
+			for (int i = 0; i < g.length; i++) {
+				g[i] = new SU3Matrix(new double[]{1,0,0,0,1,0,0,0,1,0,0,0,0,0,0,0,0,0});
 			}
 		} else {
 			System.out.println("Gauge transformation for SU(" + colors + ") not defined.\n");

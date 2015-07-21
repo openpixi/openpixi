@@ -1,5 +1,7 @@
 package org.openpixi.pixi.physics.grid;
 
+import java.util.zip.DataFormatException;
+
 public class SU3Matrix implements LinkMatrix {
 
 	/* 9 real entries, 9 imaginary entries */
@@ -345,7 +347,7 @@ public class SU3Matrix implements LinkMatrix {
 		phase2 = Math.atan2(value2Im,value2Re);
 		phase3 = Math.atan2(value3Im,value3Re);
 
-		if (Math.abs(phase1+phase2+phase3) >= 10e-10) {
+		if (Math.abs(phase1+phase2+phase3) >= 1.e-13) {
 			phase3 -= phase1+phase2+phase3;
 		}
 
@@ -380,7 +382,7 @@ public class SU3Matrix implements LinkMatrix {
 		fieldValues[0] = values[0];
 		fieldValues[4] = values[4];
 		fieldValues[8] = values[8];
-		// off-diagonal real values are averages of symmetric pairs
+		// off-diagonal real values are symmetric averages of pairs
 		fieldValues[1] = (values[1] + values[3])/2;
 		fieldValues[2] = (values[2] + values[6])/2;
 		fieldValues[5] = (values[5] + values[7])/2;
@@ -464,6 +466,7 @@ public class SU3Matrix implements LinkMatrix {
 	 * !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 	 */
 	public double getTrace() {
+		System.out.println("Trace not double for SU3!");
 		return 0;
 	}
 }

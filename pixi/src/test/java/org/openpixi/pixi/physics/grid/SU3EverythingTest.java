@@ -9,7 +9,7 @@ import org.apache.commons.math3.linear.Array2DRowRealMatrix;
 import org.junit.Assert;
 import org.junit.Test;
 
-public class SU3MatrixTest {
+public class SU3EverythingTest {
 
 
 	private final double accuracy = 1.E-13;
@@ -76,6 +76,22 @@ public class SU3MatrixTest {
 			 */
 			cMatrix2 = convertToMatrix(c);
 			compareMatrices(cMatrix, cMatrix2);
+
+			/*
+				Now repeat for algebra element.
+			 */
+			SU3Field fa = (SU3Field) a.getAlgebraElement();
+			SU3Field fb = (SU3Field) b.getAlgebraElement();
+			aMatrix = convertToMatrix(fa);
+			bMatrix = convertToMatrix(fb);
+			SU3Field fc = (SU3Field) fa.add(fb);
+			cMatrix = (Array2DRowFieldMatrix<Complex>) aMatrix.add(bMatrix).copy();
+			cMatrix2 = convertToMatrix(fc);
+			compareMatrices(cMatrix, cMatrix2);
+			fc = (SU3Field) fa.sub(fb);
+			cMatrix = (Array2DRowFieldMatrix<Complex>) aMatrix.subtract(bMatrix).copy();
+			cMatrix2 = convertToMatrix(fc);
+			compareMatrices(cMatrix, cMatrix2);
 		}
 	}
 
@@ -127,49 +143,17 @@ public class SU3MatrixTest {
 			 */
 			Array2DRowFieldMatrix<Complex> m3 = convertToMatrix(m1);
 			compareMatrices(m2, m3);
-		}
-	}
-
-	@Test
-	public void testAlgebraGroupElements() {
-		int numberOfTests = 10;
-		for (int t = 0; t < numberOfTests; t++) {
-			/*
-				Create a random matrix.
-			 */
-			SU3Matrix m1 = createRandomSU3Matrix();
-			Array2DRowFieldMatrix<Complex> m2 = convertToMatrix(m1);
-
-			double[] values = ((SU3Field) m1.getAlgebraElement()).get();
-			SU3Matrix tempMatrix = new SU3Matrix(new double[]{values[0],values[1],values[2],values[1],values[4],values[5],values[2],values[5],values[8],0,values[3],values[6],-values[3],0,values[7],-values[6],-values[7],0});
-			// mm1 is algebra element expressed as Array2DRowFieldMatrix
-			Array2DRowFieldMatrix<Complex> mm1 = convertToMatrix(tempMatrix);
-
-			SU3Matrix m3 = (SU3Matrix) m1.getAlgebraElement().getLinkExact();
-			// m4 is group element again, which should be same as m2
-			Array2DRowFieldMatrix<Complex> m4 = convertToMatrix(m3);
-
-			Array2DRowFieldMatrix<Complex> arg = (Array2DRowFieldMatrix<Complex>) mm1.scalarMultiply(new Complex(0,1));
 
 			/*
-				Exponentiate i*mm1; should be original SU3Matrix m2
+				Test corresponding algebra element
 			 */
-			Field<Complex> field = ComplexField.getInstance();
-			// initialize summand to 3x3 identity matrix
-			Array2DRowFieldMatrix<Complex> summand = new Array2DRowFieldMatrix<Complex>(field, 3, 3);
-			summand.setEntry(0, 0, new Complex(1,0));
-			summand.setEntry(1, 1, new Complex(1,0));
-			summand.setEntry(2, 2, new Complex(1,0));
-			Array2DRowFieldMatrix<Complex> mm2 = (Array2DRowFieldMatrix<Complex>) summand.copy();
-			// power series
-			for (int i = 1; i <= 100; i++) {
-				summand = summand.multiply(arg);
-				summand = (Array2DRowFieldMatrix<Complex>) summand.scalarMultiply(new Complex(1./i,0));
-				mm2 = mm2.add(summand);
-			}
-
-			compareMatrices(m2,mm2);
-			compareMatrices(m2,m4);
+			SU3Field f1 = (SU3Field) m1.getAlgebraElement();
+			Array2DRowFieldMatrix<Complex> f2 = convertToMatrix(f1);
+			rand = Math.random() - 0.5;
+			f1 = (SU3Field) f1.mult(rand);
+			f2 = (Array2DRowFieldMatrix<Complex>) f2.scalarMultiply(new Complex(rand));
+			Array2DRowFieldMatrix<Complex> f3 = convertToMatrix(f1);
+			compareMatrices(f2, f3);
 		}
 	}
 
@@ -203,6 +187,89 @@ public class SU3MatrixTest {
 		}
 	}
 
+	@Test
+	public void testAlgebraGroupElements() {
+		int numberOfTests = 10;
+		for (int t = 0; t < numberOfTests; t++) {
+			/*
+				Create a random matrix.
+			 */
+			SU3Matrix m1 = createRandomSU3Matrix();
+			Array2DRowFieldMatrix<Complex> m2 = convertToMatrix(m1);
+
+			SU3Field f1 = (SU3Field) m1.getAlgebraElement();
+			// mm1 is algebra element expressed as Array2DRowFieldMatrix
+			Array2DRowFieldMatrix<Complex> mm1 = convertToMatrix(f1);
+
+			SU3Matrix m3 = (SU3Matrix) m1.getAlgebraElement().getLinkExact();
+			// m4 is group element again, which should be same as m2
+			Array2DRowFieldMatrix<Complex> m4 = convertToMatrix(m3);
+
+			Array2DRowFieldMatrix<Complex> arg = (Array2DRowFieldMatrix<Complex>) mm1.scalarMultiply(new Complex(0,1));
+
+			/*
+				Exponentiate i*mm1; should be original SU3Matrix m2
+			 */
+			Field<Complex> field = ComplexField.getInstance();
+			// initialize summand to 3x3 identity matrix
+			Array2DRowFieldMatrix<Complex> summand = new Array2DRowFieldMatrix<Complex>(field, 3, 3);
+			summand.setEntry(0, 0, new Complex(1,0));
+			summand.setEntry(1, 1, new Complex(1,0));
+			summand.setEntry(2, 2, new Complex(1,0));
+			Array2DRowFieldMatrix<Complex> mm2 = (Array2DRowFieldMatrix<Complex>) summand.copy();
+			// power series
+			for (int i = 1; i <= 100; i++) {
+				summand = summand.multiply(arg);
+				summand = (Array2DRowFieldMatrix<Complex>) summand.scalarMultiply(new Complex(1./i,0));
+				mm2 = mm2.add(summand);
+			}
+
+			compareMatrices(m2,mm2);
+			compareMatrices(m2,m4);
+		}
+	}
+
+	@Test
+	public void testHermiticity() {
+		int numberOfTests = 10;
+		for (int t = 0; t < numberOfTests; t++) {
+			/*
+				Create a random matrix.
+			 */
+			SU3Matrix m1 = createRandomSU3Matrix();
+
+			/*
+				Get algebra element
+			 */
+			SU3Field f1 = (SU3Field) m1.getAlgebraElement();
+			Array2DRowFieldMatrix<Complex> ff1 = convertToMatrix(f1);
+
+			/*
+				Get adjoint
+			 */
+			Array2DRowFieldMatrix<Complex> ff2 = (Array2DRowFieldMatrix<Complex>) ff1.transpose();
+			for (int i = 0; i < 3; i++) {
+				for (int j = 0; j < 3; j++) {
+					Complex v = ff2.getEntry(i, j).conjugate();
+					ff2.setEntry(i, j, v);
+				}
+			}
+
+			/*
+				Test Hermiticity
+			 */
+			compareMatrices(ff1,ff2);
+
+			/*
+				Test if traceless
+			 */
+			double trReal = ff1.getEntry(0,0).getReal() + ff1.getEntry(1,1).getReal() + ff1.getEntry(2,2).getReal();
+			double trImag = ff1.getEntry(0,0).getImaginary() + ff1.getEntry(1,1).getImaginary() + ff1.getEntry(2,2).getImaginary();
+			Assert.assertEquals(0, trReal, accuracy);
+			Assert.assertEquals(0, trImag, accuracy);
+		}
+	}
+
 	private double[] proj(double[] v1, double[] v2) {
 		double[] prod = new double[2];
 		prod[0] = v1[0]*v2[0]+v1[1]*v2[1]+v1[2]*v2[2]+v1[3]*v2[3]+v1[4]*v2[4]+v1[5]*v2[5];
@@ -217,7 +284,7 @@ public class SU3MatrixTest {
 		return out;
 	}
 
-	// uses Gram-Schmidt on random matrix and then normalizes to set determinant
+	// uses Gram-Schmidt on random matrix (-> unitary) and then normalizes to set determinant (-> SU)
 	public SU3Matrix createRandomSU3Matrix() {
 		double[] v1 = new double[6];
 		double[] v2 = new double[6];
@@ -300,6 +367,25 @@ public class SU3MatrixTest {
 		output.setEntry(2, 0, new Complex(input.get(6),input.get(15)));
 		output.setEntry(2, 1, new Complex(input.get(7),input.get(16)));
 		output.setEntry(2, 2, new Complex(input.get(8),input.get(17)));
+
+		return output;
+	}
+
+	private Array2DRowFieldMatrix<Complex> convertToMatrix(YMField arg) {
+		SU3Field input = (SU3Field) arg;
+
+		Field<Complex> field = ComplexField.getInstance();
+		Array2DRowFieldMatrix<Complex> output = new Array2DRowFieldMatrix<Complex>(field, 3, 3);
+
+		output.setEntry(0, 0, new Complex(input.get(0),0));
+		output.setEntry(0, 1, new Complex(input.get(1),input.get(3)));
+		output.setEntry(0, 2, new Complex(input.get(2),input.get(6)));
+		output.setEntry(1, 0, new Complex(input.get(1),-input.get(3)));
+		output.setEntry(1, 1, new Complex(input.get(4),0));
+		output.setEntry(1, 2, new Complex(input.get(5),input.get(7)));
+		output.setEntry(2, 0, new Complex(input.get(2),-input.get(6)));
+		output.setEntry(2, 1, new Complex(input.get(5),-input.get(7)));
+		output.setEntry(2, 2, new Complex(input.get(8),0));
 
 		return output;
 	}
