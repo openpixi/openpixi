@@ -279,10 +279,12 @@ public class Particle3DPanel extends AnimationPanel {
 			mouseOldX = e.getX();
 			mouseOldY = e.getY();
 			super.mouseDragged(e);
+			simulationAnimation.repaint();
 		}
 
 		public void mouseReleased(MouseEvent e) {
 			super.mouseReleased(e);
+			simulationAnimation.repaint();
 		}
 	}
 
