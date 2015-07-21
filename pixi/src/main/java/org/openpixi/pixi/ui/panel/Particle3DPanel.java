@@ -43,9 +43,9 @@ import org.openpixi.pixi.ui.util.projection.SphereObject;
  */
 public class Particle3DPanel extends AnimationPanel {
 
-	ColorProperties colorProperties = new ColorProperties();
-	FieldProperties fieldProperties = new FieldProperties();
-	InfoProperties infoProperties = new InfoProperties();
+	ColorProperties colorProperties;
+	FieldProperties fieldProperties;
+	InfoProperties infoProperties;
 
 	/** Whether to combine the spatial components of the fields into a single vector
 	 * or whether to keep them separate. */
@@ -65,6 +65,9 @@ public class Particle3DPanel extends AnimationPanel {
 	/** Constructor */
 	public Particle3DPanel(SimulationAnimation simulationAnimation) {
 		super(simulationAnimation);
+		colorProperties = new ColorProperties(simulationAnimation);
+		fieldProperties = new FieldProperties(simulationAnimation);
+		infoProperties = new InfoProperties(simulationAnimation);
 
 		projection.phi = 0;
 		projection.theta = 0;

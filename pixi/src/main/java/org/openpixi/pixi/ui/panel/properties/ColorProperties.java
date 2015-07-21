@@ -8,14 +8,16 @@ import javax.swing.Box;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 
+import org.openpixi.pixi.ui.SimulationAnimation;
+
 /**
  * Common properties in connection with color fields
  *
  */
 public class ColorProperties {
 
+	private SimulationAnimation simulationAnimation;
 	private int colorIndex = 0;
-
 	private int directionIndex = 1;
 
 	String[] colorString = {
@@ -27,6 +29,10 @@ public class ColorProperties {
 			"x",
 			"y",
 			"z"};
+
+	public ColorProperties(SimulationAnimation simulationAnimation) {
+		this.simulationAnimation = simulationAnimation;
+	}
 
 	public int getColorIndex() {
 		return colorIndex;
@@ -83,6 +89,7 @@ public class ColorProperties {
 			JComboBox cbox = (JComboBox) eve.getSource();
 			int id = cbox.getSelectedIndex();
 			ColorProperties.this.colorIndex = id;
+			simulationAnimation.repaint();
 		}
 	}
 
@@ -91,6 +98,7 @@ public class ColorProperties {
 			JComboBox cbox = (JComboBox) eve.getSource();
 			int id = cbox.getSelectedIndex();
 			ColorProperties.this.directionIndex = id;
+			simulationAnimation.repaint();
 		}
 	}
 }

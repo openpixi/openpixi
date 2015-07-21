@@ -36,9 +36,9 @@ import javax.swing.*;
  */
 public class OccupationNumbers2DGLPanel extends AnimationGLPanel {
 
-	ScaleProperties scaleProperties = new ScaleProperties();
+	ScaleProperties scaleProperties;
 	BooleanProperties colorfulProperties;
-	IntegerProperties frameSkipProperties = new IntegerProperties("Skipped frames:", 2);
+	IntegerProperties frameSkipProperties;
 
 	OccupationNumbersInTime diagnostic;
 	Simulation simulation;
@@ -49,7 +49,9 @@ public class OccupationNumbers2DGLPanel extends AnimationGLPanel {
 	/** Constructor */
 	public OccupationNumbers2DGLPanel(SimulationAnimation simulationAnimation) {
 		super(simulationAnimation);
+		scaleProperties = new ScaleProperties(simulationAnimation);
 		colorfulProperties = new BooleanProperties(simulationAnimation, "Colorful occupation numbers", true);
+		frameSkipProperties = new IntegerProperties(simulationAnimation, "Skipped frames:", 2);
 		scaleProperties.setAutomaticScaling(true);
 		frameCounter = 0;
 

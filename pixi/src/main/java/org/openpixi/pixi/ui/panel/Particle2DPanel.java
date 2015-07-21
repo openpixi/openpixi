@@ -41,14 +41,18 @@ import org.openpixi.pixi.ui.panel.properties.TraceProperties;
  */
 public class Particle2DPanel extends AnimationPanel {
 
-	ColorProperties colorProperties = new ColorProperties();
-	FieldProperties fieldProperties = new FieldProperties();
-	InfoProperties infoProperties = new InfoProperties();
-	TraceProperties traceProperties = new TraceProperties();
+	ColorProperties colorProperties;
+	FieldProperties fieldProperties;
+	InfoProperties infoProperties;
+	TraceProperties traceProperties;
 
 	/** Constructor */
 	public Particle2DPanel(SimulationAnimation simulationAnimation) {
 		super(simulationAnimation);
+		colorProperties = new ColorProperties(simulationAnimation);
+		fieldProperties = new FieldProperties(simulationAnimation);
+		infoProperties = new InfoProperties(simulationAnimation);
+		traceProperties = new TraceProperties(simulationAnimation);
 	}
 
 	public void clear() {
