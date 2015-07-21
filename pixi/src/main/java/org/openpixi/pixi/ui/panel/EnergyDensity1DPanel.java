@@ -129,7 +129,9 @@ public class EnergyDensity1DPanel extends AnimationPanel {
 				*/
 				double BfieldSquared = 0.0;
 				for(int w = 0; w < s.getNumberOfDimensions(); w++) {
-					BfieldSquared += s.grid.getBsquaredFromLinks(s.grid.getCellIndex(pos), w) / (as * g * as * g) / 2;
+					// Time averaging for B field.
+					BfieldSquared += s.grid.getBsquaredFromLinks(s.grid.getCellIndex(pos), w, 0) / (as * g * as * g) / 4.0;
+					BfieldSquared += s.grid.getBsquaredFromLinks(s.grid.getCellIndex(pos), w, 1) / (as * g * as * g) / 4.0;
 				}
 				scaleProperties.putValue(BfieldSquared);
 				newValue = (int) (((scaleB * BfieldSquared) * panelHeight));
@@ -166,7 +168,8 @@ public class EnergyDensity1DPanel extends AnimationPanel {
 				double totalEnergy = 0.0;
 				int index = s.grid.getCellIndex(pos);
 				for(int w = 0; w < s.getNumberOfDimensions(); w++) {
-					totalEnergy += (s.grid.getBsquaredFromLinks(index, w) + s.grid.getEsquaredFromLinks(index, w)) / (as * g * as * g) / 2;
+					totalEnergy += (0.5 * (s.grid.getBsquaredFromLinks(index, w, 0) + s.grid.getBsquaredFromLinks(index, w, 1)) +
+							s.grid.getEsquaredFromLinks(index, w)) / (as * g * as * g) / 2;
 				}
 				scaleProperties.putValue(totalEnergy);
 				newValue = (int) (((scaleTotal * totalEnergy) * panelHeight));

@@ -1,11 +1,9 @@
-package org.openpixi.pixi.ui.panel.gl;
+package org.openpixi.pixi.ui.panel.chart;
 
-import javax.media.opengl.GL2;
-import javax.media.opengl.GLAutoDrawable;
-import javax.media.opengl.GLEventListener;
-import javax.media.opengl.awt.GLCanvas;
-import javax.media.opengl.awt.GLJPanel;
-import javax.media.opengl.glu.GLU;
+import info.monitorenter.gui.chart.Chart2D;
+
+import java.awt.Graphics;
+
 import javax.swing.Box;
 import javax.swing.JLabel;
 import javax.swing.SwingConstants;
@@ -14,31 +12,40 @@ import org.openpixi.pixi.ui.SimulationAnimation;
 import org.openpixi.pixi.ui.SimulationAnimationListener;
 import org.openpixi.pixi.ui.panel.FocusablePanel;
 
-public class AnimationGLPanel extends GLJPanel implements GLEventListener, FocusablePanel {
+/**
+ * This panel shows various charts.
+ */
+public class AnimationChart2DPanel extends Chart2D implements FocusablePanel {
 
-	protected SimulationAnimation simulationAnimation;
+	private SimulationAnimation simulationAnimation;
 	private MyAnimationListener listener;
 	boolean focus = false;
 
 	/** Constructor */
-	public AnimationGLPanel(SimulationAnimation simulationAnimation) {
+	public AnimationChart2DPanel(SimulationAnimation simulationAnimation) {
+		super();
 		this.simulationAnimation = simulationAnimation;
 		listener = new MyAnimationListener();
 		this.simulationAnimation.addListener(listener);
 		this.setVisible(true);
-
-		this.addGLEventListener(this);
 	}
 
 	/** Listener for timer */
 	private class MyAnimationListener implements SimulationAnimationListener {
 
 		public void repaint() {
-			AnimationGLPanel.this.repaint();
+			AnimationChart2DPanel.this.update();
 		}
 
 		public void clear() {
+			AnimationChart2DPanel.this.clear();
 		}
+	}
+
+	public void update() {
+	}
+
+	public void clear() {
 	}
 
 	public SimulationAnimation getSimulationAnimation() {
@@ -50,10 +57,12 @@ public class AnimationGLPanel extends GLJPanel implements GLEventListener, Focus
 		simulationAnimation.removeListener(listener);
 	}
 
+	@Override
 	public void setFocus(boolean focus) {
 		this.focus = focus;
 	}
 
+	@Override
 	public boolean isFocused() {
 		return focus;
 	}
@@ -78,36 +87,5 @@ public class AnimationGLPanel extends GLJPanel implements GLEventListener, Focus
 		box.add(Box.createVerticalStrut(20));
 		box.add(jlabel);
 		box.add(Box.createVerticalGlue());
-	}
-
-	@Override
-	public void display(GLAutoDrawable glautodrawable) {
-		// TODO: Show focus (if set)
-	}
-
-	@Override
-	public void dispose(GLAutoDrawable glautodrawable) {
-	}
-
-	@Override
-	public void init(GLAutoDrawable glautodrawable) {
-	}
-
-	@Override
-	public void reshape(GLAutoDrawable glautodrawable, int x, int y,
-			int width, int height) {
-		// Setup 2D mode
-		GL2 gl2 = glautodrawable.getGL().getGL2();
-		gl2.glMatrixMode( GL2.GL_PROJECTION );
-		gl2.glLoadIdentity();
-
-		// coordinate system origin at lower left with width and height same as the window
-		GLU glu = new GLU();
-		glu.gluOrtho2D( 0.0f, width, 0.0f, height );
-
-		gl2.glMatrixMode( GL2.GL_MODELVIEW );
-		gl2.glLoadIdentity();
-
-		gl2.glViewport( 0, 0, width, height );
 	}
 }

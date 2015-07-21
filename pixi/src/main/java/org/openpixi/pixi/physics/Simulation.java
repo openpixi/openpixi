@@ -22,6 +22,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 
 import org.openpixi.pixi.physics.fields.fieldgenerators.IFieldGenerator;
+import org.openpixi.pixi.physics.fields.currentgenerators.ICurrentGenerator;
 import org.openpixi.pixi.physics.fields.PoissonSolver;
 import org.openpixi.pixi.physics.force.Force;
 import org.openpixi.pixi.physics.force.CombinedForce;
@@ -45,18 +46,11 @@ public class Simulation {
 	 * Timestep
 	 */
 	public double tstep;
+
 	/**
-	 * Width of simulated area
+	 * Size of the simulation box
 	 */
-	private double width;
-	/**
-	 * Height of simulated area
-	 */
-	private double height;
-	/**
-	 * Depth of simulated area
-	 */
-	private double depth;
+	private double[] simulationBoxSize;
 
 
 	private int numberOfColors;
@@ -113,6 +107,11 @@ public class Simulation {
      */
     private ArrayList<Diagnostics>  diagnostics;
 
+	/**
+	 * List of external current generators which are applied during the whole runtime of the simulation.
+	 */
+	private ArrayList<ICurrentGenerator>  currentGenerators;
+
 	public Interpolation getInterpolation() {
 		return interpolation;
 	}
@@ -121,17 +120,24 @@ public class Simulation {
 		return iterations;
 	}
 
+	@Deprecated
 	public double getWidth() {
-		return width;
+		return simulationBoxSize[0];
 	}
 
+	@Deprecated
 	public double getHeight() {
-		return height;
+		return simulationBoxSize[1];
 	}
-	
+
+	@Deprecated
 	public double getDepth() {
-		return depth;
+		return simulationBoxSize[2];
 	}
+
+	public double[] getSimulationBoxSize() { return simulationBoxSize; }
+
+	public double getSimulationBoxSize(int i) { return simulationBoxSize[i]; }
 
 	public double getSpeedOfLight() {
 		return speedOfLight;
@@ -159,9 +165,12 @@ public class Simulation {
 	 */
 	public Simulation(Settings settings) {
 		tstep = settings.getTimeStep();
-		width = settings.getSimulationWidth();
-		height = settings.getSimulationHeight();
-		depth = settings.getSimulationDepth();
+
+		this.simulationBoxSize = new double[settings.getNumberOfDimensions()];
+		for(int i = 0; i < settings.getNumberOfDimensions(); i++) {
+			this.simulationBoxSize[i] = settings.getGridStep() * settings.getGridCells(i);
+		}
+
 		speedOfLight = settings.getSpeedOfLight();
 		numberOfColors = settings.getNumberOfColors();
 		numberOfDimensions = settings.getNumberOfDimensions();
@@ -178,7 +187,10 @@ public class Simulation {
 		particles = (ArrayList<IParticle>) settings.getParticles();
 		f = settings.getForce();
 
-		DoubleBox simulationBox = new DoubleBox(numberOfDimensions, new double[] {0, 0, 0}, new double[] {width, height, depth});
+		diagnostics = settings.getDiagnostics();
+
+		DoubleBox simulationBox = new DoubleBox(numberOfDimensions, new double[] {0, 0, 0},
+				new double[] {this.getWidth(), this.getHeight(), this.getDepth()});
 		IParticleBoundaryConditions particleBoundaryConditions;
 		switch (settings.getBoundaryType())
 		{
@@ -219,6 +231,9 @@ public class Simulation {
 			(e.g. check if Gauss law is fulfilled.)
 		 */
 
+		// Copy current generators from Settings.
+		currentGenerators = settings.getCurrentGenerators();
+
 		/**
 		 * In order to read out the initial state without specifying the Unext(t = at/2) links by hand we calculate them
 		 * according to the equations of motion from the electric fields at t = 0 and gauge links U(t = -at/2). We also
@@ -230,29 +245,17 @@ public class Simulation {
 		interpolation.interpolateToParticle(particles, grid);
 
 		interpolation.interpolateToGrid(particles, grid, tstep);
+
 		// Generate external currents on the grid!!
-		/*
 		for (int c = 0; c < currentGenerators.size(); c++)
 		{
 			currentGenerators.get(c).applyCurrent(this);
 		}
-		*/
+
+
+
 
 		//updateVelocities(); TODO: Write this method!!
-
-		// Cycle through diagnostic objects and initialize them.
-		diagnostics = settings.getDiagnostics();
-		for (int f = 0; f < diagnostics.size(); f++)
-        {
-			diagnostics.get(f).initialize(this);
-        }
-
-		//Here we run the diagnostics routines on the initial state!!
-		try {
-			runDiagnostics();
-		} catch (IOException ex) {
-			//TODO: Take care of the exception!!
-		}
 
 	}
 
@@ -296,19 +299,25 @@ public class Simulation {
 	 */
 	public void step() throws FileNotFoundException,IOException {
 
+		// Initialize and run diagnostics before first simulation step.
+		if(totalSimulationSteps == 0) {
+			for (int f = 0; f < diagnostics.size(); f++) {
+				diagnostics.get(f).initialize(this);
+			}
+			runDiagnostics();
+		}
 		//Link and particle reassignment
 		grid.storeFields();
 		//reassignParticles(); TODO: Write this method!!
 
 		//Generation of internal and external currents
+		grid.resetCurrent();
 		interpolation.interpolateToGrid(particles, grid, tstep);
 		// Generate external currents on the grid!!
-		/*
 		for (int c = 0; c < currentGenerators.size(); c++)
 		{
 			currentGenerators.get(c).applyCurrent(this);
 		}
-		*/
 
 		//Combined update of gauge links and fields
 		grid.updateGrid(tstep);

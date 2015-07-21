@@ -34,4 +34,16 @@ public abstract class YMField {
 	
 	public abstract LinkMatrix getLinkExact ();
 
+	/**
+	 * Returns the projection of the algebra element on to the c'th generator, i.e.
+	 *
+	 *	tr( A t_c ) = 0.5 A_c,
+	 *
+	 * if A is the algebra element and t_c is the generator. Remember that tr( t_a t_b ) = 0.5 \delta_{ab}.
+	 *
+	 * @param c	Number of the generator
+	 * @return	Projection onto generator
+	 */
+	public abstract double proj(int c);
+
 }

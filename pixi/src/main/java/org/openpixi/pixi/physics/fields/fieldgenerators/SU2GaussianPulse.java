@@ -80,10 +80,10 @@ public class SU2GaussianPulse implements IFieldGenerator {
 			}
 			double electricFieldFactor = -g * as * tmp;
 
-			// Multiplicative factor for the gaussian pulse at t = dt/2 (for links)
+			// Multiplicative factor for the gaussian pulse at t = -dt/2 (for links)
 			tmp = 1.0;
 			for (int i = 0; i < numberOfDimensions; i++) {
-				tmp *= gaussian(currentPosition[i], this.position[i] + c * timeStep / 2.0 * this.direction[i], this.sigma[i]);
+				tmp *= gaussian(currentPosition[i], this.position[i] - c * timeStep / 2.0 * this.direction[i], this.sigma[i]);
 			}
 			double gaugeFieldFactor = g * as * tmp;
 

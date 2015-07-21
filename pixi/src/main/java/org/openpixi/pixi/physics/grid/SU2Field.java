@@ -182,4 +182,9 @@ public void addequate (YMField a) {
 		return b;
 	}
 
+	public double proj(int c)
+	{
+		return 0.5 * v[c];
+	}
+
 }

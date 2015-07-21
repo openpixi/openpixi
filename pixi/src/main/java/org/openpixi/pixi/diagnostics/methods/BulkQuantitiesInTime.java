@@ -51,6 +51,7 @@ public class BulkQuantitiesInTime implements Diagnostics {
 		this.stepInterval = (int) (timeInterval / this.s.getTimeStep());
 		this.fieldMeasurements = new FieldMeasurements();
 
+
 		if(!supressOutput) {
 			// Create/delete file.
 			clear();
@@ -59,7 +60,7 @@ public class BulkQuantitiesInTime implements Diagnostics {
 			File file = getOutputFile(path);
 			try {
 				FileWriter pw = new FileWriter(file, true);
-				pw.write("#time \t E^2 \t B^2 \t P_x \t P_y \t P_z \t Gauss law ");
+				pw.write("#time \t E^2 \t B^2 \t P_x \t P_y \t P_z \t G");
 				pw.write("\n");
 				pw.close();
 			} catch (IOException ex) {
@@ -93,6 +94,7 @@ public class BulkQuantitiesInTime implements Diagnostics {
 			pz = +esquares[0] + esquares[1] - esquares[2] + bsquares[0] + bsquares[1] - bsquares[2];
 
 			gaussViolation = fieldMeasurements.calculateGaussConstraint(grid);
+
 
 			if(!supressOutput) {
 				File file = getOutputFile(path);
