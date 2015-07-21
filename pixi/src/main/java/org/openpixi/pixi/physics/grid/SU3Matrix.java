@@ -172,6 +172,26 @@ public class SU3Matrix implements LinkMatrix {
 		return b;
 	}
 
+	public double[] det() {
+		// computed in Mathematica
+		// not yet tested
+		double[] out = new double[2];
+
+		// real part
+		out[0] = e[13]*e[15]*e[2]-e[12]*e[16]*e[2]-e[11]*e[16]*e[3]+e[10]*e[17]*e[3]+e[11]*e[15]*e[4]-e[10]*e[15]*e[5]+
+				e[11]*e[13]*e[6]-e[10]*e[14]*e[6]-e[2]*e[4]*e[6]-e[11]*e[12]*e[7]+e[2]*e[3]*e[7]+e[10]*e[12]*e[8]+
+				e[1]*(-e[14]*e[15]+e[12]*e[17]+e[5]*e[6]-e[3]*e[8])+e[0]*(e[14]*e[16]-e[13]*e[17]-e[5]*e[7]+e[4]*e[8])-
+				e[17]*e[4]*e[9]+e[16]*e[5]*e[9]+e[14]*e[7]*e[9]-e[13]*e[8]*e[9];
+
+		// imag. part
+		out[1] = -e[1]*e[17]*e[3]+e[16]*e[2]*e[3]+e[0]*e[17]*e[4]-e[15]*e[2]*e[4]+e[1]*e[15]*e[5]-e[0]*e[16]*e[5]+
+				e[1]*e[14]*e[6]-e[13]*e[2]*e[6]-e[0]*e[14]*e[7]+e[12]*e[2]*e[7]+e[11]*(e[13]*e[15]-e[12]*e[16]-e[4]*e[6]+e[3]*e[7])-
+				e[1]*e[12]*e[8]+e[0]*e[13]*e[8]+e[10]*(-e[14]*e[15]+e[12]*e[17]+e[5]*e[6]-e[3]*e[8])+
+				(e[14]*e[16]-e[13]*e[17]-e[5]*e[7]+e[4]*e[8])*e[9];
+
+		return out;
+		}
+
 	/**
 	 * Normalizes (complex) vector in place
 	 * Vector is stored as three real components followed by three imag. components
@@ -324,6 +344,10 @@ public class SU3Matrix implements LinkMatrix {
 		phase1 = Math.atan2(value1Im,value1Re);
 		phase2 = Math.atan2(value2Im,value2Re);
 		phase3 = Math.atan2(value3Im,value3Re);
+
+		if (Math.abs(phase1+phase2+phase3) >= 10e-10) {
+			phase3 -= phase1+phase2+phase3;
+		}
 
 		// multiply U log(D) U* to get algebra element
 		// log(D) is just a real diagonal matrix so multipication is included in construction of U

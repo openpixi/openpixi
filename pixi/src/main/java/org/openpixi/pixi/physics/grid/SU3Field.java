@@ -192,8 +192,6 @@ public class SU3Field extends YMField {
 		phase2 = r * Math.cos(th2) - (linTerm*Math.cos(th2))/(3*r);
 		phase3 = r * Math.cos(th3) - (linTerm*Math.cos(th3))/(3*r);
 
-		double test = r * Math.sin(th3) + (linTerm*Math.sin(th3))/(3*r);
-
 		// now use eigenvalues to compute orthonormal eigenvectors
 		// (U - \lambda_i)(U - \lambda_j) has columns that are eigenvectors for the remaining eigenvalue \lambda_k
 		// we use this result, but we only need one column so we can avoid doing the full multiplication
@@ -272,5 +270,4 @@ public class SU3Field extends YMField {
 	public LinkMatrix getLinkExact () {
 		return new SU3Matrix(groupElementDecompositionMethod());
 	}
-
 }
