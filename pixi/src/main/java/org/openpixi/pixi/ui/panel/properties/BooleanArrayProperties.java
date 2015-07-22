@@ -1,6 +1,9 @@
 package org.openpixi.pixi.ui.panel.properties;
 
 import javax.swing.*;
+
+import org.openpixi.pixi.ui.SimulationAnimation;
+
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.util.ArrayList;
@@ -12,12 +15,14 @@ import java.util.List;
  */
 public class BooleanArrayProperties {
 
+	private SimulationAnimation simulationAnimation;
 	private boolean[] valueList;
 	private String[] nameList;
 	private JCheckBox[] boolCheckList;
 
-	public BooleanArrayProperties(String[] nameList, boolean[] initialValueList)
+	public BooleanArrayProperties(SimulationAnimation simulationAnimation, String[] nameList, boolean[] initialValueList)
 	{
+		this.simulationAnimation = simulationAnimation;
 		this.nameList = nameList;
 		boolCheckList = new JCheckBox[this.nameList.length];
 		valueList = new boolean[this.nameList.length];
@@ -91,6 +96,7 @@ public class BooleanArrayProperties {
 		public void itemStateChanged(ItemEvent event){
 			BooleanArrayProperties.this.valueList[index] =
 					(event.getStateChange() == ItemEvent.SELECTED);
+			simulationAnimation.repaint();
 		}
 	}
 }

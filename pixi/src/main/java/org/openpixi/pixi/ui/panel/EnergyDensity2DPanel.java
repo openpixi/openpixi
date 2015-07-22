@@ -39,12 +39,14 @@ import org.openpixi.pixi.ui.panel.properties.InfoProperties;
  */
 public class EnergyDensity2DPanel extends AnimationPanel {
 
-	ScaleProperties scaleProperties = new ScaleProperties();	
-	InfoProperties infoProperties = new InfoProperties();
+	ScaleProperties scaleProperties;
+	InfoProperties infoProperties;
 	
 	/** Constructor */
 	public EnergyDensity2DPanel(SimulationAnimation simulationAnimation) {
 		super(simulationAnimation);
+		scaleProperties = new ScaleProperties(simulationAnimation);
+		infoProperties = new InfoProperties(simulationAnimation);
 	}
 
 	/** Display the particles */

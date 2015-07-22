@@ -1,6 +1,9 @@
 package org.openpixi.pixi.ui.panel.properties;
 
 import javax.swing.*;
+
+import org.openpixi.pixi.ui.SimulationAnimation;
+
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -10,14 +13,16 @@ import java.awt.event.ActionListener;
  */
 public class IntegerProperties {
 
+	private SimulationAnimation simulationAnimation;
 	private int value;
 	private String name;
 
 	private JLabel label;
 	private JTextField textField;
 
-	public IntegerProperties(String name, int initialValue)
+	public IntegerProperties(SimulationAnimation simulationAnimation, String name, int initialValue)
 	{
+		this.simulationAnimation = simulationAnimation;
 		this.name = name;
 		textField = new JTextField();
 		this.setValue(initialValue);
@@ -56,6 +61,7 @@ public class IntegerProperties {
 	class TextFieldListener implements ActionListener {
 		public void actionPerformed(ActionEvent event) {
 			value = Integer.parseInt(textField.getText());
+			simulationAnimation.repaint();
 		}
 	}
 }

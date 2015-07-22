@@ -37,11 +37,12 @@ import org.openpixi.pixi.ui.panel.properties.ScaleProperties;
  */
 public class EnergyDensity2DGLPanel extends AnimationGLPanel {
 
-	ScaleProperties scaleProperties = new ScaleProperties();
+	ScaleProperties scaleProperties;
 
 	/** Constructor */
 	public EnergyDensity2DGLPanel(SimulationAnimation simulationAnimation) {
 		super(simulationAnimation);
+		scaleProperties = new ScaleProperties(simulationAnimation);
 
 		scaleProperties.setAutomaticScaling(true);
 	}

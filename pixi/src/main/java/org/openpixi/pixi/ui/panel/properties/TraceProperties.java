@@ -6,12 +6,19 @@ import java.awt.event.ItemListener;
 import javax.swing.Box;
 import javax.swing.JCheckBox;
 
+import org.openpixi.pixi.ui.SimulationAnimation;
+
 public class TraceProperties {
 
+	private SimulationAnimation simulationAnimation;
 	/** A state for the trace */
 	public boolean showTrace = false;
 
 	private boolean resetTrace;
+
+	public TraceProperties(SimulationAnimation simulationAnimation) {
+		this.simulationAnimation = simulationAnimation;
+	}
 
 	public void clear() {
 		resetTrace = true;
@@ -57,6 +64,7 @@ public class TraceProperties {
 		public void itemStateChanged(ItemEvent event){
 			TraceProperties.this.showTrace = 
 					(event.getStateChange() == ItemEvent.SELECTED);
+			simulationAnimation.repaint();
 		}
 	}
 
