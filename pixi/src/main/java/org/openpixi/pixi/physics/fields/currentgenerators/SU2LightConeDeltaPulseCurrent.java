@@ -58,8 +58,8 @@ public class SU2LightConeDeltaPulseCurrent implements ICurrentGenerator {
 				this.magnitude * this.amplitudeColorDirection[1],
 				this.magnitude * this.amplitudeColorDirection[2]);
 
-		fieldAmplitude.mult(normFactor);	// This factor comes from the dimensionality of the current density
-		chargeAmplitude.mult(chargeNorm);
+		fieldAmplitude.multequate(chargeNorm);	// This factor comes from the dimensionality of the current density
+		chargeAmplitude.multequate(chargeNorm);
 
 		/*
 			Find the nearest grid point and apply the current configuration to the cell current.

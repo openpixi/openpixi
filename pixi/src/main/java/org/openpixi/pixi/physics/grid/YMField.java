@@ -19,6 +19,8 @@ public abstract class YMField {
 	public abstract double square ();
 	
 	public abstract YMField mult (double number);
+
+	public abstract void multequate (double number);
 	
 	public abstract void set (YMField a);
 	
