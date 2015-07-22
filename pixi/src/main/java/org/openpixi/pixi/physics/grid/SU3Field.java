@@ -176,21 +176,20 @@ public class SU3Field extends YMField {
 		r = Math.pow(preOmegaRe * preOmegaRe + preOmegaIm * preOmegaIm, 1. / 6);
 
 		// three angles of cube roots of W^3
-		double th1, th2, th3;
-		th1 = (th + 0*Math.PI)/3;
-		th2 = (th + 2*Math.PI)/3;
-		th3 = (th + 4*Math.PI)/3;
+		double[] ths = new double[3];
+		for (int i = 0; i < 3; i++) {
+			ths[i] = (th + 2 * Math.PI * i) / 3;
+		}
 
 		// the end is near!
 		// X_i = W_i - p / (3 W_i)
 		// then \lambda_i = X_i
 		// this gives us the real eigenvalues to high precision
 		// (these matrices are hermitian, so eigenvalues better be real)
-		//
-		double phase1, phase2, phase3;
-		phase1 = r * Math.cos(th1) - (linTerm*Math.cos(th1))/(3*r);
-		phase2 = r * Math.cos(th2) - (linTerm*Math.cos(th2))/(3*r);
-		phase3 = r * Math.cos(th3) - (linTerm*Math.cos(th3))/(3*r);
+		double[] phases = new double[3];
+		for (int i = 0; i < 3; i++) {
+			phases[i] = r * Math.cos(ths[i]) - (linTerm * Math.cos(ths[i])) / (3 * r);
+		}
 
 		// now use eigenvalues to compute orthonormal eigenvectors
 		// (U - \lambda_i)(U - \lambda_j) has columns that are eigenvectors for the remaining eigenvalue \lambda_k
@@ -199,62 +198,46 @@ public class SU3Field extends YMField {
 
 		// get one eigenvector for each value
 		// normalize vectors in place
-		// not yet tested
-		double[] vector1, vector2, vector3;
+		double[][] vectors = new double[3][6];
+		for (int i = 0; i < 3; i++) {
+			// product of other two phases besides phases[i]
+			double otherPhaseProduct = phases[0] * phases[1] * phases[2] / phases[i];
+			// sum of other two phases besides phases[i]
+			double otherPhaseSum = phases[0] + phases[1] + phases[2] - phases[i];
 
-		vector1 = new double[6];
-		vector1[0] = v[0]*v[0]+v[1]*v[1]+v[2]*v[2]+v[3]*v[3]+v[6]*v[6]+phase2*phase3-v[0]*(phase2+phase3);
-		vector1[1] = v[0]*v[1]+v[2]*v[5]+v[6]*v[7]+v[1]*(v[4]-phase2-phase3);
-		vector1[2] = v[0]*v[2]+v[1]*v[5]-v[3]*v[7]+v[2]*v[8]-v[2]*phase2-v[2]*phase3;
-		vector1[3] = 0;
-		vector1[4] = -v[0]*v[3]-v[5]*v[6]+v[2]*v[7]+v[3]*(phase2+phase3-v[4]);
-		vector1[5] = -v[3]*v[5]-v[0]*v[6]-v[1]*v[7]-v[6]*v[8]+v[6]*phase2+v[6]*phase3;
+			vectors[i][0] = v[0]*v[0]+v[1]*v[1]+v[2]*v[2]+v[3]*v[3]+v[6]*v[6]+otherPhaseProduct-v[0]*otherPhaseSum;
+			vectors[i][1] = v[0]*v[1]+v[2]*v[5]+v[6]*v[7]+v[1]*(v[4]-otherPhaseSum);
+			vectors[i][2] = v[0]*v[2]+v[1]*v[5]-v[3]*v[7]+v[2]*v[8]-v[2]*otherPhaseSum;
+			vectors[i][3] = 0;
+			vectors[i][4] = -v[0]*v[3]-v[5]*v[6]+v[2]*v[7]+v[3]*(otherPhaseSum-v[4]);
+			vectors[i][5] = -v[3]*v[5]-v[0]*v[6]-v[1]*v[7]-v[6]*v[8]+v[6]*otherPhaseSum;
 
-		vector2 = new double[6];
-		vector2[0] = v[0]*v[0]+v[1]*v[1]+v[2]*v[2]+v[3]*v[3]+v[6]*v[6]+phase1*phase3-v[0]*(phase1+phase3);
-		vector2[1] = v[0]*v[1]+v[2]*v[5]+v[6]*v[7]+v[1]*(v[4]-phase1-phase3);
-		vector2[2] = v[0]*v[2]+v[1]*v[5]-v[3]*v[7]+v[2]*v[8]-v[2]*phase1-v[2]*phase3;
-		vector2[3] = 0;
-		vector2[4] = -v[0]*v[3]-v[5]*v[6]+v[2]*v[7]+v[3]*(phase1+phase3-v[4]);
-		vector2[5] = -v[3]*v[5]-v[0]*v[6]-v[1]*v[7]-v[6]*v[8]+v[6]*phase1+v[6]*phase3;
-
-		vector3 = new double[6];
-		vector3[0] = v[0]*v[0]+v[1]*v[1]+v[2]*v[2]+v[3]*v[3]+v[6]*v[6]+phase1*phase2-v[0]*(phase1+phase2);
-		vector3[1] = v[0]*v[1]+v[2]*v[5]+v[6]*v[7]+v[1]*(v[4]-phase1-phase2);
-		vector3[2] = v[0]*v[2]+v[1]*v[5]-v[3]*v[7]+v[2]*v[8]-v[2]*phase1-v[2]*phase2;
-		vector3[3] = 0;
-		vector3[4] = -v[0]*v[3]-v[5]*v[6]+v[2]*v[7]+v[3]*(phase1+phase2-v[4]);
-		vector3[5] = -v[3]*v[5]-v[0]*v[6]-v[1]*v[7]-v[6]*v[8]+v[6]*phase1+v[6]*phase2;
-
-		normalize(vector1);
-		normalize(vector2);
-		normalize(vector3);
+			normalize(vectors[i]);
+		}
 
 		// take log of eigenvalue matrix
-		double value1Re,value1Im, value2Re,value2Im, value3Re,value3Im;
-		value1Re = Math.cos(phase1);
-		value1Im = Math.sin(phase1);
-		value2Re = Math.cos(phase2);
-		value2Im = Math.sin(phase2);
-		value3Re = Math.cos(phase3);
-		value3Im = Math.sin(phase3);
+		double[] valuesRe = new double[3];
+		double[] valuesIm = new double[3];
+		for (int i = 0; i < 3; i++) {
+			valuesRe[i] = Math.cos(phases[i]);
+			valuesIm[i] = Math.sin(phases[i]);
+		}
 
 		// multiply U exp(D) U* to get algebra element
-		// exp(D) is just a (complex) diagonal matrix so multipication is included in construction of U
-		SU3Matrix UEeD = new SU3Matrix(new double[]{vector1[0]*value1Re-vector1[3]*value1Im,vector2[0]*value2Re-vector2[3]*value2Im,vector3[0]*value3Re-vector3[3]*value3Im,
-													vector1[1]*value1Re-vector1[4]*value1Im,vector2[1]*value2Re-vector2[4]*value2Im,vector3[1]*value3Re-vector3[4]*value3Im,
-													vector1[2]*value1Re-vector1[5]*value1Im,vector2[2]*value2Re-vector2[5]*value2Im,vector3[2]*value3Re-vector3[5]*value3Im,
-													vector1[0]*value1Im+vector1[3]*value1Re,vector2[0]*value2Im+vector2[3]*value2Re,vector3[0]*value3Im+vector3[3]*value3Re,
-													vector1[1]*value1Im+vector1[4]*value1Re,vector2[1]*value2Im+vector2[4]*value2Re,vector3[1]*value3Im+vector3[4]*value3Re,
-													vector1[2]*value1Im+vector1[5]*value1Re,vector2[2]*value2Im+vector2[5]*value2Re,vector3[2]*value3Im+vector3[5]*value3Re});
-		SU3Matrix UAdj = new SU3Matrix(new double[]{ vector1[0], vector1[1], vector1[2],
-													 vector2[0], vector2[1], vector2[2],
-													 vector3[0], vector3[1], vector3[2],
-													-vector1[3],-vector1[4],-vector1[5],
-													-vector2[3],-vector2[4],-vector2[5],
-													-vector3[3],-vector3[4],-vector3[5]});
-
-		return ((SU3Matrix) UEeD.mult(UAdj)).get();
+		// exp(D) is just a (complex) diagonal matrix
+		SU3Matrix unit = new SU3Matrix(new double[]{vectors[0][0],vectors[1][0],vectors[2][0],
+													vectors[0][1],vectors[1][1],vectors[2][1],
+													vectors[0][2],vectors[1][2],vectors[2][2],
+													vectors[0][3],vectors[1][3],vectors[2][3],
+													vectors[0][4],vectors[1][4],vectors[2][4],
+													vectors[0][5],vectors[1][5],vectors[2][5]});
+		SU3Matrix diag = new SU3Matrix(new double[]{valuesRe[0],0,0,
+													0,valuesRe[1],0,
+													0,0,valuesRe[2],
+													valuesIm[0],0,0,
+													0,valuesIm[1],0,
+													0,0,valuesIm[2]});
+		return ((SU3Matrix) unit.mult(diag).mult(unit.adj())).get();
 	}
 
 
@@ -269,5 +252,19 @@ public class SU3Field extends YMField {
 	
 	public LinkMatrix getLinkExact () {
 		return new SU3Matrix(groupElementDecompositionMethod());
+	}
+
+	public double proj(int c) {
+		switch (c) {
+			case 0: return 2 * v[1];
+			case 1: return -2 * v[3];
+			case 2: return v[0] - v[4];
+			case 3: return 2 * v[2];
+			case 4: return -2 * v[6];
+			case 5: return 2 * v[5];
+			case 6: return -2 * v[7];
+			case 7: return (v[0] + v[4] - 2 * v[8]) / Math.sqrt(3);
+			default: System.out.println("Invalid generator index!"); return 0;
+		}
 	}
 }

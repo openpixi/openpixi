@@ -149,7 +149,6 @@ public class SU3Matrix implements LinkMatrix {
 
 	public LinkMatrix mult(LinkMatrix arg) {
 		// computed in Mathematica
-		// not yet tested
 		SU3Matrix b = new SU3Matrix();
 		b.set(0, arg.get(0)*e[0]+arg.get(3)*e[1]-arg.get(12)*e[10]-arg.get(15)*e[11]+arg.get(6)*e[2]-arg.get(9)*e[9]);
 		b.set(1, arg.get(1)*e[0]+arg.get(4)*e[1]-arg.get(13)*e[10]-arg.get(16)*e[11]+arg.get(7)*e[2]-arg.get(10)*e[9]);
@@ -174,7 +173,6 @@ public class SU3Matrix implements LinkMatrix {
 
 	public double[] det() {
 		// computed in Mathematica
-		// not yet tested
 		double[] out = new double[2];
 
 		// real part
@@ -284,22 +282,21 @@ public class SU3Matrix implements LinkMatrix {
 		r = Math.pow(preOmegaRe * preOmegaRe + preOmegaIm * preOmegaIm, 1. / 6);
 
 		// three angles of cube roots of W^3
-		double th1, th2, th3;
-		th1 = (th + 0*Math.PI)/3;
-		th2 = (th + 2*Math.PI)/3;
-		th3 = (th + 4*Math.PI)/3;
+		double[] ths = new double[3];
+		for (int i = 0; i < 3; i++) {
+			ths[i] = (th + 2 * Math.PI * i) / 3;
+		}
 
 		// the end is near!
 		// X_i = W_i - p / (3 W_i)
 		// then \lambda_i = X_i + 1/3 tr(U)
 		// this gives us the real and imag. parts of the three eigenvalues to high precision
-		double value1Re, value1Im, value2Re, value2Im, value3Re, value3Im;
-		value1Re = r * Math.cos(th1) - (linTermRe*Math.cos(th1) + linTermIm*Math.sin(th1))/(3*r) + trRe/3;
-		value1Im = r * Math.sin(th1) + (linTermRe*Math.sin(th1) - linTermIm*Math.cos(th1))/(3*r) + trIm/3;
-		value2Re = r * Math.cos(th2) - (linTermRe*Math.cos(th2) + linTermIm*Math.sin(th2))/(3*r) + trRe/3;
-		value2Im = r * Math.sin(th2) + (linTermRe*Math.sin(th2) - linTermIm*Math.cos(th2))/(3*r) + trIm/3;
-		value3Re = r * Math.cos(th3) - (linTermRe*Math.cos(th3) + linTermIm*Math.sin(th3))/(3*r) + trRe/3;
-		value3Im = r * Math.sin(th3) + (linTermRe*Math.sin(th3) - linTermIm*Math.cos(th3))/(3*r) + trIm/3;
+		double[] valuesRe = new double[3];
+		double[] valuesIm = new double[3];
+		for (int i = 0; i < 3; i++) {
+			valuesRe[i] = r * Math.cos(ths[i]) - (linTermRe * Math.cos(ths[i]) + linTermIm * Math.sin(ths[i])) / (3 * r) + trRe / 3;
+			valuesIm[i] = r * Math.sin(ths[i]) + (linTermRe * Math.sin(ths[i]) - linTermIm * Math.cos(ths[i])) / (3 * r) + trIm / 3;
+		}
 
 		// now use eigenvalues to compute orthonormal eigenvectors
 		// (U - \lambda_i)(U - \lambda_j) has columns that are eigenvectors for the remaining eigenvalue \lambda_k
@@ -308,61 +305,54 @@ public class SU3Matrix implements LinkMatrix {
 
 		// get one eigenvector for each value
 		// normalize vectors in place
-		// not yet tested
-		double[] vector1, vector2, vector3;
+		double[][] vectors = new double[3][6];
+		for (int i = 0; i < 3; i++) {
+			// product of other two valuesRe besides valuesRe[i]
+			double otherValueReProduct = valuesRe[0] * valuesRe[1] * valuesRe[2] / valuesRe[i];
+			// sum of other two valuesRe besides valuesRe[i]
+			double otherValueReSum = valuesRe[0] + valuesRe[1] + valuesRe[2] - valuesRe[i];
+			// product of other two valuesIm besides valuesIm[i]
+			double otherValueImProduct = valuesIm[0] * valuesIm[1] * valuesIm[2] / valuesIm[i];
+			// sum of other two valuesIm besides valuesIm[i]
+			double otherValueImSum = valuesIm[0] + valuesIm[1] + valuesIm[2] - valuesIm[i];
+			//  sum of products of valuesIm and valuesRe for other two values
+			double otherReImSum = (valuesRe[0]*valuesIm[0] + valuesRe[1]*valuesIm[1] + valuesRe[2]*valuesIm[2] - valuesRe[i]*valuesIm[i]);
 
-		vector1 = new double[6];
-		vector1[0] = value2Re*(value3Re-e[0])-value3Re*e[0]+e[0]*e[0]-e[10]*e[12]-e[11]*e[15]+e[1]*e[3]+e[2]*e[6]+value3Im*e[9]-e[9]*e[9]+value2Im*(-value3Im+e[9]);
-		vector1[1] = value2Im*e[12]+value3Im*e[12]-e[12]*e[13]-e[14]*e[15]-value2Re*e[3]-value3Re*e[3]+e[0]*e[3]+e[3]*e[4]+e[5]*e[6]-e[12]*e[9];
-		vector1[2] = value2Im*e[15]+value3Im*e[15]-e[12]*e[16]-e[15]*e[17]-value2Re*e[6]-value3Re*e[6]+e[0]*e[6]+e[3]*e[7]+e[6]*e[8]-e[15]*e[9];
-		vector1[3] = value2Im*(value3Re-e[0])-value3Im*e[0]+e[1]*e[12]+e[15]*e[2]+e[10]*e[3]+e[11]*e[6]+value2Re*(value3Im-e[9])-value3Re*e[9]+2*e[0]*e[9];
-		vector1[4] = -value2Re*e[12]-value3Re*e[12]+e[0]*e[12]-value2Im*e[3]-value3Im*e[3]+e[13]*e[3]+e[12]*e[4]+e[15]*e[5]+e[14]*e[6]+e[3]*e[9];
-		vector1[5] = -value2Re*e[15]-value3Re*e[15]+e[0]*e[15]+e[16]*e[3]-value2Im*e[6]-value3Im*e[6]+e[17]*e[6]+e[12]*e[7]+e[15]*e[8]+e[6]*e[9];
+			vectors[i][0] = (e[0]-otherValueReSum)*e[0]+(otherValueImSum-e[9])*e[9]+otherValueReProduct-otherValueImProduct-e[10]*e[12]-e[11]*e[15]+e[1]*e[3]+e[2]*e[6];
+			vectors[i][1] = (e[0]+e[4]-otherValueReSum)*e[3]+e[6]*e[5]+(otherValueImSum-e[9]-e[13])*e[12]-e[15]*e[14];
+			vectors[i][2] = (e[0]+e[8]-otherValueReSum)*e[6]+e[3]*e[7]+(otherValueImSum-e[9]-e[17])*e[15]-e[16]*e[12];
+			vectors[i][3] = (otherValueReSum-e[0])*(otherValueImSum-e[9])-otherReImSum+e[1]*e[12]+e[15]*e[2]+e[10]*e[3]+e[11]*e[6]+e[0]*e[9];
+			vectors[i][4] = (e[0]+e[4]-otherValueReSum)*e[12]+e[15]*e[5]+(e[9]+e[13]-otherValueImSum)*e[3]+e[6]*e[14];
+			vectors[i][5] = (e[0]+e[8]-otherValueReSum)*e[15]+e[12]*e[7]+(e[9]+e[17]-otherValueImSum)*e[6]+e[3]*e[16];
 
-		vector2 = new double[6];
-		vector2[0] = value1Re*(value3Re-e[0])-value3Re*e[0]+e[0]*e[0]-e[10]*e[12]-e[11]*e[15]+e[1]*e[3]+e[2]*e[6]+value3Im*e[9]-e[9]*e[9]+value1Im*(-value3Im+e[9]);
-		vector2[1] = value1Im*e[12]+value3Im*e[12]-e[12]*e[13]-e[14]*e[15]-value1Re*e[3]-value3Re*e[3]+e[0]*e[3]+e[3]*e[4]+e[5]*e[6]-e[12]*e[9];
-		vector2[2] = value1Im*e[15]+value3Im*e[15]-e[12]*e[16]-e[15]*e[17]-value1Re*e[6]-value3Re*e[6]+e[0]*e[6]+e[3]*e[7]+e[6]*e[8]-e[15]*e[9];
-		vector2[3] = value1Im*(value3Re-e[0])-value3Im*e[0]+e[1]*e[12]+e[15]*e[2]+e[10]*e[3]+e[11]*e[6]+value1Re*(value3Im-e[9])-value3Re*e[9]+2*e[0]*e[9];
-		vector2[4] = -value1Re*e[12]-value3Re*e[12]+e[0]*e[12]-value1Im*e[3]-value3Im*e[3]+e[13]*e[3]+e[12]*e[4]+e[15]*e[5]+e[14]*e[6]+e[3]*e[9];
-		vector2[5] = -value1Re*e[15]-value3Re*e[15]+e[0]*e[15]+e[16]*e[3]-value1Im*e[6]-value3Im*e[6]+e[17]*e[6]+e[12]*e[7]+e[15]*e[8]+e[6]*e[9];
-
-		vector3 = new double[6];
-		vector3[0] = value1Re*(value2Re-e[0])-value2Re*e[0]+e[0]*e[0]-e[10]*e[12]-e[11]*e[15]+e[1]*e[3]+e[2]*e[6]+value2Im*e[9]-e[9]*e[9]+value1Im*(-value2Im+e[9]);
-		vector3[1] = value1Im*e[12]+value2Im*e[12]-e[12]*e[13]-e[14]*e[15]-value1Re*e[3]-value2Re*e[3]+e[0]*e[3]+e[3]*e[4]+e[5]*e[6]-e[12]*e[9];
-		vector3[2] = value1Im*e[15]+value2Im*e[15]-e[12]*e[16]-e[15]*e[17]-value1Re*e[6]-value2Re*e[6]+e[0]*e[6]+e[3]*e[7]+e[6]*e[8]-e[15]*e[9];
-		vector3[3] = value1Im*(value2Re-e[0])-value2Im*e[0]+e[1]*e[12]+e[15]*e[2]+e[10]*e[3]+e[11]*e[6]+value1Re*(value2Im-e[9])-value2Re*e[9]+2*e[0]*e[9];
-		vector3[4] = -value1Re*e[12]-value2Re*e[12]+e[0]*e[12]-value1Im*e[3]-value2Im*e[3]+e[13]*e[3]+e[12]*e[4]+e[15]*e[5]+e[14]*e[6]+e[3]*e[9];
-		vector3[5] = -value1Re*e[15]-value2Re*e[15]+e[0]*e[15]+e[16]*e[3]-value1Im*e[6]-value2Im*e[6]+e[17]*e[6]+e[12]*e[7]+e[15]*e[8]+e[6]*e[9];
-
-		normalize(vector1);
-		normalize(vector2);
-		normalize(vector3);
+			normalize(vectors[i]);
+		}
 
 		// take log of eigenvalue matrix
-		double phase1, phase2, phase3;
-		phase1 = Math.atan2(value1Im,value1Re);
-		phase2 = Math.atan2(value2Im,value2Re);
-		phase3 = Math.atan2(value3Im,value3Re);
+		double[] phases = new double[3];
+		for (int i = 0; i < 3; i++) {
+			phases[i] = Math.atan2(valuesIm[i],valuesRe[i]);
+		}
 
-		if (Math.abs(phase1+phase2+phase3) >= 1.e-13) {
-			phase3 -= phase1+phase2+phase3;
+		double phaseSum = phases[0] + phases[1] + phases[2];
+		if (Math.abs(phaseSum) >= 1.e-13) {
+			phases[2] -= phaseSum;
 		}
 
 		// multiply U log(D) U* to get algebra element
-		// log(D) is just a real diagonal matrix so multipication is included in construction of U
-		SU3Matrix ULnD = new SU3Matrix(new double[]{vector1[0]*phase1,vector2[0]*phase2,vector3[0]*phase3,
-													vector1[1]*phase1,vector2[1]*phase2,vector3[1]*phase3,
-													vector1[2]*phase1,vector2[2]*phase2,vector3[2]*phase3,
-													vector1[3]*phase1,vector2[3]*phase2,vector3[3]*phase3,
-													vector1[4]*phase1,vector2[4]*phase2,vector3[4]*phase3,
-													vector1[5]*phase1,vector2[5]*phase2,vector3[5]*phase3});
-		SU3Matrix UAdj = new SU3Matrix(new double[]{ vector1[0], vector1[1], vector1[2],
-													 vector2[0], vector2[1], vector2[2],
-													 vector3[0], vector3[1], vector3[2],
-													-vector1[3],-vector1[4],-vector1[5],
-													-vector2[3],-vector2[4],-vector2[5],
-													-vector3[3],-vector3[4],-vector3[5]});
+		// log(D) is just a real diagonal matrix so multiplication is included in construction of U
+		SU3Matrix ULnD = new SU3Matrix(new double[]{vectors[0][0]*phases[0],vectors[1][0]*phases[1],vectors[2][0]*phases[2],
+													vectors[0][1]*phases[0],vectors[1][1]*phases[1],vectors[2][1]*phases[2],
+													vectors[0][2]*phases[0],vectors[1][2]*phases[1],vectors[2][2]*phases[2],
+													vectors[0][3]*phases[0],vectors[1][3]*phases[1],vectors[2][3]*phases[2],
+													vectors[0][4]*phases[0],vectors[1][4]*phases[1],vectors[2][4]*phases[2],
+													vectors[0][5]*phases[0],vectors[1][5]*phases[1],vectors[2][5]*phases[2]});
+		SU3Matrix UAdj = new SU3Matrix(new double[]{ vectors[0][0], vectors[0][1], vectors[0][2],
+													 vectors[1][0], vectors[1][1], vectors[1][2],
+													 vectors[2][0], vectors[2][1], vectors[2][2],
+													-vectors[0][3],-vectors[0][4],-vectors[0][5],
+													-vectors[1][3],-vectors[1][4],-vectors[1][5],
+													-vectors[2][3],-vectors[2][4],-vectors[2][5]});
 
 		double[] values = ((SU3Matrix) ULnD.mult(UAdj)).get();
 		// now normalize to ensure hermiticity!
@@ -423,7 +413,7 @@ public class SU3Matrix implements LinkMatrix {
 	/**
 	 * Returns the projection of the matrix onto the generators of the group as a YMField. This is done via the formula
 	 *
-	 *      u_a = - i tr (t_a U),
+	 *      u_a = - 2 i tr (t_a U),
 	 *
 	 * where U is the SU3Matrix, t_a is the a-th generator of the group and u_a is the a-th component of the YMField.
 	 *
@@ -433,24 +423,24 @@ public class SU3Matrix implements LinkMatrix {
 	 * @return YMField instance of the projection
 	 */
 	public YMField proj() {
-		double[] values = new double[]{(2*e[9]-e[13]-e[17])/6,
-				e[10]/2,
-				e[11]/2,
-				e[12]/2,
-				(2*e[13]-e[17]-e[9])/6,
-				e[14]/2,
-				e[15]/2,
-				e[16]/2,
-				(2*e[17]-e[9]-e[13])/6,
-				(e[4]+e[8]-2*e[0])/6,
-				-e[1]/2,
-				-e[2]/2,
-				-e[3]/2,
-				(e[0]+e[8]-2*e[4])/6,
-				-e[5]/2,
-				-e[6]/2,
-				-e[7]/2,
-				(e[0]+e[4]-2*e[8])/6};
+		double[] values = new double[]{(2*e[9]-e[13]-e[17])/3,
+				e[10],
+				e[11],
+				e[12],
+				(2*e[13]-e[17]-e[9])/3,
+				e[14],
+				e[15],
+				e[16],
+				(2*e[17]-e[9]-e[13])/3,
+				-(2*e[0]-e[4]-e[8])/3,
+				-e[1],
+				-e[2],
+				-e[3],
+				-(2*e[4]-e[0]-e[8])/3,
+				-e[5],
+				-e[6],
+				-e[7],
+				-(2*e[8]-e[0]-e[4])/3};
 		double[] fieldValues = hermiticize(values);
 		return new SU3Field(fieldValues);
 	}
