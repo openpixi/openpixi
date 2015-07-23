@@ -9,12 +9,12 @@ public class LightConePoissonSolver {
 
 	//private DoubleFFTWrapper fft;
 	private int dir;
-	private int[] pos;
+	private double[] position;
 	private int orientation;
 
-	public LightConePoissonSolver(int[] position, int direction, int orientation) {
-		pos = new int[position.length];
-		System.arraycopy(position, 0, this.pos, 0, position.length);
+	public LightConePoissonSolver(double[] position, int direction, int orientation) {
+		this.position = new double[position.length];
+		System.arraycopy(position, 0, this.position, 0, position.length);
 		this.dir = direction;
 		this.orientation = orientation;
 	}
@@ -42,7 +42,12 @@ public class LightConePoissonSolver {
 		int cellIndex;
 		int chargeIndex;
 
-		double norm = Math.pow(g.getLatticeSpacing(), g.getNumberOfDimensions() - 1);
+		//double norm = Math.pow(g.getLatticeSpacing(), g.getNumberOfDimensions() - 1);
+		double norm = Math.pow(g.getLatticeSpacing(), truesize);
+		int[] pos = new int[position.length];
+		for (int i = 0; i < position.length; i++) {
+			pos[i] = (int) Math.rint(position[i]/g.getLatticeSpacing());
+		}
 
 		if (size.length > 1) {
 			double[][] charge = new double[size[0]][2 * size[1]];

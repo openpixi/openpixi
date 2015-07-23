@@ -8,15 +8,14 @@ import org.openpixi.pixi.physics.fields.LightConePoissonSolver;
 public class SU2LightConeDeltaPulseCurrent implements ICurrentGenerator {
 
 	private int direction;
-	private int[] location;
+	private double[] location;
 	private double[] amplitudeColorDirection;
 	private double magnitude;
 	private Grid grid;
-	private int initialPosition;
 	private int orientation;
 	private LightConePoissonSolver poisson;
 
-	public SU2LightConeDeltaPulseCurrent(int direction, int[] location, double[] amplitudeColorDirection, double magnitude, int orientation) {
+	public SU2LightConeDeltaPulseCurrent(int direction, double[] location, double[] amplitudeColorDirection, double magnitude, int orientation) {
 
 		this.direction = direction;
 		this.location = location;
@@ -27,7 +26,6 @@ public class SU2LightConeDeltaPulseCurrent implements ICurrentGenerator {
 		this.amplitudeColorDirection = this.normalizeVector(amplitudeColorDirection);
 
 		this.magnitude = magnitude;
-		this.initialPosition = location[direction];
 		this.orientation = orientation;
 		this.poisson = new LightConePoissonSolver(location, direction, orientation);
 	}
@@ -41,6 +39,13 @@ public class SU2LightConeDeltaPulseCurrent implements ICurrentGenerator {
 		double normFactor = as/(Math.pow(as, grid.getNumberOfDimensions())*at);
 		double chargeNorm = 1.0/(Math.pow(as, grid.getNumberOfDimensions()));
 		double speed = s.getSpeedOfLight()*Integer.signum(orientation);
+		int[] pos = new int[location.length];
+		for (int i = 0; i < location.length; i++) {
+			pos[i] = (int) Math.rint(location[i]/as);
+			if( (s.totalSimulationSteps == 0) && (Math.abs((location[i]/as) % pos[i]) > 0.0001) ) {
+				System.out.println("SU2LightConeDeltaPulseCurrent: location is at a non-integer grid position!.");
+			}
+		}
 
 		/*
 			Setup the field amplitude for the current.
@@ -66,14 +71,14 @@ public class SU2LightConeDeltaPulseCurrent implements ICurrentGenerator {
 		 */
 		int position;
 		if(orientation < 0) {
-			position = (int) Math.ceil(initialPosition + speed * time * at / as);
+			position = (int) Math.ceil(Math.rint(location[direction]) + speed * time * at / as);
 		} else {
-			position = (int) Math.floor(initialPosition + speed * time * at / as);
+			position = (int) Math.floor(Math.rint(location[direction]) + speed * time * at / as);
 		}
 		//int position = (int) Math.rint(initialPosition + speed*time*at/as);
 		//int position = (int) Math.floor(initialPosition + speed * time * at / as);
-		location[direction] = position;
-		int cellIndex = grid.getCellIndex(location);
+		pos[direction] = position;
+		int cellIndex = grid.getCellIndex(pos);
 
 		int chargeIndex = cellIndex;
 		if(orientation < 0) {

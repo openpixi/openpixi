@@ -7,15 +7,13 @@ import org.openpixi.pixi.physics.grid.SU2Field;
 public class SU2DeltaPulseCurrent implements ICurrentGenerator {
 
 	private int direction;
-	private int[] location;
+	private double[] location;
 	private double[] amplitudeColorDirection;
 	private double magnitude;
 	private double speed;
-	private Simulation s;
 	private Grid grid;
-	private int initialPosition;
 
-	public SU2DeltaPulseCurrent(int direction, int[] location, double[] amplitudeColorDirection, double magnitude, double speed) {
+	public SU2DeltaPulseCurrent(int direction, double[] location, double[] amplitudeColorDirection, double magnitude, double speed) {
 
 		this.direction = direction;
 		this.location = location;
@@ -27,18 +25,23 @@ public class SU2DeltaPulseCurrent implements ICurrentGenerator {
 
 		this.magnitude = magnitude;
 		this.speed = speed;
-		this.initialPosition = location[direction];
 	}
 
 	public void applyCurrent(Simulation s) {
-		this.s = s;
 		this.grid = s.grid;
 		double as = grid.getLatticeSpacing();
 		double at = s.getTimeStep();
 		double time = s.totalSimulationTime;
 		double g = s.getCouplingConstant();
-		double normFactor = as/(Math.pow(as, grid.getNumberOfDimensions())*at);
+		//double normFactor = as/(Math.pow(as, grid.getNumberOfDimensions())*at);
 		double chargeNorm = 1.0/(Math.pow(as, grid.getNumberOfDimensions()));
+		int[] pos = new int[location.length];
+		for (int i = 0; i < location.length; i++) {
+			pos[i] = (int) Math.rint(location[i]/as);
+			if( (s.totalSimulationSteps == 0) && (Math.abs((location[i]/as) % pos[i]) > 0.0001) ) {
+				System.out.println("SU2DeltaPulseCurrent: location is at a non-integer grid position!.");
+			}
+		}
 
 		/*
 			Setup the field amplitude for the current.
@@ -56,15 +59,15 @@ public class SU2DeltaPulseCurrent implements ICurrentGenerator {
 				this.magnitude * this.amplitudeColorDirection[1],
 				this.magnitude * this.amplitudeColorDirection[2]);
 
-		fieldAmplitude.mult(normFactor);	// This factor comes from the dimensionality of the current density
-		chargeAmplitude.mult(chargeNorm);
+		fieldAmplitude.multequate(chargeNorm);	// This factor comes from the dimensionality of the current density
+		chargeAmplitude.multequate(chargeNorm);
 
 		/*
 			Find the nearest grid point and apply the current configuration to the cell current.
 		 */
-		int position = (int) Math.rint(initialPosition + speed*time/as);
-		location[direction] = position;
-		int cellIndex = grid.getCellIndex(location);
+		int position = (int) Math.rint(Math.rint(location[direction]) + speed*time/as);
+		pos[direction] = position;
+		int cellIndex = grid.getCellIndex(pos);
 
 		grid.addJ(cellIndex, direction, fieldAmplitude.mult(g*as));	// The factor g*as comes from our definition of electric fields!!
 		grid.setRho(cellIndex, chargeAmplitude.mult(g*as));

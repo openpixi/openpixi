@@ -18,7 +18,7 @@ public class YamlSU2LightConeDeltaPulseCurrent {
 	/**
 	 * Starting point for the current pulse on the grid.
 	 */
-	public List<Integer> location;
+	public List<Double> location;
 
 	/**
 	 * Direction of the current in color space.
@@ -79,7 +79,7 @@ public class YamlSU2LightConeDeltaPulseCurrent {
             I do it manually.
          */
 
-		int[] locationArray = new int[numberOfDimensions];
+		double[] locationArray = new double[numberOfDimensions];
 		double[] aColorArray = new double[numberOfComponents];
 
 		for (int i = 0; i < numberOfDimensions; i++) {
