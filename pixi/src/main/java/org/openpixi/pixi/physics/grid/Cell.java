@@ -52,26 +52,6 @@ public class Cell implements Serializable {
 				}
 			}
 		}
-		else if(colors == 3) {
-			F = new SU3Field[dimensions][dimensions];
-			U = new SU3Matrix[dimensions];
-			Unext = new SU3Matrix[dimensions];
-			E = new SU3Field[dimensions];
-			J = new SU3Field[dimensions];
-			rho = new SU3Field();
-
-			for(int i = 0; i < dimensions; i++)
-			{
-				U[i] = new SU3Matrix();
-				Unext[i] = new SU3Matrix();
-				E[i] = new SU3Field();
-				J[i] = new SU3Field();
-
-				for(int j = 0; j < dimensions; j++) {
-					F[i][j] = new SU3Field();
-				}
-			}
-		}
 		else {
 			System.out.println("Cell constructor for SU(" + colors + ") not defined.\n");
 		}
@@ -155,9 +135,7 @@ public class Cell implements Serializable {
 	public YMField getEmptyField(int colors) {
 		if(colors == 2) {
 			return new SU2Field();
-		} else if(colors == 3) {
-			return new SU3Field();
-		} else {System.out.println("Error!! Number of colors should be equal to 2 or 3!!"); return null;}
+		} else {System.out.println("Error!! Number of colors should be equal to 2!!"); return null;}
 	}
 
 	public void reassignLinks() {

@@ -141,36 +141,26 @@ public class SU3Field extends YMField {
 		double trSq = square() / 2;
 
 		// real determinant
-		double det;
-		det = -v[2]*v[2]*v[4]+v[6]*(2*v[3]*v[5]-v[4]*v[6]+2*v[1]*v[7])+2*v[2]*(v[1]*v[5]-v[3]*v[7])-
+		double det = -v[2]*v[2]*v[4]+v[6]*(2*v[3]*v[5]-v[4]*v[6]+2*v[1]*v[7])+2*v[2]*(v[1]*v[5]-v[3]*v[7])-
 				(v[1]*v[1]+v[3]*v[3])*v[8]-v[0]*(v[5]*v[5]+v[7]*v[7]-v[4]*v[8]);
 
 		// coefficients in reduced cubic equation
 		// \lambda = X
 		// X^3 - X * 1/2 tr(U^2) - det(U) == 0
-		double linTerm;
-		linTerm = -trSq/2;
+		double linTerm = -trSq/2;
 
 		// cubic is now in form X^3 + p X + q == 0
 		// transform to W^6 + q W^3 - 1/27 p^3 == 0
 		// then W^3 == (-q + sqrt(q^2 + 4/27 p^3))/2
 		// (pick positive solution)
-		// preRad is always real here
-
-		double preRad, radRe, radIm;
+		// preRad is always negative and real here so rad = i radIm = i sqrt(-preRad)
+		double preRad, radIm;
 		preRad = det*det + Math.pow(linTerm,3)*4/27;
-		if (preRad >= 0) {
-			radRe = Math.sqrt(preRad);
-			radIm = 0;
-		}
-		else {
-			radRe = 0;
-			radIm = Math.sqrt(-preRad);
-		}
+		radIm = Math.sqrt(-preRad);
 
 		// convert W^3 to polar
 		double preOmegaRe, preOmegaIm, r, th;
-		preOmegaRe = (det + radRe)/2;
+		preOmegaRe = det/2;
 		preOmegaIm = radIm/2;
 		th = Math.atan2(preOmegaIm, preOmegaRe);
 		r = Math.pow(preOmegaRe * preOmegaRe + preOmegaIm * preOmegaIm, 1. / 6);
@@ -207,10 +197,10 @@ public class SU3Field extends YMField {
 
 			vectors[i][0] = v[0]*v[0]+v[1]*v[1]+v[2]*v[2]+v[3]*v[3]+v[6]*v[6]+otherPhaseProduct-v[0]*otherPhaseSum;
 			vectors[i][1] = v[0]*v[1]+v[2]*v[5]+v[6]*v[7]+v[1]*(v[4]-otherPhaseSum);
-			vectors[i][2] = v[0]*v[2]+v[1]*v[5]-v[3]*v[7]+v[2]*v[8]-v[2]*otherPhaseSum;
+			vectors[i][2] = v[0]*v[2]+v[1]*v[5]-v[3]*v[7]+v[2]*(v[8]-otherPhaseSum);
 			vectors[i][3] = 0;
 			vectors[i][4] = -v[0]*v[3]-v[5]*v[6]+v[2]*v[7]+v[3]*(otherPhaseSum-v[4]);
-			vectors[i][5] = -v[3]*v[5]-v[0]*v[6]-v[1]*v[7]-v[6]*v[8]+v[6]*otherPhaseSum;
+			vectors[i][5] = -v[3]*v[5]-v[0]*v[6]-v[1]*v[7]+v[6]*(otherPhaseSum-v[8]);
 
 			normalize(vectors[i]);
 		}

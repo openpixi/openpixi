@@ -5,14 +5,13 @@ import org.apache.commons.math3.Field;
 import org.apache.commons.math3.complex.Complex;
 import org.apache.commons.math3.complex.ComplexField;
 import org.apache.commons.math3.linear.Array2DRowFieldMatrix;
-import org.apache.commons.math3.linear.Array2DRowRealMatrix;
 import org.junit.Assert;
 import org.junit.Test;
 
 public class SU3EverythingTest {
 
 
-	private final double accuracy = 1.E-13;
+	private final double accuracy = 1.E-12;
 
 	@Test
 	public void SU() {

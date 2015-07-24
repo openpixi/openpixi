@@ -188,7 +188,7 @@ public class SU3Matrix implements LinkMatrix {
 				(e[14]*e[16]-e[13]*e[17]-e[5]*e[7]+e[4]*e[8])*e[9];
 
 		return out;
-		}
+	}
 
 	/**
 	 * Normalizes (complex) vector in place
@@ -251,7 +251,7 @@ public class SU3Matrix implements LinkMatrix {
 //		radIm = r * Math.sin(th);
 
 		// UPDATE!
-		// for some reason the argument under the square root is always real for SU(3) matrices
+		// for some reason the argument under the square root is always real and positive for SU(3) matrices
 		// confirmed in Mathematica for one million random SU(3) matrices
 		// invariant can be expressed as
 		// 		Im{ 1/3 tr(U^2) tr(U) -
@@ -263,21 +263,14 @@ public class SU3Matrix implements LinkMatrix {
 		// not always true for SU(4)! so why is this true for SU(3)?
 		// anyway, we can get rid of all the imaginary computation here and take the direct square root
 
-		double preRad, radRe, radIm;
+		double preRad, radRe;
 		preRad = constTermRe*constTermRe - constTermIm*constTermIm + 4*linTermRe*(linTermRe*linTermRe - 3*linTermIm*linTermIm)/27;
-		if (preRad >= 0) {
-			radRe = Math.sqrt(preRad);
-			radIm = 0;
-		}
-		else {
-			radRe = 0;
-			radIm = Math.sqrt(-preRad);
-		}
+		radRe = Math.sqrt(preRad);
 
 		// convert W^3 to polar
 		double preOmegaRe, preOmegaIm, r, th;
 		preOmegaRe = (-constTermRe + radRe)/2;
-		preOmegaIm = (-constTermIm + radIm)/2;
+		preOmegaIm = -constTermIm / 2;
 		th = Math.atan2(preOmegaIm, preOmegaRe);
 		r = Math.pow(preOmegaRe * preOmegaRe + preOmegaIm * preOmegaIm, 1. / 6);
 

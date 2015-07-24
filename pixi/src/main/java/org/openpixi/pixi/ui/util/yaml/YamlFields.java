@@ -18,10 +18,6 @@ public class YamlFields {
 
 	public ArrayList<YamlSU2FocusedGaussianPulse> SU2FocusedGaussianPulses = new ArrayList<YamlSU2FocusedGaussianPulse>();
 
-	public ArrayList<YamlSU2Test> SU2Tests = new ArrayList<YamlSU2Test>();
-
-	public ArrayList<YamlSU2Test2> SU2Test2s = new ArrayList<YamlSU2Test2>();
-
 	/**
 	 * Creates FieldGenerator instances and applies them to the Settings instance.
 	 * @param s
@@ -47,16 +43,6 @@ public class YamlFields {
 		for (YamlSU2FocusedGaussianPulse pulse : SU2FocusedGaussianPulses) {
 			if (pulse.checkConsistency(s)) {
 				s.addFieldGenerator(pulse.getFieldGenerator());
-			}
-		}
-		for (YamlSU2Test test : SU2Tests) {
-			if (test.checkConsistency(s)) {
-				s.addFieldGenerator(test.getFieldGenerator());
-			}
-		}
-		for (YamlSU2Test2 test : SU2Test2s) {
-			if (test.checkConsistency(s)) {
-				s.addFieldGenerator(test.getFieldGenerator());
 			}
 		}
 	}
