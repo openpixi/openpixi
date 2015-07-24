@@ -71,9 +71,9 @@ public class SU2LightConeDeltaPulseCurrent implements ICurrentGenerator {
 		 */
 		int position;
 		if(orientation < 0) {
-			position = (int) Math.ceil(Math.rint(location[direction]) + speed * time * at / as);
+			position = (int) Math.ceil(Math.rint(location[direction]/as) + speed * time * at / as);
 		} else {
-			position = (int) Math.floor(Math.rint(location[direction]) + speed * time * at / as);
+			position = (int) Math.floor(Math.rint(location[direction]/as) + speed * time * at / as);
 		}
 		//int position = (int) Math.rint(initialPosition + speed*time*at/as);
 		//int position = (int) Math.floor(initialPosition + speed * time * at / as);
