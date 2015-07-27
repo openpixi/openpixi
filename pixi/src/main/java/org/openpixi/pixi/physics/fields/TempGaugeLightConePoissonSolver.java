@@ -47,12 +47,13 @@ public class TempGaugeLightConePoissonSolver extends LightConePoissonSolver {
 		//double norm = Math.pow(g.getLatticeSpacing(), g.getNumberOfDimensions() - 1);
 		double norm = Math.pow(g.getLatticeSpacing(), truesize);
 		int[] pos = new int[position.length];
+		int gaugePos[] = new int[position.length];
 		for (int i = 0; i < position.length; i++) {
 			pos[i] = (int) Math.rint(position[i]/g.getLatticeSpacing());
 		}
 		if(orientation > 0) {
 			dirMin = 0;
-			dirMax = pos[dir];
+			dirMax = pos[dir]+1;
 		} else {
 			dirMin = pos[dir]+1;
 			dirMax = g.getNumCells(dir);
@@ -126,7 +127,6 @@ public class TempGaugeLightConePoissonSolver extends LightConePoissonSolver {
 					g.setE(chargeIndex, signature[0], E0List[j][w]);
 					g.setE(chargeIndex, signature[1], E1List[j][w]);
 
-					int gaugePos[] = new int[position.length];
 					System.arraycopy(pos, 0, gaugePos, 0, position.length);
 					for (int z = dirMin; z < dirMax; z++) {
 						gaugePos[dir] = z;
@@ -189,7 +189,6 @@ public class TempGaugeLightConePoissonSolver extends LightConePoissonSolver {
 				}
 				g.setE(chargeIndex, signature[0], E0List[j]);
 
-				int gaugePos[] = new int[position.length];
 				System.arraycopy(pos, 0, gaugePos, 0, position.length);
 				for (int z = dirMin; z < dirMax; z++) {
 					gaugePos[dir] = z;
