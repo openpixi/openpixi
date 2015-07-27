@@ -17,13 +17,13 @@ currents:
       aColor: [1.0, 0.0, 0.0]
       a: .4
       v: 1
-      tempGauge: 0
+      tempGauge: 1
     - direction: 0
       location: [124, 64, 0]
       aColor: [0.0, 1.0, 0.0]
       a: .4
       v: -1
-      tempGauge: 0
+      tempGauge: 1
 
 # Generated panel code:
 panels:

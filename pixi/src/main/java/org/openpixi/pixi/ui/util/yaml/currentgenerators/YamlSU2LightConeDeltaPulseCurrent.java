@@ -36,6 +36,11 @@ public class YamlSU2LightConeDeltaPulseCurrent {
 	public Integer v;
 
 	/**
+	 * Switch for the temporal axial gauge.
+	 */
+	public Integer tempGauge;
+
+	/**
 	 * Checks input for errors.
 	 *
 	 * @param settings Settings class. Important: numberOfDimensions and numberOfColors must be defined.
@@ -73,7 +78,12 @@ public class YamlSU2LightConeDeltaPulseCurrent {
 	public SU2LightConeDeltaPulseCurrent getCurrentGenerator() {
 		int numberOfDimensions = location.size();
 		int numberOfComponents = aColor.size();
-
+		boolean gauge;
+		if(tempGauge != 0) {
+			gauge = true;
+		} else {
+			gauge = false;
+		}
         /*
 			I'm sure this can be improved. I don't know how to convert a ArrayList<Double> into a double[] quickly, so
             I do it manually.
@@ -90,6 +100,6 @@ public class YamlSU2LightConeDeltaPulseCurrent {
 			aColorArray[c] = aColor.get(c);
 		}
 
-		return new SU2LightConeDeltaPulseCurrent(direction, locationArray, aColorArray, a, v);
+		return new SU2LightConeDeltaPulseCurrent(direction, locationArray, aColorArray, a, v, gauge);
 	}
 }

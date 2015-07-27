@@ -4,6 +4,7 @@ import org.openpixi.pixi.physics.Simulation;
 import org.openpixi.pixi.physics.grid.Grid;
 import org.openpixi.pixi.physics.grid.SU2Field;
 import org.openpixi.pixi.physics.fields.LightConePoissonSolver;
+import org.openpixi.pixi.physics.fields.TempGaugeLightConePoissonSolver;
 
 public class SU2LightConeDeltaPulseCurrent implements ICurrentGenerator {
 
@@ -15,7 +16,7 @@ public class SU2LightConeDeltaPulseCurrent implements ICurrentGenerator {
 	private int orientation;
 	private LightConePoissonSolver poisson;
 
-	public SU2LightConeDeltaPulseCurrent(int direction, double[] location, double[] amplitudeColorDirection, double magnitude, int orientation) {
+	public SU2LightConeDeltaPulseCurrent(int direction, double[] location, double[] amplitudeColorDirection, double magnitude, int orientation, boolean gauge) {
 
 		this.direction = direction;
 		this.location = location;
@@ -27,7 +28,11 @@ public class SU2LightConeDeltaPulseCurrent implements ICurrentGenerator {
 
 		this.magnitude = magnitude;
 		this.orientation = orientation;
-		this.poisson = new LightConePoissonSolver(location, direction, orientation);
+		if(gauge == true) {
+			this.poisson = new TempGaugeLightConePoissonSolver(location, direction, orientation);
+		} else {
+			this.poisson = new LightConePoissonSolver(location, direction, orientation);
+		}
 	}
 
 	public void applyCurrent(Simulation s) {

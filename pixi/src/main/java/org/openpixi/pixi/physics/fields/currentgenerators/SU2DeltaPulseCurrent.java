@@ -65,7 +65,7 @@ public class SU2DeltaPulseCurrent implements ICurrentGenerator {
 		/*
 			Find the nearest grid point and apply the current configuration to the cell current.
 		 */
-		int position = (int) Math.rint(Math.rint(location[direction]) + speed*time/as);
+		int position = (int) Math.rint(Math.rint(location[direction]/as) + speed*time/as);
 		pos[direction] = position;
 		int cellIndex = grid.getCellIndex(pos);
 
