@@ -375,27 +375,17 @@ public class SU3Matrix implements LinkMatrix {
 	}
 
 
-	// Mostly same as proj, but multiplies by 2 since tr(t_i t_j) = 1/2 \delta_ij
+	// Same as proj, scheduled for deletion
 	public YMField getLinearizedAlgebraElement() {
-		double[] values = new double[]{(2*e[9]-e[13]-e[17])/3,
-				e[10],
-				e[11],
-				e[12],
-				(2*e[13]-e[17]-e[9])/3,
-				e[14],
-				e[15],
-				e[16],
-				(2*e[17]-e[9]-e[13])/3,
-				(e[4]+e[8]-2*e[0])/3,
-				-e[1],
-				-e[2],
-				-e[3],
-				(e[0]+e[8]-2*e[4])/3,
-				-e[5],
-				-e[6],
-				-e[7],
-				(e[0]+e[4]-2*e[8])/3};
-		double[] fieldValues = hermiticize(values);
+		double[] fieldValues = new double[]{(2*e[9]-e[13]-e[17])/3,
+											(e[10]+e[12])/2,
+											(e[11]+e[15])/2,
+											(e[3]-e[1])/2,
+											(2*e[13]-e[17]-e[9])/3,
+											(e[14]+e[16])/2,
+											(e[6]-e[2])/2,
+											(e[7]-e[5])/2,
+											(2*e[17]-e[9]-e[13])/3};
 		return new SU3Field(fieldValues);
 	}
 
@@ -406,7 +396,7 @@ public class SU3Matrix implements LinkMatrix {
 	/**
 	 * Returns the projection of the matrix onto the generators of the group as a YMField. This is done via the formula
 	 *
-	 *      u_a = - 2 i tr (t_a U),
+	 *      u_a = 2 Im {tr t_a U},
 	 *
 	 * where U is the SU3Matrix, t_a is the a-th generator of the group and u_a is the a-th component of the YMField.
 	 *
@@ -416,25 +406,15 @@ public class SU3Matrix implements LinkMatrix {
 	 * @return YMField instance of the projection
 	 */
 	public YMField proj() {
-		double[] values = new double[]{(2*e[9]-e[13]-e[17])/3,
-				e[10],
-				e[11],
-				e[12],
-				(2*e[13]-e[17]-e[9])/3,
-				e[14],
-				e[15],
-				e[16],
-				(2*e[17]-e[9]-e[13])/3,
-				-(2*e[0]-e[4]-e[8])/3,
-				-e[1],
-				-e[2],
-				-e[3],
-				-(2*e[4]-e[0]-e[8])/3,
-				-e[5],
-				-e[6],
-				-e[7],
-				-(2*e[8]-e[0]-e[4])/3};
-		double[] fieldValues = hermiticize(values);
+		double[] fieldValues = new double[]{(2*e[9]-e[13]-e[17])/3,
+											(e[10]+e[12])/2,
+											(e[11]+e[15])/2,
+											(e[3]-e[1])/2,
+											(2*e[13]-e[17]-e[9])/3,
+											(e[14]+e[16])/2,
+											(e[6]-e[2])/2,
+											(e[7]-e[5])/2,
+											(2*e[17]-e[9]-e[13])/3};
 		return new SU3Field(fieldValues);
 	}
 
