@@ -131,8 +131,8 @@ public class TempGaugeLightConePoissonSolver extends LightConePoissonSolver {
 					for (int z = dirMin; z < dirMax; z++) {
 						gaugePos[dir] = z;
 						dirIndex = g.getCellIndex(gaugePos);
-						g.setU(dirIndex, signature[0], E0List[j][w].getLinkExact());
-						g.setU(dirIndex, signature[1], E1List[j][w].getLinkExact());
+						g.setU(dirIndex, signature[0], (E0List[j][w].mult(-1.0)).getLinkExact());
+						g.setU(dirIndex, signature[1], (E1List[j][w].mult(-1.0)).getLinkExact());
 					}
 				}
 			}
@@ -193,7 +193,7 @@ public class TempGaugeLightConePoissonSolver extends LightConePoissonSolver {
 				for (int z = dirMin; z < dirMax; z++) {
 					gaugePos[dir] = z;
 					dirIndex = g.getCellIndex(gaugePos);
-					g.setU(dirIndex, signature[0], E0List[j].getLinkExact());
+					g.setU(dirIndex, signature[0], (E0List[j].mult(-1.0)).getLinkExact());
 				}
 			}
 		} else {

@@ -13,14 +13,14 @@ duration: 1000
 currents:
   SU2LightConeDeltaPulseCurrent:
     - direction: 0
-      location: [4, 64, 0]
+      location: [30, 64, 0]
       aColor: [1.0, 0.0, 0.0]
       a: .4
       v: 1
       tempGauge: 1
     - direction: 0
-      location: [124, 64, 0]
-      aColor: [0.0, 1.0, 0.0]
+      location: [100, 64, 0]
+      aColor: [1.0, 0.0, 0.0]
       a: .4
       v: -1
       tempGauge: 1
