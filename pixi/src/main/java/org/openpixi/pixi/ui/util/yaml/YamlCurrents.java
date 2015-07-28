@@ -16,6 +16,8 @@ public class YamlCurrents {
 
     public ArrayList<YamlSU2LightConeDeltaPulseCurrent> SU2LightConeDeltaPulseCurrent = new ArrayList<YamlSU2LightConeDeltaPulseCurrent>();
 
+    public ArrayList<YamlSU2LightConeGaussPulseCurrent> SU2LightConeGaussPulseCurrent = new ArrayList<YamlSU2LightConeGaussPulseCurrent>();
+
     /**
      * Creates CurrentGenerator instances and applies them to the Settings instance.
      * @param s
@@ -36,6 +38,12 @@ public class YamlCurrents {
         for (YamlSU2LightConeDeltaPulseCurrent lightcone : SU2LightConeDeltaPulseCurrent) {
             if (lightcone.checkConsistency(s)) {
                 s.addCurrentGenerator(lightcone.getCurrentGenerator());
+            }
+        }
+
+        for (YamlSU2LightConeGaussPulseCurrent gauss : SU2LightConeGaussPulseCurrent) {
+            if (gauss.checkConsistency(s)) {
+                s.addCurrentGenerator(gauss.getCurrentGenerator());
             }
         }
 
