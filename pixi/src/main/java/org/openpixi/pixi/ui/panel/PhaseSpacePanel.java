@@ -16,11 +16,12 @@ import org.openpixi.pixi.ui.panel.properties.ScaleProperties;
  */
 public class PhaseSpacePanel extends AnimationPanel {
 
-	ScaleProperties scaleProperties = new ScaleProperties();
+	ScaleProperties scaleProperties;
 
 	/** Constructor */
 	public PhaseSpacePanel(SimulationAnimation simulationAnimation) {
 		super(simulationAnimation);
+		scaleProperties = new ScaleProperties(simulationAnimation);
 	}
 
 	/** Display the particles */

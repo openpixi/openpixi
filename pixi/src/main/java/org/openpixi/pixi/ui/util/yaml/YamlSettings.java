@@ -7,6 +7,7 @@ import org.openpixi.pixi.physics.GeneralBoundaryType;
 import org.openpixi.pixi.physics.Settings;
 import org.openpixi.pixi.physics.fields.EmptyPoissonSolver;
 import org.openpixi.pixi.physics.fields.fieldgenerators.IFieldGenerator;
+import org.openpixi.pixi.physics.fields.currentgenerators.ICurrentGenerator;
 import org.openpixi.pixi.physics.fields.GeneralYangMillsSolver;
 import org.openpixi.pixi.physics.grid.EmptyInterpolator;
 import org.openpixi.pixi.physics.solver.relativistic.LeapFrogRelativistic;
@@ -29,6 +30,7 @@ public class YamlSettings {
 	public List<YamlParticle> particles;
 	public List<YamlParticleStream> streams;
     public YamlFields fields;
+	public YamlCurrents currents;
 	public YamlOutput output;
 	public YamlPanels panels;
 
@@ -47,6 +49,7 @@ public class YamlSettings {
         settings.setParticleSolver(new LeapFrogRelativistic(settings.getNumberOfDimensions(), settings.getSpeedOfLight()));
         settings.setNumOfThreads(4);
         settings.setFieldGenerators(new ArrayList<IFieldGenerator>());
+		settings.setCurrentGenerators(new ArrayList<ICurrentGenerator>());
         settings.setDiagnostics(new ArrayList<Diagnostics>());
 
 		// Custom settings:
@@ -113,6 +116,11 @@ public class YamlSettings {
         {
             fields.applyTo(settings);
         }
+
+		if(currents != null)
+		{
+			currents.applyTo(settings);
+		}
 
 		if (output != null) {
 			output.applyTo(settings);

@@ -1,25 +1,29 @@
-package org.openpixi.pixi.ui.panel;
+package org.openpixi.pixi.ui.panel.chart;
 
-import java.awt.Color;
+import info.monitorenter.gui.chart.Chart2D;
+
 import java.awt.Graphics;
-import java.awt.Graphics2D;
 
 import javax.swing.Box;
 import javax.swing.JLabel;
-import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 
 import org.openpixi.pixi.ui.SimulationAnimation;
 import org.openpixi.pixi.ui.SimulationAnimationListener;
+import org.openpixi.pixi.ui.panel.FocusablePanel;
 
-public class AnimationPanel extends JPanel implements FocusablePanel {
+/**
+ * This panel shows various charts.
+ */
+public class AnimationChart2DPanel extends Chart2D implements FocusablePanel {
 
-	protected SimulationAnimation simulationAnimation;
+	private SimulationAnimation simulationAnimation;
 	private MyAnimationListener listener;
 	boolean focus = false;
 
 	/** Constructor */
-	public AnimationPanel(SimulationAnimation simulationAnimation) {
+	public AnimationChart2DPanel(SimulationAnimation simulationAnimation) {
+		super();
 		this.simulationAnimation = simulationAnimation;
 		listener = new MyAnimationListener();
 		this.simulationAnimation.addListener(listener);
@@ -27,24 +31,25 @@ public class AnimationPanel extends JPanel implements FocusablePanel {
 	}
 
 	/** Listener for timer */
-	public class MyAnimationListener implements SimulationAnimationListener {
+	private class MyAnimationListener implements SimulationAnimationListener {
 
 		public void repaint() {
-			AnimationPanel.this.repaint();
+			AnimationChart2DPanel.this.update();
 		}
 
 		public void clear() {
-			AnimationPanel.this.clear();
+			AnimationChart2DPanel.this.clear();
 		}
+	}
+
+	public void update() {
+	}
+
+	public void clear() {
 	}
 
 	public SimulationAnimation getSimulationAnimation() {
 		return simulationAnimation;
-	}
-
-	/** Clear screen.
-	 * (Overwrite for custom behavior.) */
-	public void clear() {
 	}
 
 	/** Unregister this panel */
@@ -52,26 +57,19 @@ public class AnimationPanel extends JPanel implements FocusablePanel {
 		simulationAnimation.removeListener(listener);
 	}
 
+	@Override
 	public void setFocus(boolean focus) {
 		this.focus = focus;
 	}
 
+	@Override
 	public boolean isFocused() {
 		return focus;
 	}
 
-	public void paintComponent(Graphics graph1) {
-		super.paintComponent(graph1);
-		if (focus) {
-			// Paint focus frame
-			Graphics2D graph = (Graphics2D) graph1;
-			graph.setColor(Color.gray);
-			graph.drawRect(0, 1, getWidth() - 1, getHeight() - 2);
-		}
-	}
-
 	/**
-	 * Add components to the property panel.
+	 * Add a component to the property panel.
+	 *
 	 * @param box Property panel.
 	 */
 	public void addPropertyComponents(Box box) {
@@ -80,6 +78,7 @@ public class AnimationPanel extends JPanel implements FocusablePanel {
 
 	/**
 	 * Add a label to the property panel
+	 *
 	 * @param box Property panel.
 	 * @param label Label of property panel.
 	 */

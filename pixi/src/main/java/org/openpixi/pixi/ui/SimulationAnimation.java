@@ -101,7 +101,7 @@ public class SimulationAnimation {
 		listeners.remove(listener);
 	}
 
-	private void repaint() {
+	public void repaint() {
 		// Let all listeners know
 		for (SimulationAnimationListener l : listeners) {
 			l.repaint();

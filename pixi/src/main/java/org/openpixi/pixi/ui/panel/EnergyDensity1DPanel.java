@@ -17,11 +17,12 @@ import org.openpixi.pixi.ui.panel.properties.ScaleProperties;
  */
 public class EnergyDensity1DPanel extends AnimationPanel {
 	
-	ScaleProperties scaleProperties = new ScaleProperties();
+	ScaleProperties scaleProperties;
 
 	/** Constructor */
 	public EnergyDensity1DPanel(SimulationAnimation simulationAnimation) {
 		super(simulationAnimation);
+		scaleProperties = new ScaleProperties(simulationAnimation);
 	}
 
 	public void paintComponent(Graphics graph1) {

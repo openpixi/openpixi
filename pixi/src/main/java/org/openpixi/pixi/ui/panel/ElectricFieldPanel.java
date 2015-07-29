@@ -21,13 +21,16 @@ import org.openpixi.pixi.ui.panel.properties.ScaleProperties;
  */
 public class ElectricFieldPanel extends AnimationPanel {
 
-	ColorProperties colorProperties = new ColorProperties();
-	ScaleProperties scaleProperties = new ScaleProperties();
-	GaugeProperties gaugeProperties = new GaugeProperties();
+	ColorProperties colorProperties;
+	ScaleProperties scaleProperties;
+	GaugeProperties gaugeProperties;
 
 	/** Constructor */
 	public ElectricFieldPanel(SimulationAnimation simulationAnimation) {
 		super(simulationAnimation);
+		colorProperties = new ColorProperties(simulationAnimation);
+		scaleProperties = new ScaleProperties(simulationAnimation);
+		gaugeProperties = new GaugeProperties(simulationAnimation);
 	}
 
 	/** Display the particles */

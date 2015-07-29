@@ -9,14 +9,20 @@ import javax.swing.Box;
 import javax.swing.JCheckBox;
 
 import org.openpixi.pixi.physics.Simulation;
+import org.openpixi.pixi.ui.SimulationAnimation;
 import org.openpixi.pixi.ui.panel.AnimationPanel;
 import org.openpixi.pixi.ui.util.FrameRateDetector;
 
 public class InfoProperties {
 
+	private SimulationAnimation simulationAnimation;
 	public boolean showInfo = false;
 
 	Color darkGreen = new Color(0x00, 0x80, 0x00);
+
+	public InfoProperties(SimulationAnimation simulationAnimation) {
+		this.simulationAnimation = simulationAnimation;
+	}
 
 	public boolean isShowInfo() {
 		return showInfo;
@@ -44,6 +50,7 @@ public class InfoProperties {
 		public void itemStateChanged(ItemEvent event) {
 			InfoProperties.this.showInfo =
 					(event.getStateChange() == ItemEvent.SELECTED);
+			simulationAnimation.repaint();
 		}
 	}
 

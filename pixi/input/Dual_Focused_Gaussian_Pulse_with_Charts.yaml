@@ -1,0 +1,64 @@
+# Dual focused gaussian pulse test with impact parameter
+
+gridStep: 1
+numberOfDimensions: 3
+numberOfColors: 2
+numberOfThreads: 6
+gridCells: [128, 128, 1]
+poissonsolver: empty
+timeStep: 0.2
+duration: 1000
+
+fields:
+  SU2FocusedGaussianPulses:
+    - dir: [1.0, 0.0, 0.0]
+      pos: [64, 74, 0.0]
+      aSpatial: [0.0, 0.0, 1.0]
+      aColor: [1.0, 0.0, 0.0]
+      a: 4
+      sigma: 3
+      angle: 1.0
+      distance: 32.0
+    - dir: [-1.0, 0.0, 0.0]
+      pos: [64, 56, 0.0]
+      aSpatial: [0.0, 0.0, 1.0]
+      aColor: [0.0, 1.0, 0.0]
+      a: 4
+      sigma: 3
+      angle: 1.0
+      distance: 32.0
+
+# Generated panel code:
+panels:
+  dividerLocation: 532
+  leftPanel:
+    dividerLocation: 348
+    leftPanel:
+      chartPanel:
+        logarithmicScale: false
+        showCharts:
+        - E squared
+        - B squared
+        - Energy density
+    orientation: 0
+    rightPanel:
+      chartPanel:
+        logarithmicScale: true
+        showCharts:
+        - Gauss law violation
+  orientation: 1
+  rightPanel:
+    dividerLocation: 348
+    leftPanel:
+      electricFieldPanel:
+        automaticScaling: false
+        colorIndex: 0
+        directionIndex: 2
+        scaleFactor: 1.0
+    orientation: 0
+    rightPanel:
+      electricFieldPanel:
+        automaticScaling: false
+        colorIndex: 1
+        directionIndex: 2
+        scaleFactor: 1.0

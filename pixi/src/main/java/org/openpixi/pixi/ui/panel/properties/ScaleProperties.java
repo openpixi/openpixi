@@ -12,8 +12,11 @@ import javax.swing.JLabel;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 
+import org.openpixi.pixi.ui.SimulationAnimation;
+
 public class ScaleProperties {
 
+	private SimulationAnimation simulationAnimation;
 	private double scaleFactor = 1;
 	private double automaticScaleFactor = 1;
 	private boolean automaticScaling = false;
@@ -21,6 +24,10 @@ public class ScaleProperties {
 
 	private JLabel label;
 	private JTextField textField;
+
+	public ScaleProperties(SimulationAnimation simulationAnimation) {
+		this.simulationAnimation = simulationAnimation;
+	}
 
 	public double getScaleFactor() {
 		return scaleFactor;
@@ -113,12 +120,14 @@ public class ScaleProperties {
 			ScaleProperties.this.automaticScaling =
 					(event.getStateChange() == ItemEvent.SELECTED);
 			ScaleProperties.this.updateTextFieldStatus();
+			simulationAnimation.repaint();
 		}
 	}
 
 	class TextFieldListener implements ActionListener {
 		public void actionPerformed(ActionEvent event) {
 			scaleFactor = Double.parseDouble(textField.getText());
+			simulationAnimation.repaint();
 		}
 	}
 }
