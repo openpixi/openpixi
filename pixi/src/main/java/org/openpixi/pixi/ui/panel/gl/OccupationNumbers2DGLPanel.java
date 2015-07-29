@@ -29,6 +29,7 @@ import javax.media.opengl.GL;
 import javax.media.opengl.GL2;
 import javax.media.opengl.GLAutoDrawable;
 import javax.swing.*;
+import java.util.Arrays;
 
 
 /**
@@ -146,15 +147,17 @@ public class OccupationNumbers2DGLPanel extends AnimationGLPanel {
 	private int getMomentumIndex(int[] pos)
 	{
 		int[] numGridCells = simulation.grid.getNumCells();
+		int[] pos2 = new int[pos.length];
+		System.arraycopy(pos, 0, pos2, 0, pos.length);
 
 		for(int i = 0; i < pos.length; i++)
 		{
-			pos[i] += numGridCells[i] / 2;
-			pos[i] %= numGridCells[i];
-			pos[i] = numGridCells[i] - pos[i];
+			pos2[i] += numGridCells[i] / 2;
+			pos2[i] %= numGridCells[i];
+			pos2[i] = numGridCells[i] - pos2[i];
 		}
 
-		return simulation.grid.getCellIndex(pos);
+		return simulation.grid.getCellIndex(pos2);
 	}
 
 	public void addPropertyComponents(Box box) {
