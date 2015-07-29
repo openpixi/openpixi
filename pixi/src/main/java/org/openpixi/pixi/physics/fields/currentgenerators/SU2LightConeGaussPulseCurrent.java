@@ -1,8 +1,9 @@
 package org.openpixi.pixi.physics.fields.currentgenerators;
 
+import org.apache.commons.math3.analysis.function.Gaussian;
 import org.openpixi.pixi.physics.Simulation;
 import org.openpixi.pixi.physics.fields.LightConePoissonSolver;
-import org.openpixi.pixi.physics.fields.TempGaugeLightConePoissonSolver;
+import org.openpixi.pixi.physics.fields.TempGaugeLightConeGaussPoissonSolver;
 import org.openpixi.pixi.physics.grid.Grid;
 import org.openpixi.pixi.physics.grid.SU2Field;
 
@@ -17,7 +18,7 @@ public class SU2LightConeGaussPulseCurrent implements ICurrentGenerator {
 	private int orientation;
 	private LightConePoissonSolver poisson;
 
-	public SU2LightConeGaussPulseCurrent(int direction, double[] location, double width, double[] amplitudeColorDirection, double magnitude, int orientation, boolean gauge) {
+	public SU2LightConeGaussPulseCurrent(int direction, double[] location, double width, double[] amplitudeColorDirection, double magnitude, int orientation) {
 
 		this.direction = direction;
 		this.location = location;
@@ -30,11 +31,7 @@ public class SU2LightConeGaussPulseCurrent implements ICurrentGenerator {
 		this.magnitude = magnitude;
 		this.width = width;
 		this.orientation = orientation;
-		if(gauge == true) {
-			this.poisson = new TempGaugeLightConePoissonSolver(location, direction, orientation);
-		} else {
-			this.poisson = new LightConePoissonSolver(location, direction, orientation);
-		}
+		this.poisson = new TempGaugeLightConeGaussPoissonSolver(location, direction, orientation, width);
 	}
 
 	public void applyCurrent(Simulation s) {
@@ -42,6 +39,7 @@ public class SU2LightConeGaussPulseCurrent implements ICurrentGenerator {
 		double as = grid.getLatticeSpacing();
 		double at = s.getTimeStep();
 		int time = s.totalSimulationSteps;
+		int numberOfCells = grid.getNumCells(direction);
 		double g = s.getCouplingConstant();
 		double normFactor = as/(Math.pow(as, grid.getNumberOfDimensions())*at);
 		double chargeNorm = 1.0/(Math.pow(as, grid.getNumberOfDimensions()));
@@ -70,8 +68,8 @@ public class SU2LightConeGaussPulseCurrent implements ICurrentGenerator {
 				this.magnitude * this.amplitudeColorDirection[1],
 				this.magnitude * this.amplitudeColorDirection[2]);
 
-		fieldAmplitude.multequate(chargeNorm);	// This factor comes from the dimensionality of the current density
-		chargeAmplitude.multequate(chargeNorm);
+		fieldAmplitude.multequate(chargeNorm*g*as);	// This factor comes from the dimensionality of the current density
+		chargeAmplitude.multequate(chargeNorm*g*as);	// The factor g*as comes from our definition of electric fields!!
 
 		/*
 			Find the nearest grid point and apply the current configuration to the cell current.
@@ -82,18 +80,19 @@ public class SU2LightConeGaussPulseCurrent implements ICurrentGenerator {
 		} else {
 			position = (int) Math.floor(Math.rint(location[direction]/as) + speed * time * at / as);
 		}
-		//int position = (int) Math.rint(initialPosition + speed*time*at/as);
-		//int position = (int) Math.floor(initialPosition + speed * time * at / as);
-		pos[direction] = position;
-		int cellIndex = grid.getCellIndex(pos);
 
-		int chargeIndex = cellIndex;
-		if(orientation < 0) {
-			chargeIndex = grid.shift(chargeIndex, direction, 1);
+		for (int i = 0; i < numberOfCells; i++) {
+			pos[direction] = i;
+			int cellIndex = grid.getCellIndex(pos);
+			int chargeIndex = cellIndex;
+			if(orientation < 0) {
+				chargeIndex = grid.shift(chargeIndex, direction, 1);
+			}
+
+			grid.addJ(cellIndex, direction, fieldAmplitude.mult(shape(position*as, i*as)));
+			grid.setRho(chargeIndex, chargeAmplitude.mult(shape(position*as, i*as)));
 		}
 
-		grid.addJ(cellIndex, direction, fieldAmplitude.mult(g * as));	// The factor g*as comes from our definition of electric fields!!
-		grid.setRho(chargeIndex, chargeAmplitude.mult(g * as));
 		if(time == 0) {
 			poisson.solve(grid);
 		}
@@ -110,5 +109,11 @@ public class SU2LightConeGaussPulseCurrent implements ICurrentGenerator {
 			output[i] = vector[i] / norm;
 		}
 		return output;
+	}
+
+	private double shape(double mean, double x) {
+		Gaussian gauss = new Gaussian(mean, width);
+		double value = gauss.value(x);
+		return value;
 	}
 }

@@ -36,11 +36,6 @@ public class YamlSU2LightConeGaussPulseCurrent {
 	public Integer v;
 
 	/**
-	 * Switch for the temporal axial gauge.
-	 */
-	public Integer tempGauge;
-
-	/**
 	 * Width of the Gauss pulse.
 	 */
 	public Double width;
@@ -88,12 +83,6 @@ public class YamlSU2LightConeGaussPulseCurrent {
 	public SU2LightConeGaussPulseCurrent getCurrentGenerator() {
 		int numberOfDimensions = location.size();
 		int numberOfComponents = aColor.size();
-		boolean gauge;
-		if(tempGauge != 0) {
-			gauge = true;
-		} else {
-			gauge = false;
-		}
         /*
 			I'm sure this can be improved. I don't know how to convert a ArrayList<Double> into a double[] quickly, so
             I do it manually.
@@ -110,6 +99,6 @@ public class YamlSU2LightConeGaussPulseCurrent {
 			aColorArray[c] = aColor.get(c);
 		}
 
-		return new SU2LightConeGaussPulseCurrent(direction, locationArray, width, aColorArray, a, v, gauge);
+		return new SU2LightConeGaussPulseCurrent(direction, locationArray, width, aColorArray, a, v);
 	}
 }
