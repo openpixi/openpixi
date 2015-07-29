@@ -1,8 +1,15 @@
 package org.openpixi.pixi.physics.grid;
 
+/**
+ * This is a parametrization of SU(3) group elements.
+ * For lack of a better method, the elements are represented explicitly
+ * as 3x3 complex matrices. The first nine components are the real parts,
+ * the last nine components are the imaginary parts. The matrix thus looks like
+ * 		e[0] + i e[9]		e[1] + i e[10]		e[2] + i e[11]
+ * 		e[3] + i e[12]		e[4] + i e[13]		e[5] + i e[14]
+ * 		e[6] + i e[15]		e[7] + i e[16]		e[8] + i e[17]
+ */
 public class SU3Matrix implements LinkMatrix {
-
-	/* 9 real entries, 9 imaginary entries */
 
 	private double[] e;
 
@@ -327,10 +334,11 @@ public class SU3Matrix implements LinkMatrix {
 			phases[i] = Math.atan2(valuesIm[i],valuesRe[i]);
 		}
 
+		// ensure algebra element is traceless!
+		// make phases sum to zero
 		double phaseSum = phases[0] + phases[1] + phases[2];
-		if (Math.abs(phaseSum) >= 1.e-13) {
-			phases[2] -= phaseSum;
-		}
+		phases[2] -= phaseSum;
+
 
 		// multiply U log(D) U* to get algebra element
 		// log(D) is just a real diagonal matrix so multiplication is included in construction of U
