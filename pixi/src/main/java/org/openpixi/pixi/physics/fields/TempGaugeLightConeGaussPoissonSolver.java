@@ -2,17 +2,19 @@ package org.openpixi.pixi.physics.fields;
 
 import edu.emory.mathcs.jtransforms.fft.DoubleFFT_1D;
 import edu.emory.mathcs.jtransforms.fft.DoubleFFT_2D;
+import org.apache.commons.math3.analysis.function.Gaussian;
+import org.apache.commons.math3.special.Erf;
 import org.openpixi.pixi.physics.grid.Grid;
 import org.openpixi.pixi.physics.grid.SU2Field;
 import org.openpixi.pixi.physics.grid.YMField;
 
 public class TempGaugeLightConeGaussPoissonSolver extends LightConePoissonSolver {
 
-	//private DoubleFFTWrapper fft;
 	private int dir;
 	private double[] position;
 	private int orientation;
 	private double width;
+	private static Erf erf;
 
 	public TempGaugeLightConeGaussPoissonSolver(double[] position, int direction, int orientation, double width) {
 		this.position = new double[position.length];
@@ -20,6 +22,7 @@ public class TempGaugeLightConeGaussPoissonSolver extends LightConePoissonSolver
 		this.dir = direction;
 		this.orientation = orientation;
 		this.width = width;
+		//erf = new Erf();
 	}
 
 	public void solve(Grid g) {
@@ -40,25 +43,18 @@ public class TempGaugeLightConeGaussPoissonSolver extends LightConePoissonSolver
 				k++;
 			} else {}
 		}
-		//fft = new DoubleFFTWrapper(size);
+
 		int numberOfComponents = g.getNumberOfColors() * g.getNumberOfColors() - 1;
+		double as = g.getLatticeSpacing();
 		int cellIndex;
 		int chargeIndex;
-		int dirIndex, dirMin, dirMax;
+		int dirMax = g.getNumCells(dir);
 
-		//double norm = Math.pow(g.getLatticeSpacing(), g.getNumberOfDimensions() - 1);
-		double norm = Math.pow(g.getLatticeSpacing(), truesize);
+		double norm = Math.pow(as, truesize);
 		int[] pos = new int[position.length];
-		int gaugePos[] = new int[position.length];
+		int[] gaugePos = new int[position.length];
 		for (int i = 0; i < position.length; i++) {
-			pos[i] = (int) Math.rint(position[i]/g.getLatticeSpacing());
-		}
-		if(orientation > 0) {
-			dirMin = 0;
-			dirMax = pos[dir]+1;
-		} else {
-			dirMin = pos[dir]+1;
-			dirMax = g.getNumCells(dir);
+			pos[i] = (int) Math.rint(position[i]/as);
 		}
 
 		if (size.length > 1) {
@@ -105,36 +101,35 @@ public class TempGaugeLightConeGaussPoissonSolver extends LightConePoissonSolver
 				charge[0][1] = 0.0;
 				//perform inverse Fourier transform
 				fft.complexInverse(charge, true);
-				//compute the values of the gauge field in the direction of the current and the values of the electric field
+				//compute the values of the electric field
 				for(int j = 0; j < size[0]; j++) {
 					for (int w = 0; w < size[1]; w++) {
 						pos[signature[0]] = j;
 						pos[signature[1]] = w;
-						E0List[j][w].set(i, -(charge[(j + 1) % size[0]][2 * w] - charge[j][2*w]) / g.getLatticeSpacing());
-						E1List[j][w].set(i, -(charge[j][ 2 * ((w + 1) % size[1]) ] - charge[j][2*w]) / g.getLatticeSpacing());
+						E0List[j][w].set(i, -(charge[(j + 1) % size[0]][2 * w] - charge[j][2*w]) / as);
+						E1List[j][w].set(i, -(charge[j][ 2 * ((w + 1) % size[1]) ] - charge[j][2*w]) / as);
 					}
 				}
 			}
 			//set the values of the gauge field in the direction of the current and the values of the electric field
+			System.arraycopy(pos, 0, gaugePos, 0, position.length);
 			for(int j = 0; j < size[0]; j++) {
+				gaugePos[signature[0]] = j;
 				for (int w = 0; w < size[1]; w++) {
-					pos[signature[0]] = j;
-					pos[signature[1]] = w;
-
-					cellIndex = g.getCellIndex(pos);
-					chargeIndex = cellIndex;
-					if(orientation < 0) {
-						chargeIndex = g.shift(chargeIndex, dir, 1);
-					}
-					g.setE(chargeIndex, signature[0], E0List[j][w]);
-					g.setE(chargeIndex, signature[1], E1List[j][w]);
-
-					System.arraycopy(pos, 0, gaugePos, 0, position.length);
-					for (int z = dirMin; z < dirMax; z++) {
+					gaugePos[signature[1]] = w;
+					for (int z = 0; z < dirMax; z++) {
 						gaugePos[dir] = z;
-						dirIndex = g.getCellIndex(gaugePos);
-						g.setU(dirIndex, signature[0], (E0List[j][w].mult(-1.0)).getLinkExact());
-						g.setU(dirIndex, signature[1], (E1List[j][w].mult(-1.0)).getLinkExact());
+						cellIndex = g.getCellIndex(gaugePos);
+						chargeIndex = cellIndex;
+						if(orientation < 0) {
+							chargeIndex = g.shift(chargeIndex, dir, 1);
+						}
+
+						g.setE(chargeIndex, signature[0], E0List[j][w].mult(shapeGauss(pos[dir]*as, z*as)));
+						g.setE(chargeIndex, signature[1], E1List[j][w].mult(shapeGauss(pos[dir]*as, z*as)));
+
+						g.setU(cellIndex, signature[0], (E0List[j][w].mult(-1.0*shapeErf(pos[dir]*as, z*as))).getLinkExact());
+						g.setU(cellIndex, signature[1], (E1List[j][w].mult(-1.0*shapeErf(pos[dir]*as, z*as))).getLinkExact());
 					}
 				}
 			}
@@ -181,21 +176,19 @@ public class TempGaugeLightConeGaussPoissonSolver extends LightConePoissonSolver
 				}
 			}
 			//set the values of the gauge field in the direction of the current and the values of the electric field
+			System.arraycopy(pos, 0, gaugePos, 0, position.length);
 			for(int j = 0; j < size[0]; j++) {
-				pos[signature[0]] = j;
-
-				cellIndex = g.getCellIndex(pos);
-				chargeIndex = cellIndex;
-				if(orientation < 0) {
-					chargeIndex = g.shift(chargeIndex, dir, 1);
-				}
-				g.setE(chargeIndex, signature[0], E0List[j]);
-
-				System.arraycopy(pos, 0, gaugePos, 0, position.length);
-				for (int z = dirMin; z < dirMax; z++) {
+				gaugePos[signature[0]] = j;
+				for (int z = 0; z < dirMax; z++) {
 					gaugePos[dir] = z;
-					dirIndex = g.getCellIndex(gaugePos);
-					g.setU(dirIndex, signature[0], (E0List[j].mult(-1.0)).getLinkExact());
+					cellIndex = g.getCellIndex(gaugePos);
+					chargeIndex = cellIndex;
+					if(orientation < 0) {
+						chargeIndex = g.shift(chargeIndex, dir, 1);
+					}
+					
+					g.setE(chargeIndex, signature[0], E0List[j].mult(shapeGauss(pos[dir]*as, z*as)));
+					g.setU(cellIndex, signature[0], (E0List[j].mult(-1.0*shapeErf(pos[dir]*as, z*as))).getLinkExact());
 				}
 			}
 		} else {
@@ -203,6 +196,18 @@ public class TempGaugeLightConeGaussPoissonSolver extends LightConePoissonSolver
 		}
 
 
+	}
+
+	private double shapeGauss(double mean, double x) {
+		Gaussian gauss = new Gaussian(mean, width);
+		double value = gauss.value(x);
+		return value;
+	}
+
+	private double shapeErf(double mean, double x) {
+		double arg = (x - mean)/(width*Math.sqrt(2));
+		double value = 0.5 + 0.5*erf.erf(arg);
+		return value;
 	}
 
 }
