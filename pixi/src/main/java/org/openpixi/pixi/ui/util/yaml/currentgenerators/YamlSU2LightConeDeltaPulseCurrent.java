@@ -18,7 +18,7 @@ public class YamlSU2LightConeDeltaPulseCurrent {
 	/**
 	 * Starting point for the current pulse on the grid.
 	 */
-	public List<Integer> location;
+	public List<Double> location;
 
 	/**
 	 * Direction of the current in color space.
@@ -34,6 +34,11 @@ public class YamlSU2LightConeDeltaPulseCurrent {
 	 * Orientation of the current.
 	 */
 	public Integer v;
+
+	/**
+	 * Switch for the temporal axial gauge.
+	 */
+	public Integer tempGauge;
 
 	/**
 	 * Checks input for errors.
@@ -73,13 +78,18 @@ public class YamlSU2LightConeDeltaPulseCurrent {
 	public SU2LightConeDeltaPulseCurrent getCurrentGenerator() {
 		int numberOfDimensions = location.size();
 		int numberOfComponents = aColor.size();
-
+		boolean gauge;
+		if(tempGauge != 0) {
+			gauge = true;
+		} else {
+			gauge = false;
+		}
         /*
 			I'm sure this can be improved. I don't know how to convert a ArrayList<Double> into a double[] quickly, so
             I do it manually.
          */
 
-		int[] locationArray = new int[numberOfDimensions];
+		double[] locationArray = new double[numberOfDimensions];
 		double[] aColorArray = new double[numberOfComponents];
 
 		for (int i = 0; i < numberOfDimensions; i++) {
@@ -90,6 +100,6 @@ public class YamlSU2LightConeDeltaPulseCurrent {
 			aColorArray[c] = aColor.get(c);
 		}
 
-		return new SU2LightConeDeltaPulseCurrent(direction, locationArray, aColorArray, a, v);
+		return new SU2LightConeDeltaPulseCurrent(direction, locationArray, aColorArray, a, v, gauge);
 	}
 }

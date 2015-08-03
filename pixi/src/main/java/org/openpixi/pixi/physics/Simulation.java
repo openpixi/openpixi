@@ -222,9 +222,9 @@ public class Simulation {
 
         // Cycle through field generators and apply field configurations to the Grid.
         fieldGenerators = settings.getFieldGenerators();
-        for (int f = 0; f < fieldGenerators.size(); f++)
+		for (IFieldGenerator f: fieldGenerators)
         {
-            fieldGenerators.get(f).applyFieldConfiguration(this);
+            f.applyFieldConfiguration(this);
         }
 		/*
 			TODO After running through each field generator we should check if the intial state is consistent.
@@ -233,6 +233,10 @@ public class Simulation {
 
 		// Copy current generators from Settings.
 		currentGenerators = settings.getCurrentGenerators();
+		// Generate external currents on the grid!!
+		for (ICurrentGenerator c: currentGenerators) {
+			c.applyCurrent(this);
+		}
 
 		/**
 		 * In order to read out the initial state without specifying the Unext(t = at/2) links by hand we calculate them
@@ -245,15 +249,6 @@ public class Simulation {
 		interpolation.interpolateToParticle(particles, grid);
 
 		interpolation.interpolateToGrid(particles, grid, tstep);
-
-		// Generate external currents on the grid!!
-		for (int c = 0; c < currentGenerators.size(); c++)
-		{
-			currentGenerators.get(c).applyCurrent(this);
-		}
-
-
-
 
 		//updateVelocities(); TODO: Write this method!!
 
@@ -301,8 +296,8 @@ public class Simulation {
 
 		// Initialize and run diagnostics before first simulation step.
 		if(totalSimulationSteps == 0) {
-			for (int f = 0; f < diagnostics.size(); f++) {
-				diagnostics.get(f).initialize(this);
+			for (Diagnostics d: diagnostics) {
+				d.initialize(this);
 			}
 			runDiagnostics();
 		}
@@ -314,9 +309,9 @@ public class Simulation {
 		grid.resetCurrent();
 		interpolation.interpolateToGrid(particles, grid, tstep);
 		// Generate external currents on the grid!!
-		for (int c = 0; c < currentGenerators.size(); c++)
+		for (ICurrentGenerator c: currentGenerators)
 		{
-			currentGenerators.get(c).applyCurrent(this);
+			c.applyCurrent(this);
 		}
 
 		//Combined update of gauge links and fields

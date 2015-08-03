@@ -1,14 +1,14 @@
 package org.openpixi.pixi.ui.util.yaml.currentgenerators;
 
 import org.openpixi.pixi.physics.Settings;
-import org.openpixi.pixi.physics.fields.currentgenerators.SU2WireCurrent;
+import org.openpixi.pixi.physics.fields.currentgenerators.SU2LightConeGaussPulseCurrent;
 
 import java.util.List;
 
 /**
- * Yaml wrapper for the SU2WireCurrent CurrentGenerator.
+ * Yaml wrapper for the SU2LightConeDeltaPulseCurrent CurrentGenerator.
  */
-public class YamlSU2WireCurrent {
+public class YamlSU2LightConeGaussPulseCurrent {
 
 	/**
 	 * Direction of the current.
@@ -16,7 +16,7 @@ public class YamlSU2WireCurrent {
 	public Integer direction;
 
 	/**
-	 * Location of the current on the grid.
+	 * Starting point for the current pulse on the grid.
 	 */
 	public List<Double> location;
 
@@ -31,9 +31,14 @@ public class YamlSU2WireCurrent {
 	public Double a;
 
 	/**
-	 * Speed of the current.
+	 * Orientation of the current.
 	 */
-	public Double v;
+	public Integer v;
+
+	/**
+	 * Width of the Gauss pulse.
+	 */
+	public Double width;
 
 	/**
 	 * Checks input for errors.
@@ -43,37 +48,41 @@ public class YamlSU2WireCurrent {
 	 */
 	public boolean checkConsistency(Settings settings) {
 		if (direction >= settings.getNumberOfDimensions()) {
-			System.out.println("SU2WireCurrent: direction index exceeds the dimensions of the system.");
+			System.out.println("SU2LightConeGaussPulseCurrent: direction index exceeds the dimensions of the system.");
 			return false;
 		}
 
 		if (location.size() != settings.getNumberOfDimensions()) {
-			System.out.println("SU2WireCurrent: location vector does not have the right dimensions.");
+			System.out.println("SU2LightConeGaussPulseCurrent: location vector does not have the right dimensions.");
 			return false;
 		}
 
 		int numberOfComponents = settings.getNumberOfColors() * settings.getNumberOfColors() - 1;
 		if (aColor.size() != numberOfComponents) {
-			System.out.println("SU2WireCurrent: aColor vector does not have the right dimensions.");
+			System.out.println("SU2LightConeGaussPulseCurrent: aColor vector does not have the right dimensions.");
 			return false;
 		}
 
-		if (Math.abs(v) > settings.getSpeedOfLight()) {
-			System.out.println("SU2WireCurrent: v exceeds the chosen speed of light.");
+		if (v == 0) {
+			System.out.println("SU2LightConeGaussPulseCurrent: Orientation has to be non-zero.");
+			return false;
+		}
+
+		if (width <= 0) {
+			System.out.println("SU2LightConeGaussPulseCurrent: Width has to be a non-zero positive number.");
 			return false;
 		}
 		return true;
 	}
 
 	/**
-	 * Returns an instance of SU2WireCurrent according to the parameters in the YAML file.
+	 * Returns an instance of SU2LightConeDeltaPulseCurrent according to the parameters in the YAML file.
 	 *
-	 * @return Instance of SU2WireCurrent.
+	 * @return Instance of SU2LightConeDeltaPulseCurrent.
 	 */
-	public SU2WireCurrent getCurrentGenerator() {
+	public SU2LightConeGaussPulseCurrent getCurrentGenerator() {
 		int numberOfDimensions = location.size();
 		int numberOfComponents = aColor.size();
-
         /*
 			I'm sure this can be improved. I don't know how to convert a ArrayList<Double> into a double[] quickly, so
             I do it manually.
@@ -90,6 +99,6 @@ public class YamlSU2WireCurrent {
 			aColorArray[c] = aColor.get(c);
 		}
 
-		return new SU2WireCurrent(direction, locationArray, aColorArray, a, v);
+		return new SU2LightConeGaussPulseCurrent(direction, locationArray, width, aColorArray, a, v);
 	}
 }

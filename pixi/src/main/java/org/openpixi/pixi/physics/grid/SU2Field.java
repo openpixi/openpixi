@@ -90,6 +90,15 @@ public void addequate (YMField a) {
 		return b;
 		
 	}
+
+	public void multequate (double number) {
+
+		SU2Field b = new SU2Field();
+		this.v[0] *= number;
+		this.v[1] *= number;
+		this.v[2] *= number;
+
+	}
 	
 	public void set (YMField a) {
 		
