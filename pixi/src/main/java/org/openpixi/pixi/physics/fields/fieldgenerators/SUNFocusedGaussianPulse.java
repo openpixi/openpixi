@@ -1,6 +1,7 @@
 package org.openpixi.pixi.physics.fields.fieldgenerators;
 
 import org.openpixi.pixi.physics.Simulation;
+import org.openpixi.pixi.physics.gauge.CoulombGauge;
 import org.openpixi.pixi.physics.grid.Cell;
 import org.openpixi.pixi.physics.grid.Grid;
 import org.openpixi.pixi.physics.grid.SU2Field;
@@ -12,7 +13,7 @@ public class SUNFocusedGaussianPulse implements IFieldGenerator {
 	private int numberOfComponents;
 	private double[] direction;
 	private double[] position;
-	private double[] amplitudeSpatialDirection;
+	private double amplitudePolarisationAngle;
 	private double[] amplitudeColorDirection;
 	private double amplitudeMagnitude;
 	private double sigma;
@@ -23,12 +24,15 @@ public class SUNFocusedGaussianPulse implements IFieldGenerator {
 	private Grid grid;
 	private double timeStep;
 
-	private double ph0;
-	private double th0;
+	private double[] referenceDirection;
+	private double[] rotationAxis;
+	private double rotationAngle;
+
+	private final double ALMOST_ZERO = 10e-12;
 
 	public SUNFocusedGaussianPulse(double[] direction,
 								   double[] position,
-								   double[] amplitudeSpatialDirection,
+								   double amplitudePolarisationAngle,
 								   double[] amplitudeColorDirection,
 								   double amplitudeMagnitude,
 								   double sigma,
@@ -42,20 +46,26 @@ public class SUNFocusedGaussianPulse implements IFieldGenerator {
 		/*
 			Amplitude directions should be normalized.
 		 */
-		this.amplitudeSpatialDirection = this.normalizeVector(amplitudeSpatialDirection);
+		this.amplitudePolarisationAngle = amplitudePolarisationAngle;
 		this.amplitudeColorDirection = this.normalizeVector(amplitudeColorDirection);
 		this.amplitudeMagnitude = amplitudeMagnitude;
 		this.sigma = sigma;
 		this.angle = angle;
 		this.distance = distance;
 
-		/*
-			Precompute some angles.
-		 */
-		double[] directionSpherical = this.convertToSpherical(this.direction[0], this.direction[1], this.direction[2]);
+		this.referenceDirection = new double[]{1.0, 0.0, 0.0};
+		this.rotationAxis = normalizeVector(cross(referenceDirection, this.direction));
+		if(dot(referenceDirection, this.direction) > 0 ) {
+			this.rotationAngle = Math.asin(norm(cross(referenceDirection, this.direction)));
+		} else {
+			this.rotationAngle = Math.asin(norm(cross(referenceDirection, this.direction))) + Math.PI;
+		}
 
-		this.ph0 = directionSpherical[1];
-		this.th0 = directionSpherical[2];
+		// if direction points in the same direction as reference direction then the rotation has to be done differently.
+		if(norm(cross(referenceDirection, this.direction)) < ALMOST_ZERO) {
+			this.rotationAxis = new double[]{0.0, 1.0, 0.0};
+			this.rotationAngle = Math.acos(dot(referenceDirection, this.direction)); // should either be +pi, -pi or 0
+		}
 	}
 
 	public void applyFieldConfiguration(Simulation s) {
@@ -67,16 +77,6 @@ public class SUNFocusedGaussianPulse implements IFieldGenerator {
 		double as = grid.getLatticeSpacing();
 		double g = s.getCouplingConstant();
 
-		/*
-			Setup the field amplitude for the focused gaussian pulse.
-		 */
-		SU2Field[] amplitudeYMField = new SU2Field[this.numberOfDimensions];
-		for (int i = 0; i < this.numberOfDimensions; i++) {
-			amplitudeYMField[i] = new SU2Field(
-					this.amplitudeMagnitude * this.amplitudeSpatialDirection[i] * this.amplitudeColorDirection[0],
-					this.amplitudeMagnitude * this.amplitudeSpatialDirection[i] * this.amplitudeColorDirection[1],
-					this.amplitudeMagnitude * this.amplitudeSpatialDirection[i] * this.amplitudeColorDirection[2]);
-		}
 
 		int numberOfCells = grid.getTotalNumberOfCells();
 
@@ -93,7 +93,21 @@ public class SUNFocusedGaussianPulse implements IFieldGenerator {
 				pos[i] = currentPosition[i] - this.position[i];
 			}
 
-			double[] spherical = this.convertToSpherical(pos[0], pos[1], pos[2]);
+			double[] rotatedPos = this.rotateVector(pos, rotationAxis, rotationAngle);
+			double[] spherical = this.convertToSpherical(rotatedPos[0], rotatedPos[1], rotatedPos[2]);
+
+
+			// Setup the field amplitude for the focused gaussian pulse.
+
+			double[] amplitudeSpatialDirection = getVectorFieldDirection(spherical, amplitudePolarisationAngle);
+			amplitudeSpatialDirection = rotateVector(amplitudeSpatialDirection, rotationAxis, -rotationAngle);
+			SU2Field[] amplitudeYMField = new SU2Field[this.numberOfDimensions];
+			for (int i = 0; i < this.numberOfDimensions; i++) {
+				amplitudeYMField[i] = new SU2Field(
+						this.amplitudeMagnitude * amplitudeSpatialDirection[i] * this.amplitudeColorDirection[0],
+						this.amplitudeMagnitude * amplitudeSpatialDirection[i] * this.amplitudeColorDirection[1],
+						this.amplitudeMagnitude * amplitudeSpatialDirection[i] * this.amplitudeColorDirection[2]);
+			}
 
 			// Multiplicative factor for the focused gaussian pulse at t = 0 (for electric fields)
 			double electricFieldFactor = g * as * c * (spherical[0] - this.distance) / (sigma * sigma)
@@ -114,13 +128,39 @@ public class SUNFocusedGaussianPulse implements IFieldGenerator {
 				currentCell.addE(i, amplitudeYMField[i].mult(electricFieldFactor));
 			}
 		}
+
+		// Apply Coulomb gauge
+		CoulombGauge coulombGauge = new CoulombGauge(s.grid);
+		coulombGauge.applyGaugeTransformation(grid);
 	}
 
 	private double[] convertToSpherical(double x, double y, double z) {
 		double r = Math.sqrt(x * x + y * y + z * z);
-		double p = Math.atan2(y, x);
-		double t = Math.acos(z / r);
+		double p;
+		if(Math.abs(x) > ALMOST_ZERO || Math.abs(y) > ALMOST_ZERO) {
+			p = Math.atan2(y, x);
+		} else {
+			p = 0.0;
+		}
+		double t;
+		if(r > 10e-10) {
+			t = Math.acos(z / r);
+		} else {
+			t = 0.0;
+		}
 		return new double[]{r, p, t};
+	}
+
+	private double[] getVectorFieldDirection(double[] spherical, double a) {
+		double[] vector = new double[3];
+		double t = spherical[2];
+		double p = spherical[1];
+
+		vector[0] = Math.cos(a)*Math.cos(t) * Math.cos(p)	+ Math.sin(a) * (- Math.sin(p));
+		vector[1] = Math.cos(a)*Math.cos(t) * Math.sin(p)	+ Math.sin(a) * Math.cos(p);
+		vector[2] = Math.cos(a)*Math.sin(t);
+
+		return normalizeVector(vector);
 	}
 
 	private double pulseFunction(double r, double ph, double th, double t) {
@@ -130,19 +170,19 @@ public class SUNFocusedGaussianPulse implements IFieldGenerator {
 		// Shape for the angular parts
 		// This is very clumsy but solves a problem connected to periodicity with angular coordinates.
 		double phshape = 0.0;
-		double thshape = 1.0;
+		double thshape;
 
 		for (int i = -1; i <= 1; i++) {
-			phshape += anglularShapeFunction(ph + 2.0 * Math.PI * i, ph0, angle, 2.0, 4.0);
+			phshape += angularShapeFunction(ph + 2.0 * Math.PI * i, 0, angle, 2.0, 4.0);
 		}
 
 
-		thshape = anglularShapeFunction(th, th0, angle, 2.0, 4.0);
+		thshape = angularShapeFunction(th, Math.PI/2.0, angle, 2.0, 4.0);
 
 		return gauss * phshape * thshape;
 	}
 
-	private double anglularShapeFunction(double a, double a0, double da, double p, double q) {
+	private double angularShapeFunction(double a, double a0, double da, double p, double q) {
 		if (a0 - da < a && a < a0 + da) {
 			double A = Math.pow(Math.abs(da), p);
 			double B = Math.pow(Math.abs(a0 - a), p);
@@ -157,16 +197,44 @@ public class SUNFocusedGaussianPulse implements IFieldGenerator {
 	}
 
 	private double[] normalizeVector(double[] vector) {
-		double norm = 0.0;
 		double[] output = new double[vector.length];
+		double n = norm(vector);
 		for (int i = 0; i < vector.length; i++) {
-			norm += vector[i] * vector[i];
-		}
-		norm = Math.sqrt(norm);
-		for (int i = 0; i < vector.length; i++) {
-			output[i] = vector[i] / norm;
+			output[i] = vector[i] / n;
 		}
 		return output;
+	}
+
+	private double[] rotateVector(double[] v, double[] k, double a) {
+		if(Math.abs(a) > ALMOST_ZERO) {
+			double[] c = cross(k, v);
+			double d = dot(k, v);
+			double ca = Math.cos(a);
+			double sa = Math.sin(a);
+
+			double[] result = new double[3];
+			for (int i = 0; i < 3; i++) {
+				result[i] = v[i] * ca + c[i] * sa + k[i] * d * (1.0 - ca);
+			}
+			return result;
+		}
+		return v.clone();
+	}
+
+	private double dot(double[] v1, double[] v2) {
+		return v1[0]*v2[0] + v1[1]*v2[1] + v1[2]*v2[2];
+	}
+
+	private double norm(double[] v) {
+		return Math.sqrt(dot(v,v));
+	}
+
+	private double[] cross(double[] v1, double[] v2) {
+		return new double[]{
+				v1[1] * v2[2] - v1[2] * v2[1],
+				v1[2] * v2[0] - v1[0] * v2[2],
+				v1[0] * v2[1] - v1[1] * v2[0]
+		};
 	}
 
 	private double[] getPosition(int[] cellPosition) {
