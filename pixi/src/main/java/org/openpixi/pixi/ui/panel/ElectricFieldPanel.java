@@ -31,24 +31,28 @@ public class ElectricFieldPanel extends AnimationPanel {
 	public final int INDEX_U = 1;
 	public final int INDEX_U_NEXT = 2;
 	public final int INDEX_J = 3;
+	public final int INDEX_RHO = 4;
 
 	String[] fieldLabel = new String[] {
 			"E",
 			"U",
 			"U next",
-			"j"
+			"j",
+			"rho"
 	};
 
 	Color[] fieldColors = new Color[] {
 			Color.black,
 			Color.green,
 			Color.gray,
-			Color.red
+			Color.red,
+			Color.blue
 	};
 
 	boolean[] fieldInit = new boolean[] {
 			true,
 			true,
+			false,
 			false,
 			false
 	};
@@ -183,6 +187,9 @@ public class ElectricFieldPanel extends AnimationPanel {
 					break;
 				case INDEX_J:
 					value = drawGrid.getJ(s.grid.getCellIndex(pos), directionIndex).get(colorIndex) / (as * g);
+					break;
+				case INDEX_RHO:
+					value = drawGrid.getRho(s.grid.getCellIndex(pos)).get(colorIndex) / (as * g);
 					break;
 				}
 				scaleProperties.putValue(value);
