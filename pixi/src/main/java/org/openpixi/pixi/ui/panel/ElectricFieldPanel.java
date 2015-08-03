@@ -10,6 +10,7 @@ import org.openpixi.pixi.physics.gauge.RandomGauge;
 import org.openpixi.pixi.physics.grid.Grid;
 import org.openpixi.pixi.physics.particles.IParticle;
 import org.openpixi.pixi.ui.SimulationAnimation;
+import org.openpixi.pixi.ui.panel.properties.BooleanArrayProperties;
 import org.openpixi.pixi.ui.panel.properties.ColorProperties;
 import org.openpixi.pixi.ui.panel.properties.GaugeProperties;
 import org.openpixi.pixi.ui.panel.properties.ScaleProperties;
@@ -24,6 +25,33 @@ public class ElectricFieldPanel extends AnimationPanel {
 	ColorProperties colorProperties;
 	ScaleProperties scaleProperties;
 	GaugeProperties gaugeProperties;
+	public BooleanArrayProperties showFieldProperties;
+
+	public final int INDEX_E = 0;
+	public final int INDEX_U = 1;
+	public final int INDEX_U_NEXT = 2;
+	public final int INDEX_J = 3;
+
+	String[] fieldLabel = new String[] {
+			"E",
+			"U",
+			"U next",
+			"j"
+	};
+
+	Color[] fieldColors = new Color[] {
+			Color.black,
+			Color.green,
+			Color.gray,
+			Color.red
+	};
+
+	boolean[] fieldInit = new boolean[] {
+			true,
+			true,
+			false,
+			false
+	};
 
 	/** Constructor */
 	public ElectricFieldPanel(SimulationAnimation simulationAnimation) {
@@ -31,6 +59,7 @@ public class ElectricFieldPanel extends AnimationPanel {
 		colorProperties = new ColorProperties(simulationAnimation);
 		scaleProperties = new ScaleProperties(simulationAnimation);
 		gaugeProperties = new GaugeProperties(simulationAnimation);
+		showFieldProperties = new BooleanArrayProperties(simulationAnimation, fieldLabel, fieldInit);
 	}
 
 	/** Display the particles */
@@ -57,13 +86,6 @@ public class ElectricFieldPanel extends AnimationPanel {
 		double sy = getHeight() / s.getHeight();
 
 		double panelHeight = getHeight();
-
-		// Lattice spacing and coupling constant
-		double as = s.grid.getLatticeSpacing();
-		double g = s.getCouplingConstant();
-
-		int colorIndex = colorProperties.getColorIndex();
-		int directionIndex = colorProperties.getDirectionIndex();
 
 		boolean useCoulombGauge = gaugeProperties.isCoulombGauge();
 		Grid drawGrid = s.grid;
@@ -96,21 +118,38 @@ public class ElectricFieldPanel extends AnimationPanel {
 			}
 		}
 
-		// Draw electric field:
-		graph.setColor(Color.black);
-		// Scale factor for electric field
-		double scaleE = scaleProperties.getScale();
-
-		// Scale factor for gauge field
-		double scaleA = scaleProperties.getScale();
+		// Scale factor
+		double scale = scaleProperties.getScale();
 
 		scaleProperties.resetAutomaticScale();
+
+		for (int i = 0; i < fieldLabel.length; i++) {
+			if (showFieldProperties.getValue(i)) {
+				drawGraph(graph, s, sx, panelHeight, drawGrid, scale, i);
+			}
+		}
+
+		scaleProperties.calculateAutomaticScale(0.5);
+
+	}
+
+	private void drawGraph(Graphics2D graph, Simulation s, double sx,
+			double panelHeight, Grid drawGrid, double scale, int type) {
+
+		// Lattice spacing and coupling constant
+		double as = s.grid.getLatticeSpacing();
+		double g = s.getCouplingConstant();
+
+		int colorIndex = colorProperties.getColorIndex();
+		int directionIndex = colorProperties.getDirectionIndex();
 
 		int[] pos = new int[s.getNumberOfDimensions()];
 		for(int w = 2; w < s.getNumberOfDimensions(); w++) {
 			pos[w] = s.grid.getNumCells(w)/2;
 		}
-		
+
+		graph.setColor(fieldColors[type]);
+
 		for(int k = 0; k < s.grid.getNumCells(1); k++)
 		{
 			int newPosition = 0;
@@ -131,54 +170,34 @@ public class ElectricFieldPanel extends AnimationPanel {
 					In the flipped and translated coordinate system defined above we have to add the fields to the
 					center of the panel in order to get the expected result.
 				*/
-				double electricField = drawGrid.getE(s.grid.getCellIndex(pos), directionIndex).get(colorIndex) / (as * g);
-				scaleProperties.putValue(electricField);
-				newValue = (int) (((0.5 + scaleE * electricField) * panelHeight));
+				double value = 0;
+				switch(type) {
+				case INDEX_E:
+					value = drawGrid.getE(s.grid.getCellIndex(pos), directionIndex).get(colorIndex) / (as * g);
+					break;
+				case INDEX_U:
+					value = drawGrid.getU(s.grid.getCellIndex(pos), directionIndex).getLinearizedAlgebraElement().get(colorIndex) / (as * g);
+					break;
+				case INDEX_U_NEXT:
+					value = drawGrid.getUnext(s.grid.getCellIndex(pos), directionIndex).getLinearizedAlgebraElement().get(colorIndex) / (as * g);
+					break;
+				case INDEX_J:
+					value = drawGrid.getJ(s.grid.getCellIndex(pos), directionIndex).get(colorIndex) / (as * g);
+					break;
+				}
+				scaleProperties.putValue(value);
+				newValue = (int) (((0.5 + scale * value) * panelHeight));
 
 				if (i > 0) {
 					graph.drawLine(oldPosition, oldValue,newPosition, newValue);
 				}
 			}
 		}
-		
-		// Draw gauge field:
-		graph.setColor(Color.green);
-				
-		for(int k = 0; k < s.grid.getNumCells(1); k++)
-		{
-			int newPosition = 0;
-			int newValue = 0;
-			for(int i = 0; i < s.grid.getNumCells(0); i++)
-			{
-
-				int oldPosition = newPosition;
-				int oldValue = newValue;
-				pos[0] = i;
-				pos[1] = k;
-
-				// Gauge fields are placed at the lattice points.
-				newPosition = (int) (s.grid.getLatticeSpacing() * i * sx);
-
-				/*
-					Expectation: Positive fields should point upwards.
-					In the flipped and translated coordinate system defined above we have to add the fields to the
-					center of the panel in order to get the expected result.
-				*/
-				double gaugeField = drawGrid.getU(s.grid.getCellIndex(pos), directionIndex).getLinearizedAlgebraElement().get(colorIndex) / (as * g);
-				scaleProperties.putValue(gaugeField);
-				newValue = (int) (((0.5 + scaleA * gaugeField) * panelHeight));
-
-				if (i > 0) {
-					graph.drawLine(oldPosition, oldValue,newPosition, newValue);
-				}
-			}
-		}
-		scaleProperties.calculateAutomaticScale(0.5);
-
 	}
 
 	public void addPropertyComponents(Box box) {
 		addLabel(box, "Electric field panel");
+		showFieldProperties.addComponents(box);
 		colorProperties.addComponents(box);
 		scaleProperties.addComponents(box);
 		gaugeProperties.addComponents(box);
