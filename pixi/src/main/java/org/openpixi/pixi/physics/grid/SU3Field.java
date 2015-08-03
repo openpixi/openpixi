@@ -104,6 +104,14 @@ public class SU3Field extends YMField {
 
 	}
 
+	public void multequate (double number) {
+
+		for (int i = 0; i < 9; i++) {
+			this.v[i] = v[i]*number;
+		}
+
+	}
+
 	public void set (YMField a) {
 
 		for (int i = 0; i < 9; i++) {
