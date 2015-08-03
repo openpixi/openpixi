@@ -1,7 +1,6 @@
 package org.openpixi.pixi.ui.util.yaml.fieldgenerators;
 
 import org.openpixi.pixi.physics.Settings;
-import org.openpixi.pixi.physics.fields.fieldgenerators.SU2FocusedGaussianPulse;
 import org.openpixi.pixi.physics.fields.fieldgenerators.SUNFocusedGaussianPulse;
 
 import java.util.List;
@@ -82,9 +81,9 @@ public class YamlSUNFocusedGaussianPulse {
 	}
 
 	/**
-	 * Returns an instance of SU2FocusedGaussianPulse according to the parameters in the YAML file.
+	 * Returns an instance of SUNFocusedGaussianPulse according to the parameters in the YAML file.
 	 *
-	 * @return Instance of SU2FocusedGaussianPulse.
+	 * @return Instance of SUNFocusedGaussianPulse.
 	 */
 	public SUNFocusedGaussianPulse getFieldGenerator() {
 		int numberOfDimensions = dir.size();

@@ -50,10 +50,6 @@ public class MainBatch {
 	 */
 	public static void main(String[] args) throws FileNotFoundException, IOException, InterruptedException {
 		Debug.checkAssertsEnabled();
-
-		// Creates a settings class with the default parameters
-		Settings settings = new Settings();
-
 		// Checks if the user has specified at least one parameter.
 		// If so creates a parser and uses the parameter as the
 		// path to the settings file.
@@ -62,29 +58,26 @@ public class MainBatch {
 			File file = new File(path, args[0]);
 			try {
 				String string = FileIO.readFile(file);
-				YamlParser parser = new YamlParser(settings);
-				parser.parseString(string);
-				System.out.println("Using " + args[0]);
+				runSimulationFromString(string);
+
 			} catch (IOException e) {
 				System.out.println("Error opening " + args[0]);
 			}
 		}
+	}
 
-		// Creates the actual physics simulation that can be run iteratively.
-		//simulation = new Simulation(settings);
+	public static void runSimulationFromString(String configurationString) {
+		// Creates a settings class with the default parameters
+		Settings settings = new Settings();
+		YamlParser yamlParser = new YamlParser(settings);
+		yamlParser.parseString(configurationString);
 
-		//simulation = InitialConditions.initTwoStream(0.01,1,50);
+		// Runs the simulation
 		simulation = new Simulation(settings);
-		//simulation = InitialConditions.initOneTest(0.01,1);
-		//simulation = InitialConditions.initOneTest3D(0.01,1);
-		//simulation = InitialConditions.initInterpolationTest3D(0.01,1);
-		//simulation = InitialConditions.initWaveTest(1);
-
-		while (simulation.continues()) {
-			// advance the simulation by one step
-			simulation.step();
+		try {
+			simulation.run();
+		} catch (IOException e) {
+			System.out.println("MainBatch: something went wrong.");
 		}
-
-		//simulation.close();
 	}
 }
