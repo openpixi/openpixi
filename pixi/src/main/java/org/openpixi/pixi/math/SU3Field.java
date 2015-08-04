@@ -80,31 +80,27 @@ public class SU3Field implements AlgebraElement {
 	}
 
 	public void set(int j, double value) {
-		double proj = get(j);
-		double[] generator;
+		double diff = (value - get(j)) / 2;
 
 		switch (j) {
-			case 0: generator = new double[]{0,1,0,0,0,0,0,0,0};
+			case 0: v[1] += diff;
 				break;
-			case 1: generator = new double[]{0,0,0,-1,0,0,0,0,0};
+			case 1: v[3] -= diff;
 				break;
-			case 2: generator = new double[]{1,0,0,0,-1,0,0,0,0};
+			case 2: v[0] += diff; v[4] -= diff;
 				break;
-			case 3: generator = new double[]{0,0,1,0,0,0,0,0,0};
+			case 3: v[2] += diff;
 				break;
-			case 4: generator = new double[]{0,0,0,0,0,0,-1,0,0};
+			case 4: v[6] -= diff;
 				break;
-			case 5: generator = new double[]{0,0,0,0,0,1,0,0,0};
+			case 5: v[5] += diff;
 				break;
-			case 6: generator = new double[]{0,0,0,0,0,0,0,-1,0};
+			case 6: v[7] -= diff;
 				break;
-			case 7: generator = new double[]{1/Math.sqrt(3),0,0,0,1/Math.sqrt(3),0,0,0,-2/Math.sqrt(3)};
+			case 7: v[0] += diff / Math.sqrt(3); v[4] += diff / Math.sqrt(3); v[8] -= 2 * diff / Math.sqrt(3);
 				break;
 			default: System.out.println("Invalid generator set index!");
-				generator = new double[]{0,0,0,0,0,0,0,0,0};
 		}
-
-		addAssign((new SU3Field(generator)).mult((value - proj)/2));
 	}
 
 	public double get(int j) {
