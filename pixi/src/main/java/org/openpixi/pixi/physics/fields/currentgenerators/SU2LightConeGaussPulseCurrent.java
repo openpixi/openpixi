@@ -68,8 +68,8 @@ public class SU2LightConeGaussPulseCurrent implements ICurrentGenerator {
 				this.magnitude * this.amplitudeColorDirection[1],
 				this.magnitude * this.amplitudeColorDirection[2]);
 
-		fieldAmplitude.multequate(chargeNorm*g*as);	// This factor comes from the dimensionality of the current density
-		chargeAmplitude.multequate(chargeNorm*g*as);	// The factor g*as comes from our definition of electric fields!!
+		fieldAmplitude.multAssign(chargeNorm * g * as);	// This factor comes from the dimensionality of the current density
+		chargeAmplitude.multAssign(chargeNorm * g * as);	// The factor g*as comes from our definition of electric fields!!
 
 		/*
 			Find the nearest grid point and apply the current configuration to the cell current.

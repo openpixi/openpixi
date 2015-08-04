@@ -4,7 +4,6 @@ import org.openpixi.pixi.parallel.cellaccess.CellAction;
 import org.openpixi.pixi.parallel.cellaccess.CellIterator;
 import org.openpixi.pixi.physics.Settings;
 import org.openpixi.pixi.physics.fields.FieldSolver;
-import org.openpixi.pixi.physics.grid.YMField;
 
 public class Grid {
 
@@ -812,7 +811,7 @@ public class Grid {
 		for (int i = 0; i < numDim; i++) {
 			int id2 = shift(index, i, -1);
 			temp.set(getU(id2, i).adj().mult(getUnext(id2, i)).proj());
-			gauss.addequate(getE(index, i).sub(temp.mult(norm)));
+			gauss.addAssign(getE(index, i).sub(temp.mult(norm)));
 		}
 		return gauss.square() / Math.pow( as * as * gaugeCoupling, 2.0);
 	}

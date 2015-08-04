@@ -8,7 +8,7 @@ public abstract class YMField {
 	
 	public abstract YMField add (YMField a);
 	
-	public abstract void addequate (YMField a);
+	public abstract void addAssign(YMField a);
 	
 	public abstract YMField sub (YMField a);
 	
@@ -20,7 +20,7 @@ public abstract class YMField {
 	
 	public abstract YMField mult (double number);
 
-	public abstract void multequate (double number);
+	public abstract void multAssign(double number);
 	
 	public abstract void set (YMField a);
 	

@@ -131,8 +131,8 @@ public class TempGaugeLightConeGaussPoissonSolver extends LightConePoissonSolver
 
 						A0.set(g.getU(cellIndex, signature[0]).getAlgebraElement());
 						A1.set(g.getU(cellIndex, signature[1]).getAlgebraElement());
-						A0.addequate(E0List[j][w].mult(-1.0 * shapeErf(pos[dir] * as, z * as)));
-						A1.addequate(E1List[j][w].mult(-1.0*shapeErf(pos[dir]*as, z*as)));
+						A0.addAssign(E0List[j][w].mult(-1.0 * shapeErf(pos[dir] * as, z * as)));
+						A1.addAssign(E1List[j][w].mult(-1.0 * shapeErf(pos[dir] * as, z * as)));
 
 						g.setU(cellIndex, signature[0], A0.getLinkExact());
 						g.setU(cellIndex, signature[1], A1.getLinkExact());
@@ -198,7 +198,7 @@ public class TempGaugeLightConeGaussPoissonSolver extends LightConePoissonSolver
 					g.addE(chargeIndex, signature[0], E0List[j].mult(shapeGauss(pos[dir] * as, z * as)));
 
 					A0.set(g.getU(cellIndex, signature[0]).getAlgebraElement());
-					A0.addequate(E0List[j].mult(-1.0 * shapeErf(pos[dir] * as, z * as)));
+					A0.addAssign(E0List[j].mult(-1.0 * shapeErf(pos[dir] * as, z * as)));
 
 					g.setU(cellIndex, signature[0], A0.getLinkExact());
 				}

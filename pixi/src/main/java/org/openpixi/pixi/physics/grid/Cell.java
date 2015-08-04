@@ -62,7 +62,7 @@ public class Cell implements Serializable {
 	 * two threads trying to update the field at the same time.
 	 */
 	public synchronized void addJ(int dir, YMField current) {
-		J[dir].addequate(current);
+		J[dir].addAssign(current);
 	}
 
 	public YMField getJ(int dir) {
@@ -82,7 +82,7 @@ public class Cell implements Serializable {
 	 * two threads trying to update the field at the same time.
 	 */
 	public synchronized void addRho(YMField rho) {
-		this.rho.addequate(rho);
+		this.rho.addAssign(rho);
 	}
 
 	public YMField getE(int dir) {
@@ -94,7 +94,7 @@ public class Cell implements Serializable {
 	}
 	
 	public void addE(int dir, YMField field) {
-		E[dir].addequate(field);
+		E[dir].addAssign(field);
 	}
 	
 	public LinkMatrix getU(int dir) {

@@ -1,11 +1,8 @@
 package org.openpixi.pixi.physics.fields.currentgenerators;
 
 import org.openpixi.pixi.physics.Simulation;
-import org.openpixi.pixi.physics.fields.currentgenerators.ICurrentGenerator;
-import org.openpixi.pixi.physics.grid.Cell;
 import org.openpixi.pixi.physics.grid.Grid;
 import org.openpixi.pixi.physics.grid.SU2Field;
-import org.openpixi.pixi.physics.grid.SU2Matrix;
 
 public class SU2WireCurrent implements ICurrentGenerator {
 
@@ -61,8 +58,8 @@ public class SU2WireCurrent implements ICurrentGenerator {
 				this.magnitude * this.amplitudeColorDirection[1],
 				this.magnitude * this.amplitudeColorDirection[2]);
 
-		fieldAmplitude.multequate(chargeNorm);	// This factor comes from the dimensionality of the current density
-		chargeAmplitude.multequate(chargeNorm);
+		fieldAmplitude.multAssign(chargeNorm);	// This factor comes from the dimensionality of the current density
+		chargeAmplitude.multAssign(chargeNorm);
 
 		/*
 			Cycle through each cell and apply the current configuration to the cell currents.

@@ -44,7 +44,7 @@ public class SU2Field extends YMField {
 		
 	}
 	
-public void addequate (YMField a) {
+public void addAssign(YMField a) {
 		
 		v[0] += a.v[0];
 		v[1] += a.v[1];
@@ -91,7 +91,7 @@ public void addequate (YMField a) {
 		
 	}
 
-	public void multequate (double number) {
+	public void multAssign(double number) {
 
 		this.v[0] *= number;
 		this.v[1] *= number;

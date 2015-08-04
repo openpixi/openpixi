@@ -49,7 +49,7 @@ public class SU3Field extends YMField {
 		
 	}
 	
-	public void addequate (YMField a) {
+	public void addAssign(YMField a) {
 
 		for (int i = 0; i < 9; i++) {
 			v[i] += a.v[i];
@@ -104,7 +104,7 @@ public class SU3Field extends YMField {
 
 	}
 
-	public void multequate (double number) {
+	public void multAssign(double number) {
 
 		for (int i = 0; i < 9; i++) {
 			this.v[i] = v[i]*number;
