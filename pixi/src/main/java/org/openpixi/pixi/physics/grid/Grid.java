@@ -719,7 +719,7 @@ public class Grid {
 	 */
 	public double getEsquaredFromLinks(int index, int direction) {
 		
-		double norm = at * at / 4.0;
+		double norm = at * at;
 		double res = cells[index].getUnext(direction).mult(cells[index].getU(direction).adj()).proj().square()/norm;
 
 		return res;
@@ -762,7 +762,7 @@ public class Grid {
 		
 		YMField gauss = cells[index].getEmptyField(numCol);
 		YMField temp = cells[index].getEmptyField(numCol);
-		double norm = -2.0/(at);
+		double norm = -1.0/(at);
 
 		for (int i = 0; i < numDim; i++) {
 			int id2 = shift(index, i, -1);

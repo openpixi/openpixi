@@ -72,7 +72,7 @@ public class GeneralYangMillsSolver extends FieldSolver
 					plaquettes[0] = plaquettes[0].add(plaquettes[p]);
 				}
 
-				YMField currentE = grid.getE(index, i).add(plaquettes[0].proj().mult(2 * at / (as * as )));
+				YMField currentE = grid.getE(index, i).add(plaquettes[0].proj().mult(at / (as * as )));
 				currentE.addAssign(grid.getJ(index, i).mult(-at));
 				grid.setE(index, i, currentE);
 			}
