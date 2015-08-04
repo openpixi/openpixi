@@ -153,16 +153,19 @@ public class Cell implements Serializable {
 	 */
 	public void copyFrom(Cell other) {
 		
-		for (int i=0;i<other.F.length;i++) {
-			System.arraycopy(other.F[i],0,this.F[i],0,other.F[i].length);
+		for (int i = 0; i < F.length; i++) {
+			for (int j = 0; j < F.length; j++) {
+				this.F[i][j] = other.F[i][j].mult(1.0);
+			}
 		}
 
-		System.arraycopy(other.J, 0, this.J, 0, other.J.length);
-		System.arraycopy(other.U, 0, this.U, 0, other.U.length);
-		System.arraycopy(other.Unext, 0, this.Unext, 0, other.Unext.length);
-		System.arraycopy(other.E, 0, this.E, 0, other.E.length);
+		for(int i = 0; i < E.length; i++) {
+			this.E[i] = other.E[i].mult(1.0); // hack to get a copy of an algebra element
+			this.J[i] = other.J[i].mult(1.0);
+			this.U[i] = other.U[i].mult(1.0);
+			this.Unext[i] = other.Unext[i].mult(1.0);
+		}
 		this.rho.set(other.rho);
-		
 	}
 /*
 	@Override
