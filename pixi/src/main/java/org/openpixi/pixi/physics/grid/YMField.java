@@ -1,34 +1,30 @@
 package org.openpixi.pixi.physics.grid;
 
-import org.openpixi.pixi.physics.grid.LinkMatrix;
+public interface YMField {
+	
+	YMField add (YMField a);
+	
+	void addAssign(YMField a);
+	
+	YMField sub (YMField a);
+	
+	void set (int j, double value);
+	
+	double get (int j);
+	
+	double square ();
+	
+	YMField mult (double number);
 
-public abstract class YMField {
+	void multAssign(double number);
 	
-	protected double[] v;
+	void set (YMField a);
 	
-	public abstract YMField add (YMField a);
+	void reset ();
 	
-	public abstract void addAssign(YMField a);
+	LinkMatrix getLinearizedLink();
 	
-	public abstract YMField sub (YMField a);
-	
-	public abstract void set (int j, double value);
-	
-	public abstract double get (int j);
-	
-	public abstract double square ();
-	
-	public abstract YMField mult (double number);
-
-	public abstract void multAssign(double number);
-	
-	public abstract void set (YMField a);
-	
-	public abstract void reset ();
-	
-	public abstract LinkMatrix getLinearizedLink();
-	
-	public abstract LinkMatrix getLink();
+	LinkMatrix getLink();
 
 	/**
 	 * Returns the projection of the algebra element on to the c'th generator, i.e.
@@ -40,6 +36,6 @@ public abstract class YMField {
 	 * @param c	Number of the generator
 	 * @return	Projection onto generator
 	 */
-	public abstract double proj(int c);
+	double proj(int c);
 
 }
