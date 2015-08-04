@@ -2,8 +2,8 @@ package org.openpixi.pixi.physics.grid;
 
 import org.openpixi.pixi.math.AlgebraElement;
 import org.openpixi.pixi.math.GroupElement;
-import org.openpixi.pixi.math.SU2Field;
-import org.openpixi.pixi.math.SU2Matrix;
+import org.openpixi.pixi.math.SU2AlgebraElement;
+import org.openpixi.pixi.math.SU2GroupElement;
 
 import java.io.Serializable;
 
@@ -38,22 +38,22 @@ public class Cell implements Serializable {
 	 */
 	public Cell(int dimensions, int colors) {
 		if(colors == 2) {
-			F = new SU2Field[dimensions][dimensions];
-			U = new SU2Matrix[dimensions];
-			Unext = new SU2Matrix[dimensions];
-			E = new SU2Field[dimensions];
-			J = new SU2Field[dimensions];
-			rho = new SU2Field();
+			F = new SU2AlgebraElement[dimensions][dimensions];
+			U = new SU2GroupElement[dimensions];
+			Unext = new SU2GroupElement[dimensions];
+			E = new SU2AlgebraElement[dimensions];
+			J = new SU2AlgebraElement[dimensions];
+			rho = new SU2AlgebraElement();
 			
 			for(int i = 0; i < dimensions; i++)
 			{
-				U[i] = new SU2Matrix();
-				Unext[i] = new SU2Matrix();
-				E[i] = new SU2Field();
-				J[i] = new SU2Field();
+				U[i] = new SU2GroupElement();
+				Unext[i] = new SU2GroupElement();
+				E[i] = new SU2AlgebraElement();
+				J[i] = new SU2AlgebraElement();
 				
 				for(int j = 0; j < dimensions; j++) {
-					F[i][j] = new SU2Field();
+					F[i][j] = new SU2AlgebraElement();
 				}
 			}
 		}
@@ -139,7 +139,7 @@ public class Cell implements Serializable {
 	
 	public AlgebraElement getEmptyField(int colors) {
 		if(colors == 2) {
-			return new SU2Field();
+			return new SU2AlgebraElement();
 		} else {System.out.println("Error!! Number of colors should be equal to 2!!"); return null;}
 	}
 

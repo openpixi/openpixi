@@ -9,11 +9,11 @@ package org.openpixi.pixi.math;
  * 		e[1] - i e[3]		e[4]        		e[5] + i e[7]
  * 		e[2] - i e[6]		e[5] - i e[7]		e[8]
  */
-public class SU3Field implements AlgebraElement {
+public class SU3AlgebraElement implements AlgebraElement {
 
 	protected double[] v;
 
-	public SU3Field() {
+	public SU3AlgebraElement() {
 
 		v = new double[9];
 
@@ -22,7 +22,7 @@ public class SU3Field implements AlgebraElement {
 		}
 	}
 
-	public SU3Field(double[] values) {
+	public SU3AlgebraElement(double[] values) {
 
 		v = new double[9];
 
@@ -47,9 +47,9 @@ public class SU3Field implements AlgebraElement {
 	
 	public AlgebraElement add (AlgebraElement arg) {
 
-		SU3Field a = (SU3Field) arg;
+		SU3AlgebraElement a = (SU3AlgebraElement) arg;
 		
-		SU3Field b = new SU3Field();
+		SU3AlgebraElement b = new SU3AlgebraElement();
 		for (int i = 0; i < 9; i++) {
 			b.v[i] = v[i]+a.v[i];
 		}
@@ -59,7 +59,7 @@ public class SU3Field implements AlgebraElement {
 	
 	public void addAssign(AlgebraElement arg) {
 
-		SU3Field a = (SU3Field) arg;
+		SU3AlgebraElement a = (SU3AlgebraElement) arg;
 
 		for (int i = 0; i < 9; i++) {
 			v[i] += a.v[i];
@@ -69,9 +69,9 @@ public class SU3Field implements AlgebraElement {
 	
 	public AlgebraElement sub (AlgebraElement arg) {
 
-		SU3Field a = (SU3Field) arg;
+		SU3AlgebraElement a = (SU3AlgebraElement) arg;
 		
-		SU3Field b = new SU3Field();
+		SU3AlgebraElement b = new SU3AlgebraElement();
 		for (int i = 0; i < 9; i++) {
 			b.v[i] = v[i]-a.v[i];
 		}
@@ -137,7 +137,7 @@ public class SU3Field implements AlgebraElement {
 	
 	public AlgebraElement mult (double number) {
 
-		SU3Field b = new SU3Field();
+		SU3AlgebraElement b = new SU3AlgebraElement();
 		for (int i = 0; i < 9; i++) {
 			b.v[i] = v[i]*number;
 		}
@@ -155,7 +155,7 @@ public class SU3Field implements AlgebraElement {
 
 	public void set (AlgebraElement arg) {
 
-		SU3Field a = (SU3Field) arg;
+		SU3AlgebraElement a = (SU3AlgebraElement) arg;
 
 		for (int i = 0; i < 9; i++) {
 			v[i] = a.v[i];
@@ -182,7 +182,7 @@ public class SU3Field implements AlgebraElement {
 	/**
 	 * Calculates the algebra element by first eigendecomposing into UDU* and then finding log D
 	 * WARNING: This decomposition only works for SU(3) matrices due to certain optimizations
-	 * @return coefficients to be fed into SU3Field to give algebra element
+	 * @return coefficients to be fed into SU3AlgebraElement to give algebra element
 	 */
 	private double[] groupElementDecompositionMethod() {
 		// trace of matrix squared, using square method
@@ -263,28 +263,28 @@ public class SU3Field implements AlgebraElement {
 
 		// multiply U exp(D) U* to get algebra element
 		// exp(D) is just a (complex) diagonal matrix
-		SU3Matrix unit = new SU3Matrix(new double[]{vectors[0][0],vectors[1][0],vectors[2][0],
+		SU3GroupElement unit = new SU3GroupElement(new double[]{vectors[0][0],vectors[1][0],vectors[2][0],
 													vectors[0][1],vectors[1][1],vectors[2][1],
 													vectors[0][2],vectors[1][2],vectors[2][2],
 													vectors[0][3],vectors[1][3],vectors[2][3],
 													vectors[0][4],vectors[1][4],vectors[2][4],
 													vectors[0][5],vectors[1][5],vectors[2][5]});
-		SU3Matrix diag = new SU3Matrix(new double[]{valuesRe[0],0,0,
+		SU3GroupElement diag = new SU3GroupElement(new double[]{valuesRe[0],0,0,
 													0,valuesRe[1],0,
 													0,0,valuesRe[2],
 													valuesIm[0],0,0,
 													0,valuesIm[1],0,
 													0,0,valuesIm[2]});
-		return ((SU3Matrix) unit.mult(diag).mult(unit.adj())).get();
+		return ((SU3GroupElement) unit.mult(diag).mult(unit.adj())).get();
 	}
 
 	public GroupElement getLinearizedLink() {
 		double[] values = new double[]{1,-v[3],-v[6],v[3],1,-v[7],v[6],v[7],1,v[0],v[1],v[2],v[1],v[4],v[5],v[2],v[5],v[8]};
-		return new SU3Matrix(values);
+		return new SU3GroupElement(values);
 	}
 	
 	public GroupElement getLink() {
-		return new SU3Matrix(groupElementDecompositionMethod());
+		return new SU3GroupElement(groupElementDecompositionMethod());
 	}
 
 	public double proj(int c) {
@@ -302,6 +302,6 @@ public class SU3Field implements AlgebraElement {
 	}
 
 	public AlgebraElement copy() {
-		return new SU3Field(get());
+		return new SU3AlgebraElement(get());
 	}
 }

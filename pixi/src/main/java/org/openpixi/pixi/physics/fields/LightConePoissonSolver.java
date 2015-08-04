@@ -1,9 +1,9 @@
 package org.openpixi.pixi.physics.fields;
 
 import org.openpixi.pixi.math.AlgebraElement;
+import org.openpixi.pixi.math.SU2AlgebraElement;
 import org.openpixi.pixi.physics.grid.Grid;
 import edu.emory.mathcs.jtransforms.fft.*;
-import org.openpixi.pixi.math.SU2Field;
 
 public class LightConePoissonSolver {
 
@@ -59,9 +59,9 @@ public class LightConePoissonSolver {
 			AlgebraElement[][] E1List = new AlgebraElement[size[0]][size[1]];
 			for(int j = 0; j < size[0]; j++) {
 				for (int w = 0; w < size[1]; w++) {
-					gaugeList[j][w] = new SU2Field();
-					E0List[j][w] = new SU2Field();
-					E1List[j][w] = new SU2Field();
+					gaugeList[j][w] = new SU2AlgebraElement();
+					E0List[j][w] = new SU2AlgebraElement();
+					E1List[j][w] = new SU2AlgebraElement();
 				}
 			}
 
@@ -140,8 +140,8 @@ public class LightConePoissonSolver {
 			AlgebraElement[] gaugeList = new AlgebraElement[size[0]];
 			AlgebraElement[] E0List = new AlgebraElement[size[0]];
 			for(int j = 0; j < size[0]; j++) {
-				gaugeList[j] = new SU2Field();
-				E0List[j] = new SU2Field();
+				gaugeList[j] = new SU2AlgebraElement();
+				E0List[j] = new SU2AlgebraElement();
 			}
 
 			for(int i = 0; i < numberOfComponents; i++) {

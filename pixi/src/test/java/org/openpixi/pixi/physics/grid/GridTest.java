@@ -5,7 +5,7 @@ import java.util.Random;
 import org.junit.Assert;
 import org.junit.Test;
 import org.openpixi.pixi.math.GroupElement;
-import org.openpixi.pixi.math.SU2Matrix;
+import org.openpixi.pixi.math.SU2GroupElement;
 import org.openpixi.pixi.physics.GeneralBoundaryType;
 import org.openpixi.pixi.physics.Settings;
 import org.openpixi.pixi.physics.Simulation;
@@ -45,7 +45,7 @@ public class GridTest {
 
 			// This code is specific to SU2
 			for (int i = 0; i < 3; i++) {
-				Assert.assertEquals(((SU2Matrix) l1).get(i), ((SU2Matrix) l2).get(i), accuracy);
+				Assert.assertEquals(((SU2GroupElement) l1).get(i), ((SU2GroupElement) l2).get(i), accuracy);
 			}
 		}
 
@@ -67,10 +67,10 @@ public class GridTest {
 			GroupElement result = plaq1.mult(plaq2);
 
 			// This code is specific to SU2
-			Assert.assertEquals(1.0, ((SU2Matrix) result).get(0), accuracy);
-			Assert.assertEquals(0.0, ((SU2Matrix) result).get(1), accuracy);
-			Assert.assertEquals(0.0, ((SU2Matrix) result).get(2), accuracy);
-			Assert.assertEquals(0.0, ((SU2Matrix) result).get(3), accuracy);
+			Assert.assertEquals(1.0, ((SU2GroupElement) result).get(0), accuracy);
+			Assert.assertEquals(0.0, ((SU2GroupElement) result).get(1), accuracy);
+			Assert.assertEquals(0.0, ((SU2GroupElement) result).get(2), accuracy);
+			Assert.assertEquals(0.0, ((SU2GroupElement) result).get(3), accuracy);
 
 			// Forward and backward plaquette around the same rectangle should have the same trace.
 			int shiftedIndex = g.shift(index, d1, 1);

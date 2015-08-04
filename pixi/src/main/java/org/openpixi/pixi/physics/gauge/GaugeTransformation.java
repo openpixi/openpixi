@@ -2,9 +2,9 @@ package org.openpixi.pixi.physics.gauge;
 
 import org.openpixi.pixi.math.AlgebraElement;
 import org.openpixi.pixi.math.GroupElement;
+import org.openpixi.pixi.math.SU2GroupElement;
 import org.openpixi.pixi.parallel.cellaccess.CellAction;
 import org.openpixi.pixi.physics.grid.Grid;
-import org.openpixi.pixi.math.SU2Matrix;
 
 public class GaugeTransformation {
 
@@ -35,9 +35,9 @@ public class GaugeTransformation {
 
 		int colors = grid.getNumberOfColors();
 		if (colors == 2) {
-			g = new SU2Matrix[numberOfCells];
+			g = new SU2GroupElement[numberOfCells];
 			for (int i = 0; i < g.length; i++) {
-				g[i] = new SU2Matrix(1, 0, 0, 0);
+				g[i] = new SU2GroupElement(1, 0, 0, 0);
 			}
 		} else {
 			System.out.println("Gauge transformation for SU(" + colors + ") not defined.\n");

@@ -1,11 +1,11 @@
 package org.openpixi.pixi.physics.fields.currentgenerators;
 
 import org.apache.commons.math3.analysis.function.Gaussian;
+import org.openpixi.pixi.math.SU2AlgebraElement;
 import org.openpixi.pixi.physics.Simulation;
 import org.openpixi.pixi.physics.fields.LightConePoissonSolver;
 import org.openpixi.pixi.physics.fields.TempGaugeLightConeGaussPoissonSolver;
 import org.openpixi.pixi.physics.grid.Grid;
-import org.openpixi.pixi.math.SU2Field;
 
 public class SU2LightConeGaussPulseCurrent implements ICurrentGenerator {
 
@@ -55,7 +55,7 @@ public class SU2LightConeGaussPulseCurrent implements ICurrentGenerator {
 		/*
 			Setup the field amplitude for the current.
 		 */
-		SU2Field fieldAmplitude = new SU2Field(
+		SU2AlgebraElement fieldAmplitude = new SU2AlgebraElement(
 				this.magnitude * speed * this.amplitudeColorDirection[0],
 				this.magnitude * speed * this.amplitudeColorDirection[1],
 				this.magnitude * speed * this.amplitudeColorDirection[2]);
@@ -63,7 +63,7 @@ public class SU2LightConeGaussPulseCurrent implements ICurrentGenerator {
 		/*
 			Setup the field amplitude for the charge.
 		 */
-		SU2Field chargeAmplitude = new SU2Field(
+		SU2AlgebraElement chargeAmplitude = new SU2AlgebraElement(
 				this.magnitude * this.amplitudeColorDirection[0],
 				this.magnitude * this.amplitudeColorDirection[1],
 				this.magnitude * this.amplitudeColorDirection[2]);

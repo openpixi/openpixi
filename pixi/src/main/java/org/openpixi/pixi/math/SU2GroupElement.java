@@ -9,15 +9,15 @@ package org.openpixi.pixi.math;
  * where \sigma_i is the i-th Pauli matrix.
  *
  */
-public class SU2Matrix implements GroupElement {
+public class SU2GroupElement implements GroupElement {
 
 	private double[] e;
 
 	/**
-	 * Constructs a new SU2Matrix instance with all parameters set to zero.
-	 * This is not a valid SU2Matrix since the norm of the parameter vector is zero.
+	 * Constructs a new SU2GroupElement instance with all parameters set to zero.
+	 * This is not a valid SU2GroupElement since the norm of the parameter vector is zero.
 	 */
-	public SU2Matrix() {
+	public SU2GroupElement() {
 
 		e = new double[4];
 
@@ -28,15 +28,15 @@ public class SU2Matrix implements GroupElement {
 	}
 
 	/**
-	 * Constructs a new SU2Matrix instance with given parameters.
-	 * In order to get a valid SU2Matrix the parameter vector should have norm 1.
+	 * Constructs a new SU2GroupElement instance with given parameters.
+	 * In order to get a valid SU2GroupElement the parameter vector should have norm 1.
 	 *
 	 * @param a first parameter
 	 * @param b second parameter
 	 * @param c third parameter
 	 * @param d fourth parameter
 	 */
-	public SU2Matrix(double a, double b, double c, double d) {
+	public SU2GroupElement(double a, double b, double c, double d) {
 
 		e = new double[4];
 
@@ -48,11 +48,11 @@ public class SU2Matrix implements GroupElement {
 	}
 
 	/**
-	 * Constructs a new SU2Matrix instance from a given SU2Matrix instance.
+	 * Constructs a new SU2GroupElement instance from a given SU2GroupElement instance.
 	 *
-	 * @param matrix    SU2Matrix instance which should be copied.
+	 * @param matrix    SU2GroupElement instance which should be copied.
 	 */
-	public SU2Matrix(SU2Matrix matrix)
+	public SU2GroupElement(SU2GroupElement matrix)
 	{
 		this();
 		this.set(matrix);
@@ -60,9 +60,9 @@ public class SU2Matrix implements GroupElement {
 
 	public GroupElement add(GroupElement arg) {
 
-		SU2Matrix a = (SU2Matrix) arg;
+		SU2GroupElement a = (SU2GroupElement) arg;
 
-		SU2Matrix b = new SU2Matrix();
+		SU2GroupElement b = new SU2GroupElement();
 		for (int i = 0; i < 4; i++) {
 			b.set(i, e[i] + a.get(i));
 		}
@@ -72,9 +72,9 @@ public class SU2Matrix implements GroupElement {
 
 	public GroupElement sub(GroupElement arg) {
 
-		SU2Matrix a = (SU2Matrix) arg;
+		SU2GroupElement a = (SU2GroupElement) arg;
 
-		SU2Matrix b = new SU2Matrix();
+		SU2GroupElement b = new SU2GroupElement();
 		for (int i = 0; i < 4; i++) {
 			b.set(i, e[i] - a.get(i));
 		}
@@ -83,13 +83,13 @@ public class SU2Matrix implements GroupElement {
 	}
 
 	/**
-	 * Copies values from another SU2Matrix instance to this instance.
+	 * Copies values from another SU2GroupElement instance to this instance.
 	 *
-	 * @param arg SU2Matrix to copy from.
+	 * @param arg SU2GroupElement to copy from.
 	 */
 	public void set(GroupElement arg) {
 
-		SU2Matrix a = (SU2Matrix) arg;
+		SU2GroupElement a = (SU2GroupElement) arg;
 
 		for (int i = 0; i < 4; i++) {
 			e[i] = a.get(i);
@@ -98,7 +98,7 @@ public class SU2Matrix implements GroupElement {
 
 	/**
 	 * Sets the j-th parameter to a certain value. These parameters are specific to the group parametrization used by
-	 * SU2Matrix.
+	 * SU2GroupElement.
 	 *
 	 * @param j index of the parameter to be set (0-3).
 	 * @param value new value of the parameter
@@ -111,7 +111,7 @@ public class SU2Matrix implements GroupElement {
 
 	/**
 	 * Returns the value of j-th parameter. These parameters are specific to the group parametrization used by
-	 * SU2Matrix.
+	 * SU2GroupElement.
 	 *
 	 * @param j index of the parameter to be read (0-3).
 	 * @return value of the j-th parameter.
@@ -123,7 +123,7 @@ public class SU2Matrix implements GroupElement {
 	}
 
 	public GroupElement adj() {
-		SU2Matrix b = new SU2Matrix(this);
+		SU2GroupElement b = new SU2GroupElement(this);
 		for (int i = 1; i < 4; i++)
 		{
 			b.set(i, -b.get(i));
@@ -141,7 +141,7 @@ public class SU2Matrix implements GroupElement {
 	/**
 	 * Computes the first parameter from the other three parameters such that the parameter norm is 1.
 	 * If the norm of the other three parameters is already larger then one this will fail.
-	 * This method is specific to the group parametrization used by SU2Matrix.
+	 * This method is specific to the group parametrization used by SU2GroupElement.
 	 */
 	public void computeFirstParameter() {
 
@@ -155,7 +155,7 @@ public class SU2Matrix implements GroupElement {
 
 	/**
 	 * Computes the parameter norm. If the norm is one then the matrix is unitary and has determinant 1.
-	 * This method is specific to the group parametrization used by SU2Matrix.
+	 * This method is specific to the group parametrization used by SU2GroupElement.
 	 *
 	 * @return norm of the parameter vector
 	 */
@@ -167,7 +167,7 @@ public class SU2Matrix implements GroupElement {
 
 	public GroupElement mult(double number) {
 
-		SU2Matrix b = new SU2Matrix();
+		SU2GroupElement b = new SU2GroupElement();
 		for (int i = 0; i < 4; i++) {
 			b.set(i, e[i] * number);
 		}
@@ -177,9 +177,9 @@ public class SU2Matrix implements GroupElement {
 
 	public GroupElement mult(GroupElement arg) {
 
-		SU2Matrix a = (SU2Matrix) arg;
+		SU2GroupElement a = (SU2GroupElement) arg;
 
-		SU2Matrix b = new SU2Matrix();
+		SU2GroupElement b = new SU2GroupElement();
 		b.e[0] = e[0] * a.get(0) - e[1] * a.get(1) - e[2] * a.get(2) - e[3] * a.get(3);
 		b.e[1] = e[0] * a.get(1) + e[1] * a.get(0) - e[2] * a.get(3) + e[3] * a.get(2);
 		b.e[2] = e[0] * a.get(2) + e[2] * a.get(0) - e[3] * a.get(1) + e[1] * a.get(3);
@@ -197,10 +197,10 @@ public class SU2Matrix implements GroupElement {
 		}
 		norm = Math.sqrt(norm);
 
-		SU2Field field = new SU2Field();
+		SU2AlgebraElement field = new SU2AlgebraElement();
 		
 		if(norm < 1.E-15) {
-			field = new SU2Field(0,0,0);
+			field = new SU2AlgebraElement(0,0,0);
 		} else {
 			for(int i = 0; i < 3; i++)
 			{
@@ -213,7 +213,7 @@ public class SU2Matrix implements GroupElement {
 
 	public AlgebraElement proj()
 	{
-		SU2Field field = new SU2Field();
+		SU2AlgebraElement field = new SU2AlgebraElement();
 
 		field.set(0, 2 * this.e[1]);
 		field.set(1, 2 * this.e[2]);
@@ -227,6 +227,6 @@ public class SU2Matrix implements GroupElement {
 	}
 
 	public GroupElement copy() {
-		return new SU2Matrix(e[0], e[1], e[2], e[3]);
+		return new SU2GroupElement(e[0], e[1], e[2], e[3]);
 	}
 }

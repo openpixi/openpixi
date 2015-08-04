@@ -9,11 +9,11 @@ package org.openpixi.pixi.math;
  * 		e[3] + i e[12]		e[4] + i e[13]		e[5] + i e[14]
  * 		e[6] + i e[15]		e[7] + i e[16]		e[8] + i e[17]
  */
-public class SU3Matrix implements GroupElement {
+public class SU3GroupElement implements GroupElement {
 
 	private double[] e;
 
-	public SU3Matrix() {
+	public SU3GroupElement() {
 
 		e = new double[18];
 		for (int i = 0; i < 18; i++) {
@@ -21,7 +21,7 @@ public class SU3Matrix implements GroupElement {
 		}
 	}
 
-	public SU3Matrix(double[] params) {
+	public SU3GroupElement(double[] params) {
 
 		e = new double[18];
 
@@ -30,7 +30,7 @@ public class SU3Matrix implements GroupElement {
 		}
 	}
 
-	public SU3Matrix(SU3Matrix matrix)
+	public SU3GroupElement(SU3GroupElement matrix)
 	{
 		this();
 		this.set(matrix);
@@ -38,9 +38,9 @@ public class SU3Matrix implements GroupElement {
 
 	public GroupElement add(GroupElement arg) {
 
-		SU3Matrix a = (SU3Matrix) arg;
+		SU3GroupElement a = (SU3GroupElement) arg;
 
-		SU3Matrix b = new SU3Matrix();
+		SU3GroupElement b = new SU3GroupElement();
 		for (int i = 0; i < 18; i++) {
 			b.set(i, e[i] + a.get(i));
 		}
@@ -50,9 +50,9 @@ public class SU3Matrix implements GroupElement {
 
 	public GroupElement sub(GroupElement arg) {
 
-		SU3Matrix a = (SU3Matrix) arg;
+		SU3GroupElement a = (SU3GroupElement) arg;
 
-		SU3Matrix b = new SU3Matrix();
+		SU3GroupElement b = new SU3GroupElement();
 		for (int i = 0; i < 18; i++) {
 			b.set(i, e[i] - a.get(i));
 		}
@@ -61,7 +61,7 @@ public class SU3Matrix implements GroupElement {
 
 	public void set(GroupElement arg) {
 
-		SU3Matrix a = (SU3Matrix) arg;
+		SU3GroupElement a = (SU3GroupElement) arg;
 
 		for (int i = 0; i < 18; i++) {
 			e[i] = a.get(i);
@@ -86,7 +86,7 @@ public class SU3Matrix implements GroupElement {
 
 	public GroupElement adj() {
 
-		SU3Matrix b = new SU3Matrix(this);
+		SU3GroupElement b = new SU3GroupElement(this);
 		// real diag.
 		b.set(0, e[0]);
 		b.set(4, e[4]);
@@ -152,7 +152,7 @@ public class SU3Matrix implements GroupElement {
 
 	public GroupElement mult(double number) {
 
-		SU3Matrix b = new SU3Matrix();
+		SU3GroupElement b = new SU3GroupElement();
 		for (int i = 0; i < 18; i++) {
 			b.set(i, e[i] * number);
 		}
@@ -162,10 +162,10 @@ public class SU3Matrix implements GroupElement {
 
 	public GroupElement mult(GroupElement arg) {
 
-		SU3Matrix a = (SU3Matrix) arg;
+		SU3GroupElement a = (SU3GroupElement) arg;
 
 		// computed in Mathematica
-		SU3Matrix b = new SU3Matrix();
+		SU3GroupElement b = new SU3GroupElement();
 		b.set(0, a.get(0)*e[0]+a.get(3)*e[1]-a.get(12)*e[10]-a.get(15)*e[11]+a.get(6)*e[2]-a.get(9)*e[9]);
 		b.set(1, a.get(1)*e[0]+a.get(4)*e[1]-a.get(13)*e[10]-a.get(16)*e[11]+a.get(7)*e[2]-a.get(10)*e[9]);
 		b.set(2, a.get(2)*e[0]+a.get(5)*e[1]-a.get(14)*e[10]-a.get(17)*e[11]+a.get(8)*e[2]-a.get(11)*e[9]);
@@ -225,7 +225,7 @@ public class SU3Matrix implements GroupElement {
 	/**
 	 * Calculates the algebra element by first eigendecomposing into UDU* and then finding log D
 	 * WARNING: This decomposition only works for SU(3) matrices due to certain optimizations
-	 * @return coefficients to be fed into SU3Field to give algebra element
+	 * @return coefficients to be fed into SU3AlgebraElement to give algebra element
 	 */
 	private double[] algebraElementDecompositionMethod() {
 
@@ -351,28 +351,28 @@ public class SU3Matrix implements GroupElement {
 
 		// multiply U log(D) U* to get algebra element
 		// log(D) is just a real diagonal matrix so multiplication is included in construction of U
-		SU3Matrix ULnD = new SU3Matrix(new double[]{vectors[0][0]*phases[0],vectors[1][0]*phases[1],vectors[2][0]*phases[2],
+		SU3GroupElement ULnD = new SU3GroupElement(new double[]{vectors[0][0]*phases[0],vectors[1][0]*phases[1],vectors[2][0]*phases[2],
 													vectors[0][1]*phases[0],vectors[1][1]*phases[1],vectors[2][1]*phases[2],
 													vectors[0][2]*phases[0],vectors[1][2]*phases[1],vectors[2][2]*phases[2],
 													vectors[0][3]*phases[0],vectors[1][3]*phases[1],vectors[2][3]*phases[2],
 													vectors[0][4]*phases[0],vectors[1][4]*phases[1],vectors[2][4]*phases[2],
 													vectors[0][5]*phases[0],vectors[1][5]*phases[1],vectors[2][5]*phases[2]});
-		SU3Matrix UAdj = new SU3Matrix(new double[]{ vectors[0][0], vectors[0][1], vectors[0][2],
+		SU3GroupElement UAdj = new SU3GroupElement(new double[]{ vectors[0][0], vectors[0][1], vectors[0][2],
 													 vectors[1][0], vectors[1][1], vectors[1][2],
 													 vectors[2][0], vectors[2][1], vectors[2][2],
 													-vectors[0][3],-vectors[0][4],-vectors[0][5],
 													-vectors[1][3],-vectors[1][4],-vectors[1][5],
 													-vectors[2][3],-vectors[2][4],-vectors[2][5]});
 
-		double[] values = ((SU3Matrix) ULnD.mult(UAdj)).get();
+		double[] values = ((SU3GroupElement) ULnD.mult(UAdj)).get();
 		// now normalize to ensure hermiticity!
 		return hermiticize(values);
 	}
 
 	/**
 	 * (anti)symmetrizes matrix to ensure hermiticity
-	 * @param values list of 18 values as in SU3Matrix
-	 * @return list of 9 values as in SU3Field
+	 * @param values list of 18 values as in SU3GroupElement
+	 * @return list of 9 values as in SU3AlgebraElement
 	 */
 	private double[] hermiticize(double[] values) {
 		double[] fieldValues = new double[9];
@@ -392,7 +392,7 @@ public class SU3Matrix implements GroupElement {
 	}
 
 	public AlgebraElement getAlgebraElement() {
-		return new SU3Field(algebraElementDecompositionMethod());
+		return new SU3AlgebraElement(algebraElementDecompositionMethod());
 	}
 
 	/**
@@ -411,7 +411,7 @@ public class SU3Matrix implements GroupElement {
 											(e[6]-e[2])/2,
 											(e[7]-e[5])/2,
 											(2*e[17]-e[9]-e[13])/3};
-		return new SU3Field(fieldValues);
+		return new SU3AlgebraElement(fieldValues);
 	}
 
 	/**
@@ -424,6 +424,6 @@ public class SU3Matrix implements GroupElement {
 	}
 
 	public GroupElement copy() {
-		return new SU3Matrix(get());
+		return new SU3GroupElement(get());
 	}
 }

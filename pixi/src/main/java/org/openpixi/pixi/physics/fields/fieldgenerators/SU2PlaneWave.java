@@ -1,10 +1,10 @@
 package org.openpixi.pixi.physics.fields.fieldgenerators;
 
+import org.openpixi.pixi.math.SU2AlgebraElement;
 import org.openpixi.pixi.physics.Simulation;
 import org.openpixi.pixi.physics.grid.Cell;
 import org.openpixi.pixi.physics.grid.Grid;
-import org.openpixi.pixi.math.SU2Field;
-import org.openpixi.pixi.math.SU2Matrix;
+import org.openpixi.pixi.math.SU2GroupElement;
 
 public class SU2PlaneWave implements IFieldGenerator {
 
@@ -45,9 +45,9 @@ public class SU2PlaneWave implements IFieldGenerator {
 		/*
 			Setup the field amplitude for the plane wave.
 		 */
-		SU2Field[] amplitudeYMField = new SU2Field[this.numberOfDimensions];
+		SU2AlgebraElement[] amplitudeYMField = new SU2AlgebraElement[this.numberOfDimensions];
 		for (int i = 0; i < this.numberOfDimensions; i++) {
-			amplitudeYMField[i] = new SU2Field(
+			amplitudeYMField[i] = new SU2AlgebraElement(
 					this.amplitudeMagnitude * this.amplitudeSpatialDirection[i] * this.amplitudeColorDirection[0],
 					this.amplitudeMagnitude * this.amplitudeSpatialDirection[i] * this.amplitudeColorDirection[1],
 					this.amplitudeMagnitude * this.amplitudeSpatialDirection[i] * this.amplitudeColorDirection[2]);
@@ -80,7 +80,7 @@ public class SU2PlaneWave implements IFieldGenerator {
 
 			for (int i = 0; i < this.numberOfDimensions; i++) {
 				//Setup the gauge links
-				SU2Matrix U = (SU2Matrix) currentCell.getU(i).mult(amplitudeYMField[i].mult(factorForU).getLink());
+				SU2GroupElement U = (SU2GroupElement) currentCell.getU(i).mult(amplitudeYMField[i].mult(factorForU).getLink());
 				currentCell.setU(i, U);
 
 				//Setup the electric fields

@@ -3,7 +3,7 @@ package org.openpixi.pixi.physics.fields.fieldgenerators;
 import org.openpixi.pixi.physics.Simulation;
 import org.openpixi.pixi.physics.grid.Cell;
 import org.openpixi.pixi.physics.grid.Grid;
-import org.openpixi.pixi.math.SU2Field;
+import org.openpixi.pixi.math.SU2AlgebraElement;
 
 public class SU2RandomFields implements IFieldGenerator {
 
@@ -28,8 +28,8 @@ public class SU2RandomFields implements IFieldGenerator {
 			Cell currentCell = g.getCell(c);
 
 			for (int i = 0; i < numberOfDimensions; i++) {
-				SU2Field efield = new SU2Field();
-				SU2Field ufield = new SU2Field();
+				SU2AlgebraElement efield = new SU2AlgebraElement();
+				SU2AlgebraElement ufield = new SU2AlgebraElement();
 				for (int j = 0; j < numberOfComponents; j++) {
 					efield.set(i, (Math.random() - 0.5) * magnitude);
 					ufield.set(i, (Math.random() - 0.5) * magnitude);

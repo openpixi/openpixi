@@ -1,10 +1,10 @@
 package org.openpixi.pixi.math;
 
-public class SU2Field implements AlgebraElement {
+public class SU2AlgebraElement implements AlgebraElement {
 
 	protected double[] v;
 	
-	public SU2Field () {
+	public SU2AlgebraElement() {
 		
 		v = new double[3];
 			
@@ -14,7 +14,7 @@ public class SU2Field implements AlgebraElement {
 			
 	}
 	
-	public SU2Field (double a, double b, double c) {
+	public SU2AlgebraElement(double a, double b, double c) {
 		
 		v = new double[3];
 		
@@ -34,8 +34,8 @@ public class SU2Field implements AlgebraElement {
 	
 	public AlgebraElement add (AlgebraElement arg) {
 
-		SU2Field a = (SU2Field) arg;
-		SU2Field b = new SU2Field();
+		SU2AlgebraElement a = (SU2AlgebraElement) arg;
+		SU2AlgebraElement b = new SU2AlgebraElement();
 
 		b.v[0] = v[0]+a.v[0];
 		b.v[1] = v[1]+a.v[1];
@@ -46,7 +46,7 @@ public class SU2Field implements AlgebraElement {
 	
 	public void addAssign(AlgebraElement arg) {
 
-		SU2Field a = (SU2Field) arg;
+		SU2AlgebraElement a = (SU2AlgebraElement) arg;
 
 		v[0] += a.v[0];
 		v[1] += a.v[1];
@@ -56,9 +56,9 @@ public class SU2Field implements AlgebraElement {
 	
 	public AlgebraElement sub (AlgebraElement arg) {
 
-		SU2Field a = (SU2Field) arg;
+		SU2AlgebraElement a = (SU2AlgebraElement) arg;
 		
-		SU2Field b = new SU2Field();
+		SU2AlgebraElement b = new SU2AlgebraElement();
 		b.v[0] = v[0]-a.v[0];
 		b.v[1] = v[1]-a.v[1];
 		b.v[2] = v[2]-a.v[2];
@@ -87,7 +87,7 @@ public class SU2Field implements AlgebraElement {
 	
 	public AlgebraElement mult (double number) {
 		
-		SU2Field b = new SU2Field();
+		SU2AlgebraElement b = new SU2AlgebraElement();
 		b.v[0] = v[0]*number;
 		b.v[1] = v[1]*number;
 		b.v[2] = v[2]*number;
@@ -105,7 +105,7 @@ public class SU2Field implements AlgebraElement {
 	
 	public void set (AlgebraElement arg) {
 
-		SU2Field a = (SU2Field) arg;
+		SU2AlgebraElement a = (SU2AlgebraElement) arg;
 		
 		v[0] = a.v[0];
 		v[1] = a.v[1];
@@ -116,7 +116,7 @@ public class SU2Field implements AlgebraElement {
 	public GroupElement getLinearizedLink() {
 		
 		double sum = (v[0]*v[0]+v[1]*v[1]+v[2]*v[2])/4;
-		SU2Matrix b = new SU2Matrix(Math.sqrt(1.0-sum), v[0]/2, v[1]/2, v[2]/2);
+		SU2GroupElement b = new SU2GroupElement(Math.sqrt(1.0-sum), v[0]/2, v[1]/2, v[2]/2);
 		return b;
 	}
 	
@@ -130,7 +130,7 @@ public class SU2Field implements AlgebraElement {
 		} else {
 			sinfakt = 0.5/mod*Math.sin(mod);
 		}
-		SU2Matrix b = new SU2Matrix(Math.cos(mod), v[0]*sinfakt, v[1]*sinfakt, v[2]*sinfakt);
+		SU2GroupElement b = new SU2GroupElement(Math.cos(mod), v[0]*sinfakt, v[1]*sinfakt, v[2]*sinfakt);
 		return b;
 	}
 
@@ -140,6 +140,6 @@ public class SU2Field implements AlgebraElement {
 	}
 
 	public AlgebraElement copy() {
-		return new SU2Field(v[0], v[1], v[2]);
+		return new SU2AlgebraElement(v[0], v[1], v[2]);
 	}
 }

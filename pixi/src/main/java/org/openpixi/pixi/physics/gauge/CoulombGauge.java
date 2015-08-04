@@ -4,9 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.openpixi.pixi.math.AlgebraElement;
+import org.openpixi.pixi.math.SU2AlgebraElement;
 import org.openpixi.pixi.parallel.cellaccess.CellAction;
 import org.openpixi.pixi.physics.grid.Grid;
-import org.openpixi.pixi.math.SU2Field;
 
 /**
  * Appy the Coulomb gauge transformation to a grid.
@@ -80,10 +80,10 @@ public class CoulombGauge extends GaugeTransformation {
 
 		int colors = grid.getNumberOfColors();
 
-		// New SU2Field array to store psi values
-		SU2Field[] psi = new SU2Field[getG().length];
+		// New SU2AlgebraElement array to store psi values
+		SU2AlgebraElement[] psi = new SU2AlgebraElement[getG().length];
 		for (int i = 0; i < getG().length; i++) {
-			psi[i] = new SU2Field();
+			psi[i] = new SU2AlgebraElement();
 		}
 
 		for (int color = 0; color < colors; color++) {
@@ -104,7 +104,7 @@ public class CoulombGauge extends GaugeTransformation {
 				int fftIndex = fft.getFFTArrayIndex(i);
 				double value = fftArray[fftIndex];
 
-				// Store values temporarily in SU2Matrix instead of SU2Field:
+				// Store values temporarily in SU2GroupElement instead of SU2AlgebraElement:
 				//getG()[i].set(color + 1, value);
 
 				psi[i].set(color, value);
@@ -114,10 +114,10 @@ public class CoulombGauge extends GaugeTransformation {
 		// Calculate g(x) = exp(i g psi^\dagger)
 		for (int i = 0; i < getG().length; i++) {
 			// psi is stored in g for convenience:
-			//SU2Field psidagger = (SU2Field) getG()[i].adj().proj();
+			//SU2AlgebraElement psidagger = (SU2AlgebraElement) getG()[i].adj().proj();
 
 			// Field generators are antihermitian so multiply psi by -1 to get psidagger
-			SU2Field psidagger = (SU2Field) psi[i].mult(-1);
+			SU2AlgebraElement psidagger = (SU2AlgebraElement) psi[i].mult(-1);
 			getG()[i] = psidagger.getLink();
 		}
 
