@@ -3,8 +3,9 @@ package org.openpixi.pixi.physics.grid;
 import org.openpixi.pixi.physics.grid.LinkMatrix;
 import org.openpixi.pixi.physics.grid.YMField;
 
-public class SU2Field extends YMField {
-	
+public class SU2Field implements YMField {
+
+	protected double[] v;
 	
 	public SU2Field () {
 		
@@ -34,9 +35,11 @@ public class SU2Field extends YMField {
 		
 	}
 	
-	public YMField add (YMField a) {
-		
+	public YMField add (YMField arg) {
+
+		SU2Field a = (SU2Field) arg;
 		SU2Field b = new SU2Field();
+
 		b.v[0] = v[0]+a.v[0];
 		b.v[1] = v[1]+a.v[1];
 		b.v[2] = v[2]+a.v[2];
@@ -44,15 +47,19 @@ public class SU2Field extends YMField {
 		
 	}
 	
-public void addAssign(YMField a) {
-		
+public void addAssign(YMField arg) {
+
+		SU2Field a = (SU2Field) arg;
+
 		v[0] += a.v[0];
 		v[1] += a.v[1];
 		v[2] += a.v[2];
 		
 	}
 	
-	public YMField sub (YMField a) {
+	public YMField sub (YMField arg) {
+
+		SU2Field a = (SU2Field) arg;
 		
 		SU2Field b = new SU2Field();
 		b.v[0] = v[0]-a.v[0];
@@ -99,7 +106,9 @@ public void addAssign(YMField a) {
 
 	}
 	
-	public void set (YMField a) {
+	public void set (YMField arg) {
+
+		SU2Field a = (SU2Field) arg;
 		
 		v[0] = a.v[0];
 		v[1] = a.v[1];

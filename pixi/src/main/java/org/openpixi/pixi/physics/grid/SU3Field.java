@@ -9,8 +9,9 @@ package org.openpixi.pixi.physics.grid;
  * 		e[1] - i e[3]		e[4]        		e[5] + i e[7]
  * 		e[2] - i e[6]		e[5] - i e[7]		e[8]
  */
-public class SU3Field extends YMField {
+public class SU3Field implements YMField {
 
+	protected double[] v;
 
 	public SU3Field() {
 
@@ -39,7 +40,9 @@ public class SU3Field extends YMField {
 		
 	}
 	
-	public YMField add (YMField a) {
+	public YMField add (YMField arg) {
+
+		SU3Field a = (SU3Field) arg;
 		
 		SU3Field b = new SU3Field();
 		for (int i = 0; i < 9; i++) {
@@ -49,7 +52,9 @@ public class SU3Field extends YMField {
 		
 	}
 	
-	public void addAssign(YMField a) {
+	public void addAssign(YMField arg) {
+
+		SU3Field a = (SU3Field) arg;
 
 		for (int i = 0; i < 9; i++) {
 			v[i] += a.v[i];
@@ -57,7 +62,9 @@ public class SU3Field extends YMField {
 		
 	}
 	
-	public YMField sub (YMField a) {
+	public YMField sub (YMField arg) {
+
+		SU3Field a = (SU3Field) arg;
 		
 		SU3Field b = new SU3Field();
 		for (int i = 0; i < 9; i++) {
@@ -112,7 +119,9 @@ public class SU3Field extends YMField {
 
 	}
 
-	public void set (YMField a) {
+	public void set (YMField arg) {
+
+		SU3Field a = (SU3Field) arg;
 
 		for (int i = 0; i < 9; i++) {
 			v[i] = a.v[i];
