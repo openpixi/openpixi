@@ -324,4 +324,8 @@ public class SU3Field implements YMField {
 			default: System.out.println("Invalid generator index!"); return 0;
 		}
 	}
+
+	public YMField copy() {
+		return new SU3Field(get());
+	}
 }

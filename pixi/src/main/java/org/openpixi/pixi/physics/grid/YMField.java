@@ -48,4 +48,5 @@ public interface YMField {
 	 */
 	double proj(int c);
 
+	YMField copy();
 }

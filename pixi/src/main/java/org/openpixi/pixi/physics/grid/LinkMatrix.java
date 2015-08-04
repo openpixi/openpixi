@@ -37,4 +37,6 @@ public interface LinkMatrix {
 	YMField proj();
 
 	void set(LinkMatrix a);
+
+	LinkMatrix copy();
 }

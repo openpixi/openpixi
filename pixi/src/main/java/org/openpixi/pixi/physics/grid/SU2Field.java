@@ -204,4 +204,7 @@ public void addAssign(YMField arg) {
 		return 0.5 * v[c];
 	}
 
+	public YMField copy() {
+		return new SU2Field(v[0], v[1], v[2]);
+	}
 }

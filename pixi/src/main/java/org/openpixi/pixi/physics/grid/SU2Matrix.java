@@ -303,4 +303,8 @@ public class SU2Matrix implements LinkMatrix {
 	public double getRealTrace() {
 		return 2*e[0];
 	}
+
+	public LinkMatrix copy() {
+		return new SU2Matrix(e[0], e[1], e[2], e[3]);
+	}
 }

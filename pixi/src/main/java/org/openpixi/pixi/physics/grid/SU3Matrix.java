@@ -437,4 +437,8 @@ public class SU3Matrix implements LinkMatrix {
 	public double getRealTrace() {
 		return e[0] + e[4] + e[8];
 	}
+
+	public LinkMatrix copy() {
+		return new SU3Matrix(get());
+	}
 }
