@@ -24,7 +24,7 @@ public class GridTest {
 		Grid g = s.grid;
 
 
-		//Test for getLink() method and shift() method
+		//Test for getLinearizedLink() method and shift() method
 		int numberOfTests = 100;
 		for (int t = 0; t < numberOfTests; t++) {
 			// Create random lattice position

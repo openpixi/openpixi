@@ -32,7 +32,7 @@ public abstract class YMField {
 	
 	public abstract void addfour (YMField a, YMField b, YMField c, YMField d);
 	
-	public abstract LinkMatrix getLink ();
+	public abstract LinkMatrix getLinearizedLink();
 	
 	public abstract LinkMatrix getLinkExact ();
 

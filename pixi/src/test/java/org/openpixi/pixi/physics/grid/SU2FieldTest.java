@@ -1,10 +1,6 @@
 package org.openpixi.pixi.physics.grid;
 
 
-import org.apache.commons.math3.Field;
-import org.apache.commons.math3.complex.Complex;
-import org.apache.commons.math3.complex.ComplexField;
-import org.apache.commons.math3.linear.Array2DRowFieldMatrix;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -110,7 +106,7 @@ public class SU2FieldTest {
 		/*
 		Transform to a SU2 matrix exactly and in linear approximation.
 	 */
-		SU2Matrix matSimple = (SU2Matrix) firstField.getLink();
+		SU2Matrix matSimple = (SU2Matrix) firstField.getLinearizedLink();
 		SU2Matrix matExact = (SU2Matrix) firstField.getLinkExact();
 
 		/*

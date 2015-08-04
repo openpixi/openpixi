@@ -252,7 +252,7 @@ public class SU3Field extends YMField {
 	/**
 	 * Essentially just using exp(I v) ~ 1 + I v
 	 */
-	public LinkMatrix getLink () {
+	public LinkMatrix getLinearizedLink() {
 		double[] values = new double[]{1,-v[3],-v[6],v[3],1,-v[7],v[6],v[7],1,v[0],v[1],v[2],v[1],v[4],v[5],v[2],v[5],v[8]};
 		return new SU3Matrix(values);
 	}

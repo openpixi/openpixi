@@ -524,8 +524,8 @@ public class Grid {
 	 * orientation.
 	 * <br>
 	 * Examples:
-	 * <ul><li>Link starting at index in positive x-direction: getLink(index, 0, 1)</li>
-	 * <li>Link starting at index in negative x-direction: getLink(index, 0, -1)</li></ul>
+	 * <ul><li>Link starting at index in positive x-direction: getLinearizedLink(index, 0, 1)</li>
+	 * <li>Link starting at index in negative x-direction: getLinearizedLink(index, 0, -1)</li></ul>
 	 *
 	 * @param index         Lattice index from which the link starts from
 	 * @param direction     Direction of the link (0 - (numberOfDimensions-1))

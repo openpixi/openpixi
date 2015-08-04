@@ -169,7 +169,7 @@ public void addAssign(YMField a) {
 			
 	}
 	
-	public LinkMatrix getLink () {
+	public LinkMatrix getLinearizedLink() {
 		
 		double sum = (v[0]*v[0]+v[1]*v[1]+v[2]*v[2])/4;
 		SU2Matrix b = new SU2Matrix(Math.sqrt(1.0-sum), v[0]/2, v[1]/2, v[2]/2);
