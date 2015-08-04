@@ -26,8 +26,6 @@ public abstract class YMField {
 	
 	public abstract void reset ();
 	
-	public abstract void addfour (YMField a, YMField b, YMField c, YMField d);
-	
 	public abstract LinkMatrix getLinearizedLink();
 	
 	public abstract LinkMatrix getLinkExact ();
