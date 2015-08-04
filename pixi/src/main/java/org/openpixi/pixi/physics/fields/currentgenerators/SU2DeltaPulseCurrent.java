@@ -27,6 +27,10 @@ public class SU2DeltaPulseCurrent implements ICurrentGenerator {
 		this.speed = speed;
 	}
 
+	public void initializeCurrent(Simulation s) {
+		applyCurrent(s);
+	}
+
 	public void applyCurrent(Simulation s) {
 		this.grid = s.grid;
 		double as = grid.getLatticeSpacing();
@@ -70,7 +74,7 @@ public class SU2DeltaPulseCurrent implements ICurrentGenerator {
 		int cellIndex = grid.getCellIndex(pos);
 
 		grid.addJ(cellIndex, direction, fieldAmplitude.mult(g*as));	// The factor g*as comes from our definition of electric fields!!
-		grid.setRho(cellIndex, chargeAmplitude.mult(g*as));
+		grid.addRho(cellIndex, chargeAmplitude.mult(g*as));
 
 	}
 

@@ -34,6 +34,11 @@ public class SU2LightConeGaussPulseCurrent implements ICurrentGenerator {
 		this.poisson = new TempGaugeLightConeGaussPoissonSolver(location, direction, orientation, width);
 	}
 
+	public void initializeCurrent(Simulation s) {
+		applyCurrent(s);
+		poisson.solve(s.grid);
+	}
+
 	public void applyCurrent(Simulation s) {
 		this.grid = s.grid;
 		double as = grid.getLatticeSpacing();
@@ -85,11 +90,7 @@ public class SU2LightConeGaussPulseCurrent implements ICurrentGenerator {
 			}
 
 			grid.addJ(cellIndex, direction, fieldAmplitude.mult(shape(position, i*as)));
-			grid.setRho(chargeIndex, chargeAmplitude.mult(shape(position, i*as)));
-		}
-
-		if(time == 0) {
-			poisson.solve(grid);
+			grid.addRho(chargeIndex, chargeAmplitude.mult(shape(position, i*as)));
 		}
 	}
 

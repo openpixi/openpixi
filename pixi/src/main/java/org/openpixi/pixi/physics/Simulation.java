@@ -235,7 +235,7 @@ public class Simulation {
 		currentGenerators = settings.getCurrentGenerators();
 		// Generate external currents on the grid!!
 		for (ICurrentGenerator c: currentGenerators) {
-			c.applyCurrent(this);
+			c.initializeCurrent(this);
 		}
 
 		/**
@@ -305,8 +305,9 @@ public class Simulation {
 		grid.storeFields();
 		//reassignParticles(); TODO: Write this method!!
 
-		//Generation of internal and external currents
+		//Generation of internal and external currents and charges
 		grid.resetCurrent();
+		grid.resetCharge();
 		interpolation.interpolateToGrid(particles, grid, tstep);
 		// Generate external currents on the grid!!
 		for (ICurrentGenerator c: currentGenerators)

@@ -35,6 +35,11 @@ public class SU2LightConeDeltaPulseCurrent implements ICurrentGenerator {
 		}
 	}
 
+	public void initializeCurrent(Simulation s) {
+		applyCurrent(s);
+		poisson.solve(s.grid);
+	}
+
 	public void applyCurrent(Simulation s) {
 		this.grid = s.grid;
 		double as = grid.getLatticeSpacing();
@@ -91,10 +96,7 @@ public class SU2LightConeDeltaPulseCurrent implements ICurrentGenerator {
 		}
 
 		grid.addJ(cellIndex, direction, fieldAmplitude.mult(g * as));	// The factor g*as comes from our definition of electric fields!!
-		grid.setRho(chargeIndex, chargeAmplitude.mult(g * as));
-		if(time == 0) {
-			poisson.solve(grid);
-		}
+		grid.addRho(chargeIndex, chargeAmplitude.mult(g * as));
 	}
 
 	private double[] normalizeVector(double[] vector) {
