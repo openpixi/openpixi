@@ -296,15 +296,11 @@ public class SU2Matrix implements LinkMatrix {
 	}
 
 	/**
-	 * Returns the trace of the matrix.
+	 * Returns the real trace of the matrix.
 	 *
-	 * @return	Trace of the matrix.
+	 * @return	Real part of trace of the matrix.
 	 */
-	public double getTrace()
-	{
+	public double getRealTrace() {
 		return 2*e[0];
 	}
-
-
-
 }

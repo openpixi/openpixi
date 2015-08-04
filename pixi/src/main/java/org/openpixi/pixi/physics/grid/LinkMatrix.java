@@ -18,7 +18,12 @@ public interface LinkMatrix {
 
 	YMField getLinearizedAlgebraElement();
 
-	double getTrace();
+	/**
+	 * Returns the real trace of the matrix.
+	 *
+	 * @return	Real part of trace of the matrix.
+	 */
+	double getRealTrace();
 
 	/**
 	 * Returns the projection of the matrix onto the generators of the group as a YMField. This is done via the formula

@@ -46,6 +46,6 @@ public class UnitarityTester implements Diagnostics {
 	}
 
 	private boolean checkTraceWithinRange(LinkMatrix U) {
-		return Math.abs(U.getTrace()) < numberOfColors + tolerance;
+		return Math.abs(U.getRealTrace()) < numberOfColors + tolerance;
 	}
 }

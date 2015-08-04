@@ -430,15 +430,11 @@ public class SU3Matrix implements LinkMatrix {
 	}
 
 	/**
-	 * Returns the trace of the matrix.
+	 * Returns the real trace of the matrix.
 	 *
-	 * @return	Trace of the matrix.
-	 * !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-	 * Not necessarily real for SU(3) so not implemented!!!!!!
-	 * !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+	 * @return	Real part of trace of the matrix.
 	 */
-	public double getTrace() {
-		System.out.println("Trace not double for SU3!");
-		return 0;
+	public double getRealTrace() {
+		return e[0] + e[4] + e[8];
 	}
 }

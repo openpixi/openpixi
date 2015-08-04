@@ -75,7 +75,7 @@ public class GridTest {
 
 			LinkMatrix plaq3 = g.getPlaquette(shiftedIndex, d1, d2, -1, 1, 0);
 
-			Assert.assertEquals(plaq1.getTrace(), plaq3.getTrace(), accuracy);
+			Assert.assertEquals(plaq1.getRealTrace(), plaq3.getRealTrace(), accuracy);
 		}
 	}
 
