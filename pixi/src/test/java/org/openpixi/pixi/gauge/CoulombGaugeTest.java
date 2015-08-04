@@ -11,6 +11,7 @@ import org.openpixi.pixi.physics.gauge.GaugeTransformation;
 import org.openpixi.pixi.physics.grid.Grid;
 import org.openpixi.pixi.physics.grid.LinkMatrix;
 import org.openpixi.pixi.physics.grid.SU2Field;
+import org.openpixi.pixi.physics.grid.SU2Matrix;
 
 public class CoulombGaugeTest {
 
@@ -115,7 +116,7 @@ public class CoulombGaugeTest {
 	private void printU(String string, Grid grid) {
 		System.out.print(string + ": ");
 		for (int i = 0; i < grid.getTotalNumberOfCells(); i++) {
-			System.out.print("" + grid.getCell(i).getU(0).get(0) + "|" + grid.getCell(i).getU(0).get(1) + ", ");
+			System.out.print("" + ((SU2Matrix) grid.getCell(i).getU(0)).get(0) + "|" + ((SU2Matrix) grid.getCell(i).getU(0)).get(1) + ", ");
 		}
 		System.out.println();
 	}
@@ -124,12 +125,12 @@ public class CoulombGaugeTest {
 	/**
 	 * Output for debugging
 	 * @param string
-	 * @param grid
+	 * @param g
 	 */
 	private void printg(String string, LinkMatrix[] g) {
 		System.out.print(string + ": ");
 		for (int i = 0; i < g.length; i++) {
-			System.out.print("" + g[i].get(0) + "|" + g[i].get(1) + ", ");
+			System.out.print("" + ((SU2Matrix) g[i]).get(0) + "|" + ((SU2Matrix) g[i]).get(1) + ", ");
 		}
 		System.out.println();
 	}

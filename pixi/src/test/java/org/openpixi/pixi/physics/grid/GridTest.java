@@ -43,7 +43,7 @@ public class GridTest {
 
 			// This code is specific to SU2
 			for (int i = 0; i < 3; i++) {
-				Assert.assertEquals(l1.get(i), l2.get(i), accuracy);
+				Assert.assertEquals(((SU2Matrix) l1).get(i), ((SU2Matrix) l2).get(i), accuracy);
 			}
 		}
 
@@ -65,10 +65,10 @@ public class GridTest {
 			LinkMatrix result = plaq1.mult(plaq2);
 
 			// This code is specific to SU2
-			Assert.assertEquals(1.0, result.get(0), accuracy);
-			Assert.assertEquals(0.0, result.get(1), accuracy);
-			Assert.assertEquals(0.0, result.get(2), accuracy);
-			Assert.assertEquals(0.0, result.get(3), accuracy);
+			Assert.assertEquals(1.0, ((SU2Matrix) result).get(0), accuracy);
+			Assert.assertEquals(0.0, ((SU2Matrix) result).get(1), accuracy);
+			Assert.assertEquals(0.0, ((SU2Matrix) result).get(2), accuracy);
+			Assert.assertEquals(0.0, ((SU2Matrix) result).get(3), accuracy);
 
 			// Forward and backward plaquette around the same rectangle should have the same trace.
 			int shiftedIndex = g.shift(index, d1, 1);

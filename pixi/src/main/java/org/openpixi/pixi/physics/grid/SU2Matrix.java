@@ -67,10 +67,12 @@ public class SU2Matrix implements LinkMatrix {
 	 * @return Sum of the SU2Matrix instances.
 	 */
 	public LinkMatrix add(LinkMatrix arg) {
-		
+
+		SU2Matrix a = (SU2Matrix) arg;
+
 		SU2Matrix b = new SU2Matrix();
 		for (int i = 0; i < 4; i++) {
-			b.set(i, e[i] + arg.get(i));
+			b.set(i, e[i] + a.get(i));
 		}
 		return b;
 
@@ -85,10 +87,12 @@ public class SU2Matrix implements LinkMatrix {
 	 * @return Difference of the SU2Matrix instances.
 	 */
 	public LinkMatrix sub(LinkMatrix arg) {
-		
+
+		SU2Matrix a = (SU2Matrix) arg;
+
 		SU2Matrix b = new SU2Matrix();
 		for (int i = 0; i < 4; i++) {
-			b.set(i, e[i] - arg.get(i));
+			b.set(i, e[i] - a.get(i));
 		}
 		return b;
 
@@ -100,9 +104,11 @@ public class SU2Matrix implements LinkMatrix {
 	 * @param arg SU2Matrix to copy from.
 	 */
 	public void set(LinkMatrix arg) {
-		
+
+		SU2Matrix a = (SU2Matrix) arg;
+
 		for (int i = 0; i < 4; i++) {
-			e[i] = arg.get(i);
+			e[i] = a.get(i);
 		}
 	}
 
@@ -216,11 +222,13 @@ public class SU2Matrix implements LinkMatrix {
 	 */
 	public LinkMatrix mult(LinkMatrix arg) {
 
+		SU2Matrix a = (SU2Matrix) arg;
+
 		SU2Matrix b = new SU2Matrix();
-		b.e[0] = e[0] * arg.get(0) - e[1] * arg.get(1) - e[2] * arg.get(2) - e[3] * arg.get(3);
-		b.e[1] = e[0] * arg.get(1) + e[1] * arg.get(0) - e[2] * arg.get(3) + e[3] * arg.get(2);
-		b.e[2] = e[0] * arg.get(2) + e[2] * arg.get(0) - e[3] * arg.get(1) + e[1] * arg.get(3);
-		b.e[3] = e[0] * arg.get(3) + e[3] * arg.get(0) - e[1] * arg.get(2) + e[2] * arg.get(1);
+		b.e[0] = e[0] * a.get(0) - e[1] * a.get(1) - e[2] * a.get(2) - e[3] * a.get(3);
+		b.e[1] = e[0] * a.get(1) + e[1] * a.get(0) - e[2] * a.get(3) + e[3] * a.get(2);
+		b.e[2] = e[0] * a.get(2) + e[2] * a.get(0) - e[3] * a.get(1) + e[1] * a.get(3);
+		b.e[3] = e[0] * a.get(3) + e[3] * a.get(0) - e[1] * a.get(2) + e[2] * a.get(1);
 		return b;
 
 	}

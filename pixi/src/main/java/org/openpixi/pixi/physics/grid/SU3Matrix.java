@@ -38,9 +38,11 @@ public class SU3Matrix implements LinkMatrix {
 
 	public LinkMatrix add(LinkMatrix arg) {
 
+		SU3Matrix a = (SU3Matrix) arg;
+
 		SU3Matrix b = new SU3Matrix();
 		for (int i = 0; i < 18; i++) {
-			b.set(i, e[i] + arg.get(i));
+			b.set(i, e[i] + a.get(i));
 		}
 		return b;
 
@@ -48,17 +50,21 @@ public class SU3Matrix implements LinkMatrix {
 
 	public LinkMatrix sub(LinkMatrix arg) {
 
+		SU3Matrix a = (SU3Matrix) arg;
+
 		SU3Matrix b = new SU3Matrix();
 		for (int i = 0; i < 18; i++) {
-			b.set(i, e[i] - arg.get(i));
+			b.set(i, e[i] - a.get(i));
 		}
 		return b;
 	}
 
 	public void set(LinkMatrix arg) {
-		
+
+		SU3Matrix a = (SU3Matrix) arg;
+
 		for (int i = 0; i < 18; i++) {
-			e[i] = arg.get(i);
+			e[i] = a.get(i);
 		}
 	}
 
@@ -155,26 +161,29 @@ public class SU3Matrix implements LinkMatrix {
 	}
 
 	public LinkMatrix mult(LinkMatrix arg) {
+
+		SU3Matrix a = (SU3Matrix) arg;
+
 		// computed in Mathematica
 		SU3Matrix b = new SU3Matrix();
-		b.set(0, arg.get(0)*e[0]+arg.get(3)*e[1]-arg.get(12)*e[10]-arg.get(15)*e[11]+arg.get(6)*e[2]-arg.get(9)*e[9]);
-		b.set(1, arg.get(1)*e[0]+arg.get(4)*e[1]-arg.get(13)*e[10]-arg.get(16)*e[11]+arg.get(7)*e[2]-arg.get(10)*e[9]);
-		b.set(2, arg.get(2)*e[0]+arg.get(5)*e[1]-arg.get(14)*e[10]-arg.get(17)*e[11]+arg.get(8)*e[2]-arg.get(11)*e[9]);
-		b.set(3, -arg.get(9)*e[12]-arg.get(12)*e[13]-arg.get(15)*e[14]+arg.get(0)*e[3]+arg.get(3)*e[4]+arg.get(6)*e[5]);
-		b.set(4, -arg.get(10)*e[12]-arg.get(13)*e[13]-arg.get(16)*e[14]+arg.get(1)*e[3]+arg.get(4)*e[4]+arg.get(7)*e[5]);
-		b.set(5, -arg.get(11)*e[12]-arg.get(14)*e[13]-arg.get(17)*e[14]+arg.get(2)*e[3]+arg.get(5)*e[4]+arg.get(8)*e[5]);
-		b.set(6, -arg.get(9)*e[15]-arg.get(12)*e[16]-arg.get(15)*e[17]+arg.get(0)*e[6]+arg.get(3)*e[7]+arg.get(6)*e[8]);
-		b.set(7, -arg.get(10)*e[15]-arg.get(13)*e[16]-arg.get(16)*e[17]+arg.get(1)*e[6]+arg.get(4)*e[7]+arg.get(7)*e[8]);
-		b.set(8, -arg.get(11)*e[15]-arg.get(14)*e[16]-arg.get(17)*e[17]+arg.get(2)*e[6]+arg.get(5)*e[7]+arg.get(8)*e[8]);
-		b.set(9, arg.get(9)*e[0]+arg.get(12)*e[1]+arg.get(3)*e[10]+arg.get(6)*e[11]+arg.get(15)*e[2]+arg.get(0)*e[9]);
-		b.set(10, arg.get(10)*e[0]+arg.get(13)*e[1]+arg.get(4)*e[10]+arg.get(7)*e[11]+arg.get(16)*e[2]+arg.get(1)*e[9]);
-		b.set(11, arg.get(11)*e[0]+arg.get(14)*e[1]+arg.get(5)*e[10]+arg.get(8)*e[11]+arg.get(17)*e[2]+arg.get(2)*e[9]);
-		b.set(12, arg.get(0)*e[12]+arg.get(3)*e[13]+arg.get(6)*e[14]+arg.get(9)*e[3]+arg.get(12)*e[4]+arg.get(15)*e[5]);
-		b.set(13, arg.get(1)*e[12]+arg.get(4)*e[13]+arg.get(7)*e[14]+arg.get(10)*e[3]+arg.get(13)*e[4]+arg.get(16)*e[5]);
-		b.set(14, arg.get(2)*e[12]+arg.get(5)*e[13]+arg.get(8)*e[14]+arg.get(11)*e[3]+arg.get(14)*e[4]+arg.get(17)*e[5]);
-		b.set(15, arg.get(0)*e[15]+arg.get(3)*e[16]+arg.get(6)*e[17]+arg.get(9)*e[6]+arg.get(12)*e[7]+arg.get(15)*e[8]);
-		b.set(16, arg.get(1)*e[15]+arg.get(4)*e[16]+arg.get(7)*e[17]+arg.get(10)*e[6]+arg.get(13)*e[7]+arg.get(16)*e[8]);
-		b.set(17, arg.get(2)*e[15]+arg.get(5)*e[16]+arg.get(8)*e[17]+arg.get(11)*e[6]+arg.get(14)*e[7]+arg.get(17)*e[8]);
+		b.set(0, a.get(0)*e[0]+a.get(3)*e[1]-a.get(12)*e[10]-a.get(15)*e[11]+a.get(6)*e[2]-a.get(9)*e[9]);
+		b.set(1, a.get(1)*e[0]+a.get(4)*e[1]-a.get(13)*e[10]-a.get(16)*e[11]+a.get(7)*e[2]-a.get(10)*e[9]);
+		b.set(2, a.get(2)*e[0]+a.get(5)*e[1]-a.get(14)*e[10]-a.get(17)*e[11]+a.get(8)*e[2]-a.get(11)*e[9]);
+		b.set(3, -a.get(9)*e[12]-a.get(12)*e[13]-a.get(15)*e[14]+a.get(0)*e[3]+a.get(3)*e[4]+a.get(6)*e[5]);
+		b.set(4, -a.get(10)*e[12]-a.get(13)*e[13]-a.get(16)*e[14]+a.get(1)*e[3]+a.get(4)*e[4]+a.get(7)*e[5]);
+		b.set(5, -a.get(11)*e[12]-a.get(14)*e[13]-a.get(17)*e[14]+a.get(2)*e[3]+a.get(5)*e[4]+a.get(8)*e[5]);
+		b.set(6, -a.get(9)*e[15]-a.get(12)*e[16]-a.get(15)*e[17]+a.get(0)*e[6]+a.get(3)*e[7]+a.get(6)*e[8]);
+		b.set(7, -a.get(10)*e[15]-a.get(13)*e[16]-a.get(16)*e[17]+a.get(1)*e[6]+a.get(4)*e[7]+a.get(7)*e[8]);
+		b.set(8, -a.get(11)*e[15]-a.get(14)*e[16]-a.get(17)*e[17]+a.get(2)*e[6]+a.get(5)*e[7]+a.get(8)*e[8]);
+		b.set(9, a.get(9)*e[0]+a.get(12)*e[1]+a.get(3)*e[10]+a.get(6)*e[11]+a.get(15)*e[2]+a.get(0)*e[9]);
+		b.set(10, a.get(10)*e[0]+a.get(13)*e[1]+a.get(4)*e[10]+a.get(7)*e[11]+a.get(16)*e[2]+a.get(1)*e[9]);
+		b.set(11, a.get(11)*e[0]+a.get(14)*e[1]+a.get(5)*e[10]+a.get(8)*e[11]+a.get(17)*e[2]+a.get(2)*e[9]);
+		b.set(12, a.get(0)*e[12]+a.get(3)*e[13]+a.get(6)*e[14]+a.get(9)*e[3]+a.get(12)*e[4]+a.get(15)*e[5]);
+		b.set(13, a.get(1)*e[12]+a.get(4)*e[13]+a.get(7)*e[14]+a.get(10)*e[3]+a.get(13)*e[4]+a.get(16)*e[5]);
+		b.set(14, a.get(2)*e[12]+a.get(5)*e[13]+a.get(8)*e[14]+a.get(11)*e[3]+a.get(14)*e[4]+a.get(17)*e[5]);
+		b.set(15, a.get(0)*e[15]+a.get(3)*e[16]+a.get(6)*e[17]+a.get(9)*e[6]+a.get(12)*e[7]+a.get(15)*e[8]);
+		b.set(16, a.get(1)*e[15]+a.get(4)*e[16]+a.get(7)*e[17]+a.get(10)*e[6]+a.get(13)*e[7]+a.get(16)*e[8]);
+		b.set(17, a.get(2)*e[15]+a.get(5)*e[16]+a.get(8)*e[17]+a.get(11)*e[6]+a.get(14)*e[7]+a.get(17)*e[8]);
 		return b;
 	}
 
