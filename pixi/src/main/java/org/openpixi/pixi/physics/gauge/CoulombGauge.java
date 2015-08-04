@@ -3,10 +3,10 @@ package org.openpixi.pixi.physics.gauge;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.openpixi.pixi.math.AlgebraElement;
+import org.openpixi.pixi.math.SU2AlgebraElement;
 import org.openpixi.pixi.parallel.cellaccess.CellAction;
 import org.openpixi.pixi.physics.grid.Grid;
-import org.openpixi.pixi.physics.grid.SU2Field;
-import org.openpixi.pixi.physics.grid.YMField;
 
 /**
  * Appy the Coulomb gauge transformation to a grid.
@@ -79,6 +79,13 @@ public class CoulombGauge extends GaugeTransformation {
 		double divergenceSquaredSum = 0;
 
 		int colors = grid.getNumberOfColors();
+
+		// New SU2AlgebraElement array to store psi values
+		SU2AlgebraElement[] psi = new SU2AlgebraElement[getG().length];
+		for (int i = 0; i < getG().length; i++) {
+			psi[i] = new SU2AlgebraElement();
+		}
+
 		for (int color = 0; color < colors; color++) {
 			// Calculate Divergence and put into fftArray
 			calculateDivergence.setColorAndResetSum(color);
@@ -97,16 +104,21 @@ public class CoulombGauge extends GaugeTransformation {
 				int fftIndex = fft.getFFTArrayIndex(i);
 				double value = fftArray[fftIndex];
 
-				// Store values temporarily in SU2Matrix instead of SU2Field:
-				getG()[i].set(color + 1, value);
+				// Store values temporarily in SU2GroupElement instead of SU2AlgebraElement:
+				//getG()[i].set(color + 1, value);
+
+				psi[i].set(color, value);
 			}
 		}
 
 		// Calculate g(x) = exp(i g psi^\dagger)
 		for (int i = 0; i < getG().length; i++) {
 			// psi is stored in g for convenience:
-			SU2Field psidagger = (SU2Field) getG()[i].adj().proj();
-			getG()[i] = psidagger.getLinkExact();
+			//SU2AlgebraElement psidagger = (SU2AlgebraElement) getG()[i].adj().proj();
+
+			// Field generators are antihermitian so multiply psi by -1 to get psidagger
+			SU2AlgebraElement psidagger = (SU2AlgebraElement) psi[i].mult(-1);
+			getG()[i] = psidagger.getLink();
 		}
 
 		/*
@@ -136,8 +148,8 @@ public class CoulombGauge extends GaugeTransformation {
 				/*
 				 * U_i(x) - U_i(x-i)
 				 */
-				YMField U = grid.getU(index, dir).getAlgebraElement();
-				YMField Ushifted = grid.getU(grid.shift(index, dir, -1), dir).getAlgebraElement();
+				AlgebraElement U = grid.getU(index, dir).getAlgebraElement();
+				AlgebraElement Ushifted = grid.getU(grid.shift(index, dir, -1), dir).getAlgebraElement();
 
 				divergenceU += U.get(color) - Ushifted.get(color);
 			}

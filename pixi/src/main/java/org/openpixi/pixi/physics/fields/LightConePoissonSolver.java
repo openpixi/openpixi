@@ -1,9 +1,9 @@
 package org.openpixi.pixi.physics.fields;
 
+import org.openpixi.pixi.math.AlgebraElement;
+import org.openpixi.pixi.math.SU2AlgebraElement;
 import org.openpixi.pixi.physics.grid.Grid;
 import edu.emory.mathcs.jtransforms.fft.*;
-import org.openpixi.pixi.physics.grid.SU2Field;
-import org.openpixi.pixi.physics.grid.YMField;
 
 public class LightConePoissonSolver {
 
@@ -54,14 +54,14 @@ public class LightConePoissonSolver {
 		if (size.length > 1) {
 			double[][] charge = new double[size[0]][2 * size[1]];
 			double[][] current = new double[size[0]][2 * size[1]];
-			YMField[][] gaugeList = new YMField[size[0]][size[1]];
-			YMField[][] E0List = new YMField[size[0]][size[1]];
-			YMField[][] E1List = new YMField[size[0]][size[1]];
+			AlgebraElement[][] gaugeList = new AlgebraElement[size[0]][size[1]];
+			AlgebraElement[][] E0List = new AlgebraElement[size[0]][size[1]];
+			AlgebraElement[][] E1List = new AlgebraElement[size[0]][size[1]];
 			for(int j = 0; j < size[0]; j++) {
 				for (int w = 0; w < size[1]; w++) {
-					gaugeList[j][w] = new SU2Field();
-					E0List[j][w] = new SU2Field();
-					E1List[j][w] = new SU2Field();
+					gaugeList[j][w] = new SU2AlgebraElement();
+					E0List[j][w] = new SU2AlgebraElement();
+					E1List[j][w] = new SU2AlgebraElement();
 				}
 			}
 
@@ -128,7 +128,7 @@ public class LightConePoissonSolver {
 					if(orientation < 0) {
 						chargeIndex = g.shift(chargeIndex, dir, 1);
 					}
-					g.setU(cellIndex, dir, gaugeList[j][w].getLinkExact());
+					g.setU(cellIndex, dir, gaugeList[j][w].getLink());
 					g.setE(chargeIndex, signature[0], E0List[j][w]);
 					g.setE(chargeIndex, signature[1], E1List[j][w]);
 				}
@@ -137,11 +137,11 @@ public class LightConePoissonSolver {
 		} else if(size.length == 1) {
 			double[] charge = new double[2 * size[0]];
 			double[] current = new double[2 * size[0]];
-			YMField[] gaugeList = new YMField[size[0]];
-			YMField[] E0List = new YMField[size[0]];
+			AlgebraElement[] gaugeList = new AlgebraElement[size[0]];
+			AlgebraElement[] E0List = new AlgebraElement[size[0]];
 			for(int j = 0; j < size[0]; j++) {
-				gaugeList[j] = new SU2Field();
-				E0List[j] = new SU2Field();
+				gaugeList[j] = new SU2AlgebraElement();
+				E0List[j] = new SU2AlgebraElement();
 			}
 
 			for(int i = 0; i < numberOfComponents; i++) {
@@ -196,7 +196,7 @@ public class LightConePoissonSolver {
 				if(orientation < 0) {
 					chargeIndex = g.shift(chargeIndex, dir, 1);
 				}
-				g.setU(cellIndex, dir, gaugeList[j].getLinkExact());
+				g.setU(cellIndex, dir, gaugeList[j].getLink());
 				g.setE(chargeIndex, signature[0], E0List[j]);
 			}
 		} else {

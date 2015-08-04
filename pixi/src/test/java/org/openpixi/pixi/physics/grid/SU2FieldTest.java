@@ -1,12 +1,10 @@
 package org.openpixi.pixi.physics.grid;
 
 
-import org.apache.commons.math3.Field;
-import org.apache.commons.math3.complex.Complex;
-import org.apache.commons.math3.complex.ComplexField;
-import org.apache.commons.math3.linear.Array2DRowFieldMatrix;
 import org.junit.Assert;
 import org.junit.Test;
+import org.openpixi.pixi.math.SU2AlgebraElement;
+import org.openpixi.pixi.math.SU2GroupElement;
 
 public class SU2FieldTest {
 
@@ -29,8 +27,8 @@ public class SU2FieldTest {
 			We construct two fields. One from the constructor and another using setter methods.
 		 */
 
-		SU2Field firstField = new SU2Field(vec[0], vec[1], vec[2]);
-		SU2Field secondField = new SU2Field();
+		SU2AlgebraElement firstField = new SU2AlgebraElement(vec[0], vec[1], vec[2]);
+		SU2AlgebraElement secondField = new SU2AlgebraElement();
 		for (int i = 0; i < 3; i++) {
 			secondField.set(i, vec[i]);
 		}
@@ -72,8 +70,8 @@ public class SU2FieldTest {
 		/*
 			Create two fields.
 		 */
-		SU2Field a = new SU2Field();
-		SU2Field b = new SU2Field();
+		SU2AlgebraElement a = new SU2AlgebraElement();
+		SU2AlgebraElement b = new SU2AlgebraElement();
 		for (int i = 0; i < 3; i++) {
 			a.set(i, aVec[i]);
 			b.set(i, bVec[i]);
@@ -82,8 +80,8 @@ public class SU2FieldTest {
 		/*
 			Use add and sub methods.
 		 */
-		SU2Field r1 = (SU2Field) a.add(b);
-		SU2Field r2 = (SU2Field) a.sub(b);
+		SU2AlgebraElement r1 = (SU2AlgebraElement) a.add(b);
+		SU2AlgebraElement r2 = (SU2AlgebraElement) a.sub(b);
 
 		/*
 			Compare results.
@@ -105,19 +103,19 @@ public class SU2FieldTest {
 		for (int i = 0; i < 3; i++) {
 			vec[i] = (Math.random() - 0.5)*scaling;
 		}
-		SU2Field firstField = new SU2Field(vec[0], vec[1], vec[2]);
+		SU2AlgebraElement firstField = new SU2AlgebraElement(vec[0], vec[1], vec[2]);
 		
 		/*
 		Transform to a SU2 matrix exactly and in linear approximation.
 	 */
-		SU2Matrix matSimple = (SU2Matrix) firstField.getLink();
-		SU2Matrix matExact = (SU2Matrix) firstField.getLinkExact();
+		SU2GroupElement matSimple = (SU2GroupElement) firstField.getLinearizedLink();
+		SU2GroupElement matExact = (SU2GroupElement) firstField.getLink();
 
 		/*
-		Transform back to a SU2 field exactly and in linear approximation.
+		Transform back to a SU2 field exactly and in linear approximation (proj).
 	 */
-		SU2Field fieldSimple = (SU2Field) matSimple.getLinearizedAlgebraElement();
-		SU2Field fieldExact = (SU2Field) matExact.getAlgebraElement();
+		SU2AlgebraElement fieldSimple = (SU2AlgebraElement) matSimple.proj();
+		SU2AlgebraElement fieldExact = (SU2AlgebraElement) matExact.getAlgebraElement();
 		
 		/*
 		Compare results.
@@ -143,11 +141,11 @@ public class SU2FieldTest {
 				vec1[i] = Math.random() - 0.5;
 				vec2[i] = value*vec1[i];
 			}
-			SU2Field firstField = new SU2Field(vec1[0], vec1[1], vec1[2]);
+			SU2AlgebraElement firstField = new SU2AlgebraElement(vec1[0], vec1[1], vec1[2]);
 			/*
 			Multiply with a scalar.
 		 */
-			SU2Field secondField = (SU2Field) firstField.mult(value);
+			SU2AlgebraElement secondField = (SU2AlgebraElement) firstField.mult(value);
 			/*
 				Compare results.
 			 */

@@ -1,5 +1,10 @@
 package org.openpixi.pixi.physics.grid;
 
+import org.openpixi.pixi.math.AlgebraElement;
+import org.openpixi.pixi.math.GroupElement;
+import org.openpixi.pixi.math.SU2AlgebraElement;
+import org.openpixi.pixi.math.SU2GroupElement;
+
 import java.io.Serializable;
 
 /**
@@ -9,22 +14,22 @@ import java.io.Serializable;
  */
 public class Cell implements Serializable {
 	/**Local electric current in d directions*/
-	private YMField[] J;
+	private AlgebraElement[] J;
 
 	/**Local charge density at time */
-	private YMField rho;
+	private AlgebraElement rho;
 
 	/**Electric fields in d directions at time t */
-	private YMField[] E;
+	private AlgebraElement[] E;
 	
 	/**Purely spatial components of the field-strength tensor at time*/
-	private YMField[][] F;
+	private AlgebraElement[][] F;
 	
 	/**Link matrices at time t - dt/2 */
-	private LinkMatrix[] U;
+	private GroupElement[] U;
 	
 	/**Link matrices at time t + dt/2 */
-	private LinkMatrix[] Unext;
+	private GroupElement[] Unext;
 
 	/**
 	 * Constructor for Cell.
@@ -33,22 +38,22 @@ public class Cell implements Serializable {
 	 */
 	public Cell(int dimensions, int colors) {
 		if(colors == 2) {
-			F = new SU2Field[dimensions][dimensions];
-			U = new SU2Matrix[dimensions];
-			Unext = new SU2Matrix[dimensions];
-			E = new SU2Field[dimensions];
-			J = new SU2Field[dimensions];
-			rho = new SU2Field();
+			F = new SU2AlgebraElement[dimensions][dimensions];
+			U = new SU2GroupElement[dimensions];
+			Unext = new SU2GroupElement[dimensions];
+			E = new SU2AlgebraElement[dimensions];
+			J = new SU2AlgebraElement[dimensions];
+			rho = new SU2AlgebraElement();
 			
 			for(int i = 0; i < dimensions; i++)
 			{
-				U[i] = new SU2Matrix();
-				Unext[i] = new SU2Matrix();
-				E[i] = new SU2Field();
-				J[i] = new SU2Field();
+				U[i] = new SU2GroupElement();
+				Unext[i] = new SU2GroupElement();
+				E[i] = new SU2AlgebraElement();
+				J[i] = new SU2AlgebraElement();
 				
 				for(int j = 0; j < dimensions; j++) {
-					F[i][j] = new SU2Field();
+					F[i][j] = new SU2AlgebraElement();
 				}
 			}
 		}
@@ -61,19 +66,19 @@ public class Cell implements Serializable {
 	 * Needs to be synchronized as we expect in the parallel version
 	 * two threads trying to update the field at the same time.
 	 */
-	public synchronized void addJ(int dir, YMField current) {
-		J[dir].addequate(current);
+	public synchronized void addJ(int dir, AlgebraElement current) {
+		J[dir].addAssign(current);
 	}
 
-	public YMField getJ(int dir) {
+	public AlgebraElement getJ(int dir) {
 		return J[dir];
 	}
 
-	public YMField getRho() {
+	public AlgebraElement getRho() {
 		return rho;
 	}
 
-	public void setRho(YMField rho) {
+	public void setRho(AlgebraElement rho) {
 		this.rho = rho;
 	}
 
@@ -81,43 +86,43 @@ public class Cell implements Serializable {
 	 * Needs to be synchronized as we expect in the parallel version
 	 * two threads trying to update the field at the same time.
 	 */
-	public synchronized void addRho(YMField rho) {
-		this.rho.addequate(rho);
+	public synchronized void addRho(AlgebraElement rho) {
+		this.rho.addAssign(rho);
 	}
 
-	public YMField getE(int dir) {
+	public AlgebraElement getE(int dir) {
 		return E[dir];
 	}
 
-	public void setE(int dir, YMField field) {
+	public void setE(int dir, AlgebraElement field) {
 		E[dir].set(field);
 	}
 	
-	public void addE(int dir, YMField field) {
-		E[dir].addequate(field);
+	public void addE(int dir, AlgebraElement field) {
+		E[dir].addAssign(field);
 	}
 	
-	public LinkMatrix getU(int dir) {
+	public GroupElement getU(int dir) {
 		return U[dir];
 	}
 
-	public void setU(int dir, LinkMatrix link) {
+	public void setU(int dir, GroupElement link) {
 		U[dir].set(link);
 	}
 	
-	public LinkMatrix getUnext(int dir) {
+	public GroupElement getUnext(int dir) {
 		return Unext[dir];
 	}
 
-	public void setUnext(int dir, LinkMatrix link) {
+	public void setUnext(int dir, GroupElement link) {
 		Unext[dir].set(link);
 	}
 
-	public YMField getFieldStrength(int i, int j) {
+	public AlgebraElement getFieldStrength(int i, int j) {
 		return F[i][j];
 	}
 
-	public void setFieldStrength(int i, int j, YMField field) {
+	public void setFieldStrength(int i, int j, AlgebraElement field) {
 		F[i][j].set(field);
 	}
 	
@@ -132,14 +137,14 @@ public class Cell implements Serializable {
 		rho.reset();
 	}
 	
-	public YMField getEmptyField(int colors) {
+	public AlgebraElement getEmptyField(int colors) {
 		if(colors == 2) {
-			return new SU2Field();
+			return new SU2AlgebraElement();
 		} else {System.out.println("Error!! Number of colors should be equal to 2!!"); return null;}
 	}
 
 	public void reassignLinks() {
-		LinkMatrix[] temp = U;
+		GroupElement[] temp = U;
 	    U = Unext;
 	    Unext = temp;
 	}

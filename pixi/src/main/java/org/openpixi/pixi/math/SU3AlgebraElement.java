@@ -1,4 +1,4 @@
-package org.openpixi.pixi.physics.grid;
+package org.openpixi.pixi.math;
 
 /**
  * This is a parametrization of SU(3) algebra elements.
@@ -9,10 +9,11 @@ package org.openpixi.pixi.physics.grid;
  * 		e[1] - i e[3]		e[4]        		e[5] + i e[7]
  * 		e[2] - i e[6]		e[5] - i e[7]		e[8]
  */
-public class SU3Field extends YMField {
+public class SU3AlgebraElement implements AlgebraElement {
 
+	protected double[] v;
 
-	public SU3Field() {
+	public SU3AlgebraElement() {
 
 		v = new double[9];
 
@@ -21,14 +22,19 @@ public class SU3Field extends YMField {
 		}
 	}
 
-	public SU3Field(double[] values) {
-		
+	public SU3AlgebraElement(double[] values) {
+
 		v = new double[9];
 
-		for (int i = 0; i < 9; i++) {
-			v[i] = values[i];
+		if (values.length == 9) {
+			for (int i = 0; i < 9; i++) {
+				v[i] = values[i];
+			}
+		} else if (values.length == 8) {
+			for (int i = 0; i < 8; i++) {
+				set(i, values[i]);
+			}
 		}
-		
 	}
 	
 	public void reset () {
@@ -39,9 +45,11 @@ public class SU3Field extends YMField {
 		
 	}
 	
-	public YMField add (YMField a) {
+	public AlgebraElement add (AlgebraElement arg) {
+
+		SU3AlgebraElement a = (SU3AlgebraElement) arg;
 		
-		SU3Field b = new SU3Field();
+		SU3AlgebraElement b = new SU3AlgebraElement();
 		for (int i = 0; i < 9; i++) {
 			b.v[i] = v[i]+a.v[i];
 		}
@@ -49,7 +57,9 @@ public class SU3Field extends YMField {
 		
 	}
 	
-	public void addequate (YMField a) {
+	public void addAssign(AlgebraElement arg) {
+
+		SU3AlgebraElement a = (SU3AlgebraElement) arg;
 
 		for (int i = 0; i < 9; i++) {
 			v[i] += a.v[i];
@@ -57,23 +67,57 @@ public class SU3Field extends YMField {
 		
 	}
 	
-	public YMField sub (YMField a) {
+	public AlgebraElement sub (AlgebraElement arg) {
+
+		SU3AlgebraElement a = (SU3AlgebraElement) arg;
 		
-		SU3Field b = new SU3Field();
+		SU3AlgebraElement b = new SU3AlgebraElement();
 		for (int i = 0; i < 9; i++) {
 			b.v[i] = v[i]-a.v[i];
 		}
 		return b;
 		
 	}
-	
-	public void set (int j, double value) {
-		
-		v[j] = value;
-		
+
+	public void set(int j, double value) {
+		double diff = (value - get(j)) / 2;
+
+		switch (j) {
+			case 0: v[1] += diff;
+				break;
+			case 1: v[3] -= diff;
+				break;
+			case 2: v[0] += diff; v[4] -= diff;
+				break;
+			case 3: v[2] += diff;
+				break;
+			case 4: v[6] -= diff;
+				break;
+			case 5: v[5] += diff;
+				break;
+			case 6: v[7] -= diff;
+				break;
+			case 7: v[0] += diff / Math.sqrt(3); v[4] += diff / Math.sqrt(3); v[8] -= 2 * diff / Math.sqrt(3);
+				break;
+			default: System.out.println("Invalid generator set index!");
+		}
+	}
+
+	public double get(int j) {
+		switch (j) {
+			case 0: return 2 * v[1];
+			case 1: return -2 * v[3];
+			case 2: return v[0] - v[4];
+			case 3: return 2 * v[2];
+			case 4: return -2 * v[6];
+			case 5: return 2 * v[5];
+			case 6: return -2 * v[7];
+			case 7: return (v[0] + v[4] - 2 * v[8]) / Math.sqrt(3);
+			default: System.out.println("Invalid generator get index!"); return 0;
+		}
 	}
 	
-	public double get (int j) {
+	public double getEntry(int j) {
 		
 		double b = v[j];
 		return b;
@@ -86,17 +130,14 @@ public class SU3Field extends YMField {
 
 	}
 
-	/**
-	 * @return 2 tr(A^2)
-	 */
 	public double square () {
 		return 2*(v[0]*v[0]+v[4]*v[4]+v[8]*v[8]+2*(v[1]*v[1]+v[2]*v[2]+v[3]*v[3]+v[5]*v[5]+v[6]*v[6]+v[7]*v[7]));
 		
 	}
 	
-	public YMField mult (double number) {
+	public AlgebraElement mult (double number) {
 
-		SU3Field b = new SU3Field();
+		SU3AlgebraElement b = new SU3AlgebraElement();
 		for (int i = 0; i < 9; i++) {
 			b.v[i] = v[i]*number;
 		}
@@ -104,7 +145,7 @@ public class SU3Field extends YMField {
 
 	}
 
-	public void multequate (double number) {
+	public void multAssign(double number) {
 
 		for (int i = 0; i < 9; i++) {
 			this.v[i] = v[i]*number;
@@ -112,25 +153,15 @@ public class SU3Field extends YMField {
 
 	}
 
-	public void set (YMField a) {
+	public void set (AlgebraElement arg) {
+
+		SU3AlgebraElement a = (SU3AlgebraElement) arg;
 
 		for (int i = 0; i < 9; i++) {
 			v[i] = a.v[i];
 		}
 
 	}
-	
-	public void addfour (YMField a, YMField b, YMField c, YMField d) {
-
-		for (int i = 0; i < 9; i++) {
-			v[i] = a.get(i)+b.get(i)+c.get(i)+d.get(i)+this.get(i);
-		}
-			
-	}
-
-	public void FieldFromForwardPlaquette (LinkMatrix a, LinkMatrix b, LinkMatrix c, LinkMatrix d) {}
-
-	public void FieldFromBackwardPlaquette (LinkMatrix a, LinkMatrix b, LinkMatrix c, LinkMatrix d) {}
 
 	/**
 	 * Normalizes (complex) vector in place
@@ -151,7 +182,7 @@ public class SU3Field extends YMField {
 	/**
 	 * Calculates the algebra element by first eigendecomposing into UDU* and then finding log D
 	 * WARNING: This decomposition only works for SU(3) matrices due to certain optimizations
-	 * @return coefficients to be fed into SU3Field to give algebra element
+	 * @return coefficients to be fed into SU3AlgebraElement to give algebra element
 	 */
 	private double[] groupElementDecompositionMethod() {
 		// trace of matrix squared, using square method
@@ -232,33 +263,28 @@ public class SU3Field extends YMField {
 
 		// multiply U exp(D) U* to get algebra element
 		// exp(D) is just a (complex) diagonal matrix
-		SU3Matrix unit = new SU3Matrix(new double[]{vectors[0][0],vectors[1][0],vectors[2][0],
+		SU3GroupElement unit = new SU3GroupElement(new double[]{vectors[0][0],vectors[1][0],vectors[2][0],
 													vectors[0][1],vectors[1][1],vectors[2][1],
 													vectors[0][2],vectors[1][2],vectors[2][2],
 													vectors[0][3],vectors[1][3],vectors[2][3],
 													vectors[0][4],vectors[1][4],vectors[2][4],
 													vectors[0][5],vectors[1][5],vectors[2][5]});
-		SU3Matrix diag = new SU3Matrix(new double[]{valuesRe[0],0,0,
+		SU3GroupElement diag = new SU3GroupElement(new double[]{valuesRe[0],0,0,
 													0,valuesRe[1],0,
 													0,0,valuesRe[2],
 													valuesIm[0],0,0,
 													0,valuesIm[1],0,
 													0,0,valuesIm[2]});
-		return ((SU3Matrix) unit.mult(diag).mult(unit.adj())).get();
+		return ((SU3GroupElement) unit.mult(diag).mult(unit.adj())).get();
 	}
 
-
-
-	/**
-	 * Essentially just using exp(I v) ~ 1 + I v
-	 */
-	public LinkMatrix getLink () {
+	public GroupElement getLinearizedLink() {
 		double[] values = new double[]{1,-v[3],-v[6],v[3],1,-v[7],v[6],v[7],1,v[0],v[1],v[2],v[1],v[4],v[5],v[2],v[5],v[8]};
-		return new SU3Matrix(values);
+		return new SU3GroupElement(values);
 	}
 	
-	public LinkMatrix getLinkExact () {
-		return new SU3Matrix(groupElementDecompositionMethod());
+	public GroupElement getLink() {
+		return new SU3GroupElement(groupElementDecompositionMethod());
 	}
 
 	public double proj(int c) {
@@ -273,5 +299,9 @@ public class SU3Field extends YMField {
 			case 7: return (v[0] + v[4] - 2 * v[8]) / Math.sqrt(3);
 			default: System.out.println("Invalid generator index!"); return 0;
 		}
+	}
+
+	public AlgebraElement copy() {
+		return new SU3AlgebraElement(get());
 	}
 }

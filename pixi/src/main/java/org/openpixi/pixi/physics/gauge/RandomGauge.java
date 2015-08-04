@@ -2,7 +2,7 @@ package org.openpixi.pixi.physics.gauge;
 
 import org.openpixi.pixi.parallel.cellaccess.CellAction;
 import org.openpixi.pixi.physics.grid.Grid;
-import org.openpixi.pixi.physics.grid.SU2Field;
+import org.openpixi.pixi.math.SU2AlgebraElement;
 
 /**
  * Apply a random gauge transformation to a grid.
@@ -41,8 +41,8 @@ public class RandomGauge extends GaugeTransformation {
 			double a = 2 * (Math.random() - 0.5) * randomVector[0];
 			double b = 2 * (Math.random() - 0.5) * randomVector[1];
 			double c = 2 * (Math.random() - 0.5) * randomVector[2];
-			SU2Field field = new SU2Field(a, b, c);
-			getG()[index] = field.getLinkExact();
+			SU2AlgebraElement field = new SU2AlgebraElement(a, b, c);
+			getG()[index] = field.getLink();
 		}
 	}
 }
