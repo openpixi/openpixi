@@ -92,7 +92,7 @@ public class SU2GaussianPulse implements IFieldGenerator {
 
 			for (int i = 0; i < this.numberOfDimensions; i++) {
 				//Setup the gauge links
-				SU2Matrix U = (SU2Matrix) currentCell.getU(i).mult(amplitudeYMField[i].mult(gaugeFieldFactor).getLinkExact());
+				SU2Matrix U = (SU2Matrix) currentCell.getU(i).mult(amplitudeYMField[i].mult(gaugeFieldFactor).getLink());
 				currentCell.setU(i, U);
 
 				//Setup the electric fields

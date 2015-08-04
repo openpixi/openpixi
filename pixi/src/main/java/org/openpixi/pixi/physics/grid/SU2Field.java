@@ -176,7 +176,7 @@ public void addAssign(YMField a) {
 		return b;
 	}
 	
-	public LinkMatrix getLinkExact () {
+	public LinkMatrix getLink() {
 		
 		double sum = v[0]*v[0]+v[1]*v[1]+v[2]*v[2];
 		double mod = Math.sqrt(sum)/2;

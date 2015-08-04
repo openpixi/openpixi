@@ -28,7 +28,7 @@ public abstract class YMField {
 	
 	public abstract LinkMatrix getLinearizedLink();
 	
-	public abstract LinkMatrix getLinkExact ();
+	public abstract LinkMatrix getLink();
 
 	/**
 	 * Returns the projection of the algebra element on to the c'th generator, i.e.

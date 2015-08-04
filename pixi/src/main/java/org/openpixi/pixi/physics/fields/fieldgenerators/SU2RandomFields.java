@@ -35,7 +35,7 @@ public class SU2RandomFields implements IFieldGenerator {
 					ufield.set(i, (Math.random() - 0.5) * magnitude);
 				}
 
-				currentCell.setU(i, ufield.getLinkExact());
+				currentCell.setU(i, ufield.getLink());
 				currentCell.setE(i, efield);
 			}
 		}

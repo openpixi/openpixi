@@ -257,7 +257,7 @@ public class SU3Field extends YMField {
 		return new SU3Matrix(values);
 	}
 	
-	public LinkMatrix getLinkExact () {
+	public LinkMatrix getLink() {
 		return new SU3Matrix(groupElementDecompositionMethod());
 	}
 

@@ -6,13 +6,11 @@ import org.junit.Test;
 import org.openpixi.pixi.physics.Settings;
 import org.openpixi.pixi.physics.Simulation;
 import org.openpixi.pixi.physics.fields.fieldgenerators.SU2PlaneWave;
-import org.openpixi.pixi.physics.fields.fieldgenerators.SU2RandomFields;
 import org.openpixi.pixi.physics.gauge.CoulombGauge;
 import org.openpixi.pixi.physics.gauge.GaugeTransformation;
 import org.openpixi.pixi.physics.grid.Grid;
 import org.openpixi.pixi.physics.grid.LinkMatrix;
 import org.openpixi.pixi.physics.grid.SU2Field;
-import org.openpixi.pixi.physics.grid.SU2Matrix;
 
 public class CoulombGaugeTest {
 
@@ -74,10 +72,10 @@ public class CoulombGaugeTest {
 		GaugeTransformation transformation = new GaugeTransformation(grid);
 
 		// Apply some test gauge transformation
-		LinkMatrix g1 = field1.getLinkExact();
+		LinkMatrix g1 = field1.getLink();
 		transformation.getG()[0] = transformation.getG()[0].mult(g1);
 
-		LinkMatrix g2 = field2.getLinkExact();
+		LinkMatrix g2 = field2.getLink();
 		transformation.getG()[0] = transformation.getG()[0].mult(g2);
 
 		transformation.applyGaugeTransformation(grid);

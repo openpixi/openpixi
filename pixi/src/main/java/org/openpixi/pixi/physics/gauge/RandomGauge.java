@@ -42,7 +42,7 @@ public class RandomGauge extends GaugeTransformation {
 			double b = 2 * (Math.random() - 0.5) * randomVector[1];
 			double c = 2 * (Math.random() - 0.5) * randomVector[2];
 			SU2Field field = new SU2Field(a, b, c);
-			getG()[index] = field.getLinkExact();
+			getG()[index] = field.getLink();
 		}
 	}
 }

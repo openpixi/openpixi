@@ -95,7 +95,7 @@ public class GeneralYangMillsSolver extends FieldSolver
 
 			for(int k=0;k<grid.getNumberOfDimensions();k++) {
 
-				V = grid.getE(index, k).mult(-at).getLinkExact();	//minus sign takes take of conjugation
+				V = grid.getE(index, k).mult(-at).getLink();	//minus sign takes take of conjugation
 				grid.setUnext( index, k, V.mult(grid.getU(index, k)) );
 
 			}

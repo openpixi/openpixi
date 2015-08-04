@@ -128,7 +128,7 @@ public class LightConePoissonSolver {
 					if(orientation < 0) {
 						chargeIndex = g.shift(chargeIndex, dir, 1);
 					}
-					g.setU(cellIndex, dir, gaugeList[j][w].getLinkExact());
+					g.setU(cellIndex, dir, gaugeList[j][w].getLink());
 					g.setE(chargeIndex, signature[0], E0List[j][w]);
 					g.setE(chargeIndex, signature[1], E1List[j][w]);
 				}
@@ -196,7 +196,7 @@ public class LightConePoissonSolver {
 				if(orientation < 0) {
 					chargeIndex = g.shift(chargeIndex, dir, 1);
 				}
-				g.setU(cellIndex, dir, gaugeList[j].getLinkExact());
+				g.setU(cellIndex, dir, gaugeList[j].getLink());
 				g.setE(chargeIndex, signature[0], E0List[j]);
 			}
 		} else {

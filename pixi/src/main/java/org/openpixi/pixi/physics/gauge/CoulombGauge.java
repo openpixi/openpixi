@@ -106,7 +106,7 @@ public class CoulombGauge extends GaugeTransformation {
 		for (int i = 0; i < getG().length; i++) {
 			// psi is stored in g for convenience:
 			SU2Field psidagger = (SU2Field) getG()[i].adj().proj();
-			getG()[i] = psidagger.getLinkExact();
+			getG()[i] = psidagger.getLink();
 		}
 
 		/*

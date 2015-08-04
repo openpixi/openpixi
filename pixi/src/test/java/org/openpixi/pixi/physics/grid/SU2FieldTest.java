@@ -107,7 +107,7 @@ public class SU2FieldTest {
 		Transform to a SU2 matrix exactly and in linear approximation.
 	 */
 		SU2Matrix matSimple = (SU2Matrix) firstField.getLinearizedLink();
-		SU2Matrix matExact = (SU2Matrix) firstField.getLinkExact();
+		SU2Matrix matExact = (SU2Matrix) firstField.getLink();
 
 		/*
 		Transform back to a SU2 field exactly and in linear approximation.

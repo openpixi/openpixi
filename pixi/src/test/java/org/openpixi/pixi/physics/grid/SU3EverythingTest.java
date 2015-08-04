@@ -200,7 +200,7 @@ public class SU3EverythingTest {
 			// mm1 is algebra element expressed as Array2DRowFieldMatrix
 			Array2DRowFieldMatrix<Complex> mm1 = convertToMatrix(f1);
 
-			SU3Matrix m3 = (SU3Matrix) m1.getAlgebraElement().getLinkExact();
+			SU3Matrix m3 = (SU3Matrix) m1.getAlgebraElement().getLink();
 			// m4 is group element again, which should be same as m2
 			Array2DRowFieldMatrix<Complex> m4 = convertToMatrix(m3);
 
