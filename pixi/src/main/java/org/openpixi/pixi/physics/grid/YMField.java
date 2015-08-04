@@ -7,9 +7,19 @@ public interface YMField {
 	void addAssign(YMField a);
 	
 	YMField sub (YMField a);
-	
+
+	/**
+	 * Set coefficient of jth algebra generator to value
+	 * @param j
+	 * @param value
+	 */
 	void set (int j, double value);
-	
+
+	/**
+	 * Get coefficient of jth algebra generator
+	 * @param j
+	 * @return
+	 */
 	double get (int j);
 	
 	double square ();

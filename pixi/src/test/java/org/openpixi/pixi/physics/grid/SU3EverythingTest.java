@@ -14,6 +14,47 @@ public class SU3EverythingTest {
 	private final double accuracy = 1.E-12;
 
 	@Test
+	public void testGetterAndSetter() {
+		int numberOfTests = 10;
+		for (int t = 0; t < numberOfTests; t++) {
+			/*
+				Create random SU3 field.
+			 */
+			double[] vec = new double[8];
+			double square = 0.0;
+			for (int i = 0; i < 8; i++) {
+				vec[i] = Math.random() - 0.5;
+				square += vec[i] * vec[i];
+			}
+
+			/*
+				We construct two fields. One from the constructor and another using setter methods.
+			 */
+			SU3Field firstField = new SU3Field(new double[]{(vec[2]+vec[7]/Math.sqrt(3))/2,vec[0]/2,vec[3]/2,
+															-vec[1]/2,(-vec[2]+vec[7]/Math.sqrt(3))/2,vec[5]/2,
+															-vec[4]/2,-vec[6]/2,-vec[7]/Math.sqrt(3)});
+			SU3Field secondField = new SU3Field();
+			for (int i = 0; i < 8; i++) {
+				secondField.set(i, vec[i]);
+			}
+
+			/*
+				Now we test if the values have been set correctly.
+			 */
+			for (int i = 0; i < 8; i++) {
+				Assert.assertEquals(firstField.get(i), vec[i], accuracy);
+				Assert.assertEquals(secondField.get(i), vec[i], accuracy);
+			}
+
+			/*
+				Here the square method is tested.
+			 */
+			Assert.assertEquals(firstField.square(), square, accuracy);
+			Assert.assertEquals(secondField.square(), square, accuracy);
+		}
+	}
+
+	@Test
 	public void SU() {
 		int numberOfTests = 10;
 		for (int t = 0; t < numberOfTests; t++) {
@@ -376,15 +417,15 @@ public class SU3EverythingTest {
 		Field<Complex> field = ComplexField.getInstance();
 		Array2DRowFieldMatrix<Complex> output = new Array2DRowFieldMatrix<Complex>(field, 3, 3);
 
-		output.setEntry(0, 0, new Complex(input.get(0),0));
-		output.setEntry(0, 1, new Complex(input.get(1),input.get(3)));
-		output.setEntry(0, 2, new Complex(input.get(2),input.get(6)));
-		output.setEntry(1, 0, new Complex(input.get(1),-input.get(3)));
-		output.setEntry(1, 1, new Complex(input.get(4),0));
-		output.setEntry(1, 2, new Complex(input.get(5),input.get(7)));
-		output.setEntry(2, 0, new Complex(input.get(2),-input.get(6)));
-		output.setEntry(2, 1, new Complex(input.get(5),-input.get(7)));
-		output.setEntry(2, 2, new Complex(input.get(8),0));
+		output.setEntry(0, 0, new Complex(input.getEntry(0),0));
+		output.setEntry(0, 1, new Complex(input.getEntry(1),input.getEntry(3)));
+		output.setEntry(0, 2, new Complex(input.getEntry(2),input.getEntry(6)));
+		output.setEntry(1, 0, new Complex(input.getEntry(1),-input.getEntry(3)));
+		output.setEntry(1, 1, new Complex(input.getEntry(4),0));
+		output.setEntry(1, 2, new Complex(input.getEntry(5),input.getEntry(7)));
+		output.setEntry(2, 0, new Complex(input.getEntry(2),-input.getEntry(6)));
+		output.setEntry(2, 1, new Complex(input.getEntry(5),-input.getEntry(7)));
+		output.setEntry(2, 2, new Complex(input.getEntry(8),0));
 
 		return output;
 	}
