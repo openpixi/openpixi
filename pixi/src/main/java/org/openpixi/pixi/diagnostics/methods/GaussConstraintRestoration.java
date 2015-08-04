@@ -25,6 +25,8 @@ public class GaussConstraintRestoration implements Diagnostics {
 	private double totalGaussViolation;
 	private double oldTotalGaussViolation;
 
+	private Grid oldGrid;
+
 	public GaussConstraintRestoration(double timeInterval, double timeOffset, double gamma, int maxIterations, double accuracy) {
 		this.timeInterval = timeInterval;
 		this.timeOffset = timeOffset;
@@ -48,15 +50,21 @@ public class GaussConstraintRestoration implements Diagnostics {
 		computeGaussViolation(grid);
 		oldTotalGaussViolation = totalGaussViolation;
 		for(int i = 0 ; i < maxIterations; i++) {
+			// Create backup of the grid.
+			backupGrid(grid);
+
 			applyCorrection(grid, gamma);
 			computeGaussViolation(grid);
 			double x = (oldTotalGaussViolation - totalGaussViolation) / oldTotalGaussViolation;
-			if(Math.abs(x) < accuracy) {
-				System.out.println("GaussConstraintRestoration: Reached accuracy goal at step #" + i);
+			if(x < 0) {
+				// The algorithm finished because the last iteration lead to a worsening of the Gauss law violation.
+				restoreGrid(grid);
+				System.out.println("GaussConstraintRestoration: Reached instability at step #" + i);
 				break;
 			}
-			if(x < 0) {
-				System.out.println("GaussConstraintRestoration: Reached instability at step #" + i);
+			if(Math.abs(x) < accuracy) {
+				// The algorithm finished because the desired accuracy goal was reached.
+				System.out.println("GaussConstraintRestoration: Reached accuracy goal at step #" + i);
 				break;
 			}
 			oldTotalGaussViolation = totalGaussViolation;
@@ -90,7 +98,7 @@ public class GaussConstraintRestoration implements Diagnostics {
 		int numberOfCells = grid.getTotalNumberOfCells();
 
 		// Apply correction to electric fields
-		double factor2 = - 1.0 * grid.getLatticeSpacing() * gamma;
+		double factor2 = - 0.5 * grid.getLatticeSpacing() * gamma;
 		for(int i = 0; i < numberOfCells; i++) {
 			for(int j = 0; j < grid.getNumberOfDimensions(); j++) {
 				AlgebraElement E = grid.getE(i, j);
@@ -103,5 +111,13 @@ public class GaussConstraintRestoration implements Diagnostics {
 
 		// Since the electric fields have changed, the Unext links have to be recalculated.
 		grid.updateLinks(grid.getTemporalSpacing());
+	}
+
+	public void backupGrid(Grid grid) {
+		oldGrid = new Grid(grid);
+	}
+
+	public void restoreGrid(Grid grid) {
+		grid.copyValuesFrom(oldGrid);
 	}
 }
