@@ -1,10 +1,10 @@
 package org.openpixi.pixi.diagnostics.methods;
 
 import org.openpixi.pixi.diagnostics.Diagnostics;
+import org.openpixi.pixi.math.AlgebraElement;
+import org.openpixi.pixi.math.GroupElement;
 import org.openpixi.pixi.physics.Simulation;
 import org.openpixi.pixi.physics.grid.Grid;
-import org.openpixi.pixi.physics.grid.LinkMatrix;
-import org.openpixi.pixi.physics.grid.YMField;
 import org.openpixi.pixi.physics.particles.IParticle;
 
 import java.io.IOException;
@@ -21,7 +21,7 @@ public class GaussConstraintRestoration implements Diagnostics {
 	private int maxIterations = 100;
 
 
-	private LinkMatrix[] gaussViolation;
+	private GroupElement[] gaussViolation;
 	private double totalGaussViolation;
 	private double oldTotalGaussViolation;
 
@@ -69,15 +69,15 @@ public class GaussConstraintRestoration implements Diagnostics {
 		double dt = grid.getTemporalSpacing();
 		double a = grid.getLatticeSpacing();
 		double factor = 1.0 / (dt * a);
-		LinkMatrix zero = grid.getU(0,0).mult(0.0); // hack to get a zero matrix.
-		gaussViolation = new LinkMatrix[numberOfCells];
+		GroupElement zero = grid.getU(0,0).mult(0.0); // hack to get a zero matrix.
+		gaussViolation = new GroupElement[numberOfCells];
 		totalGaussViolation = 0.0;
 		for(int i = 0; i < numberOfCells; i++) {
-			LinkMatrix C = zero.mult(1.0); // hack to get a copy of a matrix.
+			GroupElement C = zero.mult(1.0); // hack to get a copy of a matrix.
 			for(int j = 0; j < grid.getNumberOfDimensions(); j++) {
 				int k = grid.shift(i, j, -1);
-				LinkMatrix C1 = grid.getUnext(i, j).mult(grid.getU(i, j).adj());
-				LinkMatrix C2 = grid.getU(k, j).adj().mult(grid.getUnext(k, j));
+				GroupElement C1 = grid.getUnext(i, j).mult(grid.getU(i, j).adj());
+				GroupElement C2 = grid.getU(k, j).adj().mult(grid.getUnext(k, j));
 				C = C.add(C1.sub(C2));
 			}
 
@@ -93,10 +93,10 @@ public class GaussConstraintRestoration implements Diagnostics {
 		double factor2 = - 1.0 * grid.getLatticeSpacing() * gamma;
 		for(int i = 0; i < numberOfCells; i++) {
 			for(int j = 0; j < grid.getNumberOfDimensions(); j++) {
-				YMField E = grid.getE(i, j);
+				AlgebraElement E = grid.getE(i, j);
 				int k = grid.shift(i, j, 1);
-				LinkMatrix C1 = grid.getU(i, j).mult(gaussViolation[k]).mult(grid.getU(i, j).adj());
-				LinkMatrix C2 = gaussViolation[i];
+				GroupElement C1 = grid.getU(i, j).mult(gaussViolation[k]).mult(grid.getU(i, j).adj());
+				GroupElement C2 = gaussViolation[i];
 				grid.setE(i, j, E.add(C1.sub(C2).proj().mult(factor2)));
 			}
 		}
