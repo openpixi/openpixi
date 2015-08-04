@@ -48,19 +48,7 @@ public class SimulationAnimation {
 	public class TimerListener implements ActionListener {
 
 		public void actionPerformed(ActionEvent eve) {
-			try {
-				s.step();
-				if (s.totalSimulationSteps == s.getIterations()) {
-					// Stop simulation (the user can continue by hand)
-					stopAnimation();
-				}
-			} catch (FileNotFoundException ex) {
-				Logger.getLogger(Particle2DPanel.class.getName()).log(Level.SEVERE, null, ex);
-			} catch (IOException ex2) {
-				Logger.getLogger(Particle2DPanel.class.getName()).log(Level.SEVERE, null, ex2);
-			}
-			frameratedetector.update();
-			repaint();
+			doSimulationStep();
 		}
 	}
 
@@ -71,6 +59,16 @@ public class SimulationAnimation {
 	public void stopAnimation() {
 		timer.stop();
 		//test = false;
+	}
+
+	/**
+	 * Perform a single animation step
+	 */
+	public void stepAnimation() {
+		// stop animation first
+		stopAnimation();
+
+		doSimulationStep();
 	}
 
 	public Simulation getSimulation() {
@@ -114,6 +112,23 @@ public class SimulationAnimation {
 			l.clear();
 		}
 	}
+
+	private void doSimulationStep() {
+		try {
+			s.step();
+			if (s.totalSimulationSteps == s.getIterations()) {
+				// Stop simulation (the user can continue by hand)
+				stopAnimation();
+			}
+		} catch (FileNotFoundException ex) {
+			Logger.getLogger(Particle2DPanel.class.getName()).log(Level.SEVERE, null, ex);
+		} catch (IOException ex2) {
+			Logger.getLogger(Particle2DPanel.class.getName()).log(Level.SEVERE, null, ex2);
+		}
+		frameratedetector.update();
+		repaint();
+	}
+
 	/**
 	 * Reset animation according to settings
 	 *

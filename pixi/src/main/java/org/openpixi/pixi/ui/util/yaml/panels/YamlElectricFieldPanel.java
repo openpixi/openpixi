@@ -7,6 +7,9 @@ import org.openpixi.pixi.ui.panel.ElectricFieldPanel;
 
 public class YamlElectricFieldPanel {
 
+	// Fields content properties
+	public String[] showFields;
+
 	// Color properties
 	public Integer colorIndex;
 	public Integer directionIndex;
@@ -22,6 +25,7 @@ public class YamlElectricFieldPanel {
 	public YamlElectricFieldPanel(Component component) {
 		if (component instanceof ElectricFieldPanel) {
 			ElectricFieldPanel panel = (ElectricFieldPanel) component;
+			showFields = panel.showFieldProperties.getStringArrayFromValues();
 			colorIndex = panel.getColorProperties().getColorIndex();
 			directionIndex = panel.getColorProperties().getDirectionIndex();
 			scaleFactor = panel.getScaleProperties().getScaleFactor();
@@ -32,6 +36,10 @@ public class YamlElectricFieldPanel {
 	public Component inflate(PanelManager panelManager) {
 
 		ElectricFieldPanel panel = new ElectricFieldPanel(panelManager.getSimulationAnimation());
+
+		if (showFields != null) {
+			panel.showFieldProperties.setValuesFromStringArray(showFields);
+		}
 
 		if (colorIndex != null) {
 			panel.getColorProperties().setColorIndex(colorIndex);
