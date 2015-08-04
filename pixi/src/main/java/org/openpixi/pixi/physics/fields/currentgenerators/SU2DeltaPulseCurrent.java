@@ -1,8 +1,8 @@
 package org.openpixi.pixi.physics.fields.currentgenerators;
 
+import org.openpixi.pixi.math.SU2AlgebraElement;
 import org.openpixi.pixi.physics.Simulation;
 import org.openpixi.pixi.physics.grid.Grid;
-import org.openpixi.pixi.physics.grid.SU2Field;
 
 public class SU2DeltaPulseCurrent implements ICurrentGenerator {
 
@@ -50,7 +50,7 @@ public class SU2DeltaPulseCurrent implements ICurrentGenerator {
 		/*
 			Setup the field amplitude for the current.
 		 */
-		SU2Field fieldAmplitude = new SU2Field(
+		SU2AlgebraElement fieldAmplitude = new SU2AlgebraElement(
 				this.magnitude * this.speed * this.amplitudeColorDirection[0],
 				this.magnitude * this.speed * this.amplitudeColorDirection[1],
 				this.magnitude * this.speed * this.amplitudeColorDirection[2]);
@@ -58,13 +58,13 @@ public class SU2DeltaPulseCurrent implements ICurrentGenerator {
 		/*
 			Setup the field amplitude for the charge.
 		 */
-		SU2Field chargeAmplitude = new SU2Field(
+		SU2AlgebraElement chargeAmplitude = new SU2AlgebraElement(
 				this.magnitude * this.amplitudeColorDirection[0],
 				this.magnitude * this.amplitudeColorDirection[1],
 				this.magnitude * this.amplitudeColorDirection[2]);
 
-		fieldAmplitude.multequate(chargeNorm);	// This factor comes from the dimensionality of the current density
-		chargeAmplitude.multequate(chargeNorm);
+		fieldAmplitude.multAssign(chargeNorm);	// This factor comes from the dimensionality of the current density
+		chargeAmplitude.multAssign(chargeNorm);
 
 		/*
 			Find the nearest grid point and apply the current configuration to the cell current.

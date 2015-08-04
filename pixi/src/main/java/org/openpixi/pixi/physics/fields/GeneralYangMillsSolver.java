@@ -2,8 +2,8 @@ package org.openpixi.pixi.physics.fields;
 
 import org.openpixi.pixi.parallel.cellaccess.CellAction;
 import org.openpixi.pixi.physics.grid.Grid;
-import org.openpixi.pixi.physics.grid.YMField;
-import org.openpixi.pixi.physics.grid.LinkMatrix;
+import org.openpixi.pixi.math.AlgebraElement;
+import org.openpixi.pixi.math.GroupElement;
 
 public class GeneralYangMillsSolver extends FieldSolver
 {
@@ -56,7 +56,7 @@ public class GeneralYangMillsSolver extends FieldSolver
 		public void execute(Grid grid, int index) {
 			for(int i = 0; i < grid.getNumberOfDimensions(); i++)
 			{
-				LinkMatrix[] plaquettes =  new LinkMatrix[grid.getNumberOfDimensions()-1];
+				GroupElement[] plaquettes =  new GroupElement[grid.getNumberOfDimensions()-1];
 				int c = 0;
 				for(int j = 0; j < grid.getNumberOfDimensions(); j++)
 				{
@@ -72,8 +72,8 @@ public class GeneralYangMillsSolver extends FieldSolver
 					plaquettes[0] = plaquettes[0].add(plaquettes[p]);
 				}
 
-				YMField currentE = grid.getE(index, i).add(plaquettes[0].proj().mult(2 * at / (as * as )));
-				currentE.addequate(grid.getJ(index,i).mult(-at));
+				AlgebraElement currentE = grid.getE(index, i).add(plaquettes[0].proj().mult(at / (as * as )));
+				currentE.addAssign(grid.getJ(index, i).mult(-at));
 				grid.setE(index, i, currentE);
 			}
 		}
@@ -91,11 +91,11 @@ public class GeneralYangMillsSolver extends FieldSolver
 		 */
 		public void execute(Grid grid, int index) {
 
-			LinkMatrix V;
+			GroupElement V;
 
 			for(int k=0;k<grid.getNumberOfDimensions();k++) {
 
-				V = grid.getE(index, k).mult(-at).getLinkExact();	//minus sign takes take of conjugation
+				V = grid.getE(index, k).mult(-at).getLink();	//minus sign takes take of conjugation
 				grid.setUnext( index, k, V.mult(grid.getU(index, k)) );
 
 			}

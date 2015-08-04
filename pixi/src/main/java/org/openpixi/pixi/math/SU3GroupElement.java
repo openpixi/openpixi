@@ -1,4 +1,4 @@
-package org.openpixi.pixi.physics.grid;
+package org.openpixi.pixi.math;
 
 /**
  * This is a parametrization of SU(3) group elements.
@@ -9,11 +9,11 @@ package org.openpixi.pixi.physics.grid;
  * 		e[3] + i e[12]		e[4] + i e[13]		e[5] + i e[14]
  * 		e[6] + i e[15]		e[7] + i e[16]		e[8] + i e[17]
  */
-public class SU3Matrix implements LinkMatrix {
+public class SU3GroupElement implements GroupElement {
 
 	private double[] e;
 
-	public SU3Matrix() {
+	public SU3GroupElement() {
 
 		e = new double[18];
 		for (int i = 0; i < 18; i++) {
@@ -21,7 +21,7 @@ public class SU3Matrix implements LinkMatrix {
 		}
 	}
 
-	public SU3Matrix(double[] params) {
+	public SU3GroupElement(double[] params) {
 
 		e = new double[18];
 
@@ -30,35 +30,41 @@ public class SU3Matrix implements LinkMatrix {
 		}
 	}
 
-	public SU3Matrix(SU3Matrix matrix)
+	public SU3GroupElement(SU3GroupElement matrix)
 	{
 		this();
 		this.set(matrix);
 	}
 
-	public LinkMatrix add(LinkMatrix arg) {
+	public GroupElement add(GroupElement arg) {
 
-		SU3Matrix b = new SU3Matrix();
+		SU3GroupElement a = (SU3GroupElement) arg;
+
+		SU3GroupElement b = new SU3GroupElement();
 		for (int i = 0; i < 18; i++) {
-			b.set(i, e[i] + arg.get(i));
+			b.set(i, e[i] + a.get(i));
 		}
 		return b;
 
 	}
 
-	public LinkMatrix sub(LinkMatrix arg) {
+	public GroupElement sub(GroupElement arg) {
 
-		SU3Matrix b = new SU3Matrix();
+		SU3GroupElement a = (SU3GroupElement) arg;
+
+		SU3GroupElement b = new SU3GroupElement();
 		for (int i = 0; i < 18; i++) {
-			b.set(i, e[i] - arg.get(i));
+			b.set(i, e[i] - a.get(i));
 		}
 		return b;
 	}
 
-	public void set(LinkMatrix arg) {
-		
+	public void set(GroupElement arg) {
+
+		SU3GroupElement a = (SU3GroupElement) arg;
+
 		for (int i = 0; i < 18; i++) {
-			e[i] = arg.get(i);
+			e[i] = a.get(i);
 		}
 	}
 
@@ -78,9 +84,9 @@ public class SU3Matrix implements LinkMatrix {
 		return e;
 	}
 
-	public LinkMatrix adj() {
+	public GroupElement adj() {
 
-		SU3Matrix b = new SU3Matrix(this);
+		SU3GroupElement b = new SU3GroupElement(this);
 		// real diag.
 		b.set(0, e[0]);
 		b.set(4, e[4]);
@@ -144,9 +150,9 @@ public class SU3Matrix implements LinkMatrix {
 		this.set(16, -temp);
 	}
 
-	public LinkMatrix mult(double number) {
+	public GroupElement mult(double number) {
 
-		SU3Matrix b = new SU3Matrix();
+		SU3GroupElement b = new SU3GroupElement();
 		for (int i = 0; i < 18; i++) {
 			b.set(i, e[i] * number);
 		}
@@ -154,27 +160,30 @@ public class SU3Matrix implements LinkMatrix {
 
 	}
 
-	public LinkMatrix mult(LinkMatrix arg) {
+	public GroupElement mult(GroupElement arg) {
+
+		SU3GroupElement a = (SU3GroupElement) arg;
+
 		// computed in Mathematica
-		SU3Matrix b = new SU3Matrix();
-		b.set(0, arg.get(0)*e[0]+arg.get(3)*e[1]-arg.get(12)*e[10]-arg.get(15)*e[11]+arg.get(6)*e[2]-arg.get(9)*e[9]);
-		b.set(1, arg.get(1)*e[0]+arg.get(4)*e[1]-arg.get(13)*e[10]-arg.get(16)*e[11]+arg.get(7)*e[2]-arg.get(10)*e[9]);
-		b.set(2, arg.get(2)*e[0]+arg.get(5)*e[1]-arg.get(14)*e[10]-arg.get(17)*e[11]+arg.get(8)*e[2]-arg.get(11)*e[9]);
-		b.set(3, -arg.get(9)*e[12]-arg.get(12)*e[13]-arg.get(15)*e[14]+arg.get(0)*e[3]+arg.get(3)*e[4]+arg.get(6)*e[5]);
-		b.set(4, -arg.get(10)*e[12]-arg.get(13)*e[13]-arg.get(16)*e[14]+arg.get(1)*e[3]+arg.get(4)*e[4]+arg.get(7)*e[5]);
-		b.set(5, -arg.get(11)*e[12]-arg.get(14)*e[13]-arg.get(17)*e[14]+arg.get(2)*e[3]+arg.get(5)*e[4]+arg.get(8)*e[5]);
-		b.set(6, -arg.get(9)*e[15]-arg.get(12)*e[16]-arg.get(15)*e[17]+arg.get(0)*e[6]+arg.get(3)*e[7]+arg.get(6)*e[8]);
-		b.set(7, -arg.get(10)*e[15]-arg.get(13)*e[16]-arg.get(16)*e[17]+arg.get(1)*e[6]+arg.get(4)*e[7]+arg.get(7)*e[8]);
-		b.set(8, -arg.get(11)*e[15]-arg.get(14)*e[16]-arg.get(17)*e[17]+arg.get(2)*e[6]+arg.get(5)*e[7]+arg.get(8)*e[8]);
-		b.set(9, arg.get(9)*e[0]+arg.get(12)*e[1]+arg.get(3)*e[10]+arg.get(6)*e[11]+arg.get(15)*e[2]+arg.get(0)*e[9]);
-		b.set(10, arg.get(10)*e[0]+arg.get(13)*e[1]+arg.get(4)*e[10]+arg.get(7)*e[11]+arg.get(16)*e[2]+arg.get(1)*e[9]);
-		b.set(11, arg.get(11)*e[0]+arg.get(14)*e[1]+arg.get(5)*e[10]+arg.get(8)*e[11]+arg.get(17)*e[2]+arg.get(2)*e[9]);
-		b.set(12, arg.get(0)*e[12]+arg.get(3)*e[13]+arg.get(6)*e[14]+arg.get(9)*e[3]+arg.get(12)*e[4]+arg.get(15)*e[5]);
-		b.set(13, arg.get(1)*e[12]+arg.get(4)*e[13]+arg.get(7)*e[14]+arg.get(10)*e[3]+arg.get(13)*e[4]+arg.get(16)*e[5]);
-		b.set(14, arg.get(2)*e[12]+arg.get(5)*e[13]+arg.get(8)*e[14]+arg.get(11)*e[3]+arg.get(14)*e[4]+arg.get(17)*e[5]);
-		b.set(15, arg.get(0)*e[15]+arg.get(3)*e[16]+arg.get(6)*e[17]+arg.get(9)*e[6]+arg.get(12)*e[7]+arg.get(15)*e[8]);
-		b.set(16, arg.get(1)*e[15]+arg.get(4)*e[16]+arg.get(7)*e[17]+arg.get(10)*e[6]+arg.get(13)*e[7]+arg.get(16)*e[8]);
-		b.set(17, arg.get(2)*e[15]+arg.get(5)*e[16]+arg.get(8)*e[17]+arg.get(11)*e[6]+arg.get(14)*e[7]+arg.get(17)*e[8]);
+		SU3GroupElement b = new SU3GroupElement();
+		b.set(0, a.get(0)*e[0]+a.get(3)*e[1]-a.get(12)*e[10]-a.get(15)*e[11]+a.get(6)*e[2]-a.get(9)*e[9]);
+		b.set(1, a.get(1)*e[0]+a.get(4)*e[1]-a.get(13)*e[10]-a.get(16)*e[11]+a.get(7)*e[2]-a.get(10)*e[9]);
+		b.set(2, a.get(2)*e[0]+a.get(5)*e[1]-a.get(14)*e[10]-a.get(17)*e[11]+a.get(8)*e[2]-a.get(11)*e[9]);
+		b.set(3, -a.get(9)*e[12]-a.get(12)*e[13]-a.get(15)*e[14]+a.get(0)*e[3]+a.get(3)*e[4]+a.get(6)*e[5]);
+		b.set(4, -a.get(10)*e[12]-a.get(13)*e[13]-a.get(16)*e[14]+a.get(1)*e[3]+a.get(4)*e[4]+a.get(7)*e[5]);
+		b.set(5, -a.get(11)*e[12]-a.get(14)*e[13]-a.get(17)*e[14]+a.get(2)*e[3]+a.get(5)*e[4]+a.get(8)*e[5]);
+		b.set(6, -a.get(9)*e[15]-a.get(12)*e[16]-a.get(15)*e[17]+a.get(0)*e[6]+a.get(3)*e[7]+a.get(6)*e[8]);
+		b.set(7, -a.get(10)*e[15]-a.get(13)*e[16]-a.get(16)*e[17]+a.get(1)*e[6]+a.get(4)*e[7]+a.get(7)*e[8]);
+		b.set(8, -a.get(11)*e[15]-a.get(14)*e[16]-a.get(17)*e[17]+a.get(2)*e[6]+a.get(5)*e[7]+a.get(8)*e[8]);
+		b.set(9, a.get(9)*e[0]+a.get(12)*e[1]+a.get(3)*e[10]+a.get(6)*e[11]+a.get(15)*e[2]+a.get(0)*e[9]);
+		b.set(10, a.get(10)*e[0]+a.get(13)*e[1]+a.get(4)*e[10]+a.get(7)*e[11]+a.get(16)*e[2]+a.get(1)*e[9]);
+		b.set(11, a.get(11)*e[0]+a.get(14)*e[1]+a.get(5)*e[10]+a.get(8)*e[11]+a.get(17)*e[2]+a.get(2)*e[9]);
+		b.set(12, a.get(0)*e[12]+a.get(3)*e[13]+a.get(6)*e[14]+a.get(9)*e[3]+a.get(12)*e[4]+a.get(15)*e[5]);
+		b.set(13, a.get(1)*e[12]+a.get(4)*e[13]+a.get(7)*e[14]+a.get(10)*e[3]+a.get(13)*e[4]+a.get(16)*e[5]);
+		b.set(14, a.get(2)*e[12]+a.get(5)*e[13]+a.get(8)*e[14]+a.get(11)*e[3]+a.get(14)*e[4]+a.get(17)*e[5]);
+		b.set(15, a.get(0)*e[15]+a.get(3)*e[16]+a.get(6)*e[17]+a.get(9)*e[6]+a.get(12)*e[7]+a.get(15)*e[8]);
+		b.set(16, a.get(1)*e[15]+a.get(4)*e[16]+a.get(7)*e[17]+a.get(10)*e[6]+a.get(13)*e[7]+a.get(16)*e[8]);
+		b.set(17, a.get(2)*e[15]+a.get(5)*e[16]+a.get(8)*e[17]+a.get(11)*e[6]+a.get(14)*e[7]+a.get(17)*e[8]);
 		return b;
 	}
 
@@ -216,7 +225,7 @@ public class SU3Matrix implements LinkMatrix {
 	/**
 	 * Calculates the algebra element by first eigendecomposing into UDU* and then finding log D
 	 * WARNING: This decomposition only works for SU(3) matrices due to certain optimizations
-	 * @return coefficients to be fed into SU3Field to give algebra element
+	 * @return coefficients to be fed into SU3AlgebraElement to give algebra element
 	 */
 	private double[] algebraElementDecompositionMethod() {
 
@@ -342,28 +351,28 @@ public class SU3Matrix implements LinkMatrix {
 
 		// multiply U log(D) U* to get algebra element
 		// log(D) is just a real diagonal matrix so multiplication is included in construction of U
-		SU3Matrix ULnD = new SU3Matrix(new double[]{vectors[0][0]*phases[0],vectors[1][0]*phases[1],vectors[2][0]*phases[2],
+		SU3GroupElement ULnD = new SU3GroupElement(new double[]{vectors[0][0]*phases[0],vectors[1][0]*phases[1],vectors[2][0]*phases[2],
 													vectors[0][1]*phases[0],vectors[1][1]*phases[1],vectors[2][1]*phases[2],
 													vectors[0][2]*phases[0],vectors[1][2]*phases[1],vectors[2][2]*phases[2],
 													vectors[0][3]*phases[0],vectors[1][3]*phases[1],vectors[2][3]*phases[2],
 													vectors[0][4]*phases[0],vectors[1][4]*phases[1],vectors[2][4]*phases[2],
 													vectors[0][5]*phases[0],vectors[1][5]*phases[1],vectors[2][5]*phases[2]});
-		SU3Matrix UAdj = new SU3Matrix(new double[]{ vectors[0][0], vectors[0][1], vectors[0][2],
+		SU3GroupElement UAdj = new SU3GroupElement(new double[]{ vectors[0][0], vectors[0][1], vectors[0][2],
 													 vectors[1][0], vectors[1][1], vectors[1][2],
 													 vectors[2][0], vectors[2][1], vectors[2][2],
 													-vectors[0][3],-vectors[0][4],-vectors[0][5],
 													-vectors[1][3],-vectors[1][4],-vectors[1][5],
 													-vectors[2][3],-vectors[2][4],-vectors[2][5]});
 
-		double[] values = ((SU3Matrix) ULnD.mult(UAdj)).get();
+		double[] values = ((SU3GroupElement) ULnD.mult(UAdj)).get();
 		// now normalize to ensure hermiticity!
 		return hermiticize(values);
 	}
 
 	/**
 	 * (anti)symmetrizes matrix to ensure hermiticity
-	 * @param values list of 18 values as in SU3Matrix
-	 * @return list of 9 values as in SU3Field
+	 * @param values list of 18 values as in SU3GroupElement
+	 * @return list of 9 values as in SU3AlgebraElement
 	 */
 	private double[] hermiticize(double[] values) {
 		double[] fieldValues = new double[9];
@@ -382,38 +391,17 @@ public class SU3Matrix implements LinkMatrix {
 		return fieldValues;
 	}
 
-
-	// Same as proj, scheduled for deletion
-	public YMField getLinearizedAlgebraElement() {
-		double[] fieldValues = new double[]{(2*e[9]-e[13]-e[17])/3,
-											(e[10]+e[12])/2,
-											(e[11]+e[15])/2,
-											(e[3]-e[1])/2,
-											(2*e[13]-e[17]-e[9])/3,
-											(e[14]+e[16])/2,
-											(e[6]-e[2])/2,
-											(e[7]-e[5])/2,
-											(2*e[17]-e[9]-e[13])/3};
-		return new SU3Field(fieldValues);
-	}
-
-	public YMField getAlgebraElement() {
-		return new SU3Field(algebraElementDecompositionMethod());
+	public AlgebraElement getAlgebraElement() {
+		return new SU3AlgebraElement(algebraElementDecompositionMethod());
 	}
 
 	/**
-	 * Returns the projection of the matrix onto the generators of the group as a YMField. This is done via the formula
-	 *
-	 *      u_a = 2 Im {tr t_a U},
-	 *
-	 * where U is the SU3Matrix, t_a is the a-th generator of the group and u_a is the a-th component of the YMField.
-	 *
 	 * Computed in Mathematica by calculating u_a and then finding explicit matrix
 	 * as sum of Gell-Mann matrices with weights u_a
 	 *
-	 * @return YMField instance of the projection
+	 * @return AlgebraElement instance of the projection
 	 */
-	public YMField proj() {
+	public AlgebraElement proj() {
 		double[] fieldValues = new double[]{(2*e[9]-e[13]-e[17])/3,
 											(e[10]+e[12])/2,
 											(e[11]+e[15])/2,
@@ -423,19 +411,19 @@ public class SU3Matrix implements LinkMatrix {
 											(e[6]-e[2])/2,
 											(e[7]-e[5])/2,
 											(2*e[17]-e[9]-e[13])/3};
-		return new SU3Field(fieldValues);
+		return new SU3AlgebraElement(fieldValues);
 	}
 
 	/**
-	 * Returns the trace of the matrix.
+	 * Returns the real trace of the matrix.
 	 *
-	 * @return	Trace of the matrix.
-	 * !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-	 * Not necessarily real for SU(3) so not implemented!!!!!!
-	 * !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+	 * @return	Real part of trace of the matrix.
 	 */
-	public double getTrace() {
-		System.out.println("Trace not double for SU3!");
-		return 0;
+	public double getRealTrace() {
+		return e[0] + e[4] + e[8];
+	}
+
+	public GroupElement copy() {
+		return new SU3GroupElement(get());
 	}
 }

@@ -180,10 +180,10 @@ public class ElectricFieldPanel extends AnimationPanel {
 					value = drawGrid.getE(s.grid.getCellIndex(pos), directionIndex).get(colorIndex) / (as * g);
 					break;
 				case INDEX_U:
-					value = drawGrid.getU(s.grid.getCellIndex(pos), directionIndex).getLinearizedAlgebraElement().get(colorIndex) / (as * g);
+					value = drawGrid.getU(s.grid.getCellIndex(pos), directionIndex).proj().get(colorIndex) / (as * g);
 					break;
 				case INDEX_U_NEXT:
-					value = drawGrid.getUnext(s.grid.getCellIndex(pos), directionIndex).getLinearizedAlgebraElement().get(colorIndex) / (as * g);
+					value = drawGrid.getUnext(s.grid.getCellIndex(pos), directionIndex).proj().get(colorIndex) / (as * g);
 					break;
 				case INDEX_J:
 					value = drawGrid.getJ(s.grid.getCellIndex(pos), directionIndex).get(colorIndex) / (as * g);

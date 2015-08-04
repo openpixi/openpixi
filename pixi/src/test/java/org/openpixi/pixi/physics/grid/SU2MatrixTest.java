@@ -7,6 +7,8 @@ import org.apache.commons.math3.complex.ComplexField;
 import org.apache.commons.math3.linear.Array2DRowFieldMatrix;
 import org.junit.Assert;
 import org.junit.Test;
+import org.openpixi.pixi.math.GroupElement;
+import org.openpixi.pixi.math.SU2GroupElement;
 
 public class SU2MatrixTest {
 
@@ -34,8 +36,8 @@ public class SU2MatrixTest {
 			We construct two matrices. One from the constructor and another using setter methods.
 		 */
 
-		SU2Matrix firstMatrix = new SU2Matrix(vec[0], vec[1], vec[2], vec[3]);
-		SU2Matrix secondMatrix = new SU2Matrix();
+		SU2GroupElement firstMatrix = new SU2GroupElement(vec[0], vec[1], vec[2], vec[3]);
+		SU2GroupElement secondMatrix = new SU2GroupElement();
 		for (int i = 0; i < 4; i++) {
 			secondMatrix.set(i, vec[i]);
 		}
@@ -61,7 +63,7 @@ public class SU2MatrixTest {
 		/*
 			Create random SU2 matrix. Should be unitary.
 		 */
-		SU2Matrix matrix = createRandomSU2Matrix();
+		SU2GroupElement matrix = createRandomSU2Matrix();
 
 		/*
 			We check for unitarity using the built-in methods.
@@ -114,8 +116,8 @@ public class SU2MatrixTest {
 		/*
 			Create two matrices.
 		 */
-		SU2Matrix a = new SU2Matrix();
-		SU2Matrix b = new SU2Matrix();
+		SU2GroupElement a = new SU2GroupElement();
+		SU2GroupElement b = new SU2GroupElement();
 		for (int i = 0; i < 4; i++) {
 			a.set(i, aVec[i]);
 			b.set(i, bVec[i]);
@@ -124,8 +126,8 @@ public class SU2MatrixTest {
 		/*
 			Use add and sub methods.
 		 */
-		SU2Matrix r1 = (SU2Matrix) a.add(b);
-		SU2Matrix r2 = (SU2Matrix) a.sub(b);
+		SU2GroupElement r1 = (SU2GroupElement) a.add(b);
+		SU2GroupElement r2 = (SU2GroupElement) a.sub(b);
 
 		/*
 			Compare results.
@@ -173,28 +175,28 @@ public class SU2MatrixTest {
 		/*
 			Create unit matrix.
 		 */
-		SU2Matrix a = new SU2Matrix(1.0, 0.0, 0.0, 0.0);
+		SU2GroupElement a = new SU2GroupElement(1.0, 0.0, 0.0, 0.0);
 		Array2DRowFieldMatrix<Complex> aMatrix = convertToMatrix(a);
 		compareMatrices(aMatrix, s0);
 
 		/*
 			Create Pauli x matrix times i.
 		 */
-		SU2Matrix b = new SU2Matrix(0.0, 1.0, 0.0, 0.0);
+		SU2GroupElement b = new SU2GroupElement(0.0, 1.0, 0.0, 0.0);
 		Array2DRowFieldMatrix<Complex> bMatrix = convertToMatrix(b);
 		compareMatrices(bMatrix, s1);
 
 		/*
 			Create Pauli y matrix times i.
 		 */
-		SU2Matrix c = new SU2Matrix(0.0, 0.0, 1.0, 0.0);
+		SU2GroupElement c = new SU2GroupElement(0.0, 0.0, 1.0, 0.0);
 		Array2DRowFieldMatrix<Complex> cMatrix = convertToMatrix(c);
 		compareMatrices(cMatrix, s2);
 
 		/*
 			Create Pauli y matrix times i.
 		 */
-		SU2Matrix d = new SU2Matrix(0.0, 0.0, 0.0, 1.0);
+		SU2GroupElement d = new SU2GroupElement(0.0, 0.0, 0.0, 1.0);
 		Array2DRowFieldMatrix<Complex> dMatrix = convertToMatrix(d);
 		compareMatrices(dMatrix, s3);
 
@@ -202,7 +204,7 @@ public class SU2MatrixTest {
 			Test matrix multiplication between Pauli matrices.
 		 */
 
-		LinkMatrix r;
+		GroupElement r;
 		Array2DRowFieldMatrix<Complex> rMatrix;
 		Array2DRowFieldMatrix<Complex> rMatrix2;
 
@@ -226,8 +228,8 @@ public class SU2MatrixTest {
 
 	@Test
 	public void testMultiplication() {
-		SU2Matrix a = createRandomSU2Matrix();
-		SU2Matrix b = createRandomSU2Matrix();
+		SU2GroupElement a = createRandomSU2Matrix();
+		SU2GroupElement b = createRandomSU2Matrix();
 
 		Array2DRowFieldMatrix<Complex> aMatrix = convertToMatrix(a);
 		Array2DRowFieldMatrix<Complex> bMatrix = convertToMatrix(b);
@@ -235,7 +237,7 @@ public class SU2MatrixTest {
 		/*
 			Do the multiplication.
 		 */
-		LinkMatrix c = a.mult(b);
+		GroupElement c = a.mult(b);
 		Array2DRowFieldMatrix<Complex> cMatrix = (Array2DRowFieldMatrix<Complex>) aMatrix.multiply(bMatrix).copy();
 
 		/*
@@ -266,7 +268,7 @@ public class SU2MatrixTest {
 			/*
 				Create a random matrix.
 			 */
-			SU2Matrix m1 = createRandomSU2Matrix();
+			SU2GroupElement m1 = createRandomSU2Matrix();
 			Array2DRowFieldMatrix<Complex> m2 = convertToMatrix(m1);
 
 			/*
@@ -274,7 +276,7 @@ public class SU2MatrixTest {
 			 */
 			double rand = Math.random() - 0.5;
 
-			m1 = (SU2Matrix) m1.mult(rand);
+			m1 = (SU2GroupElement) m1.mult(rand);
 			m2 = (Array2DRowFieldMatrix<Complex>) m2.scalarMultiply(new Complex(rand));
 
 			/*
@@ -294,13 +296,13 @@ public class SU2MatrixTest {
 			/*
 				Create a random matrix.
 			 */
-			SU2Matrix m1 = createRandomSU2Matrix();
+			SU2GroupElement m1 = createRandomSU2Matrix();
 			Array2DRowFieldMatrix<Complex> m2 = convertToMatrix(m1);
 
 			/*
 				Apply hermitian conjugation.
 			 */
-			m1 = (SU2Matrix) m1.adj();
+			m1 = (SU2GroupElement) m1.adj();
 			m2 = (Array2DRowFieldMatrix<Complex>) m2.transpose();
 			for (int i = 0; i < 2; i++) {
 				for (int j = 0; j < 2; j++) {
@@ -319,7 +321,7 @@ public class SU2MatrixTest {
 		}
 	}
 
-	private SU2Matrix createRandomSU2Matrix() {
+	private SU2GroupElement createRandomSU2Matrix() {
 		/*
 			Create random SU2 matrix.
 		 */
@@ -335,7 +337,7 @@ public class SU2MatrixTest {
 			vec[i] /= modulus;
 		}
 
-		SU2Matrix m = new SU2Matrix(vec[0], vec[1], vec[2], vec[3]);
+		SU2GroupElement m = new SU2GroupElement(vec[0], vec[1], vec[2], vec[3]);
 		Assert.assertEquals(m.computeParameterNorm(), 1.0, accuracy);
 
 		return m;
@@ -356,12 +358,12 @@ public class SU2MatrixTest {
 		}
 	}
 
-	private Array2DRowFieldMatrix<Complex> convertToMatrix(LinkMatrix arg) {
+	private Array2DRowFieldMatrix<Complex> convertToMatrix(GroupElement arg) {
 		/*
 			This is very, very tedious. I'm sorry.
 		 */
 
-		SU2Matrix input = (SU2Matrix) arg;
+		SU2GroupElement input = (SU2GroupElement) arg;
 
 		Field<Complex> field = ComplexField.getInstance();
 		Complex imaginaryUnit = new Complex(0.0, 1.0);

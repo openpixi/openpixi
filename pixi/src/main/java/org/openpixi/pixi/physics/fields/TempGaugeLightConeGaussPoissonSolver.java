@@ -4,6 +4,8 @@ import edu.emory.mathcs.jtransforms.fft.DoubleFFT_1D;
 import edu.emory.mathcs.jtransforms.fft.DoubleFFT_2D;
 import org.apache.commons.math3.analysis.function.Gaussian;
 import org.apache.commons.math3.special.Erf;
+import org.openpixi.pixi.math.AlgebraElement;
+import org.openpixi.pixi.math.SU2AlgebraElement;
 import org.openpixi.pixi.physics.grid.*;
 
 public class TempGaugeLightConeGaussPoissonSolver extends LightConePoissonSolver {
@@ -57,12 +59,12 @@ public class TempGaugeLightConeGaussPoissonSolver extends LightConePoissonSolver
 
 		if (size.length > 1) {
 			double[][] charge = new double[size[0]][2 * size[1]];
-			YMField[][] E0List = new YMField[size[0]][size[1]];
-			YMField[][] E1List = new YMField[size[0]][size[1]];
+			AlgebraElement[][] E0List = new AlgebraElement[size[0]][size[1]];
+			AlgebraElement[][] E1List = new AlgebraElement[size[0]][size[1]];
 			for(int j = 0; j < size[0]; j++) {
 				for (int w = 0; w < size[1]; w++) {
-					E0List[j][w] = new SU2Field();
-					E1List[j][w] = new SU2Field();
+					E0List[j][w] = new SU2AlgebraElement();
+					E1List[j][w] = new SU2AlgebraElement();
 				}
 			}
 
@@ -111,9 +113,9 @@ public class TempGaugeLightConeGaussPoissonSolver extends LightConePoissonSolver
 			}
 			//set the values of the gauge field in the direction of the current and the values of the electric field
 			System.arraycopy(pos, 0, gaugePos, 0, position.length);
-			YMField A0, A1;
-			A0 = new SU2Field();
-			A1 = new SU2Field();
+			AlgebraElement A0, A1;
+			A0 = new SU2AlgebraElement();
+			A1 = new SU2AlgebraElement();
 			for(int j = 0; j < size[0]; j++) {
 				gaugePos[signature[0]] = j;
 				for (int w = 0; w < size[1]; w++) {
@@ -131,20 +133,20 @@ public class TempGaugeLightConeGaussPoissonSolver extends LightConePoissonSolver
 
 						A0.set(g.getU(cellIndex, signature[0]).getAlgebraElement());
 						A1.set(g.getU(cellIndex, signature[1]).getAlgebraElement());
-						A0.addequate(E0List[j][w].mult(-1.0 * shapeErf(pos[dir] * as, z * as)));
-						A1.addequate(E1List[j][w].mult(-1.0*shapeErf(pos[dir]*as, z*as)));
+						A0.addAssign(E0List[j][w].mult(-1.0 * shapeErf(pos[dir] * as, z * as)));
+						A1.addAssign(E1List[j][w].mult(-1.0 * shapeErf(pos[dir] * as, z * as)));
 
-						g.setU(cellIndex, signature[0], A0.getLinkExact());
-						g.setU(cellIndex, signature[1], A1.getLinkExact());
+						g.setU(cellIndex, signature[0], A0.getLink());
+						g.setU(cellIndex, signature[1], A1.getLink());
 					}
 				}
 			}
 
 		} else if(size.length == 1) {
 			double[] charge = new double[2 * size[0]];
-			YMField[] E0List = new YMField[size[0]];
+			AlgebraElement[] E0List = new AlgebraElement[size[0]];
 			for(int j = 0; j < size[0]; j++) {
-				E0List[j] = new SU2Field();
+				E0List[j] = new SU2AlgebraElement();
 			}
 
 			for(int i = 0; i < numberOfComponents; i++) {
@@ -183,8 +185,8 @@ public class TempGaugeLightConeGaussPoissonSolver extends LightConePoissonSolver
 			}
 			//set the values of the gauge field in the direction of the current and the values of the electric field
 			System.arraycopy(pos, 0, gaugePos, 0, position.length);
-			YMField A0;
-			A0 = new SU2Field();
+			AlgebraElement A0;
+			A0 = new SU2AlgebraElement();
 			for(int j = 0; j < size[0]; j++) {
 				gaugePos[signature[0]] = j;
 				for (int z = 0; z < dirMax; z++) {
@@ -198,9 +200,9 @@ public class TempGaugeLightConeGaussPoissonSolver extends LightConePoissonSolver
 					g.addE(chargeIndex, signature[0], E0List[j].mult(shapeGauss(pos[dir] * as, z * as)));
 
 					A0.set(g.getU(cellIndex, signature[0]).getAlgebraElement());
-					A0.addequate(E0List[j].mult(-1.0 * shapeErf(pos[dir] * as, z * as)));
+					A0.addAssign(E0List[j].mult(-1.0 * shapeErf(pos[dir] * as, z * as)));
 
-					g.setU(cellIndex, signature[0], A0.getLinkExact());
+					g.setU(cellIndex, signature[0], A0.getLink());
 				}
 			}
 		} else {

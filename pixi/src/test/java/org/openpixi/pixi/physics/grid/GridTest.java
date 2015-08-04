@@ -4,6 +4,8 @@ import java.util.Random;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.openpixi.pixi.math.GroupElement;
+import org.openpixi.pixi.math.SU2GroupElement;
 import org.openpixi.pixi.physics.GeneralBoundaryType;
 import org.openpixi.pixi.physics.Settings;
 import org.openpixi.pixi.physics.Simulation;
@@ -24,7 +26,7 @@ public class GridTest {
 		Grid g = s.grid;
 
 
-		//Test for getLink() method and shift() method
+		//Test for getLinearizedLink() method and shift() method
 		int numberOfTests = 100;
 		for (int t = 0; t < numberOfTests; t++) {
 			// Create random lattice position
@@ -37,13 +39,13 @@ public class GridTest {
 			// Shift position
 			int shiftedIndex = g.shift(index, dir, 1);
 
-			LinkMatrix l1 = g.getLink(index, dir, 1, 0);
-			LinkMatrix l2 = g.getLink(shiftedIndex, dir, -1, 0);
+			GroupElement l1 = g.getLink(index, dir, 1, 0);
+			GroupElement l2 = g.getLink(shiftedIndex, dir, -1, 0);
 			l2.selfadj();
 
 			// This code is specific to SU2
 			for (int i = 0; i < 3; i++) {
-				Assert.assertEquals(l1.get(i), l2.get(i), accuracy);
+				Assert.assertEquals(((SU2GroupElement) l1).get(i), ((SU2GroupElement) l2).get(i), accuracy);
 			}
 		}
 
@@ -59,23 +61,23 @@ public class GridTest {
 			int d2 = (int) (Math.random() * s.getNumberOfDimensions());
 
 			// These two plaquettes should be the inverse of each other.
-			LinkMatrix plaq1 = g.getPlaquette(index, d1, d2, 1, 1, 0);
-			LinkMatrix plaq2 = g.getPlaquette(index, d2, d1, 1, 1, 0);
+			GroupElement plaq1 = g.getPlaquette(index, d1, d2, 1, 1, 0);
+			GroupElement plaq2 = g.getPlaquette(index, d2, d1, 1, 1, 0);
 
-			LinkMatrix result = plaq1.mult(plaq2);
+			GroupElement result = plaq1.mult(plaq2);
 
 			// This code is specific to SU2
-			Assert.assertEquals(1.0, result.get(0), accuracy);
-			Assert.assertEquals(0.0, result.get(1), accuracy);
-			Assert.assertEquals(0.0, result.get(2), accuracy);
-			Assert.assertEquals(0.0, result.get(3), accuracy);
+			Assert.assertEquals(1.0, ((SU2GroupElement) result).get(0), accuracy);
+			Assert.assertEquals(0.0, ((SU2GroupElement) result).get(1), accuracy);
+			Assert.assertEquals(0.0, ((SU2GroupElement) result).get(2), accuracy);
+			Assert.assertEquals(0.0, ((SU2GroupElement) result).get(3), accuracy);
 
 			// Forward and backward plaquette around the same rectangle should have the same trace.
 			int shiftedIndex = g.shift(index, d1, 1);
 
-			LinkMatrix plaq3 = g.getPlaquette(shiftedIndex, d1, d2, -1, 1, 0);
+			GroupElement plaq3 = g.getPlaquette(shiftedIndex, d1, d2, -1, 1, 0);
 
-			Assert.assertEquals(plaq1.getTrace(), plaq3.getTrace(), accuracy);
+			Assert.assertEquals(plaq1.getRealTrace(), plaq3.getRealTrace(), accuracy);
 		}
 	}
 

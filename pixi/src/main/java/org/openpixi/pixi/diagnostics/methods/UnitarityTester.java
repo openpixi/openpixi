@@ -3,7 +3,7 @@ package org.openpixi.pixi.diagnostics.methods;
 import org.openpixi.pixi.diagnostics.Diagnostics;
 import org.openpixi.pixi.physics.Simulation;
 import org.openpixi.pixi.physics.grid.Grid;
-import org.openpixi.pixi.physics.grid.LinkMatrix;
+import org.openpixi.pixi.math.GroupElement;
 import org.openpixi.pixi.physics.particles.IParticle;
 
 import java.io.IOException;
@@ -45,7 +45,7 @@ public class UnitarityTester implements Diagnostics {
 		}
 	}
 
-	private boolean checkTraceWithinRange(LinkMatrix U) {
-		return Math.abs(U.getTrace()) < numberOfColors + tolerance;
+	private boolean checkTraceWithinRange(GroupElement U) {
+		return Math.abs(U.getRealTrace()) < numberOfColors + tolerance;
 	}
 }
