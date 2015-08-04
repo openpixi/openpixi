@@ -39,6 +39,7 @@ public class MainControlApplet extends JApplet
 
 	private JButton startButton;
 	private JButton stopButton;
+	private JButton stepButton;
 	private JButton resetButton;
 
 	private JSlider speedSlider;
@@ -109,6 +110,15 @@ public class MainControlApplet extends JApplet
 	}
 
 	/**
+	 * Listener for step button.
+	 */
+	class StepListener implements ActionListener {
+		public void actionPerformed(ActionEvent eve) {
+			simulationAnimation.stepAnimation();
+		}
+	}
+
+	/**
 	 * Listener for reset button.
 	 */
 	class ResetListener implements ActionListener {
@@ -127,7 +137,7 @@ public class MainControlApplet extends JApplet
 //		}
 //	}
 
-	class StepListener implements ChangeListener{
+	class StepListener2 implements ChangeListener{
 		public void stateChanged(ChangeEvent eve) {
 			Simulation s = simulationAnimation.getSimulation();
 			JSlider source = (JSlider) eve.getSource();
@@ -149,9 +159,10 @@ public class MainControlApplet extends JApplet
 		panelManager = new PanelManager(this);
 		Simulation s = simulationAnimation.getSimulation();
 
-		startButton = new JButton("start");
-		stopButton = new JButton("stop");
-		resetButton = new JButton("reset");
+		startButton = new JButton("Start");
+		stopButton = new JButton("Stop");
+		stepButton = new JButton("Step");
+		resetButton = new JButton("Reset");
 
 		/**one can also write a constructor for a JSlider as:
 		 * JSlider slider = new JSlider(int min, int max, int value);
@@ -176,7 +187,7 @@ public class MainControlApplet extends JApplet
 		speed.add(speedSlider);
 
 //		stepSlider = new JSlider();
-//		stepSlider.addChangeListener(new StepListener());
+//		stepSlider.addChangeListener(new StepListener2());
 //		stepSlider.setMinimum(1);
 //		stepSlider.setMaximum(100);
 //		stepSlider.setValue((int)(s.tstep / stepSliderScaling));
@@ -199,6 +210,7 @@ public class MainControlApplet extends JApplet
 
 		startButton.addActionListener(new StartListener());
 		stopButton.addActionListener(new StopListener());
+		stepButton.addActionListener(new StepListener());
 		resetButton.addActionListener(new ResetListener());
 
 //		relativisticCheck = new JCheckBox("Relativistic Version");
@@ -209,6 +221,7 @@ public class MainControlApplet extends JApplet
 		controlPanel.setLayout(new FlowLayout());
 		controlPanel.add(startButton);
 		controlPanel.add(stopButton);
+		controlPanel.add(stepButton);
 		controlPanel.add(resetButton);
 		controlPanel.add(Box.createHorizontalStrut(50));
 
