@@ -3,10 +3,10 @@ package org.openpixi.pixi.physics.gauge;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.openpixi.pixi.math.AlgebraElement;
 import org.openpixi.pixi.parallel.cellaccess.CellAction;
 import org.openpixi.pixi.physics.grid.Grid;
-import org.openpixi.pixi.physics.grid.SU2Field;
-import org.openpixi.pixi.physics.grid.YMField;
+import org.openpixi.pixi.math.SU2Field;
 
 /**
  * Appy the Coulomb gauge transformation to a grid.
@@ -148,8 +148,8 @@ public class CoulombGauge extends GaugeTransformation {
 				/*
 				 * U_i(x) - U_i(x-i)
 				 */
-				YMField U = grid.getU(index, dir).getAlgebraElement();
-				YMField Ushifted = grid.getU(grid.shift(index, dir, -1), dir).getAlgebraElement();
+				AlgebraElement U = grid.getU(index, dir).getAlgebraElement();
+				AlgebraElement Ushifted = grid.getU(grid.shift(index, dir, -1), dir).getAlgebraElement();
 
 				divergenceU += U.get(color) - Ushifted.get(color);
 			}

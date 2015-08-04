@@ -1,11 +1,11 @@
 package org.openpixi.pixi.diagnostics.methods;
 
 import org.openpixi.pixi.diagnostics.Diagnostics;
+import org.openpixi.pixi.math.AlgebraElement;
 import org.openpixi.pixi.physics.Simulation;
 import org.openpixi.pixi.physics.gauge.CoulombGauge;
 import org.openpixi.pixi.physics.gauge.DoubleFFTWrapper;
 import org.openpixi.pixi.physics.grid.Grid;
-import org.openpixi.pixi.physics.grid.YMField;
 import org.openpixi.pixi.physics.particles.IParticle;
 
 import java.io.File;
@@ -13,8 +13,6 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
-import java.util.Locale;
 
 public class OccupationNumbersInTime implements Diagnostics {
 
@@ -129,8 +127,8 @@ public class OccupationNumbersInTime implements Diagnostics {
 						eFFTdata[j][k][fftIndex + 1] = 0.0;
 
 						// Gauge fields need to be averaged over two time-steps.
-						YMField gaugeFieldAsAlgebraElement0 = grid.getU(i, j).getAlgebraElement();
-						YMField gaugeFieldAsAlgebraElement1 = grid.getUnext(i, j).getAlgebraElement();
+						AlgebraElement gaugeFieldAsAlgebraElement0 = grid.getU(i, j).getAlgebraElement();
+						AlgebraElement gaugeFieldAsAlgebraElement1 = grid.getUnext(i, j).getAlgebraElement();
 						double gaugeFieldComponent0 = 2.0 * gaugeFieldAsAlgebraElement0.proj(k) * gainv;
 						double gaugeFieldComponent1 = 2.0 * gaugeFieldAsAlgebraElement1.proj(k) * gainv;
 						aFFTdata[j][k][fftIndex] = 0.5 * (gaugeFieldComponent0 + gaugeFieldComponent1);

@@ -3,6 +3,7 @@ package org.openpixi.pixi.physics.grid;
 import org.junit.Assert;
 import org.junit.Test;
 import org.openpixi.pixi.diagnostics.methods.BulkQuantitiesInTime;
+import org.openpixi.pixi.math.SU2Field;
 import org.openpixi.pixi.physics.GeneralBoundaryType;
 import org.openpixi.pixi.physics.Settings;
 import org.openpixi.pixi.physics.Simulation;

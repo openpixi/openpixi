@@ -7,6 +7,10 @@ import org.apache.commons.math3.complex.ComplexField;
 import org.apache.commons.math3.linear.Array2DRowFieldMatrix;
 import org.junit.Assert;
 import org.junit.Test;
+import org.openpixi.pixi.math.GroupElement;
+import org.openpixi.pixi.math.SU3Field;
+import org.openpixi.pixi.math.SU3Matrix;
+import org.openpixi.pixi.math.AlgebraElement;
 
 public class SU3EverythingTest {
 
@@ -392,7 +396,7 @@ public class SU3EverythingTest {
 		}
 	}
 
-	private Array2DRowFieldMatrix<Complex> convertToMatrix(LinkMatrix arg) {
+	private Array2DRowFieldMatrix<Complex> convertToMatrix(GroupElement arg) {
 		SU3Matrix input = (SU3Matrix) arg;
 
 		Field<Complex> field = ComplexField.getInstance();
@@ -411,7 +415,7 @@ public class SU3EverythingTest {
 		return output;
 	}
 
-	private Array2DRowFieldMatrix<Complex> convertToMatrix(YMField arg) {
+	private Array2DRowFieldMatrix<Complex> convertToMatrix(AlgebraElement arg) {
 		SU3Field input = (SU3Field) arg;
 
 		Field<Complex> field = ComplexField.getInstance();

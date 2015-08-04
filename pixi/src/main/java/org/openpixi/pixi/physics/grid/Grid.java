@@ -1,5 +1,7 @@
 package org.openpixi.pixi.physics.grid;
 
+import org.openpixi.pixi.math.AlgebraElement;
+import org.openpixi.pixi.math.GroupElement;
 import org.openpixi.pixi.parallel.cellaccess.CellAction;
 import org.openpixi.pixi.parallel.cellaccess.CellIterator;
 import org.openpixi.pixi.physics.Settings;
@@ -92,79 +94,79 @@ public class Grid {
 	}
 
 	/**
-	 * Returns the YMField instance of the (dir)-component of the current.
+	 * Returns the AlgebraElement instance of the (dir)-component of the current.
 	 * @param index     Lattice index of the current
 	 * @param dir       Index of the component
-	 * @return          YMField instance of the (dir)-component of the current.
+	 * @return          AlgebraElement instance of the (dir)-component of the current.
 	 */
-	public YMField getJ(int index, int dir) {
+	public AlgebraElement getJ(int index, int dir) {
 		return cells[index].getJ(dir);
 	}
 
 	/**
-	 * Adds a YMField instance to the (dir)-component of the current.
+	 * Adds a AlgebraElement instance to the (dir)-component of the current.
 	 * @param index     Lattice index of the current
 	 * @param dir       Index of the component
-	 * @param field     YMField to be added to the (dir)-component of the current.
+	 * @param field     AlgebraElement to be added to the (dir)-component of the current.
 	 */
-	public void addJ(int index, int dir, YMField field) {
+	public void addJ(int index, int dir, AlgebraElement field) {
 		cells[index].addJ(dir, field);
 	}
 
 	/**
-	 * Returns the YMField instance of the charge density.
+	 * Returns the AlgebraElement instance of the charge density.
 	 * @param index     Lattice index of the charge density
-	 * @return          YMField instance of the charge density
+	 * @return          AlgebraElement instance of the charge density
 	 */
-	public YMField getRho(int index) {
+	public AlgebraElement getRho(int index) {
 		return cells[index].getRho();
 	}
 
 	/**
-	 * Sets the YMField instance of the charge density.
+	 * Sets the AlgebraElement instance of the charge density.
 	 * @param index     Lattice index of the charge density
-	 * @param field     YMField instance which the electric field should be set to.
+	 * @param field     AlgebraElement instance which the electric field should be set to.
 	 */
-	public void setRho(int index, YMField field) {
+	public void setRho(int index, AlgebraElement field) {
 		cells[index].setRho(field);
 	}
 
 	/**
-	 * Adds a YMField to the charge density.
+	 * Adds a AlgebraElement to the charge density.
 	 * @param index     Lattice index of the charge density
-	 * @param field     YMField instance which should be added.
+	 * @param field     AlgebraElement instance which should be added.
 	 */
-	public void addRho(int index, YMField field) {
+	public void addRho(int index, AlgebraElement field) {
 		cells[index].addRho(field);
 	}
 
 	/**
-	 * Returns the YMField instance of the (dir)-component of the electric field.
+	 * Returns the AlgebraElement instance of the (dir)-component of the electric field.
 	 * @param index     Lattice index of the electric field
 	 * @param dir       Index of the component
-	 * @return          YMField instance of the (dir)-component
+	 * @return          AlgebraElement instance of the (dir)-component
 	 */
-	public YMField getE(int index, int dir) {
+	public AlgebraElement getE(int index, int dir) {
 		return cells[index].getE(dir);
 	}
 
 	/**
-	 * Sets the YMField instance of the (dir)-component of the electric field.
+	 * Sets the AlgebraElement instance of the (dir)-component of the electric field.
 	 * @param index     Lattice index of the electric field
 	 * @param dir       Index of the component
-	 * @param field     YMField instance which the electric field should be set to.
+	 * @param field     AlgebraElement instance which the electric field should be set to.
 	 */
-	public void setE(int index, int dir, YMField field) {
+	public void setE(int index, int dir, AlgebraElement field) {
 		cells[index].setE(dir, field);
 	}
 
 	/**
-	 * Adds a YMField to the (dir)-component of the electric field.
+	 * Adds a AlgebraElement to the (dir)-component of the electric field.
 	 * @param index     Lattice index of the electric field
 	 * @param dir       Index of the component
-	 * @param field     YMField instance which should be added.
+	 * @param field     AlgebraElement instance which should be added.
 	 */
-	public void addE(int index, int dir, YMField field) {
+	public void addE(int index, int dir, AlgebraElement field) {
 		cells[index].addE(dir, field);
 	}
 
@@ -173,9 +175,9 @@ public class Grid {
 	 * @param index     Lattice index of the field strength tensor
 	 * @param dir1      First spatial component (0 - (numberOfDimensions-1))
 	 * @param dir2      Second spatial component (0 - (numberOfDimensions-1))
-	 * @return          YMField instance of the (dir1, dir2)-component
+	 * @return          AlgebraElement instance of the (dir1, dir2)-component
 	 */
-	public YMField getFTensor(int index, int dir1, int dir2) {
+	public AlgebraElement getFTensor(int index, int dir1, int dir2) {
 		return cells[index].getFieldStrength(dir1, dir2);
 	}
 
@@ -184,9 +186,9 @@ public class Grid {
 	 * @param index     Lattice index of the field strength tensor
 	 * @param dir1      First space component (0 - (numberOfDimensions-1))
 	 * @param dir2      Second space component (0 - (numberOfDimensions-1))
-	 * @param field     YMField instance which the field strength tensor should be set to.
+	 * @param field     AlgebraElement instance which the field strength tensor should be set to.
 	 */
-	public void setFTensor(int index, int dir1, int dir2, YMField field) {
+	public void setFTensor(int index, int dir1, int dir2, AlgebraElement field) {
 		cells[index].setFieldStrength(dir1, dir2, field);
 	}
 
@@ -196,7 +198,7 @@ public class Grid {
 	 * @param dir   Direction of the gauge link
 	 * @return      Instance of the gauge link
 	 */
-	public LinkMatrix getU(int index, int dir) {
+	public GroupElement getU(int index, int dir) {
 		return cells[index].getU(dir);
 	}
 
@@ -204,9 +206,9 @@ public class Grid {
 	 * Sets the gauge link at time (t) at given lattice index in given direction to a new value.
 	 * @param index Lattice index of the gauge link
 	 * @param dir   Direction of the gauge link
-	 * @param mat   LinkMatrix instance
+	 * @param mat   GroupElement instance
 	 */
-	public void setU(int index, int dir, LinkMatrix mat) {
+	public void setU(int index, int dir, GroupElement mat) {
 		cells[index].setU(dir, mat);
 	}
 
@@ -216,7 +218,7 @@ public class Grid {
 	 * @param dir   Direction of the gauge link
 	 * @return      Instance of the gauge link
 	 */
-	public LinkMatrix getUnext(int index, int dir) {
+	public GroupElement getUnext(int index, int dir) {
 		return cells[index].getUnext(dir);
 	}
 
@@ -224,9 +226,9 @@ public class Grid {
 	 * Sets the gauge link at time (t+dt) at given lattice index in given direction to a new value.
 	 * @param index Lattice index of the gauge link
 	 * @param dir   Direction of the gauge link
-	 * @param mat   LinkMatrix instance
+	 * @param mat   GroupElement instance
 	 */
-	public void setUnext(int index, int dir, LinkMatrix mat) {
+	public void setUnext(int index, int dir, GroupElement mat) {
 		cells[index].setUnext(dir, mat);
 	}
 
@@ -396,11 +398,11 @@ public class Grid {
 		int numberOfCells = grid.getTotalNumberOfCells();
 		for (int ci = 0; ci < numberOfCells; ci++) {
 			for (int d = 0; d < numDim; d++) {
-				LinkMatrix U = grid.getU(ci, d);
+				GroupElement U = grid.getU(ci, d);
 				this.setU(ci, d, U);
-				LinkMatrix Unext = grid.getUnext(ci, d);
+				GroupElement Unext = grid.getUnext(ci, d);
 				this.setUnext(ci, d, Unext);
-				YMField E = grid.getE(ci, d);
+				AlgebraElement E = grid.getE(ci, d);
 				this.setE(ci, d, E);
 				// TODO: if desired: Copy other fields as well.
 			}
@@ -491,9 +493,9 @@ public class Grid {
 	 * @param o1    	Orientation of the first direction
 	 * @param o2    	Orientation of the second direction
 	 * @param timeIndex Option to select between U (timeIndex = 0) and Unext (timeIndex != 0).
-	 * @return      	Plaquette as LinkMatrix with correct orientation
+	 * @return      	Plaquette as GroupElement with correct orientation
 	 */
-	public LinkMatrix getPlaquette(int index, int d1, int d2, int o1, int o2, int timeIndex)
+	public GroupElement getPlaquette(int index, int d1, int d2, int o1, int o2, int timeIndex)
 	{
 		/*
 			The four lattice indices associated with the plaquette.
@@ -507,10 +509,10 @@ public class Grid {
 			The four gauge links associated with the plaquette.
 		 */
 
-		LinkMatrix U1 = getLink(x1, d1, o1, timeIndex);
-		LinkMatrix U2 = getLink(x2, d2, o2, timeIndex);
-		LinkMatrix U3 = getLink(x3, d1, -o1, timeIndex);
-		LinkMatrix U4 = getLink(x4, d2, -o2, timeIndex);
+		GroupElement U1 = getLink(x1, d1, o1, timeIndex);
+		GroupElement U2 = getLink(x2, d2, o2, timeIndex);
+		GroupElement U3 = getLink(x3, d1, -o1, timeIndex);
+		GroupElement U4 = getLink(x4, d2, -o2, timeIndex);
 
 		/*
 			Plaquette calculation
@@ -533,7 +535,7 @@ public class Grid {
 	 * @param timeIndex		Option to select between U (timeIndex = 0) and Unext (timeIndex != 0).
 	 * @return              Gauge link in certain direction with correct orientation
 	 */
-	public LinkMatrix getLink(int index, int direction, int orientation, int timeIndex)
+	public GroupElement getLink(int index, int direction, int orientation, int timeIndex)
 	{
 		if(timeIndex == 0)
 		{
@@ -760,8 +762,8 @@ public class Grid {
 
 	public double getGaussConstraintSquared(int index) {
 		
-		YMField gauss = cells[index].getEmptyField(numCol);
-		YMField temp = cells[index].getEmptyField(numCol);
+		AlgebraElement gauss = cells[index].getEmptyField(numCol);
+		AlgebraElement temp = cells[index].getEmptyField(numCol);
 		double norm = -1.0/(at);
 
 		for (int i = 0; i < numDim; i++) {

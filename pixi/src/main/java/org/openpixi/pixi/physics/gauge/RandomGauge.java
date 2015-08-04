@@ -2,7 +2,7 @@ package org.openpixi.pixi.physics.gauge;
 
 import org.openpixi.pixi.parallel.cellaccess.CellAction;
 import org.openpixi.pixi.physics.grid.Grid;
-import org.openpixi.pixi.physics.grid.SU2Field;
+import org.openpixi.pixi.math.SU2Field;
 
 /**
  * Apply a random gauge transformation to a grid.

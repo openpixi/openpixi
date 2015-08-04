@@ -3,8 +3,8 @@ package org.openpixi.pixi.physics.fields;
 import edu.emory.mathcs.jtransforms.fft.DoubleFFT_1D;
 import edu.emory.mathcs.jtransforms.fft.DoubleFFT_2D;
 import org.openpixi.pixi.physics.grid.Grid;
-import org.openpixi.pixi.physics.grid.SU2Field;
-import org.openpixi.pixi.physics.grid.YMField;
+import org.openpixi.pixi.math.SU2Field;
+import org.openpixi.pixi.math.AlgebraElement;
 
 public class TempGaugeLightConePoissonSolver extends LightConePoissonSolver {
 
@@ -61,8 +61,8 @@ public class TempGaugeLightConePoissonSolver extends LightConePoissonSolver {
 
 		if (size.length > 1) {
 			double[][] charge = new double[size[0]][2 * size[1]];
-			YMField[][] E0List = new YMField[size[0]][size[1]];
-			YMField[][] E1List = new YMField[size[0]][size[1]];
+			AlgebraElement[][] E0List = new AlgebraElement[size[0]][size[1]];
+			AlgebraElement[][] E1List = new AlgebraElement[size[0]][size[1]];
 			for(int j = 0; j < size[0]; j++) {
 				for (int w = 0; w < size[1]; w++) {
 					E0List[j][w] = new SU2Field();
@@ -139,7 +139,7 @@ public class TempGaugeLightConePoissonSolver extends LightConePoissonSolver {
 
 		} else if(size.length == 1) {
 			double[] charge = new double[2 * size[0]];
-			YMField[] E0List = new YMField[size[0]];
+			AlgebraElement[] E0List = new AlgebraElement[size[0]];
 			for(int j = 0; j < size[0]; j++) {
 				E0List[j] = new SU2Field();
 			}

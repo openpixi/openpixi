@@ -1,4 +1,4 @@
-package org.openpixi.pixi.physics.grid;
+package org.openpixi.pixi.math;
 
 /**
  * This is a parametrization of SU(3) group elements.
@@ -9,7 +9,7 @@ package org.openpixi.pixi.physics.grid;
  * 		e[3] + i e[12]		e[4] + i e[13]		e[5] + i e[14]
  * 		e[6] + i e[15]		e[7] + i e[16]		e[8] + i e[17]
  */
-public class SU3Matrix implements LinkMatrix {
+public class SU3Matrix implements GroupElement {
 
 	private double[] e;
 
@@ -36,7 +36,7 @@ public class SU3Matrix implements LinkMatrix {
 		this.set(matrix);
 	}
 
-	public LinkMatrix add(LinkMatrix arg) {
+	public GroupElement add(GroupElement arg) {
 
 		SU3Matrix a = (SU3Matrix) arg;
 
@@ -48,7 +48,7 @@ public class SU3Matrix implements LinkMatrix {
 
 	}
 
-	public LinkMatrix sub(LinkMatrix arg) {
+	public GroupElement sub(GroupElement arg) {
 
 		SU3Matrix a = (SU3Matrix) arg;
 
@@ -59,7 +59,7 @@ public class SU3Matrix implements LinkMatrix {
 		return b;
 	}
 
-	public void set(LinkMatrix arg) {
+	public void set(GroupElement arg) {
 
 		SU3Matrix a = (SU3Matrix) arg;
 
@@ -84,7 +84,7 @@ public class SU3Matrix implements LinkMatrix {
 		return e;
 	}
 
-	public LinkMatrix adj() {
+	public GroupElement adj() {
 
 		SU3Matrix b = new SU3Matrix(this);
 		// real diag.
@@ -150,7 +150,7 @@ public class SU3Matrix implements LinkMatrix {
 		this.set(16, -temp);
 	}
 
-	public LinkMatrix mult(double number) {
+	public GroupElement mult(double number) {
 
 		SU3Matrix b = new SU3Matrix();
 		for (int i = 0; i < 18; i++) {
@@ -160,7 +160,7 @@ public class SU3Matrix implements LinkMatrix {
 
 	}
 
-	public LinkMatrix mult(LinkMatrix arg) {
+	public GroupElement mult(GroupElement arg) {
 
 		SU3Matrix a = (SU3Matrix) arg;
 
@@ -393,7 +393,7 @@ public class SU3Matrix implements LinkMatrix {
 
 
 	// Same as proj, scheduled for deletion
-	public YMField getLinearizedAlgebraElement() {
+	public AlgebraElement getLinearizedAlgebraElement() {
 		double[] fieldValues = new double[]{(2*e[9]-e[13]-e[17])/3,
 											(e[10]+e[12])/2,
 											(e[11]+e[15])/2,
@@ -406,7 +406,7 @@ public class SU3Matrix implements LinkMatrix {
 		return new SU3Field(fieldValues);
 	}
 
-	public YMField getAlgebraElement() {
+	public AlgebraElement getAlgebraElement() {
 		return new SU3Field(algebraElementDecompositionMethod());
 	}
 
@@ -414,9 +414,9 @@ public class SU3Matrix implements LinkMatrix {
 	 * Computed in Mathematica by calculating u_a and then finding explicit matrix
 	 * as sum of Gell-Mann matrices with weights u_a
 	 *
-	 * @return YMField instance of the projection
+	 * @return AlgebraElement instance of the projection
 	 */
-	public YMField proj() {
+	public AlgebraElement proj() {
 		double[] fieldValues = new double[]{(2*e[9]-e[13]-e[17])/3,
 											(e[10]+e[12])/2,
 											(e[11]+e[15])/2,
@@ -438,7 +438,7 @@ public class SU3Matrix implements LinkMatrix {
 		return e[0] + e[4] + e[8];
 	}
 
-	public LinkMatrix copy() {
+	public GroupElement copy() {
 		return new SU3Matrix(get());
 	}
 }

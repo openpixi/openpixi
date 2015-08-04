@@ -3,8 +3,8 @@ package org.openpixi.pixi.physics.fields.fieldgenerators;
 import org.openpixi.pixi.physics.Simulation;
 import org.openpixi.pixi.physics.grid.Cell;
 import org.openpixi.pixi.physics.grid.Grid;
-import org.openpixi.pixi.physics.grid.SU2Field;
-import org.openpixi.pixi.physics.grid.SU2Matrix;
+import org.openpixi.pixi.math.SU2Field;
+import org.openpixi.pixi.math.SU2Matrix;
 
 public class SU2FocusedGaussianPulse implements IFieldGenerator {
 

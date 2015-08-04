@@ -1,4 +1,4 @@
-package org.openpixi.pixi.physics.grid;
+package org.openpixi.pixi.math;
 
 /**
  * This class implements a parametrization of the group SU(2).
@@ -9,7 +9,7 @@ package org.openpixi.pixi.physics.grid;
  * where \sigma_i is the i-th Pauli matrix.
  *
  */
-public class SU2Matrix implements LinkMatrix {
+public class SU2Matrix implements GroupElement {
 
 	private double[] e;
 
@@ -66,7 +66,7 @@ public class SU2Matrix implements LinkMatrix {
 	 * @param arg SU2Matrix which is added to the current SU2Matrix instance.
 	 * @return Sum of the SU2Matrix instances.
 	 */
-	public LinkMatrix add(LinkMatrix arg) {
+	public GroupElement add(GroupElement arg) {
 
 		SU2Matrix a = (SU2Matrix) arg;
 
@@ -86,7 +86,7 @@ public class SU2Matrix implements LinkMatrix {
 	 * @param arg SU2Matrix which is subtracted from the current SU2Matrix instance.
 	 * @return Difference of the SU2Matrix instances.
 	 */
-	public LinkMatrix sub(LinkMatrix arg) {
+	public GroupElement sub(GroupElement arg) {
 
 		SU2Matrix a = (SU2Matrix) arg;
 
@@ -103,7 +103,7 @@ public class SU2Matrix implements LinkMatrix {
 	 *
 	 * @param arg SU2Matrix to copy from.
 	 */
-	public void set(LinkMatrix arg) {
+	public void set(GroupElement arg) {
 
 		SU2Matrix a = (SU2Matrix) arg;
 
@@ -144,7 +144,7 @@ public class SU2Matrix implements LinkMatrix {
 	 *
 	 * @return  Hermitian conjugate of the current instance.
 	 */
-	public LinkMatrix adj() {
+	public GroupElement adj() {
 		SU2Matrix b = new SU2Matrix(this);
 		for (int i = 1; i < 4; i++)
 		{
@@ -200,7 +200,7 @@ public class SU2Matrix implements LinkMatrix {
 	 * @param number    real number to be multiplied with.
 	 * @return          product of the scalar multiplication.
 	 */
-	public LinkMatrix mult(double number) {
+	public GroupElement mult(double number) {
 
 		SU2Matrix b = new SU2Matrix();
 		for (int i = 0; i < 4; i++) {
@@ -220,7 +220,7 @@ public class SU2Matrix implements LinkMatrix {
 	 * @param arg SU2Matrix instance used for post-multiplication.
 	 * @return  Result of the multiplication.
 	 */
-	public LinkMatrix mult(LinkMatrix arg) {
+	public GroupElement mult(GroupElement arg) {
 
 		SU2Matrix a = (SU2Matrix) arg;
 
@@ -240,7 +240,7 @@ public class SU2Matrix implements LinkMatrix {
 	 *
 	 * @return  Approximate algebra element of the SU2Matrix.
 	 */
-	public YMField getLinearizedAlgebraElement()
+	public AlgebraElement getLinearizedAlgebraElement()
 	{
 		return new SU2Field(e[1] * 2, e[2] * 2, e[3] * 2);
 	}
@@ -252,7 +252,7 @@ public class SU2Matrix implements LinkMatrix {
 	 *
 	 * @return  Algebra element of the SU2Matrix.
 	 */
-	public YMField getAlgebraElement()
+	public AlgebraElement getAlgebraElement()
 	{
 		double norm = 0.0;
 		for(int i = 1; i < 4; i++)
@@ -276,15 +276,15 @@ public class SU2Matrix implements LinkMatrix {
 	}
 
 	/**
-	 * Returns the projection of the matrix onto the generators of the group as a YMField. This is done via the formula
+	 * Returns the projection of the matrix onto the generators of the group as a AlgebraElement. This is done via the formula
 	 *
 	 *      u_a = 2 Im {tr t_a U},
 	 *
-	 * where U is the SU2Matrix, t_a is the a-th generator of the group and u_a is the a-th component of the YMField.
+	 * where U is the SU2Matrix, t_a is the a-th generator of the group and u_a is the a-th component of the AlgebraElement.
 	 *
-	 * @return YMField instance of the projection
+	 * @return AlgebraElement instance of the projection
 	 */
-	public YMField proj()
+	public AlgebraElement proj()
 	{
 		SU2Field field = new SU2Field();
 
@@ -304,7 +304,7 @@ public class SU2Matrix implements LinkMatrix {
 		return 2*e[0];
 	}
 
-	public LinkMatrix copy() {
+	public GroupElement copy() {
 		return new SU2Matrix(e[0], e[1], e[2], e[3]);
 	}
 }

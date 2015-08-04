@@ -1,12 +1,12 @@
-package org.openpixi.pixi.physics.grid;
+package org.openpixi.pixi.math;
 
-public interface YMField {
+public interface AlgebraElement {
 	
-	YMField add (YMField a);
+	AlgebraElement add (AlgebraElement a);
 	
-	void addAssign(YMField a);
+	void addAssign(AlgebraElement a);
 	
-	YMField sub (YMField a);
+	AlgebraElement sub (AlgebraElement a);
 
 	/**
 	 * Set coefficient of jth algebra generator to value
@@ -24,17 +24,17 @@ public interface YMField {
 	
 	double square ();
 	
-	YMField mult (double number);
+	AlgebraElement mult (double number);
 
 	void multAssign(double number);
 	
-	void set (YMField a);
+	void set (AlgebraElement a);
 	
 	void reset ();
 	
-	LinkMatrix getLinearizedLink();
+	GroupElement getLinearizedLink();
 	
-	LinkMatrix getLink();
+	GroupElement getLink();
 
 	/**
 	 * Returns the projection of the algebra element on to the c'th generator, i.e.
@@ -48,5 +48,5 @@ public interface YMField {
 	 */
 	double proj(int c);
 
-	YMField copy();
+	AlgebraElement copy();
 }

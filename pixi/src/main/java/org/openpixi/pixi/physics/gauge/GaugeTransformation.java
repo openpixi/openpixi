@@ -1,20 +1,20 @@
 package org.openpixi.pixi.physics.gauge;
 
+import org.openpixi.pixi.math.AlgebraElement;
+import org.openpixi.pixi.math.GroupElement;
 import org.openpixi.pixi.parallel.cellaccess.CellAction;
 import org.openpixi.pixi.physics.grid.Grid;
-import org.openpixi.pixi.physics.grid.LinkMatrix;
-import org.openpixi.pixi.physics.grid.SU2Matrix;
-import org.openpixi.pixi.physics.grid.YMField;
+import org.openpixi.pixi.math.SU2Matrix;
 
 public class GaugeTransformation {
 
 	private GaugeTransformationAction gaugeTransformationAction = new GaugeTransformationAction();
 
 	/** Gauge transformation */
-	private LinkMatrix[] g;
+	private GroupElement[] g;
 
 	/** Get gauge transformation array */
-	public LinkMatrix[] getG() {
+	public GroupElement[] getG() {
 		return g;
 	}
 
@@ -59,24 +59,24 @@ public class GaugeTransformation {
 				/*
 				 * U_i(x) -> g(x) U_i(x) g^\dagger(x+i)
 				 */
-				LinkMatrix U = grid.getU(index, dir);
+				GroupElement U = grid.getU(index, dir);
 				int shiftedCellIndex = grid.shift(index, dir, 1);
-				LinkMatrix gdaggershifted = g[shiftedCellIndex].adj();
+				GroupElement gdaggershifted = g[shiftedCellIndex].adj();
 				U = g[index].mult(U).mult(gdaggershifted);
 				grid.setU(index, dir, U);
 
 				/*
 				 * Unext_i(x) -> g(x) Unext_i(x) g^\dagger(x+i)
 				 */
-				LinkMatrix Unext = grid.getUnext(index, dir);
+				GroupElement Unext = grid.getUnext(index, dir);
 				Unext = g[index].mult(Unext).mult(gdaggershifted);
 				grid.setUnext(index, dir, Unext);
 
 				/*
 				 * E_i(x) -> g(x) E_i(x) g^\dagger(x)
 				 */
-				YMField E = grid.getE(index, dir);
-				LinkMatrix gdagger = g[index].adj();
+				AlgebraElement E = grid.getE(index, dir);
+				GroupElement gdagger = g[index].adj();
 				E = (g[index].mult(E.getLinearizedLink()).mult(gdagger)).getLinearizedAlgebraElement();
 				// TODO: rather work with exact mapping?
 				//E = (g[cellIndex].mult(E.getLink()).mult(gdagger)).getAlgebraElement();

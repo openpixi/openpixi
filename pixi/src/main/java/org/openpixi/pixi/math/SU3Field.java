@@ -1,4 +1,4 @@
-package org.openpixi.pixi.physics.grid;
+package org.openpixi.pixi.math;
 
 /**
  * This is a parametrization of SU(3) algebra elements.
@@ -9,7 +9,7 @@ package org.openpixi.pixi.physics.grid;
  * 		e[1] - i e[3]		e[4]        		e[5] + i e[7]
  * 		e[2] - i e[6]		e[5] - i e[7]		e[8]
  */
-public class SU3Field implements YMField {
+public class SU3Field implements AlgebraElement {
 
 	protected double[] v;
 
@@ -45,7 +45,7 @@ public class SU3Field implements YMField {
 		
 	}
 	
-	public YMField add (YMField arg) {
+	public AlgebraElement add (AlgebraElement arg) {
 
 		SU3Field a = (SU3Field) arg;
 		
@@ -57,7 +57,7 @@ public class SU3Field implements YMField {
 		
 	}
 	
-	public void addAssign(YMField arg) {
+	public void addAssign(AlgebraElement arg) {
 
 		SU3Field a = (SU3Field) arg;
 
@@ -67,7 +67,7 @@ public class SU3Field implements YMField {
 		
 	}
 	
-	public YMField sub (YMField arg) {
+	public AlgebraElement sub (AlgebraElement arg) {
 
 		SU3Field a = (SU3Field) arg;
 		
@@ -142,7 +142,7 @@ public class SU3Field implements YMField {
 		
 	}
 	
-	public YMField mult (double number) {
+	public AlgebraElement mult (double number) {
 
 		SU3Field b = new SU3Field();
 		for (int i = 0; i < 9; i++) {
@@ -160,7 +160,7 @@ public class SU3Field implements YMField {
 
 	}
 
-	public void set (YMField arg) {
+	public void set (AlgebraElement arg) {
 
 		SU3Field a = (SU3Field) arg;
 
@@ -170,7 +170,7 @@ public class SU3Field implements YMField {
 
 	}
 	
-	public void addfour (YMField a, YMField b, YMField c, YMField d) {
+	public void addfour (AlgebraElement a, AlgebraElement b, AlgebraElement c, AlgebraElement d) {
 
 		for (int i = 0; i < 9; i++) {
 			v[i] = a.get(i)+b.get(i)+c.get(i)+d.get(i)+this.get(i);
@@ -178,9 +178,9 @@ public class SU3Field implements YMField {
 			
 	}
 
-	public void FieldFromForwardPlaquette (LinkMatrix a, LinkMatrix b, LinkMatrix c, LinkMatrix d) {}
+	public void FieldFromForwardPlaquette (GroupElement a, GroupElement b, GroupElement c, GroupElement d) {}
 
-	public void FieldFromBackwardPlaquette (LinkMatrix a, LinkMatrix b, LinkMatrix c, LinkMatrix d) {}
+	public void FieldFromBackwardPlaquette (GroupElement a, GroupElement b, GroupElement c, GroupElement d) {}
 
 	/**
 	 * Normalizes (complex) vector in place
@@ -302,12 +302,12 @@ public class SU3Field implements YMField {
 	/**
 	 * Essentially just using exp(I v) ~ 1 + I v
 	 */
-	public LinkMatrix getLinearizedLink() {
+	public GroupElement getLinearizedLink() {
 		double[] values = new double[]{1,-v[3],-v[6],v[3],1,-v[7],v[6],v[7],1,v[0],v[1],v[2],v[1],v[4],v[5],v[2],v[5],v[8]};
 		return new SU3Matrix(values);
 	}
 	
-	public LinkMatrix getLink() {
+	public GroupElement getLink() {
 		return new SU3Matrix(groupElementDecompositionMethod());
 	}
 
@@ -325,7 +325,7 @@ public class SU3Field implements YMField {
 		}
 	}
 
-	public YMField copy() {
+	public AlgebraElement copy() {
 		return new SU3Field(get());
 	}
 }

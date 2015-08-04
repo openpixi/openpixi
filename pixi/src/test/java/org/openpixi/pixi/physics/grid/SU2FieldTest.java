@@ -3,6 +3,8 @@ package org.openpixi.pixi.physics.grid;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.openpixi.pixi.math.SU2Field;
+import org.openpixi.pixi.math.SU2Matrix;
 
 public class SU2FieldTest {
 

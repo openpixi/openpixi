@@ -7,6 +7,8 @@ import org.apache.commons.math3.complex.ComplexField;
 import org.apache.commons.math3.linear.Array2DRowFieldMatrix;
 import org.junit.Assert;
 import org.junit.Test;
+import org.openpixi.pixi.math.GroupElement;
+import org.openpixi.pixi.math.SU2Matrix;
 
 public class SU2MatrixTest {
 
@@ -202,7 +204,7 @@ public class SU2MatrixTest {
 			Test matrix multiplication between Pauli matrices.
 		 */
 
-		LinkMatrix r;
+		GroupElement r;
 		Array2DRowFieldMatrix<Complex> rMatrix;
 		Array2DRowFieldMatrix<Complex> rMatrix2;
 
@@ -235,7 +237,7 @@ public class SU2MatrixTest {
 		/*
 			Do the multiplication.
 		 */
-		LinkMatrix c = a.mult(b);
+		GroupElement c = a.mult(b);
 		Array2DRowFieldMatrix<Complex> cMatrix = (Array2DRowFieldMatrix<Complex>) aMatrix.multiply(bMatrix).copy();
 
 		/*
@@ -356,7 +358,7 @@ public class SU2MatrixTest {
 		}
 	}
 
-	private Array2DRowFieldMatrix<Complex> convertToMatrix(LinkMatrix arg) {
+	private Array2DRowFieldMatrix<Complex> convertToMatrix(GroupElement arg) {
 		/*
 			This is very, very tedious. I'm sorry.
 		 */

@@ -1,9 +1,6 @@
-package org.openpixi.pixi.physics.grid;
+package org.openpixi.pixi.math;
 
-import org.openpixi.pixi.physics.grid.LinkMatrix;
-import org.openpixi.pixi.physics.grid.YMField;
-
-public class SU2Field implements YMField {
+public class SU2Field implements AlgebraElement {
 
 	protected double[] v;
 	
@@ -35,7 +32,7 @@ public class SU2Field implements YMField {
 		
 	}
 	
-	public YMField add (YMField arg) {
+	public AlgebraElement add (AlgebraElement arg) {
 
 		SU2Field a = (SU2Field) arg;
 		SU2Field b = new SU2Field();
@@ -47,7 +44,7 @@ public class SU2Field implements YMField {
 		
 	}
 	
-public void addAssign(YMField arg) {
+public void addAssign(AlgebraElement arg) {
 
 		SU2Field a = (SU2Field) arg;
 
@@ -57,7 +54,7 @@ public void addAssign(YMField arg) {
 		
 	}
 	
-	public YMField sub (YMField arg) {
+	public AlgebraElement sub (AlgebraElement arg) {
 
 		SU2Field a = (SU2Field) arg;
 		
@@ -88,7 +85,7 @@ public void addAssign(YMField arg) {
 		
 	}
 	
-	public YMField mult (double number) {
+	public AlgebraElement mult (double number) {
 		
 		SU2Field b = new SU2Field();
 		b.v[0] = v[0]*number;
@@ -106,7 +103,7 @@ public void addAssign(YMField arg) {
 
 	}
 	
-	public void set (YMField arg) {
+	public void set (AlgebraElement arg) {
 
 		SU2Field a = (SU2Field) arg;
 		
@@ -116,7 +113,7 @@ public void addAssign(YMField arg) {
 		
 	}
 	
-//	public void FieldFromForwardPlaquette (LinkMatrix a, LinkMatrix b, LinkMatrix c, LinkMatrix d) {
+//	public void FieldFromForwardPlaquette (GroupElement a, GroupElement b, GroupElement c, GroupElement d) {
 //
 //		double a0,a1,a2,a3;
 //		double b0,b1,b2,b3;
@@ -144,7 +141,7 @@ public void addAssign(YMField arg) {
 //
 //	}
 //
-//	public void FieldFromBackwardPlaquette (LinkMatrix a, LinkMatrix b, LinkMatrix c, LinkMatrix d) {
+//	public void FieldFromBackwardPlaquette (GroupElement a, GroupElement b, GroupElement c, GroupElement d) {
 //
 //		double a0,a1,a2,a3;
 //		double b0,b1,b2,b3;
@@ -170,7 +167,7 @@ public void addAssign(YMField arg) {
 //
 //	}
 	
-	public void addfour (YMField a, YMField b, YMField c, YMField d) {
+	public void addfour (AlgebraElement a, AlgebraElement b, AlgebraElement c, AlgebraElement d) {
 		
 		v[0] = a.get(0)+b.get(0)+c.get(0)+d.get(0)+this.get(0);
 		v[1] = a.get(1)+b.get(1)+c.get(1)+d.get(1)+this.get(1);
@@ -178,14 +175,14 @@ public void addAssign(YMField arg) {
 			
 	}
 	
-	public LinkMatrix getLinearizedLink() {
+	public GroupElement getLinearizedLink() {
 		
 		double sum = (v[0]*v[0]+v[1]*v[1]+v[2]*v[2])/4;
 		SU2Matrix b = new SU2Matrix(Math.sqrt(1.0-sum), v[0]/2, v[1]/2, v[2]/2);
 		return b;
 	}
 	
-	public LinkMatrix getLink() {
+	public GroupElement getLink() {
 		
 		double sum = v[0]*v[0]+v[1]*v[1]+v[2]*v[2];
 		double mod = Math.sqrt(sum)/2;
@@ -204,7 +201,7 @@ public void addAssign(YMField arg) {
 		return 0.5 * v[c];
 	}
 
-	public YMField copy() {
+	public AlgebraElement copy() {
 		return new SU2Field(v[0], v[1], v[2]);
 	}
 }

@@ -4,6 +4,8 @@ import java.util.Random;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.openpixi.pixi.math.GroupElement;
+import org.openpixi.pixi.math.SU2Matrix;
 import org.openpixi.pixi.physics.GeneralBoundaryType;
 import org.openpixi.pixi.physics.Settings;
 import org.openpixi.pixi.physics.Simulation;
@@ -37,8 +39,8 @@ public class GridTest {
 			// Shift position
 			int shiftedIndex = g.shift(index, dir, 1);
 
-			LinkMatrix l1 = g.getLink(index, dir, 1, 0);
-			LinkMatrix l2 = g.getLink(shiftedIndex, dir, -1, 0);
+			GroupElement l1 = g.getLink(index, dir, 1, 0);
+			GroupElement l2 = g.getLink(shiftedIndex, dir, -1, 0);
 			l2.selfadj();
 
 			// This code is specific to SU2
@@ -59,10 +61,10 @@ public class GridTest {
 			int d2 = (int) (Math.random() * s.getNumberOfDimensions());
 
 			// These two plaquettes should be the inverse of each other.
-			LinkMatrix plaq1 = g.getPlaquette(index, d1, d2, 1, 1, 0);
-			LinkMatrix plaq2 = g.getPlaquette(index, d2, d1, 1, 1, 0);
+			GroupElement plaq1 = g.getPlaquette(index, d1, d2, 1, 1, 0);
+			GroupElement plaq2 = g.getPlaquette(index, d2, d1, 1, 1, 0);
 
-			LinkMatrix result = plaq1.mult(plaq2);
+			GroupElement result = plaq1.mult(plaq2);
 
 			// This code is specific to SU2
 			Assert.assertEquals(1.0, ((SU2Matrix) result).get(0), accuracy);
@@ -73,7 +75,7 @@ public class GridTest {
 			// Forward and backward plaquette around the same rectangle should have the same trace.
 			int shiftedIndex = g.shift(index, d1, 1);
 
-			LinkMatrix plaq3 = g.getPlaquette(shiftedIndex, d1, d2, -1, 1, 0);
+			GroupElement plaq3 = g.getPlaquette(shiftedIndex, d1, d2, -1, 1, 0);
 
 			Assert.assertEquals(plaq1.getRealTrace(), plaq3.getRealTrace(), accuracy);
 		}
