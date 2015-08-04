@@ -58,14 +58,6 @@ public class SU2Matrix implements GroupElement {
 		this.set(matrix);
 	}
 
-	/**
-	 * Adds two SU2Matrix instances and returns the result as a copy.
-	 * The result is not a valid SU2 matrix since the parameter norm will not be one in general.
-	 * This method does not change the original SU2Matrix instance.
-	 *
-	 * @param arg SU2Matrix which is added to the current SU2Matrix instance.
-	 * @return Sum of the SU2Matrix instances.
-	 */
 	public GroupElement add(GroupElement arg) {
 
 		SU2Matrix a = (SU2Matrix) arg;
@@ -78,14 +70,6 @@ public class SU2Matrix implements GroupElement {
 
 	}
 
-	/**
-	 * Subtracts the passed SU2Matrix instance from the current instance and returns the result as a copy.
-	 * The result is not a valid SU2 matrix since the parameter norm will not be one in general.
-	 * This method does not change the original SU2Matrix instance.
-	 *
-	 * @param arg SU2Matrix which is subtracted from the current SU2Matrix instance.
-	 * @return Difference of the SU2Matrix instances.
-	 */
 	public GroupElement sub(GroupElement arg) {
 
 		SU2Matrix a = (SU2Matrix) arg;
@@ -138,12 +122,6 @@ public class SU2Matrix implements GroupElement {
 
 	}
 
-	/**
-	 * Applies hermitian conjugation to the current instance of SU2Matrix and returns a copy.
-	 * This method does not change the original SU2Matrix instance.
-	 *
-	 * @return  Hermitian conjugate of the current instance.
-	 */
 	public GroupElement adj() {
 		SU2Matrix b = new SU2Matrix(this);
 		for (int i = 1; i < 4; i++)
@@ -152,13 +130,7 @@ public class SU2Matrix implements GroupElement {
 		}
 		return b;
 	}
-	
-	/**
-	 * Applies hermitian conjugation to the current instance of SU2Matrix without returning a copy.
-	 * This method changes the original SU2Matrix instance.
-	 *
-	 * @return  Hermitian conjugate of the current instance.
-	 */
+
 	public void selfadj() {
 		for (int i = 1; i < 4; i++)
 		{
@@ -193,13 +165,6 @@ public class SU2Matrix implements GroupElement {
 
 	}
 
-	/**
-	 * Computes the scalar product of the SU2Matrix instance with a real number and returns a copy.
-	 * This method does not change the original SU2Matrix instance.
-	 *
-	 * @param number    real number to be multiplied with.
-	 * @return          product of the scalar multiplication.
-	 */
 	public GroupElement mult(double number) {
 
 		SU2Matrix b = new SU2Matrix();
@@ -210,16 +175,6 @@ public class SU2Matrix implements GroupElement {
 
 	}
 
-	/**
-	 * Computes the matrix product of the SU2Matrix instance with another SU2Matrix instance.
-	 * Let A be the SU2Matrix instance which the method is applied to and let B the SU2matrix instance
-	 * which is passed as an argument. The result of the multiplication is A.B (post-multiply or multiplication from
-	 * the right).
-	 * This method does not change the original SU2Matrix instance.
-	 *
-	 * @param arg SU2Matrix instance used for post-multiplication.
-	 * @return  Result of the multiplication.
-	 */
 	public GroupElement mult(GroupElement arg) {
 
 		SU2Matrix a = (SU2Matrix) arg;
@@ -233,13 +188,6 @@ public class SU2Matrix implements GroupElement {
 
 	}
 
-	/**
-	 * Returns the exact algebra element of the group element. The algebra element generates the group element
-	 * via the exponential map.
-	 * This also works far from identity but is not always continuous.
-	 *
-	 * @return  Algebra element of the SU2Matrix.
-	 */
 	public AlgebraElement getAlgebraElement()
 	{
 		double norm = 0.0;
@@ -263,17 +211,6 @@ public class SU2Matrix implements GroupElement {
 		return field;
 	}
 
-	/**
-	 * Returns the projection of the matrix onto the generators of the group as a AlgebraElement. This is done via the formula
-	 *
-	 *      u_a = 2 Im {tr t_a U},
-	 *
-	 * where U is the SU2Matrix, t_a is the a-th generator of the group and u_a is the a-th component of the AlgebraElement.
-	 *
-	 * This method can also be used to give a linearized algebra element.
-	 *
-	 * @return AlgebraElement instance of the projection
-	 */
 	public AlgebraElement proj()
 	{
 		SU2Field field = new SU2Field();
@@ -285,11 +222,6 @@ public class SU2Matrix implements GroupElement {
 		return field;
 	}
 
-	/**
-	 * Returns the real trace of the matrix.
-	 *
-	 * @return	Real part of trace of the matrix.
-	 */
 	public double getRealTrace() {
 		return 2*e[0];
 	}

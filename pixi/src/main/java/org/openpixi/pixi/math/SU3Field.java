@@ -134,9 +134,6 @@ public class SU3Field implements AlgebraElement {
 
 	}
 
-	/**
-	 * @return 2 tr(A^2)
-	 */
 	public double square () {
 		return 2*(v[0]*v[0]+v[4]*v[4]+v[8]*v[8]+2*(v[1]*v[1]+v[2]*v[2]+v[3]*v[3]+v[5]*v[5]+v[6]*v[6]+v[7]*v[7]));
 		
@@ -297,11 +294,6 @@ public class SU3Field implements AlgebraElement {
 		return ((SU3Matrix) unit.mult(diag).mult(unit.adj())).get();
 	}
 
-
-
-	/**
-	 * Essentially just using exp(I v) ~ 1 + I v
-	 */
 	public GroupElement getLinearizedLink() {
 		double[] values = new double[]{1,-v[3],-v[6],v[3],1,-v[7],v[6],v[7],1,v[0],v[1],v[2],v[1],v[4],v[5],v[2],v[5],v[8]};
 		return new SU3Matrix(values);
