@@ -234,18 +234,6 @@ public class SU2Matrix implements GroupElement {
 	}
 
 	/**
-	 * Returns approximate algebra element of the group element. The algebra element generates the group element via
-	 * the exponential map.
-	 * This only works if the group element is close to identity.
-	 *
-	 * @return  Approximate algebra element of the SU2Matrix.
-	 */
-	public AlgebraElement getLinearizedAlgebraElement()
-	{
-		return new SU2Field(e[1] * 2, e[2] * 2, e[3] * 2);
-	}
-
-	/**
 	 * Returns the exact algebra element of the group element. The algebra element generates the group element
 	 * via the exponential map.
 	 * This also works far from identity but is not always continuous.
@@ -281,6 +269,8 @@ public class SU2Matrix implements GroupElement {
 	 *      u_a = 2 Im {tr t_a U},
 	 *
 	 * where U is the SU2Matrix, t_a is the a-th generator of the group and u_a is the a-th component of the AlgebraElement.
+	 *
+	 * This method can also be used to give a linearized algebra element.
 	 *
 	 * @return AlgebraElement instance of the projection
 	 */

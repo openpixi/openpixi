@@ -112,9 +112,9 @@ public class SU2FieldTest {
 		SU2Matrix matExact = (SU2Matrix) firstField.getLink();
 
 		/*
-		Transform back to a SU2 field exactly and in linear approximation.
+		Transform back to a SU2 field exactly and in linear approximation (proj).
 	 */
-		SU2Field fieldSimple = (SU2Field) matSimple.getLinearizedAlgebraElement();
+		SU2Field fieldSimple = (SU2Field) matSimple.proj();
 		SU2Field fieldExact = (SU2Field) matExact.getAlgebraElement();
 		
 		/*

@@ -391,21 +391,6 @@ public class SU3Matrix implements GroupElement {
 		return fieldValues;
 	}
 
-
-	// Same as proj, scheduled for deletion
-	public AlgebraElement getLinearizedAlgebraElement() {
-		double[] fieldValues = new double[]{(2*e[9]-e[13]-e[17])/3,
-											(e[10]+e[12])/2,
-											(e[11]+e[15])/2,
-											(e[3]-e[1])/2,
-											(2*e[13]-e[17]-e[9])/3,
-											(e[14]+e[16])/2,
-											(e[6]-e[2])/2,
-											(e[7]-e[5])/2,
-											(2*e[17]-e[9]-e[13])/3};
-		return new SU3Field(fieldValues);
-	}
-
 	public AlgebraElement getAlgebraElement() {
 		return new SU3Field(algebraElementDecompositionMethod());
 	}

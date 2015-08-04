@@ -164,7 +164,7 @@ public class ElectricFieldPanel extends AnimationPanel {
 					In the flipped and translated coordinate system defined above we have to add the fields to the
 					center of the panel in order to get the expected result.
 				*/
-				double gaugeField = drawGrid.getU(s.grid.getCellIndex(pos), directionIndex).getLinearizedAlgebraElement().get(colorIndex) / (as * g);
+				double gaugeField = drawGrid.getU(s.grid.getCellIndex(pos), directionIndex).proj().get(colorIndex) / (as * g);
 				scaleProperties.putValue(gaugeField);
 				newValue = (int) (((0.5 + scaleA * gaugeField) * panelHeight));
 

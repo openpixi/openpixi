@@ -16,8 +16,6 @@ public interface GroupElement {
 
 	AlgebraElement getAlgebraElement();
 
-	AlgebraElement getLinearizedAlgebraElement();
-
 	/**
 	 * Returns the real trace of the matrix.
 	 *

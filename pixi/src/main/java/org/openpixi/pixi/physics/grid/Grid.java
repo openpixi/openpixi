@@ -755,7 +755,7 @@ public class Grid {
 			k = 1;
 			break;
 		}
-		double res = getPlaquette(index, j, k, 1, 1, timeIndex).getLinearizedAlgebraElement().square()/norm;
+		double res = getPlaquette(index, j, k, 1, 1, timeIndex).proj().square()/norm;
 
 		return res;
 	}

@@ -77,7 +77,7 @@ public class GaugeTransformation {
 				 */
 				AlgebraElement E = grid.getE(index, dir);
 				GroupElement gdagger = g[index].adj();
-				E = (g[index].mult(E.getLinearizedLink()).mult(gdagger)).getLinearizedAlgebraElement();
+				E = (g[index].mult(E.getLinearizedLink()).mult(gdagger)).proj();
 				// TODO: rather work with exact mapping?
 				//E = (g[cellIndex].mult(E.getLink()).mult(gdagger)).getAlgebraElement();
 				grid.setE(index, dir, E);
