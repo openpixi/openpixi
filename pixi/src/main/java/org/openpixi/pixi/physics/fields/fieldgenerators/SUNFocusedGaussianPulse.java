@@ -1,5 +1,6 @@
 package org.openpixi.pixi.physics.fields.fieldgenerators;
 
+import org.openpixi.pixi.diagnostics.methods.GaussConstraintRestoration;
 import org.openpixi.pixi.physics.Simulation;
 import org.openpixi.pixi.physics.gauge.CoulombGauge;
 import org.openpixi.pixi.physics.grid.Cell;
@@ -115,6 +116,7 @@ public class SUNFocusedGaussianPulse implements IFieldGenerator {
 
 			// Multiplicative factor for the focused gaussian pulse at t = -dt/2 (for links)
 			double gaugeFieldFactor = g * as * pulseFunction(spherical[0], spherical[1], spherical[2], - this.timeStep / 2.0);
+			double gaugeFieldFactor2 = g * as * pulseFunction(spherical[0], spherical[1], spherical[2], + this.timeStep / 2.0);
 
 
 			Cell currentCell = grid.getCell(ci);
@@ -124,6 +126,9 @@ public class SUNFocusedGaussianPulse implements IFieldGenerator {
 				SU2Matrix U = (SU2Matrix) currentCell.getU(i).mult(amplitudeYMField[i].mult(gaugeFieldFactor).getLinkExact());
 				currentCell.setU(i, U);
 
+				SU2Matrix Unext = (SU2Matrix) currentCell.getUnext(i).mult(amplitudeYMField[i].mult(gaugeFieldFactor2).getLinkExact());
+				currentCell.setUnext(i, Unext);
+
 				//Setup the electric fields
 				currentCell.addE(i, amplitudeYMField[i].mult(electricFieldFactor));
 			}
@@ -132,6 +137,10 @@ public class SUNFocusedGaussianPulse implements IFieldGenerator {
 		// Apply Coulomb gauge
 		CoulombGauge coulombGauge = new CoulombGauge(s.grid);
 		coulombGauge.applyGaugeTransformation(grid);
+
+		// Restore Gauss constraint
+		GaussConstraintRestoration gaussRestoration = new GaussConstraintRestoration(10.0, 0.0, 0.5, 100, 10e-4);
+		gaussRestoration.iterateRestorationAlgorithm(grid);
 	}
 
 	private double[] convertToSpherical(double x, double y, double z) {
