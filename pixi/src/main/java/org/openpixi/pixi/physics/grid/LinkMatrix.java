@@ -26,6 +26,6 @@ public interface LinkMatrix {
 
 	//Following methods could be exported to a new, "dirtier" interface in the future.
 	void set (int j, double value);
-	
+
 	double get (int j);
 }
