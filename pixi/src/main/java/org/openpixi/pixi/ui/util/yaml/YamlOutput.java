@@ -23,6 +23,8 @@ public class YamlOutput {
 
 	public ArrayList<YamlUnitarityTester> unitarityTester = new ArrayList<YamlUnitarityTester>();
 
+	public ArrayList<YamlGaussConstraintRestoration> gaussConstraintRestoration = new ArrayList<YamlGaussConstraintRestoration>();
+
 
 	/**
 	 * Creates FileGenerator instances and applies them to the Settings instance.
@@ -54,6 +56,10 @@ public class YamlOutput {
 		}
 
 		for (YamlUnitarityTester output : unitarityTester) {
+			s.addDiagnostics(output.getFileGenerator());
+		}
+
+		for (YamlGaussConstraintRestoration output : gaussConstraintRestoration) {
 			s.addDiagnostics(output.getFileGenerator());
 		}
 	}
