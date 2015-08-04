@@ -5,6 +5,7 @@ import org.openpixi.pixi.parallel.cellaccess.*;
 import org.openpixi.pixi.parallel.particleaccess.*;
 import org.openpixi.pixi.physics.fields.*;
 import org.openpixi.pixi.physics.fields.fieldgenerators.IFieldGenerator;
+import org.openpixi.pixi.physics.fields.currentgenerators.ICurrentGenerator;
 import org.openpixi.pixi.physics.force.*;
 import org.openpixi.pixi.physics.grid.*;
 import org.openpixi.pixi.physics.particles.*;
@@ -67,6 +68,9 @@ public class Settings {
 
 	// FieldGenerator related settings
 	private ArrayList<IFieldGenerator> fieldGenerators = new ArrayList<IFieldGenerator>();
+
+	// CurrentGenerator related settings
+	private ArrayList<ICurrentGenerator> currentGenerators = new ArrayList<ICurrentGenerator>();
 
 	// Diagnostics related settings
 	/**
@@ -196,6 +200,11 @@ public class Settings {
     {
         return this.fieldGenerators;
     }
+
+	public ArrayList<ICurrentGenerator> getCurrentGenerators()
+	{
+		return this.currentGenerators;
+	}
 
 	public YamlPanels getYamlPanels() {
 		return yamlPanels;
@@ -408,10 +417,20 @@ public class Settings {
         this.fieldGenerators = fieldGenerators;
     }
 
-    public void addFieldGenerator(IFieldGenerator generator)
+	public void addFieldGenerator(IFieldGenerator generator)
+	{
+		this.fieldGenerators.add(generator);
+	}
+
+    public void addCurrentGenerator(ICurrentGenerator generator)
     {
-        this.fieldGenerators.add(generator);
+        this.currentGenerators.add(generator);
     }
+
+	public void setCurrentGenerators(ArrayList<ICurrentGenerator> currentGenerators)
+	{
+		this.currentGenerators = currentGenerators;
+	}
 
 	public void setYamlPanels(YamlPanels yamlPanels) {
 		this.yamlPanels = yamlPanels;

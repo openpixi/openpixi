@@ -29,6 +29,7 @@ import javax.media.opengl.GL;
 import javax.media.opengl.GL2;
 import javax.media.opengl.GLAutoDrawable;
 import javax.swing.*;
+import java.util.Arrays;
 
 
 /**
@@ -36,9 +37,9 @@ import javax.swing.*;
  */
 public class OccupationNumbers2DGLPanel extends AnimationGLPanel {
 
-	ScaleProperties scaleProperties = new ScaleProperties();
-	BooleanProperties colorfulProperties = new BooleanProperties("Colorful occupation numbers", true);
-	IntegerProperties frameSkipProperties = new IntegerProperties("Skipped frames:", 2);
+	ScaleProperties scaleProperties;
+	BooleanProperties colorfulProperties;
+	IntegerProperties frameSkipProperties;
 
 	OccupationNumbersInTime diagnostic;
 	Simulation simulation;
@@ -49,6 +50,9 @@ public class OccupationNumbers2DGLPanel extends AnimationGLPanel {
 	/** Constructor */
 	public OccupationNumbers2DGLPanel(SimulationAnimation simulationAnimation) {
 		super(simulationAnimation);
+		scaleProperties = new ScaleProperties(simulationAnimation);
+		colorfulProperties = new BooleanProperties(simulationAnimation, "Colorful occupation numbers", true);
+		frameSkipProperties = new IntegerProperties(simulationAnimation, "Skipped frames:", 2);
 		scaleProperties.setAutomaticScaling(true);
 		frameCounter = 0;
 
@@ -143,15 +147,17 @@ public class OccupationNumbers2DGLPanel extends AnimationGLPanel {
 	private int getMomentumIndex(int[] pos)
 	{
 		int[] numGridCells = simulation.grid.getNumCells();
+		int[] pos2 = new int[pos.length];
+		System.arraycopy(pos, 0, pos2, 0, pos.length);
 
 		for(int i = 0; i < pos.length; i++)
 		{
-			pos[i] += numGridCells[i] / 2;
-			pos[i] %= numGridCells[i];
-			pos[i] = numGridCells[i] - pos[i];
+			pos2[i] += numGridCells[i] / 2;
+			pos2[i] %= numGridCells[i];
+			pos2[i] = numGridCells[i] - pos2[i];
 		}
 
-		return simulation.grid.getCellIndex(pos);
+		return simulation.grid.getCellIndex(pos2);
 	}
 
 	public void addPropertyComponents(Box box) {

@@ -1,10 +1,10 @@
 package org.openpixi.pixi.physics.fields.fieldgenerators;
 
+import org.openpixi.pixi.math.SU2AlgebraElement;
+import org.openpixi.pixi.math.SU2GroupElement;
 import org.openpixi.pixi.physics.Simulation;
 import org.openpixi.pixi.physics.grid.Cell;
 import org.openpixi.pixi.physics.grid.Grid;
-import org.openpixi.pixi.physics.grid.SU2Field;
-import org.openpixi.pixi.physics.grid.SU2Matrix;
 
 public class SU2GaussianPulse implements IFieldGenerator {
 
@@ -53,9 +53,9 @@ public class SU2GaussianPulse implements IFieldGenerator {
 		/*
 			Setup the field amplitude for the gaussian pulse.
 		 */
-		SU2Field[] amplitudeYMField = new SU2Field[this.numberOfDimensions];
+		SU2AlgebraElement[] amplitudeYMField = new SU2AlgebraElement[this.numberOfDimensions];
 		for (int i = 0; i < this.numberOfDimensions; i++) {
-			amplitudeYMField[i] = new SU2Field(
+			amplitudeYMField[i] = new SU2AlgebraElement(
 					this.amplitudeMagnitude * this.amplitudeSpatialDirection[i] * this.amplitudeColorDirection[0],
 					this.amplitudeMagnitude * this.amplitudeSpatialDirection[i] * this.amplitudeColorDirection[1],
 					this.amplitudeMagnitude * this.amplitudeSpatialDirection[i] * this.amplitudeColorDirection[2]);
@@ -92,7 +92,7 @@ public class SU2GaussianPulse implements IFieldGenerator {
 
 			for (int i = 0; i < this.numberOfDimensions; i++) {
 				//Setup the gauge links
-				SU2Matrix U = (SU2Matrix) currentCell.getU(i).mult(amplitudeYMField[i].mult(gaugeFieldFactor).getLinkExact());
+				SU2GroupElement U = (SU2GroupElement) currentCell.getU(i).mult(amplitudeYMField[i].mult(gaugeFieldFactor).getLink());
 				currentCell.setU(i, U);
 
 				//Setup the electric fields

@@ -14,7 +14,7 @@ import org.openpixi.pixi.ui.SimulationAnimationListener;
 
 public class AnimationPanel extends JPanel implements FocusablePanel {
 
-	private SimulationAnimation simulationAnimation;
+	protected SimulationAnimation simulationAnimation;
 	private MyAnimationListener listener;
 	boolean focus = false;
 

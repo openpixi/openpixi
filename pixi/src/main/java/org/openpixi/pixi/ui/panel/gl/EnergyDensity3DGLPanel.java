@@ -37,7 +37,7 @@ import org.openpixi.pixi.ui.panel.properties.ScaleProperties;
  */
 public class EnergyDensity3DGLPanel extends AnimationGLPanel {
 
-	ScaleProperties scaleProperties = new ScaleProperties();
+	ScaleProperties scaleProperties;
 
 	public double phi;
 	public double theta;
@@ -51,6 +51,7 @@ public class EnergyDensity3DGLPanel extends AnimationGLPanel {
 	/** Constructor */
 	public EnergyDensity3DGLPanel(SimulationAnimation simulationAnimation) {
 		super(simulationAnimation);
+		scaleProperties = new ScaleProperties(simulationAnimation);
 
 		MouseListener l = new MouseListener();
 		addMouseListener(l);
@@ -205,10 +206,12 @@ public class EnergyDensity3DGLPanel extends AnimationGLPanel {
 			mouseOldX = e.getX();
 			mouseOldY = e.getY();
 			super.mouseDragged(e);
+			simulationAnimation.repaint();
 		}
 
 		public void mouseReleased(MouseEvent e) {
 			super.mouseReleased(e);
+			simulationAnimation.repaint();
 		}
 	}
 

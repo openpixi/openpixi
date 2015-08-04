@@ -22,6 +22,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 
 import org.openpixi.pixi.physics.fields.fieldgenerators.IFieldGenerator;
+import org.openpixi.pixi.physics.fields.currentgenerators.ICurrentGenerator;
 import org.openpixi.pixi.physics.fields.PoissonSolver;
 import org.openpixi.pixi.physics.force.Force;
 import org.openpixi.pixi.physics.force.CombinedForce;
@@ -105,6 +106,11 @@ public class Simulation {
      * List of output file generators which are applied during the runtime of the simulation.
      */
     private ArrayList<Diagnostics>  diagnostics;
+
+	/**
+	 * List of external current generators which are applied during the whole runtime of the simulation.
+	 */
+	private ArrayList<ICurrentGenerator>  currentGenerators;
 
 	public Interpolation getInterpolation() {
 		return interpolation;
@@ -216,14 +222,21 @@ public class Simulation {
 
         // Cycle through field generators and apply field configurations to the Grid.
         fieldGenerators = settings.getFieldGenerators();
-        for (int f = 0; f < fieldGenerators.size(); f++)
+		for (IFieldGenerator f: fieldGenerators)
         {
-            fieldGenerators.get(f).applyFieldConfiguration(this);
+            f.applyFieldConfiguration(this);
         }
 		/*
 			TODO After running through each field generator we should check if the intial state is consistent.
 			(e.g. check if Gauss law is fulfilled.)
 		 */
+
+		// Copy current generators from Settings.
+		currentGenerators = settings.getCurrentGenerators();
+		// Generate external currents on the grid!!
+		for (ICurrentGenerator c: currentGenerators) {
+			c.applyCurrent(this);
+		}
 
 		/**
 		 * In order to read out the initial state without specifying the Unext(t = at/2) links by hand we calculate them
@@ -236,15 +249,6 @@ public class Simulation {
 		interpolation.interpolateToParticle(particles, grid);
 
 		interpolation.interpolateToGrid(particles, grid, tstep);
-		// Generate external currents on the grid!!
-		/*
-		for (int c = 0; c < currentGenerators.size(); c++)
-		{
-			currentGenerators.get(c).applyCurrent(this);
-		}
-		*/
-
-
 
 		//updateVelocities(); TODO: Write this method!!
 
@@ -292,8 +296,8 @@ public class Simulation {
 
 		// Initialize and run diagnostics before first simulation step.
 		if(totalSimulationSteps == 0) {
-			for (int f = 0; f < diagnostics.size(); f++) {
-				diagnostics.get(f).initialize(this);
+			for (Diagnostics d: diagnostics) {
+				d.initialize(this);
 			}
 			runDiagnostics();
 		}
@@ -302,14 +306,13 @@ public class Simulation {
 		//reassignParticles(); TODO: Write this method!!
 
 		//Generation of internal and external currents
+		grid.resetCurrent();
 		interpolation.interpolateToGrid(particles, grid, tstep);
 		// Generate external currents on the grid!!
-		/*
-		for (int c = 0; c < currentGenerators.size(); c++)
+		for (ICurrentGenerator c: currentGenerators)
 		{
-			currentGenerators.get(c).applyCurrent(this);
+			c.applyCurrent(this);
 		}
-		*/
 
 		//Combined update of gauge links and fields
 		grid.updateGrid(tstep);

@@ -83,9 +83,9 @@ public class Chart2DPanel extends AnimationChart2DPanel {
 
 		this.fieldMeasurements = new FieldMeasurements();
 
-		logarithmicProperty = new BooleanProperties("Logarithmic scale", false);
+		logarithmicProperty = new BooleanProperties(simulationAnimation, "Logarithmic scale", false);
 
-		showChartsProperty = new BooleanArrayProperties(chartLabel, new boolean[chartLabel.length]);
+		showChartsProperty = new BooleanArrayProperties(simulationAnimation, chartLabel, new boolean[chartLabel.length]);
 
 		occupationNumbers = new OccupationNumbersInTime(1.0, "none", "", false);
 		// Linear scale

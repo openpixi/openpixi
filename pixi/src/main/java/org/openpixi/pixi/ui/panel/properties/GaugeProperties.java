@@ -6,9 +6,16 @@ import java.awt.event.ItemListener;
 import javax.swing.Box;
 import javax.swing.JCheckBox;
 
+import org.openpixi.pixi.ui.SimulationAnimation;
+
 public class GaugeProperties {
 
+	private SimulationAnimation simulationAnimation;
 	private boolean coulombGauge = false;
+
+	public GaugeProperties(SimulationAnimation simulationAnimation) {
+		this.simulationAnimation = simulationAnimation;
+	}
 
 	public boolean isCoulombGauge() {
 		return coulombGauge;
@@ -36,6 +43,7 @@ public class GaugeProperties {
 		public void itemStateChanged(ItemEvent event){
 			GaugeProperties.this.coulombGauge = 
 					(event.getStateChange() == ItemEvent.SELECTED);
+			simulationAnimation.repaint();
 		}
 	}
 }
