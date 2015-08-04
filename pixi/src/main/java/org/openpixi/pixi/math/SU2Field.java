@@ -44,7 +44,7 @@ public class SU2Field implements AlgebraElement {
 		
 	}
 	
-public void addAssign(AlgebraElement arg) {
+	public void addAssign(AlgebraElement arg) {
 
 		SU2Field a = (SU2Field) arg;
 
@@ -111,68 +111,6 @@ public void addAssign(AlgebraElement arg) {
 		v[1] = a.v[1];
 		v[2] = a.v[2];
 		
-	}
-	
-//	public void FieldFromForwardPlaquette (GroupElement a, GroupElement b, GroupElement c, GroupElement d) {
-//
-//		double a0,a1,a2,a3;
-//		double b0,b1,b2,b3;
-///*
-//		SU2Matrix a = (SU2Matrix) A;
-//		SU2Matrix b = (SU2Matrix) B;
-//		SU2Matrix c = (SU2Matrix) C;
-//		SU2Matrix d = (SU2Matrix) D;
-//*/
-//		 a0 =  a.get(0)*b.get(0) - a.get(1)*b.get(1) - a.get(2)*b.get(2) - a.get(3)*b.get(3);
-//		 a1 =  a.get(0)*b.get(1) + a.get(1)*b.get(0) - a.get(2)*b.get(3) + a.get(3)*b.get(2);
-//		 a2 =  a.get(0)*b.get(2) + a.get(2)*b.get(0) - a.get(3)*b.get(1) + a.get(1)*b.get(3);
-//		 a3 =  a.get(0)*b.get(3) + a.get(3)*b.get(0) - a.get(1)*b.get(2) + a.get(2)*b.get(1);
-//
-//
-//		 b0 = a0*c.get(0) + a1*c.get(1) + a2*c.get(2) + a3*c.get(3);
-//		 b1 = -a0*c.get(1) + a1*c.get(0) + a2*c.get(3) - a3*c.get(2);
-//		 b2 = -a0*c.get(2) + a2*c.get(0) + a3*c.get(1) - a1*c.get(3);
-//		 b3 = -a0*c.get(3) + a3*c.get(0) + a1*c.get(2) - a2*c.get(1);
-//
-//
-//		 v[0] = -b0*d.get(1) + b1*d.get(0) + b2*d.get(3) - b3*d.get(2);
-//		 v[1] = -b0*d.get(2) + b2*d.get(0) + b3*d.get(1) - b1*d.get(3);
-//		 v[2] = -b0*d.get(3) + b3*d.get(0) + b1*d.get(2) - b2*d.get(1);
-//
-//	}
-//
-//	public void FieldFromBackwardPlaquette (GroupElement a, GroupElement b, GroupElement c, GroupElement d) {
-//
-//		double a0,a1,a2,a3;
-//		double b0,b1,b2,b3;
-///*
-//		SU2Matrix a = (SU2Matrix) A;
-//		SU2Matrix b = (SU2Matrix) B;
-//		SU2Matrix c = (SU2Matrix) C;
-//		SU2Matrix d = (SU2Matrix) D;
-//*/
-//		a0 = a.get(0)*b.get(0) + a.get(1)*b.get(1) + a.get(2)*b.get(2) + a.get(3)*b.get(3);
-//		a1 = -a.get(0)*b.get(1) + a.get(1)*b.get(0) + a.get(2)*b.get(3) - a.get(3)*b.get(2);
-//		a2 = -a.get(0)*b.get(2) + a.get(2)*b.get(0) + a.get(3)*b.get(1) - a.get(1)*b.get(3);
-//		a3 = -a.get(0)*b.get(3) + a.get(3)*b.get(0) + a.get(1)*b.get(2) - a.get(2)*b.get(1);
-//
-//		b0 = a0*c.get(0) + a1*c.get(1) + a2*c.get(2) + a3*c.get(3);
-//		b1 = -a0*c.get(1) + a1*c.get(0) + a2*c.get(3) - a3*c.get(2);
-//		b2 = -a0*c.get(2) + a2*c.get(0) + a3*c.get(1) - a1*c.get(3);
-//		b3 = -a0*c.get(3) + a3*c.get(0) + a1*c.get(2) - a2*c.get(1);
-//
-//		v[0] = b0*d.get(1) + b1*d.get(0) - b2*d.get(3) + b3*d.get(2);
-//		v[1] = b0*d.get(2) + b2*d.get(0) - b3*d.get(1) + b1*d.get(3);
-//		v[2] = b0*d.get(3) + b3*d.get(0) - b1*d.get(2) + b2*d.get(1);
-//
-//	}
-	
-	public void addfour (AlgebraElement a, AlgebraElement b, AlgebraElement c, AlgebraElement d) {
-		
-		v[0] = a.get(0)+b.get(0)+c.get(0)+d.get(0)+this.get(0);
-		v[1] = a.get(1)+b.get(1)+c.get(1)+d.get(1)+this.get(1);
-		v[2] = a.get(2)+b.get(2)+c.get(2)+d.get(2)+this.get(2);
-			
 	}
 	
 	public GroupElement getLinearizedLink() {

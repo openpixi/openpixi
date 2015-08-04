@@ -79,47 +79,47 @@ public class SU3Field implements AlgebraElement {
 		
 	}
 
-		public void set(int j, double value) {
-			double proj = get(j);
-			double[] generator;
+	public void set(int j, double value) {
+		double proj = get(j);
+		double[] generator;
 
-			switch (j) {
-				case 0: generator = new double[]{0,1,0,0,0,0,0,0,0};
-					break;
-				case 1: generator = new double[]{0,0,0,-1,0,0,0,0,0};
-					break;
-				case 2: generator = new double[]{1,0,0,0,-1,0,0,0,0};
-					break;
-				case 3: generator = new double[]{0,0,1,0,0,0,0,0,0};
-					break;
-				case 4: generator = new double[]{0,0,0,0,0,0,-1,0,0};
-					break;
-				case 5: generator = new double[]{0,0,0,0,0,1,0,0,0};
-					break;
-				case 6: generator = new double[]{0,0,0,0,0,0,0,-1,0};
-					break;
-				case 7: generator = new double[]{1/Math.sqrt(3),0,0,0,1/Math.sqrt(3),0,0,0,-2/Math.sqrt(3)};
-					break;
-				default: System.out.println("Invalid generator set index!");
-					generator = new double[]{0,0,0,0,0,0,0,0,0};
-			}
-
-			addAssign((new SU3Field(generator)).mult((value - proj)/2));
+		switch (j) {
+			case 0: generator = new double[]{0,1,0,0,0,0,0,0,0};
+				break;
+			case 1: generator = new double[]{0,0,0,-1,0,0,0,0,0};
+				break;
+			case 2: generator = new double[]{1,0,0,0,-1,0,0,0,0};
+				break;
+			case 3: generator = new double[]{0,0,1,0,0,0,0,0,0};
+				break;
+			case 4: generator = new double[]{0,0,0,0,0,0,-1,0,0};
+				break;
+			case 5: generator = new double[]{0,0,0,0,0,1,0,0,0};
+				break;
+			case 6: generator = new double[]{0,0,0,0,0,0,0,-1,0};
+				break;
+			case 7: generator = new double[]{1/Math.sqrt(3),0,0,0,1/Math.sqrt(3),0,0,0,-2/Math.sqrt(3)};
+				break;
+			default: System.out.println("Invalid generator set index!");
+				generator = new double[]{0,0,0,0,0,0,0,0,0};
 		}
 
-		public double get(int j) {
-			switch (j) {
-				case 0: return 2 * v[1];
-				case 1: return -2 * v[3];
-				case 2: return v[0] - v[4];
-				case 3: return 2 * v[2];
-				case 4: return -2 * v[6];
-				case 5: return 2 * v[5];
-				case 6: return -2 * v[7];
-				case 7: return (v[0] + v[4] - 2 * v[8]) / Math.sqrt(3);
-				default: System.out.println("Invalid generator get index!"); return 0;
-			}
+		addAssign((new SU3Field(generator)).mult((value - proj)/2));
+	}
+
+	public double get(int j) {
+		switch (j) {
+			case 0: return 2 * v[1];
+			case 1: return -2 * v[3];
+			case 2: return v[0] - v[4];
+			case 3: return 2 * v[2];
+			case 4: return -2 * v[6];
+			case 5: return 2 * v[5];
+			case 6: return -2 * v[7];
+			case 7: return (v[0] + v[4] - 2 * v[8]) / Math.sqrt(3);
+			default: System.out.println("Invalid generator get index!"); return 0;
 		}
+	}
 	
 	public double getEntry(int j) {
 		
@@ -166,18 +166,6 @@ public class SU3Field implements AlgebraElement {
 		}
 
 	}
-	
-	public void addfour (AlgebraElement a, AlgebraElement b, AlgebraElement c, AlgebraElement d) {
-
-		for (int i = 0; i < 9; i++) {
-			v[i] = a.get(i)+b.get(i)+c.get(i)+d.get(i)+this.get(i);
-		}
-			
-	}
-
-	public void FieldFromForwardPlaquette (GroupElement a, GroupElement b, GroupElement c, GroupElement d) {}
-
-	public void FieldFromBackwardPlaquette (GroupElement a, GroupElement b, GroupElement c, GroupElement d) {}
 
 	/**
 	 * Normalizes (complex) vector in place
