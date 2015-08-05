@@ -150,14 +150,6 @@ public class SUNFocusedGaussianPulse implements IFieldGenerator {
 				currentCell.addE(i, amplitudeYMField[i].mult(electricFieldFactor));
 			}
 		}
-
-		// Apply Coulomb gauge
-		CoulombGauge coulombGauge = new CoulombGauge(s.grid);
-		coulombGauge.applyGaugeTransformation(grid);
-
-		// Restore Gauss constraint
-		GaussConstraintRestoration gaussRestoration = new GaussConstraintRestoration(10.0, 0.0, 0.5, 100, 10e-4);
-		gaussRestoration.iterateRestorationAlgorithm(grid);
 	}
 
 	/**
