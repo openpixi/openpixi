@@ -10,6 +10,9 @@ import org.openpixi.pixi.physics.particles.IParticle;
 import java.io.IOException;
 import java.util.ArrayList;
 
+/**
+ * This diagnostic implements an algorithm to restore the Gauss constraint. It is taken from arXiv:hep-ph/9603384.
+ */
 public class GaussConstraintRestoration implements Diagnostics {
 
 	private double timeInterval;
@@ -27,6 +30,14 @@ public class GaussConstraintRestoration implements Diagnostics {
 
 	private Grid oldGrid;
 
+	/**
+	 * Creates an instance of the diagnostic.
+	 * @param timeInterval		time interval at which the diagnostic should run.
+	 * @param timeOffset		time offset for the diagnostic so that it does not run in the first simulation step.
+	 * @param gamma				parameter controlling the convergence of the algorithm. Smaller values lead to better convergence but need more iterations.
+	 * @param maxIterations		maximum number of iterations before the algorithm stops.
+	 * @param accuracy			accuracy goal for the algorithm. if the accuracy goal is reached the iteration stops.
+	 */
 	public GaussConstraintRestoration(double timeInterval, double timeOffset, double gamma, int maxIterations, double accuracy) {
 		this.timeInterval = timeInterval;
 		this.timeOffset = timeOffset;
@@ -46,6 +57,10 @@ public class GaussConstraintRestoration implements Diagnostics {
 		}
 	}
 
+	/**
+	 * Starts the iteration of the algorithm.
+	 * @param grid	Reference to the grid
+	 */
 	public void iterateRestorationAlgorithm(Grid grid) {
 		computeGaussViolation(grid);
 		oldTotalGaussViolation = totalGaussViolation;
@@ -71,6 +86,10 @@ public class GaussConstraintRestoration implements Diagnostics {
 		}
 	}
 
+	/**
+	 * Computes the gauss violation at every point on the grid.
+	 * @param grid	Reference to the grid
+	 */
 	public void computeGaussViolation(Grid grid) {
 		// Compute Gauss violation at every point and save it to an array.
 		int numberOfCells = grid.getTotalNumberOfCells();
@@ -94,6 +113,11 @@ public class GaussConstraintRestoration implements Diagnostics {
 		}
 	}
 
+	/**
+	 * Applies the correction according to the violation computed with computeGaussViolation().
+	 * @param grid		Reference to the grid
+	 * @param gamma		Parameter controlling the convergence
+	 */
 	public void applyCorrection(Grid grid, double gamma) {
 		int numberOfCells = grid.getTotalNumberOfCells();
 
@@ -113,10 +137,18 @@ public class GaussConstraintRestoration implements Diagnostics {
 		grid.updateLinks(grid.getTemporalSpacing());
 	}
 
+	/**
+	 * Creates a backup of the grid.
+	 * @param grid	Reference to the grid
+	 */
 	public void backupGrid(Grid grid) {
 		oldGrid = new Grid(grid);
 	}
 
+	/**
+	 * Restores the backup of the grid.
+	 * @param grid	Reference to the grid
+	 */
 	public void restoreGrid(Grid grid) {
 		grid.copyValuesFrom(oldGrid);
 	}
