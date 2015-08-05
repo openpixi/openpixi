@@ -1,6 +1,7 @@
 package org.openpixi.pixi.physics.grid;
 
 import org.openpixi.pixi.math.AlgebraElement;
+import org.openpixi.pixi.math.ElementFactory;
 import org.openpixi.pixi.math.GroupElement;
 import org.openpixi.pixi.parallel.cellaccess.CellAction;
 import org.openpixi.pixi.parallel.cellaccess.CellIterator;
@@ -76,6 +77,11 @@ public class Grid {
 	 * </pre>
 	 */
 	private int cummulatedCellCount[];
+
+	/**
+	 * Factory for SU(n) group and algebra elements.
+	 */
+	private ElementFactory factory = new ElementFactory();
 
 	/**
 	 * Returns the FieldSolver instance currently used.
@@ -311,6 +317,14 @@ public class Grid {
 	}
 
 	/**
+	 * Returns the element factory
+	 * @return Element factory
+	 */
+	public ElementFactory getElementFactory() {
+		return factory;
+	}
+
+	/**
 	 * Returns the Cell instance at given lattice index.
 	 *
 	 * @param index  Index of the cell
@@ -435,7 +449,7 @@ public class Grid {
 		cells = new Cell[length];
 
 		for(int i = 0; i < length; i++) {
-			cells[i] = new Cell(numDim, numCol);
+			cells[i] = new Cell(numDim, numCol, factory);
 		}
 	
 	}

@@ -13,8 +13,8 @@ public class ElementFactory {
                 return new SU2GroupElement(0, 0, 0, 0);
             case 3:
                 return new SU3GroupElement(new double[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0});
-            default:
-                return new SU2GroupElement();
+            default: System.out.println("Constructor for SU(" + colors + ") not defined.\n");
+                return new SU2GroupElement(0, 0, 0, 0);
         }
     }
 
@@ -24,19 +24,19 @@ public class ElementFactory {
                 return new SU2GroupElement(1, 0, 0, 0);
             case 3:
                 return new SU3GroupElement(new double[]{1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0});
-            default:
-                return new SU2GroupElement();
+            default: System.out.println("Constructor for SU(" + colors + ") not defined.\n");
+                return new SU2GroupElement(1, 0, 0, 0);
         }
     }
 
-    public AlgebraElement algberaZero(int colors) {
+    public AlgebraElement algebraZero(int colors) {
         switch (colors) {
             case 2:
                 return new SU2AlgebraElement(0, 0, 0);
             case 3:
                 return new SU3AlgebraElement(new double[]{0, 0, 0, 0, 0, 0, 0, 0});
-            default:
-                return new SU2AlgebraElement();
+            default: System.out.println("Constructor for SU(" + colors + ") not defined.\n");
+                return new SU2AlgebraElement(0, 0, 0);
         }
     }
 }
