@@ -40,7 +40,7 @@ public class YamlGaussConstraintRestoration {
 	/**
 	 * Returns an instance of GaussConstraintRestoration according to the parameters in the YAML file.
 	 *
-	 * @return Instance of GaussConstraintRestoration.
+	 * @return instance of GaussConstraintRestoration.
 	 */
 	public GaussConstraintRestoration getFileGenerator() {
 		GaussConstraintRestoration fileGen = new GaussConstraintRestoration(interval, offset, gamma, maxIterations, absoluteValue, applyOnlyOnce);

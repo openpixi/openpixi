@@ -34,12 +34,12 @@ public class GaussConstraintRestoration implements Diagnostics {
 
 	/**
 	 * Creates an instance of the diagnostic.
-	 * @param timeInterval		time interval at which the diagnostic should run.
-	 * @param timeOffset		time offset for the diagnostic so that it does not run in the first simulation step.
-	 * @param gamma				parameter controlling the convergence of the algorithm. Smaller values lead to better convergence but need more iterations.
-	 * @param maxIterations		maximum number of iterations before the algorithm stops.
-	 * @param absoluteValue		absoluteValue goal for the algorithm. if the absolute value goal is reached the iteration stops.
-	 * @param applyOnlyOnce		apply the algorithm only once at time offset.
+	 * @param timeInterval      time interval at which the diagnostic should run.
+	 * @param timeOffset        time offset for the diagnostic so that it does not run in the first simulation step.
+	 * @param gamma             parameter controlling the convergence of the algorithm. Smaller values lead to better convergence but need more iterations.
+	 * @param maxIterations     maximum number of iterations before the algorithm stops.
+	 * @param absoluteValue     absoluteValue goal for the algorithm. if the absolute value goal is reached the iteration stops.
+	 * @param applyOnlyOnce     apply the algorithm only once at time offset.
 	 */
 	public GaussConstraintRestoration(double timeInterval, double timeOffset, double gamma, int maxIterations, double absoluteValue, boolean applyOnlyOnce) {
 		this.timeInterval = timeInterval;
@@ -48,6 +48,7 @@ public class GaussConstraintRestoration implements Diagnostics {
 		this.maxIterations = maxIterations;
 		this.absoluteValue = absoluteValue;
 		this.applyOnlyOnce = applyOnlyOnce;
+		this.alreadyApplied = false;
 	}
 
 	public void initialize(Simulation s) {
@@ -72,7 +73,7 @@ public class GaussConstraintRestoration implements Diagnostics {
 
 	/**
 	 * Starts the iteration of the algorithm.
-	 * @param grid	Reference to the grid
+	 * @param grid  reference to the grid
 	 */
 	public void iterateRestorationAlgorithm(Grid grid) {
 		computeGaussViolation(grid);
@@ -110,7 +111,7 @@ public class GaussConstraintRestoration implements Diagnostics {
 
 	/**
 	 * Computes the gauss violation at every point on the grid.
-	 * @param grid	Reference to the grid
+	 * @param grid  reference to the grid
 	 */
 	public void computeGaussViolation(Grid grid) {
 		// Compute Gauss violation at every point and save it to an array.
@@ -122,7 +123,7 @@ public class GaussConstraintRestoration implements Diagnostics {
 		gaussViolation = new GroupElement[numberOfCells];
 		totalGaussViolation = 0.0;
 		for(int i = 0; i < numberOfCells; i++) {
-			GroupElement C = zero.mult(1.0); // hack to get a copy of a matrix.
+			GroupElement C = zero.copy();
 			for(int j = 0; j < grid.getNumberOfDimensions(); j++) {
 				int k = grid.shift(i, j, -1);
 				GroupElement C1 = grid.getUnext(i, j).mult(grid.getU(i, j).adj());
@@ -138,8 +139,8 @@ public class GaussConstraintRestoration implements Diagnostics {
 
 	/**
 	 * Applies the correction according to the violation computed with computeGaussViolation().
-	 * @param grid		Reference to the grid
-	 * @param gamma		Parameter controlling the convergence
+	 * @param grid      reference to the grid
+	 * @param gamma     parameter controlling the convergence
 	 */
 	public void applyCorrection(Grid grid, double gamma) {
 		int numberOfCells = grid.getTotalNumberOfCells();
@@ -162,7 +163,7 @@ public class GaussConstraintRestoration implements Diagnostics {
 
 	/**
 	 * Creates a backup of the grid.
-	 * @param grid	Reference to the grid
+	 * @param grid  reference to the grid
 	 */
 	public void backupGrid(Grid grid) {
 		oldGrid = new Grid(grid);
@@ -170,7 +171,7 @@ public class GaussConstraintRestoration implements Diagnostics {
 
 	/**
 	 * Restores the backup of the grid.
-	 * @param grid	Reference to the grid
+	 * @param grid  reference to the grid
 	 */
 	public void restoreGrid(Grid grid) {
 		grid.copyValuesFrom(oldGrid);

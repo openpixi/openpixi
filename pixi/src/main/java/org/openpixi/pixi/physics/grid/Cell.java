@@ -160,15 +160,15 @@ public class Cell implements Serializable {
 		
 		for (int i = 0; i < F.length; i++) {
 			for (int j = 0; j < F.length; j++) {
-				this.F[i][j] = other.F[i][j].mult(1.0);
+				this.F[i][j] = other.F[i][j].copy();
 			}
 		}
 
 		for(int i = 0; i < E.length; i++) {
-			this.E[i] = other.E[i].mult(1.0); // hack to get a copy of an algebra element
-			this.J[i] = other.J[i].mult(1.0);
-			this.U[i] = other.U[i].mult(1.0);
-			this.Unext[i] = other.Unext[i].mult(1.0);
+			this.E[i] = other.E[i].copy();
+			this.J[i] = other.J[i].copy();
+			this.U[i] = other.U[i].copy();
+			this.Unext[i] = other.Unext[i].copy();
 		}
 		this.rho.set(other.rho);
 	}

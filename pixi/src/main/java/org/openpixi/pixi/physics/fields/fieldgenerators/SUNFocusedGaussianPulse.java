@@ -1,10 +1,8 @@
 package org.openpixi.pixi.physics.fields.fieldgenerators;
 
-import org.openpixi.pixi.diagnostics.methods.GaussConstraintRestoration;
 import org.openpixi.pixi.math.SU2AlgebraElement;
 import org.openpixi.pixi.math.SU2GroupElement;
 import org.openpixi.pixi.physics.Simulation;
-import org.openpixi.pixi.physics.gauge.CoulombGauge;
 import org.openpixi.pixi.physics.grid.Cell;
 import org.openpixi.pixi.physics.grid.Grid;
 
@@ -34,14 +32,14 @@ public class SUNFocusedGaussianPulse implements IFieldGenerator {
 	/**
 	 * Creates the instance of the field generator.
 	 *
-	 * @param direction						spatial direction of the pulse
-	 * @param position						point of convergence
-	 * @param amplitudePolarisationAngle	angle of the polarisation vector
-	 * @param amplitudeColorDirection		color amplitude of the pulse
-	 * @param amplitudeMagnitude			overall magnitude of the total amplitude
-	 * @param sigma							width of the radial Gauss profile
-	 * @param angle							angular spread of the pulse at beginning
-	 * @param distance						starting distance from the point of convergence
+	 * @param direction                     spatial direction of the pulse
+	 * @param position                      point of convergence
+	 * @param amplitudePolarisationAngle    angle of the polarisation vector
+	 * @param amplitudeColorDirection       color amplitude of the pulse
+	 * @param amplitudeMagnitude            overall magnitude of the total amplitude
+	 * @param sigma                         width of the radial Gauss profile
+	 * @param angle                         angular spread of the pulse at beginning
+	 * @param distance                      starting distance from the point of convergence
 	 */
 	public SUNFocusedGaussianPulse(double[] direction,
 								   double[] position,
@@ -178,9 +176,9 @@ public class SUNFocusedGaussianPulse implements IFieldGenerator {
 
 	/**
 	 * Returns the polarisation direction of the pulse at a certain point.
-	 * @param spherical	point given in spherical coordinates
-	 * @param a			polarisation angle
-	 * @return			normalized polarisation vector at a given point
+	 * @param spherical point given in spherical coordinates
+	 * @param a         polarisation angle
+	 * @return          normalized polarisation vector at a given point
 	 */
 	private double[] getVectorFieldDirection(double[] spherical, double a) {
 		double[] vector = new double[3];
@@ -197,11 +195,11 @@ public class SUNFocusedGaussianPulse implements IFieldGenerator {
 	/**
 	 * A function which determines the shape of the pulse.
 	 *
-	 * @param r		radius
-	 * @param ph	azimuthal angle
-	 * @param th	polar angle
-	 * @param t 	time argument: this is used to correctly set E and U which are defined at different times.
-	 * @return		(scalar) profile of the pulse
+	 * @param r     radius
+	 * @param ph    azimuthal angle
+	 * @param th    polar angle
+	 * @param t     time argument: this is used to correctly set E and U which are defined at different times.
+	 * @return      (scalar) profile of the pulse
 	 */
 	private double pulseFunction(double r, double ph, double th, double t) {
 		// Shape for the radial part
@@ -225,12 +223,12 @@ public class SUNFocusedGaussianPulse implements IFieldGenerator {
 	/**
 	 * Auxiliary function determining the angular shape of the pulse.
 	 *
-	 * @param a		angle (can be polar or azimuthal)
-	 * @param a0	angular origin
-	 * @param da	angular spread of the pulse
-	 * @param p		geometric parameter determining the exact shape
-	 * @param q		geometric parameter determining the exact shape
-	 * @return		angular profile of the pulse
+	 * @param a     angle (can be polar or azimuthal)
+	 * @param a0    angular origin
+	 * @param da    angular spread of the pulse
+	 * @param p     geometric parameter determining the exact shape
+	 * @param q     geometric parameter determining the exact shape
+	 * @return      angular profile of the pulse
 	 */
 	private double angularShapeFunction(double a, double a0, double da, double p, double q) {
 		if (a0 - da < a && a < a0 + da) {
@@ -245,10 +243,10 @@ public class SUNFocusedGaussianPulse implements IFieldGenerator {
 	/**
 	 * Non-normalized Gaussian function
 	 *
-	 * @param x		function argument
-	 * @param x0	center of the gaussian
-	 * @param sx	width of the gaussian (sigma)
-	 * @return		gaussian profile
+	 * @param x     function argument
+	 * @param x0    center of the gaussian
+	 * @param sx    width of the gaussian (sigma)
+	 * @return      gaussian profile
 	 */
 	private double gaussian(double x, double x0, double sx) {
 		return Math.exp(-0.5 * Math.pow((x - x0) / sx, 2));
@@ -257,8 +255,8 @@ public class SUNFocusedGaussianPulse implements IFieldGenerator {
 	/**
 	 * Normalizes an n-dimensional double vector.
 	 *
-	 * @param vector	double vector
-	 * @return			normalized vector
+	 * @param vector    double vector
+	 * @return          normalized vector
 	 */
 	private double[] normalizeVector(double[] vector) {
 		double[] output = new double[vector.length];
@@ -273,10 +271,10 @@ public class SUNFocusedGaussianPulse implements IFieldGenerator {
 	 * Rotates a vector v with respect to the rotation axis k and rotation angle a.
 	 * This is an implementation of Rodrigues' rotation formula.
 	 *
-	 * @param v		vector which the rotation is applied to
-	 * @param k		rotation axis
-	 * @param a		rotation angle
-	 * @return		rotated vector
+	 * @param v     vector which the rotation is applied to
+	 * @param k     rotation axis
+	 * @param a     rotation angle
+	 * @return      rotated vector
 	 */
 	private double[] rotateVector(double[] v, double[] k, double a) {
 		if(Math.abs(a) > ALMOST_ZERO) {
@@ -296,9 +294,9 @@ public class SUNFocusedGaussianPulse implements IFieldGenerator {
 
 	/**
 	 * scalar product of two 3D vectors.
-	 * @param v1	vector 1
-	 * @param v2	vector 2
-	 * @return		v1.v2
+	 * @param v1    vector 1
+	 * @param v2    vector 2
+	 * @return      v1.v2
 	 */
 	private double dot(double[] v1, double[] v2) {
 		return v1[0]*v2[0] + v1[1]*v2[1] + v1[2]*v2[2];
@@ -307,8 +305,8 @@ public class SUNFocusedGaussianPulse implements IFieldGenerator {
 	/**
 	 * norm of a vector
 	 *
-	 * @param v	a vector
-	 * @return	|v|
+	 * @param v a vector
+	 * @return  |v|
 	 */
 	private double norm(double[] v) {
 		return Math.sqrt(dot(v,v));
@@ -316,9 +314,9 @@ public class SUNFocusedGaussianPulse implements IFieldGenerator {
 
 	/**
 	 * Cross product of two vectors in 3D.
-	 * @param v1	vector 1
-	 * @param v2	vector 2
-	 * @return	v1 x v2
+	 * @param v1    vector 1
+	 * @param v2    vector 2
+	 * @return      v1 x v2
 	 */
 	private double[] cross(double[] v1, double[] v2) {
 		return new double[]{
@@ -331,8 +329,8 @@ public class SUNFocusedGaussianPulse implements IFieldGenerator {
 	/**
 	 * Converts a cell position to the real position in the simulation box.
 	 *
-	 * @param cellPosition	cell position
-	 * @return				position in the simulation box
+	 * @param cellPosition  cell position
+	 * @return              position in the simulation box
 	 */
 	private double[] getPosition(int[] cellPosition) {
 		double[] position = new double[this.numberOfDimensions];
