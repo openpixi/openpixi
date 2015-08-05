@@ -2,6 +2,7 @@ package org.openpixi.pixi.physics.fields;
 
 import edu.emory.mathcs.jtransforms.fft.DoubleFFT_1D;
 import edu.emory.mathcs.jtransforms.fft.DoubleFFT_2D;
+import org.openpixi.pixi.math.ElementFactory;
 import org.openpixi.pixi.math.SU2AlgebraElement;
 import org.openpixi.pixi.physics.grid.Grid;
 import org.openpixi.pixi.math.AlgebraElement;
@@ -44,6 +45,9 @@ public class TempGaugeLightConePoissonSolver extends LightConePoissonSolver {
 		int chargeIndex;
 		int dirIndex, dirMin, dirMax;
 
+		ElementFactory factory = g.getElementFactory();
+		int colors = g.getNumberOfColors();
+
 		//double norm = Math.pow(g.getLatticeSpacing(), g.getNumberOfDimensions() - 1);
 		double norm = Math.pow(g.getLatticeSpacing(), truesize);
 		int[] pos = new int[position.length];
@@ -65,8 +69,8 @@ public class TempGaugeLightConePoissonSolver extends LightConePoissonSolver {
 			AlgebraElement[][] E1List = new AlgebraElement[size[0]][size[1]];
 			for(int j = 0; j < size[0]; j++) {
 				for (int w = 0; w < size[1]; w++) {
-					E0List[j][w] = new SU2AlgebraElement();
-					E1List[j][w] = new SU2AlgebraElement();
+					E0List[j][w] = factory.algebraZero(colors);
+					E1List[j][w] = factory.algebraZero(colors);
 				}
 			}
 
@@ -141,7 +145,7 @@ public class TempGaugeLightConePoissonSolver extends LightConePoissonSolver {
 			double[] charge = new double[2 * size[0]];
 			AlgebraElement[] E0List = new AlgebraElement[size[0]];
 			for(int j = 0; j < size[0]; j++) {
-				E0List[j] = new SU2AlgebraElement();
+				E0List[j] = factory.algebraZero(colors);
 			}
 
 			for(int i = 0; i < numberOfComponents; i++) {
