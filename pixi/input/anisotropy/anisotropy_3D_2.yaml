@@ -1,0 +1,52 @@
+gridStep: 1
+numberOfDimensions: 3
+numberOfColors: 2
+numberOfThreads: 12
+gridCells: [64, 64, 64]
+poissonsolver: empty
+timeStep: 0.3
+duration: 32.0
+couplingConstant: 2
+
+fields:
+  SUNFocusedGaussianPulses:
+    - dir: [0.0, 0.0, 1.0]
+      pos: [36, 32, 32]
+      polarisationAngle: 0
+      useRandomPolarisation: false
+      aColor: [1.0, 0.0, 0.0]
+      a: 2
+      sigma: 2
+      angle: 1.0
+      distance: 16.0
+    - dir: [0.0, 0.0, -1.0]
+      pos: [28, 32, 32]
+      polarisationAngle: 1.57
+      useRandomPolarisation: false
+      aColor: [0.0, 1.0, 0.0]
+      a: 2
+      sigma: 2
+      angle: 1.0
+      distance: 16.0
+
+
+output:
+  gaussConstraintRestoration:
+    - interval: 10.0
+      offset: 0.0
+      gamma: 0.2
+      maxIterations: 50
+      accuracyGoal: 10e-4
+      applyOnlyOnce: true
+
+  occupationNumbersInTime:
+    - path: anisotropy2.csv
+      outputType: csv_with_vectors
+      interval: 32.0
+      colorful: false
+
+# Generated panel code:
+panels:
+  energyDensity2DGLPanel:
+    automaticScaling: false
+    scaleFactor: 200.0
