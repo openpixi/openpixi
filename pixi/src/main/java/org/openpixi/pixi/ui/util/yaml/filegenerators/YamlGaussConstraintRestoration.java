@@ -33,12 +33,17 @@ public class YamlGaussConstraintRestoration {
 	public double accuracyGoal = 10-4;
 
 	/**
+	 * Option to apply the iteration only once at the time defined by time offset.
+	 */
+	public boolean applyOnlyOnce = false;
+
+	/**
 	 * Returns an instance of GaussConstraintRestoration according to the parameters in the YAML file.
 	 *
 	 * @return Instance of GaussConstraintRestoration.
 	 */
 	public GaussConstraintRestoration getFileGenerator() {
-		GaussConstraintRestoration fileGen = new GaussConstraintRestoration(interval, offset, gamma, maxIterations, accuracyGoal);
+		GaussConstraintRestoration fileGen = new GaussConstraintRestoration(interval, offset, gamma, maxIterations, accuracyGoal, applyOnlyOnce);
 		return fileGen;
 	}
 }

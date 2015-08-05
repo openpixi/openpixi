@@ -19,9 +19,11 @@ public class GaussConstraintRestoration implements Diagnostics {
 	private int stepInterval;
 	private double timeOffset;
 	private int stepOffset;
-	private double gamma = 0.5;
-	private double accuracy = 10e-4;
-	private int maxIterations = 100;
+	private double gamma;
+	private double accuracy;
+	private int maxIterations;
+	private boolean applyOnlyOnce;
+	private boolean alreadyApplied;
 
 
 	private GroupElement[] gaussViolation;
@@ -37,13 +39,15 @@ public class GaussConstraintRestoration implements Diagnostics {
 	 * @param gamma				parameter controlling the convergence of the algorithm. Smaller values lead to better convergence but need more iterations.
 	 * @param maxIterations		maximum number of iterations before the algorithm stops.
 	 * @param accuracy			accuracy goal for the algorithm. if the accuracy goal is reached the iteration stops.
+	 * @param applyOnlyOnce		apply the algorithm only once at time offset.
 	 */
-	public GaussConstraintRestoration(double timeInterval, double timeOffset, double gamma, int maxIterations, double accuracy) {
+	public GaussConstraintRestoration(double timeInterval, double timeOffset, double gamma, int maxIterations, double accuracy, boolean applyOnlyOnce) {
 		this.timeInterval = timeInterval;
 		this.timeOffset = timeOffset;
 		this.gamma = gamma;
 		this.maxIterations = maxIterations;
 		this.accuracy = accuracy;
+		this.applyOnlyOnce = applyOnlyOnce;
 	}
 
 	public void initialize(Simulation s) {
@@ -52,8 +56,17 @@ public class GaussConstraintRestoration implements Diagnostics {
 	}
 
 	public void calculate(Grid grid, ArrayList<IParticle> particles, int steps) throws IOException {
-		if ((steps - stepOffset) % stepInterval == 0) {
-			iterateRestorationAlgorithm(grid);
+		if(!applyOnlyOnce){
+			if ((steps - stepOffset) % stepInterval == 0) {
+				iterateRestorationAlgorithm(grid);
+			}
+		} else {
+			if(!alreadyApplied) {
+				if(steps == stepOffset) {
+					iterateRestorationAlgorithm(grid);
+					alreadyApplied = true;
+				}
+			}
 		}
 	}
 
