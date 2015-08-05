@@ -24,7 +24,7 @@ output:
       offset: 5.0
       gamma: 0.5
       maxIterations: 1000
-      accuracyGoal: 10e-4
+      absoluteValue: 10e-7
 
 # Generated panel code:
 panels:

@@ -32,11 +32,9 @@ fields:
 
 output:
   gaussConstraintRestoration:
-    - interval: 10.0
-      offset: 0.0
       gamma: 0.2
       maxIterations: 50
-      accuracyGoal: 10e-4
+      absoluteValue: 10e-9
       applyOnlyOnce: true
 
   occupationNumbersInTime:

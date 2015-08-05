@@ -10,12 +10,12 @@ public class YamlGaussConstraintRestoration {
 	/**
 	 * Measurement interval.
 	 */
-	public double interval;
+	public double interval = 1.0;
 
 	/**
 	 * Measurement interval offset.
 	 */
-	public double offset;
+	public double offset = 0.0;
 
 	/**
 	 * Parameter for the restoration algorithm. Should be tuned of optimality.
@@ -28,9 +28,9 @@ public class YamlGaussConstraintRestoration {
 	public int maxIterations = 100;
 
 	/**
-	 * Accuracy goal for the restoration algorithm. If the desired accuracy is reached the iteration stops.
+	 * Absolute value goal for the restoration algorithm. If the desired absolute value is reached the iteration stops.
 	 */
-	public double accuracyGoal = 10-4;
+	public double absoluteValue = 10-8;
 
 	/**
 	 * Option to apply the iteration only once at the time defined by time offset.
@@ -43,7 +43,7 @@ public class YamlGaussConstraintRestoration {
 	 * @return Instance of GaussConstraintRestoration.
 	 */
 	public GaussConstraintRestoration getFileGenerator() {
-		GaussConstraintRestoration fileGen = new GaussConstraintRestoration(interval, offset, gamma, maxIterations, accuracyGoal, applyOnlyOnce);
+		GaussConstraintRestoration fileGen = new GaussConstraintRestoration(interval, offset, gamma, maxIterations, absoluteValue, applyOnlyOnce);
 		return fileGen;
 	}
 }

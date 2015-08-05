@@ -20,7 +20,7 @@ public class GaussConstraintRestoration implements Diagnostics {
 	private double timeOffset;
 	private int stepOffset;
 	private double gamma;
-	private double accuracy;
+	private double absoluteValue;
 	private int maxIterations;
 	private boolean applyOnlyOnce;
 	private boolean alreadyApplied;
@@ -38,15 +38,15 @@ public class GaussConstraintRestoration implements Diagnostics {
 	 * @param timeOffset		time offset for the diagnostic so that it does not run in the first simulation step.
 	 * @param gamma				parameter controlling the convergence of the algorithm. Smaller values lead to better convergence but need more iterations.
 	 * @param maxIterations		maximum number of iterations before the algorithm stops.
-	 * @param accuracy			accuracy goal for the algorithm. if the accuracy goal is reached the iteration stops.
+	 * @param absoluteValue		absoluteValue goal for the algorithm. if the absolute value goal is reached the iteration stops.
 	 * @param applyOnlyOnce		apply the algorithm only once at time offset.
 	 */
-	public GaussConstraintRestoration(double timeInterval, double timeOffset, double gamma, int maxIterations, double accuracy, boolean applyOnlyOnce) {
+	public GaussConstraintRestoration(double timeInterval, double timeOffset, double gamma, int maxIterations, double absoluteValue, boolean applyOnlyOnce) {
 		this.timeInterval = timeInterval;
 		this.timeOffset = timeOffset;
 		this.gamma = gamma;
 		this.maxIterations = maxIterations;
-		this.accuracy = accuracy;
+		this.absoluteValue = absoluteValue;
 		this.applyOnlyOnce = applyOnlyOnce;
 	}
 
@@ -78,25 +78,34 @@ public class GaussConstraintRestoration implements Diagnostics {
 		computeGaussViolation(grid);
 		oldTotalGaussViolation = totalGaussViolation;
 		for(int i = 0 ; i < maxIterations; i++) {
+
+			if(totalGaussViolation < absoluteValue) {
+				// The algorithm finished because the desired absolute value goal was reached.
+				System.out.println("GaussConstraintRestoration: Reached absolute value at step #" + i);
+				break;
+			}
+
 			// Create backup of the grid.
 			backupGrid(grid);
 
 			applyCorrection(grid, gamma);
 			computeGaussViolation(grid);
-			double x = (oldTotalGaussViolation - totalGaussViolation) / oldTotalGaussViolation;
+			double x = oldTotalGaussViolation - totalGaussViolation;
 			if(x < 0) {
 				// The algorithm finished because the last iteration lead to a worsening of the Gauss law violation.
 				restoreGrid(grid);
 				System.out.println("GaussConstraintRestoration: Reached instability at step #" + i);
 				break;
 			}
-			if(Math.abs(x) < accuracy) {
-				// The algorithm finished because the desired accuracy goal was reached.
-				System.out.println("GaussConstraintRestoration: Reached accuracy goal at step #" + i);
-				break;
-			}
+
 			oldTotalGaussViolation = totalGaussViolation;
+
+			if(i == maxIterations-1) {
+				// The algorithm finished because the maximum number of iterations was reached.
+				System.out.println("GaussConstraintRestoration: Reached maximum number of iterations at step #" + i);
+			}
 		}
+
 	}
 
 	/**
@@ -124,6 +133,7 @@ public class GaussConstraintRestoration implements Diagnostics {
 			gaussViolation[i] = C.mult(factor);
 			totalGaussViolation += gaussViolation[i].proj().sub(grid.getRho(i)).square();
 		}
+		totalGaussViolation /= numberOfCells;
 	}
 
 	/**
