@@ -32,7 +32,7 @@ fields:
 
 output:
   gaussConstraintRestoration:
-      gamma: 0.2
+    - gamma: 0.2
       maxIterations: 50
       absoluteValue: 10e-9
       applyOnlyOnce: true
