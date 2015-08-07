@@ -168,14 +168,20 @@ public class SU3AlgebraElement implements AlgebraElement {
 	 * Vector is stored as three real components followed by three imag. components
 	 * @param vector to be normalized
 	 */
-	private void normalize(double[] vector) {
+	private boolean normalize(double[] vector) {
 		double norm = 0;
 		for (int i = 0; i < 6; i++) {
 			norm += vector[i] * vector[i];
 		}
 		norm = Math.sqrt(norm);
-		for (int i = 0; i < 6; i++) {
-			vector[i] /= norm;
+
+		if (Math.abs(norm) < 10E-10) {
+			return false;
+		} else {
+			for (int i = 0; i < 6; i++) {
+				vector[i] /= norm;
+			}
+			return true;
 		}
 	}
 
@@ -204,6 +210,9 @@ public class SU3AlgebraElement implements AlgebraElement {
 		// preRad is always negative and real here so rad = i radIm = i sqrt(-preRad)
 		double preRad, radIm;
 		preRad = det*det + Math.pow(linTerm,3)*4/27;
+		if (Math.abs(preRad) < 10E-10) {
+			preRad = 0;
+		}
 		radIm = Math.sqrt(-preRad);
 
 		// convert W^3 to polar
@@ -226,7 +235,11 @@ public class SU3AlgebraElement implements AlgebraElement {
 		// (these matrices are hermitian, so eigenvalues better be real)
 		double[] phases = new double[3];
 		for (int i = 0; i < 3; i++) {
-			phases[i] = r * Math.cos(ths[i]) - (linTerm * Math.cos(ths[i])) / (3 * r);
+			if (Math.abs(r) < 10E-10) {
+				phases[i] = 0;
+			} else {
+				phases[i] = r * Math.cos(ths[i]) - (linTerm * Math.cos(ths[i])) / (3 * r);
+			}
 		}
 
 		// now use eigenvalues to compute orthonormal eigenvectors
@@ -239,18 +252,49 @@ public class SU3AlgebraElement implements AlgebraElement {
 		double[][] vectors = new double[3][6];
 		for (int i = 0; i < 3; i++) {
 			// product of other two phases besides phases[i]
-			double otherPhaseProduct = phases[0] * phases[1] * phases[2] / phases[i];
+			double otherPhaseProduct;
+			if (phases[i] != 0) {
+				otherPhaseProduct = phases[0] * phases[1] * phases[2] / phases[i];
+			} else {
+				otherPhaseProduct = phases[(i + 1) % 3] * phases[(i + 2) % 3];
+			}
 			// sum of other two phases besides phases[i]
 			double otherPhaseSum = phases[0] + phases[1] + phases[2] - phases[i];
 
 			vectors[i][0] = v[0]*v[0]+v[1]*v[1]+v[2]*v[2]+v[3]*v[3]+v[6]*v[6]+otherPhaseProduct-v[0]*otherPhaseSum;
-			vectors[i][1] = v[0]*v[1]+v[2]*v[5]+v[6]*v[7]+v[1]*(v[4]-otherPhaseSum);
-			vectors[i][2] = v[0]*v[2]+v[1]*v[5]-v[3]*v[7]+v[2]*(v[8]-otherPhaseSum);
+			vectors[i][1] = v[2]*v[5]+v[6]*v[7]+v[1]*(v[0]+v[4]-otherPhaseSum);
+			vectors[i][2] = v[1]*v[5]-v[3]*v[7]+v[2]*(v[0]+v[8]-otherPhaseSum);
 			vectors[i][3] = 0;
-			vectors[i][4] = -v[0]*v[3]-v[5]*v[6]+v[2]*v[7]+v[3]*(otherPhaseSum-v[4]);
-			vectors[i][5] = -v[3]*v[5]-v[0]*v[6]-v[1]*v[7]+v[6]*(otherPhaseSum-v[8]);
+			vectors[i][4] = -v[5]*v[6]+v[2]*v[7]+v[3]*(otherPhaseSum-v[0]-v[4]);
+			vectors[i][5] = -v[3]*v[5]-v[1]*v[7]+v[6]*(otherPhaseSum-v[0]-v[8]);
 
-			normalize(vectors[i]);
+			boolean done = normalize(vectors[i]);
+
+			if (!done) {
+				vectors[i][0] = v[2]*v[5]+v[6]*v[7]+v[1]*(v[0]+v[4]-otherPhaseSum);
+				vectors[i][1] = v[1]*v[1]+v[3]*v[3]+v[4]*v[4]+v[5]*v[5]+v[7]*v[7]+otherPhaseProduct-v[4]*otherPhaseSum;
+				vectors[i][2] = v[1]*v[2]+v[3]*v[6]+v[5]*(v[4]+v[8]-otherPhaseSum);
+				vectors[i][3] = v[5]*v[6]-v[2]*v[7]-v[3]*(otherPhaseSum-v[0]-v[4]);
+				vectors[i][4] = 0;
+				vectors[i][5] = v[2]*v[3]-v[1]*v[6]+v[7]*(otherPhaseSum-v[4]-v[8]);
+
+				done = normalize(vectors[i]);
+
+				if (!done) {
+					vectors[i][0] = v[1]*v[5]-v[3]*v[7]+v[2]*(v[0]+v[8]-otherPhaseSum);
+					vectors[i][1] = v[1]*v[2]+v[3]*v[6]+v[5]*(v[4]+v[8]-otherPhaseSum);
+					vectors[i][2] = v[2]*v[2]+v[5]*v[5]+v[6]*v[6]+v[7]*v[7]+v[8]*v[8]+otherPhaseProduct-v[8]*otherPhaseSum;
+					vectors[i][3] = v[3]*v[5]+v[1]*v[7]-v[6]*(otherPhaseSum-v[0]-v[8]);
+					vectors[i][4] = v[1]*v[6]-v[2]*v[3]-v[7]*(otherPhaseSum-v[4]-v[8]);
+					vectors[i][5] = 0;
+
+					done = normalize(vectors[i]);
+
+					if (!done) {
+						vectors[i][i] = 1;
+					}
+				}
+			}
 		}
 
 		// take log of eigenvalue matrix

@@ -211,14 +211,19 @@ public class SU3GroupElement implements GroupElement {
 	 * Vector is stored as three real components followed by three imag. components
 	 * @param vector to be normalized
 	 */
-	private void normalize(double[] vector) {
+	private boolean normalize(double[] vector) {
 		double norm = 0;
 		for (int i = 0; i < 6; i++) {
 			norm += vector[i] * vector[i];
 		}
 		norm = Math.sqrt(norm);
-		for (int i = 0; i < 6; i++) {
-			vector[i] /= norm;
+		if (Math.abs(norm) < 10E-10) {
+			return false;
+		} else {
+			for (int i = 0; i < 6; i++) {
+				vector[i] /= norm;
+			}
+			return true;
 		}
 	}
 
@@ -334,7 +339,33 @@ public class SU3GroupElement implements GroupElement {
 			vectors[i][4] = (e[0]+e[4]-otherValueReSum)*e[12]+e[15]*e[5]+(e[9]+e[13]-otherValueImSum)*e[3]+e[6]*e[14];
 			vectors[i][5] = (e[0]+e[8]-otherValueReSum)*e[15]+e[12]*e[7]+(e[9]+e[17]-otherValueImSum)*e[6]+e[3]*e[16];
 
-			normalize(vectors[i]);
+			boolean done = normalize(vectors[i]);
+
+			if (!done) {
+				vectors[i][0] = (e[0]+e[4]-otherValueReSum)*e[1]+e[7]*e[2]+(otherValueImSum-e[9]-e[13])*e[10]-e[16]*e[11];
+				vectors[i][1] = (e[4]-otherValueReSum)*e[4]+(otherValueImSum-e[13])*e[13]+otherValueReProduct-otherValueImProduct-e[10]*e[12]-e[14]*e[16]+e[1]*e[3]+e[5]*e[7];
+				vectors[i][2] = (e[4]+e[8]-otherValueReSum)*e[7]+e[1]*e[6]+(otherValueImSum-e[13]-e[17])*e[16]-e[10]*e[15];
+				vectors[i][3] = (e[0]+e[4]-otherValueReSum)*e[10]+e[16]*e[2]+(e[9]+e[13]-otherValueImSum)*e[1]+e[7]*e[11];
+				vectors[i][4] = (otherValueReSum-e[4])*(otherValueImSum-e[13])-otherReImSum+e[1]*e[12]+e[16]*e[5]+e[10]*e[3]+e[14]*e[7]+e[4]*e[13];
+				vectors[i][5] = (e[4]+e[8]-otherValueReSum)*e[16]+e[10]*e[6]+(e[13]+e[17]-otherValueImSum)*e[7]+e[1]*e[15];
+
+				done = normalize(vectors[i]);
+
+				if (!done) {
+					vectors[i][0] = (e[0]+e[8]-otherValueReSum)*e[2]+e[1]*e[5]+(otherValueImSum-e[9]-e[17])*e[11]-e[10]*e[14];
+					vectors[i][1] = (e[4]+e[8]-otherValueReSum)*e[5]+e[2]*e[3]+(otherValueImSum-e[13]-e[17])*e[14]-e[11]*e[12];
+					vectors[i][2] = (e[8]-otherValueReSum)*e[8]+(otherValueImSum-e[17])*e[17]+otherValueReProduct-otherValueImProduct-e[14]*e[16]-e[11]*e[15]+e[5]*e[7]+e[2]*e[6];
+					vectors[i][3] = (e[0]+e[8]-otherValueReSum)*e[11]+e[14]*e[1]+(e[9]+e[17]-otherValueImSum)*e[2]+e[5]*e[10];
+					vectors[i][4] = (e[4]+e[8]-otherValueReSum)*e[14]+e[11]*e[3]+(e[13]+e[17]-otherValueImSum)*e[5]+e[2]*e[12];
+					vectors[i][5] = (otherValueReSum-e[8])*(otherValueImSum-e[17])-otherReImSum+e[7]*e[14]+e[15]*e[2]+e[16]*e[5]+e[11]*e[6]+e[8]*e[17];
+
+					done = normalize(vectors[i]);
+
+					if (!done) {
+						vectors[i][i] = 1;
+					}
+				}
+			}
 		}
 
 		// take log of eigenvalue matrix
