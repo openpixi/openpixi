@@ -426,7 +426,7 @@ public class SU3GroupElement implements GroupElement {
 
 			boolean done = normalize(vectors[1]) && normalize(vectors[2]);
 
-			if (done) {
+			if (!done) {
 				vectors[1][0] = -e[4] + valuesRe[1];
 				vectors[1][1] = e[3];
 				vectors[1][2] = 0;
@@ -443,7 +443,7 @@ public class SU3GroupElement implements GroupElement {
 
 				done = normalize(vectors[1]) && normalize(vectors[2]);
 
-				if (done) {
+				if (!done) {
 					vectors[1][0] = -e[7];
 					vectors[1][1] = e[6];
 					vectors[1][2] = 0;
