@@ -11,7 +11,7 @@ package org.openpixi.pixi.math;
  */
 public class SU3GroupElement implements GroupElement {
 
-	private final double eigenvalueAccuracy = 1.E-12;
+	private final double eigenvalueAccuracy = 1.E-7;
 
 	private double[] e;
 
