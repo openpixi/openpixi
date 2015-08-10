@@ -200,7 +200,8 @@ public class TempGaugeLightConePoissonSolver extends LightConePoissonSolver {
 			System.out.println("LightConePoissonSolver: Poisson solver not applicable!");
 		}
 
-
+		g.resetCharge();
+		g.resetCurrent();
 	}
 
 }

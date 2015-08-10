@@ -31,7 +31,7 @@ public class SU2LightConeGaussPulseCurrent implements ICurrentGenerator {
 		this.magnitude = magnitude;
 		this.width = width;
 		this.orientation = orientation;
-		this.poisson = new TempGaugeLightConeGaussPoissonSolver(location, direction, orientation, width);
+		this.poisson = new TempGaugeLightConeGaussPoissonSolver(location, direction, Integer.signum(orientation), width);
 	}
 
 	public void initializeCurrent(Simulation s) {
@@ -80,17 +80,14 @@ public class SU2LightConeGaussPulseCurrent implements ICurrentGenerator {
 			Find the nearest grid point and apply the current configuration to the cell current.
 		 */
 		double position = location[direction] + speed * time * at;
+		double posCharge = position - speed*at/2;
 
 		for (int i = 0; i < numberOfCells; i++) {
 			pos[direction] = i;
 			int cellIndex = grid.getCellIndex(pos);
-			int chargeIndex = cellIndex;
-			if(orientation < 0) {
-				chargeIndex = grid.shift(chargeIndex, direction, 1);
-			}
 
 			grid.addJ(cellIndex, direction, fieldAmplitude.mult(shape(position, i*as)));
-			grid.addRho(chargeIndex, chargeAmplitude.mult(shape(position, i*as)));
+			grid.addRho(cellIndex, chargeAmplitude.mult(shape(posCharge, i*as)));
 		}
 	}
 
@@ -109,7 +106,9 @@ public class SU2LightConeGaussPulseCurrent implements ICurrentGenerator {
 
 	private double shape(double mean, double x) {
 		Gaussian gauss = new Gaussian(mean, width);
+		//Gaussian gauss = new Gaussian(1.0/(width*Math.sqrt(2*Math.PI)), mean, width);
 		double value = gauss.value(x);
+		//double value = Math.exp(-Math.pow(x - mean, 2)/(2*width*width))/(width*Math.sqrt(2*Math.PI));
 		return value;
 	}
 }

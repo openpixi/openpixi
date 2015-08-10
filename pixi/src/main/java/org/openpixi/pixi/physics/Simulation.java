@@ -233,9 +233,14 @@ public class Simulation {
 
 		// Copy current generators from Settings.
 		currentGenerators = settings.getCurrentGenerators();
-		// Generate external currents on the grid!!
+		// Initialize external currents on the grid!!
 		for (ICurrentGenerator c: currentGenerators) {
 			c.initializeCurrent(this);
+		}
+
+		// Generate external currents on the grid!!
+		for (ICurrentGenerator c: currentGenerators) {
+			c.applyCurrent(this);
 		}
 
 		/**
