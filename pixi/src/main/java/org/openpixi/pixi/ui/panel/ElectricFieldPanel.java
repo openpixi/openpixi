@@ -3,15 +3,17 @@ package org.openpixi.pixi.ui.panel;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.util.ArrayList;
+
 import javax.swing.Box;
 import org.openpixi.pixi.physics.Simulation;
 import org.openpixi.pixi.physics.gauge.CoulombGauge;
-import org.openpixi.pixi.physics.gauge.RandomGauge;
 import org.openpixi.pixi.physics.grid.Grid;
 import org.openpixi.pixi.physics.particles.IParticle;
 import org.openpixi.pixi.ui.SimulationAnimation;
 import org.openpixi.pixi.ui.panel.properties.BooleanArrayProperties;
 import org.openpixi.pixi.ui.panel.properties.ColorProperties;
+import org.openpixi.pixi.ui.panel.properties.ComboBoxProperties;
 import org.openpixi.pixi.ui.panel.properties.GaugeProperties;
 import org.openpixi.pixi.ui.panel.properties.ScaleProperties;
 
@@ -26,6 +28,7 @@ public class ElectricFieldPanel extends AnimationPanel {
 	ScaleProperties scaleProperties;
 	GaugeProperties gaugeProperties;
 	public BooleanArrayProperties showFieldProperties;
+	public ComboBoxProperties surfaceProperties;
 
 	public final int INDEX_E = 0;
 	public final int INDEX_U = 1;
@@ -64,6 +67,15 @@ public class ElectricFieldPanel extends AnimationPanel {
 		scaleProperties = new ScaleProperties(simulationAnimation);
 		gaugeProperties = new GaugeProperties(simulationAnimation);
 		showFieldProperties = new BooleanArrayProperties(simulationAnimation, fieldLabel, fieldInit);
+
+		// Construct array:
+		int boxsize = simulationAnimation.getSimulation().grid.getNumCells(1);
+		ArrayList<String> entries = new ArrayList<String>();
+		entries.add("All");
+		for (int i = 0; i < boxsize; i++) {
+			entries.add("" + i);
+		}
+		surfaceProperties = new ComboBoxProperties(simulationAnimation, "Which line", entries.toArray(new String[0]), 0);
 	}
 
 	/** Display the particles */
@@ -154,7 +166,19 @@ public class ElectricFieldPanel extends AnimationPanel {
 
 		graph.setColor(fieldColors[type]);
 
-		for(int k = 0; k < s.grid.getNumCells(1); k++)
+		int kmin = 0;
+		int kmax = 0;
+		if (surfaceProperties.getIndex() == 0) {
+			// Show all surfaces
+			kmin = 0;
+			kmax = s.grid.getNumCells(1);
+		} else {
+			// Show only selected surface.
+			// Index differs by one:
+			kmin = surfaceProperties.getIndex() - 1;
+			kmax = kmin + 1;
+		}
+		for(int k = kmin; k < kmax; k++)
 		{
 			int newPosition = 0;
 			int newValue = 0;
@@ -206,6 +230,7 @@ public class ElectricFieldPanel extends AnimationPanel {
 		addLabel(box, "Electric field panel");
 		showFieldProperties.addComponents(box);
 		colorProperties.addComponents(box);
+		surfaceProperties.addComponents(box);
 		scaleProperties.addComponents(box);
 		gaugeProperties.addComponents(box);
 	}
