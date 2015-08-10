@@ -56,6 +56,7 @@ public class StringProperties {
 	{
 		this.value = value;
 		textField.setText(value);
+		simulationAnimation.repaint();
 	}
 
 	class TextFieldListener implements ActionListener {
