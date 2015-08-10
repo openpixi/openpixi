@@ -394,7 +394,7 @@ public class Grid {
 	 * Copy U and E field values from one grid to another.
 	 * @param grid
 	 */
-	private void copyValuesFrom(Grid grid) {
+	public void copyValuesFrom(Grid grid) {
 		int numberOfCells = grid.getTotalNumberOfCells();
 		for (int ci = 0; ci < numberOfCells; ci++) {
 			for (int d = 0; d < numDim; d++) {
