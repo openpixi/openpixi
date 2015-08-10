@@ -247,17 +247,32 @@ public class SU3AlgebraElement implements AlgebraElement {
 		// we use this result, but we only need one column so we can avoid doing the full multiplication
 		// optimized result computed in Mathematica, of course
 
+		// if there are degenerate eigenvalues, only use vector method for nondegenerate value
+		int phaseNum = 3;
+		int notDegenerate = 3;
+		if (Math.abs(phases[0] - phases[1]) < 10E-10) {
+			double temp = phases[2];
+			phases[2] = phases[0];
+			phases[0] = temp;
+			phaseNum = 1;
+			notDegenerate = 2;
+		} else if (Math.abs(phases[0] - phases[2]) < 10E-10) {
+			double temp = phases[1];
+			phases[1] = phases[0];
+			phases[0] = temp;
+			phaseNum = 1;
+			notDegenerate  = 1;
+		} else if (Math.abs(phases[1] - phases[2]) < 10E-10) {
+			phaseNum = 1;
+			notDegenerate = 0;
+		}
+
 		// get one eigenvector for each value
 		// normalize vectors in place
 		double[][] vectors = new double[3][6];
-		for (int i = 0; i < 3; i++) {
+		for (int i = 0; i < phaseNum; i++) {
 			// product of other two phases besides phases[i]
-			double otherPhaseProduct;
-			if (phases[i] != 0) {
-				otherPhaseProduct = phases[0] * phases[1] * phases[2] / phases[i];
-			} else {
-				otherPhaseProduct = phases[(i + 1) % 3] * phases[(i + 2) % 3];
-			}
+			double otherPhaseProduct = phases[(i + 1) % 3] * phases[(i + 2) % 3];
 			// sum of other two phases besides phases[i]
 			double otherPhaseSum = phases[0] + phases[1] + phases[2] - phases[i];
 
@@ -291,7 +306,82 @@ public class SU3AlgebraElement implements AlgebraElement {
 					done = normalize(vectors[i]);
 
 					if (!done) {
-						vectors[i][i] = 1;
+						for (int j = 0; j < 6; j++) {
+							vectors[i][j] = 0;
+						}
+						if (notDegenerate == 3) {
+							vectors[i][i] = 1;
+						} else {
+							vectors[i][notDegenerate] = 1;
+						}
+					}
+				}
+			}
+		}
+
+		// if there are degenerate eigenvalues use row reduction to find two orthogonal eigenvectors
+		// for a given row of our hermitian matrix (a0 a1 a2), these vectors are
+		//  		-a1    a0     0
+		// and		a0*a2  a1*a2  -|a0|^2-|a1|^2
+		if (phaseNum == 1) {
+
+			vectors[1][0] = -v[1];
+			vectors[1][1] = v[0] - phases[1];
+			vectors[1][2] = 0;
+			vectors[1][3] = -v[3];
+			vectors[1][4] = 0;
+			vectors[1][5] = 0;
+
+			vectors[2][0] = v[2] * (v[0] - phases[2]);
+			vectors[2][1] = v[1]*v[2] + v[3]*v[6];
+			vectors[2][2] = (phases[2] - v[0]) * (v[0] - phases[2]) - v[1]*v[1] - v[3]*v[3];
+			vectors[2][3] = v[6] * (v[0] - phases[2]);
+			vectors[2][4] = v[1]*v[6] - v[2]*v[3];
+			vectors[2][5] = 0;
+
+			boolean done = normalize(vectors[1]) && normalize(vectors[2]);
+
+			if (!done) {
+				vectors[1][0] = phases[1] - v[4];
+				vectors[1][1] = v[1];
+				vectors[1][2] = 0;
+				vectors[1][3] = 0;
+				vectors[1][4] = -v[3];
+				vectors[1][5] = 0;
+
+				vectors[2][0] = v[1]*v[5] - v[3]*v[7];
+				vectors[2][1] = v[5] * (v[4] - phases[2]);
+				vectors[2][2] = (phases[2] - v[4]) * (v[4] - phases[2]) - v[1]*v[1] - v[3]*v[3];
+				vectors[2][3] = v[1]*v[7] + v[3]*v[5];
+				vectors[2][4] = v[7] * (v[4] - phases[2]);
+				vectors[2][5] = 0;
+
+				done = normalize(vectors[1]) && normalize(vectors[2]);
+
+				if (!done) {
+					vectors[1][0] = -v[5];
+					vectors[1][1] = v[2];
+					vectors[1][2] = 0;
+					vectors[1][3] = v[7];
+					vectors[1][4] = -v[6];
+					vectors[1][5] = 0;
+
+					vectors[2][0] = v[2] * (v[8] - phases[2]);
+					vectors[2][1] = v[5] * (v[8] - phases[2]);
+					vectors[2][2] = -v[2]*v[2] - v[5]*v[5] - v[6]*v[6] - v[7]*v[7];
+					vectors[2][3] = v[6] * (v[8] - phases[2]);
+					vectors[2][4] = v[7] * (v[8] - phases[2]);
+					vectors[2][5] = 0;
+
+					done = normalize(vectors[1]) && normalize(vectors[2]);
+
+					if (!done) {
+						for (int j = 0; j < 6; j++) {
+							vectors[1][j] = 0;
+							vectors[2][j] = 0;
+						}
+						vectors[1][(notDegenerate + 1) % 3] = 1;
+						vectors[2][(notDegenerate + 2) % 3] = 1;
 					}
 				}
 			}
