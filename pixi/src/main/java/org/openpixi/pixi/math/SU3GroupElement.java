@@ -11,6 +11,8 @@ package org.openpixi.pixi.math;
  */
 public class SU3GroupElement implements GroupElement {
 
+	private final double eigenvalueAccuracy = 1.E-12;
+
 	private double[] e;
 
 	public SU3GroupElement() {
@@ -286,7 +288,7 @@ public class SU3GroupElement implements GroupElement {
 
 		double preRad, radRe;
 		preRad = constTermRe*constTermRe - constTermIm*constTermIm + 4*linTermRe*(linTermRe*linTermRe - 3*linTermIm*linTermIm)/27;
-		if (Math.abs(preRad) < 10E-10) {
+		if (preRad < 0) {
 			preRad = 0;
 		}
 		radRe = Math.sqrt(preRad);
@@ -323,7 +325,7 @@ public class SU3GroupElement implements GroupElement {
 		// if there are degenerate eigenvalues, only use vector method for nondegenerate value
 		int phaseNum = 3;
 		int notDegenerate = 3;
-		if (Math.abs(valuesRe[0] - valuesRe[1]) < 10E-10 && Math.abs(valuesIm[0] - valuesIm[1]) < 10E-10) {
+		if (Math.abs(valuesRe[0] - valuesRe[1]) < eigenvalueAccuracy && Math.abs(valuesIm[0] - valuesIm[1]) < eigenvalueAccuracy) {
 			double temp = valuesRe[2];
 			valuesRe[2] = valuesRe[0];
 			valuesRe[0] = temp;
@@ -332,7 +334,7 @@ public class SU3GroupElement implements GroupElement {
 			valuesIm[0] = temp;
 			phaseNum = 1;
 			notDegenerate = 2;
-		} else if (Math.abs(valuesRe[0] - valuesRe[2]) < 10E-10 && Math.abs(valuesIm[0] - valuesIm[2]) < 10E-10) {
+		} else if (Math.abs(valuesRe[0] - valuesRe[2]) < eigenvalueAccuracy && Math.abs(valuesIm[0] - valuesIm[2]) < eigenvalueAccuracy) {
 			double temp = valuesRe[1];
 			valuesRe[1] = valuesRe[0];
 			valuesRe[0] = temp;
@@ -341,7 +343,7 @@ public class SU3GroupElement implements GroupElement {
 			valuesIm[0] = temp;
 			phaseNum = 1;
 			notDegenerate  = 1;
-		} else if (Math.abs(valuesRe[1] - valuesRe[2]) < 10E-10 && Math.abs(valuesIm[1] - valuesIm[2]) < 10E-10) {
+		} else if (Math.abs(valuesRe[1] - valuesRe[2]) < eigenvalueAccuracy && Math.abs(valuesIm[1] - valuesIm[2]) < eigenvalueAccuracy) {
 			phaseNum = 1;
 			notDegenerate = 0;
 		}

@@ -11,6 +11,8 @@ package org.openpixi.pixi.math;
  */
 public class SU3AlgebraElement implements AlgebraElement {
 
+	private final double eigenvalueAccuracy = 1.E-12;
+
 	protected double[] v;
 
 	public SU3AlgebraElement() {
@@ -210,7 +212,7 @@ public class SU3AlgebraElement implements AlgebraElement {
 		// preRad is always negative and real here so rad = i radIm = i sqrt(-preRad)
 		double preRad, radIm;
 		preRad = det*det + Math.pow(linTerm,3)*4/27;
-		if (Math.abs(preRad) < 10E-10) {
+		if (preRad > 0) {
 			preRad = 0;
 		}
 		radIm = Math.sqrt(-preRad);
@@ -250,19 +252,19 @@ public class SU3AlgebraElement implements AlgebraElement {
 		// if there are degenerate eigenvalues, only use vector method for nondegenerate value
 		int phaseNum = 3;
 		int notDegenerate = 3;
-		if (Math.abs(phases[0] - phases[1]) < 10E-10) {
+		if (Math.abs(phases[0] - phases[1]) < eigenvalueAccuracy) {
 			double temp = phases[2];
 			phases[2] = phases[0];
 			phases[0] = temp;
 			phaseNum = 1;
 			notDegenerate = 2;
-		} else if (Math.abs(phases[0] - phases[2]) < 10E-10) {
+		} else if (Math.abs(phases[0] - phases[2]) < eigenvalueAccuracy) {
 			double temp = phases[1];
 			phases[1] = phases[0];
 			phases[0] = temp;
 			phaseNum = 1;
 			notDegenerate  = 1;
-		} else if (Math.abs(phases[1] - phases[2]) < 10E-10) {
+		} else if (Math.abs(phases[1] - phases[2]) < eigenvalueAccuracy) {
 			phaseNum = 1;
 			notDegenerate = 0;
 		}
