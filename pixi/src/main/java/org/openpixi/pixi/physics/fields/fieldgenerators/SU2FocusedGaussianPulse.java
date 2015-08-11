@@ -5,7 +5,7 @@ import org.openpixi.pixi.physics.Simulation;
 import org.openpixi.pixi.physics.grid.Cell;
 import org.openpixi.pixi.physics.grid.Grid;
 
-public class SUnFocusedGaussianPulse implements IFieldGenerator {
+public class SU2FocusedGaussianPulse implements IFieldGenerator {
 
 	private int numberOfDimensions;
 	private int numberOfComponents;
@@ -25,7 +25,7 @@ public class SUnFocusedGaussianPulse implements IFieldGenerator {
 	private double ph0;
 	private double th0;
 
-	public SUnFocusedGaussianPulse(double[] direction,
+	public SU2FocusedGaussianPulse(double[] direction,
 								   double[] position,
 								   double[] amplitudeSpatialDirection,
 								   double[] amplitudeColorDirection,

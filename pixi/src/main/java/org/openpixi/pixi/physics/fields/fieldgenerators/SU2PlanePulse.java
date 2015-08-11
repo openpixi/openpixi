@@ -5,7 +5,7 @@ import org.openpixi.pixi.physics.Simulation;
 import org.openpixi.pixi.physics.grid.Cell;
 import org.openpixi.pixi.physics.grid.Grid;
 
-public class SUnPlanePulse implements IFieldGenerator {
+public class SU2PlanePulse implements IFieldGenerator {
 
 	private int numberOfDimensions;
 	private int numberOfComponents;
@@ -20,7 +20,7 @@ public class SUnPlanePulse implements IFieldGenerator {
 	private Grid grid;
 	private double timeStep;
 
-	public SUnPlanePulse(double[] direction,
+	public SU2PlanePulse(double[] direction,
 						 double[] position,
 						 double[] amplitudeSpatialDirection,
 						 double[] amplitudeColorDirection,

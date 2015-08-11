@@ -1,5 +1,7 @@
 package org.openpixi.pixi.physics.fields.fieldgenerators;
 
+import org.openpixi.pixi.math.AlgebraElement;
+import org.openpixi.pixi.math.ElementFactory;
 import org.openpixi.pixi.math.SU2AlgebraElement;
 import org.openpixi.pixi.physics.Simulation;
 import org.openpixi.pixi.physics.grid.Cell;
@@ -42,15 +44,18 @@ public class SU2PlaneWave implements IFieldGenerator {
 		double as = grid.getLatticeSpacing();
 		double g = s.getCouplingConstant();
 
+		ElementFactory factory = grid.getElementFactory();
+		int colors = grid.getNumberOfColors();
+
 		/*
-			Setup the field amplitude for the plane wave.
+			Setup the field amplitude for the gaussian pulse.
 		 */
-		SU2AlgebraElement[] amplitudeYMField = new SU2AlgebraElement[this.numberOfDimensions];
+		AlgebraElement[] amplitudeYMField = new AlgebraElement[this.numberOfDimensions];
 		for (int i = 0; i < this.numberOfDimensions; i++) {
-			amplitudeYMField[i] = new SU2AlgebraElement(
-					this.amplitudeMagnitude * this.amplitudeSpatialDirection[i] * this.amplitudeColorDirection[0],
-					this.amplitudeMagnitude * this.amplitudeSpatialDirection[i] * this.amplitudeColorDirection[1],
-					this.amplitudeMagnitude * this.amplitudeSpatialDirection[i] * this.amplitudeColorDirection[2]);
+			amplitudeYMField[i] = factory.algebraZero(colors);
+			for (int j = 0; j < colors; j++) {
+				amplitudeYMField[i].set(j,this.amplitudeMagnitude * this.amplitudeSpatialDirection[i] * this.amplitudeColorDirection[j]);
+			}
 		}
 
 		int numberOfCells = grid.getTotalNumberOfCells();

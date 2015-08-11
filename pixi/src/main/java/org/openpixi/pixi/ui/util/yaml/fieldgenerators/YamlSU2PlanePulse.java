@@ -1,54 +1,44 @@
 package org.openpixi.pixi.ui.util.yaml.fieldgenerators;
 
 import org.openpixi.pixi.physics.Settings;
-import org.openpixi.pixi.physics.fields.fieldgenerators.SUnFocusedGaussianPulse;
+import org.openpixi.pixi.physics.fields.fieldgenerators.SU2PlanePulse;
 
 import java.util.List;
 
 /**
- * Yaml wrapper for the SUnFocusedGaussianPulse FieldGenerator.
+ * Yaml wrapper for the SU2PlanePulse FieldGenerator.
  */
-public class YamlSUnFocusedGaussianPulse {
+public class YamlSU2PlanePulse {
 
 	/**
-	 * Direction vector of the pulse.
+	 * Direction vector of the plane pulse.
 	 */
 	public List<Double> dir;
 
 	/**
-	 * Focal point of the pulse (where to pulse converges).
+	 * Position of the plane pulse "wave front".
 	 */
 	public List<Double> pos;
 
 	/**
-	 * Spatial amplitude of the pulse.
+	 * Spatial amplitude of the plane pulse.
 	 */
 	public List<Double> aSpatial;
 
 	/**
-	 * Amplitude of the pulse in color space.
+	 * Amplitude of the plane pulse in color space.
 	 */
 	public List<Double> aColor;
 
 	/**
-	 * Magnitude of the pulse.
+	 * Magnitude of the plane pulse.
 	 */
 	public Double a;
 
 	/**
-	 * Radial width of the pulse.
+	 * Width of the plane pulse.
 	 */
 	public Double sigma;
-
-	/**
-	 * Angular width of the pulse.
-	 */
-	public Double angle;
-
-	/**
-	 * Radial distance from the focal point.
-	 */
-	public Double distance;
 
 	/**
 	 * Checks input for errors.
@@ -58,33 +48,34 @@ public class YamlSUnFocusedGaussianPulse {
 	 */
 	public boolean checkConsistency(Settings settings) {
 		if (dir.size() != settings.getNumberOfDimensions()) {
-			System.out.println("SUnFocusedGaussianPulse: dir vector does not have the right dimensions.");
+			System.out.println("SU2PlanePulse: dir vector does not have the right dimensions.");
 			return false;
 		}
 
 		if (pos.size() != settings.getNumberOfDimensions()) {
-			System.out.println("SUnFocusedGaussianPulse: pos vector does not have the right dimensions.");
+			System.out.println("SU2PlanePulse: pos vector does not have the right dimensions.");
 			return false;
 		}
 
 		if (aSpatial.size() != settings.getNumberOfDimensions()) {
-			System.out.println("SUnFocusedGaussianPulse: aSpatial vector does not have the right dimensions.");
+			System.out.println("SU2PlanePulse: aSpatial vector does not have the right dimensions.");
 			return false;
 		}
+
 		int numberOfComponents = settings.getNumberOfColors() * settings.getNumberOfColors() - 1;
 		if (aColor.size() != numberOfComponents) {
-			System.out.println("SUnFocusedGaussianPulse: aColor vector does not have the right dimensions.");
+			System.out.println("SU2PlanePulse: aColor vector does not have the right dimensions.");
 			return false;
 		}
 		return true;
 	}
 
 	/**
-	 * Returns an instance of SUnFocusedGaussianPulse according to the parameters in the YAML file.
+	 * Returns an instance of SU2PlanePulse according to the parameters in the YAML file.
 	 *
-	 * @return Instance of SUnFocusedGaussianPulse.
+	 * @return Instance of SU2PlanePulse.
 	 */
-	public SUnFocusedGaussianPulse getFieldGenerator() {
+	public SU2PlanePulse getFieldGenerator() {
 		int numberOfDimensions = dir.size();
 		int numberOfComponents = aColor.size();
 
@@ -108,6 +99,6 @@ public class YamlSUnFocusedGaussianPulse {
 			aColorArray[c] = aColor.get(c);
 		}
 
-		return new SUnFocusedGaussianPulse(dirArray, posArray, aSpatialArray, aColorArray, a, sigma, angle, distance);
+		return new SU2PlanePulse(dirArray, posArray, aSpatialArray, aColorArray, a, sigma);
 	}
 }
