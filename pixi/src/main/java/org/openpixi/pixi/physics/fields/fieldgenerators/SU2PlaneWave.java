@@ -48,7 +48,7 @@ public class SU2PlaneWave implements IFieldGenerator {
 		int colors = grid.getNumberOfColors();
 
 		/*
-			Setup the field amplitude for the gaussian pulse.
+			Setup the field amplitude for the plane wave.
 		 */
 		AlgebraElement[] amplitudeYMField = new AlgebraElement[this.numberOfDimensions];
 		for (int i = 0; i < this.numberOfDimensions; i++) {
