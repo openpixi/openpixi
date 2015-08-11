@@ -11,7 +11,7 @@ package org.openpixi.pixi.math;
  */
 public class SU3GroupElement implements GroupElement {
 
-	private final double eigenvalueAccuracy = 1.E-7;
+	private final double zeroAccuracy = 1.E-7;
 
 	private double[] e;
 
@@ -313,8 +313,13 @@ public class SU3GroupElement implements GroupElement {
 		double[] valuesRe = new double[3];
 		double[] valuesIm = new double[3];
 		for (int i = 0; i < 3; i++) {
-			valuesRe[i] = r * Math.cos(ths[i]) - (linTermRe * Math.cos(ths[i]) + linTermIm * Math.sin(ths[i])) / (3 * r) + trRe / 3;
-			valuesIm[i] = r * Math.sin(ths[i]) + (linTermRe * Math.sin(ths[i]) - linTermIm * Math.cos(ths[i])) / (3 * r) + trIm / 3;
+			if (Math.abs(r) < zeroAccuracy) {
+				valuesRe[i] = trRe / 3;
+				valuesIm[i] = trIm / 3;
+			} else {
+				valuesRe[i] = r * Math.cos(ths[i]) - (linTermRe * Math.cos(ths[i]) + linTermIm * Math.sin(ths[i])) / (3 * r) + trRe / 3;
+				valuesIm[i] = r * Math.sin(ths[i]) + (linTermRe * Math.sin(ths[i]) - linTermIm * Math.cos(ths[i])) / (3 * r) + trIm / 3;
+			}
 		}
 
 		// now use eigenvalues to compute orthonormal eigenvectors
@@ -325,7 +330,7 @@ public class SU3GroupElement implements GroupElement {
 		// if there are degenerate eigenvalues, only use vector method for nondegenerate value
 		int phaseNum = 3;
 		int notDegenerate = 3;
-		if (Math.abs(valuesRe[0] - valuesRe[1]) < eigenvalueAccuracy && Math.abs(valuesIm[0] - valuesIm[1]) < eigenvalueAccuracy) {
+		if (Math.abs(valuesRe[0] - valuesRe[1]) < zeroAccuracy && Math.abs(valuesIm[0] - valuesIm[1]) < zeroAccuracy) {
 			double temp = valuesRe[2];
 			valuesRe[2] = valuesRe[0];
 			valuesRe[0] = temp;
@@ -334,7 +339,7 @@ public class SU3GroupElement implements GroupElement {
 			valuesIm[0] = temp;
 			phaseNum = 1;
 			notDegenerate = 2;
-		} else if (Math.abs(valuesRe[0] - valuesRe[2]) < eigenvalueAccuracy && Math.abs(valuesIm[0] - valuesIm[2]) < eigenvalueAccuracy) {
+		} else if (Math.abs(valuesRe[0] - valuesRe[2]) < zeroAccuracy && Math.abs(valuesIm[0] - valuesIm[2]) < zeroAccuracy) {
 			double temp = valuesRe[1];
 			valuesRe[1] = valuesRe[0];
 			valuesRe[0] = temp;
@@ -343,7 +348,7 @@ public class SU3GroupElement implements GroupElement {
 			valuesIm[0] = temp;
 			phaseNum = 1;
 			notDegenerate  = 1;
-		} else if (Math.abs(valuesRe[1] - valuesRe[2]) < eigenvalueAccuracy && Math.abs(valuesIm[1] - valuesIm[2]) < eigenvalueAccuracy) {
+		} else if (Math.abs(valuesRe[1] - valuesRe[2]) < zeroAccuracy && Math.abs(valuesIm[1] - valuesIm[2]) < zeroAccuracy) {
 			phaseNum = 1;
 			notDegenerate = 0;
 		}

@@ -11,7 +11,7 @@ package org.openpixi.pixi.math;
  */
 public class SU3AlgebraElement implements AlgebraElement {
 
-	private final double eigenvalueAccuracy = 1.E-12;
+	private final double zeroAccuracy = 1.E-12;
 
 	protected double[] v;
 
@@ -237,7 +237,7 @@ public class SU3AlgebraElement implements AlgebraElement {
 		// (these matrices are hermitian, so eigenvalues better be real)
 		double[] phases = new double[3];
 		for (int i = 0; i < 3; i++) {
-			if (Math.abs(r) < 10E-10) {
+			if (Math.abs(r) < zeroAccuracy) {
 				phases[i] = 0;
 			} else {
 				phases[i] = r * Math.cos(ths[i]) - (linTerm * Math.cos(ths[i])) / (3 * r);
@@ -252,19 +252,19 @@ public class SU3AlgebraElement implements AlgebraElement {
 		// if there are degenerate eigenvalues, only use vector method for nondegenerate value
 		int phaseNum = 3;
 		int notDegenerate = 3;
-		if (Math.abs(phases[0] - phases[1]) < eigenvalueAccuracy) {
+		if (Math.abs(phases[0] - phases[1]) < zeroAccuracy) {
 			double temp = phases[2];
 			phases[2] = phases[0];
 			phases[0] = temp;
 			phaseNum = 1;
 			notDegenerate = 2;
-		} else if (Math.abs(phases[0] - phases[2]) < eigenvalueAccuracy) {
+		} else if (Math.abs(phases[0] - phases[2]) < zeroAccuracy) {
 			double temp = phases[1];
 			phases[1] = phases[0];
 			phases[0] = temp;
 			phaseNum = 1;
 			notDegenerate  = 1;
-		} else if (Math.abs(phases[1] - phases[2]) < eigenvalueAccuracy) {
+		} else if (Math.abs(phases[1] - phases[2]) < zeroAccuracy) {
 			phaseNum = 1;
 			notDegenerate = 0;
 		}
