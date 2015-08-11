@@ -53,7 +53,7 @@ public class SU2PlaneWave implements IFieldGenerator {
 		AlgebraElement[] amplitudeYMField = new AlgebraElement[this.numberOfDimensions];
 		for (int i = 0; i < this.numberOfDimensions; i++) {
 			amplitudeYMField[i] = factory.algebraZero(colors);
-			for (int j = 0; j < colors; j++) {
+			for (int j = 0; j < this.numberOfComponents; j++) {
 				amplitudeYMField[i].set(j,this.amplitudeMagnitude * this.amplitudeSpatialDirection[i] * this.amplitudeColorDirection[j]);
 			}
 		}

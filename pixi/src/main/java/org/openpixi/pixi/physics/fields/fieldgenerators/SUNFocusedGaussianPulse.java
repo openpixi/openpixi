@@ -1,7 +1,6 @@
 package org.openpixi.pixi.physics.fields.fieldgenerators;
 
-import org.openpixi.pixi.math.SU2AlgebraElement;
-import org.openpixi.pixi.math.SU2GroupElement;
+import org.openpixi.pixi.math.*;
 import org.openpixi.pixi.physics.Simulation;
 import org.openpixi.pixi.physics.grid.Cell;
 import org.openpixi.pixi.physics.grid.Grid;
@@ -93,6 +92,8 @@ public class SUNFocusedGaussianPulse implements IFieldGenerator {
 		double as = grid.getLatticeSpacing();
 		double g = s.getCouplingConstant();
 
+		ElementFactory factory = grid.getElementFactory();
+		int colors = grid.getNumberOfColors();
 
 		int numberOfCells = grid.getTotalNumberOfCells();
 
@@ -117,12 +118,12 @@ public class SUNFocusedGaussianPulse implements IFieldGenerator {
 
 			double[] amplitudeSpatialDirection = getVectorFieldDirection(spherical, amplitudePolarisationAngle);
 			amplitudeSpatialDirection = rotateVector(amplitudeSpatialDirection, rotationAxis, -rotationAngle);
-			SU2AlgebraElement[] amplitudeYMField = new SU2AlgebraElement[this.numberOfDimensions];
+			AlgebraElement[] amplitudeYMField = new AlgebraElement[this.numberOfDimensions];
 			for (int i = 0; i < this.numberOfDimensions; i++) {
-				amplitudeYMField[i] = new SU2AlgebraElement(
-						this.amplitudeMagnitude * amplitudeSpatialDirection[i] * this.amplitudeColorDirection[0],
-						this.amplitudeMagnitude * amplitudeSpatialDirection[i] * this.amplitudeColorDirection[1],
-						this.amplitudeMagnitude * amplitudeSpatialDirection[i] * this.amplitudeColorDirection[2]);
+				amplitudeYMField[i] = factory.algebraZero(colors);
+				for (int j = 0; j < this.numberOfComponents; j++) {
+					amplitudeYMField[i].set(j,this.amplitudeMagnitude * amplitudeSpatialDirection[i] * this.amplitudeColorDirection[j]);
+				}
 			}
 
 			// Multiplicative factor for the focused gaussian pulse at t = 0 (for electric fields)
@@ -138,10 +139,10 @@ public class SUNFocusedGaussianPulse implements IFieldGenerator {
 
 			for (int i = 0; i < this.numberOfDimensions; i++) {
 				//Setup the gauge links
-				SU2GroupElement U = (SU2GroupElement) currentCell.getU(i).mult(amplitudeYMField[i].mult(gaugeFieldFactor).getLink());
+				GroupElement U = currentCell.getU(i).mult(amplitudeYMField[i].mult(gaugeFieldFactor).getLink());
 				currentCell.setU(i, U);
 
-				SU2GroupElement Unext = (SU2GroupElement) currentCell.getUnext(i).mult(amplitudeYMField[i].mult(gaugeFieldFactor2).getLink());
+				GroupElement Unext = currentCell.getUnext(i).mult(amplitudeYMField[i].mult(gaugeFieldFactor2).getLink());
 				currentCell.setUnext(i, Unext);
 
 				//Setup the electric fields
