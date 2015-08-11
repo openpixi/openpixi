@@ -11,7 +11,8 @@ package org.openpixi.pixi.math;
  */
 public class SU3GroupElement implements GroupElement {
 
-	private final double zeroAccuracy = 1.E-7;
+	private final double zeroAccuracy = 1.E-12;
+	private final double eigenvalueZeroAccuracy = 1.E-7;
 
 	private double[] e;
 
@@ -219,7 +220,7 @@ public class SU3GroupElement implements GroupElement {
 			norm += vector[i] * vector[i];
 		}
 		norm = Math.sqrt(norm);
-		if (Math.abs(norm) < 10E-10) {
+		if (Math.abs(norm) < zeroAccuracy) {
 			return false;
 		} else {
 			for (int i = 0; i < 6; i++) {
@@ -313,7 +314,7 @@ public class SU3GroupElement implements GroupElement {
 		double[] valuesRe = new double[3];
 		double[] valuesIm = new double[3];
 		for (int i = 0; i < 3; i++) {
-			if (Math.abs(r) < zeroAccuracy) {
+			if (Math.abs(r) == 0) {
 				valuesRe[i] = trRe / 3;
 				valuesIm[i] = trIm / 3;
 			} else {
@@ -330,7 +331,7 @@ public class SU3GroupElement implements GroupElement {
 		// if there are degenerate eigenvalues, only use vector method for nondegenerate value
 		int phaseNum = 3;
 		int notDegenerate = 3;
-		if (Math.abs(valuesRe[0] - valuesRe[1]) < zeroAccuracy && Math.abs(valuesIm[0] - valuesIm[1]) < zeroAccuracy) {
+		if (Math.abs(valuesRe[0] - valuesRe[1]) < eigenvalueZeroAccuracy && Math.abs(valuesIm[0] - valuesIm[1]) < eigenvalueZeroAccuracy) {
 			double temp = valuesRe[2];
 			valuesRe[2] = valuesRe[0];
 			valuesRe[0] = temp;
@@ -339,7 +340,7 @@ public class SU3GroupElement implements GroupElement {
 			valuesIm[0] = temp;
 			phaseNum = 1;
 			notDegenerate = 2;
-		} else if (Math.abs(valuesRe[0] - valuesRe[2]) < zeroAccuracy && Math.abs(valuesIm[0] - valuesIm[2]) < zeroAccuracy) {
+		} else if (Math.abs(valuesRe[0] - valuesRe[2]) < eigenvalueZeroAccuracy && Math.abs(valuesIm[0] - valuesIm[2]) < eigenvalueZeroAccuracy) {
 			double temp = valuesRe[1];
 			valuesRe[1] = valuesRe[0];
 			valuesRe[0] = temp;
@@ -348,7 +349,7 @@ public class SU3GroupElement implements GroupElement {
 			valuesIm[0] = temp;
 			phaseNum = 1;
 			notDegenerate  = 1;
-		} else if (Math.abs(valuesRe[1] - valuesRe[2]) < zeroAccuracy && Math.abs(valuesIm[1] - valuesIm[2]) < zeroAccuracy) {
+		} else if (Math.abs(valuesRe[1] - valuesRe[2]) < eigenvalueZeroAccuracy && Math.abs(valuesIm[1] - valuesIm[2]) < eigenvalueZeroAccuracy) {
 			phaseNum = 1;
 			notDegenerate = 0;
 		}

@@ -177,7 +177,7 @@ public class SU3AlgebraElement implements AlgebraElement {
 		}
 		norm = Math.sqrt(norm);
 
-		if (Math.abs(norm) < 10E-10) {
+		if (Math.abs(norm) < zeroAccuracy) {
 			return false;
 		} else {
 			for (int i = 0; i < 6; i++) {
@@ -237,7 +237,7 @@ public class SU3AlgebraElement implements AlgebraElement {
 		// (these matrices are hermitian, so eigenvalues better be real)
 		double[] phases = new double[3];
 		for (int i = 0; i < 3; i++) {
-			if (Math.abs(r) < zeroAccuracy) {
+			if (Math.abs(r) == 0) {
 				phases[i] = 0;
 			} else {
 				phases[i] = r * Math.cos(ths[i]) - (linTerm * Math.cos(ths[i])) / (3 * r);
