@@ -1,4 +1,4 @@
-package org.openpixi.pixi.physics.grid;
+package org.openpixi.pixi.math;
 
 
 import org.apache.commons.math3.Field;
@@ -16,6 +16,9 @@ public class SU3EverythingTest {
 
 
 	private final double accuracy = 1.E-12;
+	// Changing between group and algebra elements with degenerate eigenvalues is not as accurate!!!
+	// TODO: fix this!
+	private final double singularAccuracy = 1.E-7;
 
 	@Test
 	public void testGetterAndSetter() {
@@ -270,6 +273,38 @@ public class SU3EverythingTest {
 
 			compareMatrices(m2,mm2);
 			compareMatrices(m2,m4);
+		}
+	}
+
+	@Test
+	public void testSingularAndDegenerate() {
+		/*
+			For each generator, test if it can be converted to a group element and back.
+			This is a good check for functionality with singular and degenerate matrices.
+		 */
+		for (int i = 0; i < 8; i++) {
+			SU3AlgebraElement m = new SU3AlgebraElement();
+			m.set(i, 1);
+
+			SU3GroupElement mm = (SU3GroupElement) m.getLink();
+
+			m = (SU3AlgebraElement) mm.getAlgebraElement();
+
+			for (int j = 0; j < 8; j++) {
+				Assert.assertEquals(m.get(j), i == j ? 1.0 : 0.0, singularAccuracy);
+			}
+		}
+		/*
+			Test conversion for algebra element zero matrix.
+		 */
+		SU3AlgebraElement m = new SU3AlgebraElement();
+
+		SU3GroupElement mm = (SU3GroupElement) m.getLink();
+
+		m = (SU3AlgebraElement) mm.getAlgebraElement();
+
+		for (int j = 0; j < 8; j++) {
+			Assert.assertEquals(m.get(j), 0.0, singularAccuracy);
 		}
 	}
 

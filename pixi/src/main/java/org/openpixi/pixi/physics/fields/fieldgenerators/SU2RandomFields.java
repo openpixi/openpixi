@@ -1,5 +1,7 @@
 package org.openpixi.pixi.physics.fields.fieldgenerators;
 
+import org.openpixi.pixi.math.AlgebraElement;
+import org.openpixi.pixi.math.ElementFactory;
 import org.openpixi.pixi.physics.Simulation;
 import org.openpixi.pixi.physics.grid.Cell;
 import org.openpixi.pixi.physics.grid.Grid;
@@ -17,7 +19,11 @@ public class SU2RandomFields implements IFieldGenerator {
 	public void applyFieldConfiguration(Simulation s) {
 		this.g = s.grid;
 		this.numberOfDimensions = s.getNumberOfDimensions();
-		this.numberOfComponents = 3;
+
+		ElementFactory factory = g.getElementFactory();
+		int colors = g.getNumberOfColors();
+
+		this.numberOfComponents = colors * colors - 1;
 
 		int numberOfCells = g.getTotalNumberOfCells();
 
@@ -28,8 +34,8 @@ public class SU2RandomFields implements IFieldGenerator {
 			Cell currentCell = g.getCell(c);
 
 			for (int i = 0; i < numberOfDimensions; i++) {
-				SU2AlgebraElement efield = new SU2AlgebraElement();
-				SU2AlgebraElement ufield = new SU2AlgebraElement();
+				AlgebraElement efield = factory.algebraZero(colors);
+				AlgebraElement ufield = factory.algebraZero(colors);
 				for (int j = 0; j < numberOfComponents; j++) {
 					efield.set(i, (Math.random() - 0.5) * magnitude);
 					ufield.set(i, (Math.random() - 0.5) * magnitude);

@@ -1,6 +1,7 @@
 package org.openpixi.pixi.physics.gauge;
 
 import org.openpixi.pixi.math.AlgebraElement;
+import org.openpixi.pixi.math.ElementFactory;
 import org.openpixi.pixi.math.GroupElement;
 import org.openpixi.pixi.math.SU2GroupElement;
 import org.openpixi.pixi.parallel.cellaccess.CellAction;
@@ -34,13 +35,12 @@ public class GaugeTransformation {
 		int numberOfCells = grid.getTotalNumberOfCells();
 
 		int colors = grid.getNumberOfColors();
-		if (colors == 2) {
-			g = new SU2GroupElement[numberOfCells];
-			for (int i = 0; i < g.length; i++) {
-				g[i] = new SU2GroupElement(1, 0, 0, 0);
-			}
-		} else {
-			System.out.println("Gauge transformation for SU(" + colors + ") not defined.\n");
+
+		ElementFactory factory = grid.getElementFactory();
+
+		g = new GroupElement[numberOfCells];
+		for (int i = 0; i < g.length; i++) {
+			g[i] = factory.groupIdentity(colors);
 		}
 	}
 

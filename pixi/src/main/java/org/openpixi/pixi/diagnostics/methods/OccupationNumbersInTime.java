@@ -122,15 +122,15 @@ public class OccupationNumbersInTime implements Diagnostics {
 				for (int j = 0; j < grid.getNumberOfDimensions(); j++) {
 					for (int k = 0; k < numberOfComponents; k++) {
 						// Electric field
-						double electricFieldComponent = 2.0 * grid.getE(i, j).proj(k) * gainv;
+						double electricFieldComponent = grid.getE(i, j).get(k) * gainv;
 						eFFTdata[j][k][fftIndex] = electricFieldComponent;
 						eFFTdata[j][k][fftIndex + 1] = 0.0;
 
 						// Gauge fields need to be averaged over two time-steps.
 						AlgebraElement gaugeFieldAsAlgebraElement0 = grid.getU(i, j).getAlgebraElement();
 						AlgebraElement gaugeFieldAsAlgebraElement1 = grid.getUnext(i, j).getAlgebraElement();
-						double gaugeFieldComponent0 = 2.0 * gaugeFieldAsAlgebraElement0.proj(k) * gainv;
-						double gaugeFieldComponent1 = 2.0 * gaugeFieldAsAlgebraElement1.proj(k) * gainv;
+						double gaugeFieldComponent0 = gaugeFieldAsAlgebraElement0.get(k) * gainv;
+						double gaugeFieldComponent1 = gaugeFieldAsAlgebraElement1.get(k) * gainv;
 						aFFTdata[j][k][fftIndex] = 0.5 * (gaugeFieldComponent0 + gaugeFieldComponent1);
 						aFFTdata[j][k][fftIndex + 1] = 0.0;
 					}

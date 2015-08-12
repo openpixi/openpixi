@@ -11,6 +11,9 @@ package org.openpixi.pixi.math;
  */
 public class SU3GroupElement implements GroupElement {
 
+	private final double zeroAccuracy = 1.E-12;
+	private final double eigenvalueZeroAccuracy = 1.E-7;
+
 	private double[] e;
 
 	public SU3GroupElement() {
@@ -211,14 +214,19 @@ public class SU3GroupElement implements GroupElement {
 	 * Vector is stored as three real components followed by three imag. components
 	 * @param vector to be normalized
 	 */
-	private void normalize(double[] vector) {
+	private boolean normalize(double[] vector) {
 		double norm = 0;
 		for (int i = 0; i < 6; i++) {
 			norm += vector[i] * vector[i];
 		}
 		norm = Math.sqrt(norm);
-		for (int i = 0; i < 6; i++) {
-			vector[i] /= norm;
+		if (Math.abs(norm) < zeroAccuracy) {
+			return false;
+		} else {
+			for (int i = 0; i < 6; i++) {
+				vector[i] /= norm;
+			}
+			return true;
 		}
 	}
 
@@ -281,6 +289,9 @@ public class SU3GroupElement implements GroupElement {
 
 		double preRad, radRe;
 		preRad = constTermRe*constTermRe - constTermIm*constTermIm + 4*linTermRe*(linTermRe*linTermRe - 3*linTermIm*linTermIm)/27;
+		if (preRad < 0) {
+			preRad = 0;
+		}
 		radRe = Math.sqrt(preRad);
 
 		// convert W^3 to polar
@@ -303,8 +314,13 @@ public class SU3GroupElement implements GroupElement {
 		double[] valuesRe = new double[3];
 		double[] valuesIm = new double[3];
 		for (int i = 0; i < 3; i++) {
-			valuesRe[i] = r * Math.cos(ths[i]) - (linTermRe * Math.cos(ths[i]) + linTermIm * Math.sin(ths[i])) / (3 * r) + trRe / 3;
-			valuesIm[i] = r * Math.sin(ths[i]) + (linTermRe * Math.sin(ths[i]) - linTermIm * Math.cos(ths[i])) / (3 * r) + trIm / 3;
+			if (Math.abs(r) == 0) {
+				valuesRe[i] = trRe / 3;
+				valuesIm[i] = trIm / 3;
+			} else {
+				valuesRe[i] = r * Math.cos(ths[i]) - (linTermRe * Math.cos(ths[i]) + linTermIm * Math.sin(ths[i])) / (3 * r) + trRe / 3;
+				valuesIm[i] = r * Math.sin(ths[i]) + (linTermRe * Math.sin(ths[i]) - linTermIm * Math.cos(ths[i])) / (3 * r) + trIm / 3;
+			}
 		}
 
 		// now use eigenvalues to compute orthonormal eigenvectors
@@ -312,16 +328,42 @@ public class SU3GroupElement implements GroupElement {
 		// we use this result, but we only need one column so we can avoid doing the full multiplication
 		// optimized result computed in Mathematica, of course
 
+		// if there are degenerate eigenvalues, only use vector method for nondegenerate value
+		int phaseNum = 3;
+		int notDegenerate = 3;
+		if (Math.abs(valuesRe[0] - valuesRe[1]) < eigenvalueZeroAccuracy && Math.abs(valuesIm[0] - valuesIm[1]) < eigenvalueZeroAccuracy) {
+			double temp = valuesRe[2];
+			valuesRe[2] = valuesRe[0];
+			valuesRe[0] = temp;
+			temp = valuesIm[2];
+			valuesIm[2] = valuesIm[0];
+			valuesIm[0] = temp;
+			phaseNum = 1;
+			notDegenerate = 2;
+		} else if (Math.abs(valuesRe[0] - valuesRe[2]) < eigenvalueZeroAccuracy && Math.abs(valuesIm[0] - valuesIm[2]) < eigenvalueZeroAccuracy) {
+			double temp = valuesRe[1];
+			valuesRe[1] = valuesRe[0];
+			valuesRe[0] = temp;
+			temp = valuesIm[1];
+			valuesIm[1] = valuesIm[0];
+			valuesIm[0] = temp;
+			phaseNum = 1;
+			notDegenerate  = 1;
+		} else if (Math.abs(valuesRe[1] - valuesRe[2]) < eigenvalueZeroAccuracy && Math.abs(valuesIm[1] - valuesIm[2]) < eigenvalueZeroAccuracy) {
+			phaseNum = 1;
+			notDegenerate = 0;
+		}
+
 		// get one eigenvector for each value
 		// normalize vectors in place
 		double[][] vectors = new double[3][6];
-		for (int i = 0; i < 3; i++) {
+		for (int i = 0; i < phaseNum; i++) {
 			// product of other two valuesRe besides valuesRe[i]
-			double otherValueReProduct = valuesRe[0] * valuesRe[1] * valuesRe[2] / valuesRe[i];
+			double otherValueReProduct = valuesRe[(i + 1) % 3] * valuesRe[(i + 2) % 3];
 			// sum of other two valuesRe besides valuesRe[i]
 			double otherValueReSum = valuesRe[0] + valuesRe[1] + valuesRe[2] - valuesRe[i];
 			// product of other two valuesIm besides valuesIm[i]
-			double otherValueImProduct = valuesIm[0] * valuesIm[1] * valuesIm[2] / valuesIm[i];
+			double otherValueImProduct = valuesIm[(i + 1) % 3] * valuesIm[(i + 2) % 3];
 			// sum of other two valuesIm besides valuesIm[i]
 			double otherValueImSum = valuesIm[0] + valuesIm[1] + valuesIm[2] - valuesIm[i];
 			//  sum of products of valuesIm and valuesRe for other two values
@@ -334,7 +376,108 @@ public class SU3GroupElement implements GroupElement {
 			vectors[i][4] = (e[0]+e[4]-otherValueReSum)*e[12]+e[15]*e[5]+(e[9]+e[13]-otherValueImSum)*e[3]+e[6]*e[14];
 			vectors[i][5] = (e[0]+e[8]-otherValueReSum)*e[15]+e[12]*e[7]+(e[9]+e[17]-otherValueImSum)*e[6]+e[3]*e[16];
 
-			normalize(vectors[i]);
+			boolean done = normalize(vectors[i]);
+
+			if (!done) {
+				vectors[i][0] = (e[0]+e[4]-otherValueReSum)*e[1]+e[7]*e[2]+(otherValueImSum-e[9]-e[13])*e[10]-e[16]*e[11];
+				vectors[i][1] = (e[4]-otherValueReSum)*e[4]+(otherValueImSum-e[13])*e[13]+otherValueReProduct-otherValueImProduct-e[10]*e[12]-e[14]*e[16]+e[1]*e[3]+e[5]*e[7];
+				vectors[i][2] = (e[4]+e[8]-otherValueReSum)*e[7]+e[1]*e[6]+(otherValueImSum-e[13]-e[17])*e[16]-e[10]*e[15];
+				vectors[i][3] = (e[0]+e[4]-otherValueReSum)*e[10]+e[16]*e[2]+(e[9]+e[13]-otherValueImSum)*e[1]+e[7]*e[11];
+				vectors[i][4] = (otherValueReSum-e[4])*(otherValueImSum-e[13])-otherReImSum+e[1]*e[12]+e[16]*e[5]+e[10]*e[3]+e[14]*e[7]+e[4]*e[13];
+				vectors[i][5] = (e[4]+e[8]-otherValueReSum)*e[16]+e[10]*e[6]+(e[13]+e[17]-otherValueImSum)*e[7]+e[1]*e[15];
+
+				done = normalize(vectors[i]);
+
+				if (!done) {
+					vectors[i][0] = (e[0]+e[8]-otherValueReSum)*e[2]+e[1]*e[5]+(otherValueImSum-e[9]-e[17])*e[11]-e[10]*e[14];
+					vectors[i][1] = (e[4]+e[8]-otherValueReSum)*e[5]+e[2]*e[3]+(otherValueImSum-e[13]-e[17])*e[14]-e[11]*e[12];
+					vectors[i][2] = (e[8]-otherValueReSum)*e[8]+(otherValueImSum-e[17])*e[17]+otherValueReProduct-otherValueImProduct-e[14]*e[16]-e[11]*e[15]+e[5]*e[7]+e[2]*e[6];
+					vectors[i][3] = (e[0]+e[8]-otherValueReSum)*e[11]+e[14]*e[1]+(e[9]+e[17]-otherValueImSum)*e[2]+e[5]*e[10];
+					vectors[i][4] = (e[4]+e[8]-otherValueReSum)*e[14]+e[11]*e[3]+(e[13]+e[17]-otherValueImSum)*e[5]+e[2]*e[12];
+					vectors[i][5] = (otherValueReSum-e[8])*(otherValueImSum-e[17])-otherReImSum+e[7]*e[14]+e[15]*e[2]+e[16]*e[5]+e[11]*e[6]+e[8]*e[17];
+
+					done = normalize(vectors[i]);
+
+					if (!done) {
+						for (int j = 0; j < 6; j++) {
+							vectors[i][j] = 0;
+						}
+						if (notDegenerate == 3) {
+							vectors[i][i] = 1;
+						} else {
+							vectors[i][notDegenerate] = 1;
+						}
+					}
+				}
+			}
+		}
+
+		// if there are degenerate eigenvalues use row reduction to find two orthogonal eigenvectors
+		// for a given row of our hermitian matrix (a0 a1 a2), these vectors are
+		//  		-a1    a0     0
+		// and		a0*a2  a1*a2  -|a0|^2-|a1|^2
+		if (phaseNum == 1) {
+
+			vectors[1][0] = -e[1];
+			vectors[1][1] = e[0] - valuesRe[1];
+			vectors[1][2] = 0;
+			vectors[1][3] = -e[10];
+			vectors[1][4] = e[9] - valuesIm[1];
+			vectors[1][5] = 0;
+
+			vectors[2][0] = e[2] * (e[0] - valuesRe[2]) + e[11] * (e[9] - valuesIm[2]);
+			vectors[2][1] = e[1] * e[2] + e[10] * e[11];
+			vectors[2][2] = (e[0] - valuesRe[2]) * (valuesRe[2] - e[0]) + (e[9] - valuesIm[2]) * (valuesIm[2] - e[9]) - e[1]*e[1] - e[10]*e[10];
+			vectors[2][3] = e[2] * (valuesIm[2] - e[9]) + e[11] * (e[0] - valuesRe[2]);
+			vectors[2][4] = e[1] * e[11] - e[2] * e[10];
+			vectors[2][5] = 0;
+
+			boolean done = normalize(vectors[1]) && normalize(vectors[2]);
+
+			if (!done) {
+				vectors[1][0] = -e[4] + valuesRe[1];
+				vectors[1][1] = e[3];
+				vectors[1][2] = 0;
+				vectors[1][3] = -e[13] + valuesIm[1];
+				vectors[1][4] = e[12];
+				vectors[1][5] = 0;
+
+				vectors[2][0] = e[3] * e[5] + e[12] * e[14];
+				vectors[2][1] = e[5] * (e[4] - valuesRe[2]) + e[14] * (e[13] - valuesIm[2]);
+				vectors[2][2] = (e[4] - valuesRe[2]) * (valuesRe[2] - e[4]) + (e[13] - valuesIm[2]) * (valuesIm[2] - e[13]) - e[3]*e[3] - e[12]*e[12];
+				vectors[2][3] = e[3] * e[14] - e[12] * e[5];
+				vectors[2][4] = e[5] * (valuesIm[2] - e[13]) + e[14] * (e[4] - valuesRe[2]);
+				vectors[2][5] = 0;
+
+				done = normalize(vectors[1]) && normalize(vectors[2]);
+
+				if (!done) {
+					vectors[1][0] = -e[7];
+					vectors[1][1] = e[6];
+					vectors[1][2] = 0;
+					vectors[1][3] = -e[16];
+					vectors[1][4] = e[15];
+					vectors[1][5] = 0;
+
+					vectors[2][0] = e[6] * (e[8] - valuesRe[2]) + e[15] * (e[17] - valuesIm[2]);
+					vectors[2][1] = e[7] * (e[8] - valuesRe[2]) + e[16] * (e[17] - valuesIm[2]);
+					vectors[2][2] = -e[6]*e[6] - e[15]*e[15] - e[7]*e[7] - e[16]*e[16];
+					vectors[2][3] = e[6] * (e[17] - valuesIm[2]) - e[15] * (e[8] - valuesRe[2]);
+					vectors[2][4] = e[7] * (e[17] - valuesIm[2]) - e[16] * (e[8] - valuesRe[2]);
+					vectors[2][5] = 0;
+
+					done = normalize(vectors[1]) && normalize(vectors[2]);
+
+					if (!done) {
+						for (int j = 0; j < 6; j++) {
+							vectors[1][j] = 0;
+							vectors[2][j] = 0;
+						}
+						vectors[1][(notDegenerate + 1) % 3] = 1;
+						vectors[2][(notDegenerate + 2) % 3] = 1;
+					}
+				}
+			}
 		}
 
 		// take log of eigenvalue matrix

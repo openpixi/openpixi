@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.openpixi.pixi.math.AlgebraElement;
+import org.openpixi.pixi.math.ElementFactory;
 import org.openpixi.pixi.math.SU2AlgebraElement;
 import org.openpixi.pixi.parallel.cellaccess.CellAction;
 import org.openpixi.pixi.physics.grid.Grid;
@@ -78,12 +79,13 @@ public class CoulombGauge extends GaugeTransformation {
 	private double iterateCoulombGauge(Grid grid) {
 		double divergenceSquaredSum = 0;
 
+		ElementFactory factory = grid.getElementFactory();
 		int colors = grid.getNumberOfColors();
 
-		// New SU2AlgebraElement array to store psi values
-		SU2AlgebraElement[] psi = new SU2AlgebraElement[getG().length];
+		// New AlgebraElement array to store psi values
+		AlgebraElement[] psi = new AlgebraElement[getG().length];
 		for (int i = 0; i < getG().length; i++) {
-			psi[i] = new SU2AlgebraElement();
+			psi[i] = factory.algebraZero(colors);
 		}
 
 		for (int color = 0; color < colors; color++) {
@@ -117,7 +119,7 @@ public class CoulombGauge extends GaugeTransformation {
 			//SU2AlgebraElement psidagger = (SU2AlgebraElement) getG()[i].adj().proj();
 
 			// Field generators are antihermitian so multiply psi by -1 to get psidagger
-			SU2AlgebraElement psidagger = (SU2AlgebraElement) psi[i].mult(-1);
+			AlgebraElement psidagger = psi[i].mult(-1);
 			getG()[i] = psidagger.getLink();
 		}
 

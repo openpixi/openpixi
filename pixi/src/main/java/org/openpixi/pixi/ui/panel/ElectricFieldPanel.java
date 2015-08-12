@@ -3,10 +3,11 @@ package org.openpixi.pixi.ui.panel;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.util.ArrayList;
+
 import javax.swing.Box;
 import org.openpixi.pixi.physics.Simulation;
 import org.openpixi.pixi.physics.gauge.CoulombGauge;
-import org.openpixi.pixi.physics.gauge.RandomGauge;
 import org.openpixi.pixi.physics.grid.Grid;
 import org.openpixi.pixi.physics.particles.IParticle;
 import org.openpixi.pixi.ui.SimulationAnimation;
@@ -14,6 +15,7 @@ import org.openpixi.pixi.ui.panel.properties.BooleanArrayProperties;
 import org.openpixi.pixi.ui.panel.properties.ColorProperties;
 import org.openpixi.pixi.ui.panel.properties.GaugeProperties;
 import org.openpixi.pixi.ui.panel.properties.ScaleProperties;
+import org.openpixi.pixi.ui.panel.properties.StringProperties;
 
 /**
  * This panel shows the one-dimensional electric field along the x-direction.
@@ -26,6 +28,7 @@ public class ElectricFieldPanel extends AnimationPanel {
 	ScaleProperties scaleProperties;
 	GaugeProperties gaugeProperties;
 	public BooleanArrayProperties showFieldProperties;
+	public StringProperties showCoordinateProperties;
 
 	public final int INDEX_E = 0;
 	public final int INDEX_U = 1;
@@ -64,6 +67,16 @@ public class ElectricFieldPanel extends AnimationPanel {
 		scaleProperties = new ScaleProperties(simulationAnimation);
 		gaugeProperties = new GaugeProperties(simulationAnimation);
 		showFieldProperties = new BooleanArrayProperties(simulationAnimation, fieldLabel, fieldInit);
+
+		// Construct default string:
+		// x is the coordinate displayed as x-asis.
+		// i is the loop coordinate
+		String coordinates = "x, i, ";
+		for(int w = 2; w < simulationAnimation.getSimulation().getNumberOfDimensions(); w++) {
+			coordinates += simulationAnimation.getSimulation().grid.getNumCells(w)/2 + ", ";
+		}
+		coordinates = coordinates.substring(0, coordinates.length() - 2);
+		showCoordinateProperties = new StringProperties(simulationAnimation, "Show coordinate", coordinates);
 	}
 
 	/** Display the particles */
@@ -148,23 +161,49 @@ public class ElectricFieldPanel extends AnimationPanel {
 		int directionIndex = colorProperties.getDirectionIndex();
 
 		int[] pos = new int[s.getNumberOfDimensions()];
-		for(int w = 2; w < s.getNumberOfDimensions(); w++) {
+		for(int w = 0; w < s.getNumberOfDimensions(); w++) {
 			pos[w] = s.grid.getNumCells(w)/2;
 		}
 
 		graph.setColor(fieldColors[type]);
 
-		for(int k = 0; k < s.grid.getNumCells(1); k++)
+		int kmin = 0;
+		int kmax = 1;
+		int abscissaIndex = 0; // x-axis by default
+		int loopIndex = -1; // No loop index set
+		String[] indices = showCoordinateProperties.getValue().split(",");
+		int imax = Math.min(indices.length, s.getNumberOfDimensions());
+		for (int i = 0; i < imax; i++) {
+			if (indices[i].trim().equals("x")) {
+				abscissaIndex = i;
+			} else if (indices[i].trim().equals("i")) {
+				loopIndex = i;
+			} else {
+				try{
+					pos[i] = Integer.parseInt(indices[i].trim());
+				} catch (NumberFormatException e) {
+					// No error message - use default instead.
+				}
+			}
+		}
+		if (loopIndex != -1) {
+			// Show all lines
+			kmin = 0;
+			kmax = s.grid.getNumCells(loopIndex);
+		}
+		for(int k = kmin; k < kmax; k++)
 		{
 			int newPosition = 0;
 			int newValue = 0;
-			for(int i = 0; i < s.grid.getNumCells(0); i++)
+			for(int i = 0; i < s.grid.getNumCells(abscissaIndex); i++)
 			{
 
 				int oldPosition = newPosition;
 				int oldValue = newValue;
-				pos[0] = i;
-				pos[1] = k;
+				pos[abscissaIndex] = i;
+				if (loopIndex != -1) {
+					pos[loopIndex] = k;
+				}
 
 				// Electric fields are placed at the lattice points.
 				newPosition = (int) (s.grid.getLatticeSpacing() * (i) * sx);
@@ -206,6 +245,7 @@ public class ElectricFieldPanel extends AnimationPanel {
 		addLabel(box, "Electric field panel");
 		showFieldProperties.addComponents(box);
 		colorProperties.addComponents(box);
+		showCoordinateProperties.addComponents(box);
 		scaleProperties.addComponents(box);
 		gaugeProperties.addComponents(box);
 	}

@@ -1,9 +1,6 @@
 package org.openpixi.pixi.physics.grid;
 
-import org.openpixi.pixi.math.AlgebraElement;
-import org.openpixi.pixi.math.GroupElement;
-import org.openpixi.pixi.math.SU2AlgebraElement;
-import org.openpixi.pixi.math.SU2GroupElement;
+import org.openpixi.pixi.math.*;
 
 import java.io.Serializable;
 
@@ -31,34 +28,34 @@ public class Cell implements Serializable {
 	/**Link matrices at time t + dt/2 */
 	private GroupElement[] Unext;
 
+	/**Factory for group and algebra elements */
+	ElementFactory factory;
+
 	/**
 	 * Constructor for Cell.
 	 * @param dimensions Number of spatial dimensions (e.g. 3)
 	 * @param colors Number of colors N for the gauge group SU(N)
 	 */
-	public Cell(int dimensions, int colors) {
-		if(colors == 2) {
-			F = new SU2AlgebraElement[dimensions][dimensions];
-			U = new SU2GroupElement[dimensions];
-			Unext = new SU2GroupElement[dimensions];
-			E = new SU2AlgebraElement[dimensions];
-			J = new SU2AlgebraElement[dimensions];
-			rho = new SU2AlgebraElement();
-			
-			for(int i = 0; i < dimensions; i++)
-			{
-				U[i] = new SU2GroupElement();
-				Unext[i] = new SU2GroupElement();
-				E[i] = new SU2AlgebraElement();
-				J[i] = new SU2AlgebraElement();
-				
-				for(int j = 0; j < dimensions; j++) {
-					F[i][j] = new SU2AlgebraElement();
-				}
+	public Cell(int dimensions, int colors, ElementFactory factory) {
+		this.factory = factory;
+
+		F = new AlgebraElement[dimensions][dimensions];
+		U = new GroupElement[dimensions];
+		Unext = new GroupElement[dimensions];
+		E = new AlgebraElement[dimensions];
+		J = new AlgebraElement[dimensions];
+		rho = factory.algebraZero(colors);
+
+		for(int i = 0; i < dimensions; i++)
+		{
+			U[i] = factory.groupIdentity(colors);
+			Unext[i] = factory.groupZero(colors);
+			E[i] = factory.algebraZero(colors);
+			J[i] = factory.algebraZero(colors);
+
+			for(int j = 0; j < dimensions; j++) {
+				F[i][j] = factory.algebraZero(colors);
 			}
-		}
-		else {
-			System.out.println("Cell constructor for SU(" + colors + ") not defined.\n");
 		}
 	}
 
@@ -138,9 +135,7 @@ public class Cell implements Serializable {
 	}
 	
 	public AlgebraElement getEmptyField(int colors) {
-		if(colors == 2) {
-			return new SU2AlgebraElement();
-		} else {System.out.println("Error!! Number of colors should be equal to 2!!"); return null;}
+		return factory.algebraZero(colors);
 	}
 
 	public void reassignLinks() {
@@ -158,16 +153,19 @@ public class Cell implements Serializable {
 	 */
 	public void copyFrom(Cell other) {
 		
-		for (int i=0;i<other.F.length;i++) {
-			System.arraycopy(other.F[i],0,this.F[i],0,other.F[i].length);
+		for (int i = 0; i < F.length; i++) {
+			for (int j = 0; j < F.length; j++) {
+				this.F[i][j] = other.F[i][j].copy();
+			}
 		}
 
-		System.arraycopy(other.J, 0, this.J, 0, other.J.length);
-		System.arraycopy(other.U, 0, this.U, 0, other.U.length);
-		System.arraycopy(other.Unext, 0, this.Unext, 0, other.Unext.length);
-		System.arraycopy(other.E, 0, this.E, 0, other.E.length);
+		for(int i = 0; i < E.length; i++) {
+			this.E[i] = other.E[i].copy();
+			this.J[i] = other.J[i].copy();
+			this.U[i] = other.U[i].copy();
+			this.Unext[i] = other.Unext[i].copy();
+		}
 		this.rho.set(other.rho);
-		
 	}
 /*
 	@Override

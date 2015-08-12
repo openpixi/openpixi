@@ -11,6 +11,8 @@ package org.openpixi.pixi.math;
  */
 public class SU3AlgebraElement implements AlgebraElement {
 
+	private final double zeroAccuracy = 1.E-12;
+
 	protected double[] v;
 
 	public SU3AlgebraElement() {
@@ -168,14 +170,20 @@ public class SU3AlgebraElement implements AlgebraElement {
 	 * Vector is stored as three real components followed by three imag. components
 	 * @param vector to be normalized
 	 */
-	private void normalize(double[] vector) {
+	private boolean normalize(double[] vector) {
 		double norm = 0;
 		for (int i = 0; i < 6; i++) {
 			norm += vector[i] * vector[i];
 		}
 		norm = Math.sqrt(norm);
-		for (int i = 0; i < 6; i++) {
-			vector[i] /= norm;
+
+		if (Math.abs(norm) < zeroAccuracy) {
+			return false;
+		} else {
+			for (int i = 0; i < 6; i++) {
+				vector[i] /= norm;
+			}
+			return true;
 		}
 	}
 
@@ -204,6 +212,9 @@ public class SU3AlgebraElement implements AlgebraElement {
 		// preRad is always negative and real here so rad = i radIm = i sqrt(-preRad)
 		double preRad, radIm;
 		preRad = det*det + Math.pow(linTerm,3)*4/27;
+		if (preRad > 0) {
+			preRad = 0;
+		}
 		radIm = Math.sqrt(-preRad);
 
 		// convert W^3 to polar
@@ -226,7 +237,11 @@ public class SU3AlgebraElement implements AlgebraElement {
 		// (these matrices are hermitian, so eigenvalues better be real)
 		double[] phases = new double[3];
 		for (int i = 0; i < 3; i++) {
-			phases[i] = r * Math.cos(ths[i]) - (linTerm * Math.cos(ths[i])) / (3 * r);
+			if (Math.abs(r) == 0) {
+				phases[i] = 0;
+			} else {
+				phases[i] = r * Math.cos(ths[i]) - (linTerm * Math.cos(ths[i])) / (3 * r);
+			}
 		}
 
 		// now use eigenvalues to compute orthonormal eigenvectors
@@ -234,23 +249,144 @@ public class SU3AlgebraElement implements AlgebraElement {
 		// we use this result, but we only need one column so we can avoid doing the full multiplication
 		// optimized result computed in Mathematica, of course
 
+		// if there are degenerate eigenvalues, only use vector method for nondegenerate value
+		int phaseNum = 3;
+		int notDegenerate = 3;
+		if (Math.abs(phases[0] - phases[1]) < zeroAccuracy) {
+			double temp = phases[2];
+			phases[2] = phases[0];
+			phases[0] = temp;
+			phaseNum = 1;
+			notDegenerate = 2;
+		} else if (Math.abs(phases[0] - phases[2]) < zeroAccuracy) {
+			double temp = phases[1];
+			phases[1] = phases[0];
+			phases[0] = temp;
+			phaseNum = 1;
+			notDegenerate  = 1;
+		} else if (Math.abs(phases[1] - phases[2]) < zeroAccuracy) {
+			phaseNum = 1;
+			notDegenerate = 0;
+		}
+
 		// get one eigenvector for each value
 		// normalize vectors in place
 		double[][] vectors = new double[3][6];
-		for (int i = 0; i < 3; i++) {
+		for (int i = 0; i < phaseNum; i++) {
 			// product of other two phases besides phases[i]
-			double otherPhaseProduct = phases[0] * phases[1] * phases[2] / phases[i];
+			double otherPhaseProduct = phases[(i + 1) % 3] * phases[(i + 2) % 3];
 			// sum of other two phases besides phases[i]
 			double otherPhaseSum = phases[0] + phases[1] + phases[2] - phases[i];
 
 			vectors[i][0] = v[0]*v[0]+v[1]*v[1]+v[2]*v[2]+v[3]*v[3]+v[6]*v[6]+otherPhaseProduct-v[0]*otherPhaseSum;
-			vectors[i][1] = v[0]*v[1]+v[2]*v[5]+v[6]*v[7]+v[1]*(v[4]-otherPhaseSum);
-			vectors[i][2] = v[0]*v[2]+v[1]*v[5]-v[3]*v[7]+v[2]*(v[8]-otherPhaseSum);
+			vectors[i][1] = v[2]*v[5]+v[6]*v[7]+v[1]*(v[0]+v[4]-otherPhaseSum);
+			vectors[i][2] = v[1]*v[5]-v[3]*v[7]+v[2]*(v[0]+v[8]-otherPhaseSum);
 			vectors[i][3] = 0;
-			vectors[i][4] = -v[0]*v[3]-v[5]*v[6]+v[2]*v[7]+v[3]*(otherPhaseSum-v[4]);
-			vectors[i][5] = -v[3]*v[5]-v[0]*v[6]-v[1]*v[7]+v[6]*(otherPhaseSum-v[8]);
+			vectors[i][4] = -v[5]*v[6]+v[2]*v[7]+v[3]*(otherPhaseSum-v[0]-v[4]);
+			vectors[i][5] = -v[3]*v[5]-v[1]*v[7]+v[6]*(otherPhaseSum-v[0]-v[8]);
 
-			normalize(vectors[i]);
+			boolean done = normalize(vectors[i]);
+
+			if (!done) {
+				vectors[i][0] = v[2]*v[5]+v[6]*v[7]+v[1]*(v[0]+v[4]-otherPhaseSum);
+				vectors[i][1] = v[1]*v[1]+v[3]*v[3]+v[4]*v[4]+v[5]*v[5]+v[7]*v[7]+otherPhaseProduct-v[4]*otherPhaseSum;
+				vectors[i][2] = v[1]*v[2]+v[3]*v[6]+v[5]*(v[4]+v[8]-otherPhaseSum);
+				vectors[i][3] = v[5]*v[6]-v[2]*v[7]-v[3]*(otherPhaseSum-v[0]-v[4]);
+				vectors[i][4] = 0;
+				vectors[i][5] = v[2]*v[3]-v[1]*v[6]+v[7]*(otherPhaseSum-v[4]-v[8]);
+
+				done = normalize(vectors[i]);
+
+				if (!done) {
+					vectors[i][0] = v[1]*v[5]-v[3]*v[7]+v[2]*(v[0]+v[8]-otherPhaseSum);
+					vectors[i][1] = v[1]*v[2]+v[3]*v[6]+v[5]*(v[4]+v[8]-otherPhaseSum);
+					vectors[i][2] = v[2]*v[2]+v[5]*v[5]+v[6]*v[6]+v[7]*v[7]+v[8]*v[8]+otherPhaseProduct-v[8]*otherPhaseSum;
+					vectors[i][3] = v[3]*v[5]+v[1]*v[7]-v[6]*(otherPhaseSum-v[0]-v[8]);
+					vectors[i][4] = v[1]*v[6]-v[2]*v[3]-v[7]*(otherPhaseSum-v[4]-v[8]);
+					vectors[i][5] = 0;
+
+					done = normalize(vectors[i]);
+
+					if (!done) {
+						for (int j = 0; j < 6; j++) {
+							vectors[i][j] = 0;
+						}
+						if (notDegenerate == 3) {
+							vectors[i][i] = 1;
+						} else {
+							vectors[i][notDegenerate] = 1;
+						}
+					}
+				}
+			}
+		}
+
+		// if there are degenerate eigenvalues use row reduction to find two orthogonal eigenvectors
+		// for a given row of our hermitian matrix (a0 a1 a2), these vectors are
+		//  		-a1    a0     0
+		// and		a0*a2  a1*a2  -|a0|^2-|a1|^2
+		if (phaseNum == 1) {
+
+			vectors[1][0] = -v[1];
+			vectors[1][1] = v[0] - phases[1];
+			vectors[1][2] = 0;
+			vectors[1][3] = -v[3];
+			vectors[1][4] = 0;
+			vectors[1][5] = 0;
+
+			vectors[2][0] = v[2] * (v[0] - phases[2]);
+			vectors[2][1] = v[1]*v[2] + v[3]*v[6];
+			vectors[2][2] = (phases[2] - v[0]) * (v[0] - phases[2]) - v[1]*v[1] - v[3]*v[3];
+			vectors[2][3] = v[6] * (v[0] - phases[2]);
+			vectors[2][4] = v[1]*v[6] - v[2]*v[3];
+			vectors[2][5] = 0;
+
+			boolean done = normalize(vectors[1]) && normalize(vectors[2]);
+
+			if (!done) {
+				vectors[1][0] = phases[1] - v[4];
+				vectors[1][1] = v[1];
+				vectors[1][2] = 0;
+				vectors[1][3] = 0;
+				vectors[1][4] = -v[3];
+				vectors[1][5] = 0;
+
+				vectors[2][0] = v[1]*v[5] - v[3]*v[7];
+				vectors[2][1] = v[5] * (v[4] - phases[2]);
+				vectors[2][2] = (phases[2] - v[4]) * (v[4] - phases[2]) - v[1]*v[1] - v[3]*v[3];
+				vectors[2][3] = v[1]*v[7] + v[3]*v[5];
+				vectors[2][4] = v[7] * (v[4] - phases[2]);
+				vectors[2][5] = 0;
+
+				done = normalize(vectors[1]) && normalize(vectors[2]);
+
+				if (!done) {
+					vectors[1][0] = -v[5];
+					vectors[1][1] = v[2];
+					vectors[1][2] = 0;
+					vectors[1][3] = v[7];
+					vectors[1][4] = -v[6];
+					vectors[1][5] = 0;
+
+					vectors[2][0] = v[2] * (v[8] - phases[2]);
+					vectors[2][1] = v[5] * (v[8] - phases[2]);
+					vectors[2][2] = -v[2]*v[2] - v[5]*v[5] - v[6]*v[6] - v[7]*v[7];
+					vectors[2][3] = v[6] * (v[8] - phases[2]);
+					vectors[2][4] = v[7] * (v[8] - phases[2]);
+					vectors[2][5] = 0;
+
+					done = normalize(vectors[1]) && normalize(vectors[2]);
+
+					if (!done) {
+						for (int j = 0; j < 6; j++) {
+							vectors[1][j] = 0;
+							vectors[2][j] = 0;
+						}
+						vectors[1][(notDegenerate + 1) % 3] = 1;
+						vectors[2][(notDegenerate + 2) % 3] = 1;
+					}
+				}
+			}
 		}
 
 		// take log of eigenvalue matrix
