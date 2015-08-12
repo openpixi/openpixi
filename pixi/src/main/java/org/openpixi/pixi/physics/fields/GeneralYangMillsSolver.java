@@ -73,7 +73,7 @@ public class GeneralYangMillsSolver extends FieldSolver
 				}
 
 				AlgebraElement currentE = grid.getE(index, i).add(plaquettes[0].proj().mult(at / (as * as )));
-				currentE.addAssign(grid.getJ(index, i).mult(-at));
+				currentE.addAssign(grid.getJ(index, i).mult(-at/as));			//TODO: The factor 1/as should be checked!!!
 				grid.setE(index, i, currentE);
 			}
 		}
