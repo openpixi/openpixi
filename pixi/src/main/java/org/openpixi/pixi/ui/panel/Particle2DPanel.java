@@ -67,6 +67,8 @@ public class Particle2DPanel extends AnimationPanel {
 		graph.scale(1, -1);
 		double scale = 10;
 
+		colorProperties.checkConsistency();
+
 		if (traceProperties.isCallSuper()) {
 			super.paintComponent(graph1);
 		}

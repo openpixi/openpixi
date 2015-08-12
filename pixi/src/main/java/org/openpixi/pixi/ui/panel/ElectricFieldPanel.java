@@ -96,6 +96,8 @@ public class ElectricFieldPanel extends AnimationPanel {
 
 		super.paintComponent(graph1);
 
+		colorProperties.checkConsistency();
+
 		Simulation s = getSimulationAnimation().getSimulation();
 		/** Scaling factor for the displayed panel in x-direction*/
 		double sx = getWidth() / s.getWidth();
