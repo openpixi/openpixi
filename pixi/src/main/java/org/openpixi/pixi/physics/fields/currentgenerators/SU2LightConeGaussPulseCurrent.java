@@ -46,8 +46,6 @@ public class SU2LightConeGaussPulseCurrent implements ICurrentGenerator {
 		int time = s.totalSimulationSteps;
 		int numberOfCells = grid.getNumCells(direction);
 		double g = s.getCouplingConstant();
-		double normFactor = as/(Math.pow(as, grid.getNumberOfDimensions())*at);
-		double chargeNorm = 1.0/(Math.pow(as, grid.getNumberOfDimensions()));
 		double speed = s.getSpeedOfLight()*Integer.signum(orientation);
 		int[] pos = new int[location.length];
 		for (int i = 0; i < location.length; i++) {
@@ -87,7 +85,7 @@ public class SU2LightConeGaussPulseCurrent implements ICurrentGenerator {
 			int cellIndex = grid.getCellIndex(pos);
 
 			grid.addJ(cellIndex, direction, fieldAmplitude.mult(shape(position, i*as)));
-			grid.addRho(cellIndex, chargeAmplitude.mult(shape(posCharge, i*as)));
+			grid.addRho(cellIndex, chargeAmplitude.mult(shape(posCharge, i * as)));
 		}
 	}
 
@@ -107,8 +105,7 @@ public class SU2LightConeGaussPulseCurrent implements ICurrentGenerator {
 	private double shape(double mean, double x) {
 		Gaussian gauss = new Gaussian(mean, width);
 		//Gaussian gauss = new Gaussian(1.0/(width*Math.sqrt(2*Math.PI)), mean, width);
-		double value = gauss.value(x);
 		//double value = Math.exp(-Math.pow(x - mean, 2)/(2*width*width))/(width*Math.sqrt(2*Math.PI));
-		return value;
+		return gauss.value(x);
 	}
 }

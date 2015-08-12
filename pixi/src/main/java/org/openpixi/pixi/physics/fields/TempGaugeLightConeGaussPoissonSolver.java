@@ -6,7 +6,6 @@ import org.apache.commons.math3.analysis.function.Gaussian;
 import org.apache.commons.math3.special.Erf;
 import org.openpixi.pixi.math.AlgebraElement;
 import org.openpixi.pixi.math.ElementFactory;
-import org.openpixi.pixi.math.SU2AlgebraElement;
 import org.openpixi.pixi.physics.grid.Grid;
 
 public class TempGaugeLightConeGaussPoissonSolver extends LightConePoissonSolver {
@@ -135,13 +134,13 @@ public class TempGaugeLightConeGaussPoissonSolver extends LightConePoissonSolver
 						gaugePos[dir] = z;
 						cellIndex = g.getCellIndex(gaugePos);
 
-						g.addE(cellIndex, signature[0], E0List[j][w].mult(shapeGauss(positionCharge[dir], z * as) / gaussNormFactorCharge));
-						g.addE(cellIndex, signature[1], E1List[j][w].mult(shapeGauss(positionCharge[dir], z * as) / gaussNormFactorCharge));
+						g.addE(cellIndex, signature[0], E0List[j][w].mult(shapeGauss(positionCharge[dir], z * as - as/2) / gaussNormFactorCharge));
+						g.addE(cellIndex, signature[1], E1List[j][w].mult(shapeGauss(positionCharge[dir], z * as - as/2) / gaussNormFactorCharge));
 
 						A0.set(g.getU(cellIndex, signature[0]).getAlgebraElement());
 						A1.set(g.getU(cellIndex, signature[1]).getAlgebraElement());
-						A0.addAssign(E0List[j][w].mult(-1.0 * shapeErf(position[dir], z * as) / gaussNormFactorCharge));
-						A1.addAssign(E1List[j][w].mult(-1.0 * shapeErf(position[dir], z * as) / gaussNormFactorCharge));
+						A0.addAssign(E0List[j][w].mult(-1.0 * shapeErf(position[dir], z * as - as/2) / gaussNormFactorCharge));
+						A1.addAssign(E1List[j][w].mult(-1.0 * shapeErf(position[dir], z * as - as/2) / gaussNormFactorCharge));
 
 						g.setU(cellIndex, signature[0], A0.getLink());
 						g.setU(cellIndex, signature[1], A1.getLink());
@@ -197,10 +196,10 @@ public class TempGaugeLightConeGaussPoissonSolver extends LightConePoissonSolver
 					gaugePos[dir] = z;
 					cellIndex = g.getCellIndex(gaugePos);
 
-					g.addE(cellIndex, signature[0], E0List[j].mult(shapeGauss(positionCharge[dir], z * as) / gaussNormFactorCharge));
+					g.addE(cellIndex, signature[0], E0List[j].mult(shapeGauss(positionCharge[dir], z * as - as/2) / gaussNormFactorCharge));
 
 					A0.set(g.getU(cellIndex, signature[0]).getAlgebraElement());
-					A0.addAssign(E0List[j].mult(-1.0 * shapeErf(position[dir], z * as) / gaussNormFactorCharge));
+					A0.addAssign(E0List[j].mult(-1.0 * shapeErf(position[dir], z * as - as/2) / gaussNormFactorCharge));
 
 					g.setU(cellIndex, signature[0], A0.getLink());
 				}
@@ -216,9 +215,8 @@ public class TempGaugeLightConeGaussPoissonSolver extends LightConePoissonSolver
 	private double shapeGauss(double mean, double x) {
 		Gaussian gauss = new Gaussian(mean, width);
 		//Gaussian gauss = new Gaussian(1.0/(width*Math.sqrt(2*Math.PI)), mean, width);
-		double value = gauss.value(x);
 		//double value = Math.exp(-Math.pow(x - mean, 2)/(2*width*width))/(width*Math.sqrt(2*Math.PI));
-		return value;
+		return gauss.value(x);
 	}
 
 	private double shapeErf(double mean, double x) {
