@@ -227,9 +227,11 @@ public class ElectricFieldPanel extends AnimationPanel {
 					value = drawGrid.getUnext(s.grid.getCellIndex(pos), directionIndex).proj().get(colorIndex) / (as * g);
 					break;
 				case INDEX_J:
+					newPosition = (int) (s.grid.getLatticeSpacing() * (i + .5) * sx);
 					value = drawGrid.getJ(s.grid.getCellIndex(pos), directionIndex).get(colorIndex) / (as * g);
 					break;
 				case INDEX_RHO:
+					newPosition = (int) (s.grid.getLatticeSpacing() * (i + .5) * sx);
 					value = drawGrid.getRho(s.grid.getCellIndex(pos)).get(colorIndex) / (as * g);
 					break;
 				}
