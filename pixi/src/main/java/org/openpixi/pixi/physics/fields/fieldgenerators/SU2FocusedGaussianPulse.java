@@ -1,7 +1,6 @@
 package org.openpixi.pixi.physics.fields.fieldgenerators;
 
-import org.openpixi.pixi.math.SU2AlgebraElement;
-import org.openpixi.pixi.math.SU2GroupElement;
+import org.openpixi.pixi.math.*;
 import org.openpixi.pixi.physics.Simulation;
 import org.openpixi.pixi.physics.grid.Cell;
 import org.openpixi.pixi.physics.grid.Grid;
@@ -67,15 +66,18 @@ public class SU2FocusedGaussianPulse implements IFieldGenerator {
 		double as = grid.getLatticeSpacing();
 		double g = s.getCouplingConstant();
 
+		ElementFactory factory = grid.getElementFactory();
+		int colors = grid.getNumberOfColors();
+
 		/*
 			Setup the field amplitude for the focused gaussian pulse.
 		 */
-		SU2AlgebraElement[] amplitudeYMField = new SU2AlgebraElement[this.numberOfDimensions];
+		AlgebraElement[] amplitudeYMField = new AlgebraElement[this.numberOfDimensions];
 		for (int i = 0; i < this.numberOfDimensions; i++) {
-			amplitudeYMField[i] = new SU2AlgebraElement(
-					this.amplitudeMagnitude * this.amplitudeSpatialDirection[i] * this.amplitudeColorDirection[0],
-					this.amplitudeMagnitude * this.amplitudeSpatialDirection[i] * this.amplitudeColorDirection[1],
-					this.amplitudeMagnitude * this.amplitudeSpatialDirection[i] * this.amplitudeColorDirection[2]);
+			amplitudeYMField[i] = factory.algebraZero(colors);
+			for (int j = 0; j < this.numberOfComponents; j++) {
+				amplitudeYMField[i].set(j,this.amplitudeMagnitude * this.amplitudeSpatialDirection[i] * this.amplitudeColorDirection[j]);
+			}
 		}
 
 		int numberOfCells = grid.getTotalNumberOfCells();
@@ -107,7 +109,7 @@ public class SU2FocusedGaussianPulse implements IFieldGenerator {
 
 			for (int i = 0; i < this.numberOfDimensions; i++) {
 				//Setup the gauge links
-				SU2GroupElement U = (SU2GroupElement) currentCell.getU(i).mult(amplitudeYMField[i].mult(gaugeFieldFactor).getLink());
+				GroupElement U = currentCell.getU(i).mult(amplitudeYMField[i].mult(gaugeFieldFactor).getLink());
 				currentCell.setU(i, U);
 
 				//Setup the electric fields

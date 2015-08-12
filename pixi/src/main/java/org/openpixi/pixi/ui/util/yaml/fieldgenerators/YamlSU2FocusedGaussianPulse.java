@@ -2,7 +2,6 @@ package org.openpixi.pixi.ui.util.yaml.fieldgenerators;
 
 import org.openpixi.pixi.physics.Settings;
 import org.openpixi.pixi.physics.fields.fieldgenerators.SU2FocusedGaussianPulse;
-import org.openpixi.pixi.physics.fields.fieldgenerators.SU2GaussianPulse;
 
 import java.util.List;
 

@@ -5,6 +5,7 @@ import edu.emory.mathcs.jtransforms.fft.DoubleFFT_2D;
 import org.apache.commons.math3.analysis.function.Gaussian;
 import org.apache.commons.math3.special.Erf;
 import org.openpixi.pixi.math.AlgebraElement;
+import org.openpixi.pixi.math.ElementFactory;
 import org.openpixi.pixi.math.SU2AlgebraElement;
 import org.openpixi.pixi.physics.grid.*;
 
@@ -50,6 +51,9 @@ public class TempGaugeLightConeGaussPoissonSolver extends LightConePoissonSolver
 		int chargeIndex;
 		int dirMax = g.getNumCells(dir);
 
+		ElementFactory factory = g.getElementFactory();
+		int colors = g.getNumberOfColors();
+
 		double norm = Math.pow(as, truesize);
 		int[] pos = new int[position.length];
 		int[] gaugePos = new int[position.length];
@@ -63,8 +67,8 @@ public class TempGaugeLightConeGaussPoissonSolver extends LightConePoissonSolver
 			AlgebraElement[][] E1List = new AlgebraElement[size[0]][size[1]];
 			for(int j = 0; j < size[0]; j++) {
 				for (int w = 0; w < size[1]; w++) {
-					E0List[j][w] = new SU2AlgebraElement();
-					E1List[j][w] = new SU2AlgebraElement();
+					E0List[j][w] = factory.algebraZero(colors);
+					E1List[j][w] = factory.algebraZero(colors);
 				}
 			}
 
@@ -114,8 +118,8 @@ public class TempGaugeLightConeGaussPoissonSolver extends LightConePoissonSolver
 			//set the values of the gauge field in the direction of the current and the values of the electric field
 			System.arraycopy(pos, 0, gaugePos, 0, position.length);
 			AlgebraElement A0, A1;
-			A0 = new SU2AlgebraElement();
-			A1 = new SU2AlgebraElement();
+			A0 = factory.algebraZero(colors);
+			A1 = factory.algebraZero(colors);
 			for(int j = 0; j < size[0]; j++) {
 				gaugePos[signature[0]] = j;
 				for (int w = 0; w < size[1]; w++) {
@@ -146,7 +150,7 @@ public class TempGaugeLightConeGaussPoissonSolver extends LightConePoissonSolver
 			double[] charge = new double[2 * size[0]];
 			AlgebraElement[] E0List = new AlgebraElement[size[0]];
 			for(int j = 0; j < size[0]; j++) {
-				E0List[j] = new SU2AlgebraElement();
+				E0List[j] = factory.algebraZero(colors);
 			}
 
 			for(int i = 0; i < numberOfComponents; i++) {
@@ -186,7 +190,7 @@ public class TempGaugeLightConeGaussPoissonSolver extends LightConePoissonSolver
 			//set the values of the gauge field in the direction of the current and the values of the electric field
 			System.arraycopy(pos, 0, gaugePos, 0, position.length);
 			AlgebraElement A0;
-			A0 = new SU2AlgebraElement();
+			A0 = factory.algebraZero(colors);
 			for(int j = 0; j < size[0]; j++) {
 				gaugePos[signature[0]] = j;
 				for (int z = 0; z < dirMax; z++) {
