@@ -26,6 +26,10 @@ public class SU2WireCurrent implements ICurrentGenerator {
 		this.speed = speed;
 	}
 
+	public void initializeCurrent(Simulation s) {
+		applyCurrent(s);
+	}
+
 	public void applyCurrent(Simulation s) {
 		this.grid = s.grid;
 		double as = grid.getLatticeSpacing();
@@ -69,7 +73,7 @@ public class SU2WireCurrent implements ICurrentGenerator {
 			int cellIndex = grid.getCellIndex(position);
 
 			grid.addJ(cellIndex, direction, fieldAmplitude.mult(g*as));	// The factor g*as comes from our definition of electric fields!!
-			grid.setRho(cellIndex, chargeAmplitude.mult(g*as));
+			grid.addRho(cellIndex, chargeAmplitude.mult(g*as));
 		}
 
 	}

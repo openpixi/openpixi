@@ -32,7 +32,7 @@ public class LocalInterpolation extends Interpolation {
 
 	@Override
 	public void interpolateToGrid(List<IParticle> particles, Grid grid, double timeStep) {
-		grid.resetCurrent();
+		//grid.resetCurrent();
 		this.grid = grid;
 		this.timeStep = timeStep;
 		particleIterator.execute(particles, interpolateToGrid);
@@ -46,7 +46,7 @@ public class LocalInterpolation extends Interpolation {
 
 	@Override
 	public void interpolateChargedensity(List<IParticle> particles, Grid grid) {
-		grid.resetCharge();
+		//grid.resetCharge();
 		this.grid = grid;
 		particleIterator.execute(particles, interpolateChargedensity);
 	}
