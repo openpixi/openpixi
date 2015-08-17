@@ -130,6 +130,12 @@ public class Cell implements Serializable {
 		}
 	}
 
+	public void resetUnext(int colors) {
+		for (int i=0;i<Unext.length;i++) {
+			Unext[i].set(factory.groupIdentity(colors));
+		}
+	}
+
 	public void resetCharge() {
 		rho.reset();
 	}

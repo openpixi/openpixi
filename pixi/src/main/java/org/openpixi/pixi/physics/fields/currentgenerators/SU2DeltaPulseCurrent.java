@@ -27,7 +27,7 @@ public class SU2DeltaPulseCurrent implements ICurrentGenerator {
 		this.speed = speed;
 	}
 
-	public void initializeCurrent(Simulation s) {
+	public void initializeCurrent(Simulation s, int dummy) {
 		applyCurrent(s);
 	}
 

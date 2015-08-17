@@ -35,7 +35,7 @@ public class SU2LightConeDeltaPulseCurrent implements ICurrentGenerator {
 		}
 	}
 
-	public void initializeCurrent(Simulation s) {
+	public void initializeCurrent(Simulation s, int dummy) {
 		applyCurrent(s);
 		poisson.solve(s.grid);
 	}

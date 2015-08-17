@@ -4,11 +4,13 @@ import org.apache.commons.math3.analysis.function.Gaussian;
 import org.openpixi.pixi.math.SU2AlgebraElement;
 import org.openpixi.pixi.physics.Simulation;
 import org.openpixi.pixi.physics.fields.LightConePoissonSolver;
+import org.openpixi.pixi.physics.fields.PolychromTempGaugeLightConeGaussPoissonSolver;
 import org.openpixi.pixi.physics.fields.TempGaugeLightConeGaussPoissonSolver;
 import org.openpixi.pixi.physics.grid.Grid;
 
 public class SU2LightConeGaussPulseCurrent implements ICurrentGenerator {
 
+	public static int numberOfInstances;
 	private int direction;
 	private double[] location;
 	private double[] amplitudeColorDirection;
@@ -16,10 +18,11 @@ public class SU2LightConeGaussPulseCurrent implements ICurrentGenerator {
 	private double width;
 	private Grid grid;
 	private int orientation;
-	private LightConePoissonSolver poisson;
+	private PolychromTempGaugeLightConeGaussPoissonSolver poisson;
 
 	public SU2LightConeGaussPulseCurrent(int direction, double[] location, double width, double[] amplitudeColorDirection, double magnitude, int orientation) {
 
+		numberOfInstances = 0;
 		this.direction = direction;
 		this.location = location;
 
@@ -31,12 +34,17 @@ public class SU2LightConeGaussPulseCurrent implements ICurrentGenerator {
 		this.magnitude = magnitude;
 		this.width = width;
 		this.orientation = orientation;
-		this.poisson = new TempGaugeLightConeGaussPoissonSolver(location, direction, Integer.signum(orientation), width);
+		//this.poisson = new TempGaugeLightConeGaussPoissonSolver(location, direction, Integer.signum(orientation), width);
+		this.poisson = new PolychromTempGaugeLightConeGaussPoissonSolver();
 	}
 
-	public void initializeCurrent(Simulation s) {
+	public void initializeCurrent(Simulation s, int totalInstances) {
 		applyCurrent(s);
-		poisson.solve(s.grid);
+		poisson.saveValues(totalInstances, numberOfInstances, location, direction, Integer.signum(orientation), width);
+		numberOfInstances++;
+		if(numberOfInstances == totalInstances) {
+			poisson.solve(grid);
+		}
 	}
 
 	public void applyCurrent(Simulation s) {
