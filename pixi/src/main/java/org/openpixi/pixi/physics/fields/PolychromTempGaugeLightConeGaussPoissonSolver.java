@@ -162,8 +162,8 @@ public class PolychromTempGaugeLightConeGaussPoissonSolver extends LightConePois
 						gaugePos[dir] = z;
 						cellIndex = g.getCellIndex(gaugePos);
 
-						A0.set(phiList[j][w].mult(-1.0 * g.getGaugeCoupling() * shapeGauss(positionCharge[dir], width[surfaceIndex], z * as - as / 2) * shapeErf(location[surfaceIndex][dir], surfaceIndex, z * as - as / 2) / gaussNormFactorCharge));
-						A1.set(phiList[j][w].mult(-1.0 * g.getGaugeCoupling() * shapeGauss(positionCharge[dir], width[surfaceIndex], z * as - as / 2) * shapeErf(location[surfaceIndex][dir], surfaceIndex, z * as - as / 2 + orientation[surfaceIndex]*at) / gaussNormFactorCharge));
+						A0.set(phiList[j][w].mult(-1.0 * g.getGaugeCoupling() * shapeErf(location[surfaceIndex][dir], surfaceIndex, z * as - as / 2) / gaussNormFactorCharge));
+						A1.set(phiList[j][w].mult(-1.0 * g.getGaugeCoupling() * shapeErf(location[surfaceIndex][dir], surfaceIndex, z * as - as / 2 - orientation[surfaceIndex]*at) / gaussNormFactorCharge));
 
 						g.setUnext(cellIndex, signature[0], A0.getLink());
 						g.setUnext(cellIndex, signature[1], A1.getLink());
@@ -253,8 +253,8 @@ public class PolychromTempGaugeLightConeGaussPoissonSolver extends LightConePois
 					gaugePos[dir] = z;
 					cellIndex = g.getCellIndex(gaugePos);
 
-					A0.set(phiList[j].mult(-1.0 * g.getGaugeCoupling() * shapeGauss(positionCharge[dir], width[surfaceIndex], z * as - as / 2) * shapeErf(location[surfaceIndex][dir], surfaceIndex, z * as - as / 2) / gaussNormFactorCharge));
-					A1.set(phiList[j].mult(-1.0 * g.getGaugeCoupling() * shapeGauss(positionCharge[dir], width[surfaceIndex], z * as - as / 2) * shapeErf(location[surfaceIndex][dir], surfaceIndex, z * as - as / 2 + orientation[surfaceIndex] * at) / gaussNormFactorCharge));
+					A0.set(phiList[j].mult(-1.0 * g.getGaugeCoupling() * shapeErf(location[surfaceIndex][dir], surfaceIndex, z * as - as / 2) / gaussNormFactorCharge));
+					A1.set(phiList[j].mult(-1.0 * g.getGaugeCoupling() * shapeErf(location[surfaceIndex][dir], surfaceIndex, z * as - as / 2 - orientation[surfaceIndex] * at) / gaussNormFactorCharge));
 
 					g.setUnext(cellIndex, 0, A0.getLink());
 					g.setUnext(cellIndex, 1, A1.getLink());
