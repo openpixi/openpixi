@@ -89,10 +89,6 @@ public class PolychromTempGaugeLightConeGaussPoissonSolver extends LightConePois
 		int colors = g.getNumberOfColors();
 
 		double norm = Math.pow(as, truesize);
-		/*int volumeSquared = 1;
-		for(int i = 0; i < truesize; i++) {
-			volumeSquared *= size[i]*size[i];
-		}*/
 
 		int[] pos = new int[arrayLength];
 		int[] gaugePos = new int[arrayLength];
@@ -170,7 +166,7 @@ public class PolychromTempGaugeLightConeGaussPoissonSolver extends LightConePois
 					}
 				}
 			}
-
+			//compute the derivatives of the link matrices stored in Unext, determine and set the electric fields from the temporal derivative and set the gauge links (U's)
 			System.arraycopy(pos, 0, gaugePos, 0, arrayLength);
 			AlgebraElement A0next, A1next;
 			A0next = factory.algebraZero(colors);
@@ -186,12 +182,12 @@ public class PolychromTempGaugeLightConeGaussPoissonSolver extends LightConePois
 						//fields at t=0
 						A0.set( g.getUnext(cellIndex, signature[0]).mult(g.getUnext(g.shift(cellIndex, signature[0], 1), signature[0]).adj().sub(g.getUnext(cellIndex, signature[0]).adj())).mult(1.0/as/g.getGaugeCoupling()).getAlgebraElement() );
 						A1.set( g.getUnext(cellIndex, signature[0]).mult(g.getUnext(g.shift(cellIndex, signature[1], 1), signature[0]).adj().sub(g.getUnext(cellIndex, signature[0]).adj())).mult(1.0/as/g.getGaugeCoupling()).getAlgebraElement() );
-						//fields at t=at
+						//fields at t=-at
 						A0next.set( g.getUnext(cellIndex, signature[1]).mult(g.getUnext(g.shift(cellIndex, signature[0], 1), signature[1]).adj().sub(g.getUnext(cellIndex, signature[1]).adj())).mult(1.0/as/g.getGaugeCoupling()).getAlgebraElement() );
 						A1next.set( g.getUnext(cellIndex, signature[1]).mult(g.getUnext(g.shift(cellIndex, signature[1], 1), signature[1]).adj().sub(g.getUnext(cellIndex, signature[1]).adj())).mult(1.0/as/g.getGaugeCoupling()).getAlgebraElement() );
 						//setting the electric fields
 						g.addE(cellIndex, signature[0], A0next.sub(A0).mult(-1.0/at));
-						g.addE(cellIndex, signature[1], A1next.sub(A1).mult(-1.0 / at));
+						g.addE(cellIndex, signature[1], A1next.sub(A1).mult(-1.0/at));
 
 						//setting the gauge links
 						A0.addAssign(g.getU(cellIndex, signature[0]).getAlgebraElement());
@@ -201,7 +197,7 @@ public class PolychromTempGaugeLightConeGaussPoissonSolver extends LightConePois
 					}
 				}
 			}
-
+			//the Unext matrices are being cleared in order to be used for time evolution
 			g.resetUnext();
 
 		} else if(size.length == 1) {
@@ -242,7 +238,7 @@ public class PolychromTempGaugeLightConeGaussPoissonSolver extends LightConePois
 					phiList[j].set(i, charge[2 * j]);
 				}
 			}
-			//set the values of the gauge field in the direction of the current and the values of the electric field
+			//set the values of the gauge field perpendicular to the current and save them as Unext link matrices
 			System.arraycopy(pos, 0, gaugePos, 0, arrayLength);
 			AlgebraElement A0, A1;
 			A0 = factory.algebraZero(colors);
@@ -260,7 +256,7 @@ public class PolychromTempGaugeLightConeGaussPoissonSolver extends LightConePois
 					g.setUnext(cellIndex, 1, A1.getLink());
 				}
 			}
-
+			//compute the derivatives of the link matrices stored in Unext, determine and set the electric fields from the temporal derivative and set the gauge links (U's)
 			System.arraycopy(pos, 0, gaugePos, 0, arrayLength);
 			for(int j = 0; j < size[0]; j++) {
 				gaugePos[signature[0]] = j;
@@ -270,7 +266,7 @@ public class PolychromTempGaugeLightConeGaussPoissonSolver extends LightConePois
 
 					//fields at t=0
 					A0.set( g.getUnext(cellIndex, 0).mult(g.getUnext(g.shift(cellIndex, signature[0], 1), 0).adj().sub(g.getUnext(cellIndex, 0).adj())).mult(1.0/as/g.getGaugeCoupling()).getAlgebraElement() );
-					//fields at t=at
+					//fields at t=-at
 					A1.set( g.getUnext(cellIndex, 1).mult(g.getUnext(g.shift(cellIndex, signature[0], 1), 1).adj().sub(g.getUnext(cellIndex, 1).adj())).mult(1.0/as/g.getGaugeCoupling()).getAlgebraElement() );
 					//setting the electric fields
 					g.addE(cellIndex, signature[0], A1.sub(A0).mult(-1.0/at));
@@ -280,7 +276,7 @@ public class PolychromTempGaugeLightConeGaussPoissonSolver extends LightConePois
 					g.setU(cellIndex, signature[0], A0.getLink());
 				}
 			}
-
+			//the Unext matrices are being cleared in order to be used for time evolution
 			g.resetUnext();
 
 		} else {
