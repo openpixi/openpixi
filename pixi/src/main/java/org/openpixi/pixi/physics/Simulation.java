@@ -279,18 +279,19 @@ public class Simulation {
 	/**
 	 * Runs the simulation in steps. (for interactive simulations)
 	 * The algorithm goes as follows:
-	 * 1) The link fields U(t - at/2) and Unext(t + at/2) are reassigned, such that U(t - at/2) can be overwritten
+	 * 1) At time == 0 the diagnostics routines are initialized and called for the first time in order to produce data output.
+	 * 2) Simulation time is increased by at.
+	 * 3) The link fields U(t - at/2) and Unext(t + at/2) are reassigned, such that U(t - at/2) can be overwritten
 	 * with Unext(t + 3at/2).
-	 * 2) Particle velocities are reassigned.
-	 * 3) New currents at t = t + at/2 are generated from external ones and from new particle velocities
+	 * 4) Particle velocities are reassigned.
+	 * 5) New currents at t = t + at/2 are generated from external ones and from new particle velocities
 	 * at t = t + at/2.
-	 * 4) Gauge links and electric fields are updated, Unext(t + 3at/2) and E(t + at) are dtermined from E(t),
+	 * 6) Gauge links and electric fields are updated, Unext(t + 3at/2) and E(t + at) are determined from E(t),
 	 * U(t + at/2) and J(t + at/2).
-	 * 5) Particle positions at t = t + at are computed using their velocities at t = t + at/2.
-	 * 6) Electric and magnetic field values are interpolated to particle positions.
-	 * 7) Particle velocities at t + 3at/2 are determined using the interpolated fields at t = t + at.
-	 * 8) Simulation time is increased by at.
-	 * 9) Diagnostics routines are called in order to produce data output.
+	 * 7) Particle positions at t = t + at are computed using their velocities at t = t + at/2.
+	 * 8) Electric and magnetic field values are interpolated to particle positions.
+	 * 9) Particle velocities at t + 3at/2 are determined using the interpolated fields at t = t + at.
+	 * 10) Diagnostics routines are called in order to produce data output.
 	 */
 	public void step() throws FileNotFoundException,IOException {
 
@@ -301,6 +302,11 @@ public class Simulation {
 			}
 			runDiagnostics();
 		}
+
+		// Step counter
+		totalSimulationSteps++;
+		totalSimulationTime =  totalSimulationSteps * tstep;
+
 		//Link and particle reassignment
 		grid.storeFields();
 		//reassignParticles(); TODO: Write this method!!
@@ -326,10 +332,6 @@ public class Simulation {
 
 		//Particle velocities are updated using the interpolated fields
 		//updateVelocities(); TODO: Write this method!!
-
-		// Step counter
-		totalSimulationSteps++;
-		totalSimulationTime =  totalSimulationSteps * tstep;
 
 		//Output in text files
 		runDiagnostics();

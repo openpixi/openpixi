@@ -85,8 +85,8 @@ public class SU2LightConeGaussPulseCurrent implements ICurrentGenerator {
 		/*
 			Find the nearest grid point and apply the current configuration to the cell current.
 		 */
-		double position = location[direction] + speed * time * at;
-		double posCharge = position - speed*at/2;
+		double posCharge = location[direction] + speed * time * at;
+		double position = posCharge - speed*at/2;
 
 		for (int i = 0; i < numberOfCells; i++) {
 			pos[direction] = i;
