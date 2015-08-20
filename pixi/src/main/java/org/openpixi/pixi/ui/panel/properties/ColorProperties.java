@@ -19,11 +19,9 @@ public class ColorProperties {
 	private SimulationAnimation simulationAnimation;
 	private int colorIndex = 0;
 	private int directionIndex = 1;
+	JComboBox colorIndexComboBox;
 
-	String[] colorString = {
-			"1",
-			"2",
-			"3"};
+	String[] colorString;
 
 	String[] directionString = {
 			"x",
@@ -32,6 +30,45 @@ public class ColorProperties {
 
 	public ColorProperties(SimulationAnimation simulationAnimation) {
 		this.simulationAnimation = simulationAnimation;
+		updateColorEntries();
+	}
+
+	/**
+	 * Updates the entries for the color selection.
+	 */
+	private void updateColorEntries() {
+		int colors = simulationAnimation.getSimulation().getNumberOfColors();
+		int generators = colors * colors - 1; // Number of SU(N) generators
+		colorString = new String[generators];
+		for (int i = 0; i < generators; i++) {
+			colorString[i] = "" + (i+1);
+		}
+
+		if (colorIndexComboBox == null) {
+			colorIndexComboBox = new JComboBox(colorString);
+		} else {
+			colorIndexComboBox.removeAllItems();
+			for (int i = 0; i < generators; i++) {
+				colorIndexComboBox.addItem(colorString[i]);
+			}
+		}
+
+		if (colorIndex > generators) {
+			colorIndex = generators - 1;
+		}
+		colorIndexComboBox.setSelectedIndex(colorIndex);
+	}
+
+	/**
+	 * Checks whether the selectable number of colors coincides with the number of colors
+	 * of the simulation. If not, update the number of selectable colors.
+	 */
+	public void checkConsistency() {
+		int colors = simulationAnimation.getSimulation().getNumberOfColors();
+		int generators = colors * colors - 1; // Number of SU(N) generators
+		if (generators != colorString.length) {
+			updateColorEntries();
+		}
 	}
 
 	public int getColorIndex() {
@@ -56,8 +93,6 @@ public class ColorProperties {
 
 		Box settingControls = Box.createVerticalBox();
 
-		JComboBox colorIndexComboBox;
-		colorIndexComboBox = new JComboBox(colorString);
 		colorIndexComboBox.addActionListener(new ColorListener());
 		colorIndexComboBox.setSelectedIndex(colorIndex);
 		colorIndexComboBox.setPreferredSize(new Dimension(colorIndexComboBox.getPreferredSize().width, 5));
