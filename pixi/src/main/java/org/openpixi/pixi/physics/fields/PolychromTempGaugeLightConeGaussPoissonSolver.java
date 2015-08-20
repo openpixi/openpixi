@@ -96,7 +96,7 @@ public class PolychromTempGaugeLightConeGaussPoissonSolver extends LightConePois
 			pos[i] = (int) Math.rint(location[surfaceIndex][i]/as);
 		}
 
-		double gaussNormFactorCharge = shapeGauss(location[surfaceIndex][dir], width[surfaceIndex], pos[dir] * as) / g.getGaugeCoupling() / as;
+		double gaussNormFactorCharge = shapeGauss(location[surfaceIndex][dir], width[surfaceIndex], pos[dir] * as) * g.getGaugeCoupling() * as;
 
 		if (size.length > 1) {
 			double[][] charge = new double[size[0]][2 * size[1]];

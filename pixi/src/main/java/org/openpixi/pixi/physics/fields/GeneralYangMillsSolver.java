@@ -27,6 +27,7 @@ public class GeneralYangMillsSolver extends FieldSolver
 		this.timeStep = timeStep;
 		fieldUpdater.at = timeStep;
 		fieldUpdater.as = grid.getLatticeSpacing();
+		fieldUpdater.g = grid.getGaugeCoupling();
 		linkUpdater.at = timeStep;
 		linkUpdater.as = grid.getLatticeSpacing();
 		cellIterator.execute(grid, fieldUpdater);
