@@ -475,32 +475,4 @@ public class SU3AlgebraElement implements AlgebraElement {
 	public AlgebraElement copy() {
 		return new SU3AlgebraElement(get());
 	}
-
-	public static void main(String[] args) {
-		SU3AlgebraElement a = new SU3AlgebraElement();
-		a.set(7, 1);
-
-		double[] values = a.get();
-
-		for (double value: values) {
-			System.out.println(value);
-		}
-		System.out.println();
-
-		SU3GroupElement g;
-
-		for (int i = 0; i < 100; i++) {
-			g = (SU3GroupElement) a.getLink();
-			a = (SU3AlgebraElement) g.getAlgebraElement();
-		}
-
-		values = a.get();
-
-		for (double value: values) {
-			System.out.println(value);
-		}
-		System.out.println();
-
-		System.out.println(a.get(7));
-	}
 }
