@@ -1,5 +1,7 @@
 package org.openpixi.pixi.math;
 
+import org.openpixi.pixi.ui.util.projection.PaintObject;
+
 /**
  * This is a parametrization of SU(3) algebra elements.
  * They are again represented as 3x3 matrices. Due to
@@ -12,7 +14,7 @@ package org.openpixi.pixi.math;
 public class SU3AlgebraElement implements AlgebraElement {
 
 	private final double zeroAccuracy = 1.E-12;
-
+	private final double eigenvalueZeroAccuracy = 1.E-8;
 	protected double[] v;
 
 	public SU3AlgebraElement() {
@@ -38,27 +40,27 @@ public class SU3AlgebraElement implements AlgebraElement {
 			}
 		}
 	}
-	
+
 	public void reset () {
 
 		for (int i = 0; i < 9; i++) {
 			v[i] = 0;
 		}
-		
+
 	}
-	
+
 	public AlgebraElement add (AlgebraElement arg) {
 
 		SU3AlgebraElement a = (SU3AlgebraElement) arg;
-		
+
 		SU3AlgebraElement b = new SU3AlgebraElement();
 		for (int i = 0; i < 9; i++) {
 			b.v[i] = v[i]+a.v[i];
 		}
 		return b;
-		
+
 	}
-	
+
 	public void addAssign(AlgebraElement arg) {
 
 		SU3AlgebraElement a = (SU3AlgebraElement) arg;
@@ -66,19 +68,19 @@ public class SU3AlgebraElement implements AlgebraElement {
 		for (int i = 0; i < 9; i++) {
 			v[i] += a.v[i];
 		}
-		
+
 	}
-	
+
 	public AlgebraElement sub (AlgebraElement arg) {
 
 		SU3AlgebraElement a = (SU3AlgebraElement) arg;
-		
+
 		SU3AlgebraElement b = new SU3AlgebraElement();
 		for (int i = 0; i < 9; i++) {
 			b.v[i] = v[i]-a.v[i];
 		}
 		return b;
-		
+
 	}
 
 	public void set(int j, double value) {
@@ -118,12 +120,12 @@ public class SU3AlgebraElement implements AlgebraElement {
 			default: System.out.println("Invalid generator get index!"); return 0;
 		}
 	}
-	
+
 	public double getEntry(int j) {
-		
+
 		double b = v[j];
 		return b;
-		
+
 	}
 
 	public double[] get () {
@@ -134,9 +136,8 @@ public class SU3AlgebraElement implements AlgebraElement {
 
 	public double square () {
 		return 2*(v[0]*v[0]+v[4]*v[4]+v[8]*v[8]+2*(v[1]*v[1]+v[2]*v[2]+v[3]*v[3]+v[5]*v[5]+v[6]*v[6]+v[7]*v[7]));
-		
 	}
-	
+
 	public AlgebraElement mult (double number) {
 
 		SU3AlgebraElement b = new SU3AlgebraElement();
@@ -188,9 +189,9 @@ public class SU3AlgebraElement implements AlgebraElement {
 	}
 
 	/**
-	 * Calculates the algebra element by first eigendecomposing into UDU* and then finding log D
-	 * WARNING: This decomposition only works for SU(3) matrices due to certain optimizations
-	 * @return coefficients to be fed into SU3AlgebraElement to give algebra element
+	 * Calculates the group element by first eigendecomposing into UDU* and then finding exp D
+	 * WARNING: This decomposition only works for traceless hermitian matrices due to certain optimizations
+	 * @return coefficients to be fed into SU3GroupElement to give group element
 	 */
 	private double[] groupElementDecompositionMethod() {
 		// trace of matrix squared, using square method
@@ -252,19 +253,19 @@ public class SU3AlgebraElement implements AlgebraElement {
 		// if there are degenerate eigenvalues, only use vector method for nondegenerate value
 		int phaseNum = 3;
 		int notDegenerate = 3;
-		if (Math.abs(phases[0] - phases[1]) < zeroAccuracy) {
+		if (Math.abs(phases[0] - phases[1]) < eigenvalueZeroAccuracy) {
 			double temp = phases[2];
 			phases[2] = phases[0];
 			phases[0] = temp;
 			phaseNum = 1;
 			notDegenerate = 2;
-		} else if (Math.abs(phases[0] - phases[2]) < zeroAccuracy) {
+		} else if (Math.abs(phases[0] - phases[2]) < eigenvalueZeroAccuracy) {
 			double temp = phases[1];
 			phases[1] = phases[0];
 			phases[0] = temp;
 			phaseNum = 1;
 			notDegenerate  = 1;
-		} else if (Math.abs(phases[1] - phases[2]) < zeroAccuracy) {
+		} else if (Math.abs(phases[1] - phases[2]) < eigenvalueZeroAccuracy) {
 			phaseNum = 1;
 			notDegenerate = 0;
 		}
@@ -327,24 +328,28 @@ public class SU3AlgebraElement implements AlgebraElement {
 		// and		a0*a2  a1*a2  -|a0|^2-|a1|^2
 		if (phaseNum == 1) {
 
+			double phase = (phases[1] + phases[2]) / 2;
+			phases[1] = phase;
+			phases[2] = phase;
+
 			vectors[1][0] = -v[1];
-			vectors[1][1] = v[0] - phases[1];
+			vectors[1][1] = v[0] - phase;
 			vectors[1][2] = 0;
 			vectors[1][3] = -v[3];
 			vectors[1][4] = 0;
 			vectors[1][5] = 0;
 
-			vectors[2][0] = v[2] * (v[0] - phases[2]);
+			vectors[2][0] = v[2] * (v[0] - phase);
 			vectors[2][1] = v[1]*v[2] + v[3]*v[6];
-			vectors[2][2] = (phases[2] - v[0]) * (v[0] - phases[2]) - v[1]*v[1] - v[3]*v[3];
-			vectors[2][3] = v[6] * (v[0] - phases[2]);
+			vectors[2][2] = (phase - v[0]) * (v[0] - phase) - v[1]*v[1] - v[3]*v[3];
+			vectors[2][3] = v[6] * (v[0] - phase);
 			vectors[2][4] = v[1]*v[6] - v[2]*v[3];
 			vectors[2][5] = 0;
 
 			boolean done = normalize(vectors[1]) && normalize(vectors[2]);
 
 			if (!done) {
-				vectors[1][0] = phases[1] - v[4];
+				vectors[1][0] = phase - v[4];
 				vectors[1][1] = v[1];
 				vectors[1][2] = 0;
 				vectors[1][3] = 0;
@@ -352,10 +357,10 @@ public class SU3AlgebraElement implements AlgebraElement {
 				vectors[1][5] = 0;
 
 				vectors[2][0] = v[1]*v[5] - v[3]*v[7];
-				vectors[2][1] = v[5] * (v[4] - phases[2]);
-				vectors[2][2] = (phases[2] - v[4]) * (v[4] - phases[2]) - v[1]*v[1] - v[3]*v[3];
+				vectors[2][1] = v[5] * (v[4] - phase);
+				vectors[2][2] = (phase - v[4]) * (v[4] - phase) - v[1]*v[1] - v[3]*v[3];
 				vectors[2][3] = v[1]*v[7] + v[3]*v[5];
-				vectors[2][4] = v[7] * (v[4] - phases[2]);
+				vectors[2][4] = v[7] * (v[4] - phase);
 				vectors[2][5] = 0;
 
 				done = normalize(vectors[1]) && normalize(vectors[2]);
@@ -368,16 +373,24 @@ public class SU3AlgebraElement implements AlgebraElement {
 					vectors[1][4] = -v[6];
 					vectors[1][5] = 0;
 
-					vectors[2][0] = v[2] * (v[8] - phases[2]);
-					vectors[2][1] = v[5] * (v[8] - phases[2]);
+					vectors[2][0] = v[2] * (v[8] - phase);
+					vectors[2][1] = v[5] * (v[8] - phase);
 					vectors[2][2] = -v[2]*v[2] - v[5]*v[5] - v[6]*v[6] - v[7]*v[7];
-					vectors[2][3] = v[6] * (v[8] - phases[2]);
-					vectors[2][4] = v[7] * (v[8] - phases[2]);
+					vectors[2][3] = v[6] * (v[8] - phase);
+					vectors[2][4] = v[7] * (v[8] - phase);
 					vectors[2][5] = 0;
 
 					done = normalize(vectors[1]) && normalize(vectors[2]);
 
 					if (!done) {
+						for (int i = 0; i < 3; i++) {
+							if (vectors[0][(i+1)%3] == 0 && vectors[0][(i+2)%3] == 0 && vectors[0][3+(i+1)%3] == 0 && vectors[0][3+(i+2)%3] == 0) {
+								if (notDegenerate != i) {
+									notDegenerate = i;
+								}
+							}
+						}
+
 						for (int j = 0; j < 6; j++) {
 							vectors[1][j] = 0;
 							vectors[2][j] = 0;
@@ -400,27 +413,49 @@ public class SU3AlgebraElement implements AlgebraElement {
 		// multiply U exp(D) U* to get algebra element
 		// exp(D) is just a (complex) diagonal matrix
 		SU3GroupElement unit = new SU3GroupElement(new double[]{vectors[0][0],vectors[1][0],vectors[2][0],
-													vectors[0][1],vectors[1][1],vectors[2][1],
-													vectors[0][2],vectors[1][2],vectors[2][2],
-													vectors[0][3],vectors[1][3],vectors[2][3],
-													vectors[0][4],vectors[1][4],vectors[2][4],
-													vectors[0][5],vectors[1][5],vectors[2][5]});
+																vectors[0][1],vectors[1][1],vectors[2][1],
+																vectors[0][2],vectors[1][2],vectors[2][2],
+																vectors[0][3],vectors[1][3],vectors[2][3],
+																vectors[0][4],vectors[1][4],vectors[2][4],
+																vectors[0][5],vectors[1][5],vectors[2][5]});
 		SU3GroupElement diag = new SU3GroupElement(new double[]{valuesRe[0],0,0,
-													0,valuesRe[1],0,
-													0,0,valuesRe[2],
-													valuesIm[0],0,0,
-													0,valuesIm[1],0,
-													0,0,valuesIm[2]});
+																0,valuesRe[1],0,
+																0,0,valuesRe[2],
+																valuesIm[0],0,0,
+																0,valuesIm[1],0,
+																0,0,valuesIm[2]});
 		return ((SU3GroupElement) unit.mult(diag).mult(unit.adj())).get();
+	}
+
+	/**
+	 * Calculates the group element using the taylor series expansion of exp.
+	 * WARNING: This decomposition only works well for "small" matrices!
+	 * @return coefficients to be fed into SU3GroupElement to give group element
+	 */
+	private double[] groupElementTaylorSeries() {
+		SU3GroupElement result = new SU3GroupElement(new double[]{1,0,0,0,1,0,0,0,1,0,0,0,0,0,0,0,0,0});
+		SU3GroupElement intermediate = new SU3GroupElement(new double[]{1,0,0,0,1,0,0,0,1,0,0,0,0,0,0,0,0,0});
+		SU3GroupElement multiplier = new SU3GroupElement(new double[]{v[0],v[1],v[2],v[1],v[4],v[5],v[2],v[5],v[8],0,v[3],v[6],-v[3],0,v[7],-v[6],-v[7],0});
+
+		for (int i = 1; i <= 15; i++) {
+			intermediate = (SU3GroupElement) intermediate.mult(multiplier).mult(1.0 / i);
+			result = (SU3GroupElement) result.add(intermediate);
+		}
+
+		return result.get();
 	}
 
 	public GroupElement getLinearizedLink() {
 		double[] values = new double[]{1,-v[3],-v[6],v[3],1,-v[7],v[6],v[7],1,v[0],v[1],v[2],v[1],v[4],v[5],v[2],v[5],v[8]};
 		return new SU3GroupElement(values);
 	}
-	
+
 	public GroupElement getLink() {
-		return new SU3GroupElement(groupElementDecompositionMethod());
+		if (square() <= 1E-10) {
+			return new SU3GroupElement(groupElementTaylorSeries());
+		} else {
+			return new SU3GroupElement(groupElementDecompositionMethod());
+		}
 	}
 
 	public double proj(int c) {
@@ -439,5 +474,33 @@ public class SU3AlgebraElement implements AlgebraElement {
 
 	public AlgebraElement copy() {
 		return new SU3AlgebraElement(get());
+	}
+
+	public static void main(String[] args) {
+		SU3AlgebraElement a = new SU3AlgebraElement();
+		a.set(7, 1);
+
+		double[] values = a.get();
+
+		for (double value: values) {
+			System.out.println(value);
+		}
+		System.out.println();
+
+		SU3GroupElement g;
+
+		for (int i = 0; i < 100; i++) {
+			g = (SU3GroupElement) a.getLink();
+			a = (SU3AlgebraElement) g.getAlgebraElement();
+		}
+
+		values = a.get();
+
+		for (double value: values) {
+			System.out.println(value);
+		}
+		System.out.println();
+
+		System.out.println(a.get(7));
 	}
 }

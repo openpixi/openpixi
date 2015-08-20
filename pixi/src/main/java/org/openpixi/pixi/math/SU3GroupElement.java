@@ -418,35 +418,42 @@ public class SU3GroupElement implements GroupElement {
 		// and		a0*a2  a1*a2  -|a0|^2-|a1|^2
 		if (phaseNum == 1) {
 
+			double valueRe = (valuesRe[1] + valuesRe[2]) / 2;
+			double valueIm = (valuesIm[1] + valuesIm[2]) / 2;
+			valuesRe[1] = valueRe;
+			valuesRe[2] = valueRe;
+			valuesIm[1] = valueIm;
+			valuesIm[2] = valueIm;
+
 			vectors[1][0] = -e[1];
-			vectors[1][1] = e[0] - valuesRe[1];
+			vectors[1][1] = e[0] - valueRe;
 			vectors[1][2] = 0;
 			vectors[1][3] = -e[10];
-			vectors[1][4] = e[9] - valuesIm[1];
+			vectors[1][4] = e[9] - valueIm;
 			vectors[1][5] = 0;
 
-			vectors[2][0] = e[2] * (e[0] - valuesRe[2]) + e[11] * (e[9] - valuesIm[2]);
+			vectors[2][0] = e[2] * (e[0] - valueRe) + e[11] * (e[9] - valueIm);
 			vectors[2][1] = e[1] * e[2] + e[10] * e[11];
-			vectors[2][2] = (e[0] - valuesRe[2]) * (valuesRe[2] - e[0]) + (e[9] - valuesIm[2]) * (valuesIm[2] - e[9]) - e[1]*e[1] - e[10]*e[10];
-			vectors[2][3] = e[2] * (valuesIm[2] - e[9]) + e[11] * (e[0] - valuesRe[2]);
+			vectors[2][2] = (e[0] - valueRe) * (valueRe - e[0]) + (e[9] - valueIm) * (valueIm - e[9]) - e[1]*e[1] - e[10]*e[10];
+			vectors[2][3] = e[2] * (valueIm - e[9]) + e[11] * (e[0] - valueRe);
 			vectors[2][4] = e[1] * e[11] - e[2] * e[10];
 			vectors[2][5] = 0;
 
 			boolean done = normalize(vectors[1]) && normalize(vectors[2]);
 
 			if (!done) {
-				vectors[1][0] = -e[4] + valuesRe[1];
+				vectors[1][0] = -e[4] + valueRe;
 				vectors[1][1] = e[3];
 				vectors[1][2] = 0;
-				vectors[1][3] = -e[13] + valuesIm[1];
+				vectors[1][3] = -e[13] + valueIm;
 				vectors[1][4] = e[12];
 				vectors[1][5] = 0;
 
 				vectors[2][0] = e[3] * e[5] + e[12] * e[14];
-				vectors[2][1] = e[5] * (e[4] - valuesRe[2]) + e[14] * (e[13] - valuesIm[2]);
-				vectors[2][2] = (e[4] - valuesRe[2]) * (valuesRe[2] - e[4]) + (e[13] - valuesIm[2]) * (valuesIm[2] - e[13]) - e[3]*e[3] - e[12]*e[12];
+				vectors[2][1] = e[5] * (e[4] - valueRe) + e[14] * (e[13] - valueIm);
+				vectors[2][2] = (e[4] - valueRe) * (valueRe - e[4]) + (e[13] - valueIm) * (valueIm - e[13]) - e[3]*e[3] - e[12]*e[12];
 				vectors[2][3] = e[3] * e[14] - e[12] * e[5];
-				vectors[2][4] = e[5] * (valuesIm[2] - e[13]) + e[14] * (e[4] - valuesRe[2]);
+				vectors[2][4] = e[5] * (valueIm - e[13]) + e[14] * (e[4] - valueRe);
 				vectors[2][5] = 0;
 
 				done = normalize(vectors[1]) && normalize(vectors[2]);
@@ -459,16 +466,25 @@ public class SU3GroupElement implements GroupElement {
 					vectors[1][4] = e[15];
 					vectors[1][5] = 0;
 
-					vectors[2][0] = e[6] * (e[8] - valuesRe[2]) + e[15] * (e[17] - valuesIm[2]);
-					vectors[2][1] = e[7] * (e[8] - valuesRe[2]) + e[16] * (e[17] - valuesIm[2]);
+					vectors[2][0] = e[6] * (e[8] - valueRe) + e[15] * (e[17] - valueIm);
+					vectors[2][1] = e[7] * (e[8] - valueRe) + e[16] * (e[17] - valueIm);
 					vectors[2][2] = -e[6]*e[6] - e[15]*e[15] - e[7]*e[7] - e[16]*e[16];
-					vectors[2][3] = e[6] * (e[17] - valuesIm[2]) - e[15] * (e[8] - valuesRe[2]);
-					vectors[2][4] = e[7] * (e[17] - valuesIm[2]) - e[16] * (e[8] - valuesRe[2]);
+					vectors[2][3] = e[6] * (e[17] - valueIm) - e[15] * (e[8] - valueRe);
+					vectors[2][4] = e[7] * (e[17] - valueIm) - e[16] * (e[8] - valueRe);
 					vectors[2][5] = 0;
 
 					done = normalize(vectors[1]) && normalize(vectors[2]);
 
 					if (!done) {
+						for (int i = 0; i < 3; i++) {
+							if (vectors[0][(i+1)%3] == 0 && vectors[0][(i+2)%3] == 0 && vectors[0][3+(i+1)%3] == 0 && vectors[0][3+(i+2)%3] == 0) {
+								if (notDegenerate != i) {
+									notDegenerate = i;
+								}
+							}
+						}
+
+
 						for (int j = 0; j < 6; j++) {
 							vectors[1][j] = 0;
 							vectors[2][j] = 0;
