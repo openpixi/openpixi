@@ -1,7 +1,5 @@
 package org.openpixi.pixi.math;
 
-import org.openpixi.pixi.ui.util.projection.PaintObject;
-
 /**
  * This is a parametrization of SU(3) algebra elements.
  * They are again represented as 3x3 matrices. Due to
@@ -15,6 +13,10 @@ public class SU3AlgebraElement implements AlgebraElement {
 
 	private final double zeroAccuracy = 1.E-12;
 	private final double eigenvalueZeroAccuracy = 1.E-8;
+
+	private final double taylorSeriesCutoff = 1.E-10;
+	private final int taylorSeriesN = 15;
+
 	protected double[] v;
 
 	public SU3AlgebraElement() {
@@ -435,9 +437,9 @@ public class SU3AlgebraElement implements AlgebraElement {
 	private double[] groupElementTaylorSeries() {
 		SU3GroupElement result = new SU3GroupElement(new double[]{1,0,0,0,1,0,0,0,1,0,0,0,0,0,0,0,0,0});
 		SU3GroupElement intermediate = new SU3GroupElement(new double[]{1,0,0,0,1,0,0,0,1,0,0,0,0,0,0,0,0,0});
-		SU3GroupElement multiplier = new SU3GroupElement(new double[]{v[0],v[1],v[2],v[1],v[4],v[5],v[2],v[5],v[8],0,v[3],v[6],-v[3],0,v[7],-v[6],-v[7],0});
+		SU3GroupElement multiplier = new SU3GroupElement(new double[]{0,-v[3],-v[6],v[3],0,-v[7],v[6],v[7],0,v[0],v[1],v[2],v[1],v[4],v[5],v[2],v[5],v[8]});
 
-		for (int i = 1; i <= 15; i++) {
+		for (int i = 1; i <= taylorSeriesN; i++) {
 			intermediate = (SU3GroupElement) intermediate.mult(multiplier).mult(1.0 / i);
 			result = (SU3GroupElement) result.add(intermediate);
 		}
@@ -451,7 +453,7 @@ public class SU3AlgebraElement implements AlgebraElement {
 	}
 
 	public GroupElement getLink() {
-		if (square() <= 1E-10) {
+		if (square() <= taylorSeriesCutoff) {
 			return new SU3GroupElement(groupElementTaylorSeries());
 		} else {
 			return new SU3GroupElement(groupElementDecompositionMethod());

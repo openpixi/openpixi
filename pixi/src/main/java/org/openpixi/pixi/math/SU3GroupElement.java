@@ -14,6 +14,9 @@ public class SU3GroupElement implements GroupElement {
 	private final double zeroAccuracy = 1.E-12;
 	private final double eigenvalueZeroAccuracy = 1.E-7;
 
+	private final double taylorSeriesCutoff = 3 - 1.E-8;
+	private final int taylorSeriesN = 15;
+
 	private double[] e;
 
 	public SU3GroupElement() {
@@ -529,6 +532,32 @@ public class SU3GroupElement implements GroupElement {
 	}
 
 	/**
+	 * Calculates the group element using the taylor series expansion of exp.
+	 * WARNING: This decomposition only works well for "small" matrices!
+	 * @return coefficients to be fed into SU3GroupElement to give group element
+	 */
+	private double[] algebraElementTaylorSeries() {
+		SU3GroupElement result = new SU3GroupElement();
+		SU3GroupElement intermediate = new SU3GroupElement(new double[]{-1,0,0,0,-1,0,0,0,-1,0,0,0,0,0,0,0,0,0});
+		// series for log(1+x), so subtract I from A
+		SU3GroupElement multiplier = (SU3GroupElement) this.add(intermediate).mult(-1);
+
+		for (int i = 1; i <= taylorSeriesN; i++) {
+			intermediate = (SU3GroupElement) intermediate.mult(multiplier);
+			result = (SU3GroupElement) result.add(intermediate.mult(1.0 / i));
+		}
+
+		double[] values = new double[18];
+
+		for (int i = 0; i < 9; i++) {
+			values[i] = result.get(i + 9);
+			values[i + 9] = -result.get(i);
+		}
+
+		return hermiticize(values);
+	}
+
+	/**
 	 * (anti)symmetrizes matrix to ensure hermiticity
 	 * @param values list of 18 values as in SU3GroupElement
 	 * @return list of 9 values as in SU3AlgebraElement
@@ -551,7 +580,11 @@ public class SU3GroupElement implements GroupElement {
 	}
 
 	public AlgebraElement getAlgebraElement() {
-		return new SU3AlgebraElement(algebraElementDecompositionMethod());
+		if (e[0] + e[4] + e[8] >= taylorSeriesCutoff) {
+			return new SU3AlgebraElement(algebraElementTaylorSeries());
+		} else {
+			return new SU3AlgebraElement(algebraElementDecompositionMethod());
+		}
 	}
 
 	/**
