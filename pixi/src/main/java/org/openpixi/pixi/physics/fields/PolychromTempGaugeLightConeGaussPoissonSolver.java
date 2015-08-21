@@ -88,7 +88,7 @@ public class PolychromTempGaugeLightConeGaussPoissonSolver extends LightConePois
 		ElementFactory factory = g.getElementFactory();
 		int colors = g.getNumberOfColors();
 
-		double norm = Math.pow(as, truesize);
+		double norm = Math.pow(as, 2);
 
 		int[] pos = new int[arrayLength];
 		int[] gaugePos = new int[arrayLength];
