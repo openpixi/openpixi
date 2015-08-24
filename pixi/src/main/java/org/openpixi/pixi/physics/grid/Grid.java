@@ -26,6 +26,7 @@ public class Grid {
 	private ResetChargeAction resetCharge = new ResetChargeAction();
 	private ResetCurrentAction resetCurrent = new ResetCurrentAction();
 	private StoreFieldsAction storeFields = new StoreFieldsAction();
+	private ResetUnext resetUnext = new ResetUnext();
 	/**
 	 * Cell array. This one dimensional array is used to represent the d-dimensional grid. The cells are indexed by
 	 * their cell ids. Cell ids can be computed from lattice coordinates with the {@link #getCellIndex(int[])} method.
@@ -482,6 +483,13 @@ public class Grid {
 	}
 
 	/**
+	 * Resets all Unext matrices in every cell to unit matrices.
+	 */
+	public void resetUnext() {
+		cellIterator.execute(this, resetUnext);
+	}
+
+	/**
 	 * Resets all charges in every cell to zero.
 	 */
 	public void resetCharge() {
@@ -723,6 +731,16 @@ public class Grid {
 
 		public void execute(Grid grid, int index) {
 			grid.getCell(index).reassignLinks();
+		}
+	}
+
+	/**
+	 * ResetUnext is used by the CellIterator to reset all Unext group elements on the grid.
+	 */
+	private class ResetUnext implements CellAction {
+
+		public void execute(Grid grid, int index) {
+			grid.getCell(index).resetUnext(numCol);
 		}
 	}
 

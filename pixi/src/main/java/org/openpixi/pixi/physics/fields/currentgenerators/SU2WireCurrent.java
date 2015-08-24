@@ -26,7 +26,7 @@ public class SU2WireCurrent implements ICurrentGenerator {
 		this.speed = speed;
 	}
 
-	public void initializeCurrent(Simulation s) {
+	public void initializeCurrent(Simulation s, int dummy) {
 		applyCurrent(s);
 	}
 

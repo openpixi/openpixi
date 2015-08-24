@@ -3,6 +3,7 @@ package org.openpixi.pixi.physics.fields;
 import org.openpixi.pixi.math.AlgebraElement;
 import org.openpixi.pixi.math.ElementFactory;
 import org.openpixi.pixi.math.SU2AlgebraElement;
+import org.openpixi.pixi.physics.Simulation;
 import org.openpixi.pixi.physics.grid.Grid;
 import edu.emory.mathcs.jtransforms.fft.*;
 

@@ -1,22 +1,24 @@
 package org.openpixi.pixi.physics.fields.currentgenerators;
 
+import org.apache.commons.math3.analysis.function.Gaussian;
 import org.openpixi.pixi.math.SU2AlgebraElement;
 import org.openpixi.pixi.physics.Simulation;
-import org.openpixi.pixi.physics.grid.Grid;
 import org.openpixi.pixi.physics.fields.LightConePoissonSolver;
-import org.openpixi.pixi.physics.fields.TempGaugeLightConePoissonSolver;
+import org.openpixi.pixi.physics.fields.TempGaugeLightConeGaussPoissonSolver;
+import org.openpixi.pixi.physics.grid.Grid;
 
-public class SU2LightConeDeltaPulseCurrent implements ICurrentGenerator {
+public class SU2LightConeGaussPulseCurrentMono implements ICurrentGenerator {
 
 	private int direction;
 	private double[] location;
 	private double[] amplitudeColorDirection;
 	private double magnitude;
+	private double width;
 	private Grid grid;
 	private int orientation;
 	private LightConePoissonSolver poisson;
 
-	public SU2LightConeDeltaPulseCurrent(int direction, double[] location, double[] amplitudeColorDirection, double magnitude, int orientation, boolean gauge) {
+	public SU2LightConeGaussPulseCurrentMono(int direction, double[] location, double width, double[] amplitudeColorDirection, double magnitude, int orientation) {
 
 		this.direction = direction;
 		this.location = location;
@@ -27,15 +29,12 @@ public class SU2LightConeDeltaPulseCurrent implements ICurrentGenerator {
 		this.amplitudeColorDirection = this.normalizeVector(amplitudeColorDirection);
 
 		this.magnitude = magnitude;
+		this.width = width;
 		this.orientation = orientation;
-		if(gauge == true) {
-			this.poisson = new TempGaugeLightConePoissonSolver(location, direction, orientation);
-		} else {
-			this.poisson = new LightConePoissonSolver(location, direction, orientation);
-		}
+		this.poisson = new TempGaugeLightConeGaussPoissonSolver(location, direction, Integer.signum(orientation), width);
 	}
 
-	public void initializeCurrent(Simulation s, int dummy) {
+	public void initializeCurrent(Simulation s, int totalInstances) {
 		applyCurrent(s);
 		poisson.solve(s.grid);
 	}
@@ -45,15 +44,14 @@ public class SU2LightConeDeltaPulseCurrent implements ICurrentGenerator {
 		double as = grid.getLatticeSpacing();
 		double at = s.getTimeStep();
 		int time = s.totalSimulationSteps;
+		int numberOfCells = grid.getNumCells(direction);
 		double g = s.getCouplingConstant();
-		double normFactor = as/(Math.pow(as, grid.getNumberOfDimensions())*at);
-		double chargeNorm = 1.0/(Math.pow(as, grid.getNumberOfDimensions()));
 		double speed = s.getSpeedOfLight()*Integer.signum(orientation);
 		int[] pos = new int[location.length];
 		for (int i = 0; i < location.length; i++) {
 			pos[i] = (int) Math.rint(location[i]/as);
 			if( (s.totalSimulationSteps == 0) && (Math.abs((location[i]/as) % pos[i]) > 0.0001) ) {
-				System.out.println("SU2LightConeDeltaPulseCurrent: location is at a non-integer grid position!.");
+				System.out.println("SU2LightConeGaussPulseCurrent: location is at a non-integer grid position!.");
 			}
 		}
 
@@ -73,30 +71,22 @@ public class SU2LightConeDeltaPulseCurrent implements ICurrentGenerator {
 				this.magnitude * this.amplitudeColorDirection[1],
 				this.magnitude * this.amplitudeColorDirection[2]);
 
-		fieldAmplitude.multAssign(chargeNorm);	// This factor comes from the dimensionality of the current density
-		chargeAmplitude.multAssign(chargeNorm);
+		fieldAmplitude.multAssign(1 * g * as);	// This factor comes from the dimensionality of the current density
+		chargeAmplitude.multAssign(1 * g * as);	// The factor g*as comes from our definition of electric fields!!
 
 		/*
 			Find the nearest grid point and apply the current configuration to the cell current.
 		 */
-		int position;
-		if(orientation < 0) {
-			position = (int) Math.ceil(Math.rint(location[direction]/as) + speed * time * at / as);
-		} else {
-			position = (int) Math.floor(Math.rint(location[direction]/as) + speed * time * at / as);
-		}
-		//int position = (int) Math.rint(initialPosition + speed*time*at/as);
-		//int position = (int) Math.floor(initialPosition + speed * time * at / as);
-		pos[direction] = position;
-		int cellIndex = grid.getCellIndex(pos);
+		double position = location[direction] + speed * time * at;
+		double posCharge = position - speed*at/2;
 
-		int chargeIndex = cellIndex;
-		if(orientation < 0) {
-			chargeIndex = grid.shift(chargeIndex, direction, 1);
-		}
+		for (int i = 0; i < numberOfCells; i++) {
+			pos[direction] = i;
+			int cellIndex = grid.getCellIndex(pos);
 
-		grid.addJ(cellIndex, direction, fieldAmplitude.mult(g * as));	// The factor g*as comes from our definition of electric fields!!
-		grid.addRho(chargeIndex, chargeAmplitude.mult(g * as));
+			grid.addJ(cellIndex, direction, fieldAmplitude.mult(shape(position, i*as)));
+			grid.addRho(cellIndex, chargeAmplitude.mult(shape(posCharge, i * as)));
+		}
 	}
 
 	private double[] normalizeVector(double[] vector) {
@@ -110,5 +100,12 @@ public class SU2LightConeDeltaPulseCurrent implements ICurrentGenerator {
 			output[i] = vector[i] / norm;
 		}
 		return output;
+	}
+
+	private double shape(double mean, double x) {
+		Gaussian gauss = new Gaussian(mean, width);
+		//Gaussian gauss = new Gaussian(1.0/(width*Math.sqrt(2*Math.PI)), mean, width);
+		//double value = Math.exp(-Math.pow(x - mean, 2)/(2*width*width))/(width*Math.sqrt(2*Math.PI));
+		return gauss.value(x);
 	}
 }
