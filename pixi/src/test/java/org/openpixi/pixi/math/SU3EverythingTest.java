@@ -286,9 +286,12 @@ public class SU3EverythingTest {
 			SU3AlgebraElement m = new SU3AlgebraElement();
 			m.set(i, 1);
 
-			SU3GroupElement mm = (SU3GroupElement) m.getLink();
+			SU3GroupElement mm;
 
-			m = (SU3AlgebraElement) mm.getAlgebraElement();
+			for (int j = 0; j < 10; j++) {
+				mm = (SU3GroupElement) m.getLink();
+				m = (SU3AlgebraElement) mm.getAlgebraElement();
+			}
 
 			for (int j = 0; j < 8; j++) {
 				Assert.assertEquals(m.get(j), i == j ? 1.0 : 0.0, singularAccuracy);

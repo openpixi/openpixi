@@ -100,9 +100,21 @@ public class EnergyDensity2DGLPanel extends AnimationGLPanel {
 					// get color:
 					double color = s.grid.getE(index, w).get(0);
 					red += color * color;
+					color = s.grid.getE(index, w).get(3);
+					red += color * color;
+					color = s.grid.getE(index, w).get(6);
+					red += color * color;
+
 					color = s.grid.getE(index, w).get(1);
 					green += color * color;
+					color = s.grid.getE(index, w).get(4);
+					green += color * color;
+					color = s.grid.getE(index, w).get(7);
+					green += color * color;
+
 					color = s.grid.getE(index, w).get(2);
+					blue += color * color;
+					color = s.grid.getE(index, w).get(5);
 					blue += color * color;
 				}
 				// Normalize

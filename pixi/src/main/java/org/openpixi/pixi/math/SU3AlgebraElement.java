@@ -12,7 +12,7 @@ package org.openpixi.pixi.math;
 public class SU3AlgebraElement implements AlgebraElement {
 
 	private final double zeroAccuracy = 1.E-12;
-	private final double eigenvalueZeroAccuracy = 1.E-8;
+	private final double eigenvalueZeroAccuracy = 1.E-4;
 
 	private final double taylorSeriesCutoff = 1.E-10;
 	private final int taylorSeriesN = 15;
@@ -255,19 +255,19 @@ public class SU3AlgebraElement implements AlgebraElement {
 		// if there are degenerate eigenvalues, only use vector method for nondegenerate value
 		int phaseNum = 3;
 		int notDegenerate = 3;
-		if (Math.abs(phases[0] - phases[1]) < eigenvalueZeroAccuracy) {
+		if (Math.abs(1 - phases[0] / phases[1]) < eigenvalueZeroAccuracy) {
 			double temp = phases[2];
 			phases[2] = phases[0];
 			phases[0] = temp;
 			phaseNum = 1;
 			notDegenerate = 2;
-		} else if (Math.abs(phases[0] - phases[2]) < eigenvalueZeroAccuracy) {
+		} else if (Math.abs(1 - phases[0] / phases[2]) < eigenvalueZeroAccuracy) {
 			double temp = phases[1];
 			phases[1] = phases[0];
 			phases[0] = temp;
 			phaseNum = 1;
 			notDegenerate  = 1;
-		} else if (Math.abs(phases[1] - phases[2]) < eigenvalueZeroAccuracy) {
+		} else if (Math.abs(1 - phases[1] / phases[2]) < eigenvalueZeroAccuracy) {
 			phaseNum = 1;
 			notDegenerate = 0;
 		}
