@@ -67,8 +67,7 @@ public class ElectricFieldPanel extends AnimationPanel {
 		scaleProperties = new ScaleProperties(simulationAnimation);
 		gaugeProperties = new GaugeProperties(simulationAnimation);
 		showFieldProperties = new BooleanArrayProperties(simulationAnimation, fieldLabel, fieldInit);
-
-		showCoordinateProperties = new CoordinateProperties(simulationAnimation, "Show coordinate", CoordinateProperties.Mode.MODE_1D_LOOP);
+		showCoordinateProperties = new CoordinateProperties(simulationAnimation, CoordinateProperties.Mode.MODE_1D_LOOP);
 	}
 
 	/** Display the particles */

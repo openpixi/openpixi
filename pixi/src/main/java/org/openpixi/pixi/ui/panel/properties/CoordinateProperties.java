@@ -4,7 +4,15 @@ import org.openpixi.pixi.physics.Simulation;
 import org.openpixi.pixi.ui.SimulationAnimation;
 
 /**
- * Convenience method for storing strings that specify coordinates.
+ * Convenience method for storing strings that specify coordinates for plots.
+ * <br>
+ * Examples:
+ * <ul><li>x, i, 0: Draw first index as x-axis, second index as loop index,
+ * and set third index to 0.</li>
+ * <li>x, y, 16: Draw first and second indices as x- and y-axes, and set
+ * the third index to 16.</li>
+ * <li>8, x, y: Draw the second and third indices as x- and y-axes, and
+ * set the first index to 8.</li></ul>
  *
  */
 public class CoordinateProperties extends StringProperties {
@@ -21,8 +29,8 @@ public class CoordinateProperties extends StringProperties {
 	int loopIndex;
 
 	public CoordinateProperties(SimulationAnimation simulationAnimation,
-			String name, Mode mode) {
-		super(simulationAnimation, name, "");
+			Mode mode) {
+		super(simulationAnimation, "Show coordinate", "");
 
 		this.mode = mode;
 
