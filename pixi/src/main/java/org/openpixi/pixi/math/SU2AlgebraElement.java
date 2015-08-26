@@ -139,6 +139,26 @@ public class SU2AlgebraElement implements AlgebraElement {
 		return 0.5 * v[c];
 	}
 
+	public AlgebraElement act(GroupElement g) {
+		SU2GroupElement u = (SU2GroupElement) g;
+		SU2AlgebraElement X = new SU2AlgebraElement();
+
+		double factor1 = 2.0 * u.get(0) * u.get(0) - 1.0;
+		double factor2 = 0.0;
+		for(int i = 0; i < 3; i++) {
+			factor2 += 2.0 * v[i] * u.get(i+1);
+		}
+
+		for(int i = 0; i < 3; i++) {
+			X.v[i] = factor1 * v[i] + factor2 * u.get(i+1);
+		}
+		return X;
+	}
+
+	public void actAssign(GroupElement g) {
+		this.set(this.act(g));
+	}
+
 	public AlgebraElement copy() {
 		return new SU2AlgebraElement(v[0], v[1], v[2]);
 	}
