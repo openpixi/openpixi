@@ -38,8 +38,8 @@ public class SU3EverythingTest {
 				We construct two fields. One from the constructor and another using setter methods.
 			 */
 			SU3AlgebraElement firstField = new SU3AlgebraElement(new double[]{(vec[2]+vec[7]/Math.sqrt(3))/2,vec[0]/2,vec[3]/2,
-															-vec[1]/2,(-vec[2]+vec[7]/Math.sqrt(3))/2,vec[5]/2,
-															-vec[4]/2,-vec[6]/2,-vec[7]/Math.sqrt(3)});
+															vec[1]/2,(-vec[2]+vec[7]/Math.sqrt(3))/2,vec[5]/2,
+															vec[4]/2,vec[6]/2,-vec[7]/Math.sqrt(3)});
 			SU3AlgebraElement secondField = new SU3AlgebraElement();
 			for (int i = 0; i < 8; i++) {
 				secondField.set(i, vec[i]);
@@ -460,13 +460,13 @@ public class SU3EverythingTest {
 		Array2DRowFieldMatrix<Complex> output = new Array2DRowFieldMatrix<Complex>(field, 3, 3);
 
 		output.setEntry(0, 0, new Complex(input.getEntry(0),0));
-		output.setEntry(0, 1, new Complex(input.getEntry(1),input.getEntry(3)));
-		output.setEntry(0, 2, new Complex(input.getEntry(2),input.getEntry(6)));
-		output.setEntry(1, 0, new Complex(input.getEntry(1),-input.getEntry(3)));
+		output.setEntry(0, 1, new Complex(input.getEntry(1),-input.getEntry(3)));
+		output.setEntry(0, 2, new Complex(input.getEntry(2),-input.getEntry(6)));
+		output.setEntry(1, 0, new Complex(input.getEntry(1),input.getEntry(3)));
 		output.setEntry(1, 1, new Complex(input.getEntry(4),0));
-		output.setEntry(1, 2, new Complex(input.getEntry(5),input.getEntry(7)));
-		output.setEntry(2, 0, new Complex(input.getEntry(2),-input.getEntry(6)));
-		output.setEntry(2, 1, new Complex(input.getEntry(5),-input.getEntry(7)));
+		output.setEntry(1, 2, new Complex(input.getEntry(5),-input.getEntry(7)));
+		output.setEntry(2, 0, new Complex(input.getEntry(2),input.getEntry(6)));
+		output.setEntry(2, 1, new Complex(input.getEntry(5),input.getEntry(7)));
 		output.setEntry(2, 2, new Complex(input.getEntry(8),0));
 
 		return output;

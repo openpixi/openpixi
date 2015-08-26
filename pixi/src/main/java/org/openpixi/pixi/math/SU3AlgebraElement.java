@@ -93,17 +93,17 @@ public class SU3AlgebraElement implements AlgebraElement {
 		switch (j) {
 			case 0: v[1] += diff;
 				break;
-			case 1: v[3] -= diff;
+			case 1: v[3] += diff;
 				break;
 			case 2: v[0] += diff; v[4] -= diff;
 				break;
 			case 3: v[2] += diff;
 				break;
-			case 4: v[6] -= diff;
+			case 4: v[6] += diff;
 				break;
 			case 5: v[5] += diff;
 				break;
-			case 6: v[7] -= diff;
+			case 6: v[7] += diff;
 				break;
 			case 7: v[0] += diff / Math.sqrt(3); v[4] += diff / Math.sqrt(3); v[8] -= 2 * diff / Math.sqrt(3);
 				break;
@@ -114,12 +114,12 @@ public class SU3AlgebraElement implements AlgebraElement {
 	public double get(int j) {
 		switch (j) {
 			case 0: return 2 * v[1];
-			case 1: return -2 * v[3];
+			case 1: return 2 * v[3];
 			case 2: return v[0] - v[4];
 			case 3: return 2 * v[2];
-			case 4: return -2 * v[6];
+			case 4: return 2 * v[6];
 			case 5: return 2 * v[5];
-			case 6: return -2 * v[7];
+			case 6: return 2 * v[7];
 			case 7: return (v[0] + v[4] - 2 * v[8]) / Math.sqrt(3);
 			default: System.out.println("Invalid generator get index!"); return 0;
 		}
@@ -281,8 +281,8 @@ public class SU3AlgebraElement implements AlgebraElement {
 			vectors[i][1] = v[2]*v[5]+v[6]*v[7]+v[1]*(v[0]+v[4]-otherPhaseSum);
 			vectors[i][2] = v[1]*v[5]-v[3]*v[7]+v[2]*(v[0]+v[8]-otherPhaseSum);
 			vectors[i][3] = 0;
-			vectors[i][4] = -v[5]*v[6]+v[2]*v[7]+v[3]*(otherPhaseSum-v[0]-v[4]);
-			vectors[i][5] = -v[3]*v[5]-v[1]*v[7]+v[6]*(otherPhaseSum-v[0]-v[8]);
+			vectors[i][4] = v[5]*v[6]-v[2]*v[7]+v[3]*(v[0]+v[4]-otherPhaseSum);
+			vectors[i][5] = v[3]*v[5]+v[1]*v[7]+v[6]*(v[0]+v[8]-otherPhaseSum);
 
 			boolean done = normalize(vectors[i]);
 
@@ -290,9 +290,9 @@ public class SU3AlgebraElement implements AlgebraElement {
 				vectors[i][0] = v[2]*v[5]+v[6]*v[7]+v[1]*(v[0]+v[4]-otherPhaseSum);
 				vectors[i][1] = v[1]*v[1]+v[3]*v[3]+v[4]*v[4]+v[5]*v[5]+v[7]*v[7]+otherPhaseProduct-v[4]*otherPhaseSum;
 				vectors[i][2] = v[1]*v[2]+v[3]*v[6]+v[5]*(v[4]+v[8]-otherPhaseSum);
-				vectors[i][3] = v[5]*v[6]-v[2]*v[7]-v[3]*(otherPhaseSum-v[0]-v[4]);
+				vectors[i][3] = v[2]*v[7]-v[5]*v[6]-v[3]*(v[0]+v[4]-otherPhaseSum);
 				vectors[i][4] = 0;
-				vectors[i][5] = v[2]*v[3]-v[1]*v[6]+v[7]*(otherPhaseSum-v[4]-v[8]);
+				vectors[i][5] = v[1]*v[6]-v[2]*v[3]+v[7]*(v[4]+v[8]-otherPhaseSum);
 
 				done = normalize(vectors[i]);
 
@@ -300,8 +300,8 @@ public class SU3AlgebraElement implements AlgebraElement {
 					vectors[i][0] = v[1]*v[5]-v[3]*v[7]+v[2]*(v[0]+v[8]-otherPhaseSum);
 					vectors[i][1] = v[1]*v[2]+v[3]*v[6]+v[5]*(v[4]+v[8]-otherPhaseSum);
 					vectors[i][2] = v[2]*v[2]+v[5]*v[5]+v[6]*v[6]+v[7]*v[7]+v[8]*v[8]+otherPhaseProduct-v[8]*otherPhaseSum;
-					vectors[i][3] = v[3]*v[5]+v[1]*v[7]-v[6]*(otherPhaseSum-v[0]-v[8]);
-					vectors[i][4] = v[1]*v[6]-v[2]*v[3]-v[7]*(otherPhaseSum-v[4]-v[8]);
+					vectors[i][3] = -v[3]*v[5]-v[1]*v[7]-v[6]*(v[0]+v[8]-otherPhaseSum);
+					vectors[i][4] = -v[1]*v[6]+v[2]*v[3]-v[7]*(v[4]+v[8]-otherPhaseSum);
 					vectors[i][5] = 0;
 
 					done = normalize(vectors[i]);
@@ -349,7 +349,7 @@ public class SU3AlgebraElement implements AlgebraElement {
 	private double[] groupElementTaylorSeries(double iterations) {
 		SU3GroupElement result = new SU3GroupElement(new double[]{1,0,0,0,1,0,0,0,1,0,0,0,0,0,0,0,0,0});
 		SU3GroupElement intermediate = new SU3GroupElement(new double[]{1,0,0,0,1,0,0,0,1,0,0,0,0,0,0,0,0,0});
-		SU3GroupElement multiplier = new SU3GroupElement(new double[]{0,-v[3],-v[6],v[3],0,-v[7],v[6],v[7],0,v[0],v[1],v[2],v[1],v[4],v[5],v[2],v[5],v[8]});
+		SU3GroupElement multiplier = new SU3GroupElement(new double[]{0,v[3],v[6],-v[3],0,v[7],-v[6],-v[7],0,v[0],v[1],v[2],v[1],v[4],v[5],v[2],v[5],v[8]});
 
 		for (int i = 1; i <= iterations; i++) {
 			intermediate = (SU3GroupElement) intermediate.mult(multiplier).mult(1.0 / i);
@@ -360,7 +360,7 @@ public class SU3AlgebraElement implements AlgebraElement {
 	}
 
 	public GroupElement getLinearizedLink() {
-		double[] values = new double[]{1,-v[3],-v[6],v[3],1,-v[7],v[6],v[7],1,v[0],v[1],v[2],v[1],v[4],v[5],v[2],v[5],v[8]};
+		double[] values = new double[]{1,v[3],v[6],-v[3],1,v[7],-v[6],-v[7],1,v[0],v[1],v[2],v[1],v[4],v[5],v[2],v[5],v[8]};
 		return new SU3GroupElement(values);
 	}
 
@@ -379,12 +379,12 @@ public class SU3AlgebraElement implements AlgebraElement {
 	public double proj(int c) {
 		switch (c) {
 			case 0: return 2 * v[1];
-			case 1: return -2 * v[3];
+			case 1: return 2 * v[3];
 			case 2: return v[0] - v[4];
 			case 3: return 2 * v[2];
-			case 4: return -2 * v[6];
+			case 4: return 2 * v[6];
 			case 5: return 2 * v[5];
-			case 6: return -2 * v[7];
+			case 6: return 2 * v[7];
 			case 7: return (v[0] + v[4] - 2 * v[8]) / Math.sqrt(3);
 			default: System.out.println("Invalid generator index!"); return 0;
 		}

@@ -450,9 +450,9 @@ public class SU3GroupElement implements GroupElement {
 		fieldValues[2] = (values[2] + values[6])/2;
 		fieldValues[5] = (values[5] + values[7])/2;
 		// off-diagonal imag. values are asymmetric averages of pairs
-		fieldValues[3] = (values[10] - values[12])/2;
-		fieldValues[6] = (values[11] - values[15])/2;
-		fieldValues[7] = (values[14] - values[16])/2;
+		fieldValues[3] = (values[12] - values[10])/2;
+		fieldValues[6] = (values[15] - values[11])/2;
+		fieldValues[7] = (values[16] - values[14])/2;
 		return fieldValues;
 	}
 
@@ -478,11 +478,11 @@ public class SU3GroupElement implements GroupElement {
 		double[] fieldValues = new double[]{(2*e[9]-e[13]-e[17])/3,
 											(e[10]+e[12])/2,
 											(e[11]+e[15])/2,
-											(e[3]-e[1])/2,
+											(e[1]-e[3])/2,
 											(2*e[13]-e[17]-e[9])/3,
 											(e[14]+e[16])/2,
-											(e[6]-e[2])/2,
-											(e[7]-e[5])/2,
+											(e[2]-e[6])/2,
+											(e[5]-e[7])/2,
 											(2*e[17]-e[9]-e[13])/3};
 		return new SU3AlgebraElement(fieldValues);
 	}
