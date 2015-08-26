@@ -180,11 +180,11 @@ public class PolychromTempGaugeLightConeGaussPoissonSolver extends LightConePois
 						cellIndex = g.getCellIndex(gaugePos);
 
 						//fields at t=0
-						A0.set( g.getUnext(cellIndex, signature[0]).mult(g.getUnext(g.shift(cellIndex, signature[0], 1), signature[0]).adj().sub(g.getUnext(cellIndex, signature[0]).adj())).mult(1.0/as/g.getGaugeCoupling()).getAlgebraElement() );
-						A1.set( g.getUnext(cellIndex, signature[0]).mult(g.getUnext(g.shift(cellIndex, signature[1], 1), signature[0]).adj().sub(g.getUnext(cellIndex, signature[0]).adj())).mult(1.0/as/g.getGaugeCoupling()).getAlgebraElement() );
+						A0.set( g.getUnext(cellIndex, signature[0]).mult(g.getUnext(g.shift(cellIndex, signature[0], 1), signature[0]).adj().sub(g.getUnext(cellIndex, signature[0]).adj())).mult(1.0/as/g.getGaugeCoupling()).proj() );
+						A1.set( g.getUnext(cellIndex, signature[0]).mult(g.getUnext(g.shift(cellIndex, signature[1], 1), signature[0]).adj().sub(g.getUnext(cellIndex, signature[0]).adj())).mult(1.0/as/g.getGaugeCoupling()).proj() );
 						//fields at t=-at
-						A0next.set( g.getUnext(cellIndex, signature[1]).mult(g.getUnext(g.shift(cellIndex, signature[0], 1), signature[1]).adj().sub(g.getUnext(cellIndex, signature[1]).adj())).mult(1.0/as/g.getGaugeCoupling()).getAlgebraElement() );
-						A1next.set( g.getUnext(cellIndex, signature[1]).mult(g.getUnext(g.shift(cellIndex, signature[1], 1), signature[1]).adj().sub(g.getUnext(cellIndex, signature[1]).adj())).mult(1.0/as/g.getGaugeCoupling()).getAlgebraElement() );
+						A0next.set( g.getUnext(cellIndex, signature[1]).mult(g.getUnext(g.shift(cellIndex, signature[0], 1), signature[1]).adj().sub(g.getUnext(cellIndex, signature[1]).adj())).mult(1.0/as/g.getGaugeCoupling()).proj() );
+						A1next.set( g.getUnext(cellIndex, signature[1]).mult(g.getUnext(g.shift(cellIndex, signature[1], 1), signature[1]).adj().sub(g.getUnext(cellIndex, signature[1]).adj())).mult(1.0/as/g.getGaugeCoupling()).proj() );
 						//setting the electric fields
 						g.addE(cellIndex, signature[0], A0next.sub(A0).mult(-1.0 / at).mult(g.getGaugeCoupling()*as));
 						g.addE(cellIndex, signature[1], A1next.sub(A1).mult(-1.0 / at).mult(g.getGaugeCoupling()*as));
@@ -267,9 +267,9 @@ public class PolychromTempGaugeLightConeGaussPoissonSolver extends LightConePois
 					cellIndex = g.getCellIndex(gaugePos);
 
 					//fields at t=0
-					A0.set( g.getUnext(cellIndex, 0).mult(g.getUnext(g.shift(cellIndex, signature[0], 1), 0).adj().sub(g.getUnext(cellIndex, 0).adj())).mult(1.0/as/g.getGaugeCoupling()).getAlgebraElement() );
+					A0.set( g.getUnext(cellIndex, 0).mult(g.getUnext(g.shift(cellIndex, signature[0], 1), 0).adj().sub(g.getUnext(cellIndex, 0).adj())).mult(1.0/as/g.getGaugeCoupling()).proj() );
 					//fields at t=-at
-					A1.set( g.getUnext(cellIndex, 1).mult(g.getUnext(g.shift(cellIndex, signature[0], 1), 1).adj().sub(g.getUnext(cellIndex, 1).adj())).mult(1.0/as/g.getGaugeCoupling()).getAlgebraElement() );
+					A1.set( g.getUnext(cellIndex, 1).mult(g.getUnext(g.shift(cellIndex, signature[0], 1), 1).adj().sub(g.getUnext(cellIndex, 1).adj())).mult(1.0/as/g.getGaugeCoupling()).proj() );
 					//setting the electric fields
 					g.addE(cellIndex, signature[0], A1.sub(A0).mult(-1.0 / at).mult(g.getGaugeCoupling()*as));
 
