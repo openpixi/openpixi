@@ -11,11 +11,13 @@ package org.openpixi.pixi.math;
  */
 public class SU3AlgebraElement implements AlgebraElement {
 
-	private final double zeroAccuracy = 1.E-12;
-	private final double eigenvalueZeroAccuracy = 1.E-4;
+	private final double degeneracyCutoff = 1.E-4;
+	private final double zeroCutoff = 1.E-7;
 
-	private final double taylorSeriesCutoff = 1.E-10;
-	private final int taylorSeriesN = 15;
+	private final int taylorSeriesZeroIterations = 15;
+	private final int taylorSeriesDegenerateIterations = 20;
+
+	private final double normalizationAccuracy = 1.E-12;
 
 	protected double[] v;
 
@@ -180,7 +182,7 @@ public class SU3AlgebraElement implements AlgebraElement {
 		}
 		norm = Math.sqrt(norm);
 
-		if (Math.abs(norm) < zeroAccuracy) {
+		if (Math.abs(norm) < normalizationAccuracy) {
 			return false;
 		} else {
 			for (int i = 0; i < 6; i++) {
@@ -198,6 +200,11 @@ public class SU3AlgebraElement implements AlgebraElement {
 	private double[] groupElementDecompositionMethod() {
 		// trace of matrix squared, using square method
 		double trSq = square() / 2;
+
+		// if matrix is too small, use taylor series for better accuracy
+		if (trSq <= zeroCutoff) {
+			return new double[]{taylorSeriesZeroIterations};
+		}
 
 		// real determinant
 		double det = -v[2]*v[2]*v[4]+v[6]*(2*v[3]*v[5]-v[4]*v[6]+2*v[1]*v[7])+2*v[2]*(v[1]*v[5]-v[3]*v[7])-
@@ -252,30 +259,19 @@ public class SU3AlgebraElement implements AlgebraElement {
 		// we use this result, but we only need one column so we can avoid doing the full multiplication
 		// optimized result computed in Mathematica, of course
 
-		// if there are degenerate eigenvalues, only use vector method for nondegenerate value
-		int phaseNum = 3;
-		int notDegenerate = 3;
-		if (Math.abs(1 - phases[0] / phases[1]) < eigenvalueZeroAccuracy) {
-			double temp = phases[2];
-			phases[2] = phases[0];
-			phases[0] = temp;
-			phaseNum = 1;
-			notDegenerate = 2;
-		} else if (Math.abs(1 - phases[0] / phases[2]) < eigenvalueZeroAccuracy) {
-			double temp = phases[1];
-			phases[1] = phases[0];
-			phases[0] = temp;
-			phaseNum = 1;
-			notDegenerate  = 1;
-		} else if (Math.abs(1 - phases[1] / phases[2]) < eigenvalueZeroAccuracy) {
-			phaseNum = 1;
-			notDegenerate = 0;
+		// if there are degenerate eigenvalues, use taylor series
+		if (Math.abs(1 - phases[0] / phases[1]) < degeneracyCutoff) {
+			return new double[]{taylorSeriesDegenerateIterations};
+		} else if (Math.abs(1 - phases[0] / phases[2]) < degeneracyCutoff) {
+			return new double[]{taylorSeriesDegenerateIterations};
+		} else if (Math.abs(1 - phases[1] / phases[2]) < degeneracyCutoff) {
+			return new double[]{taylorSeriesDegenerateIterations};
 		}
 
 		// get one eigenvector for each value
 		// normalize vectors in place
 		double[][] vectors = new double[3][6];
-		for (int i = 0; i < phaseNum; i++) {
+		for (int i = 0; i < 3; i++) {
 			// product of other two phases besides phases[i]
 			double otherPhaseProduct = phases[(i + 1) % 3] * phases[(i + 2) % 3];
 			// sum of other two phases besides phases[i]
@@ -314,91 +310,7 @@ public class SU3AlgebraElement implements AlgebraElement {
 						for (int j = 0; j < 6; j++) {
 							vectors[i][j] = 0;
 						}
-						if (notDegenerate == 3) {
-							vectors[i][i] = 1;
-						} else {
-							vectors[i][notDegenerate] = 1;
-						}
-					}
-				}
-			}
-		}
-
-		// if there are degenerate eigenvalues use row reduction to find two orthogonal eigenvectors
-		// for a given row of our hermitian matrix (a0 a1 a2), these vectors are
-		//  		-a1    a0     0
-		// and		a0*a2  a1*a2  -|a0|^2-|a1|^2
-		if (phaseNum == 1) {
-
-			double phase = (phases[1] + phases[2]) / 2;
-			phases[1] = phase;
-			phases[2] = phase;
-
-			vectors[1][0] = -v[1];
-			vectors[1][1] = v[0] - phase;
-			vectors[1][2] = 0;
-			vectors[1][3] = -v[3];
-			vectors[1][4] = 0;
-			vectors[1][5] = 0;
-
-			vectors[2][0] = v[2] * (v[0] - phase);
-			vectors[2][1] = v[1]*v[2] + v[3]*v[6];
-			vectors[2][2] = (phase - v[0]) * (v[0] - phase) - v[1]*v[1] - v[3]*v[3];
-			vectors[2][3] = v[6] * (v[0] - phase);
-			vectors[2][4] = v[1]*v[6] - v[2]*v[3];
-			vectors[2][5] = 0;
-
-			boolean done = normalize(vectors[1]) && normalize(vectors[2]);
-
-			if (!done) {
-				vectors[1][0] = phase - v[4];
-				vectors[1][1] = v[1];
-				vectors[1][2] = 0;
-				vectors[1][3] = 0;
-				vectors[1][4] = -v[3];
-				vectors[1][5] = 0;
-
-				vectors[2][0] = v[1]*v[5] - v[3]*v[7];
-				vectors[2][1] = v[5] * (v[4] - phase);
-				vectors[2][2] = (phase - v[4]) * (v[4] - phase) - v[1]*v[1] - v[3]*v[3];
-				vectors[2][3] = v[1]*v[7] + v[3]*v[5];
-				vectors[2][4] = v[7] * (v[4] - phase);
-				vectors[2][5] = 0;
-
-				done = normalize(vectors[1]) && normalize(vectors[2]);
-
-				if (!done) {
-					vectors[1][0] = -v[5];
-					vectors[1][1] = v[2];
-					vectors[1][2] = 0;
-					vectors[1][3] = v[7];
-					vectors[1][4] = -v[6];
-					vectors[1][5] = 0;
-
-					vectors[2][0] = v[2] * (v[8] - phase);
-					vectors[2][1] = v[5] * (v[8] - phase);
-					vectors[2][2] = -v[2]*v[2] - v[5]*v[5] - v[6]*v[6] - v[7]*v[7];
-					vectors[2][3] = v[6] * (v[8] - phase);
-					vectors[2][4] = v[7] * (v[8] - phase);
-					vectors[2][5] = 0;
-
-					done = normalize(vectors[1]) && normalize(vectors[2]);
-
-					if (!done) {
-						for (int i = 0; i < 3; i++) {
-							if (vectors[0][(i+1)%3] == 0 && vectors[0][(i+2)%3] == 0 && vectors[0][3+(i+1)%3] == 0 && vectors[0][3+(i+2)%3] == 0) {
-								if (notDegenerate != i) {
-									notDegenerate = i;
-								}
-							}
-						}
-
-						for (int j = 0; j < 6; j++) {
-							vectors[1][j] = 0;
-							vectors[2][j] = 0;
-						}
-						vectors[1][(notDegenerate + 1) % 3] = 1;
-						vectors[2][(notDegenerate + 2) % 3] = 1;
+						vectors[i][i] = 1;
 					}
 				}
 			}
@@ -434,12 +346,12 @@ public class SU3AlgebraElement implements AlgebraElement {
 	 * WARNING: This decomposition only works well for "small" matrices!
 	 * @return coefficients to be fed into SU3GroupElement to give group element
 	 */
-	private double[] groupElementTaylorSeries() {
+	private double[] groupElementTaylorSeries(double iterations) {
 		SU3GroupElement result = new SU3GroupElement(new double[]{1,0,0,0,1,0,0,0,1,0,0,0,0,0,0,0,0,0});
 		SU3GroupElement intermediate = new SU3GroupElement(new double[]{1,0,0,0,1,0,0,0,1,0,0,0,0,0,0,0,0,0});
 		SU3GroupElement multiplier = new SU3GroupElement(new double[]{0,-v[3],-v[6],v[3],0,-v[7],v[6],v[7],0,v[0],v[1],v[2],v[1],v[4],v[5],v[2],v[5],v[8]});
 
-		for (int i = 1; i <= taylorSeriesN; i++) {
+		for (int i = 1; i <= iterations; i++) {
 			intermediate = (SU3GroupElement) intermediate.mult(multiplier).mult(1.0 / i);
 			result = (SU3GroupElement) result.add(intermediate);
 		}
@@ -453,11 +365,15 @@ public class SU3AlgebraElement implements AlgebraElement {
 	}
 
 	public GroupElement getLink() {
-		if (square() <= taylorSeriesCutoff) {
-			return new SU3GroupElement(groupElementTaylorSeries());
-		} else {
-			return new SU3GroupElement(groupElementDecompositionMethod());
+		// try exact method
+		double[] values = groupElementDecompositionMethod();
+
+		// if values has length 1 the exact method failed and values[0] is the requried taylorSeriesIterations
+		if (values.length == 1) {
+			values = groupElementTaylorSeries(values[0]);
 		}
+
+		return new SU3GroupElement(values);
 	}
 
 	public double proj(int c) {
