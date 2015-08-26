@@ -131,7 +131,7 @@ public class SU2GroupElement implements GroupElement {
 		return b;
 	}
 
-	public void selfadj() {
+	public void adjAssign() {
 		for (int i = 1; i < 4; i++)
 		{
 			this.set(i, -this.get(i));

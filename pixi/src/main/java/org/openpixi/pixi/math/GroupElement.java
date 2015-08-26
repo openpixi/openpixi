@@ -36,7 +36,7 @@ public interface GroupElement {
 	 *
 	 * @return  Hermitian conjugate of the current instance.
 	 */
-	void selfadj();
+	void adjAssign();
 
 	/**
 	 * Computes the scalar product of the GroupElement instance with a real number and returns a copy.
