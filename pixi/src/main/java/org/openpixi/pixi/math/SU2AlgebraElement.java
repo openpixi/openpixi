@@ -116,7 +116,7 @@ public class SU2AlgebraElement implements AlgebraElement {
 	public GroupElement getLinearizedLink() {
 		
 		double sum = (v[0]*v[0]+v[1]*v[1]+v[2]*v[2])/4;
-		SU2GroupElement b = new SU2GroupElement(Math.sqrt(1.0-sum), v[0]/2, v[1]/2, v[2]/2);
+		SU2GroupElement b = new SU2GroupElement(Math.sqrt(1.0 - sum), v[0]/2, v[1]/2, v[2]/2);
 		return b;
 	}
 	
@@ -140,19 +140,18 @@ public class SU2AlgebraElement implements AlgebraElement {
 	}
 
 	public AlgebraElement act(GroupElement g) {
+
 		SU2GroupElement u = (SU2GroupElement) g;
-		SU2AlgebraElement X = new SU2AlgebraElement();
+		SU2GroupElement Xm = new SU2GroupElement();
 
-		double factor1 = 2.0 * u.get(0) * u.get(0) - 1.0;
-		double factor2 = 0.0;
-		for(int i = 0; i < 3; i++) {
-			factor2 += 2.0 * v[i] * u.get(i+1);
-		}
+		Xm.set(0, 0.0);
+		Xm.set(1, v[0] / 2);
+		Xm.set(2, v[1] / 2);
+		Xm.set(3, v[2] / 2);
 
-		for(int i = 0; i < 3; i++) {
-			X.v[i] = factor1 * v[i] + factor2 * u.get(i+1);
-		}
-		return X;
+		Xm = (SU2GroupElement) u.mult(Xm.mult(u.adj()));
+		return Xm.proj();
+
 	}
 
 	public void actAssign(GroupElement g) {
