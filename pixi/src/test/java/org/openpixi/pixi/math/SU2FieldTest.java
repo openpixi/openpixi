@@ -9,7 +9,7 @@ import org.openpixi.pixi.math.SU2GroupElement;
 public class SU2FieldTest {
 
 
-	private final double accuracy = 1.E-13;
+	private final double accuracy = 1.E-14;
 
 	@Test
 	public void testGetterAndSetter() {
@@ -95,34 +95,39 @@ public class SU2FieldTest {
 	@Test
 	public void testConversionToMatrixAndBack() {
 
+		for(int t = 0; t < 10; t++) {
 		/*
-		Create random SU2 field.
-	 */
-		double[] vec = new double[3];
-		double scaling = 1.0;
-		for (int i = 0; i < 3; i++) {
-			vec[i] = (Math.random() - 0.5)*scaling;
-		}
-		SU2AlgebraElement firstField = new SU2AlgebraElement(vec[0], vec[1], vec[2]);
+			Create random SU2 field.
+	 	*/
+			double[] vec = new double[3];
+			double scaling = 1.0;
+			for (int i = 0; i < 3; i++) {
+				vec[i] = (Math.random() - 0.5) * scaling;
+			}
+			SU2AlgebraElement firstField = new SU2AlgebraElement(vec[0], vec[1], vec[2]);
 		
 		/*
-		Transform to a SU2 matrix exactly and in linear approximation.
-	 */
-		SU2GroupElement matSimple = (SU2GroupElement) firstField.getLinearizedLink();
-		SU2GroupElement matExact = (SU2GroupElement) firstField.getLink();
+			Transform to a SU2 matrix exactly and in linear approximation.
+		 */
+			SU2GroupElement matSimple = (SU2GroupElement) firstField.getLinearizedLink();
+			SU2GroupElement matExact = (SU2GroupElement) firstField.getLink();
 
 		/*
-		Transform back to a SU2 field exactly and in linear approximation (proj).
-	 */
-		SU2AlgebraElement fieldSimple = (SU2AlgebraElement) matSimple.proj();
-		SU2AlgebraElement fieldExact = (SU2AlgebraElement) matExact.getAlgebraElement();
+			Transform back to a SU2 field exactly and in linear approximation (proj).
+	 	*/
+			SU2AlgebraElement fieldSimple = (SU2AlgebraElement) matSimple.proj();
+			SU2AlgebraElement fieldExact = (SU2AlgebraElement) matExact.getAlgebraElement();
 		
 		/*
-		Compare results.
-	 */
-		for (int i = 0; i < 3; i++) {
-			Assert.assertEquals(fieldSimple.get(i), firstField.get(i), accuracy);
-			Assert.assertEquals(fieldExact.get(i), firstField.get(i), accuracy);
+			Compare results.
+	 	*/
+			for (int i = 0; i < 3; i++) {
+				double simpleRelDifference = Math.abs((fieldSimple.get(i) - firstField.get(i)) / firstField.get(i));
+				double exactRelDifference = Math.abs((fieldExact.get(i) - firstField.get(i)) / firstField.get(i));
+				//System.out.println(simpleRelDifference + ", " + exactRelDifference);
+				Assert.assertEquals(0.0, simpleRelDifference, accuracy);
+				Assert.assertEquals(0.0, exactRelDifference, accuracy);
+			}
 		}
 		
 	}
