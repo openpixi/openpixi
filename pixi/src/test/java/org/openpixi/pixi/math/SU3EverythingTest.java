@@ -38,8 +38,8 @@ public class SU3EverythingTest {
 				We construct two fields. One from the constructor and another using setter methods.
 			 */
 			SU3AlgebraElement firstField = new SU3AlgebraElement(new double[]{(vec[2]+vec[7]/Math.sqrt(3))/2,vec[0]/2,vec[3]/2,
-															vec[1]/2,(-vec[2]+vec[7]/Math.sqrt(3))/2,vec[5]/2,
-															vec[4]/2,vec[6]/2,-vec[7]/Math.sqrt(3)});
+			                                                                  vec[1]/2,(-vec[2]+vec[7]/Math.sqrt(3))/2,vec[5]/2,
+			                                                                  vec[4]/2,vec[6]/2,-vec[7]/Math.sqrt(3)});
 			SU3AlgebraElement secondField = new SU3AlgebraElement();
 			for (int i = 0; i < 8; i++) {
 				secondField.set(i, vec[i]);

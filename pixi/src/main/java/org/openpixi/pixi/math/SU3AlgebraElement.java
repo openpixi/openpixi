@@ -327,17 +327,17 @@ public class SU3AlgebraElement implements AlgebraElement {
 		// multiply U exp(D) U* to get algebra element
 		// exp(D) is just a (complex) diagonal matrix
 		SU3GroupElement unit = new SU3GroupElement(new double[]{vectors[0][0],vectors[1][0],vectors[2][0],
-																vectors[0][1],vectors[1][1],vectors[2][1],
-																vectors[0][2],vectors[1][2],vectors[2][2],
-																vectors[0][3],vectors[1][3],vectors[2][3],
-																vectors[0][4],vectors[1][4],vectors[2][4],
-																vectors[0][5],vectors[1][5],vectors[2][5]});
+		                                                        vectors[0][1],vectors[1][1],vectors[2][1],
+		                                                        vectors[0][2],vectors[1][2],vectors[2][2],
+		                                                        vectors[0][3],vectors[1][3],vectors[2][3],
+		                                                        vectors[0][4],vectors[1][4],vectors[2][4],
+		                                                        vectors[0][5],vectors[1][5],vectors[2][5]});
 		SU3GroupElement diag = new SU3GroupElement(new double[]{valuesRe[0],0,0,
-																0,valuesRe[1],0,
-																0,0,valuesRe[2],
-																valuesIm[0],0,0,
-																0,valuesIm[1],0,
-																0,0,valuesIm[2]});
+		                                                        0,valuesRe[1],0,
+		                                                        0,0,valuesRe[2],
+		                                                        valuesIm[0],0,0,
+		                                                        0,valuesIm[1],0,
+		                                                        0,0,valuesIm[2]});
 		return ((SU3GroupElement) unit.mult(diag).mult(unit.adj())).get();
 	}
 
