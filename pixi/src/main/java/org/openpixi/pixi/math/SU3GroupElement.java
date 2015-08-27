@@ -119,7 +119,7 @@ public class SU3GroupElement implements GroupElement {
 		return b;
 	}
 
-	public void selfadj() {
+	public void adjAssign() {
 		double temp;
 		// real diag is good
 

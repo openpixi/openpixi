@@ -41,7 +41,7 @@ public class GridTest {
 
 			GroupElement l1 = g.getLink(index, dir, 1, 0);
 			GroupElement l2 = g.getLink(shiftedIndex, dir, -1, 0);
-			l2.selfadj();
+			l2.adjAssign();
 
 			// This code is specific to SU2
 			for (int i = 0; i < 3; i++) {

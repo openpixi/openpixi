@@ -131,7 +131,7 @@ public class SU2GroupElement implements GroupElement {
 		return b;
 	}
 
-	public void selfadj() {
+	public void adjAssign() {
 		for (int i = 1; i < 4; i++)
 		{
 			this.set(i, -this.get(i));
@@ -200,7 +200,8 @@ public class SU2GroupElement implements GroupElement {
 		SU2AlgebraElement field = new SU2AlgebraElement();
 		
 		if(norm < 1.E-15) {
-			field = new SU2AlgebraElement(0,0,0);
+			//return new SU2AlgebraElement();
+			return this.proj();
 		} else {
 			for(int i = 0; i < 3; i++)
 			{

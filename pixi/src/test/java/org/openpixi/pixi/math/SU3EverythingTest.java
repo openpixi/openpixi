@@ -337,7 +337,7 @@ public class SU3EverythingTest {
 			/*
 				Test Hermiticity
 			 */
-			compareMatrices(ff1,ff2);
+			compareMatrices(ff1, ff2);
 
 			/*
 				Test if traceless
@@ -346,6 +346,51 @@ public class SU3EverythingTest {
 			double trImag = ff1.getEntry(0,0).getImaginary() + ff1.getEntry(1,1).getImaginary() + ff1.getEntry(2,2).getImaginary();
 			Assert.assertEquals(0, trReal, accuracy);
 			Assert.assertEquals(0, trImag, accuracy);
+		}
+	}
+
+	@Test
+	public void testAct() {
+		int numberOfTests = 10;
+		for (int t = 0; t < numberOfTests; t++) {
+			/*
+				Create a random algebra element
+			 */
+			SU3GroupElement m1 = createRandomSU3Matrix();
+			SU3AlgebraElement f1 = (SU3AlgebraElement) m1.getAlgebraElement();
+			Array2DRowFieldMatrix<Complex> ff1 = convertToMatrix(f1);
+
+			/*
+				Create a random matrix.
+			 */
+			m1 = createRandomSU3Matrix();
+			Array2DRowFieldMatrix<Complex> mm1 = convertToMatrix(m1);
+
+
+			/*
+				Get adjoint of mm1
+			 */
+			Array2DRowFieldMatrix<Complex> mm2 = (Array2DRowFieldMatrix<Complex>) mm1.transpose();
+			for (int i = 0; i < 3; i++) {
+				for (int j = 0; j < 3; j++) {
+					Complex v = mm2.getEntry(i, j).conjugate();
+					mm2.setEntry(i, j, v);
+				}
+			}
+
+			/*
+				Do act method
+			 */
+			SU3AlgebraElement f2 = (SU3AlgebraElement) f1.act(m1);
+			f1.actAssign(m1);
+
+			Array2DRowFieldMatrix<Complex> ff2 = convertToMatrix(f2);
+			Array2DRowFieldMatrix<Complex> ff3 = convertToMatrix(f1);
+
+			Array2DRowFieldMatrix<Complex> ff4 = mm1.multiply(ff1).multiply(mm2);
+
+			compareMatrices(ff4,ff3);
+			compareMatrices(ff4,ff2);
 		}
 	}
 
