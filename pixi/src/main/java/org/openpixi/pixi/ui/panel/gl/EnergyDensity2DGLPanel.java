@@ -73,6 +73,8 @@ public class EnergyDensity2DGLPanel extends AnimationGLPanel {
 			pos[w] = s.grid.getNumCells(w)/2;
 		}
 
+		double colors = s.grid.getNumberOfColors();
+
 		for(int i = 0; i < s.grid.getNumCells(0); i++) {
 			gl2.glBegin( GL2.GL_QUAD_STRIP );
 			for(int k = 0; k < s.grid.getNumCells(1); k++)
@@ -98,12 +100,19 @@ public class EnergyDensity2DGLPanel extends AnimationGLPanel {
 					BfieldSquared += s.grid.getBsquaredFromLinks(index, w, 0) / (as * g * as * g) / 4.0;
 					BfieldSquared += s.grid.getBsquaredFromLinks(index, w, 1) / (as * g * as * g) / 4.0;
 					// get color:
-					double color = s.grid.getE(index, w).get(0);
-					red += color * color;
-					color = s.grid.getE(index, w).get(1);
-					green += color * color;
-					color = s.grid.getE(index, w).get(2);
-					blue += color * color;
+					double color;
+					for (int n = 0; n < colors * colors - 1; n++) {
+						color = s.grid.getE(index, w).get(n);
+						// cycle through colors if there are more than three
+						switch (n % 3) {
+							case 0: red += color * color;
+								break;
+							case 1: green += color * color;
+								break;
+							case 2: blue += color * color;
+								break;
+						}
+					}
 				}
 				// Normalize
 				double norm = red + green + blue;
