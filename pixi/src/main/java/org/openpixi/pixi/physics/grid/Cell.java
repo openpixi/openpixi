@@ -31,12 +31,17 @@ public class Cell implements Serializable {
 	/**Factory for group and algebra elements */
 	ElementFactory factory;
 
+	private int dimensions;
+	private int colors;
+
 	/**
 	 * Constructor for Cell.
 	 * @param dimensions Number of spatial dimensions (e.g. 3)
 	 * @param colors Number of colors N for the gauge group SU(N)
 	 */
 	public Cell(int dimensions, int colors, ElementFactory factory) {
+		this.dimensions = dimensions;
+		this.colors = colors;
 		this.factory = factory;
 
 		F = new AlgebraElement[dimensions][dimensions];
@@ -172,6 +177,17 @@ public class Cell implements Serializable {
 			this.Unext[i] = other.Unext[i].copy();
 		}
 		this.rho.set(other.rho);
+	}
+
+	/**
+	 * Returns of a copy of the Cell instance.
+	 *
+	 * @return	copy of the current instance
+	 */
+	public Cell copy() {
+		Cell copiedCell = new Cell(dimensions, colors, factory);
+		copiedCell.copyFrom(this);
+		return copiedCell;
 	}
 /*
 	@Override
