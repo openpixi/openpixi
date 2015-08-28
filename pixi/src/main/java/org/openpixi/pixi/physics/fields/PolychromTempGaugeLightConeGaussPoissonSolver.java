@@ -6,6 +6,7 @@ import org.apache.commons.math3.analysis.function.Gaussian;
 import org.apache.commons.math3.special.Erf;
 import org.openpixi.pixi.math.AlgebraElement;
 import org.openpixi.pixi.math.ElementFactory;
+import org.openpixi.pixi.math.GroupElement;
 import org.openpixi.pixi.physics.Simulation;
 import org.openpixi.pixi.physics.fields.currentgenerators.ICurrentGenerator;
 import org.openpixi.pixi.physics.grid.Grid;
@@ -186,8 +187,8 @@ public class PolychromTempGaugeLightConeGaussPoissonSolver extends LightConePois
 						A0next.set( g.getUnext(cellIndex, signature[1]).mult(g.getUnext(g.shift(cellIndex, signature[0], 1), signature[1]).adj().sub(g.getUnext(cellIndex, signature[1]).adj())).mult(1.0/as/g.getGaugeCoupling()).proj() );
 						A1next.set( g.getUnext(cellIndex, signature[1]).mult(g.getUnext(g.shift(cellIndex, signature[1], 1), signature[1]).adj().sub(g.getUnext(cellIndex, signature[1]).adj())).mult(1.0/as/g.getGaugeCoupling()).proj() );
 						//setting the electric fields
-						g.addE(cellIndex, signature[0], A0next.sub(A0).mult(-1.0 / at).mult(g.getGaugeCoupling()*as));
-						g.addE(cellIndex, signature[1], A1next.sub(A1).mult(-1.0 / at).mult(g.getGaugeCoupling()*as));
+						AlgebraElement E0 = A0next.sub(A0).mult(-1.0 / at).mult(g.getGaugeCoupling()*as);
+						AlgebraElement E1 = A1next.sub(A1).mult(-1.0 / at).mult(g.getGaugeCoupling()*as);
 
 						//setting the gauge links
 						A0.multAssign(g.getGaugeCoupling()*as);
@@ -196,6 +197,16 @@ public class PolychromTempGaugeLightConeGaussPoissonSolver extends LightConePois
 						A1.addAssign(g.getU(cellIndex, signature[1]).getAlgebraElement());
 						g.setU(cellIndex, signature[0], A0.getLink());
 						g.setU(cellIndex, signature[1], A1.getLink());
+
+						// Transport E-field to other location
+						GroupElement Uhalf0 = A0.mult(0.5).getLink();
+						E0.actAssign(Uhalf0);
+						GroupElement Uhalf1 = A1.mult(0.5).getLink();
+						E1.actAssign(Uhalf1);
+
+						//add fields to existing fields
+						g.addE(cellIndex, signature[0], E0);
+						g.addE(cellIndex, signature[1], E1);
 					}
 				}
 			}
@@ -271,12 +282,20 @@ public class PolychromTempGaugeLightConeGaussPoissonSolver extends LightConePois
 					//fields at t=-at
 					A1.set( g.getUnext(cellIndex, 1).mult(g.getUnext(g.shift(cellIndex, signature[0], 1), 1).adj().sub(g.getUnext(cellIndex, 1).adj())).mult(1.0/as/g.getGaugeCoupling()).proj() );
 					//setting the electric fields
-					g.addE(cellIndex, signature[0], A1.sub(A0).mult(-1.0 / at).mult(g.getGaugeCoupling()*as));
+					AlgebraElement E = A1.sub(A0).mult(-1.0 / at).mult(g.getGaugeCoupling()*as);
 
 					//setting the gauge links
 					A0.multAssign(g.getGaugeCoupling()*as);
+
 					A0.addAssign(g.getU(cellIndex, signature[0]).getAlgebraElement());
 					g.setU(cellIndex, signature[0], A0.getLink());
+
+					// Transport E-field to other location
+					GroupElement Uhalf = A0.mult(0.5).getLink();
+					E.actAssign(Uhalf);
+
+					//add fields to existing fields
+					g.addE(cellIndex, signature[0], E);
 				}
 			}
 			//the Unext matrices are being cleared in order to be used for time evolution
