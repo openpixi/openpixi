@@ -18,10 +18,6 @@
  */
 package org.openpixi.pixi.ui.panel.gl;
 
-import java.awt.Color;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-
 import javax.media.opengl.GL;
 import javax.media.opengl.GL2;
 import javax.media.opengl.GLAutoDrawable;
@@ -29,6 +25,7 @@ import javax.swing.Box;
 
 import org.openpixi.pixi.physics.Simulation;
 import org.openpixi.pixi.ui.SimulationAnimation;
+import org.openpixi.pixi.ui.panel.properties.CoordinateProperties;
 import org.openpixi.pixi.ui.panel.properties.ScaleProperties;
 
 
@@ -38,13 +35,14 @@ import org.openpixi.pixi.ui.panel.properties.ScaleProperties;
 public class EnergyDensity2DGLPanel extends AnimationGLPanel {
 
 	ScaleProperties scaleProperties;
+	public CoordinateProperties showCoordinateProperties;
 
 	/** Constructor */
 	public EnergyDensity2DGLPanel(SimulationAnimation simulationAnimation) {
 		super(simulationAnimation);
 		scaleProperties = new ScaleProperties(simulationAnimation);
-
 		scaleProperties.setAutomaticScaling(true);
+		showCoordinateProperties = new CoordinateProperties(simulationAnimation, CoordinateProperties.Mode.MODE_2D);
 	}
 
 	@Override
@@ -59,34 +57,33 @@ public class EnergyDensity2DGLPanel extends AnimationGLPanel {
 		scaleProperties.resetAutomaticScale();
 		Simulation s = getSimulationAnimation().getSimulation();
 
+		int xAxisIndex = showCoordinateProperties.getXAxisIndex();
+		int yAxisIndex = showCoordinateProperties.getYAxisIndex();
+		int pos[] = showCoordinateProperties.getPositions();
+
 		/** Scaling factor for the displayed panel in x-direction*/
-		double sx = width / s.getWidth();
+		double sx = width / s.getSimulationBoxSize(xAxisIndex);
 		/** Scaling factor for the displayed panel in y-direction*/
-		double sy = height / s.getHeight();
+		double sy = height / s.getSimulationBoxSize(yAxisIndex);
 
 		// Lattice spacing and coupling constant
 		double as = s.grid.getLatticeSpacing();
 		double g = s.getCouplingConstant();
 
-		int[] pos = new int[s.getNumberOfDimensions()];
-		for(int w = 2; w < s.getNumberOfDimensions(); w++) {
-			pos[w] = s.grid.getNumCells(w)/2;
-		}
-
 		double colors = s.grid.getNumberOfColors();
+		for(int i = 0; i < s.grid.getNumCells(xAxisIndex); i++) {
 
-		for(int i = 0; i < s.grid.getNumCells(0); i++) {
 			gl2.glBegin( GL2.GL_QUAD_STRIP );
-			for(int k = 0; k < s.grid.getNumCells(1); k++)
+			for(int k = 0; k < s.grid.getNumCells(yAxisIndex); k++)
 			{
-				int xstart = (int) (s.grid.getLatticeSpacing() * (i + 0.5) * sx);
-				int xstart2 = (int)(s.grid.getLatticeSpacing() * i * sx);
-				int xstart3 = (int)(s.grid.getLatticeSpacing() * (i + 1) * sx);
-				int ystart = (int) (s.grid.getLatticeSpacing() * (k + 0.5) * sy);
-				int ystart2 = (int) (s.grid.getLatticeSpacing() * k * sy);
+				//float xstart = (float) (s.grid.getLatticeSpacing() * (i + 0.5) * sx);
+				float xstart2 = (float)(s.grid.getLatticeSpacing() * i * sx);
+				float xstart3 = (float)(s.grid.getLatticeSpacing() * (i + 1) * sx);
+				//float ystart = (float) (s.grid.getLatticeSpacing() * (k + 0.5) * sy);
+				float ystart2 = (float) (s.grid.getLatticeSpacing() * k * sy);
 
-				pos[0] = i;
-				pos[1] = k;
+				pos[xAxisIndex] = i;
+				pos[yAxisIndex] = k;
 				int index = s.grid.getCellIndex(pos);
 
 				double EfieldSquared = 0.0;
@@ -138,6 +135,7 @@ public class EnergyDensity2DGLPanel extends AnimationGLPanel {
 	public void addPropertyComponents(Box box) {
 		addLabel(box, "Energy density 2D (OpenGL) panel");
 		scaleProperties.addComponents(box);
+		showCoordinateProperties.addComponents(box);
 	}
 
 	public ScaleProperties getScaleProperties() {
