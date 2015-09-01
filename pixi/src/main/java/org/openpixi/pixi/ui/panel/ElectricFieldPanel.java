@@ -13,9 +13,9 @@ import org.openpixi.pixi.physics.particles.IParticle;
 import org.openpixi.pixi.ui.SimulationAnimation;
 import org.openpixi.pixi.ui.panel.properties.BooleanArrayProperties;
 import org.openpixi.pixi.ui.panel.properties.ColorProperties;
+import org.openpixi.pixi.ui.panel.properties.CoordinateProperties;
 import org.openpixi.pixi.ui.panel.properties.GaugeProperties;
 import org.openpixi.pixi.ui.panel.properties.ScaleProperties;
-import org.openpixi.pixi.ui.panel.properties.StringProperties;
 
 /**
  * This panel shows the one-dimensional electric field along the x-direction.
@@ -28,7 +28,7 @@ public class ElectricFieldPanel extends AnimationPanel {
 	ScaleProperties scaleProperties;
 	GaugeProperties gaugeProperties;
 	public BooleanArrayProperties showFieldProperties;
-	public StringProperties showCoordinateProperties;
+	public CoordinateProperties showCoordinateProperties;
 
 	public final int INDEX_E = 0;
 	public final int INDEX_U = 1;
@@ -67,16 +67,7 @@ public class ElectricFieldPanel extends AnimationPanel {
 		scaleProperties = new ScaleProperties(simulationAnimation);
 		gaugeProperties = new GaugeProperties(simulationAnimation);
 		showFieldProperties = new BooleanArrayProperties(simulationAnimation, fieldLabel, fieldInit);
-
-		// Construct default string:
-		// x is the coordinate displayed as x-asis.
-		// i is the loop coordinate
-		String coordinates = "x, i, ";
-		for(int w = 2; w < simulationAnimation.getSimulation().getNumberOfDimensions(); w++) {
-			coordinates += simulationAnimation.getSimulation().grid.getNumCells(w)/2 + ", ";
-		}
-		coordinates = coordinates.substring(0, coordinates.length() - 2);
-		showCoordinateProperties = new StringProperties(simulationAnimation, "Show coordinate", coordinates);
+		showCoordinateProperties = new CoordinateProperties(simulationAnimation, CoordinateProperties.Mode.MODE_1D_LOOP);
 	}
 
 	/** Display the particles */
@@ -163,32 +154,14 @@ public class ElectricFieldPanel extends AnimationPanel {
 		int colorIndex = colorProperties.getColorIndex();
 		int directionIndex = colorProperties.getDirectionIndex();
 
-		int[] pos = new int[s.getNumberOfDimensions()];
-		for(int w = 0; w < s.getNumberOfDimensions(); w++) {
-			pos[w] = s.grid.getNumCells(w)/2;
-		}
-
 		graph.setColor(fieldColors[type]);
 
 		int kmin = 0;
 		int kmax = 1;
-		int abscissaIndex = 0; // x-axis by default
-		int loopIndex = -1; // No loop index set
-		String[] indices = showCoordinateProperties.getValue().split(",");
-		int imax = Math.min(indices.length, s.getNumberOfDimensions());
-		for (int i = 0; i < imax; i++) {
-			if (indices[i].trim().equals("x")) {
-				abscissaIndex = i;
-			} else if (indices[i].trim().equals("i")) {
-				loopIndex = i;
-			} else {
-				try{
-					pos[i] = Integer.parseInt(indices[i].trim());
-				} catch (NumberFormatException e) {
-					// No error message - use default instead.
-				}
-			}
-		}
+		int abscissaIndex = showCoordinateProperties.getXAxisIndex();
+		int loopIndex = showCoordinateProperties.getLoopIndex();
+		int pos[] = showCoordinateProperties.getPositions();
+
 		if (loopIndex != -1) {
 			// Show all lines
 			kmin = 0;
