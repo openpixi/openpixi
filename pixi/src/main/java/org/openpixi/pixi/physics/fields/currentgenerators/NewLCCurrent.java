@@ -2,13 +2,14 @@ package org.openpixi.pixi.physics.fields.currentgenerators;
 
 import org.openpixi.pixi.math.AlgebraElement;
 import org.openpixi.pixi.physics.Simulation;
+import org.openpixi.pixi.physics.fields.NewLCPoissonSolver;
 
 import java.util.ArrayList;
 
 /**
  * Created by dmueller on 9/1/15.
  */
-public class NewLightConeCurrent implements ICurrentGenerator {
+public class NewLCCurrent implements ICurrentGenerator {
 
 	private int direction;
 	private int orientation;
@@ -25,7 +26,7 @@ public class NewLightConeCurrent implements ICurrentGenerator {
 
 	private int[] numCells;
 
-	public NewLightConeCurrent(int direction, int orientation, int surfaceIndex, double longitudinalWidth){
+	public NewLCCurrent(int direction, int orientation, int surfaceIndex, double longitudinalWidth){
 		this.direction = direction;
 		this.orientation = orientation;
 		this.surfaceIndex = surfaceIndex;
@@ -65,6 +66,10 @@ public class NewLightConeCurrent implements ICurrentGenerator {
 		applyCurrent(s);
 
 		// 3) Initialize the NewLightConePoissonSolver with the transversal charge density and solve for the fields U and E.
+		NewLCPoissonSolver poissonSolver = new NewLCPoissonSolver(direction, orientation, surfaceIndex, longitudinalWidth,
+				transversalChargeDensity, transversalNumCells);
+		poissonSolver.initialize(s);
+		poissonSolver.solve(s);
 
 		// You're done: charge density, current density and the fields are set up correctly.
 	}
@@ -76,10 +81,10 @@ public class NewLightConeCurrent implements ICurrentGenerator {
 	}
 
 	/*
-		Utility methods, mainly used for the transversal grid.
+		Static utility methods, mainly used for the transversal grid.
 	 */
 
-	private int getEffectiveNumberOfDimensions(int[] numCells) {
+	public static int getEffectiveNumberOfDimensions(int[] numCells) {
 		int count = 0;
 		for (int i = 0; i < numCells.length; i++) {
 			if(numCells[i] > 1) {
@@ -89,7 +94,7 @@ public class NewLightConeCurrent implements ICurrentGenerator {
 		return count;
 	}
 
-	private int[] getEffectiveNumCells(int[] numCells) {
+	public static int[] getEffectiveNumCells(int[] numCells) {
 		int effDim = getEffectiveNumberOfDimensions(numCells);
 		int[] effNumCells = new int[effDim];
 		int count = 0;
@@ -102,7 +107,7 @@ public class NewLightConeCurrent implements ICurrentGenerator {
 		return effNumCells;
 	}
 
-	private int getTotalNumberOfCells(int[] numCells) {
+	public static int getTotalNumberOfCells(int[] numCells) {
 		int count = 1;
 		for (int i = 0; i < numCells.length; i++) {
 			count *= numCells[i];
@@ -110,7 +115,7 @@ public class NewLightConeCurrent implements ICurrentGenerator {
 		return count;
 	}
 
-	private int[] roundGridPos(double[] pos, double as) {
+	public static int[] roundGridPos(double[] pos, double as) {
 		int[] roundedGridPosition = new int[pos.length];
 		for (int i = 0; i < pos.length; i++) {
 			roundedGridPosition[i] = (int) Math.rint(pos[i] / as);
@@ -118,7 +123,22 @@ public class NewLightConeCurrent implements ICurrentGenerator {
 		return roundedGridPosition;
 	}
 
-	private int getCellIndex(int[] coordinates, int[] numCells) {
+	public static int[] getCellPos(int index, int[] numCells)
+	{
+		int numDim = numCells.length;
+		int[] pos = new int[numDim];
+
+		for(int i = numDim-1; i >= 0; i--)
+		{
+			pos[i] = index % numCells[i];
+			index -= pos[i];
+			index /= numCells[i];
+		}
+
+		return pos;
+	}
+
+	public static int getCellIndex(int[] coordinates, int[] numCells) {
 		int cellIndex;
 		// Make periodic
 		int[] periodicCoordinates = new int[coordinates.length];
