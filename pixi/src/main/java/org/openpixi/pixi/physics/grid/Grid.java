@@ -82,7 +82,7 @@ public class Grid {
 	/**
 	 * Factory for SU(n) group and algebra elements.
 	 */
-	private ElementFactory factory = new ElementFactory();
+	private ElementFactory factory;
 
 	/**
 	 * Returns the FieldSolver instance currently used.
@@ -428,6 +428,8 @@ public class Grid {
 	 * This methods initializes each cell in the grid.
 	 */
 	private void createGrid() {
+
+		factory = new ElementFactory(numCol);
 
 		unitVectors = new int[numDim][numDim];
 
