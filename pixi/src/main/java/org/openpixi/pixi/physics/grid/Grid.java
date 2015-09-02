@@ -546,6 +546,23 @@ public class Grid {
 	}
 
 	/**
+	 * Calculates the temporal plaquette starting at lattice index in the direction d with orientation o.
+	 * This method implements the following definition of the plaquette:
+	 * <pre>     U_{x, ij} = U_{x, i, t + dt/2} U_{x+i, -i, t - dt/2} </pre>
+	 *
+	 * @param index Lattice index as starting point of the temporal plaquette
+	 * @param d     Index of the direction
+	 * @param o     Orientation of the direction
+	 * @return      Temporal plaquette as GroupElement
+	 */
+	public GroupElement getTemporalPlaquette(int index, int d, int o) {
+		GroupElement U1 = getLink(index, d, o, 1);
+		GroupElement U2 = getLink(index, d, o, 0).adj().adj();
+
+		return U1.mult(U2);
+	}
+
+	/**
 	 * Getter for gauge links. Returns a link starting from a certain lattice index with the right direction and
 	 * orientation.
 	 * <br>
@@ -744,6 +761,17 @@ public class Grid {
 		public void execute(Grid grid, int index) {
 			grid.getCell(index).resetUnext(numCol);
 		}
+	}
+
+	/**
+	 * Returns the electric field computed from the temporal plaquette (i.e. U and Unext).
+	 *
+	 * @param index     Lattice index
+	 * @param direction Spatial direction of the electric field.
+	 * @return
+	 */
+	public AlgebraElement getEFromLinks(int index, int direction) {
+		return getTemporalPlaquette(index, direction, 1).proj().mult(1.0/at);
 	}
 
 	/**
