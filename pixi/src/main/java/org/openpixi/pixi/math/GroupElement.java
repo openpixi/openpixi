@@ -12,6 +12,8 @@ public interface GroupElement {
 	 */
 	GroupElement add(GroupElement a);
 
+	void addAssign(GroupElement a);
+
 	/**
 	 * Subtracts the passed GroupElement instance from the current instance and returns the result as a copy.
 	 * The result is not a valid SU(n) matrix in general.
@@ -21,6 +23,8 @@ public interface GroupElement {
 	 * @return Difference of the GroupElement instances.
 	 */
 	GroupElement sub(GroupElement a);
+
+	void subAssign(GroupElement a);
 
 	/**
 	 * Applies hermitian conjugation to the current instance of GroupElement and returns a copy.
