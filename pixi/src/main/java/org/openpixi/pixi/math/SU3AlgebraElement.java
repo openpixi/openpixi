@@ -143,7 +143,7 @@ public class SU3AlgebraElement implements AlgebraElement {
 		SU3GroupElement a = (SU3GroupElement) arg;
 
 		// temporarily store algebra element as group element so we can use the multiplication method
-		SU3GroupElement temp = new SU3GroupElement(new double[]{v[0],v[1],v[2],v[1],v[4],v[5],v[2],v[5],v[8],0,v[3],v[6],-v[3],0,v[7],-v[6],-v[7],0});
+		SU3GroupElement temp = new SU3GroupElement(new double[]{v[0],v[1],v[2],v[1],v[4],v[5],v[2],v[5],v[8],0,-v[3],-v[6],v[3],0,-v[7],v[6],v[7],0});
 
 		double[] values = ((SU3GroupElement) a.mult(temp.mult(a.adj()))).get();
 
@@ -157,9 +157,9 @@ public class SU3AlgebraElement implements AlgebraElement {
 		fieldValues[2] = (values[2] + values[6])/2;
 		fieldValues[5] = (values[5] + values[7])/2;
 		// off-diagonal imag. values are asymmetric averages of pairs
-		fieldValues[3] = (values[10] - values[12])/2;
-		fieldValues[6] = (values[11] - values[15])/2;
-		fieldValues[7] = (values[14] - values[16])/2;
+		fieldValues[3] = (values[12] - values[10])/2;
+		fieldValues[6] = (values[15] - values[11])/2;
+		fieldValues[7] = (values[16] - values[14])/2;
 
 		return new SU3AlgebraElement(fieldValues);
 	}
