@@ -1,8 +1,10 @@
 package org.openpixi.pixi.physics.fields.currentgenerators;
 
+import org.apache.commons.math3.analysis.function.Gaussian;
 import org.openpixi.pixi.math.AlgebraElement;
 import org.openpixi.pixi.physics.Simulation;
 import org.openpixi.pixi.physics.fields.NewLCPoissonSolver;
+import org.openpixi.pixi.physics.util.GridFunctions;
 
 import java.util.ArrayList;
 
@@ -19,10 +21,13 @@ public class NewLCCurrent implements ICurrentGenerator {
 	private ArrayList<PointCharge> charges;
 	private int[] transversalNumCells;
 	private AlgebraElement[] transversalChargeDensity;
+	private int totalTransversalCells;
 
 	private int numberOfColors;
 	private int numberOfComponents;
 	private double as;
+	private double at;
+	private double g;
 
 	private int[] numCells;
 
@@ -45,12 +50,14 @@ public class NewLCCurrent implements ICurrentGenerator {
 		numberOfColors = s.getNumberOfColors();
 		numberOfComponents = numberOfColors * numberOfColors - 1;
 		as = s.grid.getLatticeSpacing();
+		at = s.getTimeStep();
+		g = s.getCouplingConstant();
 
 		// 1) Initialize transversal charge density grid using the charges array.
 		numCells = s.grid.getNumCells();
-		transversalNumCells = getEffectiveNumCells(numCells);
-		int size = getTotalNumberOfCells(transversalNumCells);
-		transversalChargeDensity = new AlgebraElement[size];
+		transversalNumCells = GridFunctions.getEffectiveNumCells(numCells);
+		totalTransversalCells = GridFunctions.getTotalNumberOfCells(transversalNumCells);
+		transversalChargeDensity = new AlgebraElement[totalTransversalCells];
 
 		// Iterate over (point) charges, round them to the nearest grid point and add them to the transversal charge density.
 		for (int i = 0; i < charges.size(); i++) {
@@ -59,7 +66,7 @@ public class NewLCCurrent implements ICurrentGenerator {
 			for (int j = 0; j < numberOfComponents; j++) {
 				chargeAmplitude.set(j, c.colorDirection[j] * c.magnitude);
 			}
-			transversalChargeDensity[getCellIndex(roundGridPos(c.location, as), transversalNumCells)] = chargeAmplitude;
+			transversalChargeDensity[GridFunctions.getCellIndex(GridFunctions.roundGridPos(c.location, as), transversalNumCells)] = chargeAmplitude;
 		}
 
 		// 2) Interpolate grid charge and current density.
@@ -75,84 +82,36 @@ public class NewLCCurrent implements ICurrentGenerator {
 	}
 
 	public void applyCurrent(Simulation s) {
-		// a) Interpolate transversal charge density to grid charge density with a Gauss profile.
+		int maxDirection = numCells[direction];
+		double t = s.totalSimulationTime;
 
-		// b) Compute gird current density in a charge conserving manner.
-	}
+		for (int i = 0; i < maxDirection; i++) {
+			double z = (i - surfaceIndex) * as;
 
-	/*
-		Static utility methods, mainly used for the transversal grid.
-	 */
+			double s0 = g * as * shapeFunction(z, t - at, orientation, longitudinalWidth);  // shape at t-dt times g*as
+			double s1 = g * as * shapeFunction(z, t, orientation, longitudinalWidth);  // shape at t times g*as
+			double ds = (s1 - s0)/at; // time derivative of the shape function
+			for (int j = 0; j < totalTransversalCells; j++) {
+				int[] transversalGridPos = GridFunctions.getCellPos(j, transversalNumCells);
+				int[] gridPos = GridFunctions.insertGridPos(transversalGridPos, direction, i);
+				int cellIndex = s.grid.getCellIndex(gridPos);
+				int[] gridPosShifted = GridFunctions.insertGridPos(transversalGridPos, direction, i - 1);
+				int cellIndexShifted = s.grid.getCellIndex(gridPosShifted);
 
-	public static int getEffectiveNumberOfDimensions(int[] numCells) {
-		int count = 0;
-		for (int i = 0; i < numCells.length; i++) {
-			if(numCells[i] > 1) {
-				count++;
+				// a) Interpolate transversal charge density to grid charge density with a Gauss profile (at t).
+				s.grid.addRho(cellIndex, transversalChargeDensity[j].mult(s0));
+
+				// b) Compute gird current density in a charge conserving manner at (t-dt/2).
+				s.grid.addJ(cellIndex, direction,
+						s.grid.getJ(cellIndexShifted, direction).sub(transversalChargeDensity[j].mult(ds))
+						);
 			}
 		}
-		return count;
 	}
 
-	public static int[] getEffectiveNumCells(int[] numCells) {
-		int effDim = getEffectiveNumberOfDimensions(numCells);
-		int[] effNumCells = new int[effDim];
-		int count = 0;
-		for (int i = 0; i < numCells.length; i++) {
-			if(numCells[i] > 1) {
-				effNumCells[count] = numCells[i];
-				count++;
-			}
-		}
-		return effNumCells;
-	}
-
-	public static int getTotalNumberOfCells(int[] numCells) {
-		int count = 1;
-		for (int i = 0; i < numCells.length; i++) {
-			count *= numCells[i];
-		}
-		return count;
-	}
-
-	public static int[] roundGridPos(double[] pos, double as) {
-		int[] roundedGridPosition = new int[pos.length];
-		for (int i = 0; i < pos.length; i++) {
-			roundedGridPosition[i] = (int) Math.rint(pos[i] / as);
-		}
-		return roundedGridPosition;
-	}
-
-	public static int[] getCellPos(int index, int[] numCells)
-	{
-		int numDim = numCells.length;
-		int[] pos = new int[numDim];
-
-		for(int i = numDim-1; i >= 0; i--)
-		{
-			pos[i] = index % numCells[i];
-			index -= pos[i];
-			index /= numCells[i];
-		}
-
-		return pos;
-	}
-
-	public static int getCellIndex(int[] coordinates, int[] numCells) {
-		int cellIndex;
-		// Make periodic
-		int[] periodicCoordinates = new int[coordinates.length];
-		System.arraycopy(coordinates, 0, periodicCoordinates, 0, coordinates.length);
-		for (int i = 0; i < numCells.length; i++) {
-			periodicCoordinates[i] = (coordinates[i] + numCells[i]) % numCells[i];
-		}
-		// Compute cell index
-		cellIndex = periodicCoordinates[0];
-		for (int i = 0; i < coordinates.length; i++) {
-			cellIndex *= numCells[i];
-			cellIndex += periodicCoordinates[i];
-		}
-		return cellIndex;
+	private double shapeFunction(double z, double t, int o, double width) {
+		Gaussian gauss = new Gaussian(0.0, width);
+		return gauss.value(z - o * t);
 	}
 
 	class PointCharge {
