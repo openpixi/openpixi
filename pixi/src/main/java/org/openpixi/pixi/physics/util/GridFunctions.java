@@ -69,7 +69,7 @@ public class GridFunctions {
 		}
 		// Compute cell index
 		cellIndex = periodicCoordinates[0];
-		for (int i = 0; i < coordinates.length; i++) {
+		for (int i = 1; i < coordinates.length; i++) {
 			cellIndex *= numCells[i];
 			cellIndex += periodicCoordinates[i];
 		}
