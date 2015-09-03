@@ -5,9 +5,9 @@ package org.openpixi.pixi.math;
  * They are again represented as 3x3 matrices. Due to
  * symmetry of Hermitian matrices, though, there are only
  * nine independent components. The matrix thus looks like
- * 		e[0]        		e[1] + i e[3]		e[2] + i e[6]
- * 		e[1] - i e[3]		e[4]        		e[5] + i e[7]
- * 		e[2] - i e[6]		e[5] - i e[7]		e[8]
+ * 		e[0]        		e[1] - i e[3]		e[2] - i e[6]
+ * 		e[1] + i e[3]		e[4]        		e[5] - i e[7]
+ * 		e[2] + i e[6]		e[5] + i e[7]		e[8]
  */
 public class SU3AlgebraElement implements AlgebraElement {
 
