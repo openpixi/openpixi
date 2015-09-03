@@ -86,14 +86,30 @@ public class SU2LightConeGaussPulseCurrent implements ICurrentGenerator {
 			Find the nearest grid point and apply the current configuration to the cell current.
 		 */
 		double posCharge = location[direction] + speed * time * at;
-		double position = posCharge - as / 2 - speed*at/2;
+		//double position = posCharge - speed*at/2;
+
+		SU2AlgebraElement[] currentList = new SU2AlgebraElement[numberOfCells];
+		SU2AlgebraElement[] chargeList = new SU2AlgebraElement[numberOfCells];
+
+		for (int i = 0; i < numberOfCells; i++) {
+			chargeList[i] = new SU2AlgebraElement();
+			currentList[i] = new SU2AlgebraElement();
+			chargeList[i].set(chargeAmplitude.mult(shape(posCharge, i * as)));
+		}
+
+		currentList[0].set(fieldAmplitude.mult(0.0));
+		SU2AlgebraElement temp = new SU2AlgebraElement();
+		for (int i = 0; i < numberOfCells-1; i++) {
+			temp.set(chargeAmplitude.mult(shape(posCharge+speed*at, i * as)).sub(chargeList[i]));
+			currentList[i+1].set(currentList[i].sub(temp.mult(as/at)));
+		}
 
 		for (int i = 0; i < numberOfCells; i++) {
 			pos[direction] = i;
 			int cellIndex = grid.getCellIndex(pos);
 
-			grid.addJ(cellIndex, direction, fieldAmplitude.mult(shape(position, i*as)));
-			grid.addRho(cellIndex, chargeAmplitude.mult(shape(posCharge, i * as)));
+			grid.addJ(cellIndex, direction, currentList[i]);
+			grid.addRho(cellIndex, chargeList[i]);
 		}
 	}
 
