@@ -824,8 +824,8 @@ public class Grid {
 
 	public double getGaussConstraintSquared(int index) {
 		
-		AlgebraElement gauss = cells[index].getEmptyField(numCol);
-		AlgebraElement temp = cells[index].getEmptyField(numCol);
+		AlgebraElement gauss = factory.algebraZero();
+		AlgebraElement temp = factory.algebraZero();
 		double norm = -1.0/(at);
 
 		for (int i = 0; i < numDim; i++) {
@@ -833,6 +833,9 @@ public class Grid {
 			temp.set(getU(id2, i).adj().mult(getUnext(id2, i)).proj());
 			gauss.addAssign(getE(index, i).sub(temp.mult(norm)));
 		}
-		return gauss.square() / Math.pow( as * as * gaugeCoupling, 2.0);
+		gauss.multAssign(1/as);
+		gauss.sub(getRho(index));
+
+		return gauss.square() / Math.pow( as * gaugeCoupling, 2.0);
 	}
 }
