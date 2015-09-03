@@ -15,7 +15,7 @@ public class NewLCCurrent implements ICurrentGenerator {
 
 	private int direction;
 	private int orientation;
-	private int surfaceIndex;
+	private double location;
 	private double longitudinalWidth;
 
 	private ArrayList<PointCharge> charges;
@@ -31,10 +31,10 @@ public class NewLCCurrent implements ICurrentGenerator {
 
 	private int[] numCells;
 
-	public NewLCCurrent(int direction, int orientation, int surfaceIndex, double longitudinalWidth){
+	public NewLCCurrent(int direction, int orientation, double location, double longitudinalWidth){
 		this.direction = direction;
 		this.orientation = orientation;
-		this.surfaceIndex = surfaceIndex;
+		this.location = location;
 		this.longitudinalWidth = longitudinalWidth;
 
 		this.charges = new ArrayList<PointCharge>();
@@ -55,9 +55,12 @@ public class NewLCCurrent implements ICurrentGenerator {
 
 		// 1) Initialize transversal charge density grid using the charges array.
 		numCells = s.grid.getNumCells();
-		transversalNumCells = GridFunctions.getEffectiveNumCells(numCells);
+		transversalNumCells = GridFunctions.reduceGridPos(numCells, direction);
 		totalTransversalCells = GridFunctions.getTotalNumberOfCells(transversalNumCells);
 		transversalChargeDensity = new AlgebraElement[totalTransversalCells];
+		for (int i = 0; i < totalTransversalCells; i++) {
+			transversalChargeDensity[i] = s.grid.getElementFactory().algebraZero();
+		}
 
 		// Iterate over (point) charges, round them to the nearest grid point and add them to the transversal charge density.
 		for (int i = 0; i < charges.size(); i++) {
@@ -73,7 +76,7 @@ public class NewLCCurrent implements ICurrentGenerator {
 		applyCurrent(s);
 
 		// 3) Initialize the NewLightConePoissonSolver with the transversal charge density and solve for the fields U and E.
-		NewLCPoissonSolver poissonSolver = new NewLCPoissonSolver(direction, orientation, surfaceIndex, longitudinalWidth,
+		NewLCPoissonSolver poissonSolver = new NewLCPoissonSolver(direction, orientation, location, longitudinalWidth,
 				transversalChargeDensity, transversalNumCells);
 		poissonSolver.initialize(s);
 		poissonSolver.solve(s);
@@ -86,10 +89,11 @@ public class NewLCCurrent implements ICurrentGenerator {
 		double t = s.totalSimulationTime;
 
 		for (int i = 0; i < maxDirection; i++) {
-			double z = (i - surfaceIndex) * as;
+			double z = i * as - location;
 
-			double s0 = g * as * shapeFunction(z, t - at, orientation, longitudinalWidth);  // shape at t-dt times g*as
-			double s1 = g * as * shapeFunction(z, t, orientation, longitudinalWidth);  // shape at t times g*as
+			double s0 = g * as * shapeFunction(z, t, orientation, longitudinalWidth);  // shape at t times g*as
+			double s1 = g * as * shapeFunction(z, t + at, orientation, longitudinalWidth);  // shape at t+dt times g*as
+			double s2 = g * as * shapeFunction(z, t - at/2, orientation, longitudinalWidth);  // shape at t+dt times g*as
 			double ds = (s1 - s0)/at; // time derivative of the shape function
 			for (int j = 0; j < totalTransversalCells; j++) {
 				int[] transversalGridPos = GridFunctions.getCellPos(j, transversalNumCells);
@@ -102,9 +106,15 @@ public class NewLCCurrent implements ICurrentGenerator {
 				s.grid.addRho(cellIndex, transversalChargeDensity[j].mult(s0));
 
 				// b) Compute gird current density in a charge conserving manner at (t-dt/2).
-				s.grid.addJ(cellIndex, direction,
-						s.grid.getJ(cellIndexShifted, direction).sub(transversalChargeDensity[j].mult(ds))
-						);
+				s.grid.addJ(cellIndex, direction, transversalChargeDensity[j].mult(s2*orientation));
+				/*
+				if(Math.abs(ds) > 0.000001) {
+					s.grid.addJ(cellIndex, direction,
+							s.grid.getJ(cellIndexShifted, direction).sub(transversalChargeDensity[j].mult(ds*as))
+					);
+				}
+				*/
+
 			}
 		}
 	}
