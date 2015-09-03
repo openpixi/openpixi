@@ -88,13 +88,18 @@ public class NewLCCurrent implements ICurrentGenerator {
 		int maxDirection = numCells[direction];
 		double t = s.totalSimulationTime;
 
+		AlgebraElement[] lastCurrents = new AlgebraElement[totalTransversalCells];
+		for (int i = 0; i < totalTransversalCells; i++) {
+			lastCurrents[i] =s.grid.getElementFactory().algebraZero();
+		}
 		for (int i = 0; i < maxDirection; i++) {
 			double z = i * as - location;
 
-			double s0 = g * as * shapeFunction(z, t, orientation, longitudinalWidth);  // shape at t times g*as
-			double s1 = g * as * shapeFunction(z, t + at, orientation, longitudinalWidth);  // shape at t+dt times g*as
+			double s0 = g * as * shapeFunction(z, t - at, orientation, longitudinalWidth);  // shape at t times g*as
+			double s1 = g * as * shapeFunction(z, t, orientation, longitudinalWidth);  // shape at t+dt times g*as
 			double s2 = g * as * shapeFunction(z, t - at/2, orientation, longitudinalWidth);  // shape at t+dt times g*as
 			double ds = (s1 - s0)/at; // time derivative of the shape function
+
 			for (int j = 0; j < totalTransversalCells; j++) {
 				int[] transversalGridPos = GridFunctions.getCellPos(j, transversalNumCells);
 				int[] gridPos = GridFunctions.insertGridPos(transversalGridPos, direction, i);
@@ -103,17 +108,19 @@ public class NewLCCurrent implements ICurrentGenerator {
 				int cellIndexShifted = s.grid.getCellIndex(gridPosShifted);
 
 				// a) Interpolate transversal charge density to grid charge density with a Gauss profile (at t).
-				s.grid.addRho(cellIndex, transversalChargeDensity[j].mult(s0));
+				s.grid.addRho(cellIndex, transversalChargeDensity[j].mult(s1));
 
 				// b) Compute gird current density in a charge conserving manner at (t-dt/2).
-				s.grid.addJ(cellIndex, direction, transversalChargeDensity[j].mult(s2*orientation));
-				/*
-				if(Math.abs(ds) > 0.000001) {
+				//s.grid.addJ(cellIndex, direction, transversalChargeDensity[j].mult(s2*orientation));
+
+
+				if(Math.abs(ds * as) > 0.00000001) {
+					lastCurrents[j].addAssign(transversalChargeDensity[j].mult(-ds * as));
 					s.grid.addJ(cellIndex, direction,
-							s.grid.getJ(cellIndexShifted, direction).sub(transversalChargeDensity[j].mult(ds*as))
+							lastCurrents[j]
 					);
 				}
-				*/
+
 
 			}
 		}
