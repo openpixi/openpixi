@@ -557,7 +557,7 @@ public class Grid {
 	 */
 	public GroupElement getTemporalPlaquette(int index, int d, int o) {
 		GroupElement U1 = getLink(index, d, o, 1);
-		GroupElement U2 = getLink(index, d, o, 0).adj().adj();
+		GroupElement U2 = getLink(index, d, o, 0).adj();
 
 		return U1.mult(U2);
 	}

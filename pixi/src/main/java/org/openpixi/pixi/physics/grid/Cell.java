@@ -54,7 +54,7 @@ public class Cell implements Serializable {
 		for(int i = 0; i < dimensions; i++)
 		{
 			U[i] = factory.groupIdentity(colors);
-			Unext[i] = factory.groupZero(colors);
+			Unext[i] = factory.groupIdentity(colors);
 			E[i] = factory.algebraZero(colors);
 			J[i] = factory.algebraZero(colors);
 
