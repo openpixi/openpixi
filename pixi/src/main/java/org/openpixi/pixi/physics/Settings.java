@@ -100,34 +100,14 @@ public class Settings {
 	public double getSimulationWidth(int i) {
 		return simulationWidth[i];
 	}
-
-	public double getSimulationWidth() {
-		return getSimulationWidth(0);
-	}
-
-	public double getSimulationHeight() {
-		return getSimulationWidth(1);
-	}
-	
-	public double getSimulationDepth() {
-		return getSimulationWidth(2);
-	}
 	
 	public int getGridCells(int i)
 	{
 		return gridCells[i];
 	}
 
-	public int getGridCellsX() {
-		return getGridCells(0);
-	}
-
-	public int getGridCellsY() {
-		return getGridCells(1);
-	}
-	
-	public int getGridCellsZ() {
-		return getGridCells(2);
+	public int[] getGridCells() {
+		return gridCells;
 	}
 	
 	public double getGridStep() {
