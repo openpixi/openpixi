@@ -105,8 +105,6 @@ public class NewLCPoissonSolver {
 			double s0 = - integratedShapeFunction(z, - at / 2.0, orientation, longitudinalWidth);
 			double s1 = - integratedShapeFunction(z, + at / 2.0, orientation, longitudinalWidth);
 
-
-
 			// Setup the gauge links at t = -dt/2 and t = dt/2
 			GroupElement V0 = phi[transversalCellIndex].mult(s0 * g).getLink();
 			GroupElement V0next = phi[transversalCellIndex].mult(s1 * g).getLink();
@@ -128,10 +126,10 @@ public class NewLCPoissonSolver {
 					 */
 
 					AlgebraElement A = V0.mult(
-							(V1.sub(V0)).mult(1/as).adj()
+							(V1.sub(V0)).mult(1.0/as).adj()
 					).proj().mult(as);
 					AlgebraElement Anext = V0next.mult(
-							(V1next.sub(V0next)).mult(1/as).adj()
+							(V1next.sub(V0next)).mult(1.0/as).adj()
 					).proj().mult(as);
 
 					// "Add" the gauge field by multiplying links.
@@ -148,7 +146,7 @@ public class NewLCPoissonSolver {
 		for (int i = 0; i < totalCells; i++) {
 			for (int j = 0; j < numberOfDimensions; j++) {
 				if(j != direction) {
-					s.grid.setE(i, j, s.grid.getEFromLinks(i, j).mult(-1.0));
+					s.grid.setE(i, j, s.grid.getEFromLinks(i, j));
 				}
 			}
 		}

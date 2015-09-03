@@ -771,7 +771,7 @@ public class Grid {
 	 * @return
 	 */
 	public AlgebraElement getEFromLinks(int index, int direction) {
-		return getTemporalPlaquette(index, direction, 1).proj().mult(1.0/at);
+		return getTemporalPlaquette(index, direction, 1).proj().mult(-1.0/at);
 	}
 
 	/**
