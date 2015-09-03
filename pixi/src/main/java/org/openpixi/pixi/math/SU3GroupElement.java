@@ -12,7 +12,7 @@ package org.openpixi.pixi.math;
 public class SU3GroupElement implements GroupElement {
 
 	private final double degeneracyCutoff = 1.E-4;
-	private final double unityCutoff = 3 - 1.E-7;
+	private final double unityCutoff = 3 - 1.E-2;
 
 	private final int taylorSeriesUnityIterations = 15;
 	private final int taylorSeriesDegenerateIterations = 50;

@@ -11,11 +11,11 @@ package org.openpixi.pixi.math;
  */
 public class SU3AlgebraElement implements AlgebraElement {
 
-	private final double degeneracyCutoff = 1.E-4;
-	private final double zeroCutoff = 1.E-7;
+	private final double degeneracyCutoff = 1.E-2;
+	private final double zeroCutoff = 1.E-0;
 
 	private final int taylorSeriesZeroIterations = 15;
-	private final int taylorSeriesDegenerateIterations = 20;
+	private final int taylorSeriesDegenerateIterations = 25;
 
 	private final double normalizationAccuracy = 1.E-12;
 
