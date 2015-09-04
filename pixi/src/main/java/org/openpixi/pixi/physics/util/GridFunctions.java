@@ -8,7 +8,7 @@ public class GridFunctions {
 	/**
 	 * Computes the effective number of dimensions for a given grid.
 	 * Example: A grid described by the grid sizes [16, 16, 16] has effective dimension 3.
-	 * A grid described by [16, 16, 1] is effectivly two-dimensional.
+	 * A grid described by [16, 16, 1] is effectively two-dimensional.
 	 *
 	 * @param numCells array of grid sizes
 	 * @return         effective number of dimensions of the grid
