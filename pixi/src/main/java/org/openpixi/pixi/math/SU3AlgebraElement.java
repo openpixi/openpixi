@@ -11,12 +11,15 @@ package org.openpixi.pixi.math;
  */
 public class SU3AlgebraElement implements AlgebraElement {
 
+	// thresholds for getLink method to use Taylor series
 	private final double degeneracyCutoff = 1.E-2;
 	private final double zeroCutoff = 1.E-0;
 
+	// number of iterations to use in Taylor series for each case
 	private final int taylorSeriesZeroIterations = 15;
 	private final int taylorSeriesDegenerateIterations = 25;
 
+	// threshold to determine zero vectors in normalize method
 	private final double normalizationAccuracy = 1.E-12;
 
 	protected double[] v;

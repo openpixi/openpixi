@@ -11,12 +11,15 @@ package org.openpixi.pixi.math;
  */
 public class SU3GroupElement implements GroupElement {
 
+	// thresholds for getAlgebraElement method to use Taylor series
 	private final double degeneracyCutoff = 1.E-4;
 	private final double unityCutoff = 3 - 1.E-2;
 
+	// number of iterations to use in Taylor series for each case
 	private final int taylorSeriesUnityIterations = 15;
 	private final int taylorSeriesDegenerateIterations = 50;
 
+	// threshold to determine zero vectors in normalize method
 	private final double normalizationAccuracy = 1.E-12;
 
 	private double[] e;

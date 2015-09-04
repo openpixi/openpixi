@@ -397,6 +397,7 @@ public class SU3EverythingTest {
 		}
 	}
 
+	// projection function for use in the Gram-Schmidt process for createRandomSU3Matrix method
 	private double[] proj(double[] v1, double[] v2) {
 		double[] prod = new double[2];
 		prod[0] = v1[0]*v2[0]+v1[1]*v2[1]+v1[2]*v2[2]+v1[3]*v2[3]+v1[4]*v2[4]+v1[5]*v2[5];
