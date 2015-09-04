@@ -1,5 +1,5 @@
 gridStep: 1
-couplingConstant: 1
+couplingConstant: 2
 numberOfDimensions: 3
 numberOfColors: 2
 numberOfThreads: 6
@@ -17,16 +17,16 @@ currents:
       charges:
         - location: [40, 0]
           amplitudeColorDirection: [1.0, 0.0, 0.0]
-          magnitude: 1.0
+          magnitude: 0.1
         - location: [50, 0]
           amplitudeColorDirection: [1.0, 0.0, 0.0]
-          magnitude: -1.0
+          magnitude: -0.1
         - location: [80, 0]
           amplitudeColorDirection: [1.0, 0.0, 0.0]
-          magnitude: -1.0
+          magnitude: -0.1
         - location: [90, 0]
           amplitudeColorDirection: [1.0, 0.0, 0.0]
-          magnitude: 1.0
+          magnitude: 0.1
     - direction: 0
       orientation: -1
       location: 96.0
@@ -34,16 +34,16 @@ currents:
       charges:
         - location: [40, 0]
           amplitudeColorDirection: [1.0, 0.0, 0.0]
-          magnitude: 1.0
+          magnitude: 0.1
         - location: [50, 0]
           amplitudeColorDirection: [1.0, 0.0, 0.0]
-          magnitude: -1.0
+          magnitude: -0.1
         - location: [80, 0]
           amplitudeColorDirection: [1.0, 0.0, 0.0]
-          magnitude: -1.0
+          magnitude: -0.1
         - location: [90, 0]
           amplitudeColorDirection: [1.0, 0.0, 0.0]
-          magnitude: 1.0
+          magnitude: 0.1
 
 #output:
 #  gaussConstraintRestoration:

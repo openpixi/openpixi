@@ -1,11 +1,11 @@
-gridStep: 2
+gridStep: 1
 couplingConstant: 2
 numberOfDimensions: 3
 numberOfColors: 2
 numberOfThreads: 6
-gridCells: [64, 64, 64]
+gridCells: [128, 128, 1]
 poissonsolver: empty
-timeStep: 1
+timeStep: 0.1
 duration: 1000
 
 currents:
@@ -15,43 +15,76 @@ currents:
       location: 32.0
       longitudinalWidth: 2.0
       charges:
-        - location: [35, 64]
+        - location: [30, 0]
           amplitudeColorDirection: [1.0, 0.0, 0.0]
           magnitude: 0.1
-        - location: [55, 64]
+        - location: [40, 0]
+          amplitudeColorDirection: [0.0, 1.0, 0.0]
+          magnitude: 0.1
+        - location: [50, 0]
           amplitudeColorDirection: [1.0, 0.0, 0.0]
           magnitude: -0.1
-        - location: [75, 64]
+        - location: [60, 0]
+          amplitudeColorDirection: [0.0, 1.0, 0.0]
+          magnitude: -0.1
+        # mirrored charges to eliminate dipole field
+        - location: [80, 0]
           amplitudeColorDirection: [1.0, 0.0, 0.0]
           magnitude: -0.1
-        - location: [95, 64]
+        - location: [90, 0]
+          amplitudeColorDirection: [0.0, 1.0, 0.0]
+          magnitude: -0.1
+        - location: [100, 0]
           amplitudeColorDirection: [1.0, 0.0, 0.0]
+          magnitude: 0.1
+        - location: [110, 0]
+          amplitudeColorDirection: [0.0, 1.0, 0.0]
           magnitude: 0.1
     - direction: 0
       orientation: -1
       location: 96.0
       longitudinalWidth: 2.0
       charges:
-        - location: [35, 64]
+        - location: [30, 0]
           amplitudeColorDirection: [1.0, 0.0, 0.0]
           magnitude: 0.1
-        - location: [55, 64]
+        - location: [40, 0]
+          amplitudeColorDirection: [0.0, 1.0, 0.0]
+          magnitude: 0.1
+        - location: [50, 0]
           amplitudeColorDirection: [1.0, 0.0, 0.0]
           magnitude: -0.1
-        - location: [75, 64]
+        - location: [60, 0]
+          amplitudeColorDirection: [0.0, 1.0, 0.0]
+          magnitude: -0.1
+        # mirrored charges to eliminate dipole field
+        - location: [80, 0]
           amplitudeColorDirection: [1.0, 0.0, 0.0]
           magnitude: -0.1
-        - location: [95, 64]
+        - location: [90, 0]
+          amplitudeColorDirection: [0.0, 1.0, 0.0]
+          magnitude: -0.1
+        - location: [100, 0]
           amplitudeColorDirection: [1.0, 0.0, 0.0]
+          magnitude: 0.1
+        - location: [110, 0]
+          amplitudeColorDirection: [0.0, 1.0, 0.0]
           magnitude: 0.1
 
+#output:
+#  gaussConstraintRestoration:
+#    - interval: 0.5
+#      offset: 0.0
+#      gamma: 0.5
+#      maxIterations: 50
+#      absoluteValue: 10e-7
 
 
 # Generated panel code:
 panels:
   dividerLocation: 1015
   leftPanel:
-    dividerLocation: 714
+    dividerLocation: 667
     leftPanel:
       chartPanel:
         logarithmicScale: false
@@ -67,7 +100,7 @@ panels:
         colorIndex: 0
         directionIndex: 1
         scaleFactor: 1.0
-        showCoordinates: i, x, 32
+        showCoordinates: x, i, 0
         showFields:
         - E
         - U
@@ -77,8 +110,8 @@ panels:
     leftPanel:
       energyDensity2DGLPanel:
         automaticScaling: false
-        scaleFactor: 500.0
-        showCoordinates: x, y, 32
+        scaleFactor: 5000.0
+        showCoordinates: x, y, 0
     orientation: 0
     rightPanel:
       electricFieldPanel:
@@ -86,7 +119,7 @@ panels:
         colorIndex: 0
         directionIndex: 0
         scaleFactor: 1.0
-        showCoordinates: x, i, 32
+        showCoordinates: x, i, 0
         showFields:
         - j
         - rho
