@@ -102,12 +102,12 @@ public class NewLCPoissonSolver {
 			int transversalCellIndex = GridFunctions.getCellIndex(transversalGridPos, transversalNumCells);
 
 			// Shape function (i.e. F(z,t)) at t = -dt/2 and t = dt /2.
-			double s0 = - integratedShapeFunction(z, - at / 2.0, orientation, longitudinalWidth);
-			double s1 = - integratedShapeFunction(z, + at / 2.0, orientation, longitudinalWidth);
+			double s0 = integratedShapeFunction(z, - at / 2.0, orientation, longitudinalWidth);
+			double s1 = integratedShapeFunction(z, + at / 2.0, orientation, longitudinalWidth);
 
 			// Setup the gauge links at t = -dt/2 and t = dt/2
-			GroupElement V0 = phi[transversalCellIndex].mult(s0 * g).getLink();
-			GroupElement V0next = phi[transversalCellIndex].mult(s1 * g).getLink();
+			GroupElement V0 = phi[transversalCellIndex].mult(- s0 * g).getLink();
+			GroupElement V0next = phi[transversalCellIndex].mult(- s1 * g).getLink();
 			for (int j = 0; j < numberOfDimensions; j++) {
 				if(j != direction) {
 					int transversalCellIndexShifted = GridFunctions.getCellIndex(
@@ -115,8 +115,8 @@ public class NewLCPoissonSolver {
 									s.grid.getCellPos(s.grid.shift(i, j, 1))
 									, direction),
 							transversalNumCells);
-					GroupElement V1 = phi[transversalCellIndexShifted].mult(s0 * g).getLink();
-					GroupElement V1next = phi[transversalCellIndexShifted].mult(s1 * g).getLink();
+					GroupElement V1 = phi[transversalCellIndexShifted].mult(- s0 * g).getLink();
+					GroupElement V1next = phi[transversalCellIndexShifted].mult(- s1 * g).getLink();
 
 					/*
 					Equation from the CGC initial condition notes to find the gauge field:

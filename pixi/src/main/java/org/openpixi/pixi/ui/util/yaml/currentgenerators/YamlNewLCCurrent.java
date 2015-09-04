@@ -55,7 +55,7 @@ public class YamlNewLCCurrent {
 		}
 
 		int numberOfComponents = settings.getNumberOfColors() * settings.getNumberOfColors() - 1;
-		int effDim = GridFunctions.getEffectiveNumberOfDimensions(settings.getGridCells());
+		int effDim = settings.getNumberOfDimensions() - 1;
 
 		for(YamlPointCharge c : charges) {
 			// Check color vectors
