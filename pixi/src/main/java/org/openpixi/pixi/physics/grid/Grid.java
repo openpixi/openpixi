@@ -823,19 +823,16 @@ public class Grid {
 	}
 
 	public double getGaussConstraintSquared(int index) {
-		
 		AlgebraElement gauss = factory.algebraZero();
-		AlgebraElement temp = factory.algebraZero();
-		double norm = -1.0/(at);
-
 		for (int i = 0; i < numDim; i++) {
-			int id2 = shift(index, i, -1);
-			temp.set(getU(id2, i).adj().mult(getUnext(id2, i)).proj());
-			gauss.addAssign(getE(index, i).sub(temp.mult(norm)));
+			int shiftedIndex = shift(index, i, -1);
+			AlgebraElement E = getEFromLinks(shiftedIndex, i);
+			E.actAssign(getLink(shiftedIndex, i, 1, 0).adj());
+			gauss.addAssign(getEFromLinks(index, i));
+			gauss.addAssign(E.mult(-1.0));
 		}
-		gauss.multAssign(1/as);
-		gauss.sub(getRho(index));
-
-		return gauss.square() / Math.pow( as * gaugeCoupling, 2.0);
+		gauss.multAssign(1.0/as);
+		gauss = gauss.sub(getRho(index));
+		return gauss.square();
 	}
 }

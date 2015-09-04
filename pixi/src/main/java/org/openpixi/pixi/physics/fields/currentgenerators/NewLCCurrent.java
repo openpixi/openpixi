@@ -109,15 +109,18 @@ public class NewLCCurrent implements ICurrentGenerator {
 				s.grid.addRho(cellIndex, transversalChargeDensity[j].mult(s1));
 
 				// b) Compute gird current density in a charge conserving manner at (t-dt/2).
+
+				// Method A: Sampling the analytical result on the grid (not charge conserving)
 				//s.grid.addJ(cellIndex, direction, transversalChargeDensity[j].mult(s2*orientation));
 
-
+				// Method B: Setting the current according to the continuity equation (charge conserving)
 				if(Math.abs(ds * as) > 0.00000001) {
 					lastCurrents[j].addAssign(transversalChargeDensity[j].mult(-ds * as));
 					s.grid.addJ(cellIndex, direction,
 							lastCurrents[j]
 					);
 				}
+
 
 
 			}
