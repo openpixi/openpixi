@@ -61,8 +61,6 @@ public class NewLCPoissonSolver {
 
 	public void solve(Simulation s) {
 		DoubleFFTWrapper fft = new DoubleFFTWrapper(transversalNumCells);
-		// TODO: fix correct setting of Vs
-		// TODO: fix shape function (wrong orientation?)
 
 		// First step: compute transversal potential phi
 		for (int i = 0; i < factory.numberOfComponents; i++) {

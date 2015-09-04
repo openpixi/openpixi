@@ -69,7 +69,7 @@ public class NewLCCurrent implements ICurrentGenerator {
 			for (int j = 0; j < numberOfComponents; j++) {
 				chargeAmplitude.set(j, c.colorDirection[j] * c.magnitude);
 			}
-			transversalChargeDensity[GridFunctions.getCellIndex(GridFunctions.roundGridPos(c.location, as), transversalNumCells)] = chargeAmplitude;
+			transversalChargeDensity[GridFunctions.getCellIndex(GridFunctions.nearestGridPoint(c.location, as), transversalNumCells)] = chargeAmplitude;
 		}
 
 		// 2) Interpolate grid charge and current density.
@@ -104,8 +104,6 @@ public class NewLCCurrent implements ICurrentGenerator {
 				int[] transversalGridPos = GridFunctions.getCellPos(j, transversalNumCells);
 				int[] gridPos = GridFunctions.insertGridPos(transversalGridPos, direction, i);
 				int cellIndex = s.grid.getCellIndex(gridPos);
-				int[] gridPosShifted = GridFunctions.insertGridPos(transversalGridPos, direction, i - 1);
-				int cellIndexShifted = s.grid.getCellIndex(gridPosShifted);
 
 				// a) Interpolate transversal charge density to grid charge density with a Gauss profile (at t).
 				s.grid.addRho(cellIndex, transversalChargeDensity[j].mult(s1));
