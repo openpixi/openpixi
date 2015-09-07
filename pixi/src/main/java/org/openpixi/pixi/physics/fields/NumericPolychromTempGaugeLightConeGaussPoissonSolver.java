@@ -187,7 +187,7 @@ public class NumericPolychromTempGaugeLightConeGaussPoissonSolver extends LightC
 					}
 				}
 			}
-			//compute the derivatives of the link matrices stored in Unext, determine and set the electric fields from the temporal derivative and set the gauge links (U's)
+			//compute the transformation matrices and store them in Unext
 			System.arraycopy(pos, 0, gaugePos, 0, arrayLength);
 			for(int j = 0; j < size[0]; j++) {
 				gaugePos[signature[0]] = j;
@@ -230,14 +230,19 @@ public class NumericPolychromTempGaugeLightConeGaussPoissonSolver extends LightC
 					}
 				}
 			}
-
+			//the Unext matrices are being cleared in order to be used for time evolution
 			g.resetUnext();
 
 		} else if(size.length == 1) {
 			double[] charge = new double[2 * size[0]];
+			double[] current = new double[2 * size[0]];
 			AlgebraElement[] phiList = new AlgebraElement[size[0]];
+			AlgebraElement[] gaugeList = new AlgebraElement[size[0]];
+			AlgebraElement[] E0List = new AlgebraElement[size[0]];
 			for(int j = 0; j < size[0]; j++) {
 				phiList[j] = factory.algebraZero(colors);
+				gaugeList[j] = factory.algebraZero(colors);
+				E0List[j] = factory.algebraZero(colors);
 			}
 
 			for(int i = 0; i < numberOfComponents; i++) {
@@ -249,29 +254,40 @@ public class NumericPolychromTempGaugeLightConeGaussPoissonSolver extends LightC
 
 					charge[2*j] = g.getRho(cellIndex).get(i);
 					charge[2*j + 1] = 0.0;
+					current[2*j] = g.getJ(cellIndex, dir).get(i);
+					current[2*j + 1] = 0.0;
 				}
 				//perform Fourier transformation
 				DoubleFFT_1D fft = new DoubleFFT_1D(size[0]);
 				fft.complexForward(charge);
+				fft.complexForward(current);
 				//perform computation in Fourier space
 				for(int j = 0; j < size[0]; j++) {
 					double psqr = (2 - 2 * Math.cos((2 * Math.PI * j) / size[0]))/norm;
 						if( j != 0 ) {
 							charge[2*j] = charge[2*j]/psqr;
 							charge[2*j + 1] = charge[2*j + 1]/psqr;
+							current[2*j] = current[2*j]/psqr;
+							current[2*j + 1] = current[2*j + 1]/psqr;
 						}
 				}
 				charge[0] = 0.0;
 				charge[1] = 0.0;
+				current[0] = 0.0;
+				current[1] = 0.0;
 				//perform inverse Fourier transform
 				fft.complexInverse(charge, true);
+				fft.complexInverse(current, true);
 				//compute the values of the gauge field in the direction of the current and the values of the electric field
 				for (int j = 0; j < size[0]; j++) {
 					pos[signature[0]] = j;
+
 					phiList[j].set(i, charge[2 * j]);
+					gaugeList[j].set(i, current[2*j]);
+					E0List[j].set(i, -(charge[ 2*((j + 1) % size[0]) ] - charge[2*j]) / as);
 				}
 			}
-			//set the values of the gauge field perpendicular to the current and save them as Unext link matrices
+			//set the values of the gauge field in the direction of the current and the values of the electric field
 			System.arraycopy(pos, 0, gaugePos, 0, arrayLength);
 			AlgebraElement A0, A1;
 			A0 = factory.algebraZero(colors);
@@ -282,14 +298,15 @@ public class NumericPolychromTempGaugeLightConeGaussPoissonSolver extends LightC
 					gaugePos[dir] = z;
 					cellIndex = g.getCellIndex(gaugePos);
 
-					A0.set(phiList[j].mult(-1.0 * g.getGaugeCoupling() * shapeErf(positionCurrent[dir], surfaceIndex, z * as) / gaussNormFactorCharge));
-					A1.set(phiList[j].mult(-1.0 * g.getGaugeCoupling() * shapeErf(positionCurrent[dir] + orientation[surfaceIndex] * at, surfaceIndex, z * as) / gaussNormFactorCharge));
+					g.addE(cellIndex, signature[0], E0List[j].mult(shapeGauss(location[surfaceIndex][dir], width[surfaceIndex], z * as) / gaussNormFactorCharge * coupling * as));
 
-					g.setUnext(cellIndex, 0, A0.getLink());
-					g.setUnext(cellIndex, 1, A1.getLink());
+					A0.set(g.getU(cellIndex, signature[0]).getAlgebraElement());
+					A0.addAssign(E0List[j].mult(shapeGauss(positionCurrent[dir], width[surfaceIndex], z * as /*- as/2*/) / gaussNormFactorCharge * coupling * as));
+
+					g.setU(cellIndex, signature[0], A0.getLink());
 				}
 			}
-			//compute the derivatives of the link matrices stored in Unext, determine and set the electric fields from the temporal derivative and set the gauge links (U's)
+			//compute the transformation matrices and store them in Unext
 			System.arraycopy(pos, 0, gaugePos, 0, arrayLength);
 			for(int j = 0; j < size[0]; j++) {
 				gaugePos[signature[0]] = j;
@@ -297,17 +314,31 @@ public class NumericPolychromTempGaugeLightConeGaussPoissonSolver extends LightC
 					gaugePos[dir] = z;
 					cellIndex = g.getCellIndex(gaugePos);
 
-					//fields at t=0
-					A0.set( g.getUnext(cellIndex, 0).mult(g.getUnext(g.shift(cellIndex, signature[0], 1), 0).adj().sub(g.getUnext(cellIndex, 0).adj())).mult(1.0/as/g.getGaugeCoupling()).proj() );
-					//fields at t=-at
-					A1.set( g.getUnext(cellIndex, 1).mult(g.getUnext(g.shift(cellIndex, signature[0], 1), 1).adj().sub(g.getUnext(cellIndex, 1).adj())).mult(1.0/as/g.getGaugeCoupling()).proj() );
-					//setting the electric fields
-					g.addE(cellIndex, signature[0], A1.sub(A0).mult(-1.0 / at).mult(g.getGaugeCoupling()*as));
+					//computing transformation matrices
+					g.setUnext(cellIndex, 0, phiList[j].mult(shapeGauss(location[surfaceIndex][dir], width[surfaceIndex], z * as) / gaussNormFactorCharge * coupling * at).getLink());
+					g.setUnext(cellIndex, 0, g.getUnext(cellIndex, 0).adj());
+				}
+			}
 
-					//setting the gauge links
-					A0.multAssign(g.getGaugeCoupling()*as);
-					A0.addAssign(g.getU(cellIndex, signature[0]).getAlgebraElement());
-					g.setU(cellIndex, signature[0], A0.getLink());
+			System.arraycopy(pos, 0, gaugePos, 0, arrayLength);
+			GroupElement U0, U1, U2;
+			U0 = factory.groupZero(colors);
+			U1 = factory.groupZero(colors);
+			U2 = factory.groupZero(colors);
+			for(int j = 0; j < size[0]; j++) {
+				gaugePos[signature[0]] = j;
+				for (int z = 0; z < dirMax; z++) {
+					gaugePos[dir] = z;
+					cellIndex = g.getCellIndex(gaugePos);
+
+					//transforming the gauge links
+					U0.set( g.getUnext(cellIndex, 0).mult( g.getU(g.shift(cellIndex, signature[0], 1), signature[0]).mult(g.getUnext(cellIndex, 0).adj()) ) );
+					U2.set( g.getUnext(cellIndex, 0).mult( g.getU(g.shift(cellIndex, dir, 1), dir).mult(g.getUnext(cellIndex, 0).adj()) ) );
+					g.setU(cellIndex, signature[0], U0);
+					g.setU(cellIndex, dir, U2);
+					//transforming the electric fields
+					g.setE( cellIndex, signature[0], g.getE(cellIndex, signature[0]).act(g.getUnext(cellIndex, 0)) );
+					g.setE( cellIndex, dir, g.getE(cellIndex, dir).act(g.getUnext(cellIndex, 0)) );
 				}
 			}
 			//the Unext matrices are being cleared in order to be used for time evolution
