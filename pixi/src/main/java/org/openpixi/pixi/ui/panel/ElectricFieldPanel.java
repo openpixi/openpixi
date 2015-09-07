@@ -96,12 +96,13 @@ public class ElectricFieldPanel extends AnimationPanel {
 
 		super.paintComponent(graph1);
 
+		colorProperties.checkConsistency();
+
 		Simulation s = getSimulationAnimation().getSimulation();
 		/** Scaling factor for the displayed panel in x-direction*/
 		double sx = getWidth() / s.getWidth();
-		/** Scaling factor for the displayed panel in y-direction*/
-		double sy = getHeight() / s.getHeight();
 
+		double panelWidth = getWidth();
 		double panelHeight = getHeight();
 
 		boolean useCoulombGauge = gaugeProperties.isCoulombGauge();
@@ -119,6 +120,8 @@ public class ElectricFieldPanel extends AnimationPanel {
 //			randomGauge.applyGaugeTransformation(gridCopy);
 //			drawGrid = gridCopy;
 		}
+
+		// TODO: display particles according to showCoordinateProperties (see below)
 
 		// Draw particles on a central line:
 		for (int i = 0; i < s.particles.size(); i++) {
@@ -142,7 +145,7 @@ public class ElectricFieldPanel extends AnimationPanel {
 
 		for (int i = 0; i < fieldLabel.length; i++) {
 			if (showFieldProperties.getValue(i)) {
-				drawGraph(graph, s, sx, panelHeight, drawGrid, scale, i);
+				drawGraph(graph, s, panelWidth, panelHeight, drawGrid, scale, i);
 			}
 		}
 
@@ -150,7 +153,7 @@ public class ElectricFieldPanel extends AnimationPanel {
 
 	}
 
-	private void drawGraph(Graphics2D graph, Simulation s, double sx,
+	private void drawGraph(Graphics2D graph, Simulation s, double panelWidth,
 			double panelHeight, Grid drawGrid, double scale, int type) {
 
 		// Lattice spacing and coupling constant
@@ -191,6 +194,7 @@ public class ElectricFieldPanel extends AnimationPanel {
 			kmin = 0;
 			kmax = s.grid.getNumCells(loopIndex);
 		}
+		double sx = panelWidth / s.getSimulationBoxSize(abscissaIndex);
 		for(int k = kmin; k < kmax; k++)
 		{
 			int newPosition = 0;
@@ -225,9 +229,11 @@ public class ElectricFieldPanel extends AnimationPanel {
 					value = drawGrid.getUnext(s.grid.getCellIndex(pos), directionIndex).proj().get(colorIndex) / (as * g);
 					break;
 				case INDEX_J:
+					newPosition = (int) (s.grid.getLatticeSpacing() * (i + .5) * sx);
 					value = drawGrid.getJ(s.grid.getCellIndex(pos), directionIndex).get(colorIndex) / (as * g);
 					break;
 				case INDEX_RHO:
+					newPosition = (int) (s.grid.getLatticeSpacing() * (i + .5) * sx);
 					value = drawGrid.getRho(s.grid.getCellIndex(pos)).get(colorIndex) / (as * g);
 					break;
 				}

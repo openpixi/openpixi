@@ -6,6 +6,7 @@ import org.apache.commons.math3.complex.Complex;
 import org.apache.commons.math3.complex.ComplexField;
 import org.apache.commons.math3.linear.Array2DRowFieldMatrix;
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.openpixi.pixi.math.GroupElement;
 import org.openpixi.pixi.math.SU2GroupElement;
@@ -321,6 +322,64 @@ public class SU2MatrixTest {
 		}
 	}
 
+	@Test
+	public void testAct() {
+		int numberOfTests = 10;
+		for (int t = 0; t < numberOfTests; t++) {
+			/*
+				Create a random algebra element
+			 */
+			SU2AlgebraElement f1 = createRandomSU2AlgebraElement();
+			Array2DRowFieldMatrix<Complex> ff1 = convertToMatrix(f1);
+
+			/*
+				Create a random matrix.
+			 */
+			SU2GroupElement m1 = createRandomSU2Matrix();
+			Array2DRowFieldMatrix<Complex> mm1 = convertToMatrix(m1);
+
+
+			/*
+				Get adjoint of mm1
+			 */
+			Array2DRowFieldMatrix<Complex> mm2 = (Array2DRowFieldMatrix<Complex>) mm1.transpose();
+			for (int i = 0; i < 2; i++) {
+				for (int j = 0; j < 2; j++) {
+					Complex v = mm2.getEntry(i, j).conjugate();
+					mm2.setEntry(i, j, v);
+				}
+			}
+
+			/*
+				Do act method
+			 */
+			SU2AlgebraElement f2 = (SU2AlgebraElement) f1.act(m1);
+			f1.actAssign(m1);
+
+			Array2DRowFieldMatrix<Complex> ff2 = convertToMatrix(f2);
+			Array2DRowFieldMatrix<Complex> ff3 = convertToMatrix(f1);
+
+			Array2DRowFieldMatrix<Complex> ff4 = mm1.multiply(ff1).multiply(mm2);
+
+			compareMatrices(ff4,ff3);
+			compareMatrices(ff4,ff2);
+		}
+
+
+
+	}
+
+	private Array2DRowFieldMatrix<Complex>  adj(Array2DRowFieldMatrix<Complex> arg) {
+		Array2DRowFieldMatrix<Complex> m = (Array2DRowFieldMatrix<Complex>) arg.transpose();
+		for (int i = 0; i < 2; i++) {
+			for (int j = 0; j < 2; j++) {
+				Complex v = m.getEntry(i, j).conjugate();
+				m.setEntry(i, j, v);
+			}
+		}
+		return m;
+	}
+
 	private SU2GroupElement createRandomSU2Matrix() {
 		/*
 			Create random SU2 matrix.
@@ -343,6 +402,16 @@ public class SU2MatrixTest {
 		return m;
 	}
 
+	private SU2AlgebraElement createRandomSU2AlgebraElement() {
+		SU2AlgebraElement A = new SU2AlgebraElement();
+		double a = 4.0;
+		for(int i = 0; i < 3; i++) {
+			double r = 2.0 * (Math.random() - 0.5);
+			A.set(i, a * r);
+		}
+		return A;
+	}
+
 	private void compareMatrices(Array2DRowFieldMatrix<Complex> a, Array2DRowFieldMatrix<Complex> b) {
 		for (int i = 0; i < 2; i++) {
 			for (int j = 0; j < 2; j++) {
@@ -356,6 +425,49 @@ public class SU2MatrixTest {
 			}
 
 		}
+	}
+
+	private Array2DRowFieldMatrix<Complex> convertToMatrix(AlgebraElement arg) {
+
+		SU2AlgebraElement input = (SU2AlgebraElement) arg;
+
+		Field<Complex> field = ComplexField.getInstance();
+		Array2DRowFieldMatrix<Complex> output = new Array2DRowFieldMatrix<Complex>(field, 2, 2);
+
+		/*
+			Definition of Pauli matrices
+		 */
+
+		// Pauli x
+		Array2DRowFieldMatrix<Complex> s1 = new Array2DRowFieldMatrix<Complex>(field, 2, 2);
+		s1.setEntry(0, 1, new Complex(1.0, 0.0));
+		s1.setEntry(1, 0, new Complex(1.0, 0.0));
+
+		// Pauli y
+		Array2DRowFieldMatrix<Complex> s2 = new Array2DRowFieldMatrix<Complex>(field, 2, 2);
+		s2.setEntry(0, 1, new Complex(0.0, -1.0));
+		s2.setEntry(1, 0, new Complex(0.0, 1.0));
+
+		// Pauli z
+		Array2DRowFieldMatrix<Complex> s3 = new Array2DRowFieldMatrix<Complex>(field, 2, 2);
+		s3.setEntry(0, 0, new Complex(1.0, 0.0));
+		s3.setEntry(1, 1, new Complex(-1.0, 0.0));
+
+		/*
+			Representation of a SU(2) algebra element using Pauli matrices.
+
+			A = 0.5 \sigma_j a_j
+		 */
+
+		s1 = (Array2DRowFieldMatrix<Complex>) s1.scalarMultiply(new Complex(0.5 * input.get(0)));
+		s2 = (Array2DRowFieldMatrix<Complex>) s2.scalarMultiply(new Complex(0.5 * input.get(1)));
+		s3 = (Array2DRowFieldMatrix<Complex>) s3.scalarMultiply(new Complex(0.5 * input.get(2)));
+
+		output = output.add(s1);
+		output = output.add(s2);
+		output = output.add(s3);
+
+		return output;
 	}
 
 	private Array2DRowFieldMatrix<Complex> convertToMatrix(GroupElement arg) {

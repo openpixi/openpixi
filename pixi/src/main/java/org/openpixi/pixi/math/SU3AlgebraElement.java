@@ -132,6 +132,36 @@ public class SU3AlgebraElement implements AlgebraElement {
 
 	}
 
+	public AlgebraElement act(GroupElement arg) {
+
+		SU3GroupElement a = (SU3GroupElement) arg;
+
+		// temporarily store algebra element as group element so we can use the multiplication method
+		SU3GroupElement temp = new SU3GroupElement(new double[]{v[0],v[1],v[2],v[1],v[4],v[5],v[2],v[5],v[8],0,v[3],v[6],-v[3],0,v[7],-v[6],-v[7],0});
+
+		double[] values = ((SU3GroupElement) a.mult(temp.mult(a.adj()))).get();
+
+		double[] fieldValues = new double[9];
+
+		fieldValues[0] = values[0];
+		fieldValues[4] = values[4];
+		fieldValues[8] = values[8];
+		// off-diagonal real values are symmetric averages of pairs
+		fieldValues[1] = (values[1] + values[3])/2;
+		fieldValues[2] = (values[2] + values[6])/2;
+		fieldValues[5] = (values[5] + values[7])/2;
+		// off-diagonal imag. values are asymmetric averages of pairs
+		fieldValues[3] = (values[10] - values[12])/2;
+		fieldValues[6] = (values[11] - values[15])/2;
+		fieldValues[7] = (values[14] - values[16])/2;
+
+		return new SU3AlgebraElement(fieldValues);
+	}
+
+	public void actAssign(GroupElement arg) {
+		v = ((SU3AlgebraElement) act(arg)).get();
+	}
+
 	public double square () {
 		return 2*(v[0]*v[0]+v[4]*v[4]+v[8]*v[8]+2*(v[1]*v[1]+v[2]*v[2]+v[3]*v[3]+v[5]*v[5]+v[6]*v[6]+v[7]*v[7]));
 		

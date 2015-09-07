@@ -87,5 +87,27 @@ public interface AlgebraElement {
 	 */
 	double proj(int c);
 
+	/**
+	 * Returns the adjoint action of a group element on an algebra element (which is again an algbra element).
+	 * Let X be an algebra element and g an element of the group then we define
+	 *
+	 * 		ad_g(X) = g X g^(-1).
+	 *
+	 * This method does not change the original AlgebraElement instance.
+	 *
+	 * @param g	Group element to act on algebra element
+	 * @return  AlgebraElement instance of the adjoint action
+	 */
+	AlgebraElement act(GroupElement g);
+
+	/**
+	 * Returns the adjoint action of a group element on an algebra element (which is again an algbra element).
+	 * Same as AlgebraElement.act() but changes the original AlgebraElement instance.
+	 *
+	 * @param g Group element to act on algebra element
+	 * @return  AlgebraElement instance of the adjoint action
+	 */
+	void actAssign(GroupElement g);
+
 	AlgebraElement copy();
 }
