@@ -67,9 +67,9 @@ public class NewLCCurrent implements ICurrentGenerator {
 			PointCharge c = charges.get(i);
 			AlgebraElement chargeAmplitude = s.grid.getElementFactory().algebraZero(s.getNumberOfColors());
 			for (int j = 0; j < numberOfComponents; j++) {
-				chargeAmplitude.set(j, c.colorDirection[j] * c.magnitude);
+				chargeAmplitude.set(j, c.colorDirection[j] * c.magnitude / Math.pow(as, s.getNumberOfDimensions() - 1));
 			}
-			transversalChargeDensity[GridFunctions.getCellIndex(GridFunctions.nearestGridPoint(c.location, as), transversalNumCells)] = chargeAmplitude;
+			transversalChargeDensity[GridFunctions.getCellIndex(GridFunctions.nearestGridPoint(c.location, as), transversalNumCells)].addAssign(chargeAmplitude);
 		}
 
 		// 2) Interpolate grid charge and current density.
@@ -139,8 +139,21 @@ public class NewLCCurrent implements ICurrentGenerator {
 
 		public PointCharge(double[] location, double[] colorDirection, double magnitude) {
 			this.location = location;
-			this.colorDirection = colorDirection;
+			this.colorDirection = normalize(colorDirection);
 			this.magnitude = magnitude;
+		}
+
+		private double[] normalize(double[] v) {
+			double norm = 0.0;
+			for (int i = 0; i < v.length; i++) {
+				norm += v[i] * v[i];
+			}
+			norm = Math.sqrt(norm);
+			double[] result = new double[v.length];
+			for (int i = 0; i < v.length; i++) {
+				result[i] = v[i] / norm;
+			}
+			return result;
 		}
 	}
 }
