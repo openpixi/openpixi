@@ -159,7 +159,8 @@ public class FieldMeasurements {
 
 		public double getSum(Grid grid) {
 			charge.multAssign(Math.pow(grid.getLatticeSpacing(), grid.getNumberOfDimensions()));
-			return Math.sqrt(charge.square());
+			double latticeUnitsNorm = grid.getGaugeCoupling() * grid.getLatticeSpacing();
+			return Math.sqrt(charge.square()) / latticeUnitsNorm;
 		}
 
 		public void execute(Grid grid, int index) {
