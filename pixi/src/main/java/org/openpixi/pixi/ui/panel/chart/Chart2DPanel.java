@@ -36,6 +36,7 @@ public class Chart2DPanel extends AnimationChart2DPanel {
 	public final int INDEX_PY = 5;
 	public final int INDEX_PZ = 6;
 	public final int INDEX_ENERGY_DENSITY_2 = 7;
+	public final int INDEX_TOTAL_CHARGE = 8;
 
 	String[] chartLabel = new String[] {
 			"Gauss law violation",
@@ -45,7 +46,8 @@ public class Chart2DPanel extends AnimationChart2DPanel {
 			"px",
 			"py",
 			"pz",
-			"Energy density (occupation numbers)"
+			"Energy density (occupation numbers)",
+			"Total charge"
 	};
 
 	Color[] traceColors = new Color[] {
@@ -56,7 +58,8 @@ public class Chart2DPanel extends AnimationChart2DPanel {
 			Color.red,
 			Color.green,
 			Color.blue,
-			Color.magenta
+			Color.magenta,
+			Color.darkGray
 	};
 
 	public BooleanProperties logarithmicProperty;
@@ -133,6 +136,8 @@ public class Chart2DPanel extends AnimationChart2DPanel {
 
 		double gaussViolation = fieldMeasurements.calculateGaussConstraint(s.grid);
 
+		double totalCharge = fieldMeasurements.calculateTotalCharge(s.grid);
+
 		traces[INDEX_E_SQUARED].addPoint(time, eSquared);
 		traces[INDEX_B_SQUARED].addPoint(time, bSquared);
 		traces[INDEX_GAUSS_VIOLATION].addPoint(time, gaussViolation);
@@ -140,6 +145,7 @@ public class Chart2DPanel extends AnimationChart2DPanel {
 		traces[INDEX_PX].addPoint(time, px);
 		traces[INDEX_PY].addPoint(time, py);
 		traces[INDEX_PZ].addPoint(time, pz);
+		traces[INDEX_TOTAL_CHARGE].addPoint(time, totalCharge);
 
 		if(showChartsProperty.getValue(INDEX_ENERGY_DENSITY_2)) {
 			occupationNumbers.initialize(s);
