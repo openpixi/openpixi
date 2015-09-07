@@ -5,18 +5,21 @@ package org.openpixi.pixi.math;
  * They are again represented as 3x3 matrices. Due to
  * symmetry of Hermitian matrices, though, there are only
  * nine independent components. The matrix thus looks like
- * 		e[0]        		e[1] + i e[3]		e[2] + i e[6]
- * 		e[1] - i e[3]		e[4]        		e[5] + i e[7]
- * 		e[2] - i e[6]		e[5] - i e[7]		e[8]
+ * 		e[0]        		e[1] - i e[3]		e[2] - i e[6]
+ * 		e[1] + i e[3]		e[4]        		e[5] - i e[7]
+ * 		e[2] + i e[6]		e[5] + i e[7]		e[8]
  */
 public class SU3AlgebraElement implements AlgebraElement {
 
-	private final double degeneracyCutoff = 1.E-4;
-	private final double zeroCutoff = 1.E-7;
+	// thresholds for getLink method to use Taylor series
+	private final double degeneracyCutoff = 1.E-2;
+	private final double zeroCutoff = 1.E-0;
 
+	// number of iterations to use in Taylor series for each case
 	private final int taylorSeriesZeroIterations = 15;
-	private final int taylorSeriesDegenerateIterations = 20;
+	private final int taylorSeriesDegenerateIterations = 25;
 
+	// threshold to determine zero vectors in normalize method
 	private final double normalizationAccuracy = 1.E-12;
 
 	protected double[] v;
@@ -143,7 +146,7 @@ public class SU3AlgebraElement implements AlgebraElement {
 		SU3GroupElement a = (SU3GroupElement) arg;
 
 		// temporarily store algebra element as group element so we can use the multiplication method
-		SU3GroupElement temp = new SU3GroupElement(new double[]{v[0],v[1],v[2],v[1],v[4],v[5],v[2],v[5],v[8],0,v[3],v[6],-v[3],0,v[7],-v[6],-v[7],0});
+		SU3GroupElement temp = new SU3GroupElement(new double[]{v[0],v[1],v[2],v[1],v[4],v[5],v[2],v[5],v[8],0,-v[3],-v[6],v[3],0,-v[7],v[6],v[7],0});
 
 		double[] values = ((SU3GroupElement) a.mult(temp.mult(a.adj()))).get();
 
@@ -157,9 +160,9 @@ public class SU3AlgebraElement implements AlgebraElement {
 		fieldValues[2] = (values[2] + values[6])/2;
 		fieldValues[5] = (values[5] + values[7])/2;
 		// off-diagonal imag. values are asymmetric averages of pairs
-		fieldValues[3] = (values[10] - values[12])/2;
-		fieldValues[6] = (values[11] - values[15])/2;
-		fieldValues[7] = (values[14] - values[16])/2;
+		fieldValues[3] = (values[12] - values[10])/2;
+		fieldValues[6] = (values[15] - values[11])/2;
+		fieldValues[7] = (values[16] - values[14])/2;
 
 		return new SU3AlgebraElement(fieldValues);
 	}
