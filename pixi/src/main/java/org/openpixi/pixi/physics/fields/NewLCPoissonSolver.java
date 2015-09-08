@@ -8,9 +8,6 @@ import org.openpixi.pixi.physics.gauge.DoubleFFTWrapper;
 import org.apache.commons.math3.special.Erf;
 import org.openpixi.pixi.physics.util.GridFunctions;
 
-/**
- * Created by David on 01.09.2015.
- */
 public class NewLCPoissonSolver {
 
 	private int direction;
@@ -106,6 +103,29 @@ public class NewLCPoissonSolver {
 			// Setup the gauge links at t = -dt/2 and t = dt/2
 			GroupElement V0 = phi[transversalCellIndex].mult(- s0 * g).getLink();
 			GroupElement V0next = phi[transversalCellIndex].mult(- s1 * g).getLink();
+
+			// New method: Apply gauge transformation directly to gauge links without the use of a discretized derivative.
+			for (int j = 0; j < numberOfDimensions; j++) {
+				if (j != direction) {
+					int transversalCellIndexShifted = GridFunctions.getCellIndex(
+							GridFunctions.reduceGridPos(
+									s.grid.getCellPos(s.grid.shift(i, j, 1))
+									, direction),
+							transversalNumCells);
+
+					GroupElement V1 = phi[transversalCellIndexShifted].mult(- s0 * g).getLink();
+					GroupElement V1next = phi[transversalCellIndexShifted].mult(- s1 * g).getLink();
+
+					GroupElement U = s.grid.getU(i, j);
+					GroupElement Unext = s.grid.getUnext(i, j);
+					// U_x,i -> V_x U_x,i V_{x+i}^t
+					s.grid.setU(i, j, V0.mult(U).mult(V1.adj()));
+					s.grid.setUnext(i, j, V0next.mult(Unext).mult(V1next.adj()));
+				}
+			}
+
+			/*
+						OLD STUFF
 			for (int j = 0; j < numberOfDimensions; j++) {
 				if(j != direction) {
 					int transversalCellIndexShifted = GridFunctions.getCellIndex(
@@ -116,12 +136,13 @@ public class NewLCPoissonSolver {
 					GroupElement V1 = phi[transversalCellIndexShifted].mult(- s0 * g).getLink();
 					GroupElement V1next = phi[transversalCellIndexShifted].mult(- s1 * g).getLink();
 
-					/*
-					Equation from the CGC initial condition notes to find the gauge field:
-					    A_\mu^a t^a = i/g V (\partial_\mu V)^\dagger.
-					In lattice units we replace A_\mu^a by g*as*A_\mu^a. Therefore
-					    A_\mu^a t^a = i as V (\partial_\mu V)^\dagger.
-					 */
+
+					// Equation from the CGC initial condition notes to find the gauge field:
+					//     A_\mu^a t^a = i/g V (\partial_\mu V)^\dagger.
+					// In lattice units we replace A_\mu^a by g*as*A_\mu^a. Therefore
+					//     A_\mu^a t^a = i as V (\partial_\mu V)^\dagger.
+
+
 
 					AlgebraElement A = V0.mult(
 							(V1.sub(V0)).mult(1.0/as).adj()
@@ -130,15 +151,21 @@ public class NewLCPoissonSolver {
 							(V1next.sub(V0next)).mult(1.0/as).adj()
 					).proj().mult(as);
 
+
 					// "Add" the gauge field by multiplying links.
+
 					s.grid.setU(i, j,
 							s.grid.getU(i, j).mult(A.getLink())
 					);
 					s.grid.setUnext(i, j,
 							s.grid.getUnext(i, j).mult(Anext.getLink()));
+
 				}
+
 			}
+			*/
 		}
+
 
 		// Third step: Compute electric field from temporal plaquette
 		for (int i = 0; i < totalCells; i++) {
