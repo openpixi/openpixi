@@ -2,15 +2,13 @@ package org.openpixi.pixi.physics.fields.currentgenerators;
 
 import org.apache.commons.math3.analysis.function.Gaussian;
 import org.openpixi.pixi.math.AlgebraElement;
+import org.openpixi.pixi.math.GroupElement;
 import org.openpixi.pixi.physics.Simulation;
 import org.openpixi.pixi.physics.fields.NewLCPoissonSolver;
 import org.openpixi.pixi.physics.util.GridFunctions;
 
 import java.util.ArrayList;
 
-/**
- * Created by dmueller on 9/1/15.
- */
 public class NewLCCurrent implements ICurrentGenerator {
 
 	private int direction;
@@ -48,7 +46,7 @@ public class NewLCCurrent implements ICurrentGenerator {
 	public void initializeCurrent(Simulation s, int totalInstances) {
 		// 0) Define some variables.
 		numberOfColors = s.getNumberOfColors();
-		numberOfComponents = numberOfColors * numberOfColors - 1;
+		numberOfComponents = s.grid.getElementFactory().numberOfComponents;
 		as = s.grid.getLatticeSpacing();
 		at = s.getTimeStep();
 		g = s.getCouplingConstant();
@@ -95,9 +93,10 @@ public class NewLCCurrent implements ICurrentGenerator {
 		for (int i = 0; i < maxDirection; i++) {
 			double z = i * as - location;
 
-			double s0 = g * as * shapeFunction(z, t - at, orientation, longitudinalWidth);  // shape at t times g*as
-			double s1 = g * as * shapeFunction(z, t, orientation, longitudinalWidth);  // shape at t+dt times g*as
-			double s2 = g * as * shapeFunction(z, t - at/2, orientation, longitudinalWidth);  // shape at t+dt times g*as
+
+			double s0 = g * as * shapeFunction(z, t - at, orientation, longitudinalWidth);  // shape at t-dt times g*as
+			double s1 = g * as * shapeFunction(z, t, orientation, longitudinalWidth);  // shape at t times g*as
+			double s2 = g * as * shapeFunction(z, t - at/2, orientation, longitudinalWidth);  // shape at t-dt/2 times g*as
 			double ds = (s1 - s0)/at; // time derivative of the shape function
 
 			for (int j = 0; j < totalTransversalCells; j++) {
@@ -110,19 +109,25 @@ public class NewLCCurrent implements ICurrentGenerator {
 
 				// b) Compute gird current density in a charge conserving manner at (t-dt/2).
 
-				// Method A: Sampling the analytical result on the grid (not charge conserving)
+				// Method 1: Sampling the analytical result on the grid (not charge conserving)
 				//s.grid.addJ(cellIndex, direction, transversalChargeDensity[j].mult(s2*orientation));
 
-				// Method B: Setting the current according to the continuity equation (charge conserving)
+				// Method 2: Setting the current according to the continuity equation (charge conserving)
 				if(Math.abs(ds * as) > 0.00000001) {
-					lastCurrents[j].addAssign(transversalChargeDensity[j].mult(-ds * as));
+					// In the case of CGC initial conditions the continuity equation reduces to
+					//     j^a_{x+i, i} = j^a_{x,i} - \dot{\rho^a} as,
+					// where i is the direction in which the sheet is moving.
+					// For a single thin sheet of charges this is correct since there are no longitudinal gauge fields
+					// A_{x,i}. However during the collision of two sheets I don't want to assume that this can not
+					// happen. Therefore I generalize the spatial derivative to a covariant spatial derivative by
+					// parallel transporting the current for the neighbouring lattice site. The equation then reads
+					//     j^a_{x+i} = U_{x, i}^t j^a_x U_{x,i} - \dot{\rho^a} as.
+					GroupElement U = s.grid.getLink(cellIndex, direction, 1, 0);
+					lastCurrents[j].addAssign(transversalChargeDensity[j].mult(-ds * as).act(U));
 					s.grid.addJ(cellIndex, direction,
 							lastCurrents[j]
 					);
 				}
-
-
-
 			}
 		}
 	}
