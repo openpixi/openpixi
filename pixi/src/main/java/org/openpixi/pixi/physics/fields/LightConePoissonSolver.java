@@ -43,17 +43,20 @@ public class LightConePoissonSolver {
 		}
 		//fft = new DoubleFFTWrapper(size);
 		int numberOfComponents = g.getNumberOfColors() * g.getNumberOfColors() - 1;
+		double as = g.getLatticeSpacing();
+		double at = g.getTemporalSpacing();
 		int cellIndex;
 		int chargeIndex;
 
 		ElementFactory factory = g.getElementFactory();
 		int colors = g.getNumberOfColors();
+		double coupling = g.getGaugeCoupling();
 
 		//double norm = Math.pow(g.getLatticeSpacing(), g.getNumberOfDimensions() - 1);
-		double norm = Math.pow(g.getLatticeSpacing(), truesize);
+		double norm = Math.pow(g.getLatticeSpacing(), 2);
 		int[] pos = new int[position.length];
 		for (int i = 0; i < position.length; i++) {
-			pos[i] = (int) Math.rint(position[i]/g.getLatticeSpacing());
+			pos[i] = (int) Math.rint(position[i]/as);
 		}
 
 		if (size.length > 1) {
@@ -117,8 +120,8 @@ public class LightConePoissonSolver {
 						pos[signature[0]] = j;
 						pos[signature[1]] = w;
 						gaugeList[j][w].set(i, current[j][2*w]);
-						E0List[j][w].set(i, -(charge[(j + 1) % size[0]][2 * w] - charge[j][2*w]) / g.getLatticeSpacing());
-						E1List[j][w].set(i, -(charge[j][ 2 * ((w + 1) % size[1]) ] - charge[j][2*w]) / g.getLatticeSpacing());
+						E0List[j][w].set(i, -(charge[(j + 1) % size[0]][2 * w] - charge[j][2*w]) / as);
+						E1List[j][w].set(i, -(charge[j][ 2 * ((w + 1) % size[1]) ] - charge[j][2*w]) / as);
 					}
 				}
 			}
@@ -189,7 +192,7 @@ public class LightConePoissonSolver {
 				for (int j = 0; j < size[0]; j++) {
 					pos[signature[0]] = j;
 					gaugeList[j].set(i, current[2*j]);
-					E0List[j].set(i, -(charge[ 2*((j + 1) % size[0]) ] - charge[2*j]) / g.getLatticeSpacing());
+					E0List[j].set(i, -(charge[ 2*((j + 1) % size[0]) ] - charge[2*j]) / as);
 				}
 			}
 			//set the values of the gauge field in the direction of the current and the values of the electric field

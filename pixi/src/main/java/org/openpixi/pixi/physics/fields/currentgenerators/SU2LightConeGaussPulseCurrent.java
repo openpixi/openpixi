@@ -4,6 +4,7 @@ import org.apache.commons.math3.analysis.function.Gaussian;
 import org.openpixi.pixi.math.SU2AlgebraElement;
 import org.openpixi.pixi.physics.Simulation;
 import org.openpixi.pixi.physics.fields.LightConePoissonSolver;
+import org.openpixi.pixi.physics.fields.NumericPolychromTempGaugeLightConeGaussPoissonSolver;
 import org.openpixi.pixi.physics.fields.PolychromTempGaugeLightConeGaussPoissonSolver;
 import org.openpixi.pixi.physics.fields.TempGaugeLightConeGaussPoissonSolver;
 import org.openpixi.pixi.physics.grid.Grid;
@@ -18,7 +19,8 @@ public class SU2LightConeGaussPulseCurrent implements ICurrentGenerator {
 	private double width;
 	private Grid grid;
 	private int orientation;
-	private PolychromTempGaugeLightConeGaussPoissonSolver poisson;
+	//private PolychromTempGaugeLightConeGaussPoissonSolver poisson;
+	private NumericPolychromTempGaugeLightConeGaussPoissonSolver poisson;
 
 	public SU2LightConeGaussPulseCurrent(int direction, double[] location, double width, double[] amplitudeColorDirection, double magnitude, int orientation) {
 
@@ -35,7 +37,8 @@ public class SU2LightConeGaussPulseCurrent implements ICurrentGenerator {
 		this.width = width;
 		this.orientation = orientation;
 		//this.poisson = new TempGaugeLightConeGaussPoissonSolver(location, direction, Integer.signum(orientation), width);
-		this.poisson = new PolychromTempGaugeLightConeGaussPoissonSolver();
+		//this.poisson = new PolychromTempGaugeLightConeGaussPoissonSolver();
+		this.poisson = new NumericPolychromTempGaugeLightConeGaussPoissonSolver();
 	}
 
 	public void initializeCurrent(Simulation s, int totalInstances) {
@@ -86,14 +89,30 @@ public class SU2LightConeGaussPulseCurrent implements ICurrentGenerator {
 			Find the nearest grid point and apply the current configuration to the cell current.
 		 */
 		double posCharge = location[direction] + speed * time * at;
-		double position = posCharge - as / 2 - speed*at/2;
+		//double position = posCharge - speed*at/2;
+
+		SU2AlgebraElement[] currentList = new SU2AlgebraElement[numberOfCells];
+		SU2AlgebraElement[] chargeList = new SU2AlgebraElement[numberOfCells];
+
+		for (int i = 0; i < numberOfCells; i++) {
+			chargeList[i] = new SU2AlgebraElement();
+			currentList[i] = new SU2AlgebraElement();
+			chargeList[i].set(chargeAmplitude.mult(shape(posCharge, i * as)));
+		}
+
+		currentList[0].set(fieldAmplitude.mult(0.0));
+		SU2AlgebraElement temp = new SU2AlgebraElement();
+		for (int i = 0; i < numberOfCells-1; i++) {
+			temp.set(chargeAmplitude.mult(shape(posCharge+speed*at, i * as)).sub(chargeList[i]));
+			currentList[i+1].set(currentList[i].sub(temp.mult(as/at)));
+		}
 
 		for (int i = 0; i < numberOfCells; i++) {
 			pos[direction] = i;
 			int cellIndex = grid.getCellIndex(pos);
 
-			grid.addJ(cellIndex, direction, fieldAmplitude.mult(shape(position, i*as)));
-			grid.addRho(cellIndex, chargeAmplitude.mult(shape(posCharge, i * as)));
+			grid.addJ(cellIndex, direction, currentList[i]);
+			grid.addRho(cellIndex, chargeList[i]);
 		}
 	}
 
