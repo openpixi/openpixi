@@ -49,7 +49,7 @@ public class TempGaugeLightConePoissonSolver extends LightConePoissonSolver {
 		int colors = g.getNumberOfColors();
 
 		//double norm = Math.pow(g.getLatticeSpacing(), g.getNumberOfDimensions() - 1);
-		double norm = Math.pow(g.getLatticeSpacing(), truesize); // TODO: check factor truesize <-> 2 !!!
+		double norm = Math.pow(g.getLatticeSpacing(), truesize);
 		int[] pos = new int[position.length];
 		int gaugePos[] = new int[position.length];
 		for (int i = 0; i < position.length; i++) {
@@ -167,10 +167,10 @@ public class TempGaugeLightConePoissonSolver extends LightConePoissonSolver {
 				//perform computation in Fourier space
 				for(int j = 0; j < size[0]; j++) {
 					double psqr = (2 - 2 * Math.cos((2 * Math.PI * j) / size[0]))/norm;
-						if( j != 0 ) {
-							charge[2*j] = charge[2*j]/psqr;
-							charge[2*j + 1] = charge[2*j + 1]/psqr;
-						}
+					if( j != 0 ) {
+						charge[2*j] = charge[2*j]/psqr;
+						charge[2*j + 1] = charge[2*j + 1]/psqr;
+					}
 				}
 				charge[0] = 0.0;
 				charge[1] = 0.0;

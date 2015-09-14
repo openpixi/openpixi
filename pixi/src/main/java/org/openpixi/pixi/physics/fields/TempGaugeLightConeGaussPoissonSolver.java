@@ -57,7 +57,7 @@ public class TempGaugeLightConeGaussPoissonSolver extends LightConePoissonSolver
 		ElementFactory factory = g.getElementFactory();
 		int colors = g.getNumberOfColors();
 
-		double norm = Math.pow(as, truesize); // TODO: check factor truesize <-> 2 !!!
+		double norm = Math.pow(as, 2);
 		/*int volumeSquared = 1;
 		for(int i = 0; i < truesize; i++) {
 			volumeSquared *= size[i]*size[i];
@@ -171,10 +171,10 @@ public class TempGaugeLightConeGaussPoissonSolver extends LightConePoissonSolver
 				//perform computation in Fourier space
 				for(int j = 0; j < size[0]; j++) {
 					double psqr = (2 - 2 * Math.cos((2 * Math.PI * j) / size[0]))/norm;
-						if( j != 0 ) {
-							charge[2*j] = charge[2*j]/psqr;
-							charge[2*j + 1] = charge[2*j + 1]/psqr;
-						}
+					if( j != 0 ) {
+						charge[2*j] = charge[2*j]/psqr;
+						charge[2*j + 1] = charge[2*j + 1]/psqr;
+					}
 				}
 				charge[0] = 0.0;
 				charge[1] = 0.0;
