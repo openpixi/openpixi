@@ -801,7 +801,7 @@ public class Grid {
 		for (int i = 0; i < numDim; i++) {
 			int id2 = shift(index, i, -1);
 			temp.set(getU(id2, i).adj().mult(getUnext(id2, i)).proj());
-			gauss.addAssign(getE(index, i).sub(temp.mult(norm)).sub(getRho(index)));
+			gauss.addAssign(getE(index, i).sub(temp.mult(norm)).sub(getRho(index).mult(as)));
 		}
 		return gauss.square() / Math.pow( as * as * gaugeCoupling, 2.0);
 	}

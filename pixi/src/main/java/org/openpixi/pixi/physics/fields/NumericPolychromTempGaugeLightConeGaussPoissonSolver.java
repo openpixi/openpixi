@@ -217,9 +217,9 @@ public class NumericPolychromTempGaugeLightConeGaussPoissonSolver extends LightC
 						cellIndex = g.getCellIndex(gaugePos);
 
 						//transforming the gauge links
-						U0.set( g.getUnext(cellIndex, 0).mult( g.getU(g.shift(cellIndex, signature[0], 1), signature[0]).mult(g.getUnext(cellIndex, 0).adj()) ) );
-						U1.set( g.getUnext(cellIndex, 0).mult( g.getU(g.shift(cellIndex, signature[1], 1), signature[1]).mult(g.getUnext(cellIndex, 0).adj()) ) );
-						U2.set( g.getUnext(cellIndex, 0).mult( g.getU(g.shift(cellIndex, dir, 1), dir).mult(g.getUnext(cellIndex, 0).adj()) ) );
+						U0.set( g.getUnext(cellIndex, 0).mult( g.getU(cellIndex, signature[0]).mult(g.getUnext(g.shift(cellIndex, signature[0], 1), 0).adj()) ) );
+						U1.set( g.getUnext(cellIndex, 0).mult( g.getU(cellIndex, signature[1]).mult(g.getUnext(g.shift(cellIndex, signature[1], 1), 0).adj()) ) );
+						U2.set( g.getUnext(cellIndex, 0).mult( g.getU(cellIndex, dir).mult(g.getUnext(g.shift(cellIndex, dir, 1), 0).adj()) ) );
 						g.setU(cellIndex, signature[0], U0);
 						g.setU(cellIndex, signature[1], U1);
 						g.setU(cellIndex, dir, U2);
@@ -332,8 +332,8 @@ public class NumericPolychromTempGaugeLightConeGaussPoissonSolver extends LightC
 					cellIndex = g.getCellIndex(gaugePos);
 
 					//transforming the gauge links
-					U0.set( g.getUnext(cellIndex, 0).mult( g.getU(g.shift(cellIndex, signature[0], 1), signature[0]).mult(g.getUnext(cellIndex, 0).adj()) ) );
-					U2.set( g.getUnext(cellIndex, 0).mult( g.getU(g.shift(cellIndex, dir, 1), dir).mult(g.getUnext(cellIndex, 0).adj()) ) );
+					U0.set( g.getUnext(cellIndex, 0).mult( g.getU(cellIndex, signature[0]).mult(g.getUnext(g.shift(cellIndex, signature[0], 1), 0).adj()) ) );
+					U2.set( g.getUnext(cellIndex, 0).mult( g.getU(cellIndex, dir).mult(g.getUnext(g.shift(cellIndex, dir, 1), 0).adj()) ) );
 					g.setU(cellIndex, signature[0], U0);
 					g.setU(cellIndex, dir, U2);
 					//transforming the electric fields
