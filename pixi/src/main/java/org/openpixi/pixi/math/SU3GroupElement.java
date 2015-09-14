@@ -48,26 +48,29 @@ public class SU3GroupElement implements GroupElement {
 	}
 
 	public GroupElement add(GroupElement arg) {
-
-		SU3GroupElement a = (SU3GroupElement) arg;
-
-		SU3GroupElement b = new SU3GroupElement();
-		for (int i = 0; i < 18; i++) {
-			b.set(i, e[i] + a.get(i));
-		}
+		SU3GroupElement b = (SU3GroupElement) this.copy();
+		b.addAssign(arg);
 		return b;
+	}
 
+	public void addAssign(GroupElement arg) {
+		SU3GroupElement a = (SU3GroupElement) arg;
+		for (int i = 0; i < 18; i++) {
+			e[i] += a.get(i);
+		}
 	}
 
 	public GroupElement sub(GroupElement arg) {
-
-		SU3GroupElement a = (SU3GroupElement) arg;
-
-		SU3GroupElement b = new SU3GroupElement();
-		for (int i = 0; i < 18; i++) {
-			b.set(i, e[i] - a.get(i));
-		}
+		SU3GroupElement b = (SU3GroupElement) this.copy();
+		b.subAssign(arg);
 		return b;
+	}
+
+	public void subAssign(GroupElement arg) {
+		SU3GroupElement a = (SU3GroupElement) arg;
+		for (int i = 0; i < 18; i++) {
+			e[i] -= a.get(i);
+		}
 	}
 
 	public void set(GroupElement arg) {

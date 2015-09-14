@@ -1,7 +1,9 @@
 package org.openpixi.pixi.physics.measurements;
 
+import org.openpixi.pixi.math.AlgebraElement;
 import org.openpixi.pixi.physics.grid.Grid;
 import org.openpixi.pixi.parallel.cellaccess.CellAction;
+import org.openpixi.pixi.physics.util.GridFunctions;
 
 
 public class FieldMeasurements {
@@ -9,6 +11,7 @@ public class FieldMeasurements {
 	EFieldSquared Esquared = new EFieldSquared();
 	BFieldSquared Bsquared = new BFieldSquared();
 	GaussLaw GaussConstraint = new GaussLaw();
+	TotalCharge totalCharge = new TotalCharge();
 
 	public double calculateEsquared(Grid grid) {
 		Esquared.reset();
@@ -38,6 +41,12 @@ public class FieldMeasurements {
 		GaussConstraint.reset();
 		grid.getCellIterator().execute(grid, GaussConstraint);
         return GaussConstraint.getSum();
+	}
+
+	public double calculateTotalCharge(Grid grid) {
+		totalCharge.reset(grid);
+		grid.getCellIterator().execute(grid, totalCharge);
+		return totalCharge.getSum(grid);
 	}
 
 	private class EFieldSquared implements CellAction {
@@ -136,6 +145,27 @@ public class FieldMeasurements {
 			double result = grid.getGaussConstraintSquared(index)/norm;
 			synchronized(this) {
 			       sum += result;   // Synchronisierte Summenbildung
+			}
+		}
+	}
+
+	private class TotalCharge implements CellAction {
+
+		private AlgebraElement charge;
+
+		public void reset(Grid grid) {
+			charge = grid.getElementFactory().algebraZero();
+		}
+
+		public double getSum(Grid grid) {
+			charge.multAssign(Math.pow(grid.getLatticeSpacing(), grid.getNumberOfDimensions()));
+			double latticeUnitsNorm = grid.getGaugeCoupling() * grid.getLatticeSpacing();
+			return Math.sqrt(charge.square()) / latticeUnitsNorm;
+		}
+
+		public void execute(Grid grid, int index) {
+			synchronized(this) {
+				charge.addAssign(grid.getRho(index));   // Synchronisierte Summenbildung
 			}
 		}
 	}

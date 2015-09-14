@@ -25,6 +25,8 @@ public class YamlOutput {
 
 	public ArrayList<YamlGaussConstraintRestoration> gaussConstraintRestoration = new ArrayList<YamlGaussConstraintRestoration>();
 
+	public ArrayList<YamlBoundaryFixer> boundaryFixer = new ArrayList<YamlBoundaryFixer>();
+
 
 	/**
 	 * Creates FileGenerator instances and applies them to the Settings instance.
@@ -60,6 +62,10 @@ public class YamlOutput {
 		}
 
 		for (YamlGaussConstraintRestoration output : gaussConstraintRestoration) {
+			s.addDiagnostics(output.getFileGenerator());
+		}
+
+		for(YamlBoundaryFixer output : boundaryFixer) {
 			s.addDiagnostics(output.getFileGenerator());
 		}
 	}

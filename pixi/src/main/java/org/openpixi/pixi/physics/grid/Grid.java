@@ -82,7 +82,7 @@ public class Grid {
 	/**
 	 * Factory for SU(n) group and algebra elements.
 	 */
-	private ElementFactory factory = new ElementFactory();
+	private ElementFactory factory;
 
 	/**
 	 * Returns the FieldSolver instance currently used.
@@ -429,6 +429,8 @@ public class Grid {
 	 */
 	private void createGrid() {
 
+		factory = new ElementFactory(numCol);
+
 		unitVectors = new int[numDim][numDim];
 
 		int length = 1;
@@ -541,6 +543,23 @@ public class Grid {
 		 */
 
 		return U1.mult(U2.mult(U3.mult(U4)));
+	}
+
+	/**
+	 * Calculates the temporal plaquette starting at lattice index in the direction d with orientation o.
+	 * This method implements the following definition of the plaquette:
+	 * <pre>     U_{x, ij} = U_{x, i, t + dt/2} U_{x+i, -i, t - dt/2} </pre>
+	 *
+	 * @param index Lattice index as starting point of the temporal plaquette
+	 * @param d     Index of the direction
+	 * @param o     Orientation of the direction
+	 * @return      Temporal plaquette as GroupElement
+	 */
+	public GroupElement getTemporalPlaquette(int index, int d, int o) {
+		GroupElement U1 = getLink(index, d, o, 1);
+		GroupElement U2 = getLink(index, d, o, 0).adj();
+
+		return U1.mult(U2);
 	}
 
 	/**
@@ -745,6 +764,17 @@ public class Grid {
 	}
 
 	/**
+	 * Returns the electric field computed from the temporal plaquette (i.e. U and Unext).
+	 *
+	 * @param index     Lattice index
+	 * @param direction Spatial direction of the electric field.
+	 * @return
+	 */
+	public AlgebraElement getEFromLinks(int index, int direction) {
+		return getTemporalPlaquette(index, direction, 1).proj().mult(-1.0/at);
+	}
+
+	/**
 	 * Calculates the square of the electric field from the temporal plaquette starting at a lattice index in a direction.
 	 *
 	 * @param index      Lattice index from where the plaquette starts
@@ -793,16 +823,16 @@ public class Grid {
 	}
 
 	public double getGaussConstraintSquared(int index) {
-		
-		AlgebraElement gauss = cells[index].getEmptyField(numCol);
-		AlgebraElement temp = cells[index].getEmptyField(numCol);
-		double norm = -1.0/(at);
-
+		AlgebraElement gauss = factory.algebraZero();
 		for (int i = 0; i < numDim; i++) {
-			int id2 = shift(index, i, -1);
-			temp.set(getU(id2, i).adj().mult(getUnext(id2, i)).proj());
-			gauss.addAssign(getE(index, i).sub(temp.mult(norm)));
+			int shiftedIndex = shift(index, i, -1);
+			AlgebraElement E = getEFromLinks(shiftedIndex, i);
+			E.actAssign(getLink(shiftedIndex, i, 1, 0).adj());
+			gauss.addAssign(getEFromLinks(index, i));
+			gauss.addAssign(E.mult(-1.0));
 		}
-		return gauss.square() / Math.pow( as * as * gaugeCoupling, 2.0);
+		gauss.multAssign(1.0/as);
+		gauss = gauss.sub(getRho(index));
+		return gauss.square();
 	}
 }

@@ -57,24 +57,19 @@ public class GeneralYangMillsSolver extends FieldSolver
 		public void execute(Grid grid, int index) {
 			for(int i = 0; i < grid.getNumberOfDimensions(); i++)
 			{
-				GroupElement[] plaquettes =  new GroupElement[grid.getNumberOfDimensions()-1];
-				int c = 0;
+				GroupElement temp = grid.getElementFactory().groupZero();
 				for(int j = 0; j < grid.getNumberOfDimensions(); j++)
 				{
 					if(j != i)
 					{
-						plaquettes[c] = grid.getPlaquette(index, i, j, 1 , 1, 0).add(grid.getPlaquette(index, i, j, 1 , -1, 0));
-						c++;
+						temp.addAssign(grid.getPlaquette(index, i, j, 1 , 1, 0));
+						temp.addAssign(grid.getPlaquette(index, i, j, 1 , -1, 0));
 					}
 				}
-				//now add the plaquettes together.
-				for(int p = 1; p < plaquettes.length; p++)
-				{
-					plaquettes[0] = plaquettes[0].add(plaquettes[p]);
-				}
 
-				AlgebraElement currentE = grid.getE(index, i).add(plaquettes[0].proj().mult(at / (as * as )));
-				currentE.addAssign(grid.getJ(index, i).mult(-at / as));  // TODO: check factor 1/as !!!
+				AlgebraElement currentE = grid.getE(index, i).add(temp.proj().mult(at / (as * as )));
+				//currentE.addAssign(grid.getJ(index, i).mult(-at / as));  // TODO: check factor 1/as !!!
+				currentE.addAssign(grid.getJ(index, i).mult(-at));
 				grid.setE(index, i, currentE);
 			}
 		}

@@ -59,27 +59,29 @@ public class SU2GroupElement implements GroupElement {
 	}
 
 	public GroupElement add(GroupElement arg) {
-
-		SU2GroupElement a = (SU2GroupElement) arg;
-
-		SU2GroupElement b = new SU2GroupElement();
-		for (int i = 0; i < 4; i++) {
-			b.set(i, e[i] + a.get(i));
-		}
+		SU2GroupElement b = (SU2GroupElement) this.copy();
+		b.addAssign(arg);
 		return b;
+	}
 
+	public void addAssign(GroupElement arg) {
+		SU2GroupElement a = (SU2GroupElement) arg;
+		for (int i = 0; i < 4; i++) {
+			e[i] += a.get(i);
+		}
 	}
 
 	public GroupElement sub(GroupElement arg) {
-
-		SU2GroupElement a = (SU2GroupElement) arg;
-
-		SU2GroupElement b = new SU2GroupElement();
-		for (int i = 0; i < 4; i++) {
-			b.set(i, e[i] - a.get(i));
-		}
+		SU2GroupElement b = (SU2GroupElement) this.copy();
+		b.subAssign(arg);
 		return b;
+	}
 
+	public void subAssign(GroupElement arg) {
+		SU2GroupElement a = (SU2GroupElement) arg;
+		for (int i = 0; i < 4; i++) {
+			e[i] -= a.get(i);
+		}
 	}
 
 	/**
