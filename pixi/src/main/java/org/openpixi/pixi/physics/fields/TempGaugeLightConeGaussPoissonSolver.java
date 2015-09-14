@@ -57,7 +57,7 @@ public class TempGaugeLightConeGaussPoissonSolver extends LightConePoissonSolver
 		ElementFactory factory = g.getElementFactory();
 		int colors = g.getNumberOfColors();
 
-		double norm = Math.pow(as, 2);
+		double norm = Math.pow(as, truesize); // TODO: check factor truesize <-> 2 !!!
 		/*int volumeSquared = 1;
 		for(int i = 0; i < truesize; i++) {
 			volumeSquared *= size[i]*size[i];

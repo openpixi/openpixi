@@ -11,8 +11,16 @@ package org.openpixi.pixi.math;
  */
 public class SU3GroupElement implements GroupElement {
 
-	private final double zeroAccuracy = 1.E-12;
-	private final double eigenvalueZeroAccuracy = 1.E-7;
+	// thresholds for getAlgebraElement method to use Taylor series
+	private final double degeneracyCutoff = 1.E-4;
+	private final double unityCutoff = 3 - 1.E-2;
+
+	// number of iterations to use in Taylor series for each case
+	private final int taylorSeriesUnityIterations = 15;
+	private final int taylorSeriesDegenerateIterations = 50;
+
+	// threshold to determine zero vectors in normalize method
+	private final double normalizationAccuracy = 1.E-12;
 
 	private double[] e;
 
@@ -40,26 +48,29 @@ public class SU3GroupElement implements GroupElement {
 	}
 
 	public GroupElement add(GroupElement arg) {
-
-		SU3GroupElement a = (SU3GroupElement) arg;
-
-		SU3GroupElement b = new SU3GroupElement();
-		for (int i = 0; i < 18; i++) {
-			b.set(i, e[i] + a.get(i));
-		}
+		SU3GroupElement b = (SU3GroupElement) this.copy();
+		b.addAssign(arg);
 		return b;
+	}
 
+	public void addAssign(GroupElement arg) {
+		SU3GroupElement a = (SU3GroupElement) arg;
+		for (int i = 0; i < 18; i++) {
+			e[i] += a.get(i);
+		}
 	}
 
 	public GroupElement sub(GroupElement arg) {
-
-		SU3GroupElement a = (SU3GroupElement) arg;
-
-		SU3GroupElement b = new SU3GroupElement();
-		for (int i = 0; i < 18; i++) {
-			b.set(i, e[i] - a.get(i));
-		}
+		SU3GroupElement b = (SU3GroupElement) this.copy();
+		b.subAssign(arg);
 		return b;
+	}
+
+	public void subAssign(GroupElement arg) {
+		SU3GroupElement a = (SU3GroupElement) arg;
+		for (int i = 0; i < 18; i++) {
+			e[i] -= a.get(i);
+		}
 	}
 
 	public void set(GroupElement arg) {
@@ -220,7 +231,7 @@ public class SU3GroupElement implements GroupElement {
 			norm += vector[i] * vector[i];
 		}
 		norm = Math.sqrt(norm);
-		if (Math.abs(norm) < zeroAccuracy) {
+		if (Math.abs(norm) < normalizationAccuracy) {
 			return false;
 		} else {
 			for (int i = 0; i < 6; i++) {
@@ -242,6 +253,11 @@ public class SU3GroupElement implements GroupElement {
 		trRe = e[0] + e[4] + e[8];
 		trIm = e[13] + e[17] + e[9];
 
+		// if matrix is too close to unity, use taylor series for better accuracy
+		if (trRe >= unityCutoff) {
+			return new double[]{taylorSeriesUnityIterations};
+		}
+
 		// real and imag. parts of trace of matrix squared
 		double trSqRe, trSqIm;
 		trSqRe = e[0]*e[0]-2*e[10]*e[12]-e[13]*e[13]-2*e[11]*e[15]-2*e[14]*e[16]-e[17]*e[17]+2*e[1]*e[3]+e[4]*e[4]+2*e[2]*e[6]+2*e[5]*e[7]+e[8]*e[8]-e[9]*e[9];
@@ -261,31 +277,6 @@ public class SU3GroupElement implements GroupElement {
 		// then W^3 == (-q + sqrt(q^2 + 4/27 p^3))/2
 		// (pick positive solution)
 		// preRad is real and imag. parts of radical in solution for W^3
-
-		// old code, see update
-//		double preRadRe, preRadIm;
-//		preRadRe = constTermRe*constTermRe - constTermIm*constTermIm + 4*linTermRe*(linTermRe*linTermRe - 3*linTermIm*linTermIm)/27;
-//		preRadIm = 2*constTermRe*constTermIm + 4*linTermIm*(3*linTermRe*linTermRe - linTermIm*linTermIm)/27;
-//
-//		// compute radical
-//		double radRe, radIm, r, th;
-//		r = Math.pow(preRadRe*preRadRe + preRadIm*preRadIm, .25);
-//		th = Math.atan2(preRadIm, preRadRe)/2;
-//		radRe = r * Math.cos(th);
-//		radIm = r * Math.sin(th);
-
-		// UPDATE!
-		// for some reason the argument under the square root is always real and positive for SU(3) matrices
-		// confirmed in Mathematica for one million random SU(3) matrices
-		// invariant can be expressed as
-		// 		Im{ 1/3 tr(U^2) tr(U) -
-		//			5/27 tr^3(U) -
-		//			1/54 tr^3(U^2) +
-		//			1/108 tr^6(U) -
-		//			1/27 tr^4(U) tr(U^2) +
-		//			5/108 tr^2(U) tr^2(U^2) } == 0
-		// not always true for SU(4)! so why is this true for SU(3)?
-		// anyway, we can get rid of all the imaginary computation here and take the direct square root
 
 		double preRad, radRe;
 		preRad = constTermRe*constTermRe - constTermIm*constTermIm + 4*linTermRe*(linTermRe*linTermRe - 3*linTermIm*linTermIm)/27;
@@ -328,36 +319,19 @@ public class SU3GroupElement implements GroupElement {
 		// we use this result, but we only need one column so we can avoid doing the full multiplication
 		// optimized result computed in Mathematica, of course
 
-		// if there are degenerate eigenvalues, only use vector method for nondegenerate value
-		int phaseNum = 3;
-		int notDegenerate = 3;
-		if (Math.abs(valuesRe[0] - valuesRe[1]) < eigenvalueZeroAccuracy && Math.abs(valuesIm[0] - valuesIm[1]) < eigenvalueZeroAccuracy) {
-			double temp = valuesRe[2];
-			valuesRe[2] = valuesRe[0];
-			valuesRe[0] = temp;
-			temp = valuesIm[2];
-			valuesIm[2] = valuesIm[0];
-			valuesIm[0] = temp;
-			phaseNum = 1;
-			notDegenerate = 2;
-		} else if (Math.abs(valuesRe[0] - valuesRe[2]) < eigenvalueZeroAccuracy && Math.abs(valuesIm[0] - valuesIm[2]) < eigenvalueZeroAccuracy) {
-			double temp = valuesRe[1];
-			valuesRe[1] = valuesRe[0];
-			valuesRe[0] = temp;
-			temp = valuesIm[1];
-			valuesIm[1] = valuesIm[0];
-			valuesIm[0] = temp;
-			phaseNum = 1;
-			notDegenerate  = 1;
-		} else if (Math.abs(valuesRe[1] - valuesRe[2]) < eigenvalueZeroAccuracy && Math.abs(valuesIm[1] - valuesIm[2]) < eigenvalueZeroAccuracy) {
-			phaseNum = 1;
-			notDegenerate = 0;
+		// if there are degenerate eigenvalues, use taylor series
+		if (Math.abs(1 - valuesRe[0] / valuesRe[1]) < degeneracyCutoff && Math.abs(1 - valuesIm[0] / valuesIm[1]) < degeneracyCutoff) {
+			return new double[]{taylorSeriesDegenerateIterations};
+		} else if (Math.abs(1 - valuesRe[0] / valuesRe[2]) < degeneracyCutoff && Math.abs(1 - valuesIm[0] / valuesIm[2]) < degeneracyCutoff) {
+			return new double[]{taylorSeriesDegenerateIterations};
+		} else if (Math.abs(1 - valuesRe[1] / valuesRe[2]) < degeneracyCutoff && Math.abs(1 - valuesIm[1] / valuesIm[2]) < degeneracyCutoff) {
+			return new double[]{taylorSeriesDegenerateIterations};
 		}
 
 		// get one eigenvector for each value
 		// normalize vectors in place
 		double[][] vectors = new double[3][6];
-		for (int i = 0; i < phaseNum; i++) {
+		for (int i = 0; i < 3; i++) {
 			// product of other two valuesRe besides valuesRe[i]
 			double otherValueReProduct = valuesRe[(i + 1) % 3] * valuesRe[(i + 2) % 3];
 			// sum of other two valuesRe besides valuesRe[i]
@@ -402,79 +376,7 @@ public class SU3GroupElement implements GroupElement {
 						for (int j = 0; j < 6; j++) {
 							vectors[i][j] = 0;
 						}
-						if (notDegenerate == 3) {
-							vectors[i][i] = 1;
-						} else {
-							vectors[i][notDegenerate] = 1;
-						}
-					}
-				}
-			}
-		}
-
-		// if there are degenerate eigenvalues use row reduction to find two orthogonal eigenvectors
-		// for a given row of our hermitian matrix (a0 a1 a2), these vectors are
-		//  		-a1    a0     0
-		// and		a0*a2  a1*a2  -|a0|^2-|a1|^2
-		if (phaseNum == 1) {
-
-			vectors[1][0] = -e[1];
-			vectors[1][1] = e[0] - valuesRe[1];
-			vectors[1][2] = 0;
-			vectors[1][3] = -e[10];
-			vectors[1][4] = e[9] - valuesIm[1];
-			vectors[1][5] = 0;
-
-			vectors[2][0] = e[2] * (e[0] - valuesRe[2]) + e[11] * (e[9] - valuesIm[2]);
-			vectors[2][1] = e[1] * e[2] + e[10] * e[11];
-			vectors[2][2] = (e[0] - valuesRe[2]) * (valuesRe[2] - e[0]) + (e[9] - valuesIm[2]) * (valuesIm[2] - e[9]) - e[1]*e[1] - e[10]*e[10];
-			vectors[2][3] = e[2] * (valuesIm[2] - e[9]) + e[11] * (e[0] - valuesRe[2]);
-			vectors[2][4] = e[1] * e[11] - e[2] * e[10];
-			vectors[2][5] = 0;
-
-			boolean done = normalize(vectors[1]) && normalize(vectors[2]);
-
-			if (!done) {
-				vectors[1][0] = -e[4] + valuesRe[1];
-				vectors[1][1] = e[3];
-				vectors[1][2] = 0;
-				vectors[1][3] = -e[13] + valuesIm[1];
-				vectors[1][4] = e[12];
-				vectors[1][5] = 0;
-
-				vectors[2][0] = e[3] * e[5] + e[12] * e[14];
-				vectors[2][1] = e[5] * (e[4] - valuesRe[2]) + e[14] * (e[13] - valuesIm[2]);
-				vectors[2][2] = (e[4] - valuesRe[2]) * (valuesRe[2] - e[4]) + (e[13] - valuesIm[2]) * (valuesIm[2] - e[13]) - e[3]*e[3] - e[12]*e[12];
-				vectors[2][3] = e[3] * e[14] - e[12] * e[5];
-				vectors[2][4] = e[5] * (valuesIm[2] - e[13]) + e[14] * (e[4] - valuesRe[2]);
-				vectors[2][5] = 0;
-
-				done = normalize(vectors[1]) && normalize(vectors[2]);
-
-				if (!done) {
-					vectors[1][0] = -e[7];
-					vectors[1][1] = e[6];
-					vectors[1][2] = 0;
-					vectors[1][3] = -e[16];
-					vectors[1][4] = e[15];
-					vectors[1][5] = 0;
-
-					vectors[2][0] = e[6] * (e[8] - valuesRe[2]) + e[15] * (e[17] - valuesIm[2]);
-					vectors[2][1] = e[7] * (e[8] - valuesRe[2]) + e[16] * (e[17] - valuesIm[2]);
-					vectors[2][2] = -e[6]*e[6] - e[15]*e[15] - e[7]*e[7] - e[16]*e[16];
-					vectors[2][3] = e[6] * (e[17] - valuesIm[2]) - e[15] * (e[8] - valuesRe[2]);
-					vectors[2][4] = e[7] * (e[17] - valuesIm[2]) - e[16] * (e[8] - valuesRe[2]);
-					vectors[2][5] = 0;
-
-					done = normalize(vectors[1]) && normalize(vectors[2]);
-
-					if (!done) {
-						for (int j = 0; j < 6; j++) {
-							vectors[1][j] = 0;
-							vectors[2][j] = 0;
-						}
-						vectors[1][(notDegenerate + 1) % 3] = 1;
-						vectors[2][(notDegenerate + 2) % 3] = 1;
+						vectors[i][i] = 1;
 					}
 				}
 			}
@@ -489,26 +391,52 @@ public class SU3GroupElement implements GroupElement {
 		// ensure algebra element is traceless!
 		// make phases sum to zero
 		double phaseSum = phases[0] + phases[1] + phases[2];
-		phases[2] -= phaseSum;
+		phases[0] -= phaseSum;
 
 
 		// multiply U log(D) U* to get algebra element
 		// log(D) is just a real diagonal matrix so multiplication is included in construction of U
 		SU3GroupElement ULnD = new SU3GroupElement(new double[]{vectors[0][0]*phases[0],vectors[1][0]*phases[1],vectors[2][0]*phases[2],
-													vectors[0][1]*phases[0],vectors[1][1]*phases[1],vectors[2][1]*phases[2],
-													vectors[0][2]*phases[0],vectors[1][2]*phases[1],vectors[2][2]*phases[2],
-													vectors[0][3]*phases[0],vectors[1][3]*phases[1],vectors[2][3]*phases[2],
-													vectors[0][4]*phases[0],vectors[1][4]*phases[1],vectors[2][4]*phases[2],
-													vectors[0][5]*phases[0],vectors[1][5]*phases[1],vectors[2][5]*phases[2]});
-		SU3GroupElement UAdj = new SU3GroupElement(new double[]{ vectors[0][0], vectors[0][1], vectors[0][2],
-													 vectors[1][0], vectors[1][1], vectors[1][2],
-													 vectors[2][0], vectors[2][1], vectors[2][2],
-													-vectors[0][3],-vectors[0][4],-vectors[0][5],
-													-vectors[1][3],-vectors[1][4],-vectors[1][5],
-													-vectors[2][3],-vectors[2][4],-vectors[2][5]});
+		                                                        vectors[0][1]*phases[0],vectors[1][1]*phases[1],vectors[2][1]*phases[2],
+		                                                        vectors[0][2]*phases[0],vectors[1][2]*phases[1],vectors[2][2]*phases[2],
+		                                                        vectors[0][3]*phases[0],vectors[1][3]*phases[1],vectors[2][3]*phases[2],
+		                                                        vectors[0][4]*phases[0],vectors[1][4]*phases[1],vectors[2][4]*phases[2],
+		                                                        vectors[0][5]*phases[0],vectors[1][5]*phases[1],vectors[2][5]*phases[2]});
+		SU3GroupElement UAdj = new SU3GroupElement(new double[]{vectors[0][0], vectors[0][1], vectors[0][2],
+		                                                        vectors[1][0], vectors[1][1], vectors[1][2],
+		                                                        vectors[2][0], vectors[2][1], vectors[2][2],
+		                                                       -vectors[0][3],-vectors[0][4],-vectors[0][5],
+		                                                       -vectors[1][3],-vectors[1][4],-vectors[1][5],
+		                                                       -vectors[2][3],-vectors[2][4],-vectors[2][5]});
 
 		double[] values = ((SU3GroupElement) ULnD.mult(UAdj)).get();
 		// now normalize to ensure hermiticity!
+		return hermiticize(values);
+	}
+
+	/**
+	 * Calculates the group element using the taylor series expansion of exp.
+	 * WARNING: This decomposition only works well for "small" matrices!
+	 * @return coefficients to be fed into SU3GroupElement to give group element
+	 */
+	private double[] algebraElementTaylorSeries(double iterations) {
+		SU3GroupElement result = new SU3GroupElement();
+		SU3GroupElement intermediate = new SU3GroupElement(new double[]{-1,0,0,0,-1,0,0,0,-1,0,0,0,0,0,0,0,0,0});
+		// series for log(1+x), so subtract I from A
+		SU3GroupElement multiplier = (SU3GroupElement) this.add(intermediate).mult(-1);
+
+		for (int i = 1; i <= iterations; i++) {
+			intermediate = (SU3GroupElement) intermediate.mult(multiplier);
+			result = (SU3GroupElement) result.add(intermediate.mult(1.0 / i));
+		}
+
+		double[] values = new double[18];
+
+		for (int i = 0; i < 9; i++) {
+			values[i] = result.get(i + 9);
+			values[i + 9] = -result.get(i);
+		}
+
 		return hermiticize(values);
 	}
 
@@ -528,14 +456,22 @@ public class SU3GroupElement implements GroupElement {
 		fieldValues[2] = (values[2] + values[6])/2;
 		fieldValues[5] = (values[5] + values[7])/2;
 		// off-diagonal imag. values are asymmetric averages of pairs
-		fieldValues[3] = (values[10] - values[12])/2;
-		fieldValues[6] = (values[11] - values[15])/2;
-		fieldValues[7] = (values[14] - values[16])/2;
+		fieldValues[3] = (values[12] - values[10])/2;
+		fieldValues[6] = (values[15] - values[11])/2;
+		fieldValues[7] = (values[16] - values[14])/2;
 		return fieldValues;
 	}
 
 	public AlgebraElement getAlgebraElement() {
-		return new SU3AlgebraElement(algebraElementDecompositionMethod());
+		// try exact method
+		double[] values = algebraElementDecompositionMethod();
+
+		// if values has length 1 the exact method failed and values[0] is the requried taylorSeriesIterations
+		if (values.length == 1) {
+			values = algebraElementTaylorSeries(values[0]);
+		}
+
+		return new SU3AlgebraElement(values);
 	}
 
 	/**
@@ -546,14 +482,14 @@ public class SU3GroupElement implements GroupElement {
 	 */
 	public AlgebraElement proj() {
 		double[] fieldValues = new double[]{(2*e[9]-e[13]-e[17])/3,
-											(e[10]+e[12])/2,
-											(e[11]+e[15])/2,
-											(e[3]-e[1])/2,
-											(2*e[13]-e[17]-e[9])/3,
-											(e[14]+e[16])/2,
-											(e[6]-e[2])/2,
-											(e[7]-e[5])/2,
-											(2*e[17]-e[9]-e[13])/3};
+		                                    (e[10]+e[12])/2,
+		                                    (e[11]+e[15])/2,
+		                                    (e[1]-e[3])/2,
+		                                    (2*e[13]-e[17]-e[9])/3,
+		                                    (e[14]+e[16])/2,
+		                                    (e[2]-e[6])/2,
+		                                    (e[5]-e[7])/2,
+		                                    (2*e[17]-e[9]-e[13])/3};
 		return new SU3AlgebraElement(fieldValues);
 	}
 

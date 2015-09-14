@@ -121,6 +121,8 @@ public class EnergyDensity3DGLPanel extends AnimationGLPanel {
 			pos[w] = s.grid.getNumCells(w)/2;
 		}
 
+		double colors = s.grid.getNumberOfColors();
+
 		float[] previousValue = new float[s.grid.getNumCells(1)];
 		float[] previousRed = new float[s.grid.getNumCells(1)];
 		float[] previousGreen = new float[s.grid.getNumCells(1)];
@@ -130,11 +132,11 @@ public class EnergyDensity3DGLPanel extends AnimationGLPanel {
 			gl2.glBegin( GL2.GL_QUAD_STRIP );
 			for(int k = 0; k < s.grid.getNumCells(1); k++)
 			{
-				int xstart = (int) (s.grid.getLatticeSpacing() * (i + 0.5) * sx);
-				int xstart2 = (int)(s.grid.getLatticeSpacing() * i * sx);
-				int xstart3 = (int)(s.grid.getLatticeSpacing() * (i + 1) * sx);
-				int ystart = (int) (s.grid.getLatticeSpacing() * (k + 0.5) * sy);
-				int ystart2 = (int) (s.grid.getLatticeSpacing() * k * sy);
+				//float xstart = (float) (s.grid.getLatticeSpacing() * (i + 0.5) * sx);
+				float xstart2 = (float)(s.grid.getLatticeSpacing() * i * sx);
+				float xstart3 = (float)(s.grid.getLatticeSpacing() * (i + 1) * sx);
+				//float ystart = (float) (s.grid.getLatticeSpacing() * (k + 0.5) * sy);
+				float ystart2 = (float) (s.grid.getLatticeSpacing() * k * sy);
 
 				pos[0] = i;
 				pos[1] = k;
@@ -151,12 +153,19 @@ public class EnergyDensity3DGLPanel extends AnimationGLPanel {
 					BfieldSquared += s.grid.getBsquaredFromLinks(index, w, 0) / (as * g * as * g) / 4.0;
 					BfieldSquared += s.grid.getBsquaredFromLinks(index, w, 1) / (as * g * as * g) / 4.0;
 					// get color:
-					double color = s.grid.getE(index, w).get(0);
-					red += color * color;
-					color = s.grid.getE(index, w).get(1);
-					green += color * color;
-					color = s.grid.getE(index, w).get(2);
-					blue += color * color;
+					double color;
+					for (int n = 0; n < colors * colors - 1; n++) {
+						color = s.grid.getE(index, w).get(n);
+						// cycle through colors if there are more than three
+						switch (n % 3) {
+							case 0: red += color * color;
+								break;
+							case 1: green += color * color;
+								break;
+							case 2: blue += color * color;
+								break;
+						}
+					}
 				}
 				// Normalize
 				double norm = red + green + blue;

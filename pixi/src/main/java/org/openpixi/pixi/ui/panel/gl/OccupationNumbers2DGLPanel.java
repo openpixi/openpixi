@@ -59,11 +59,14 @@ public class OccupationNumbers2DGLPanel extends AnimationGLPanel {
 		simulation = this.simulationAnimation.getSimulation();
 		diagnostic = new OccupationNumbersInTime(1.0, "none", "", true);
 		diagnostic.initialize(simulation);
+		diagnostic.calculate(simulation.grid, simulation.particles, 0);
 
 	}
 
 	@Override
 	public void display(GLAutoDrawable glautodrawable) {
+
+		// Compute occupation numbers
 		frameSkip = (frameSkipProperties.getValue() > 1) ? frameSkipProperties.getValue() : 1;
 		if( frameCounter % frameSkip == 0)
 		{
@@ -72,76 +75,79 @@ public class OccupationNumbers2DGLPanel extends AnimationGLPanel {
 				diagnostic.initialize(simulation);
 			}
 
-			GL2 gl2 = glautodrawable.getGL().getGL2();
-			int width = glautodrawable.getWidth();
-			int height = glautodrawable.getHeight();
-			gl2.glClear( GL.GL_COLOR_BUFFER_BIT );
-			gl2.glLoadIdentity();
-
-			double scale = scaleProperties.getScale();
-			scaleProperties.resetAutomaticScale();
-			Simulation s = getSimulationAnimation().getSimulation();
-
-			/** Scaling factor for the displayed panel in x-direction*/
-			double sx = width / s.getSimulationBoxSize(0);
-			/** Scaling factor for the displayed panel in y-direction*/
-			double sy = height / s.getSimulationBoxSize(1);
-
-			int[] pos = new int[s.getNumberOfDimensions()];
-			for(int w = 2; w < s.getNumberOfDimensions(); w++) {
-				pos[w] = s.grid.getNumCells(w)/2;
-			}
-
 			diagnostic.calculate(simulation.grid, simulation.particles, 0);
 
-			for(int i = 0; i < s.grid.getNumCells(0); i++) {
-				gl2.glBegin( GL2.GL_QUAD_STRIP );
-				for(int k = 0; k < s.grid.getNumCells(1); k++)
-				{
-					int xstart2 = (int)(s.grid.getLatticeSpacing() * i * sx);
-					int xstart3 = (int)(s.grid.getLatticeSpacing() * (i + 1) * sx);
-					int ystart2 = (int) (s.grid.getLatticeSpacing() * k * sy);
-
-					pos[0] = i;
-					pos[1] = k;
-					int index = this.getMomentumIndex(pos);
-
-					if(colorfulProperties.getValue())
-					{
-						double red = diagnostic.occupationNumbers[index][0];
-						double green = diagnostic.occupationNumbers[index][1];
-						double blue = diagnostic.occupationNumbers[index][2];
-						double norm = red + green + blue;
-						double value = Math.min(1.0, scale * norm);
-
-						red = Math.sqrt(red / norm) * value;
-						green = Math.sqrt(green / norm) * value;
-						blue = Math.sqrt(blue / norm) * value;
-
-						scaleProperties.putValue(norm);
-
-						gl2.glColor3d( red, green, blue );
-						gl2.glVertex2f( xstart2, ystart2 );
-						gl2.glVertex2f( xstart3, ystart2 );
-					} else {
-						double occ = diagnostic.occupationNumbers[index][0]
-								+ diagnostic.occupationNumbers[index][1]
-								+ diagnostic.occupationNumbers[index][2];
-						double value = Math.min(1.0, scale * occ);
-
-						scaleProperties.putValue(occ);
-
-						gl2.glColor3d( value, value, value );
-						gl2.glVertex2f( xstart2, ystart2 );
-						gl2.glVertex2f( xstart3, ystart2 );
-					}
-
-				}
-				gl2.glEnd();
-			}
-			scaleProperties.calculateAutomaticScale(1.0);
 		}
 		frameCounter++;
+
+		// Display
+		GL2 gl2 = glautodrawable.getGL().getGL2();
+		int width = glautodrawable.getWidth();
+		int height = glautodrawable.getHeight();
+		gl2.glClear( GL.GL_COLOR_BUFFER_BIT );
+		gl2.glLoadIdentity();
+
+		double scale = scaleProperties.getScale();
+		scaleProperties.resetAutomaticScale();
+		Simulation s = getSimulationAnimation().getSimulation();
+
+		/** Scaling factor for the displayed panel in x-direction*/
+		double sx = width / s.getSimulationBoxSize(0);
+		/** Scaling factor for the displayed panel in y-direction*/
+		double sy = height / s.getSimulationBoxSize(1);
+
+		int[] pos = new int[s.getNumberOfDimensions()];
+		for(int w = 2; w < s.getNumberOfDimensions(); w++) {
+			pos[w] = s.grid.getNumCells(w)/2;
+		}
+
+		for(int i = 0; i < s.grid.getNumCells(0); i++) {
+			gl2.glBegin( GL2.GL_QUAD_STRIP );
+			for(int k = 0; k < s.grid.getNumCells(1); k++)
+			{
+				int xstart2 = (int)(s.grid.getLatticeSpacing() * i * sx);
+				int xstart3 = (int)(s.grid.getLatticeSpacing() * (i + 1) * sx);
+				int ystart2 = (int) (s.grid.getLatticeSpacing() * k * sy);
+
+				pos[0] = i;
+				pos[1] = k;
+				int index = this.getMomentumIndex(pos);
+
+				if(colorfulProperties.getValue())
+				{
+					double red = diagnostic.occupationNumbers[index][0];
+					double green = diagnostic.occupationNumbers[index][1];
+					double blue = diagnostic.occupationNumbers[index][2];
+					double norm = red + green + blue;
+					double value = Math.min(1.0, scale * norm);
+
+					red = Math.sqrt(red / norm) * value;
+					green = Math.sqrt(green / norm) * value;
+					blue = Math.sqrt(blue / norm) * value;
+
+					scaleProperties.putValue(norm);
+
+					gl2.glColor3d( red, green, blue );
+					gl2.glVertex2f( xstart2, ystart2 );
+					gl2.glVertex2f( xstart3, ystart2 );
+				} else {
+					double occ = diagnostic.occupationNumbers[index][0]
+							+ diagnostic.occupationNumbers[index][1]
+							+ diagnostic.occupationNumbers[index][2];
+					double value = Math.min(1.0, scale * occ);
+
+					scaleProperties.putValue(occ);
+
+					gl2.glColor3d( value, value, value );
+					gl2.glVertex2f( xstart2, ystart2 );
+					gl2.glVertex2f( xstart3, ystart2 );
+				}
+
+			}
+			gl2.glEnd();
+		}
+
+		scaleProperties.calculateAutomaticScale(1.0);
 	}
 
 	private int getMomentumIndex(int[] pos)

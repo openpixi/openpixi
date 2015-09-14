@@ -5,6 +5,18 @@ package org.openpixi.pixi.math;
  */
 public class ElementFactory {
 
+    public int numberOfColors;
+    public int numberOfComponents;
+
+    public ElementFactory(int numberOfColors) {
+        this.numberOfColors = numberOfColors;
+        if(numberOfColors > 1) {
+            this.numberOfComponents = numberOfColors * numberOfColors - 1;
+        } else {
+            this.numberOfComponents = 1;
+        }
+    }
+
     public ElementFactory() {}
 
     double[] SU3GroupZero = new double[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
@@ -43,4 +55,19 @@ public class ElementFactory {
                 return new SU2AlgebraElement(0, 0, 0);
         }
     }
+
+
+    public GroupElement groupZero() {
+        return groupZero(numberOfColors);
+    }
+
+    public GroupElement groupIdentity() {
+        return groupIdentity(numberOfColors);
+    }
+
+    public AlgebraElement algebraZero() {
+        return algebraZero(numberOfColors);
+    }
+
+
 }

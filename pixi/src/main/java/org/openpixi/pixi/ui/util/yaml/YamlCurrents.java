@@ -20,6 +20,8 @@ public class YamlCurrents {
 
     public ArrayList<YamlSU2LightConeGaussPulseCurrentMono> SU2LightConeGaussPulseCurrentMono = new ArrayList<YamlSU2LightConeGaussPulseCurrentMono>();
 
+    public ArrayList<YamlNewLCCurrent> newLCCurrents = new ArrayList<YamlNewLCCurrent>();
+
     /**
      * Creates CurrentGenerator instances and applies them to the Settings instance.
      * @param s
@@ -54,6 +56,12 @@ public class YamlCurrents {
                 s.addCurrentGenerator(mono.getCurrentGenerator());
             }
         }
+
+		for (YamlNewLCCurrent current : newLCCurrents) {
+			if (current.checkConsistency(s)) {
+				s.addCurrentGenerator(current.getCurrentGenerator());
+			}
+		}
 
     }
 

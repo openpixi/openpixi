@@ -13,7 +13,7 @@ import java.awt.event.ActionListener;
  */
 public class StringProperties {
 
-	private SimulationAnimation simulationAnimation;
+	protected SimulationAnimation simulationAnimation;
 	private String name;
 	private String value;
 
@@ -57,12 +57,21 @@ public class StringProperties {
 		this.value = value;
 		textField.setText(value);
 		simulationAnimation.repaint();
+		update();
 	}
 
 	class TextFieldListener implements ActionListener {
 		public void actionPerformed(ActionEvent event) {
 			value = textField.getText();
 			simulationAnimation.repaint();
+			update();
 		}
+	}
+
+	/**
+	 * Can be implemented by superclass to perform any calculations
+	 * if a value has been changed.
+	 */
+	public void update() {
 	}
 }
