@@ -49,7 +49,7 @@ public class TempGaugeLightConePoissonSolver extends LightConePoissonSolver {
 		int colors = g.getNumberOfColors();
 
 		//double norm = Math.pow(g.getLatticeSpacing(), g.getNumberOfDimensions() - 1);
-		double norm = Math.pow(g.getLatticeSpacing(), truesize);
+		double norm = Math.pow(g.getLatticeSpacing(), 2);
 		int[] pos = new int[position.length];
 		int gaugePos[] = new int[position.length];
 		for (int i = 0; i < position.length; i++) {
