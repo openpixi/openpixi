@@ -124,7 +124,7 @@ public class SU2LightConeGaussPulseCurrent implements ICurrentGenerator {
 			grid.addJ(cellIndex, direction, currentList[i]);
 			grid.addRho(cellIndex, chargeList[i]);
 		}
-		
+
 	}
 
 	private double[] normalizeVector(double[] vector) {
