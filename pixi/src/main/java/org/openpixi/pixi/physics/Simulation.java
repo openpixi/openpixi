@@ -235,7 +235,7 @@ public class Simulation {
 		currentGenerators = settings.getCurrentGenerators();
 		// Initialize external currents on the grid!!
 		for (ICurrentGenerator c: currentGenerators) {
-			c.initializeCurrent(this, /*countPulses(currentGenerators)*/currentGenerators.size());
+			c.initializeCurrent(this, currentGenerators.size());
 		}
 
 		/**
@@ -360,16 +360,6 @@ public class Simulation {
         {
 			diagnostics.get(f).calculate(grid, particles, this.totalSimulationSteps);
         }
-	}
-
-	private int countPulses(ArrayList<ICurrentGenerator>  currentGenerators) {
-		int count = 0;
-		for (ICurrentGenerator c : currentGenerators) {
-			if (c.getClass().getSimpleName().equals("SU2LightConeGaussPulseCurrent")) {
-				count++;
-			}
-		}
-		return count;
 	}
 	
 	public void particlePush() {

@@ -75,6 +75,7 @@ public class LorentzGaugeLightConeGaussPoissonSolver extends LightConePoissonSol
 		double as = g.getLatticeSpacing();
 		double at = g.getTemporalSpacing();
 		double coupling = g.getGaugeCoupling();
+		double temporalFactor = at/as;
 		int cellIndex;
 		int dirMax = g.getNumCells(dir);
 		int arrayLength = location[surfaceIndex].length;
@@ -169,7 +170,7 @@ public class LorentzGaugeLightConeGaussPoissonSolver extends LightConePoissonSol
 						cellIndex = g.getCellIndex(gaugePos);
 
 						Atemporal.set(g.getU0(cellIndex).getAlgebraElement());
-						Atemporal.addAssign(phiList[j][w].mult(shapeGauss(location[surfaceIndex][dir], width[surfaceIndex], z * as) / gaussNormFactorCharge * coupling * as));
+						Atemporal.addAssign(phiList[j][w].mult(shapeGauss(location[surfaceIndex][dir], width[surfaceIndex], z * as) / gaussNormFactorCharge * coupling * as * temporalFactor));
 
 						Aspatial.set(g.getU(cellIndex, dir).getAlgebraElement());
 						Aspatial.addAssign(gaugeList[j][w].mult(shapeGauss(positionCurrent[dir], width[surfaceIndex], z * as /*- as/2*/) / gaussNormFactorCharge * coupling * as));
@@ -178,7 +179,7 @@ public class LorentzGaugeLightConeGaussPoissonSolver extends LightConePoissonSol
 						g.setU0(cellIndex, Atemporal.getLink());
 
 						Atemporal.set(g.getU0next(cellIndex).getAlgebraElement());
-						Atemporal.addAssign(phiList[j][w].mult(shapeGauss(location[surfaceIndex][dir] + orientation[surfaceIndex] * at, width[surfaceIndex], z * as) / gaussNormFactorCharge * coupling * as));
+						Atemporal.addAssign(phiList[j][w].mult(shapeGauss(location[surfaceIndex][dir] + orientation[surfaceIndex] * at, width[surfaceIndex], z * as) / gaussNormFactorCharge * coupling * as * temporalFactor));
 
 						Aspatial.set(g.getUnext(cellIndex, dir).getAlgebraElement());
 						Aspatial.addAssign(gaugeList[j][w].mult(shapeGauss(positionCurrent[dir] + orientation[surfaceIndex]*at, width[surfaceIndex], z * as /*- as/2*/) / gaussNormFactorCharge * coupling * as));
@@ -252,7 +253,7 @@ public class LorentzGaugeLightConeGaussPoissonSolver extends LightConePoissonSol
 					cellIndex = g.getCellIndex(gaugePos);
 
 					Atemporal.set(g.getU0(cellIndex).getAlgebraElement());
-					Atemporal.addAssign(phiList[j].mult(shapeGauss(location[surfaceIndex][dir], width[surfaceIndex], z * as) / gaussNormFactorCharge * coupling * as));
+					Atemporal.addAssign(phiList[j].mult(shapeGauss(location[surfaceIndex][dir], width[surfaceIndex], z * as) / gaussNormFactorCharge * coupling * as * temporalFactor));
 
 					Aspatial.set(g.getU(cellIndex, dir).getAlgebraElement());
 					Aspatial.addAssign(gaugeList[j].mult(shapeGauss(positionCurrent[dir], width[surfaceIndex], z * as /*- as/2*/) / gaussNormFactorCharge * coupling * as));
@@ -261,7 +262,7 @@ public class LorentzGaugeLightConeGaussPoissonSolver extends LightConePoissonSol
 					g.setU0(cellIndex, Atemporal.getLink());
 
 					Atemporal.set(g.getU0next(cellIndex).getAlgebraElement());
-					Atemporal.addAssign(phiList[j].mult(shapeGauss(location[surfaceIndex][dir] + orientation[surfaceIndex] * at, width[surfaceIndex], z * as) / gaussNormFactorCharge * coupling * as));
+					Atemporal.addAssign(phiList[j].mult(shapeGauss(location[surfaceIndex][dir] + orientation[surfaceIndex] * at, width[surfaceIndex], z * as) / gaussNormFactorCharge * coupling * as * temporalFactor));
 
 					Aspatial.set(g.getUnext(cellIndex, dir).getAlgebraElement());
 					Aspatial.addAssign(gaugeList[j].mult(shapeGauss(positionCurrent[dir] + orientation[surfaceIndex]*at, width[surfaceIndex], z * as /*- as/2*/) / gaussNormFactorCharge * coupling * as));
