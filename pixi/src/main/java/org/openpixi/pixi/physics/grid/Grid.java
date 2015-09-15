@@ -409,7 +409,7 @@ public class Grid {
 
 		createGrid();
 				
-		this.fsolver = settings.getGridSolver();
+		this.fsolver = settings.getFieldSolver();
 		this.fsolver.initializeIterator(settings.getCellIterator(), numCells);
 
 		this.cellIterator = settings.getCellIterator();

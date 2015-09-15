@@ -52,7 +52,7 @@ public class Settings {
 	// Grid related settings
 	private int[] gridCells;
 	private double[] simulationWidth;
-	private FieldSolver gridSolver = new FieldSolver();
+	private FieldSolver fieldSolver = new FieldSolver();
 	private PoissonSolver poissonSolver = new EmptyPoissonSolver();
 	private boolean useGrid = true;
 	private boolean relativistic = true;
@@ -139,12 +139,12 @@ public class Settings {
 		return timeStep;
 	}
 
-	public FieldSolver getGridSolver() {
+	public FieldSolver getFieldSolver() {
 		/*
 		 * For the distributed tests to pass we need to create new grid solver so that the two
 		 * simulation instances do not share the cell iterator!
 		 */
-		return gridSolver.clone();
+		return fieldSolver.clone();
 	}
 
 	public PoissonSolver getPoissonSolver() {
@@ -327,8 +327,8 @@ public class Settings {
 		this.relativistic = rel;
 	}
 
-	public void setGridSolver(FieldSolver gridSolver) {
-		this.gridSolver = gridSolver;
+	public void setFieldSolver(FieldSolver fieldSolver) {
+		this.fieldSolver = fieldSolver;
 	}
 
 	public void setPoissonSolver(PoissonSolver poissonSolver) {

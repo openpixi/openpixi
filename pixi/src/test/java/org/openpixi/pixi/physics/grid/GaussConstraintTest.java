@@ -36,7 +36,7 @@ public class GaussConstraintTest {
 			Settings settings = new Settings();
 			settings.setRelativistic(true);
 			settings.setBoundary(GeneralBoundaryType.Periodic);
-			settings.setGridSolver(new GeneralYangMillsSolver());
+			settings.setFieldSolver(new GeneralYangMillsSolver());
 			settings.useGrid(true);
 			settings.setInterpolator(new EmptyInterpolator());
 			settings.setSpeedOfLight(1.0);
@@ -89,7 +89,7 @@ public class GaussConstraintTest {
 			Settings settings = new Settings();
 			settings.setRelativistic(true);
 			settings.setBoundary(GeneralBoundaryType.Periodic);
-			settings.setGridSolver(new GeneralYangMillsSolver());
+			settings.setFieldSolver(new GeneralYangMillsSolver());
 			settings.useGrid(true);
 			settings.setInterpolator(new EmptyInterpolator());
 			settings.setSpeedOfLight(1.0);
@@ -146,7 +146,7 @@ public class GaussConstraintTest {
 		Settings settings = new Settings();
 		settings.setRelativistic(true);
 		settings.setBoundary(GeneralBoundaryType.Periodic);
-		settings.setGridSolver(new GeneralYangMillsSolver());
+		settings.setFieldSolver(new GeneralYangMillsSolver());
 		settings.useGrid(true);
 		settings.setInterpolator(new EmptyInterpolator());
 		settings.setSpeedOfLight(1.0);

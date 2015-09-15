@@ -247,7 +247,7 @@ public class GridTest {
 
 		s.setRelativistic(true);
 		s.setBoundary(GeneralBoundaryType.Periodic);
-		s.setGridSolver(new GeneralYangMillsSolver());
+		s.setFieldSolver(new GeneralYangMillsSolver());
 		s.useGrid(true);
 		s.setInterpolator(new EmptyInterpolator());
 		s.setSpeedOfLight(1.0);

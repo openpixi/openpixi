@@ -26,6 +26,7 @@ public class YamlSettings {
 	public Double gridStep;
 	public Double duration;
 	public List<Integer> gridCells;
+	public String fieldsolver;
 	public String poissonsolver;
 	public List<YamlParticle> particles;
 	public List<YamlParticleStream> streams;
@@ -39,7 +40,7 @@ public class YamlSettings {
 		// Default settings:
 		settings.setRelativistic(false);
 		settings.setBoundary(GeneralBoundaryType.Periodic);
-		settings.setGridSolver(new GeneralYangMillsSolver());//settings.setGridSolver(new YangMillsSolver());
+		settings.setFieldSolver(new GeneralYangMillsSolver());//settings.setFieldSolver(new YangMillsSolver());
 		settings.useGrid(true);
 		settings.setInterpolator(new EmptyInterpolator());
         settings.setSpeedOfLight(1.0);
@@ -97,6 +98,14 @@ public class YamlSettings {
 				settings.setPoissonSolver(new EmptyPoissonSolver());
 			} else {
 				throw new RuntimeException("Unknown Poisson solver specified in YAML file.");
+			}
+		}
+
+		if(fieldsolver != null) {
+			if(fieldsolver.equals("temporal yang mills")) {
+				settings.setFieldSolver(new GeneralYangMillsSolver());
+			//} else if(fieldsolver.equals("lorenz yang mills")) {
+
 			}
 		}
 
