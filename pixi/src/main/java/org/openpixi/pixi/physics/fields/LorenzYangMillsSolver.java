@@ -46,7 +46,7 @@ public class LorenzYangMillsSolver extends FieldSolver
 
 	@Override
 	public void stepLinks(Grid grid, double timeStep) {
-		// do nothing..
+		cellIterator.execute(grid, electricFieldSolver);
 	}
 
 
