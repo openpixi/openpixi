@@ -7,7 +7,7 @@ import org.openpixi.pixi.math.SU2AlgebraElement;
 import org.openpixi.pixi.physics.GeneralBoundaryType;
 import org.openpixi.pixi.physics.Settings;
 import org.openpixi.pixi.physics.Simulation;
-import org.openpixi.pixi.physics.fields.GeneralYangMillsSolver;
+import org.openpixi.pixi.physics.fields.TemporalYangMillsSolver;
 import org.openpixi.pixi.physics.fields.fieldgenerators.SU2PlaneWave;
 import org.openpixi.pixi.physics.gauge.RandomGauge;
 
@@ -36,7 +36,7 @@ public class GaussConstraintTest {
 			Settings settings = new Settings();
 			settings.setRelativistic(true);
 			settings.setBoundary(GeneralBoundaryType.Periodic);
-			settings.setFieldSolver(new GeneralYangMillsSolver());
+			settings.setFieldSolver(new TemporalYangMillsSolver());
 			settings.useGrid(true);
 			settings.setInterpolator(new EmptyInterpolator());
 			settings.setSpeedOfLight(1.0);
@@ -89,7 +89,7 @@ public class GaussConstraintTest {
 			Settings settings = new Settings();
 			settings.setRelativistic(true);
 			settings.setBoundary(GeneralBoundaryType.Periodic);
-			settings.setFieldSolver(new GeneralYangMillsSolver());
+			settings.setFieldSolver(new TemporalYangMillsSolver());
 			settings.useGrid(true);
 			settings.setInterpolator(new EmptyInterpolator());
 			settings.setSpeedOfLight(1.0);
@@ -146,7 +146,7 @@ public class GaussConstraintTest {
 		Settings settings = new Settings();
 		settings.setRelativistic(true);
 		settings.setBoundary(GeneralBoundaryType.Periodic);
-		settings.setFieldSolver(new GeneralYangMillsSolver());
+		settings.setFieldSolver(new TemporalYangMillsSolver());
 		settings.useGrid(true);
 		settings.setInterpolator(new EmptyInterpolator());
 		settings.setSpeedOfLight(1.0);

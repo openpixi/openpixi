@@ -8,7 +8,7 @@ import org.openpixi.pixi.physics.Settings;
 import org.openpixi.pixi.physics.fields.EmptyPoissonSolver;
 import org.openpixi.pixi.physics.fields.fieldgenerators.IFieldGenerator;
 import org.openpixi.pixi.physics.fields.currentgenerators.ICurrentGenerator;
-import org.openpixi.pixi.physics.fields.GeneralYangMillsSolver;
+import org.openpixi.pixi.physics.fields.TemporalYangMillsSolver;
 import org.openpixi.pixi.physics.grid.EmptyInterpolator;
 import org.openpixi.pixi.physics.solver.relativistic.LeapFrogRelativistic;
 import org.openpixi.pixi.diagnostics.Diagnostics;
@@ -40,7 +40,7 @@ public class YamlSettings {
 		// Default settings:
 		settings.setRelativistic(false);
 		settings.setBoundary(GeneralBoundaryType.Periodic);
-		settings.setFieldSolver(new GeneralYangMillsSolver());//settings.setFieldSolver(new YangMillsSolver());
+		settings.setFieldSolver(new TemporalYangMillsSolver());//settings.setFieldSolver(new YangMillsSolver());
 		settings.useGrid(true);
 		settings.setInterpolator(new EmptyInterpolator());
         settings.setSpeedOfLight(1.0);
@@ -103,7 +103,7 @@ public class YamlSettings {
 
 		if(fieldsolver != null) {
 			if(fieldsolver.equals("temporal yang mills")) {
-				settings.setFieldSolver(new GeneralYangMillsSolver());
+				settings.setFieldSolver(new TemporalYangMillsSolver());
 			//} else if(fieldsolver.equals("lorenz yang mills")) {
 
 			}

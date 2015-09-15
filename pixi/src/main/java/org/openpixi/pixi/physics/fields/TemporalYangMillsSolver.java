@@ -5,7 +5,7 @@ import org.openpixi.pixi.physics.grid.Grid;
 import org.openpixi.pixi.math.AlgebraElement;
 import org.openpixi.pixi.math.GroupElement;
 
-public class GeneralYangMillsSolver extends FieldSolver
+public class TemporalYangMillsSolver extends FieldSolver
 {
 
 	private double timeStep;
@@ -14,7 +14,7 @@ public class GeneralYangMillsSolver extends FieldSolver
 
 	@Override
 	public FieldSolver clone() {
-		GeneralYangMillsSolver clone = new GeneralYangMillsSolver();
+		TemporalYangMillsSolver clone = new TemporalYangMillsSolver();
 		clone.copyBaseClassFields(this);
 		clone.timeStep = timeStep;
 		clone.fieldUpdater = fieldUpdater;
