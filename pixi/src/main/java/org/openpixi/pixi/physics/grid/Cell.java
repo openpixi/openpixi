@@ -156,6 +156,7 @@ public class Cell implements Serializable {
 		for (int i=0;i<Unext.length;i++) {
 			Unext[i].set(factory.groupIdentity(colors));
 		}
+		U0next.set(factory.groupIdentity());
 	}
 
 	public void resetCharge() {

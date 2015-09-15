@@ -240,6 +240,43 @@ public class Grid {
 	}
 
 	/**
+	 * Returns the temporal gauge link at time (t-dt/2) at given lattice index.
+	 * @param index Lattice index of the temporal gauge link
+	 * @return      GroupElement instance
+	 */
+	public GroupElement getU0(int index) {
+		return cells[index].getU0();
+	}
+
+	/**
+	 * Sets the temporal gauge link at time (t-dt/2) at given lattice index to a new value.
+	 * @param index Lattice index
+	 * @param link  GroupElement instance
+	 */
+	public void setU0(int index, GroupElement link) {
+		cells[index].setU0(link);
+	}
+
+	/**
+	 * Returns the temporal gauge link at time (t+dt/2) at given lattice index.
+	 * @param index Lattice index of the temporal gauge link
+	 * @return      GroupElement instance
+	 */
+	public GroupElement getU0next(int index) {
+		return cells[index].getU0next();
+	}
+
+	/**
+	 * Sets the temporal gauge link at time (t+dt/2) at given lattice index to a new value.
+	 * @param index Lattice index
+	 * @param link  GroupElement instance
+	 */
+	public void setU0next(int index, GroupElement link) {
+		cells[index].setU0next(link);
+	}
+
+
+	/**
 	 * Resets charge in a cell at a given lattice index.
 	 * @param index  Lattice index of the cell
 	 */
@@ -412,15 +449,7 @@ public class Grid {
 	public void copyValuesFrom(Grid grid) {
 		int numberOfCells = grid.getTotalNumberOfCells();
 		for (int ci = 0; ci < numberOfCells; ci++) {
-			for (int d = 0; d < numDim; d++) {
-				GroupElement U = grid.getU(ci, d);
-				this.setU(ci, d, U);
-				GroupElement Unext = grid.getUnext(ci, d);
-				this.setUnext(ci, d, Unext);
-				AlgebraElement E = grid.getE(ci, d);
-				this.setE(ci, d, E);
-				// TODO: if desired: Copy other fields as well.
-			}
+			cells[ci].copyFrom(grid.cells[ci]);
 		}
 	}
 
@@ -548,7 +577,7 @@ public class Grid {
 	/**
 	 * Calculates the temporal plaquette starting at lattice index in the direction d with orientation o.
 	 * This method implements the following definition of the plaquette:
-	 * <pre>     U_{x, ij} = U_{x, i, t + dt/2} U_{x+i, -i, t - dt/2} </pre>
+	 * <pre>     U_{x, 0i, t - dt/2}} = U_{x,0, t - dt/2} U_{x, i, t + dt/2} U_{x+i, -0, t + dt/2} U_{x+i, -i, t - dt/2} </pre>
 	 *
 	 * @param index Lattice index as starting point of the temporal plaquette
 	 * @param d     Index of the direction
@@ -556,10 +585,12 @@ public class Grid {
 	 * @return      Temporal plaquette as GroupElement
 	 */
 	public GroupElement getTemporalPlaquette(int index, int d, int o) {
-		GroupElement U1 = getLink(index, d, o, 1);
-		GroupElement U2 = getLink(index, d, o, 0).adj();
+		GroupElement U1 = getTemporalLink(index, 0);
+		GroupElement U2 = getLink(index, d, o, 1);
+		GroupElement U3 = getTemporalLink(shift(index, d, o), 0).adj();
+		GroupElement U4 = getLink(index, d, o, 0).adj();
 
-		return U1.mult(U2);
+		return U1.mult(U2.mult(U3.mult(U4)));
 	}
 
 	/**
@@ -591,6 +622,20 @@ public class Grid {
 			}
 			return getCell(index).getUnext(direction);
 		}
+	}
+
+	/**
+	 * Getter for temporal gauge links.
+	 *
+	 * @param index     Lattice index
+	 * @param timeIndex Option to select between U0 (timeIndex = 0) and U0next (timeIndex != 0).
+	 * @return          Temporal gauge link
+	 */
+	public GroupElement getTemporalLink(int index, int timeIndex) {
+		if(timeIndex == 0) {
+			return cells[index].getU0();
+		}
+		return cells[index].getU0next();
 	}
 
 	/**
@@ -783,10 +828,7 @@ public class Grid {
 	 */
 	public double getEsquaredFromLinks(int index, int direction) {
 		
-		double norm = at * at;
-		double res = cells[index].getUnext(direction).mult(cells[index].getU(direction).adj()).proj().square()/norm;
-
-		return res;
+		return  getEFromLinks(index, direction).square();
 	}
 
 	/**
