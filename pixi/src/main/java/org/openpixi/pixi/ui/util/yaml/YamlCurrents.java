@@ -18,7 +18,7 @@ public class YamlCurrents {
 
     public ArrayList<YamlSU2LightConeGaussPulseCurrent> SU2LightConeGaussPulseCurrent = new ArrayList<YamlSU2LightConeGaussPulseCurrent>();
 
-    public ArrayList<YamlSU2LightConeGaussPulseCurrentMono> SU2LightConeGaussPulseCurrentMono = new ArrayList<YamlSU2LightConeGaussPulseCurrentMono>();
+    public ArrayList<YamlSU2LorenzLightConeGaussPulseCurrent> SU2LorenzLightConeGaussPulseCurrent = new ArrayList<YamlSU2LorenzLightConeGaussPulseCurrent>();
 
     public ArrayList<YamlNewLCCurrent> newLCCurrents = new ArrayList<YamlNewLCCurrent>();
 
@@ -51,9 +51,9 @@ public class YamlCurrents {
             }
         }
 
-        for (YamlSU2LightConeGaussPulseCurrentMono mono : SU2LightConeGaussPulseCurrentMono) {
-            if (mono.checkConsistency(s)) {
-                s.addCurrentGenerator(mono.getCurrentGenerator());
+        for (YamlSU2LorenzLightConeGaussPulseCurrent lorenz : SU2LorenzLightConeGaussPulseCurrent) {
+            if (lorenz.checkConsistency(s)) {
+                s.addCurrentGenerator(lorenz.getCurrentGenerator());
             }
         }
 
