@@ -3,10 +3,7 @@ package org.openpixi.pixi.physics.fields.currentgenerators;
 import org.apache.commons.math3.analysis.function.Gaussian;
 import org.openpixi.pixi.math.SU2AlgebraElement;
 import org.openpixi.pixi.physics.Simulation;
-import org.openpixi.pixi.physics.fields.LightConePoissonSolver;
-import org.openpixi.pixi.physics.fields.NumericPolychromTempGaugeLightConeGaussPoissonSolver;
-import org.openpixi.pixi.physics.fields.PolychromTempGaugeLightConeGaussPoissonSolver;
-import org.openpixi.pixi.physics.fields.TempGaugeLightConeGaussPoissonSolver;
+import org.openpixi.pixi.physics.fields.*;
 import org.openpixi.pixi.physics.grid.Grid;
 
 public class SU2LightConeGaussPulseCurrent implements ICurrentGenerator {
@@ -20,7 +17,8 @@ public class SU2LightConeGaussPulseCurrent implements ICurrentGenerator {
 	private Grid grid;
 	private int orientation;
 	//private PolychromTempGaugeLightConeGaussPoissonSolver poisson;
-	private NumericPolychromTempGaugeLightConeGaussPoissonSolver poisson;
+	//private NumericPolychromTempGaugeLightConeGaussPoissonSolver poisson;
+	private LorentzGaugeLightConeGaussPoissonSolver poisson;
 
 	public SU2LightConeGaussPulseCurrent(int direction, double[] location, double width, double[] amplitudeColorDirection, double magnitude, int orientation) {
 
@@ -38,7 +36,8 @@ public class SU2LightConeGaussPulseCurrent implements ICurrentGenerator {
 		this.orientation = orientation;
 		//this.poisson = new TempGaugeLightConeGaussPoissonSolver(location, direction, Integer.signum(orientation), width);
 		//this.poisson = new PolychromTempGaugeLightConeGaussPoissonSolver();
-		this.poisson = new NumericPolychromTempGaugeLightConeGaussPoissonSolver();
+		//this.poisson = new NumericPolychromTempGaugeLightConeGaussPoissonSolver();
+		this.poisson = new LorentzGaugeLightConeGaussPoissonSolver();
 	}
 
 	public void initializeCurrent(Simulation s, int totalInstances) {
