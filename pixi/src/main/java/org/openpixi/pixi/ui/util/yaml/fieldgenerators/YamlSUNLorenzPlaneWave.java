@@ -1,0 +1,87 @@
+package org.openpixi.pixi.ui.util.yaml.fieldgenerators;
+
+import org.openpixi.pixi.physics.Settings;
+import org.openpixi.pixi.physics.fields.fieldgenerators.SUNLorenzPlaneWave;
+
+import java.util.List;
+
+/**
+ * Yaml wrapper for the SUNLorenzPlaneWave FieldGenerator.
+ */
+public class YamlSUNLorenzPlaneWave {
+
+	/**
+	 * Wave vector of the plane wave.
+	 */
+	public List<Double> k;
+
+	/**
+	 * Spatial amplitude of the plane wave.
+	 */
+	public List<Double> aSpatial;
+
+	/**
+	 * Amplitude of the plane wave in color space.
+	 */
+	public List<Double> aColor;
+
+	/**
+	 * Magnitude of the plane wave.
+	 */
+	public Double a;
+
+	/**
+	 * Checks input for errors.
+	 *
+	 * @param settings Settings class. Important: numberOfDimensions and numberOfColors must be defined.
+	 * @return Returns true if everything looks alright.
+	 */
+	public boolean checkConsistency(Settings settings) {
+		if (k.size() != settings.getNumberOfDimensions()) {
+			System.out.println("SUNLorenzPlaneWave: dir vector does not have the right dimensions.");
+			return false;
+		}
+
+		if (aSpatial.size() != settings.getNumberOfDimensions()) {
+			System.out.println("SUNLorenzPlaneWave: aSpatial vector does not have the right dimensions.");
+			return false;
+		}
+
+		int numberOfComponents = settings.getNumberOfColors() * settings.getNumberOfColors() - 1;
+		if (aColor.size() != numberOfComponents) {
+			System.out.println("SUNLorenzPlaneWave: aColor vector does not have the right dimensions.");
+			return false;
+		}
+		return true;
+	}
+
+	/**
+	 * Returns an instance of SUNLorenzPlaneWave according to the parameters in the YAML file.
+	 *
+	 * @return Instance of SUNLorenzPlaneWave.
+	 */
+	public SUNLorenzPlaneWave getFieldGenerator() {
+		int numberOfDimensions = k.size();
+		int numberOfComponents = aColor.size();
+
+        /*
+			I'm sure this can be improved. I don't know how to convert a ArrayList<Double> into a double[] quickly, so
+            I do it manually.
+         */
+
+		double[] kArray = new double[numberOfDimensions];
+		double[] aSpatialArray = new double[numberOfDimensions];
+		double[] aColorArray = new double[numberOfComponents];
+
+		for (int i = 0; i < numberOfDimensions; i++) {
+			kArray[i] = k.get(i);
+			aSpatialArray[i] = aSpatial.get(i);
+		}
+
+		for (int c = 0; c < numberOfComponents; c++) {
+			aColorArray[c] = aColor.get(c);
+		}
+
+		return new SUNLorenzPlaneWave(kArray, aSpatialArray, aColorArray, a);
+	}
+}
