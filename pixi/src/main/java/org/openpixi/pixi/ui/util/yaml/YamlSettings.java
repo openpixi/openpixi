@@ -6,6 +6,7 @@ import java.util.List;
 import org.openpixi.pixi.physics.GeneralBoundaryType;
 import org.openpixi.pixi.physics.Settings;
 import org.openpixi.pixi.physics.fields.EmptyPoissonSolver;
+import org.openpixi.pixi.physics.fields.LorenzYangMillsSolver;
 import org.openpixi.pixi.physics.fields.fieldgenerators.IFieldGenerator;
 import org.openpixi.pixi.physics.fields.currentgenerators.ICurrentGenerator;
 import org.openpixi.pixi.physics.fields.TemporalYangMillsSolver;
@@ -104,8 +105,8 @@ public class YamlSettings {
 		if(fieldsolver != null) {
 			if(fieldsolver.equals("temporal yang mills")) {
 				settings.setFieldSolver(new TemporalYangMillsSolver());
-			//} else if(fieldsolver.equals("lorenz yang mills")) {
-
+			} else if(fieldsolver.equals("lorenz yang mills")) {
+				settings.setFieldSolver(new LorenzYangMillsSolver());
 			}
 		}
 
