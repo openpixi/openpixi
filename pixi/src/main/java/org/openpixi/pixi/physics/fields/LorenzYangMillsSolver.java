@@ -99,9 +99,10 @@ public class LorenzYangMillsSolver extends FieldSolver
 			result.addAssign( grid.getU0(index).proj() );
 			GroupElement spatialLinks = grid.getElementFactory().groupZero();
 			for(int i = 0; i < grid.getNumberOfDimensions(); i++) {
-				int shiftedIndex = grid.shift(index, i, 1);
-				spatialLinks.addAssign(grid.getUnext(shiftedIndex, i));
-				spatialLinks.addAssign(grid.getUnext(index, i).mult(-1.0));
+				int index1 = index; //grid.shift(index, i, 1);
+				int index2 = grid.shift(index, i, -1);
+				spatialLinks.addAssign(grid.getU(index1, i));
+				spatialLinks.addAssign(grid.getU(index2, i).mult(-1.0));
 			}
 			result.addAssign(spatialLinks.proj().mult(ts));
 			// Exponentiate to find the next temporal gauge link
