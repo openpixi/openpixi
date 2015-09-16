@@ -133,9 +133,9 @@ public class Cell implements Serializable {
 
 	public void setU0(GroupElement link) { U0.set(link); }
 
-	public GroupElement getU0next() {return U0; }
+	public GroupElement getU0next() {return U0next; }
 
-	public void setU0next(GroupElement link) { U0.set(link); }
+	public void setU0next(GroupElement link) { U0next.set(link); }
 
 	public AlgebraElement getFieldStrength(int i, int j) {
 		return F[i][j];
