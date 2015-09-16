@@ -106,10 +106,15 @@ public class NewLorenzLCPoissonSolver {
 
 			// Set temporal and spatial links.
 			AlgebraElement currentPhi = phi[transversalCellIndex];
-			s.grid.setU(i, direction,		s.grid.getU(i, direction).mult(		currentPhi.mult(orientation * s0 * gaugeNorm1).getLink()));
-			s.grid.setUnext(i, direction,	s.grid.getUnext(i, direction).mult(	currentPhi.mult(orientation * s1 * gaugeNorm1).getLink()));
-			s.grid.setU0(i, 	s.grid.getU0(i).mult(		currentPhi.mult(s0 * gaugeNorm2).getLink()));
-			s.grid.setU0next(i,	s.grid.getU0next(i).mult(	currentPhi.mult(s1 * gaugeNorm2).getLink()));
+			GroupElement UZP = currentPhi.mult(orientation * s0 * gaugeNorm1).getLink();
+			GroupElement UZF = currentPhi.mult(orientation * s1 * gaugeNorm1).getLink();
+			GroupElement U0P = currentPhi.mult(-s0 * gaugeNorm2).getLink();
+			GroupElement U0F = currentPhi.mult(-s1 * gaugeNorm2).getLink();
+
+			s.grid.setU(i, direction, s.grid.getU(i, direction).mult(UZP));
+			s.grid.setUnext(i, direction, s.grid.getUnext(i, direction).mult(UZF));
+			s.grid.setU0(i, s.grid.getU0(i).mult(U0P));
+			s.grid.setU0next(i, s.grid.getU0next(i).mult(U0F));
 		}
 	}
 
