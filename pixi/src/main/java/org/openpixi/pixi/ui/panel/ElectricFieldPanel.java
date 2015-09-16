@@ -157,6 +157,7 @@ public class ElectricFieldPanel extends AnimationPanel {
 
 		// Lattice spacing and coupling constant
 		double as = s.grid.getLatticeSpacing();
+		double at = s.getTimeStep();
 		double g = s.getCouplingConstant();
 
 		int colorIndex = colorProperties.getColorIndex();
@@ -210,10 +211,10 @@ public class ElectricFieldPanel extends AnimationPanel {
 					value = drawGrid.getUnext(s.grid.getCellIndex(pos), directionIndex).proj().get(colorIndex) / (as * g);
 					break;
 				case INDEX_U0:
-					value = drawGrid.getU0(s.grid.getCellIndex(pos)).proj().get(colorIndex) / (as * g);
+					value = drawGrid.getU0(s.grid.getCellIndex(pos)).proj().get(colorIndex) / (at * g);
 					break;
 				case INDEX_U0_NEXT:
-					value = drawGrid.getU0next(s.grid.getCellIndex(pos)).proj().get(colorIndex) / (as * g);
+					value = drawGrid.getU0next(s.grid.getCellIndex(pos)).proj().get(colorIndex) / (at * g);
 					break;
 				case INDEX_J:
 					newPosition = (int) (s.grid.getLatticeSpacing() * (i + .5) * sx);
