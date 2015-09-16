@@ -101,15 +101,20 @@ public class NewLorenzLCPoissonSolver {
 			int transversalCellIndex = GridFunctions.getCellIndex(transversalGridPos, transversalNumCells);
 
 			// Shape function (i.e. F(z,t)) at t = -dt/2 and t = dt /2.
-			double s0 = shapeFunction(z, -at / 2.0, orientation, longitudinalWidth);
-			double s1 = shapeFunction(z, +at / 2.0, orientation, longitudinalWidth);
+
+			//double s0 = shapeFunction(z, -at / 2.0, orientation, longitudinalWidth);
+			//double s1 = shapeFunction(z, +at / 2.0, orientation, longitudinalWidth);
+			double s0 = shapeFunction(z + as/2.0, -at / 2.0, orientation, longitudinalWidth);
+			double s1 = shapeFunction(z + as/2.0, +at / 2.0, orientation, longitudinalWidth);
+			double s2 = shapeFunction(z, 0.0, orientation, longitudinalWidth);
+			double s3 = shapeFunction(z, at, orientation, longitudinalWidth);
 
 			// Set temporal and spatial links.
 			AlgebraElement currentPhi = phi[transversalCellIndex];
-			GroupElement UZP = currentPhi.mult(orientation * s0 * gaugeNorm1).getLink();
-			GroupElement UZF = currentPhi.mult(orientation * s1 * gaugeNorm1).getLink();
-			GroupElement U0P = currentPhi.mult(-s0 * gaugeNorm2).getLink();
-			GroupElement U0F = currentPhi.mult(-s1 * gaugeNorm2).getLink();
+			GroupElement UZP = currentPhi.mult(orientation * s0 * gaugeNorm1).getLink(); // U_{x,i} ~ A_{x+i/2, i}
+			GroupElement UZF = currentPhi.mult(orientation * s1 * gaugeNorm1).getLink(); // U_{x+0,i}
+			GroupElement U0P = currentPhi.mult(-s2 * gaugeNorm2).getLink(); // U_{x,0}
+			GroupElement U0F = currentPhi.mult(-s3 * gaugeNorm2).getLink(); // U_{x+0,0}
 
 			s.grid.setU(i, direction, s.grid.getU(i, direction).mult(UZP));
 			s.grid.setUnext(i, direction, s.grid.getUnext(i, direction).mult(UZF));

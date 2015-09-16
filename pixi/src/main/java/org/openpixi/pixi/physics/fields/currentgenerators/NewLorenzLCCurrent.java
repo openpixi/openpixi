@@ -114,6 +114,7 @@ public class NewLorenzLCCurrent implements ICurrentGenerator {
 				//s.grid.addJ(cellIndex, direction, transversalChargeDensity[j].mult(s2*orientation));
 
 				// Method 2: Setting the current according to the continuity equation (charge conserving)
+
 				if(Math.abs(ds * as) > 0.00000001) {
 					// In the case of CGC initial conditions the continuity equation reduces to
 					//     j^a_{x+i, i} = j^a_{x,i} - \dot{\rho^a} as,
@@ -123,12 +124,13 @@ public class NewLorenzLCCurrent implements ICurrentGenerator {
 					// happen. Therefore I generalize the spatial derivative to a covariant spatial derivative by
 					// parallel transporting the current for the neighbouring lattice site. The equation then reads
 					//     j^a_{x+i} = U_{x, i}^t j^a_x U_{x,i} - \dot{\rho^a} as.
-					GroupElement U = s.grid.getLink(cellIndex, direction, 1, 0);
+					GroupElement U = s.grid.getLink(cellIndex, direction, 1, 1).adj();
 					lastCurrents[j].addAssign(transversalChargeDensity[j].mult(-ds * as).act(U));
 					s.grid.addJ(cellIndex, direction,
 							lastCurrents[j]
 					);
 				}
+
 			}
 		}
 	}
