@@ -8,14 +8,14 @@ numberOfThreads: 6
 gridCells: [128, 128, 1]
 poissonsolver: empty
 fieldsolver: lorenz yang mills
-timeStep: 0.2
+timeStep: 0.1
 duration: 1000
 
 currents:
   SU2LorenzLightConeGaussPulseCurrent:
     - direction: 0
       location: [30, 60, 0]
-      aColor: [0.0, 1.0, 0.0]
+      aColor: [1.0, 0.0, 0.0]
       a: .4
       v: 1
       width: 4
