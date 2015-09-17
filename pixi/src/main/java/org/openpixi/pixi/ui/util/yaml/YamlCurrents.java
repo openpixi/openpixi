@@ -22,6 +22,8 @@ public class YamlCurrents {
 
     public ArrayList<YamlNewLCCurrent> newLCCurrents = new ArrayList<YamlNewLCCurrent>();
 
+    public ArrayList<YamlNewLorenzLCCurrent> newLorenzLCCurrents = new ArrayList<YamlNewLorenzLCCurrent>();
+
     /**
      * Creates CurrentGenerator instances and applies them to the Settings instance.
      * @param s
@@ -58,6 +60,12 @@ public class YamlCurrents {
         }
 
 		for (YamlNewLCCurrent current : newLCCurrents) {
+			if (current.checkConsistency(s)) {
+				s.addCurrentGenerator(current.getCurrentGenerator());
+			}
+		}
+
+		for (YamlNewLorenzLCCurrent current : newLorenzLCCurrents) {
 			if (current.checkConsistency(s)) {
 				s.addCurrentGenerator(current.getCurrentGenerator());
 			}

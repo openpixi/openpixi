@@ -96,14 +96,28 @@ public class LorenzYangMillsSolver extends FieldSolver
 
 		public void execute(Grid grid, int index) {
 			AlgebraElement result = grid.getElementFactory().algebraZero();
-			result.addAssign( grid.getU0(index).proj() );
+			result.addAssign( grid.getU0next(index).proj() );
 			GroupElement spatialLinks = grid.getElementFactory().groupZero();
 			for(int i = 0; i < grid.getNumberOfDimensions(); i++) {
-				int shiftedIndex = grid.shift(index, i, 1);
-				spatialLinks.addAssign(grid.getU(shiftedIndex, i));
-				spatialLinks.addAssign(grid.getU(index, i).mult(-1.0));
+				/*
+				// second order central finite difference
+				int index1 = index;
+				int index2 = grid.shift(index, i, -1);
+				spatialLinks.addAssign(grid.getU(index1, i));
+				spatialLinks.addAssign(grid.getU(index2, i).mult(-1.0));
+				 */
+
+				// fourth order central finite difference
+				int index1 = index;
+				int index2 = grid.shift(index, i, -1);
+				int index3 = grid.shift(index, i, 1);
+				int index4 = grid.shift(index2, i, -1);
+				spatialLinks.addAssign(grid.getU(index1, i).mult(-9.0/8.0));
+				spatialLinks.addAssign(grid.getU(index2, i).mult(+9.0/8.0));
+				spatialLinks.addAssign(grid.getU(index3, i).mult(+1.0/24.0));
+				spatialLinks.addAssign(grid.getU(index4, i).mult(-1.0/24.0));
 			}
-			result.addAssign(spatialLinks.proj().mult(ts));
+			result.addAssign(spatialLinks.proj().mult(-ts));
 			// Exponentiate to find the next temporal gauge link
 			grid.setU0next(index, result.getLink());
 		}

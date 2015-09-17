@@ -23,6 +23,7 @@ import org.openpixi.pixi.ui.panel.PhaseSpacePanel;
 import org.openpixi.pixi.ui.panel.chart.Chart2DPanel;
 import org.openpixi.pixi.ui.panel.gl.EnergyDensity2DGLPanel;
 import org.openpixi.pixi.ui.panel.gl.EnergyDensity3DGLPanel;
+import org.openpixi.pixi.ui.panel.gl.GaussViolation2DGLPanel;
 import org.openpixi.pixi.ui.panel.gl.OccupationNumbers2DGLPanel;
 import org.openpixi.pixi.ui.tab.PropertiesTab;
 
@@ -54,6 +55,7 @@ public class PanelManager {
 	JMenuItem itemEnergyDensity3DGLPanel;
 	JMenuItem itemOccupationNumbers2DGLPanel;
 	JMenuItem itemChart2DPanel;
+	JMenuItem itemGaussViolation2DGLPanel;
 
 	public PanelManager(MainControlApplet m) {
 		mainControlApplet = m;
@@ -213,6 +215,10 @@ public class PanelManager {
 			itemChart2DPanel = new JMenuItem("Chart panel");
 			itemChart2DPanel.addActionListener(new MenuSelected());
 			add(itemChart2DPanel);
+
+			itemGaussViolation2DGLPanel = new JMenuItem("Gauss Violation 2D (Open GL)");
+			itemGaussViolation2DGLPanel.addActionListener(new MenuSelected());
+			add(itemGaussViolation2DGLPanel);
 		}
 	}
 
@@ -281,6 +287,8 @@ public class PanelManager {
 				component = new OccupationNumbers2DGLPanel(mainControlApplet.simulationAnimation);
 			} else if (event.getSource() == itemChart2DPanel) {
 				component = new Chart2DPanel(mainControlApplet.simulationAnimation);
+			} else if (event.getSource() == itemGaussViolation2DGLPanel) {
+				component = new GaussViolation2DGLPanel(mainControlApplet.simulationAnimation);
 			}
 
 			if (component != null) {

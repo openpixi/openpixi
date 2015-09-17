@@ -14,7 +14,9 @@ import org.openpixi.pixi.ui.panel.EnergyDensity2DPanel;
 import org.openpixi.pixi.ui.panel.chart.Chart2DPanel;
 import org.openpixi.pixi.ui.panel.gl.EnergyDensity2DGLPanel;
 import org.openpixi.pixi.ui.panel.gl.EnergyDensity3DGLPanel;
+import org.openpixi.pixi.ui.panel.gl.GaussViolation2DGLPanel;
 import org.openpixi.pixi.ui.panel.gl.OccupationNumbers2DGLPanel;
+import org.openpixi.pixi.ui.util.yaml.filegenerators.YamlGaussConstraintRestoration;
 import org.openpixi.pixi.ui.util.yaml.panels.*;
 
 public class YamlPanels {
@@ -33,6 +35,7 @@ public class YamlPanels {
 	public YamlEnergyDensity2DGLPanel energyDensity2DGLPanel;
 	public YamlEnergyDensity3DGLPanel energyDensity3DGLPanel;
 	public YamlOccupationNumbers2DGLPanel occupationNumbers2DGLPanel;
+	public YamlGaussViolation2DGLPanel gaussViolation2DGLPanel;
 	public YamlChart2DPanel chartPanel;
 
 	/** Empty constructor called by SnakeYaml */
@@ -73,6 +76,8 @@ public class YamlPanels {
 			occupationNumbers2DGLPanel = new YamlOccupationNumbers2DGLPanel(component);
 		} else if (component instanceof Chart2DPanel) {
 			chartPanel = new YamlChart2DPanel(component);
+		} else if (component instanceof GaussViolation2DGLPanel) {
+			gaussViolation2DGLPanel = new YamlGaussViolation2DGLPanel(component);
 		}
 	}
 
@@ -109,6 +114,8 @@ public class YamlPanels {
 			component = occupationNumbers2DGLPanel.inflate(panelManager);
 		} else if (chartPanel != null) {
 			component = chartPanel.inflate(panelManager);
+		}else if (gaussViolation2DGLPanel != null) {
+			component = gaussViolation2DGLPanel.inflate(panelManager);
 		}
 
 		return component;
