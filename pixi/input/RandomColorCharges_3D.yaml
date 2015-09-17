@@ -1,0 +1,75 @@
+gridStep: 1
+couplingConstant: 1
+numberOfDimensions: 3
+numberOfColors: 2
+numberOfThreads: 6
+gridCells: [32, 32, 32]
+poissonsolver: empty
+fieldsolver: lorenz yang mills
+timeStep: 0.1
+duration: 1000
+
+currents:
+  randomColorCurrents:
+    - direction: 0
+      orientation: 1
+      longitudinalLocation: 6
+      longitudinalWidth: 2.0
+      transversalWidth: 3.0
+      transversalLocation: [16, 16]
+      numberOfCharges: 80
+      colorDistributionWidth: 0.2
+      numberOfColors: 2
+    - direction: 0
+      orientation: -1
+      longitudinalLocation: 26
+      longitudinalWidth: 2.0
+      transversalWidth: 3.0
+      transversalLocation: [16, 16]
+      numberOfCharges: 80
+      colorDistributionWidth: 0.2
+      numberOfColors: 2
+
+
+
+# Generated panel code:
+panels:
+  dividerLocation: 1015
+  leftPanel:
+    dividerLocation: 484
+    leftPanel:
+      chartPanel:
+        logarithmicScale: false
+        showCharts:
+        - Gauss law violation
+        - E squared
+        - B squared
+        - Energy density
+    orientation: 0
+    rightPanel:
+      dividerLocation: 501
+      leftPanel:
+        energyDensity2DGLPanel:
+          automaticScaling: false
+          scaleFactor: 100.0
+          showCoordinates: x, y, 16
+      orientation: 1
+      rightPanel:
+        energyDensity2DGLPanel:
+          automaticScaling: false
+          scaleFactor: 500.0
+          showCoordinates: 16,x,y
+  orientation: 1
+  rightPanel:
+    dividerLocation: 503
+    leftPanel:
+      energyDensity2DGLPanel:
+        automaticScaling: false
+        scaleFactor: 500.0
+        showCoordinates: 6,x,y
+    orientation: 0
+    rightPanel:
+      gaussViolation2DGLPanel:
+        automaticScaling: true
+        scaleFactor: 1.0
+        showCoordinates: 16,x,y
