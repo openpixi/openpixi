@@ -6,7 +6,7 @@ import org.openpixi.pixi.physics.fields.currentgenerators.NewLorenzLCCurrent;
 import java.util.ArrayList;
 import java.util.Random;
 
-public class YamlRandomColorCurrent {
+public class YamlRandomLorenzColorCurrent {
 	/**
 	 * Direction of the current pulse (0 to d)
 	 */

@@ -10,7 +10,7 @@ timeStep: 0.1
 duration: 1000
 
 currents:
-  randomColorCurrents:
+  randomLorenzColorCurrents:
     - direction: 0
       orientation: 1
       longitudinalLocation: 16.0
