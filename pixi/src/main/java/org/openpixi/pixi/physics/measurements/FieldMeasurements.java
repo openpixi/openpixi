@@ -16,31 +16,31 @@ public class FieldMeasurements {
 	public double calculateEsquared(Grid grid) {
 		Esquared.reset();
 		grid.getCellIterator().execute(grid, Esquared);
-        return Esquared.getSum();
+        return Esquared.getSum(grid);
 	}
 	
 	public double calculateBsquared(Grid grid) {
 		Bsquared.reset();
 		grid.getCellIterator().execute(grid, Bsquared);
-        return Bsquared.getSum();
+        return Bsquared.getSum(grid);
 	}
 	
 	public double calculateEsquared(Grid grid, int dir) {
 		Esquared.reset();
 		grid.getCellIterator().execute(grid, Esquared);
-        return Esquared.getSum(dir);
+        return Esquared.getSum(grid, dir);
 	}
 	
 	public double calculateBsquared(Grid grid, int dir) {
 		Bsquared.reset();
 		grid.getCellIterator().execute(grid, Bsquared);
-        return Bsquared.getSum(dir);
+        return Bsquared.getSum(grid, dir);
 	}
 	
 	public double calculateGaussConstraint(Grid grid) {
 		GaussConstraint.reset();
 		grid.getCellIterator().execute(grid, GaussConstraint);
-        return GaussConstraint.getSum();
+        return GaussConstraint.getSum(grid);
 	}
 
 	public double calculateTotalCharge(Grid grid) {
@@ -57,26 +57,22 @@ public class FieldMeasurements {
         	sum = new double[3];//TODO Make this method d-dimensional!!
         }
         
-        public double getSum() {
-        	return sum[0]+sum[1]+sum[2];
+        public double getSum(Grid grid) {
+			double norm = Math.pow(grid.getLatticeSpacing()*grid.getGaugeCoupling(), 2) * grid.getTotalNumberOfCells();
+			return (sum[0]+sum[1]+sum[2]) / norm;
         }
         
-        public double getSum(int dir) {
-        	return sum[dir];
+        public double getSum(Grid grid, int dir) {
+			double norm = Math.pow(grid.getLatticeSpacing()*grid.getGaugeCoupling(), 2) * grid.getTotalNumberOfCells();
+        	return sum[dir] / norm;
         }
 
         public void execute(Grid grid, int index) {
 			int numDir = grid.getNumberOfDimensions();
-			double norm = grid.getLatticeSpacing()*grid.getLatticeSpacing()*grid.getGaugeCoupling()*grid.getGaugeCoupling();
 			double[] res = new double[numDir];
 			for (int i = 0; i < numDir; i++) {
-				norm *= grid.getNumCells(i);
 				res[i] += grid.getE(index, i).square();
 				//res += grid.getEsquaredFromLinks(coor, i);
-			}
-			
-			for (int i = 0; i < numDir; i++) {
-				res[i] /= norm;
 			}
 			synchronized(this) {
 				for (int i = 0; i < numDir; i++) {
@@ -94,28 +90,26 @@ public class FieldMeasurements {
         	sum = new double[3];
         }
         
-        public double getSum() {
-        	return sum[0]+sum[1]+sum[2];
+        public double getSum(Grid grid)
+		{
+			double norm = Math.pow(grid.getLatticeSpacing()*grid.getGaugeCoupling(), 2) * grid.getTotalNumberOfCells();
+			return (sum[0]+sum[1]+sum[2]) / norm;
         }
-        
-        public double getSum(int dir) {
-        	return sum[dir];
-        }
+
+		public double getSum(Grid grid, int dir) {
+			double norm = Math.pow(grid.getLatticeSpacing()*grid.getGaugeCoupling(), 2) * grid.getTotalNumberOfCells();
+			return sum[dir] / norm;
+		}
         
         public void execute(Grid grid, int index) {
 			int numDir = grid.getNumberOfDimensions();
-			double norm = grid.getLatticeSpacing()*grid.getLatticeSpacing()*grid.getGaugeCoupling()*grid.getGaugeCoupling();
 			double[] res = new double[numDir];
 			for (int i = 0; i < numDir; i++) {
-				norm *= grid.getNumCells(i);
 				//res += grid.getB(coor, i).square();
 				// Averaging B(-dt/2) and B(dt/2) to approximate B(0).
 				res[i] += 0.5 * (grid.getBsquaredFromLinks(index, i, 0) + grid.getBsquaredFromLinks(index, i, 1));
 			}
-			
-			for (int i = 0; i < numDir; i++) {
-				res[i] /= norm;
-			}
+
 			synchronized(this) {
 				for (int i = 0; i < numDir; i++) {
 					sum[i] += res[i];   	// Synchronisierte Summenbildung
@@ -132,17 +126,13 @@ public class FieldMeasurements {
         	sum = 0.0;
         }
         
-        public double getSum() {
-        	return sum;
+        public double getSum(Grid grid) {
+			double norm = Math.pow(grid.getLatticeSpacing()*grid.getGaugeCoupling(), 2) * grid.getTotalNumberOfCells();
+			return sum / norm;
         }
         
         public void execute(Grid grid, int index) {
-			int numDir = grid.getNumberOfDimensions();
-			double norm = 1.0;
-			for (int i = 0; i < numDir; i++) {
-				norm *= grid.getNumCells(i);
-			}
-			double result = grid.getGaussConstraintSquared(index)/norm;
+			double result = grid.getGaussConstraintSquared(index);
 			synchronized(this) {
 			       sum += result;   // Synchronisierte Summenbildung
 			}

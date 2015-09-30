@@ -120,6 +120,7 @@ public class Chart2DPanel extends AnimationChart2DPanel {
 		double time = s.totalSimulationTime;
 
 		//TODO Make this method d-dimensional!!
+		// The values computed from fieldMeasurements already come in "physical units", i.e. the factor g*a is accounted for.
 		double[] esquares = new double[3];
 		double[] bsquares = new double[3];
 		for (int i = 0; i < 3; i++) {
@@ -134,8 +135,8 @@ public class Chart2DPanel extends AnimationChart2DPanel {
 		double pz = +esquares[0] + esquares[1] - esquares[2] + bsquares[0] + bsquares[1] - bsquares[2];
 		double energyDensity = (eSquared + bSquared) / 2;
 
+		// The value computed for the Gauss constraint violation and the total charge is given in physical units as well.
 		double gaussViolation = fieldMeasurements.calculateGaussConstraint(s.grid);
-
 		double totalCharge = fieldMeasurements.calculateTotalCharge(s.grid);
 
 		traces[INDEX_E_SQUARED].addPoint(time, eSquared);
