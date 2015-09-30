@@ -26,6 +26,8 @@ public class YamlCurrents {
 
     public ArrayList<YamlRandomLorenzColorCurrent> randomLorenzColorCurrents = new ArrayList<YamlRandomLorenzColorCurrent>();
 
+    public ArrayList<YamlRandomTemporalColorCurrent> randomTemporalColorCurrents = new ArrayList<YamlRandomTemporalColorCurrent>();
+
     /**
      * Creates CurrentGenerator instances and applies them to the Settings instance.
      * @param s
@@ -77,6 +79,11 @@ public class YamlCurrents {
             s.addCurrentGenerator(current.getCurrentGenerator());
         }
 
-    }
+		for (YamlRandomTemporalColorCurrent current : randomTemporalColorCurrents) {
+			s.addCurrentGenerator(current.getCurrentGenerator());
+		}
+
+
+	}
 
 }

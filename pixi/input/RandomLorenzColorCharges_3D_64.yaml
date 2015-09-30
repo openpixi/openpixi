@@ -1,9 +1,9 @@
-gridStep: 1
+gridStep: 0.5
 couplingConstant: 1
 numberOfDimensions: 3
 numberOfColors: 2
 numberOfThreads: 6
-gridCells: [32, 32, 32]
+gridCells: [64, 64, 64]
 poissonsolver: empty
 fieldsolver: lorenz yang mills
 timeStep: 0.1
@@ -14,7 +14,7 @@ currents:
     - direction: 0
       orientation: 1
       longitudinalLocation: 12
-      longitudinalWidth: 2.0
+      longitudinalWidth: 1.0
       transversalWidth: 3.0
       transversalLocation: [16, 16]
       numberOfCharges: 80
@@ -23,7 +23,7 @@ currents:
     - direction: 0
       orientation: -1
       longitudinalLocation: 20
-      longitudinalWidth: 2.0
+      longitudinalWidth: 1.0
       transversalWidth: 3.0
       transversalLocation: [16, 16]
       numberOfCharges: 80

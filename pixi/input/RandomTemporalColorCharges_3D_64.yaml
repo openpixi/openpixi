@@ -1,36 +1,39 @@
-gridStep: 1
-couplingConstant: 1
+gridStep: 0.5
+couplingConstant: 2
 numberOfDimensions: 3
 numberOfColors: 2
 numberOfThreads: 6
-gridCells: [32, 32, 32]
+gridCells: [64, 64, 64]
 poissonsolver: empty
-fieldsolver: lorenz yang mills
+fieldsolver: temporal yang mills
 timeStep: 0.1
 duration: 1000
 
 currents:
-  randomLorenzColorCurrents:
+  randomTemporalColorCurrents:
     - direction: 0
       orientation: 1
-      longitudinalLocation: 12
+      longitudinalLocation: 8
       longitudinalWidth: 2.0
       transversalWidth: 3.0
       transversalLocation: [16, 16]
       numberOfCharges: 80
-      colorDistributionWidth: 0.2
+      colorDistributionWidth: 0.8
       numberOfColors: 2
     - direction: 0
       orientation: -1
-      longitudinalLocation: 20
+      longitudinalLocation: 24
       longitudinalWidth: 2.0
       transversalWidth: 3.0
       transversalLocation: [16, 16]
       numberOfCharges: 80
-      colorDistributionWidth: 0.2
+      colorDistributionWidth: 0.8
       numberOfColors: 2
 
-
+output:
+  boundaryFixer:
+    - plane: yz0
+    - plane: yz1
 
 # Generated panel code:
 panels:
