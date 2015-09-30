@@ -70,37 +70,43 @@ public class YamlRandomLorenzColorCurrent {
 			numberOfComponents = 1;
 		}
 
+		ArrayList<double[]> listOfChargeLocations = new ArrayList<double[]>();
+		ArrayList<double[]> listOfChargeColorAmplitudes = new ArrayList<double[]>();
+
 		double[] totalCharge = new double[numberOfComponents];
-		for(int i = 0; i < numberOfCharges - 1; i++) {
+		for(int i = 0; i < numberOfCharges; i++) {
 			double[] chargeLocation = new double[transversalLocation.size()];
-			double[] chargeColorDirection = new double[numberOfComponents];
+			double[] chargeColorAmplitude = new double[numberOfComponents];
 			for (int j = 0; j < transversalLocation.size(); j++) {
 				chargeLocation[j] = transversalLocation.get(j) + rand.nextGaussian() * transversalWidth;
 			}
-			double chargeMagnitude = 0.0;
 			for (int j = 0; j < numberOfComponents; j++) {
-				chargeColorDirection[j] = rand.nextGaussian() * colorDistributionWidth;
-				totalCharge[j] += chargeColorDirection[j];
-				chargeMagnitude += Math.pow(chargeColorDirection[j], 2);
+				chargeColorAmplitude[j] = rand.nextGaussian() * colorDistributionWidth;
+				totalCharge[j] += chargeColorAmplitude[j];
 			}
-			chargeMagnitude = Math.sqrt(chargeMagnitude);
-			generator.addCharge(chargeLocation, chargeColorDirection, chargeMagnitude);
+			listOfChargeLocations.add(chargeLocation);
+			listOfChargeColorAmplitudes.add(chargeColorAmplitude);
 		}
 
-		// Add last charge to make the charge distribution colorless.
-		double[] chargeLocation = new double[transversalLocation.size()];
-		double[] chargeColorDirection = new double[numberOfComponents];
-		for (int j = 0; j < transversalLocation.size(); j++) {
-			chargeLocation[j] = transversalLocation.get(j) + rand.nextGaussian() * longitudinalWidth;
+		// Subtract a certain amount from each charge to make the whole distribution colorless.
+		for(int i = 0; i < numberOfCharges; i++) {
+			double[] amplitude = listOfChargeColorAmplitudes.get(i);
+			for (int j = 0; j < numberOfComponents; j++) {
+				amplitude[j] -= totalCharge[j] / numberOfCharges;
+			}
+
+			generator.addCharge(listOfChargeLocations.get(i), amplitude, getMagnitude(amplitude));
 		}
-		double totalChargeMagnitude = 0.0;
-		for (int j = 0; j < numberOfComponents; j++) {
-			totalChargeMagnitude += Math.pow(totalCharge[j], 2);
-		}
-		totalChargeMagnitude = -Math.sqrt(totalChargeMagnitude);
-		generator.addCharge(chargeLocation, totalCharge, totalChargeMagnitude);
 
 		return generator;
+	}
+
+	private double getMagnitude(double[] vector) {
+		double magnitude = 0.0;
+		for(int i = 0; i < vector.length; i++) {
+			magnitude += Math.pow(vector[i], 2);
+		}
+		return Math.sqrt(magnitude);
 	}
 
 
