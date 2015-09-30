@@ -11,7 +11,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 /**
- * This diagnostic implements an algorithm to restore the Gauss constraint. It is taken from arXiv:hep-ph/9603384.
+ * This diagnostic implements an algorithm to restore the Gauss constraint and only works for temporal gauge.
+ * It is taken from arXiv:hep-ph/9603384.
  */
 public class GaussConstraintRestoration implements Diagnostics {
 
