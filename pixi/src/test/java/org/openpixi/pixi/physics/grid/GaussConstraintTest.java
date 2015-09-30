@@ -8,131 +8,9 @@ import org.openpixi.pixi.physics.GeneralBoundaryType;
 import org.openpixi.pixi.physics.Settings;
 import org.openpixi.pixi.physics.Simulation;
 import org.openpixi.pixi.physics.fields.TemporalYangMillsSolver;
-import org.openpixi.pixi.physics.fields.fieldgenerators.SU2PlaneWave;
 import org.openpixi.pixi.physics.gauge.RandomGauge;
 
-import java.io.IOException;
-import java.util.ArrayList;
-
 public class GaussConstraintTest {
-
-	@Test
-	/**
-	 * This method tests the Gauss constraint using a plane wave.
-	 */
-	public void testPlaneWaves() {
-		// Test Gauss law with varying grid step.
-		double[] gridSteps = new double[]{1.0, 0.5, 0.25, 0.125};
-		int initialGridSize = 32;
-		int[] gridSizes = new int[gridSteps.length];
-		for(int i = 0; i < gridSteps.length; i++) {
-			gridSizes[i] = (int) (initialGridSize / gridSteps[i]);
-		}
-
-		ArrayList<Double> gaussViolations = new ArrayList<Double>();
-
-		for(int t = 0; t < gridSteps.length; t++) {
-			// Setup the simulation settings
-			Settings settings = new Settings();
-			settings.setRelativistic(true);
-			settings.setBoundary(GeneralBoundaryType.Periodic);
-			settings.setFieldSolver(new TemporalYangMillsSolver());
-			settings.useGrid(true);
-			settings.setInterpolator(new EmptyInterpolator());
-			settings.setSpeedOfLight(1.0);
-			settings.setNumberOfDimensions(3);
-			settings.setNumberOfColors(2);
-			settings.setTimeStep(0.05);
-			settings.setCouplingConstant(1.0);
-			settings.setTMax(10.0);
-			settings.setNumOfThreads(12);
-			settings.setGridCells(0, gridSizes[t]);
-			settings.setGridCells(1, 1);
-			settings.setGridCells(2, 1);
-			settings.setGridStep(gridSteps[t]);
-
-			BulkQuantitiesInTime bulk = new BulkQuantitiesInTime("", 1.0, true);
-			settings.addDiagnostics(bulk);
-
-			double simulationBoxLength = gridSizes[t] * gridSteps[t];
-			double[] k = new double[]{40.0 * Math.PI / simulationBoxLength, 0.0, 0.0};
-			double[] as = new double[]{0.0, 1.0, 0.0};
-			double[] ac = new double[]{1.0, 0.0, 0.0};
-			SU2PlaneWave planeWaveGenerator = new SU2PlaneWave(k, as, ac, 1.0);
-			settings.addFieldGenerator(planeWaveGenerator);
-
-			// Initialize the simulation and simulate a few steps.
-			Simulation simulation = new Simulation(settings);
-			while(simulation.continues()) {
-				try {
-					simulation.step();
-				} catch(IOException ex) {
-					ex.printStackTrace();
-				}
-			}
-
-			gaussViolations.add(bulk.gaussViolation);
-		}
-
-		// Check the results. Gauss violation should become smaller as the grid step is reduced.
-		for(int i = 1; i < gaussViolations.size(); i++) {
-			Assert.assertTrue(gaussViolations.get(i-1) > gaussViolations.get(i));
-		}
-
-
-		// Test Gauss law with varying time step.
-		gaussViolations.clear();
-
-		double[] timeSteps = new double[]{0.1, 0.05, 0.025, 0.0125};
-		for(int t = 0; t < timeSteps.length; t++) {
-			// Setup the simulation settings
-			Settings settings = new Settings();
-			settings.setRelativistic(true);
-			settings.setBoundary(GeneralBoundaryType.Periodic);
-			settings.setFieldSolver(new TemporalYangMillsSolver());
-			settings.useGrid(true);
-			settings.setInterpolator(new EmptyInterpolator());
-			settings.setSpeedOfLight(1.0);
-			settings.setNumberOfDimensions(3);
-			settings.setNumberOfColors(2);
-			settings.setTimeStep(timeSteps[t]);
-			settings.setCouplingConstant(1.0);
-			settings.setTMax(10.0);
-			settings.setNumOfThreads(12);
-			settings.setGridCells(0, initialGridSize);
-			settings.setGridCells(1, 1);
-			settings.setGridCells(2, 1);
-			settings.setGridStep(1.0);
-
-			BulkQuantitiesInTime bulk = new BulkQuantitiesInTime("", 1.0, true);
-			settings.addDiagnostics(bulk);
-
-			double simulationBoxLength = gridSizes[t] * gridSteps[t];
-			double[] k = new double[]{40.0 * Math.PI / simulationBoxLength, 0.0, 0.0};
-			double[] as = new double[]{0.0, 1.0, 0.0};
-			double[] ac = new double[]{1.0, 0.0, 0.0};
-			SU2PlaneWave planeWaveGenerator = new SU2PlaneWave(k, as, ac, 1.0);
-			settings.addFieldGenerator(planeWaveGenerator);
-
-			// Initialize the simulation and simulate a few steps.
-			Simulation simulation = new Simulation(settings);
-			while(simulation.continues()) {
-				try {
-					simulation.step();
-				} catch(IOException ex) {
-					ex.printStackTrace();
-				}
-			}
-
-			gaussViolations.add(bulk.gaussViolation);
-		}
-
-		// Check the results. Gauss violation should become smaller as the time step is reduced.
-		for(int i = 1; i < gaussViolations.size(); i++) {
-			Assert.assertTrue(gaussViolations.get(i-1) > gaussViolations.get(i));
-		}
-
-	}
 
 	@Test
 	/**
@@ -140,7 +18,7 @@ public class GaussConstraintTest {
 	 */
 	public void testGaussConstraintViolation() {
 		int gridSize = 16;
-		double timeStep = 0.0025;
+		double timeStep = 0.00025;
 		double gridStep = 0.05;
 
 		Settings settings = new Settings();

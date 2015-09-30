@@ -875,6 +875,7 @@ public class Grid {
 		}
 		gauss.multAssign(1.0/as);
 		gauss = gauss.sub(getRho(index));
-		return gauss.square();
+		return gauss.square() / Math.pow( as * gaugeCoupling, 2.0);
+		//return gauss.square();
 	}
 }
