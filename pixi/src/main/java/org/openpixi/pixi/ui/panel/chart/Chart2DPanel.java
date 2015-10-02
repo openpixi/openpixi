@@ -16,7 +16,6 @@ import javax.swing.Box;
 
 import org.openpixi.pixi.diagnostics.methods.OccupationNumbersInTime;
 import org.openpixi.pixi.physics.Simulation;
-import org.openpixi.pixi.physics.grid.Grid;
 import org.openpixi.pixi.physics.measurements.FieldMeasurements;
 import org.openpixi.pixi.ui.SimulationAnimation;
 import org.openpixi.pixi.ui.panel.properties.BooleanProperties;
@@ -73,7 +72,7 @@ public class Chart2DPanel extends AnimationChart2DPanel {
 
 	private OccupationNumbersInTime occupationNumbers;
 
-	public BooleanProperties useExcludeRegionProperty;
+	public BooleanProperties useRestrictedRegionProperty;
 	public RegionProperty regionPropery;
 	private boolean[] oldExcludedRegion;
 	private boolean oldUseExcludeRegionProperty;
@@ -105,17 +104,17 @@ public class Chart2DPanel extends AnimationChart2DPanel {
 		setAxisYLeft(axisy, 0);
 
 		this.oldExcludedRegion = new boolean[simulationAnimation.getSimulation().grid.getTotalNumberOfCells()];
-		this.useExcludeRegionProperty = new BooleanProperties(simulationAnimation, "Use restricted region", false);
+		this.useRestrictedRegionProperty = new BooleanProperties(simulationAnimation, "Use restricted region", false);
 		this.regionPropery = new RegionProperty(simulationAnimation, "Region", "");
-		oldUseExcludeRegionProperty = this.useExcludeRegionProperty.getValue();
+		oldUseExcludeRegionProperty = this.useRestrictedRegionProperty.getValue();
 	}
 
 	public void update() {
 		// Update excluded region if settings have changed.
-		if (useExcludeRegionProperty.getValue() != oldUseExcludeRegionProperty || oldExcludedRegion != regionPropery.excludedRegion) {
-			oldUseExcludeRegionProperty = useExcludeRegionProperty.getValue();
-			oldExcludedRegion = regionPropery.excludedRegion;
-			this.fieldMeasurements = new FieldMeasurements(regionPropery.excludedRegion);
+		if (useRestrictedRegionProperty.getValue() != oldUseExcludeRegionProperty || oldExcludedRegion != regionPropery.restrictedRegion) {
+			oldUseExcludeRegionProperty = useRestrictedRegionProperty.getValue();
+			oldExcludedRegion = regionPropery.restrictedRegion;
+			this.fieldMeasurements = new FieldMeasurements(regionPropery.restrictedRegion);
 
 		}
 
@@ -191,7 +190,7 @@ public class Chart2DPanel extends AnimationChart2DPanel {
 		addLabel(box, "Chart panel");
 		logarithmicProperty.addComponents(box);
 		showChartsProperty.addComponents(box);
-		useExcludeRegionProperty.addComponents(box);
+		useRestrictedRegionProperty.addComponents(box);
 		regionPropery.addComponents(box);
 	}
 
@@ -202,12 +201,12 @@ public class Chart2DPanel extends AnimationChart2DPanel {
 		public int[] latticeCoordinate0;
 		public int[] latticeCoordinate1;
 
-		public boolean[] excludedRegion;
+		public boolean[] restrictedRegion;
 
 		public RegionProperty(SimulationAnimation simulationAnimation, String name, String initialValue) {
 			super(simulationAnimation, name, initialValue);
 			this.s = simulationAnimation.getSimulation();
-			this.excludedRegion = new boolean[s.grid.getTotalNumberOfCells()];
+			this.restrictedRegion = new boolean[s.grid.getTotalNumberOfCells()];
 		}
 
 		@Override
@@ -232,13 +231,13 @@ public class Chart2DPanel extends AnimationChart2DPanel {
 					}
 
 					// Compute excluded region.
-					this.excludedRegion = new boolean[s.grid.getTotalNumberOfCells()];
+					this.restrictedRegion = new boolean[s.grid.getTotalNumberOfCells()];
 
 					for (int i = 0; i < s.grid.getTotalNumberOfCells(); i++) {
 						int[] currentCoordinate = s.grid.getCellPos(i);
 						for (int j = 0; j < s.getNumberOfDimensions(); j++) {
 							if (latticeCoordinate0[j] > currentCoordinate[j] || currentCoordinate[j] > latticeCoordinate1[j]) {
-								this.excludedRegion[i] = true;
+								this.restrictedRegion[i] = true;
 								break;
 							}
 						}

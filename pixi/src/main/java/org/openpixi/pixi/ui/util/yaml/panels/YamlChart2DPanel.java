@@ -4,13 +4,12 @@ import java.awt.Component;
 
 import org.openpixi.pixi.ui.PanelManager;
 import org.openpixi.pixi.ui.panel.chart.Chart2DPanel;
-import org.openpixi.pixi.ui.panel.properties.BooleanProperties;
 
 public class YamlChart2DPanel {
 
 	// Boolean properties
 	public Boolean logarithmicScale;
-	public Boolean useExcludedRegion;
+	public Boolean useRestrictedRegion;
 
 	// Chart content properties
 	public String[] showCharts;
@@ -29,7 +28,7 @@ public class YamlChart2DPanel {
 			logarithmicScale = panel.logarithmicProperty.getValue();
 			showCharts = panel.showChartsProperty.getStringArrayFromValues();
 
-			useExcludedRegion = panel.useExcludeRegionProperty.getValue();
+			useRestrictedRegion = panel.useRestrictedRegionProperty.getValue();
 			restrictedRegion = panel.regionPropery.getValue();
 		}
 	}
@@ -46,8 +45,8 @@ public class YamlChart2DPanel {
 			panel.showChartsProperty.setValuesFromStringArray(showCharts);
 		}
 
-		if(useExcludedRegion != null) {
-			panel.useExcludeRegionProperty.setValue(useExcludedRegion);
+		if(useRestrictedRegion != null) {
+			panel.useRestrictedRegionProperty.setValue(useRestrictedRegion);
 		}
 
 		if(restrictedRegion != null) {
