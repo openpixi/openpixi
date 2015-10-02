@@ -1,10 +1,8 @@
 package org.openpixi.pixi.physics.measurements;
 
 import org.openpixi.pixi.math.AlgebraElement;
-import org.openpixi.pixi.physics.grid.Cell;
 import org.openpixi.pixi.physics.grid.Grid;
 import org.openpixi.pixi.parallel.cellaccess.CellAction;
-import org.openpixi.pixi.physics.util.GridFunctions;
 
 
 public class FieldMeasurements {
@@ -14,14 +12,14 @@ public class FieldMeasurements {
 	private GaussLaw GaussConstraint;
 	private TotalCharge totalCharge;
 
-	private boolean useExcludedBoundaries;
-	private boolean[] excludedRegion;
+	private boolean useRestrictedRegion;
+	private boolean[] restrictedRegion;
 
 	/**
 	 * Empty constructor for standard usage.
 	 */
 	public FieldMeasurements() {
-		this.useExcludedBoundaries = false;
+		this.useRestrictedRegion = false;
 
 		Esquared = new EFieldSquared();
 		Bsquared = new BFieldSquared();
@@ -31,17 +29,17 @@ public class FieldMeasurements {
 
 	/**
 	 * Alternative constructor for use with non-periodic boundaries.
-	 * @param excludedRegion
+	 * @param restrictedRegion
 	 */
-	public FieldMeasurements(boolean[] excludedRegion) {
-		this.useExcludedBoundaries = true;
+	public FieldMeasurements(boolean[] restrictedRegion) {
+		this.useRestrictedRegion = true;
 
-		Esquared = new EFieldSquared(excludedRegion);
-		Bsquared = new BFieldSquared(excludedRegion);
-		GaussConstraint = new GaussLaw(excludedRegion);
-		totalCharge = new TotalCharge(excludedRegion);
+		Esquared = new EFieldSquared(restrictedRegion);
+		Bsquared = new BFieldSquared(restrictedRegion);
+		GaussConstraint = new GaussLaw(restrictedRegion);
+		totalCharge = new TotalCharge(restrictedRegion);
 
-		this.excludedRegion = excludedRegion;
+		this.restrictedRegion = restrictedRegion;
 	}
 
 	public double calculateEsquared(Grid grid) {
@@ -81,16 +79,16 @@ public class FieldMeasurements {
 	}
 
 	private class FieldMeasurementAction implements CellAction {
-		protected boolean useExcludedRegion;
-		protected boolean[] excludedRegion;
+		protected boolean useRestrictedRegion;
+		protected boolean[] restrictedRegion;
 
 		public FieldMeasurementAction() {
-			this.useExcludedRegion = false;
+			this.useRestrictedRegion = false;
 		}
 
-		public FieldMeasurementAction(boolean[] excludedRegion) {
-			this.useExcludedRegion = true;
-			this.excludedRegion = excludedRegion;
+		public FieldMeasurementAction(boolean[] restrictedRegion) {
+			this.useRestrictedRegion = true;
+			this.restrictedRegion = restrictedRegion;
 		}
 
 		public void execute(Grid grid, int index) {
@@ -106,8 +104,8 @@ public class FieldMeasurements {
 			super();
 		}
 
-		public EFieldSquared(boolean[] excludedRegion) {
-			super(excludedRegion);
+		public EFieldSquared(boolean[] restrictedRegion) {
+			super(restrictedRegion);
 		}
 
         public void reset() {
@@ -125,7 +123,7 @@ public class FieldMeasurements {
         }
 
         public void execute(Grid grid, int index) {
-			if(!excludedRegion[index]) {
+			if(!restrictedRegion[index]) {
 				int numDir = grid.getNumberOfDimensions();
 				double[] res = new double[numDir];
 				for (int i = 0; i < numDir; i++) {
@@ -149,8 +147,8 @@ public class FieldMeasurements {
 			super();
 		}
 
-		public BFieldSquared(boolean[] excludedRegion) {
-			super(excludedRegion);
+		public BFieldSquared(boolean[] restrictedRegion) {
+			super(restrictedRegion);
 		}
 
         public void reset() {
@@ -169,7 +167,7 @@ public class FieldMeasurements {
 		}
         
         public void execute(Grid grid, int index) {
-			if(!excludedRegion[index]) {
+			if(!restrictedRegion[index]) {
 				int numDir = grid.getNumberOfDimensions();
 				double[] res = new double[numDir];
 				for (int i = 0; i < numDir; i++) {
@@ -195,8 +193,8 @@ public class FieldMeasurements {
 			super();
 		}
 
-		public GaussLaw(boolean[] excludedRegion) {
-			super(excludedRegion);
+		public GaussLaw(boolean[] restrictedRegion) {
+			super(restrictedRegion);
 		}
 
         public void reset() {
@@ -209,7 +207,7 @@ public class FieldMeasurements {
         }
         
         public void execute(Grid grid, int index) {
-			if(!excludedRegion[index]) {
+			if(!restrictedRegion[index]) {
 				double result = grid.getGaussConstraintSquared(index);
 				synchronized (this) {
 					sum += result;   // Synchronisierte Summenbildung
@@ -226,8 +224,8 @@ public class FieldMeasurements {
 			super();
 		}
 
-		public TotalCharge(boolean[] excludedRegion) {
-			super(excludedRegion);
+		public TotalCharge(boolean[] restrictedRegion) {
+			super(restrictedRegion);
 		}
 
 		public void reset(Grid grid) {
@@ -241,7 +239,7 @@ public class FieldMeasurements {
 		}
 
 		public void execute(Grid grid, int index) {
-			if(!excludedRegion[index]) {
+			if(!restrictedRegion[index]) {
 				synchronized (this) {
 					charge.addAssign(grid.getRho(index));   // Synchronisierte Summenbildung
 				}
