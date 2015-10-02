@@ -45,11 +45,13 @@ panels:
     leftPanel:
       chartPanel:
         logarithmicScale: false
+        restrictedRegion: '[0,0,0]-[62,63,1]'
         showCharts:
         - Gauss law violation
         - E squared
         - B squared
         - Energy density
+        useRestrictedRegion: true
     orientation: 0
     rightPanel:
       electricFieldPanel:

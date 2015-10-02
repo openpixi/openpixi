@@ -35,22 +35,26 @@ output:
     - plane: yz0
     - plane: yz1
 
+
+
 # Generated panel code:
 panels:
-  dividerLocation: 1015
+  dividerLocation: 1003
   leftPanel:
-    dividerLocation: 484
+    dividerLocation: 497
     leftPanel:
       chartPanel:
         logarithmicScale: false
+        restrictedRegion: '[0,0,0]-[30,31,31]'
         showCharts:
         - Gauss law violation
         - E squared
         - B squared
         - Energy density
+        useRestrictedRegion: true
     orientation: 0
     rightPanel:
-      dividerLocation: 501
+      dividerLocation: 495
       leftPanel:
         energyDensity2DGLPanel:
           automaticScaling: false
@@ -64,7 +68,7 @@ panels:
           showCoordinates: 16,x,y
   orientation: 1
   rightPanel:
-    dividerLocation: 503
+    dividerLocation: 516
     leftPanel:
       energyDensity2DGLPanel:
         automaticScaling: false
