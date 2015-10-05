@@ -14,7 +14,7 @@ public class YamlChart2DPanel {
 	// Chart content properties
 	public String[] showCharts;
 
-	// Excluded region properties
+	// Restricted region properties
 	public String restrictedRegion;
 
 

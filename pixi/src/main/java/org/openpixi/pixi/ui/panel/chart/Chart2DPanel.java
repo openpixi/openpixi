@@ -74,8 +74,8 @@ public class Chart2DPanel extends AnimationChart2DPanel {
 
 	public BooleanProperties useRestrictedRegionProperty;
 	public RegionProperty regionPropery;
-	private boolean[] oldExcludedRegion;
-	private boolean oldUseExcludeRegionProperty;
+	private boolean[] oldRestrictedRegion;
+	private boolean oldUseRestrictedRegionProperty;
 
 	/** Constructor */
 	public Chart2DPanel(SimulationAnimation simulationAnimation) {
@@ -103,17 +103,17 @@ public class Chart2DPanel extends AnimationChart2DPanel {
 				new MyAxisScalePolicyAutomaticBestFit());
 		setAxisYLeft(axisy, 0);
 
-		this.oldExcludedRegion = new boolean[simulationAnimation.getSimulation().grid.getTotalNumberOfCells()];
+		this.oldRestrictedRegion = new boolean[simulationAnimation.getSimulation().grid.getTotalNumberOfCells()];
 		this.useRestrictedRegionProperty = new BooleanProperties(simulationAnimation, "Use restricted region", false);
 		this.regionPropery = new RegionProperty(simulationAnimation, "Region", "");
-		oldUseExcludeRegionProperty = this.useRestrictedRegionProperty.getValue();
+		oldUseRestrictedRegionProperty = this.useRestrictedRegionProperty.getValue();
 	}
 
 	public void update() {
-		// Update excluded region if settings have changed.
-		if (useRestrictedRegionProperty.getValue() != oldUseExcludeRegionProperty || oldExcludedRegion != regionPropery.restrictedRegion) {
-			oldUseExcludeRegionProperty = useRestrictedRegionProperty.getValue();
-			oldExcludedRegion = regionPropery.restrictedRegion;
+		// Update restricted region if settings have changed.
+		if (useRestrictedRegionProperty.getValue() != oldUseRestrictedRegionProperty || oldRestrictedRegion != regionPropery.restrictedRegion) {
+			oldUseRestrictedRegionProperty = useRestrictedRegionProperty.getValue();
+			oldRestrictedRegion = regionPropery.restrictedRegion;
 			this.fieldMeasurements = new FieldMeasurements(regionPropery.restrictedRegion);
 
 		}
@@ -230,7 +230,7 @@ public class Chart2DPanel extends AnimationChart2DPanel {
 						latticeCoordinate1[i] = Integer.parseInt(stringCoord1[i]);
 					}
 
-					// Compute excluded region.
+					// Compute restricted region.
 					this.restrictedRegion = new boolean[s.grid.getTotalNumberOfCells()];
 
 					for (int i = 0; i < s.grid.getTotalNumberOfCells(); i++) {
