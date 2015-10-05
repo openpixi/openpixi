@@ -13,12 +13,12 @@ public class Grid {
 	/**
 	 * Solver algorithm for the field equations
 	 */
-	private FieldSolver fsolver;
+	protected FieldSolver fsolver;
 
 	/**
 	 * Instance of the CellIterator which iterates over all cells in the grid (either sequentially or in parallel)
 	 */
-	private CellIterator cellIterator;
+	protected CellIterator cellIterator;
 
 	/*
 	 *      Cell actions
@@ -31,12 +31,12 @@ public class Grid {
 	 * Cell array. This one dimensional array is used to represent the d-dimensional grid. The cells are indexed by
 	 * their cell ids. Cell ids can be computed from lattice coordinates with the {@link #getCellIndex(int[])} method.
 	 */
-	private Cell[] cells;
+	protected Cell[] cells;
 
 	/**
 	 * Number of dimensions
 	 */
-	private int numDim;
+	protected int numDim;
 
 	/**
 	 * Number of colors
@@ -46,28 +46,28 @@ public class Grid {
 	/**
 	 * Number of cells (size of the grid) in each direction
 	 */
-	private int numCells[];
+	protected int numCells[];
 
 	/**
 	 * Spatial lattice spacing
 	 */
-	private double as;
+	protected double as;
 	
 	/**
 	 * Temporal lattice spacing
 	 */
-	private double at;
+	protected double at;
 
 	/**
 	 * Gauge coupling strength
 	 */
-	private double gaugeCoupling;
+	protected double gaugeCoupling;
 
 	/**
 	 * Unit vectors to be used for the shift method.
 	 */
 	@Deprecated
-	private int[][] unitVectors;
+	protected int[][] unitVectors;
 
 	/**
 	 * Holds the cummulated cell count. This array is used by {@link #shift(int, int, int)}
@@ -77,12 +77,12 @@ public class Grid {
 	 * cummulatedCellCount[i] = cummulatedCellCount[i + 1] * numCells[i];
 	 * </pre>
 	 */
-	private int cummulatedCellCount[];
+	protected int cummulatedCellCount[];
 
 	/**
 	 * Factory for SU(n) group and algebra elements.
 	 */
-	private ElementFactory factory;
+	protected ElementFactory factory;
 
 	/**
 	 * Returns the FieldSolver instance currently used.
@@ -456,7 +456,7 @@ public class Grid {
 	/**
 	 * This methods initializes each cell in the grid.
 	 */
-	private void createGrid() {
+	protected void createGrid() {
 
 		factory = new ElementFactory(numCol);
 
