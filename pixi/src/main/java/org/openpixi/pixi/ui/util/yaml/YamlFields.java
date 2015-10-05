@@ -20,6 +20,8 @@ public class YamlFields {
 
 	public ArrayList<YamlSUNFocusedGaussianPulse> SUNFocusedGaussianPulses = new ArrayList<YamlSUNFocusedGaussianPulse>();
 
+	public ArrayList<YamlSUNLorenzPlaneWave> SUNLorenzPlaneWaves = new ArrayList<YamlSUNLorenzPlaneWave>();
+
 	/**
 	 * Creates FieldGenerator instances and applies them to the Settings instance.
 	 * @param s
@@ -42,14 +44,22 @@ public class YamlFields {
 				s.addFieldGenerator(pulse.getFieldGenerator());
 			}
 		}
+
 		for (YamlSU2FocusedGaussianPulse pulse : SU2FocusedGaussianPulses) {
 			if (pulse.checkConsistency(s)) {
 				s.addFieldGenerator(pulse.getFieldGenerator());
 			}
 		}
+
 		for (YamlSUNFocusedGaussianPulse pulse : SUNFocusedGaussianPulses) {
 			if (pulse.checkConsistency(s)) {
 				s.addFieldGenerator(pulse.getFieldGenerator());
+			}
+		}
+
+		for (YamlSUNLorenzPlaneWave wave : SUNLorenzPlaneWaves) {
+			if (wave.checkConsistency(s)) {
+				s.addFieldGenerator(wave.getFieldGenerator());
 			}
 		}
 	}

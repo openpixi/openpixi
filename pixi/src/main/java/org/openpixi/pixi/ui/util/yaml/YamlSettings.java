@@ -6,9 +6,10 @@ import java.util.List;
 import org.openpixi.pixi.physics.GeneralBoundaryType;
 import org.openpixi.pixi.physics.Settings;
 import org.openpixi.pixi.physics.fields.EmptyPoissonSolver;
+import org.openpixi.pixi.physics.fields.LorenzYangMillsSolver;
 import org.openpixi.pixi.physics.fields.fieldgenerators.IFieldGenerator;
 import org.openpixi.pixi.physics.fields.currentgenerators.ICurrentGenerator;
-import org.openpixi.pixi.physics.fields.GeneralYangMillsSolver;
+import org.openpixi.pixi.physics.fields.TemporalYangMillsSolver;
 import org.openpixi.pixi.physics.grid.EmptyInterpolator;
 import org.openpixi.pixi.physics.solver.relativistic.LeapFrogRelativistic;
 import org.openpixi.pixi.diagnostics.Diagnostics;
@@ -26,6 +27,7 @@ public class YamlSettings {
 	public Double gridStep;
 	public Double duration;
 	public List<Integer> gridCells;
+	public String fieldsolver;
 	public String poissonsolver;
 	public List<YamlParticle> particles;
 	public List<YamlParticleStream> streams;
@@ -39,7 +41,7 @@ public class YamlSettings {
 		// Default settings:
 		settings.setRelativistic(false);
 		settings.setBoundary(GeneralBoundaryType.Periodic);
-		settings.setGridSolver(new GeneralYangMillsSolver());//settings.setGridSolver(new YangMillsSolver());
+		settings.setFieldSolver(new TemporalYangMillsSolver());//settings.setFieldSolver(new YangMillsSolver());
 		settings.useGrid(true);
 		settings.setInterpolator(new EmptyInterpolator());
         settings.setSpeedOfLight(1.0);
@@ -97,6 +99,14 @@ public class YamlSettings {
 				settings.setPoissonSolver(new EmptyPoissonSolver());
 			} else {
 				throw new RuntimeException("Unknown Poisson solver specified in YAML file.");
+			}
+		}
+
+		if(fieldsolver != null) {
+			if(fieldsolver.equals("temporal yang mills")) {
+				settings.setFieldSolver(new TemporalYangMillsSolver());
+			} else if(fieldsolver.equals("lorenz yang mills")) {
+				settings.setFieldSolver(new LorenzYangMillsSolver());
 			}
 		}
 

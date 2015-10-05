@@ -28,6 +28,12 @@ public class Cell implements Serializable {
 	/**Link matrices at time t + dt/2 */
 	private GroupElement[] Unext;
 
+	/** Temporal link matrix at time t - dt/2 */
+	private GroupElement U0;
+
+	/** Temporal link matrix at time t + dt/2 */
+	private GroupElement U0next;
+
 	/**Factory for group and algebra elements */
 	ElementFactory factory;
 
@@ -62,6 +68,9 @@ public class Cell implements Serializable {
 				F[i][j] = factory.algebraZero(colors);
 			}
 		}
+
+		U0 = factory.groupIdentity(colors);
+		U0next = factory.groupIdentity(colors);
 	}
 
 	/**
@@ -120,6 +129,14 @@ public class Cell implements Serializable {
 		Unext[dir].set(link);
 	}
 
+	public GroupElement getU0() {return U0; }
+
+	public void setU0(GroupElement link) { U0.set(link); }
+
+	public GroupElement getU0next() {return U0next; }
+
+	public void setU0next(GroupElement link) { U0next.set(link); }
+
 	public AlgebraElement getFieldStrength(int i, int j) {
 		return F[i][j];
 	}
@@ -139,20 +156,21 @@ public class Cell implements Serializable {
 		for (int i=0;i<Unext.length;i++) {
 			Unext[i].set(factory.groupIdentity(colors));
 		}
+		U0next.set(factory.groupIdentity());
 	}
 
 	public void resetCharge() {
 		rho.reset();
-	}
-	
-	public AlgebraElement getEmptyField(int colors) {
-		return factory.algebraZero(colors);
 	}
 
 	public void reassignLinks() {
 		GroupElement[] temp = U;
 	    U = Unext;
 	    Unext = temp;
+
+		GroupElement tmp = U0;
+		U0 = U0next;
+		U0next = tmp;
 	}
 	 
 	/**
@@ -177,6 +195,8 @@ public class Cell implements Serializable {
 			this.Unext[i] = other.Unext[i].copy();
 		}
 		this.rho.set(other.rho);
+		this.U0.set(other.U0);
+		this.U0next.set(other.U0next);
 	}
 
 	/**

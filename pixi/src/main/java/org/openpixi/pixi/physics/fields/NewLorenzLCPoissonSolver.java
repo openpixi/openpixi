@@ -1,14 +1,16 @@
 package org.openpixi.pixi.physics.fields;
 
+import org.apache.commons.math3.analysis.function.Gaussian;
+import org.apache.commons.math3.special.Erf;
 import org.openpixi.pixi.math.AlgebraElement;
 import org.openpixi.pixi.math.ElementFactory;
 import org.openpixi.pixi.math.GroupElement;
 import org.openpixi.pixi.physics.Simulation;
+import org.openpixi.pixi.physics.fields.currentgenerators.NewLorenzLCCurrent;
 import org.openpixi.pixi.physics.gauge.DoubleFFTWrapper;
-import org.apache.commons.math3.special.Erf;
 import org.openpixi.pixi.physics.util.GridFunctions;
 
-public class NewLCPoissonSolver {
+public class NewLorenzLCPoissonSolver {
 
 	private int direction;
 	private int orientation;
@@ -30,7 +32,7 @@ public class NewLCPoissonSolver {
 
 	private ElementFactory factory;
 
-	public NewLCPoissonSolver(int direction, int orientation, double location, double longitudinalWidth, AlgebraElement[] transversalChargeDensity, int[] transversalNumCells) {
+	public NewLorenzLCPoissonSolver(int direction, int orientation, double location, double longitudinalWidth, AlgebraElement[] transversalChargeDensity, int[] transversalNumCells) {
 		this.direction = direction;
 		this.orientation = orientation;
 		this.location = location;
@@ -84,10 +86,12 @@ public class NewLCPoissonSolver {
 			for (int j = 0; j < totalTransversalCells; j++) {
 				this.phi[j].set(i, fftArray[fft.getFFTArrayIndex(j)]);
 			}
+			System.out.println();
 		}
 
 		// Second step: compute links from transversal potential
-		double gaugeNorm = g * as;
+		double gaugeNorm1 = g * as;
+		double gaugeNorm2 = g * at;
 		int totalCells = s.grid.getTotalNumberOfCells();
 		for (int i = 0; i < totalCells; i++) {
 			int[] gridPos = s.grid.getCellPos(i);
@@ -97,49 +101,31 @@ public class NewLCPoissonSolver {
 			int transversalCellIndex = GridFunctions.getCellIndex(transversalGridPos, transversalNumCells);
 
 			// Shape function (i.e. F(z,t)) at t = -dt/2 and t = dt /2.
-			double s0 = integratedShapeFunction(z, - at / 2.0, orientation, longitudinalWidth);
-			double s1 = integratedShapeFunction(z, + at / 2.0, orientation, longitudinalWidth);
 
-			// Setup the gauge links at t = -dt/2 and t = dt/2
-			GroupElement V0 = phi[transversalCellIndex].mult(- s0 * g).getLink();
-			GroupElement V0next = phi[transversalCellIndex].mult(- s1 * g).getLink();
+			//double s0 = shapeFunction(z, -at / 2.0, orientation, longitudinalWidth);
+			//double s1 = shapeFunction(z, +at / 2.0, orientation, longitudinalWidth);
+			double s0 = shapeFunction(z + as/2.0, -at / 2.0, orientation, longitudinalWidth);
+			double s1 = shapeFunction(z + as/2.0, +at / 2.0, orientation, longitudinalWidth);
+			double s2 = shapeFunction(z, 0.0, orientation, longitudinalWidth);
+			double s3 = shapeFunction(z, at, orientation, longitudinalWidth);
 
-			// New method: Apply gauge transformation directly to gauge links without the use of a discretized derivative.
-			for (int j = 0; j < numberOfDimensions; j++) {
-				if (j != direction) {
-					int transversalCellIndexShifted = GridFunctions.getCellIndex(
-							GridFunctions.reduceGridPos(
-									s.grid.getCellPos(s.grid.shift(i, j, 1))
-									, direction),
-							transversalNumCells);
+			// Set temporal and spatial links.
+			AlgebraElement currentPhi = phi[transversalCellIndex];
+			GroupElement UZP = currentPhi.mult(orientation * s0 * gaugeNorm1).getLink(); // U_{x,i} ~ A_{x+i/2, i}
+			GroupElement UZF = currentPhi.mult(orientation * s1 * gaugeNorm1).getLink(); // U_{x+0,i}
+			GroupElement U0P = currentPhi.mult(-s2 * gaugeNorm2).getLink(); // U_{x,0}
+			GroupElement U0F = currentPhi.mult(-s3 * gaugeNorm2).getLink(); // U_{x+0,0}
 
-					GroupElement V1 = phi[transversalCellIndexShifted].mult(- s0 * g).getLink();
-					GroupElement V1next = phi[transversalCellIndexShifted].mult(- s1 * g).getLink();
-
-					GroupElement U = s.grid.getU(i, j);
-					GroupElement Unext = s.grid.getUnext(i, j);
-					// U_x,i = V_x V_{x+i}^t
-					s.grid.setU(i, j, V0.mult(U).mult(V1.adj()));
-					s.grid.setUnext(i, j, V0next.mult(Unext).mult(V1next.adj()));
-				}
-			}
-		}
-
-
-		// Third step: Compute electric field from temporal plaquette
-		for (int i = 0; i < totalCells; i++) {
-			for (int j = 0; j < numberOfDimensions; j++) {
-				if(j != direction) {
-					s.grid.setE(i, j, s.grid.getEFromLinks(i, j));
-				}
-			}
+			s.grid.setU(i, direction, s.grid.getU(i, direction).mult(UZP));
+			s.grid.setUnext(i, direction, s.grid.getUnext(i, direction).mult(UZF));
+			s.grid.setU0(i, s.grid.getU0(i).mult(U0P));
+			s.grid.setU0next(i, s.grid.getU0next(i).mult(U0F));
 		}
 	}
 
-	private double integratedShapeFunction(double z, double t, int o, double width) {
-
-		double arg = (t - o*z)/(width*Math.sqrt(2));
-		return  0.5 + 0.5*Erf.erf(arg);
+	private double shapeFunction(double z, double t, int o, double width) {
+		Gaussian gauss = new Gaussian(0.0, width);
+		return gauss.value(z - o * t);
 	}
 
 	private double computeLatticeMomentumSquared(int cellIndex) {

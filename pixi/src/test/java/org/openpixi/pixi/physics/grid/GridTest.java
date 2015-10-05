@@ -10,7 +10,7 @@ import org.openpixi.pixi.physics.GeneralBoundaryType;
 import org.openpixi.pixi.physics.Settings;
 import org.openpixi.pixi.physics.Simulation;
 import org.openpixi.pixi.physics.fields.fieldgenerators.SU2RandomFields;
-import org.openpixi.pixi.physics.fields.GeneralYangMillsSolver;
+import org.openpixi.pixi.physics.fields.TemporalYangMillsSolver;
 import org.openpixi.pixi.physics.solver.relativistic.LeapFrogRelativistic;
 
 public class GridTest {
@@ -247,7 +247,7 @@ public class GridTest {
 
 		s.setRelativistic(true);
 		s.setBoundary(GeneralBoundaryType.Periodic);
-		s.setGridSolver(new GeneralYangMillsSolver());
+		s.setFieldSolver(new TemporalYangMillsSolver());
 		s.useGrid(true);
 		s.setInterpolator(new EmptyInterpolator());
 		s.setSpeedOfLight(1.0);
