@@ -88,7 +88,8 @@ public class CoulombGauge extends GaugeTransformation {
 			psi[i] = factory.algebraZero(colors);
 		}
 
-		for (int color = 0; color < colors; color++) {
+		int numberOfComponents = factory.numberOfComponents;
+		for (int color = 0; color < numberOfComponents; color++) {
 			// Calculate Divergence and put into fftArray
 			calculateDivergence.setColorAndResetSum(color);
 			grid.getCellIterator().execute(grid, calculateDivergence);
