@@ -20,6 +20,7 @@ package org.openpixi.pixi.ui.panel.gl;
 
 import org.openpixi.pixi.diagnostics.methods.OccupationNumbersInTime;
 import org.openpixi.pixi.physics.Simulation;
+import org.openpixi.pixi.physics.util.GridFunctions;
 import org.openpixi.pixi.ui.SimulationAnimation;
 import org.openpixi.pixi.ui.panel.properties.BooleanProperties;
 import org.openpixi.pixi.ui.panel.properties.CoordinateProperties;
@@ -40,6 +41,7 @@ public class OccupationNumbers2DGLPanel extends AnimationGLPanel {
 
 	ScaleProperties scaleProperties;
 	BooleanProperties colorfulProperties;
+	BooleanProperties mirrorProperties;
 	IntegerProperties frameSkipProperties;
 	CoordinateProperties showCoordinateProperties;
 
@@ -48,6 +50,8 @@ public class OccupationNumbers2DGLPanel extends AnimationGLPanel {
 
 	private int frameCounter;
 	private int frameSkip;
+	private int mirrorDirection = 0;
+	private boolean oldUseMirror;
 
 	/** Constructor */
 	public OccupationNumbers2DGLPanel(SimulationAnimation simulationAnimation) {
@@ -55,13 +59,14 @@ public class OccupationNumbers2DGLPanel extends AnimationGLPanel {
 		scaleProperties = new ScaleProperties(simulationAnimation);
 		scaleProperties.setAutomaticScaling(true);
 		colorfulProperties = new BooleanProperties(simulationAnimation, "Colorful occupation numbers", true);
+		mirrorProperties = new BooleanProperties(simulationAnimation, "Mirror x-direction", true);
+		oldUseMirror = mirrorProperties.getValue();
 		frameSkipProperties = new IntegerProperties(simulationAnimation, "Skipped frames:", 2);
 		showCoordinateProperties = new CoordinateProperties(simulationAnimation, CoordinateProperties.Mode.MODE_2D);
 		frameCounter = 0;
 
 		simulation = this.simulationAnimation.getSimulation();
-		diagnostic = new OccupationNumbersInTime(1.0, "none", "", true);
-		diagnostic.initialize(simulation);
+		updateDiagnostic();
 		diagnostic.calculate(simulation.grid, simulation.particles, 0);
 
 	}
@@ -70,14 +75,14 @@ public class OccupationNumbers2DGLPanel extends AnimationGLPanel {
 	public void display(GLAutoDrawable glautodrawable) {
 
 		// Compute occupation numbers
+		if(mirrorProperties.getValue() != oldUseMirror || simulation != simulationAnimation.getSimulation()) {
+			oldUseMirror = mirrorProperties.getValue();
+			simulation = simulationAnimation.getSimulation();
+			updateDiagnostic();
+		}
 		frameSkip = (frameSkipProperties.getValue() > 1) ? frameSkipProperties.getValue() : 1;
 		if( frameCounter % frameSkip == 0)
 		{
-			if(simulation != simulationAnimation.getSimulation()) {
-				simulation = this.simulationAnimation.getSimulation();
-				diagnostic.initialize(simulation);
-			}
-
 			diagnostic.calculate(simulation.grid, simulation.particles, 0);
 
 		}
@@ -98,21 +103,36 @@ public class OccupationNumbers2DGLPanel extends AnimationGLPanel {
 		int yAxisIndex = showCoordinateProperties.getYAxisIndex();
 		int pos[] = showCoordinateProperties.getPositions();
 
+		int xAxisNumCells = s.grid.getNumCells(xAxisIndex);
+		int yAxisNumCells = s.grid.getNumCells(yAxisIndex);
+
 		/** Scaling factor for the displayed panel in x-direction*/
 		double sx = width / s.getSimulationBoxSize(xAxisIndex);
 		/** Scaling factor for the displayed panel in y-direction*/
 		double sy = height / s.getSimulationBoxSize(yAxisIndex);
 
-		for(int i = 0; i < s.grid.getNumCells(0); i++) {
+		if(mirrorProperties.getValue()) {
+			if(mirrorDirection == xAxisIndex) {
+				xAxisNumCells *= 2;
+				sx *= 0.5;
+			}
+			if(mirrorDirection == yAxisIndex) {
+				yAxisNumCells *= 2;
+				sy *= 0.5;
+			}
+		}
+
+
+		for(int i = 0; i < xAxisNumCells; i++) {
 			gl2.glBegin( GL2.GL_QUAD_STRIP );
-			for(int k = 0; k < s.grid.getNumCells(1); k++)
+			for(int k = 0; k < yAxisNumCells; k++)
 			{
 				int xstart2 = (int)(s.grid.getLatticeSpacing() * i * sx);
 				int xstart3 = (int)(s.grid.getLatticeSpacing() * (i + 1) * sx);
 				int ystart2 = (int) (s.grid.getLatticeSpacing() * k * sy);
 
-				pos[0] = i;
-				pos[1] = k;
+				pos[xAxisIndex] = i;
+				pos[yAxisIndex] = k;
 				int index = this.getMomentumIndex(pos);
 
 				if(colorfulProperties.getValue())
@@ -152,9 +172,22 @@ public class OccupationNumbers2DGLPanel extends AnimationGLPanel {
 		scaleProperties.calculateAutomaticScale(1.0);
 	}
 
+	private void updateDiagnostic() {
+		if(mirrorProperties.getValue()) {
+			diagnostic = new OccupationNumbersInTime(1.0, "none", "", true, mirrorDirection);
+			diagnostic.initialize(simulation);
+		} else {
+			diagnostic = new OccupationNumbersInTime(1.0, "none", "", true);
+			diagnostic.initialize(simulation);
+		}
+	}
+
 	private int getMomentumIndex(int[] pos)
 	{
-		int[] numGridCells = simulation.grid.getNumCells();
+		int[] numGridCells = simulation.grid.getNumCells().clone();
+		if(mirrorProperties.getValue()) {
+			numGridCells[mirrorDirection] *= 2;
+		}
 		int[] pos2 = new int[pos.length];
 		System.arraycopy(pos, 0, pos2, 0, pos.length);
 
@@ -165,7 +198,7 @@ public class OccupationNumbers2DGLPanel extends AnimationGLPanel {
 			pos2[i] = numGridCells[i] - pos2[i];
 		}
 
-		return simulation.grid.getCellIndex(pos2);
+		return GridFunctions.getCellIndex(pos2, numGridCells);
 	}
 
 	public void addPropertyComponents(Box box) {
@@ -174,6 +207,7 @@ public class OccupationNumbers2DGLPanel extends AnimationGLPanel {
 		colorfulProperties.addComponents(box);
 		frameSkipProperties.addComponents(box);
 		showCoordinateProperties.addComponents(box);
+		mirrorProperties.addComponents(box);
 	}
 
 	public ScaleProperties getScaleProperties() {
