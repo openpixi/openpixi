@@ -2,7 +2,6 @@ package org.openpixi.pixi.diagnostics.methods;
 
 import org.openpixi.pixi.diagnostics.Diagnostics;
 import org.openpixi.pixi.math.AlgebraElement;
-import org.openpixi.pixi.physics.Settings;
 import org.openpixi.pixi.physics.Simulation;
 import org.openpixi.pixi.physics.gauge.CoulombGauge;
 import org.openpixi.pixi.physics.gauge.DoubleFFTWrapper;
@@ -457,14 +456,17 @@ public class OccupationNumbersInTime implements Diagnostics {
 			super(grid);
 			this.numCells[mirroredDirection] *= 2;
 			createGrid();
+			this.cellIterator.setNormalMode(numCells);
 
 			// Copy and mirror cells.
 			for (int i = 0; i < grid.getTotalNumberOfCells(); i++) {
 				int[] cellPos = grid.getCellPos(i);
 				int newGridIndex = this.getCellIndex(cellPos);
+
 				int[] newMirroredGridPos = cellPos.clone();
 				newMirroredGridPos[mirroredDirection] = 2 * grid.getNumCells(mirroredDirection) - cellPos[mirroredDirection];
 				int mirroredIndex = this.getCellIndex(newMirroredGridPos);
+
 				cells[newGridIndex] = grid.getCell(i).copy();
 				cells[mirroredIndex] = grid.getCell(i).copy();
 			}
