@@ -29,6 +29,8 @@ public class NewLCCurrent implements ICurrentGenerator {
 
 	private int[] numCells;
 
+	NewLCPoissonSolver poissonSolver;
+
 	public NewLCCurrent(int direction, int orientation, double location, double longitudinalWidth){
 		this.direction = direction;
 		this.orientation = orientation;
@@ -70,14 +72,14 @@ public class NewLCCurrent implements ICurrentGenerator {
 			transversalChargeDensity[GridFunctions.getCellIndex(GridFunctions.nearestGridPoint(c.location, as), transversalNumCells)].addAssign(chargeAmplitude);
 		}
 
-		// 2) Interpolate grid charge and current density.
-		applyCurrent(s);
-
-		// 3) Initialize the NewLightConePoissonSolver with the transversal charge density and solve for the fields U and E.
-		NewLCPoissonSolver poissonSolver = new NewLCPoissonSolver(direction, orientation, location, longitudinalWidth,
+		// 2) Initialize the NewLightConePoissonSolver with the transversal charge density and solve for the fields U and E.
+		poissonSolver = new NewLCPoissonSolver(direction, orientation, location, longitudinalWidth,
 				transversalChargeDensity, transversalNumCells);
 		poissonSolver.initialize(s);
 		poissonSolver.solve(s);
+
+		// 3) Interpolate grid charge and current density.
+		applyCurrent(s);
 
 		// You're done: charge density, current density and the fields are set up correctly.
 	}
@@ -105,14 +107,17 @@ public class NewLCCurrent implements ICurrentGenerator {
 				int cellIndex = s.grid.getCellIndex(gridPos);
 
 				// a) Interpolate transversal charge density to grid charge density with a Gauss profile (at t).
-				s.grid.addRho(cellIndex, transversalChargeDensity[j].mult(s1));
+				GroupElement V = poissonSolver.getV(cellIndex, t);
+				s.grid.addRho(cellIndex, transversalChargeDensity[j].act(V).mult(s1));
 
 				// b) Compute gird current density in a charge conserving manner at (t-dt/2).
 
 				// Method 1: Sampling the analytical result on the grid (not charge conserving)
-				//s.grid.addJ(cellIndex, direction, transversalChargeDensity[j].mult(s2*orientation));
+				GroupElement V2 = poissonSolver.getV(cellIndex, t - at/2);
+				s.grid.addJ(cellIndex, direction, transversalChargeDensity[j].act(V2).mult(s2*orientation));
 
 				// Method 2: Setting the current according to the continuity equation (charge conserving)
+				/*
 				if(Math.abs(ds * as) > 0.00000001) {
 					// In the case of CGC initial conditions the continuity equation reduces to
 					//     j^a_{x+i, i} = j^a_{x,i} - \dot{\rho^a} as,
@@ -128,6 +133,7 @@ public class NewLCCurrent implements ICurrentGenerator {
 							lastCurrents[j]
 					);
 				}
+				*/
 			}
 		}
 	}

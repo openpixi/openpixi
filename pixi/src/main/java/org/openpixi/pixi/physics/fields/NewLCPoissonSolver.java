@@ -8,6 +8,8 @@ import org.openpixi.pixi.physics.gauge.DoubleFFTWrapper;
 import org.apache.commons.math3.special.Erf;
 import org.openpixi.pixi.physics.util.GridFunctions;
 
+import java.security.acl.Group;
+
 public class NewLCPoissonSolver {
 
 	private int direction;
@@ -29,6 +31,7 @@ public class NewLCPoissonSolver {
 	private double g;
 
 	private ElementFactory factory;
+	private Simulation s;
 
 	public NewLCPoissonSolver(int direction, int orientation, double location, double longitudinalWidth, AlgebraElement[] transversalChargeDensity, int[] transversalNumCells) {
 		this.direction = direction;
@@ -54,6 +57,7 @@ public class NewLCPoissonSolver {
 		for (int i = 0; i < totalTransversalCells; i++) {
 			phi[i] = factory.algebraZero();
 		}
+		this.s = s;
 	}
 
 	public void solve(Simulation s) {
@@ -134,6 +138,16 @@ public class NewLCPoissonSolver {
 				}
 			}
 		}
+	}
+
+	public GroupElement getV(int index, double t) {
+		int[] gridPos = s.grid.getCellPos(index);
+		int[] transversalGridPos = GridFunctions.reduceGridPos(gridPos, direction);
+		int transversalCellIndex = GridFunctions.getCellIndex(transversalGridPos, transversalNumCells);
+		int longitudinalGridPos = gridPos[direction];
+		double z = longitudinalGridPos * as - location;
+		double shape = integratedShapeFunction(z, t, orientation, longitudinalWidth);
+		return phi[transversalCellIndex].mult(- shape * g).getLink();
 	}
 
 	private double integratedShapeFunction(double z, double t, int o, double width) {
