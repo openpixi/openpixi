@@ -816,7 +816,7 @@ public class Grid {
 	 * @return
 	 */
 	public AlgebraElement getEFromLinks(int index, int direction) {
-		return getTemporalPlaquette(index, direction, 1).proj().mult(-1.0/at);
+		return getTemporalPlaquette(index, direction, 1).getAlgebraElement().mult(-1.0/at);
 	}
 
 	/**
@@ -871,6 +871,10 @@ public class Grid {
 	 * @return	Value of the Gauss constraint violation
 	 */
 	public double getGaussConstraintSquared(int index) {
+		return getGaussConstraint(index).square();
+	}
+
+	public AlgebraElement getGaussConstraint(int index) {
 		AlgebraElement gauss = factory.algebraZero();
 		for (int i = 0; i < numDim; i++) {
 			int shiftedIndex = shift(index, i, -1);
@@ -881,6 +885,6 @@ public class Grid {
 		}
 		gauss.multAssign(1.0/as);
 		gauss = gauss.sub(getRho(index));
-		return gauss.square();
+		return gauss;
 	}
 }
