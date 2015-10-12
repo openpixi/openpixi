@@ -85,7 +85,7 @@ public class SU2LightConeGaussPulseCurrent implements ICurrentGenerator {
 		/*
 			Find the nearest grid point and apply the current configuration to the cell current.
 		 */
-		/*
+
 		double position = location[direction] + speed * time * at;
 		double posCharge = position - speed*at/2;
 
@@ -96,8 +96,8 @@ public class SU2LightConeGaussPulseCurrent implements ICurrentGenerator {
 			grid.addJ(cellIndex, direction, fieldAmplitude.mult(shape(position, i*as)));
 			grid.addRho(cellIndex, chargeAmplitude.mult(shape(posCharge, i * as)));
 		}
-		*/
 
+		/*
 		double posCharge = location[direction] + speed * time * at;
 		//double position = posCharge - speed*at/2;
 
@@ -124,7 +124,7 @@ public class SU2LightConeGaussPulseCurrent implements ICurrentGenerator {
 			grid.addJ(cellIndex, direction, currentList[i]);
 			grid.addRho(cellIndex, chargeList[i]);
 		}
-
+		*/
 	}
 
 	private double[] normalizeVector(double[] vector) {
