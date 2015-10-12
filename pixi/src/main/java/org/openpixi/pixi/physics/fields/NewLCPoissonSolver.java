@@ -145,9 +145,19 @@ public class NewLCPoissonSolver {
 		int[] transversalGridPos = GridFunctions.reduceGridPos(gridPos, direction);
 		int transversalCellIndex = GridFunctions.getCellIndex(transversalGridPos, transversalNumCells);
 		int longitudinalGridPos = gridPos[direction];
-		double z = longitudinalGridPos * as - location;
+		return getV(longitudinalGridPos, transversalCellIndex, t);
+	}
+
+	public GroupElement getV(int longitudinalIndex, int transversalIndex, double t) {
+		double z = longitudinalIndex * as - location;
 		double shape = integratedShapeFunction(z, t, orientation, longitudinalWidth);
-		return phi[transversalCellIndex].mult(- shape * g).getLink();
+		return phi[transversalIndex].mult(- shape * g).getLink();
+	}
+
+	public GroupElement getV(double longitudinalPosition, int transversalIndex, double t) {
+		double z = longitudinalPosition - location;
+		double shape = integratedShapeFunction(z, t, orientation, longitudinalWidth);
+		return phi[transversalIndex].mult(- shape * g).getLink();
 	}
 
 	private double integratedShapeFunction(double z, double t, int o, double width) {
