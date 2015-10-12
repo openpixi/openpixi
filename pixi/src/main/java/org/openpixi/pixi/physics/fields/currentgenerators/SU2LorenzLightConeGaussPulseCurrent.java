@@ -84,7 +84,7 @@ public class SU2LorenzLightConeGaussPulseCurrent implements ICurrentGenerator {
 		 */
 
 		double posCharge = location[direction] + speed * time * at;
-		double position = posCharge - speed*at/2 + as/2;
+		double position = posCharge - speed*at/2 + speed*as/2;
 
 		for (int i = 0; i < numberOfCells; i++) {
 			pos[direction] = i;
