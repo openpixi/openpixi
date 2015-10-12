@@ -123,7 +123,7 @@ public class FieldMeasurements {
         }
 
         public void execute(Grid grid, int index) {
-			if(!restrictedRegion[index]) {
+			if(!useRestrictedRegion || !restrictedRegion[index]) {
 				int numDir = grid.getNumberOfDimensions();
 				double[] res = new double[numDir];
 				for (int i = 0; i < numDir; i++) {
@@ -167,7 +167,7 @@ public class FieldMeasurements {
 		}
         
         public void execute(Grid grid, int index) {
-			if(!restrictedRegion[index]) {
+			if(!useRestrictedRegion || !restrictedRegion[index]) {
 				int numDir = grid.getNumberOfDimensions();
 				double[] res = new double[numDir];
 				for (int i = 0; i < numDir; i++) {
@@ -207,7 +207,7 @@ public class FieldMeasurements {
         }
         
         public void execute(Grid grid, int index) {
-			if(!restrictedRegion[index]) {
+			if(!useRestrictedRegion || !restrictedRegion[index]) {
 				double result = grid.getGaussConstraintSquared(index);
 				synchronized (this) {
 					sum += result;   // Synchronisierte Summenbildung
@@ -239,7 +239,7 @@ public class FieldMeasurements {
 		}
 
 		public void execute(Grid grid, int index) {
-			if(!restrictedRegion[index]) {
+			if(!useRestrictedRegion || !restrictedRegion[index]) {
 				synchronized (this) {
 					charge.addAssign(grid.getRho(index));   // Synchronisierte Summenbildung
 				}

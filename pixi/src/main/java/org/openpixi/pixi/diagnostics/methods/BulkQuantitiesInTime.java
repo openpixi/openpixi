@@ -2,8 +2,10 @@ package org.openpixi.pixi.diagnostics.methods;
 
 import java.io.File;
 import java.io.FileWriter;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.io.IOException;
+import java.util.Locale;
 
 import org.openpixi.pixi.diagnostics.Diagnostics;
 import org.openpixi.pixi.physics.Simulation;
@@ -95,18 +97,18 @@ public class BulkQuantitiesInTime implements Diagnostics {
 
 			gaussViolation = fieldMeasurements.calculateGaussConstraint(grid);
 
-
 			if(!supressOutput) {
 				File file = getOutputFile(path);
 				FileWriter pw = new FileWriter(file, true);
+				DecimalFormat formatter = new DecimalFormat("0.################E0");
 
-				pw.write(steps * s.getTimeStep() + "\t");
-				pw.write(eSquared+ "\t");
-				pw.write(bSquared + "\t");
-				pw.write(px + "\t");
-				pw.write(py + "\t");
-				pw.write(pz + "\t");
-				pw.write(gaussViolation + "\t");
+				pw.write(formatter.format(steps * s.getTimeStep()) + "\t");
+				pw.write(formatter.format(eSquared)+ "\t");
+				pw.write(formatter.format(bSquared) + "\t");
+				pw.write(formatter.format(px) + "\t");
+				pw.write(formatter.format(py) + "\t");
+				pw.write(formatter.format(pz) + "\t");
+				pw.write(formatter.format(gaussViolation));
 				pw.write("\n");
 
 				pw.close();
