@@ -25,7 +25,10 @@ public class StringProperties {
 		this.simulationAnimation = simulationAnimation;
 		this.name = name;
 		textField = new JTextField();
-		this.setValue(initialValue);
+		this.value = initialValue;
+		textField.setText(value);
+		this.update();
+		//this.setValue(initialValue);
 	}
 
 	public void addComponents(Box box)
@@ -57,7 +60,7 @@ public class StringProperties {
 		this.value = value;
 		textField.setText(value);
 		simulationAnimation.repaint();
-		update();
+		this.update();
 	}
 
 	class TextFieldListener implements ActionListener {

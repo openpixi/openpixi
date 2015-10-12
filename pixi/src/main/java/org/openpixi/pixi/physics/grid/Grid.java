@@ -864,6 +864,12 @@ public class Grid {
 		return res;
 	}
 
+	/**
+	 * This method computes the square of the Gauss violation at a certain lattice index. The value is given in lattice
+	 * units, i.e. one has to divide by a factor of (g*a)^2 to get the real value.
+	 * @param index	Index of the cell
+	 * @return	Value of the Gauss constraint violation
+	 */
 	public double getGaussConstraintSquared(int index) {
 		AlgebraElement gauss = factory.algebraZero();
 		for (int i = 0; i < numDim; i++) {

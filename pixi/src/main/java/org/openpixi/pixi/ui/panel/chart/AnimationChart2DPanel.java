@@ -17,7 +17,7 @@ import org.openpixi.pixi.ui.panel.FocusablePanel;
  */
 public class AnimationChart2DPanel extends Chart2D implements FocusablePanel {
 
-	private SimulationAnimation simulationAnimation;
+	protected SimulationAnimation simulationAnimation;
 	private MyAnimationListener listener;
 	boolean focus = false;
 

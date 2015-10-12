@@ -97,7 +97,7 @@ public class NewLorenzLCCurrent implements ICurrentGenerator {
 
 			double s0 = g * as * shapeFunction(z, t - at, orientation, longitudinalWidth);  // shape at t-dt times g*as
 			double s1 = g * as * shapeFunction(z, t, orientation, longitudinalWidth);  // shape at t times g*as
-			double s2 = g * as * shapeFunction(z, t - at/2, orientation, longitudinalWidth);  // shape at t-dt/2 times g*as
+			double s2 = g * as * shapeFunction(z+as/2, t - at/2, orientation, longitudinalWidth);  // shape at t-dt/2 times g*as
 			double ds = (s1 - s0)/at; // time derivative of the shape function
 
 			for (int j = 0; j < totalTransversalCells; j++) {
@@ -111,10 +111,10 @@ public class NewLorenzLCCurrent implements ICurrentGenerator {
 				// b) Compute gird current density in a charge conserving manner at (t-dt/2).
 
 				// Method 1: Sampling the analytical result on the grid (not charge conserving)
-				//s.grid.addJ(cellIndex, direction, transversalChargeDensity[j].mult(s2*orientation));
+				s.grid.addJ(cellIndex, direction, transversalChargeDensity[j].mult(s2*orientation));
 
 				// Method 2: Setting the current according to the continuity equation (charge conserving)
-
+				/*
 				if(Math.abs(ds * as) > 0.00000001) {
 					// In the case of CGC initial conditions the continuity equation reduces to
 					//     j^a_{x+i, i} = j^a_{x,i} - \dot{\rho^a} as,
@@ -130,6 +130,7 @@ public class NewLorenzLCCurrent implements ICurrentGenerator {
 							lastCurrents[j]
 					);
 				}
+				*/
 
 			}
 		}
