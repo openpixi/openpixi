@@ -2,6 +2,7 @@ package org.openpixi.pixi.physics.fields.currentgenerators;
 
 import org.apache.commons.math3.analysis.function.Gaussian;
 import org.openpixi.pixi.math.SU2AlgebraElement;
+import org.openpixi.pixi.math.SU2GroupElement;
 import org.openpixi.pixi.physics.Simulation;
 import org.openpixi.pixi.physics.fields.*;
 import org.openpixi.pixi.physics.grid.Grid;
@@ -16,6 +17,7 @@ public class SU2LightConeGaussPulseCurrent implements ICurrentGenerator {
 	private double width;
 	private Grid grid;
 	private int orientation;
+	private SU2GroupElement transform;
 	private PolychromTempGaugeLightConeGaussPoissonSolver poisson;
 	//private NumericPolychromTempGaugeLightConeGaussPoissonSolver poisson;
 
@@ -36,6 +38,7 @@ public class SU2LightConeGaussPulseCurrent implements ICurrentGenerator {
 		//this.poisson = new TempGaugeLightConeGaussPoissonSolver(location, direction, Integer.signum(orientation), width);
 		this.poisson = new PolychromTempGaugeLightConeGaussPoissonSolver();
 		//this.poisson = new NumericPolychromTempGaugeLightConeGaussPoissonSolver();
+		transform = new SU2GroupElement();
 	}
 
 	public void initializeCurrent(Simulation s, int totalInstances) {
@@ -43,8 +46,12 @@ public class SU2LightConeGaussPulseCurrent implements ICurrentGenerator {
 		poisson.saveValues(totalInstances, numberOfInstances, location, direction, Integer.signum(orientation), width);
 		numberOfInstances++;
 		if(numberOfInstances == totalInstances) {
-			poisson.solve(grid);
+			poisson.solve(s);
 		}
+	}
+
+	public void gaugeTransform(SU2GroupElement transformationMatrix) {
+		transform.set(transformationMatrix);
 	}
 
 	public void applyCurrent(Simulation s) {

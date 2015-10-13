@@ -56,6 +56,14 @@ public class PolychromTempGaugeLightConeGaussPoissonSolver extends LightConePois
 		}
 	}
 
+	public void solve(Simulation s) {
+		for(int i = 0; i < numberOfInstances; i++) {
+			if( orientation[i] != 0 ) {
+				polySolver(i, s.grid);
+			} else {}
+		}
+	}
+
 	public void polySolver(int surfaceIndex,Grid g) {
 
 		int truesize = 0;
@@ -78,6 +86,7 @@ public class PolychromTempGaugeLightConeGaussPoissonSolver extends LightConePois
 		int numberOfComponents = g.getNumberOfColors() * g.getNumberOfColors() - 1;
 		double as = g.getLatticeSpacing();
 		double at = g.getTemporalSpacing();
+		double coupling = g.getGaugeCoupling();
 		int cellIndex;
 		int dirMax = g.getNumCells(dir);
 		int arrayLength = location[surfaceIndex].length;
@@ -97,7 +106,7 @@ public class PolychromTempGaugeLightConeGaussPoissonSolver extends LightConePois
 			pos[i] = (int) Math.rint(location[surfaceIndex][i]/as);
 		}
 
-		double gaussNormFactorCharge = shapeGauss(location[surfaceIndex][dir], width[surfaceIndex], pos[dir] * as) * g.getGaugeCoupling() * as;
+		double gaussNormFactorCharge = shapeGauss(location[surfaceIndex][dir], width[surfaceIndex], pos[dir] * as) * coupling * as;
 
 		if (size.length > 1) {
 			double[][] charge = new double[size[0]][2 * size[1]];
@@ -159,8 +168,8 @@ public class PolychromTempGaugeLightConeGaussPoissonSolver extends LightConePois
 						gaugePos[dir] = z;
 						cellIndex = g.getCellIndex(gaugePos);
 
-						A0.set(phiList[j][w].mult(-1.0 * g.getGaugeCoupling() * shapeErf(positionCurrent[dir], surfaceIndex, z * as) / gaussNormFactorCharge));
-						A1.set(phiList[j][w].mult(-1.0 * g.getGaugeCoupling() * shapeErf(positionCurrent[dir] + orientation[surfaceIndex]*at, surfaceIndex, z * as) / gaussNormFactorCharge));
+						A0.set(phiList[j][w].mult(-1.0 * coupling * shapeErf(positionCurrent[dir], surfaceIndex, z * as) / gaussNormFactorCharge));
+						A1.set(phiList[j][w].mult(-1.0 * coupling * shapeErf(positionCurrent[dir] + orientation[surfaceIndex]*at, surfaceIndex, z * as) / gaussNormFactorCharge));
 
 						g.setUnext(cellIndex, signature[0], A0.getLink());
 						g.setUnext(cellIndex, signature[1], A1.getLink());
@@ -181,18 +190,18 @@ public class PolychromTempGaugeLightConeGaussPoissonSolver extends LightConePois
 						cellIndex = g.getCellIndex(gaugePos);
 
 						//fields at t=0
-						A0.set( g.getUnext(cellIndex, signature[0]).mult(g.getUnext(g.shift(cellIndex, signature[0], 1), signature[0]).adj().sub(g.getUnext(cellIndex, signature[0]).adj())).mult(1.0/as/g.getGaugeCoupling()).proj() );
-						A1.set( g.getUnext(cellIndex, signature[0]).mult(g.getUnext(g.shift(cellIndex, signature[1], 1), signature[0]).adj().sub(g.getUnext(cellIndex, signature[0]).adj())).mult(1.0/as/g.getGaugeCoupling()).proj() );
+						A0.set( g.getUnext(cellIndex, signature[0]).mult(g.getUnext(g.shift(cellIndex, signature[0], 1), signature[0]).adj().sub(g.getUnext(cellIndex, signature[0]).adj())).mult(1.0/as/coupling).proj() );
+						A1.set( g.getUnext(cellIndex, signature[0]).mult(g.getUnext(g.shift(cellIndex, signature[1], 1), signature[0]).adj().sub(g.getUnext(cellIndex, signature[0]).adj())).mult(1.0/as/coupling).proj() );
 						//fields at t=-at
-						A0next.set( g.getUnext(cellIndex, signature[1]).mult(g.getUnext(g.shift(cellIndex, signature[0], 1), signature[1]).adj().sub(g.getUnext(cellIndex, signature[1]).adj())).mult(1.0/as/g.getGaugeCoupling()).proj() );
-						A1next.set( g.getUnext(cellIndex, signature[1]).mult(g.getUnext(g.shift(cellIndex, signature[1], 1), signature[1]).adj().sub(g.getUnext(cellIndex, signature[1]).adj())).mult(1.0/as/g.getGaugeCoupling()).proj() );
+						A0next.set( g.getUnext(cellIndex, signature[1]).mult(g.getUnext(g.shift(cellIndex, signature[0], 1), signature[1]).adj().sub(g.getUnext(cellIndex, signature[1]).adj())).mult(1.0/as/coupling).proj() );
+						A1next.set( g.getUnext(cellIndex, signature[1]).mult(g.getUnext(g.shift(cellIndex, signature[1], 1), signature[1]).adj().sub(g.getUnext(cellIndex, signature[1]).adj())).mult(1.0/as/coupling).proj() );
 						//setting the electric fields
-						AlgebraElement E0 = A0next.sub(A0).mult(-1.0 / at).mult(g.getGaugeCoupling()*as);
-						AlgebraElement E1 = A1next.sub(A1).mult(-1.0 / at).mult(g.getGaugeCoupling()*as);
+						AlgebraElement E0 = A0next.sub(A0).mult(-1.0 / at).mult(coupling*as);
+						AlgebraElement E1 = A1next.sub(A1).mult(-1.0 / at).mult(coupling*as);
 
 						//setting the gauge links
-						A0.multAssign(g.getGaugeCoupling()*as);
-						A1.multAssign(g.getGaugeCoupling() * as);
+						A0.multAssign(coupling*as);
+						A1.multAssign(coupling * as);
 						A0.addAssign(g.getU(cellIndex, signature[0]).getAlgebraElement());
 						A1.addAssign(g.getU(cellIndex, signature[1]).getAlgebraElement());
 						g.setU(cellIndex, signature[0], A0.getLink());
@@ -262,8 +271,8 @@ public class PolychromTempGaugeLightConeGaussPoissonSolver extends LightConePois
 					gaugePos[dir] = z;
 					cellIndex = g.getCellIndex(gaugePos);
 
-					A0.set(phiList[j].mult(-1.0 * g.getGaugeCoupling() * shapeErf(positionCurrent[dir], surfaceIndex, z * as) / gaussNormFactorCharge));
-					A1.set(phiList[j].mult(-1.0 * g.getGaugeCoupling() * shapeErf(positionCurrent[dir] + orientation[surfaceIndex] * at, surfaceIndex, z * as) / gaussNormFactorCharge));
+					A0.set(phiList[j].mult(-1.0 * coupling * shapeErf(positionCurrent[dir], surfaceIndex, z * as) / gaussNormFactorCharge));
+					A1.set(phiList[j].mult(-1.0 * coupling * shapeErf(positionCurrent[dir] + orientation[surfaceIndex] * at, surfaceIndex, z * as) / gaussNormFactorCharge));
 
 					g.setUnext(cellIndex, 0, A0.getLink());
 					g.setUnext(cellIndex, 1, A1.getLink());
@@ -278,14 +287,14 @@ public class PolychromTempGaugeLightConeGaussPoissonSolver extends LightConePois
 					cellIndex = g.getCellIndex(gaugePos);
 
 					//fields at t=0
-					A0.set( g.getUnext(cellIndex, 0).mult(g.getUnext(g.shift(cellIndex, signature[0], 1), 0).adj().sub(g.getUnext(cellIndex, 0).adj())).mult(1.0/as/g.getGaugeCoupling()).proj() );
+					A0.set( g.getUnext(cellIndex, 0).mult(g.getUnext(g.shift(cellIndex, signature[0], 1), 0).adj().sub(g.getUnext(cellIndex, 0).adj())).mult(1.0/as/coupling).proj() );
 					//fields at t=-at
-					A1.set( g.getUnext(cellIndex, 1).mult(g.getUnext(g.shift(cellIndex, signature[0], 1), 1).adj().sub(g.getUnext(cellIndex, 1).adj())).mult(1.0/as/g.getGaugeCoupling()).proj() );
+					A1.set( g.getUnext(cellIndex, 1).mult(g.getUnext(g.shift(cellIndex, signature[0], 1), 1).adj().sub(g.getUnext(cellIndex, 1).adj())).mult(1.0/as/coupling).proj() );
 					//setting the electric fields
-					AlgebraElement E = A1.sub(A0).mult(-1.0 / at).mult(g.getGaugeCoupling()*as);
+					AlgebraElement E = A1.sub(A0).mult(-1.0 / at).mult(coupling*as);
 
 					//setting the gauge links
-					A0.multAssign(g.getGaugeCoupling()*as);
+					A0.multAssign(coupling*as);
 
 					A0.addAssign(g.getU(cellIndex, signature[0]).getAlgebraElement());
 					g.setU(cellIndex, signature[0], A0.getLink());
