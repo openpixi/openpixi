@@ -138,7 +138,7 @@ public class ParticleLCCurrent implements ICurrentGenerator {
 		// Traverse through charge density and add particles by sampling the charge distribution
 
 		int maxDirection = numCells[direction];
-		double t0 = - at;
+		double t0 = - at; // MAGIC!
 
 		//double cellVolume = Math.pow(as, s.getNumberOfDimensions());
 		double cellVolume = 1.0;
@@ -241,72 +241,74 @@ public class ParticleLCCurrent implements ICurrentGenerator {
 	}
 
 	private void interpolateChargesAndCurrents(Simulation s) {
+		double c = as / at;
 		// Interpolate particle charges to charge density on the grid
 		for(Particle p : particles) {
-			// indices of the lattice sites around the particle
+			// "Floored" grid points of the particle
 			int[] gridPosOld = GridFunctions.flooredGridPoint(p.pos0, as);
+			int[] gridPosNew = GridFunctions.flooredGridPoint(p.pos1, as);
+
+			// Cell indices
 			int cellIndex0Old = s.grid.getCellIndex(gridPosOld);
 			int cellIndex1Old = s.grid.shift(cellIndex0Old, direction, 1);
-			double delta0Old = Math.abs(gridPosOld[direction] - p.pos0[direction] / as);
-			double delta1Old = 1.0 - delta0Old;
 
-			GroupElement U0Old = s.grid.getU(cellIndex0Old, direction).getAlgebraElement().mult(delta0Old).getLink().adj();
-			GroupElement U1Old = s.grid.getU(cellIndex0Old, direction).getAlgebraElement().mult(delta1Old).getLink();
-
-			int[] gridPosNew = GridFunctions.flooredGridPoint(p.pos1, as);
 			int cellIndex0New = s.grid.getCellIndex(gridPosNew);
 			int cellIndex1New = s.grid.shift(cellIndex0New, direction, 1);
-			double delta0New = Math.abs(gridPosNew[direction] - p.pos1[direction] / as);
-			double delta1New = 1.0 - delta0New;
 
-			GroupElement U0New = s.grid.getU(cellIndex0New, direction).getAlgebraElement().mult(delta0New).getLink().adj();
-			GroupElement U1New = s.grid.getU(cellIndex0New, direction).getAlgebraElement().mult(delta1New).getLink();
+			// Relative distances to the lattice sites
+			double d0New = p.pos1[direction] / as - gridPosNew[direction];
+			double d1New = 1 - d0New;
+			double d0Old = p.pos0[direction] / as - gridPosOld[direction];
+			double d1Old = 1 - d0Old;
 
-			// Interpolate charges
-			s.grid.addRho(cellIndex0New, p.Q1.act(U0New).mult(delta1New));
-			s.grid.addRho(cellIndex1New, p.Q1.act(U1New).mult(delta0New));
+			// Links at old and new position
+			GroupElement UOld = s.grid.getUnext(cellIndex0Old, direction);
+			GroupElement UNew = s.grid.getU(cellIndex0New, direction);
 
-			// Compute charge conserving currents
+			// Interpolated gauge links
+			GroupElement U0New = UNew.getAlgebraElement().mult(d0New).getLink().adj();
+			GroupElement U1New = UNew.getAlgebraElement().mult(d1New).getLink();
+
+			// Charge interpolation to neighbouring lattice sites
+			AlgebraElement Q0New = p.Q1.act(U0New).mult(d1New);
+			AlgebraElement Q1New = p.Q1.act(U1New).mult(d0New);
+
+			s.grid.addRho(cellIndex0New, Q0New);
+			s.grid.addRho(cellIndex1New, Q1New);
+
 			int longitudinalIndexOld = (int) (p.pos0[direction] / as);
 			int longitudinalIndexNew = (int) (p.pos1[direction] / as);
-			if(longitudinalIndexOld == longitudinalIndexNew) {
-				// one cell move
-				AlgebraElement rhoNew = p.Q1.act(U0New).mult(delta1New);
-				AlgebraElement rhoOld = p.Q0.act(U0Old).mult(delta1Old);
 
-				s.grid.addJ(cellIndex0New, direction, rhoNew.sub(rhoOld).mult(- as / at ));
-			} else if(longitudinalIndexOld < longitudinalIndexNew) {
-				// two cell move to the right
-				AlgebraElement rho0Old = p.Q0.act(U0Old).mult(delta1Old);
+			if(longitudinalIndexNew == longitudinalIndexOld) {
+				// One-cell move
+				GroupElement U0Old = UOld.getAlgebraElement().mult(d0Old).getLink().adj();
+				AlgebraElement Q0Old = p.Q0.act(U0Old).mult(d1Old);
 
-				AlgebraElement rho1New = p.Q1.act(U1New).mult(delta1New);
-				AlgebraElement rho1Old = p.Q0.act(U1Old).mult(delta0Old);
+				AlgebraElement J = Q0New.sub(Q0Old).mult(- c);
+				s.grid.addJ(cellIndex0New, direction, J);
 
-				GroupElement U = s.grid.getU(cellIndex0Old, direction).adj();
+			} else {
+				GroupElement U0Old = UOld.getAlgebraElement().mult(d0Old).getLink().adj();
+				GroupElement U1Old = UOld.getAlgebraElement().mult(d1Old).getLink();
+				AlgebraElement Q0Old = p.Q0.act(U0Old).mult(d1Old);
+				AlgebraElement Q1Old = p.Q0.act(U1Old).mult(d0Old);
+				if(longitudinalIndexNew > longitudinalIndexOld) {
+					// Two-cell move right
+					AlgebraElement JOld = Q0Old.mult(c);
+					AlgebraElement JNew = JOld.act(UNew);
+					JNew.addAssign(Q0New.sub(Q1Old).mult(-c));
 
-				AlgebraElement leftCurrent = rho0Old.mult(as / at);
-				AlgebraElement rightCurrent = leftCurrent.act(U);
-				rightCurrent.addAssign(rho1New.sub(rho1Old).mult(-as / at));
+					s.grid.addJ(cellIndex0Old, direction, JOld);
+					s.grid.addJ(cellIndex0New, direction, JNew);
+				} else {
+					// Two-cell move left
+					AlgebraElement JNew = Q0New.mult(-c);
+					AlgebraElement JOld = JNew.act(UNew);
+					JOld.addAssign(Q1New.sub(Q0Old).mult(-c));
 
-				s.grid.addJ(cellIndex0Old, direction, leftCurrent);
-				s.grid.addJ(cellIndex0New, direction, rightCurrent);
-
-			} else if(longitudinalIndexOld > longitudinalIndexNew) {
-				// two cell move to the left (DOES NOT WORK)
-				AlgebraElement rho0New = p.Q1.act(U0New).mult(delta0New);
-
-				AlgebraElement rho1New = p.Q1.act(U0New).mult(delta1New);
-				AlgebraElement rho1Old = p.Q0.act(U0Old).mult(delta0Old);
-
-				AlgebraElement leftCurrent = rho0New.mult( - as / at);
-
-				GroupElement U = s.grid.getU(cellIndex0New, direction).adj();
-
-				AlgebraElement rightCurrent = leftCurrent.act(U);
-				rightCurrent.addAssign(rho1New.sub(rho1Old).mult(-as / at));
-
-				s.grid.addJ(cellIndex0Old, direction, leftCurrent);
-				s.grid.addJ(cellIndex0New, direction, rightCurrent);
+					s.grid.addJ(cellIndex0Old, direction, JOld);
+					s.grid.addJ(cellIndex0New, direction, JNew);
+				}
 			}
 		}
 	}
