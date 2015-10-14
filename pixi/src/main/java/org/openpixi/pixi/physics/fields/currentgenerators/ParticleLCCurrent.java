@@ -138,51 +138,57 @@ public class ParticleLCCurrent implements ICurrentGenerator {
 		// Traverse through charge density and add particles by sampling the charge distribution
 
 		int maxDirection = numCells[direction];
-		double t0 = 0.0;
+		double t0 = - at;
 
 		//double cellVolume = Math.pow(as, s.getNumberOfDimensions());
 		double cellVolume = 1.0;
 		double prefactor = g * as;
 		for (int i = 0; i < maxDirection; i++) {
 			double z = i * as - location;
-			double shape = shapeFunction(z, t0, orientation, longitudinalWidth);  // shape at t times g*as
 			for (int j = 0; j < totalTransversalCells; j++) {
-				// Particle charge
-				int[] transversalGridPos = GridFunctions.getCellPos(j, transversalNumCells);
-				int[] gridPos = GridFunctions.insertGridPos(transversalGridPos, direction, i);
-				GroupElement V = poissonSolver.getV(i, j, t0);
-				AlgebraElement charge = transversalChargeDensity[j].act(V).mult(shape * cellVolume * prefactor);
+				for (int n = 0; n < particlesPerLink; n++) {
 
+					double dz = orientation * (n + 1) * as / (particlesPerLink + 1);
 
-				// Particle position
-				double[] particlePosition = new double[gridPos.length];
-				for (int k = 0; k < gridPos.length; k++) {
-					particlePosition[k] = gridPos[k] * as;
-				}
+					// Particle charge
+					int[] transversalGridPos = GridFunctions.getCellPos(j, transversalNumCells);
+					int[] gridPos = GridFunctions.insertGridPos(transversalGridPos, direction, i);
+					GroupElement V = poissonSolver.getV(i*as + dz, j, t0);
+					double shape = shapeFunction(z + dz, t0, orientation, longitudinalWidth);  // shape at t times g*as
+					AlgebraElement charge = transversalChargeDensity[j].act(V).mult(shape * cellVolume * prefactor / particlesPerLink);
 
-				// Particle velocity
-				double[] particleVelocity = new double[gridPos.length];
-				for (int k = 0; k < gridPos.length; k++) {
-					if(k == direction) {
-						particleVelocity[k] = 1.0 * orientation;
-					} else {
-						particleVelocity[k] = 0.0;
+					// Particle position
+					double[] particlePosition = new double[gridPos.length];
+					for (int k = 0; k < gridPos.length; k++) {
+						particlePosition[k] = gridPos[k] * as + dz;
 					}
-				}
 
-				// Create particle instance and add to particle array.
-				if(charge.square() > 10E-20 * prefactor) {
-					Particle p = new Particle();
-					p.pos0 = particlePosition;
-					p.pos1 = particlePosition.clone();
-					p.vel = particleVelocity;
-					p.Q0 = charge;
-					p.Q1 = charge.copy();
+					// Particle velocity
+					double[] particleVelocity = new double[gridPos.length];
+					for (int k = 0; k < gridPos.length; k++) {
+						if(k == direction) {
+							particleVelocity[k] = 1.0 * orientation;
+						} else {
+							particleVelocity[k] = 0.0;
+						}
+					}
 
-					particles.add(p);
+					// Create particle instance and add to particle array.
+					if(charge.square() > 10E-14 * prefactor) {
+						Particle p = new Particle();
+						p.pos0 = particlePosition;
+						p.pos1 = particlePosition.clone();
+						p.vel = particleVelocity;
+						p.Q0 = charge;
+						p.Q1 = charge.copy();
+
+						particles.add(p);
+					}
 				}
 			}
 		}
+
+		System.out.println("N = " + particles.size());
 
 	}
 
@@ -242,16 +248,16 @@ public class ParticleLCCurrent implements ICurrentGenerator {
 			int cellIndex0Old = s.grid.getCellIndex(gridPosOld);
 			int cellIndex1Old = s.grid.shift(cellIndex0Old, direction, 1);
 			double delta0Old = Math.abs(gridPosOld[direction] - p.pos0[direction] / as);
-			double delta1Old = Math.abs(p.pos0[direction] / as - (gridPosOld[direction] + 1));
+			double delta1Old = 1.0 - delta0Old;
 
-			GroupElement U0Old = s.grid.getUnext(cellIndex0Old, direction).getAlgebraElement().mult(delta0Old).getLink().adj();
-			GroupElement U1Old = s.grid.getUnext(cellIndex0Old, direction).getAlgebraElement().mult(delta1Old).getLink();
+			GroupElement U0Old = s.grid.getU(cellIndex0Old, direction).getAlgebraElement().mult(delta0Old).getLink().adj();
+			GroupElement U1Old = s.grid.getU(cellIndex0Old, direction).getAlgebraElement().mult(delta1Old).getLink();
 
 			int[] gridPosNew = GridFunctions.flooredGridPoint(p.pos1, as);
 			int cellIndex0New = s.grid.getCellIndex(gridPosNew);
 			int cellIndex1New = s.grid.shift(cellIndex0New, direction, 1);
 			double delta0New = Math.abs(gridPosNew[direction] - p.pos1[direction] / as);
-			double delta1New = Math.abs(p.pos1[direction] / as - (gridPosNew[direction]+1));
+			double delta1New = 1.0 - delta0New;
 
 			GroupElement U0New = s.grid.getU(cellIndex0New, direction).getAlgebraElement().mult(delta0New).getLink().adj();
 			GroupElement U1New = s.grid.getU(cellIndex0New, direction).getAlgebraElement().mult(delta1New).getLink();
@@ -261,33 +267,47 @@ public class ParticleLCCurrent implements ICurrentGenerator {
 			s.grid.addRho(cellIndex1New, p.Q1.act(U1New).mult(delta0New));
 
 			// Compute charge conserving currents
-			int longitudinalIndex0 = (int) (p.pos0[direction] / as);
-			int longitudinalIndex1 = (int) (p.pos1[direction] / as);
-			if(longitudinalIndex0 == longitudinalIndex1) {
+			int longitudinalIndexOld = (int) (p.pos0[direction] / as);
+			int longitudinalIndexNew = (int) (p.pos1[direction] / as);
+			if(longitudinalIndexOld == longitudinalIndexNew) {
 				// one cell move
 				AlgebraElement rhoNew = p.Q1.act(U0New).mult(delta1New);
 				AlgebraElement rhoOld = p.Q0.act(U0Old).mult(delta1Old);
 
 				s.grid.addJ(cellIndex0New, direction, rhoNew.sub(rhoOld).mult(- as / at ));
-			} else if(longitudinalIndex0 < longitudinalIndex1) {
-				// two cell move to the right (TODO)
-				/*
-				AlgebraElement rho0New = p.Q1.act(U0New).mult(delta1New);
+			} else if(longitudinalIndexOld < longitudinalIndexNew) {
+				// two cell move to the right
 				AlgebraElement rho0Old = p.Q0.act(U0Old).mult(delta1Old);
 
+				AlgebraElement rho1New = p.Q1.act(U1New).mult(delta1New);
+				AlgebraElement rho1Old = p.Q0.act(U1Old).mult(delta0Old);
+
+				GroupElement U = s.grid.getU(cellIndex0Old, direction).adj();
+
 				AlgebraElement leftCurrent = rho0Old.mult(as / at);
+				AlgebraElement rightCurrent = leftCurrent.act(U);
+				rightCurrent.addAssign(rho1New.sub(rho1Old).mult(-as / at));
 
-				GroupElement Up = s.grid.getU(cellIndex0Old, direction).adj();
+				s.grid.addJ(cellIndex0Old, direction, leftCurrent);
+				s.grid.addJ(cellIndex0New, direction, rightCurrent);
 
-				AlgebraElement rightCurrent = leftCurrent.act(Up);
-				leftCurrent.addAssign();
-				*/
+			} else if(longitudinalIndexOld > longitudinalIndexNew) {
+				// two cell move to the left (DOES NOT WORK)
+				AlgebraElement rho0New = p.Q1.act(U0New).mult(delta0New);
 
-			} else if(longitudinalIndex0 > longitudinalIndex1) {
-				// two cell move to the left (TODO)
+				AlgebraElement rho1New = p.Q1.act(U0New).mult(delta1New);
+				AlgebraElement rho1Old = p.Q0.act(U0Old).mult(delta0Old);
 
+				AlgebraElement leftCurrent = rho0New.mult( - as / at);
+
+				GroupElement U = s.grid.getU(cellIndex0New, direction).adj();
+
+				AlgebraElement rightCurrent = leftCurrent.act(U);
+				rightCurrent.addAssign(rho1New.sub(rho1Old).mult(-as / at));
+
+				s.grid.addJ(cellIndex0Old, direction, leftCurrent);
+				s.grid.addJ(cellIndex0New, direction, rightCurrent);
 			}
-
 		}
 	}
 
