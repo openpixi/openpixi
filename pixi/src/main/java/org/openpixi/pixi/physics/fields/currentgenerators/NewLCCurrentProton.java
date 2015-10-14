@@ -69,7 +69,7 @@ public class NewLCCurrentProton implements ICurrentGenerator {
 			}
 			for (int k = 0; k < totalTransversalCells; k++) {
 				double distance = getDistance(c.location, GridFunctions.getCellPos(k, transversalNumCells), as);
-				transversalChargeDensity[k].addAssign(chargeAmplitude.mult(shapeFunction(distance, 0.0, 0, c.width)/Math.PI));
+				transversalChargeDensity[k].addAssign(chargeAmplitude.mult(shapeFunction(distance, 0.0, 0, c.width)/Math.PI/transversalNumCells.length));
 			}
 		}
 

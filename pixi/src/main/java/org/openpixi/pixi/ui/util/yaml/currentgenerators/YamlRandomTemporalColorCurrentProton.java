@@ -49,7 +49,7 @@ public class YamlRandomTemporalColorCurrentProton {
 	/**
 	 * Width of the Gaussian distribution of the valence quark charge
 	 */
-	public Double quarkWidth;
+	public Double partonWidth;
 
 	/**
 	 * Number of colors
@@ -99,7 +99,7 @@ public class YamlRandomTemporalColorCurrentProton {
 				amplitude[j] -= totalCharge[j] / numberOfCharges;
 			}
 
-			generator.addCharge(listOfChargeLocations.get(i), amplitude, getMagnitude(amplitude), quarkWidth);
+			generator.addCharge(listOfChargeLocations.get(i), amplitude, getMagnitude(amplitude), partonWidth);
 		}
 
 		return generator;
