@@ -73,6 +73,21 @@ public class GridFunctions {
 	}
 
 	/**
+	 * Given a double vector in the simulation box the "floored" grid point is returned.
+	 *
+	 * @param pos position in the simulation box
+	 * @param as  lattice spacing of the grid
+	 * @return    grid position of the nearest grid point
+	 */
+	public static int[] flooredGridPoint(double[] pos, double as) {
+		int[] roundedGridPosition = new int[pos.length];
+		for (int i = 0; i < pos.length; i++) {
+			roundedGridPosition[i] = (int) (pos[i] / as);
+		}
+		return roundedGridPosition;
+	}
+
+	/**
 	 * Returns the grid position of cell index.
 	 *
 	 * @param index    cell index
