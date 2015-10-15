@@ -108,7 +108,6 @@ public class ParticleLCCurrent implements ICurrentGenerator {
 	private double shapeFunction(double z, double t, int o, double width, double dx) {
 		double z0 = z - dx/2;
 		double z1 = z + dx/2;
-
 		double arg0 = (z0 - o*t)/(width*Math.sqrt(2));
 		double arg1 = (z1 - o*t)/(width*Math.sqrt(2));
 		return  0.5 * (Erf.erf(arg1) - Erf.erf(arg0)) / dx;
@@ -129,15 +128,15 @@ public class ParticleLCCurrent implements ICurrentGenerator {
 			for (int j = 0; j < totalTransversalCells; j++) {
 				for (int n = 0; n < particlesPerLink; n++) {
 
-					//double dz = (n + 1) * as / (particlesPerLink + 1);
-					double dz = 0.0;
+					double dz = (n + 1) * as / (particlesPerLink + 1);
+					//double dz = 0.0;
 
 					// Particle charge
 					int[] transversalGridPos = GridFunctions.getCellPos(j, transversalNumCells);
-					int longitudinalIndex = (int) Math.rint(i + dz / as);
+					int longitudinalIndex = (int) (i + dz / as);
 					int[] gridPos = GridFunctions.insertGridPos(transversalGridPos, direction, longitudinalIndex);
 					GroupElement V = poissonSolver.getV(i*as + dz, j, t0);
-					double shape = shapeFunction(z + dz, t0, orientation, longitudinalWidth);  // shape at t times g*as
+					double shape = shapeFunction(z + dz, t0, orientation, longitudinalWidth, as / particlesPerLink);  // shape at t times g*as
 					AlgebraElement charge = transversalChargeDensity[j].act(V).mult(shape * cellVolume * prefactor / particlesPerLink);
 
 					// Particle position
