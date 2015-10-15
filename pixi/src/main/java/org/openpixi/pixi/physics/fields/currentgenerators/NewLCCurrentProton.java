@@ -8,6 +8,7 @@ import org.openpixi.pixi.physics.fields.NewLCPoissonSolver;
 import org.openpixi.pixi.physics.util.GridFunctions;
 
 import java.util.ArrayList;
+import java.util.Random;
 
 public class NewLCCurrentProton implements ICurrentGenerator {
 
@@ -26,6 +27,7 @@ public class NewLCCurrentProton implements ICurrentGenerator {
 	private double as;
 	private double at;
 	private double g;
+	private Random rand;
 
 	private int[] numCells;
 
@@ -34,6 +36,7 @@ public class NewLCCurrentProton implements ICurrentGenerator {
 		this.orientation = orientation;
 		this.location = location;
 		this.longitudinalWidth = longitudinalWidth;
+		rand = new Random();
 
 		this.charges = new ArrayList<GaussianCharge>();
 	}
@@ -68,8 +71,8 @@ public class NewLCCurrentProton implements ICurrentGenerator {
 				chargeAmplitude.set(j, c.colorDirection[j] * c.magnitude / Math.pow(as, s.getNumberOfDimensions() - 1));
 			}
 			for (int k = 0; k < totalTransversalCells; k++) {
-				double distance = getDistance(c.location, GridFunctions.getCellPos(k, transversalNumCells), as);
-				transversalChargeDensity[k].addAssign(chargeAmplitude.mult(shapeFunction(distance, 0.0, 0, c.width)/Math.PI/transversalNumCells.length));
+				//initializeGlauber(c, k, chargeAmplitude);
+				initializeCGC(c, k, chargeAmplitude);
 			}
 		}
 
@@ -146,6 +149,17 @@ public class NewLCCurrentProton implements ICurrentGenerator {
 			distance += Math.pow(center[j] - spacing*position[j], 2);
 		}
 		return Math.sqrt(distance);
+	}
+
+	private void initializeGlauber(GaussianCharge c, int k, AlgebraElement charge) {
+		double distance = getDistance(c.location, GridFunctions.getCellPos(k, transversalNumCells), as);
+		transversalChargeDensity[k].addAssign(charge.mult(shapeFunction(distance, 0.0, 0, c.width)/Math.PI/transversalNumCells.length));
+	}
+
+	private void initializeCGC(GaussianCharge c, int k, AlgebraElement charge) {
+		double distance = getDistance(c.location, GridFunctions.getCellPos(k, transversalNumCells), as);
+		double randomWidth = shapeFunction(distance, 0.0, 0, c.width)/Math.PI/transversalNumCells.length;
+		transversalChargeDensity[k].addAssign(charge.mult(rand.nextGaussian()*randomWidth));
 	}
 
 	class PointCharge {
