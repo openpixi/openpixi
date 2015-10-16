@@ -1,13 +1,11 @@
 package org.openpixi.pixi.ui.util.yaml.currentgenerators;
 
-import org.openpixi.pixi.physics.fields.currentgenerators.NewLCCurrent;
-import org.openpixi.pixi.physics.fields.currentgenerators.NewLorenzLCCurrent;
 import org.openpixi.pixi.physics.fields.currentgenerators.ParticleLCCurrent;
 
 import java.util.ArrayList;
 import java.util.Random;
 
-public class YamlRandomTemporalColorCurrent {
+public class YamlRandomTemporalParticleColorCurrent {
 	/**
 	 * Direction of the current pulse (0 to d)
 	 */
@@ -60,9 +58,9 @@ public class YamlRandomTemporalColorCurrent {
 
 
 	//public NewLCCurrent getCurrentGenerator() {
-	public NewLCCurrent getCurrentGenerator() {
+	public ParticleLCCurrent getCurrentGenerator() {
 		//NewLCCurrent generator = new NewLCCurrent(direction, orientation, longitudinalLocation, longitudinalWidth);
-		NewLCCurrent generator = new NewLCCurrent(direction, orientation, longitudinalLocation, longitudinalWidth);
+		ParticleLCCurrent generator = new ParticleLCCurrent(direction, orientation, longitudinalLocation, longitudinalWidth);
 		Random rand = new Random();
 		if(randomSeed != null) {
 			rand.setSeed(randomSeed);

@@ -2,12 +2,15 @@ package org.openpixi.pixi.physics.fields.currentgenerators;
 
 import org.apache.commons.math3.analysis.function.Gaussian;
 import org.apache.commons.math3.special.Erf;
+import org.openpixi.pixi.diagnostics.Diagnostics;
+import org.openpixi.pixi.diagnostics.methods.GaussConstraintRestoration;
 import org.openpixi.pixi.math.AlgebraElement;
 import org.openpixi.pixi.math.GroupElement;
 import org.openpixi.pixi.physics.Simulation;
 import org.openpixi.pixi.physics.fields.NewLCPoissonSolver;
 import org.openpixi.pixi.physics.util.GridFunctions;
 
+import java.io.IOException;
 import java.util.ArrayList;
 
 public class ParticleLCCurrent implements ICurrentGenerator {
@@ -74,14 +77,14 @@ public class ParticleLCCurrent implements ICurrentGenerator {
 			}
 			transversalChargeDensity[GridFunctions.getCellIndex(GridFunctions.nearestGridPoint(c.location, as), transversalNumCells)].addAssign(chargeAmplitude);
 		}
-		// 2) Initialize the NewLightConePoissonSolver with the transversal charge density and solve for the fields U and E.
+		// 2) Initialize the NewLCPoissonSolver with the transversal charge density and solve for the fields U and E.
 		poissonSolver = new NewLCPoissonSolver(direction, orientation, location, longitudinalWidth,
 				transversalChargeDensity, transversalNumCells);
 		poissonSolver.initialize(s);
 		poissonSolver.solve(s);
 
 
-		// 3) Interpolate grid charge and current density.
+		// 3) Interpolate grid charge and current densiy.
 		initializeParticles(s, 1);
 		applyCurrent(s);
 
@@ -128,8 +131,8 @@ public class ParticleLCCurrent implements ICurrentGenerator {
 			for (int j = 0; j < totalTransversalCells; j++) {
 				for (int n = 0; n < particlesPerLink; n++) {
 
-					double dz = (n + 1) * as / (particlesPerLink + 1);
-					//double dz = 0.0;
+					//double dz = (n + 1) * as / (particlesPerLink + 1);
+					double dz = 0.0;
 
 					// Particle charge
 					int[] transversalGridPos = GridFunctions.getCellPos(j, transversalNumCells);

@@ -22,11 +22,15 @@ public class YamlCurrents {
 
     public ArrayList<YamlNewLCCurrent> newLCCurrents = new ArrayList<YamlNewLCCurrent>();
 
+	public ArrayList<YamlParticleLCCurrent> particleLCCurrents = new ArrayList<YamlParticleLCCurrent>();
+
     public ArrayList<YamlNewLorenzLCCurrent> newLorenzLCCurrents = new ArrayList<YamlNewLorenzLCCurrent>();
 
     public ArrayList<YamlRandomLorenzColorCurrent> randomLorenzColorCurrents = new ArrayList<YamlRandomLorenzColorCurrent>();
 
     public ArrayList<YamlRandomTemporalColorCurrent> randomTemporalColorCurrents = new ArrayList<YamlRandomTemporalColorCurrent>();
+
+	public ArrayList<YamlRandomTemporalParticleColorCurrent> randomTemporalParticleColorCurrents = new ArrayList<YamlRandomTemporalParticleColorCurrent>();
 
     /**
      * Creates CurrentGenerator instances and applies them to the Settings instance.
@@ -69,6 +73,12 @@ public class YamlCurrents {
 			}
 		}
 
+		for (YamlParticleLCCurrent current : particleLCCurrents) {
+			if (current.checkConsistency(s)) {
+				s.addCurrentGenerator(current.getCurrentGenerator());
+			}
+		}
+
 		for (YamlNewLorenzLCCurrent current : newLorenzLCCurrents) {
 			if (current.checkConsistency(s)) {
 				s.addCurrentGenerator(current.getCurrentGenerator());
@@ -80,6 +90,10 @@ public class YamlCurrents {
         }
 
 		for (YamlRandomTemporalColorCurrent current : randomTemporalColorCurrents) {
+			s.addCurrentGenerator(current.getCurrentGenerator());
+		}
+
+		for (YamlRandomTemporalParticleColorCurrent current : randomTemporalParticleColorCurrents) {
 			s.addCurrentGenerator(current.getCurrentGenerator());
 		}
 

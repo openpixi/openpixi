@@ -9,7 +9,7 @@ timeStep: 0.1
 duration: 1000
 
 currents:
-  newLCCurrents:
+  particleLCCurrents:
     - direction: 0
       orientation: 1
       location: 64
