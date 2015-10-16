@@ -6,6 +6,7 @@ import org.openpixi.pixi.math.GroupElement;
 import org.openpixi.pixi.physics.Simulation;
 import org.openpixi.pixi.physics.gauge.DoubleFFTWrapper;
 import org.apache.commons.math3.special.Erf;
+import org.openpixi.pixi.physics.grid.Grid;
 import org.openpixi.pixi.physics.util.GridFunctions;
 
 import java.security.acl.Group;
@@ -33,6 +34,9 @@ public class NewLCPoissonSolver {
 	private ElementFactory factory;
 	private Simulation s;
 
+	private AlgebraElement[] gaussViolation;
+	private Grid gridCopy;
+
 	public NewLCPoissonSolver(int direction, int orientation, double location, double longitudinalWidth, AlgebraElement[] transversalChargeDensity, int[] transversalNumCells) {
 		this.direction = direction;
 		this.orientation = orientation;
@@ -58,6 +62,9 @@ public class NewLCPoissonSolver {
 			phi[i] = factory.algebraZero();
 		}
 		this.s = s;
+
+		// Create a copy of the grid.
+		gridCopy = new Grid(s.grid);
 	}
 
 	public void solve(Simulation s) {
@@ -125,6 +132,10 @@ public class NewLCPoissonSolver {
 					// U_x,i = V_x V_{x+i}^t
 					s.grid.setU(i, j, V0.mult(U).mult(V1.adj()));
 					s.grid.setUnext(i, j, V0next.mult(Unext).mult(V1next.adj()));
+
+					// Also write to copy of the grid.
+					gridCopy.setU(i, j, V0.mult(U).mult(V1.adj()));
+					gridCopy.setUnext(i, j, V0next.mult(Unext).mult(V1next.adj()));
 				}
 			}
 		}
@@ -135,9 +146,23 @@ public class NewLCPoissonSolver {
 			for (int j = 0; j < numberOfDimensions; j++) {
 				if(j != direction) {
 					s.grid.setE(i, j, s.grid.getEFromLinks(i, j));
+
+					// Also write to copy of the grid.
+					gridCopy.setE(i, j, s.grid.getEFromLinks(i, j));
 				}
 			}
 		}
+
+		// Compute gauss violation from grid copy
+		gaussViolation = new AlgebraElement[s.grid.getTotalNumberOfCells()];
+		for (int i = 0; i < gridCopy.getTotalNumberOfCells(); i++) {
+			gaussViolation[i] = gridCopy.getGaussConstraint(i);
+		}
+		gridCopy = null; // save some space!
+	}
+
+	public AlgebraElement getGaussConstraint(int i) {
+		return gaussViolation[i];
 	}
 
 	public GroupElement getV(int index, double t) {
