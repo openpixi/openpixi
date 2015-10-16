@@ -425,6 +425,7 @@ public class Grid {
 	public Grid(Grid grid) {
 		gaugeCoupling = grid.gaugeCoupling;
 		as = grid.as;
+		at = grid.at;
 		numCol = grid.numCol;
 		numDim = grid.numDim;
 		numCells = new int[numDim];
@@ -816,7 +817,7 @@ public class Grid {
 	 * @return
 	 */
 	public AlgebraElement getEFromLinks(int index, int direction) {
-		return getTemporalPlaquette(index, direction, 1).getAlgebraElement().mult(-1.0/at);
+		return getTemporalPlaquette(index, direction, 1).proj().mult(-1.0/at);
 	}
 
 	/**
