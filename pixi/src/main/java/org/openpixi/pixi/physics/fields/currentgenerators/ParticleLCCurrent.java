@@ -73,6 +73,61 @@ public class ParticleLCCurrent implements ICurrentGenerator {
 			}
 			transversalChargeDensity[GridFunctions.getCellIndex(GridFunctions.nearestGridPoint(c.location, as), transversalNumCells)].addAssign(chargeAmplitude);
 		}
+
+		// 1b) Remove dipole moment.
+		int[] refPos = new int[transversalNumCells.length];
+		for (int k = 0; k < transversalNumCells.length; k++) {
+			refPos[k] = (int) (transversalNumCells[k] / 2.0);
+		}
+
+		// Compute dipole charge
+		AlgebraElement dipoleCharge = s.grid.getElementFactory().algebraZero();
+		double dipoleDistance = Math.sqrt(totalTransversalCells) / 2.0;
+		for (int i = 0; i < transversalChargeDensity.length; i++) {
+			int[] pos = GridFunctions.getCellPos(i, transversalNumCells);
+			double dist = 0.0;
+			for (int k = 0; k < transversalNumCells.length; k++) {
+				dist += Math.sqrt(Math.pow(pos[k] - refPos[k], 2)) * as;
+			}
+			dipoleCharge.addAssign(transversalChargeDensity[i].mult(dist / dipoleDistance));
+		}
+		// Compute dipole positions and add charges
+		for (int k = 0; k < numberOfComponents; k++) {
+			double[] dipolePos1 = new double[transversalNumCells.length];
+			double[] dipolePos2 = new double[transversalNumCells.length];
+			for (int j = 0; j < transversalNumCells.length; j++) {
+				dipolePos1[j] = refPos[j] * as;
+				dipolePos2[j] = refPos[j] * as;
+			}
+
+			for (int i = 0; i < transversalChargeDensity.length; i++) {
+				int[] pos = GridFunctions.getCellPos(i, transversalNumCells);
+				for (int j = 0; j < transversalNumCells.length; j++) {
+					dipolePos1[j] += transversalChargeDensity[i].get(k) / dipoleCharge.get(k) * (pos[j] - refPos[j]) * as / 2.0;
+					dipolePos2[j] -= transversalChargeDensity[i].get(k) / dipoleCharge.get(k) * (pos[j] - refPos[j]) * as / 2.0;
+				}
+			}
+
+
+			int dipoleIndex1 = GridFunctions.getCellIndex(
+					GridFunctions.nearestGridPoint(dipolePos1, as),
+					transversalNumCells);
+			int dipoleIndex2 = GridFunctions.getCellIndex(
+					GridFunctions.nearestGridPoint(dipolePos2, as),
+					transversalNumCells);
+
+			AlgebraElement dipoleCharge1 = s.grid.getElementFactory().algebraZero();
+			AlgebraElement dipoleCharge2 = s.grid.getElementFactory().algebraZero();
+
+			dipoleCharge1.set(k, - dipoleCharge.get(k));
+			dipoleCharge2.set(k,   dipoleCharge.get(k));
+
+			transversalChargeDensity[dipoleIndex1].addAssign(dipoleCharge1);
+			transversalChargeDensity[dipoleIndex2].addAssign(dipoleCharge2);
+
+		}
+
+
 		// 2) Initialize the NewLCPoissonSolver with the transversal charge density and solve for the fields U and E.
 		poissonSolver = new NewLCPoissonSolver(direction, orientation, location, longitudinalWidth,
 				transversalChargeDensity, transversalNumCells);
@@ -104,6 +159,7 @@ public class ParticleLCCurrent implements ICurrentGenerator {
 			chargeDensity[i] = poissonSolver.getGaussConstraint(i);
 		}
 
+		double t0 = - 2*at;
 		double prefactor = g * as;
 		for (int i = 0; i < maxDirection; i++) {
 			double z = i * as - location;
@@ -115,21 +171,24 @@ public class ParticleLCCurrent implements ICurrentGenerator {
 
 					// Particle charge
 					int[] transversalGridPos = GridFunctions.getCellPos(j, transversalNumCells);
-					int longitudinalIndex = (int) (i + dz / as);
+					int longitudinalIndex = i;
 					int[] gridPos = GridFunctions.insertGridPos(transversalGridPos, direction, longitudinalIndex);
 					int cellIndex = s.grid.getCellIndex(gridPos);
 
 
 					// Charge interpolation
 					AlgebraElement leftCharge = chargeDensity[cellIndex];
-					AlgebraElement charge = leftCharge.copy();
+					AlgebraElement charge = leftCharge.mult(0.5);
 
 					// Particle position
-					double[] particlePosition = new double[gridPos.length];
+					double[] particlePosition0 = new double[gridPos.length];
+					double[] particlePosition1 = new double[gridPos.length];
 					for (int k = 0; k < gridPos.length; k++) {
-						particlePosition[k] = gridPos[k] * as;
+						particlePosition0[k] = gridPos[k] * as;
+						particlePosition1[k] = gridPos[k] * as ;
 						if(k == direction) {
-							particlePosition[k] += dz;
+							particlePosition0[k] += t0 * orientation + dz;
+							particlePosition1[k] += (t0 + at) * orientation + dz;
 						}
 					}
 
@@ -144,10 +203,10 @@ public class ParticleLCCurrent implements ICurrentGenerator {
 					}
 
 					// Create particle instance and add to particle array.
-					if(charge.square() > 10E-20 * prefactor) {
+					if(charge.square() > 10E-10 * prefactor) {
 						Particle p = new Particle();
-						p.pos0 = particlePosition;
-						p.pos1 = particlePosition.clone();
+						p.pos0 = particlePosition0;
+						p.pos1 = particlePosition1;
 						p.vel = particleVelocity;
 						p.Q0 = charge;
 						p.Q1 = charge.copy();

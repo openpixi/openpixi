@@ -146,9 +146,6 @@ public class NewLCPoissonSolver {
 			for (int j = 0; j < numberOfDimensions; j++) {
 				if(j != direction) {
 					s.grid.setE(i, j, s.grid.getEFromLinks(i, j));
-
-					// Also write to copy of the grid.
-					gridCopy.setE(i, j, s.grid.getEFromLinks(i, j));
 				}
 			}
 		}
@@ -158,7 +155,6 @@ public class NewLCPoissonSolver {
 		for (int i = 0; i < gridCopy.getTotalNumberOfCells(); i++) {
 			gaussViolation[i] = gridCopy.getGaussConstraint(i);
 		}
-		gridCopy = null; // save some space!
 	}
 
 	public AlgebraElement getGaussConstraint(int i) {

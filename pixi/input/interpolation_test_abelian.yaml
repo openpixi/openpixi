@@ -1,5 +1,5 @@
 gridStep: 1
-couplingConstant: .0001
+couplingConstant: 1
 numberOfDimensions: 3
 numberOfColors: 2
 numberOfThreads: 12
