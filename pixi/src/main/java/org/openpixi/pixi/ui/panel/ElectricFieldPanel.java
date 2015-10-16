@@ -37,6 +37,7 @@ public class ElectricFieldPanel extends AnimationPanel {
 	public final int INDEX_U0_NEXT = 4;
 	public final int INDEX_J = 5;
 	public final int INDEX_RHO = 6;
+	public final int INDEX_GAUSS = 7;
 
 	String[] fieldLabel = new String[] {
 			"E",
@@ -45,7 +46,8 @@ public class ElectricFieldPanel extends AnimationPanel {
 			"U0",
 			"U0 next",
 			"j",
-			"rho"
+			"rho",
+			"Gauss"
 	};
 
 	Color[] fieldColors = new Color[] {
@@ -55,12 +57,14 @@ public class ElectricFieldPanel extends AnimationPanel {
 			Color.green,
 			Color.gray,
 			Color.red,
-			Color.blue
+			Color.blue,
+			Color.magenta
 	};
 
 	boolean[] fieldInit = new boolean[] {
 			true,
 			true,
+			false,
 			false,
 			false,
 			false,
@@ -223,6 +227,10 @@ public class ElectricFieldPanel extends AnimationPanel {
 				case INDEX_RHO:
 					newPosition = (int) (s.grid.getLatticeSpacing() * (i + .5) * sx);
 					value = drawGrid.getRho(s.grid.getCellIndex(pos)).get(colorIndex) / (as * g);
+					break;
+				case INDEX_GAUSS:
+					newPosition = (int) (s.grid.getLatticeSpacing() * (i + .5) * sx);
+					value = drawGrid.getGaussConstraint(s.grid.getCellIndex(pos)).get(colorIndex) / (as * g);
 					break;
 				}
 				scaleProperties.putValue(value);
