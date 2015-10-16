@@ -1,16 +1,12 @@
 package org.openpixi.pixi.physics.fields.currentgenerators;
 
-import org.apache.commons.math3.analysis.function.Gaussian;
 import org.apache.commons.math3.special.Erf;
-import org.openpixi.pixi.diagnostics.Diagnostics;
-import org.openpixi.pixi.diagnostics.methods.GaussConstraintRestoration;
 import org.openpixi.pixi.math.AlgebraElement;
 import org.openpixi.pixi.math.GroupElement;
 import org.openpixi.pixi.physics.Simulation;
 import org.openpixi.pixi.physics.fields.NewLCPoissonSolver;
 import org.openpixi.pixi.physics.util.GridFunctions;
 
-import java.io.IOException;
 import java.util.ArrayList;
 
 public class ParticleLCCurrent implements ICurrentGenerator {
@@ -84,7 +80,7 @@ public class ParticleLCCurrent implements ICurrentGenerator {
 		poissonSolver.solve(s);
 
 
-		// 3) Interpolate grid charge and current densiy.
+		// 3) Interpolate grid charge and current density.
 		initializeParticles(s, 1);
 		applyCurrent(s);
 
@@ -96,35 +92,18 @@ public class ParticleLCCurrent implements ICurrentGenerator {
 		interpolateChargesAndCurrents(s);
 	}
 
-	/*
-	private double shapeFunction(double z, double t, int o, double width) {
-		Gaussian gauss = new Gaussian(0.0, width);
-		return gauss.value(z - o * t);
-	}
-	*/
-
-
-	private double shapeFunction(double z, double t, int o, double width) {
-		return shapeFunction(z, t, o, width, as);
-	}
-
-	private double shapeFunction(double z, double t, int o, double width, double dx) {
-		double z0 = z - dx/2;
-		double z1 = z + dx/2;
-		double arg0 = (z0 - o*t)/(width*Math.sqrt(2));
-		double arg1 = (z1 - o*t)/(width*Math.sqrt(2));
-		return  0.5 * (Erf.erf(arg1) - Erf.erf(arg0)) / dx;
-	}
-
 	private void initializeParticles(Simulation s, int particlesPerLink) {
 		particles = new ArrayList<Particle>();
 		// Traverse through charge density and add particles by sampling the charge distribution
 
 		int maxDirection = numCells[direction];
-		double t0 = -at; // MAGIC!
 
-		//double cellVolume = Math.pow(as, s.getNumberOfDimensions());
-		double cellVolume = 1.0;
+		// Compute charge density from Gauss law
+		AlgebraElement[] chargeDensity = new AlgebraElement[s.grid.getTotalNumberOfCells()];
+		for (int i = 0; i < s.grid.getTotalNumberOfCells(); i++) {
+			chargeDensity[i] = poissonSolver.getGaussConstraint(i);
+		}
+
 		double prefactor = g * as;
 		for (int i = 0; i < maxDirection; i++) {
 			double z = i * as - location;
@@ -138,14 +117,20 @@ public class ParticleLCCurrent implements ICurrentGenerator {
 					int[] transversalGridPos = GridFunctions.getCellPos(j, transversalNumCells);
 					int longitudinalIndex = (int) (i + dz / as);
 					int[] gridPos = GridFunctions.insertGridPos(transversalGridPos, direction, longitudinalIndex);
-					GroupElement V = poissonSolver.getV(i*as + dz, j, t0);
-					double shape = shapeFunction(z + dz, t0, orientation, longitudinalWidth, as / particlesPerLink);  // shape at t times g*as
-					AlgebraElement charge = transversalChargeDensity[j].act(V).mult(shape * cellVolume * prefactor / particlesPerLink);
+					int cellIndex = s.grid.getCellIndex(gridPos);
+
+
+					// Charge interpolation
+					AlgebraElement leftCharge = chargeDensity[cellIndex];
+					AlgebraElement charge = leftCharge.copy();
 
 					// Particle position
 					double[] particlePosition = new double[gridPos.length];
 					for (int k = 0; k < gridPos.length; k++) {
-						particlePosition[k] = gridPos[k] * as + dz;
+						particlePosition[k] = gridPos[k] * as;
+						if(k == direction) {
+							particlePosition[k] += dz;
+						}
 					}
 
 					// Particle velocity
