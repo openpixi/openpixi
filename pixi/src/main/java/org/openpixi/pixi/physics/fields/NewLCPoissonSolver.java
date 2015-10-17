@@ -65,6 +65,7 @@ public class NewLCPoissonSolver {
 
 		// Create a copy of the grid.
 		gridCopy = new Grid(s.grid);
+		gridCopy.createGrid();
 	}
 
 	public void solve(Simulation s) {
@@ -134,8 +135,8 @@ public class NewLCPoissonSolver {
 					s.grid.setUnext(i, j, V0next.mult(Unext).mult(V1next.adj()));
 
 					// Also write to copy of the grid.
-					gridCopy.setU(i, j, V0.mult(U).mult(V1.adj()));
-					gridCopy.setUnext(i, j, V0next.mult(Unext).mult(V1next.adj()));
+					gridCopy.setU(i, j, V0.mult(V1.adj()));
+					gridCopy.setUnext(i, j, V0next.mult(V1next.adj()));
 				}
 			}
 		}
@@ -144,9 +145,9 @@ public class NewLCPoissonSolver {
 		// Third step: Compute electric field from temporal plaquette
 		for (int i = 0; i < totalCells; i++) {
 			for (int j = 0; j < numberOfDimensions; j++) {
-				if(j != direction) {
+				//if(j != direction) {
 					s.grid.setE(i, j, s.grid.getEFromLinks(i, j));
-				}
+				//}
 			}
 		}
 

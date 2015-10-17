@@ -65,24 +65,34 @@ public class ParticleLCCurrent implements ICurrentGenerator {
 		}
 
 		// Iterate over (point) charges, round them to the nearest grid point and add them to the transversal charge density.
+		int[] refPos = new int[transversalNumCells.length];
+		for (int k = 0; k < transversalNumCells.length; k++) {
+			refPos[k] = (int) (transversalNumCells[k] / 2.0);
+		}
+		double meanDistance = 0.0;
 		for (int i = 0; i < charges.size(); i++) {
 			PointCharge c = charges.get(i);
 			AlgebraElement chargeAmplitude = s.grid.getElementFactory().algebraZero(s.getNumberOfColors());
 			for (int j = 0; j < numberOfComponents; j++) {
 				chargeAmplitude.set(j, c.colorDirection[j] * c.magnitude / Math.pow(as, s.getNumberOfDimensions() - 1));
 			}
-			transversalChargeDensity[GridFunctions.getCellIndex(GridFunctions.nearestGridPoint(c.location, as), transversalNumCells)].addAssign(chargeAmplitude);
+
+			int[] gridPos = GridFunctions.nearestGridPoint(c.location, as);
+			transversalChargeDensity[GridFunctions.getCellIndex(gridPos, transversalNumCells)].addAssign(chargeAmplitude);
+
+			for (int k = 0; k < transversalNumCells.length; k++) {
+				meanDistance += Math.pow(gridPos[k] - refPos[k], 2);
+			}
 		}
+		meanDistance /= charges.size();
+		meanDistance = Math.sqrt(meanDistance) * as;
 
 		// 1b) Remove dipole moment.
-		int[] refPos = new int[transversalNumCells.length];
-		for (int k = 0; k < transversalNumCells.length; k++) {
-			refPos[k] = (int) (transversalNumCells[k] / 2.0);
-		}
 
 		// Compute dipole charge
 		AlgebraElement dipoleCharge = s.grid.getElementFactory().algebraZero();
-		double dipoleDistance = Math.sqrt(totalTransversalCells) / 2.0;
+		//double dipoleDistance = Math.sqrt(totalTransversalCells) * as / 2.0;
+		double dipoleDistance = meanDistance;
 		for (int i = 0; i < transversalChargeDensity.length; i++) {
 			int[] pos = GridFunctions.getCellPos(i, transversalNumCells);
 			double dist = 0.0;
@@ -149,16 +159,50 @@ public class ParticleLCCurrent implements ICurrentGenerator {
 
 	private void initializeParticles(Simulation s, int particlesPerLink) {
 		particles = new ArrayList<Particle>();
+
 		// Traverse through charge density and add particles by sampling the charge distribution
-
-		int maxDirection = numCells[direction];
-
-		// Compute charge density from Gauss law
-		AlgebraElement[] chargeDensity = new AlgebraElement[s.grid.getTotalNumberOfCells()];
+		double t0 = - 2*at;
+		double prefactor = g * as;
 		for (int i = 0; i < s.grid.getTotalNumberOfCells(); i++) {
-			chargeDensity[i] = poissonSolver.getGaussConstraint(i);
+			AlgebraElement charge = poissonSolver.getGaussConstraint(i);
+			int[] gridPos = s.grid.getCellPos(i);
+			double dz = 0.0;
+			// Particle position
+			double[] particlePosition0 = new double[gridPos.length];
+			double[] particlePosition1 = new double[gridPos.length];
+			for (int k = 0; k < gridPos.length; k++) {
+				particlePosition0[k] = gridPos[k] * as;
+				particlePosition1[k] = gridPos[k] * as ;
+				if(k == direction) {
+					particlePosition0[k] += t0 * orientation + dz;
+					particlePosition1[k] += (t0 + at) * orientation + dz;
+				}
+			}
+
+			// Particle velocity
+			double[] particleVelocity = new double[gridPos.length];
+			for (int k = 0; k < gridPos.length; k++) {
+				if(k == direction) {
+					particleVelocity[k] = 1.0 * orientation;
+				} else {
+					particleVelocity[k] = 0.0;
+				}
+			}
+
+			// Create particle instance and add to particle array.
+			if(charge.square() > 10E-15 * prefactor) {
+				Particle p = new Particle();
+				p.pos0 = particlePosition0;
+				p.pos1 = particlePosition1;
+				p.vel = particleVelocity;
+				p.Q0 = charge;
+				p.Q1 = charge.copy();
+
+				particles.add(p);
+			}
 		}
 
+		/*
 		double t0 = - 2*at;
 		double prefactor = g * as;
 		for (int i = 0; i < maxDirection; i++) {
@@ -216,6 +260,7 @@ public class ParticleLCCurrent implements ICurrentGenerator {
 				}
 			}
 		}
+		*/
 
 		System.out.println("N = " + particles.size());
 

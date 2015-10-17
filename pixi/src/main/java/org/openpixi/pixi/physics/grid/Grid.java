@@ -457,7 +457,7 @@ public class Grid {
 	/**
 	 * This methods initializes each cell in the grid.
 	 */
-	protected void createGrid() {
+	public void createGrid() {
 
 		factory = new ElementFactory(numCol);
 
