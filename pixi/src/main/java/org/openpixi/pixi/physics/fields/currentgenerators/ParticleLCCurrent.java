@@ -190,7 +190,7 @@ public class ParticleLCCurrent implements ICurrentGenerator {
 			}
 
 			// Create particle instance and add to particle array.
-			if(charge.square() > 10E-15 * prefactor) {
+			if(charge.square() > 10E-18 * prefactor) {
 				Particle p = new Particle();
 				p.pos0 = particlePosition0;
 				p.pos1 = particlePosition1;
@@ -201,67 +201,6 @@ public class ParticleLCCurrent implements ICurrentGenerator {
 				particles.add(p);
 			}
 		}
-
-		/*
-		double t0 = - 2*at;
-		double prefactor = g * as;
-		for (int i = 0; i < maxDirection; i++) {
-			double z = i * as - location;
-			for (int j = 0; j < totalTransversalCells; j++) {
-				for (int n = 0; n < particlesPerLink; n++) {
-
-					//double dz = (n + 1) * as / (particlesPerLink + 1);
-					double dz = 0.0;
-
-					// Particle charge
-					int[] transversalGridPos = GridFunctions.getCellPos(j, transversalNumCells);
-					int longitudinalIndex = i;
-					int[] gridPos = GridFunctions.insertGridPos(transversalGridPos, direction, longitudinalIndex);
-					int cellIndex = s.grid.getCellIndex(gridPos);
-
-
-					// Charge interpolation
-					AlgebraElement leftCharge = chargeDensity[cellIndex];
-					AlgebraElement charge = leftCharge.mult(0.5);
-
-					// Particle position
-					double[] particlePosition0 = new double[gridPos.length];
-					double[] particlePosition1 = new double[gridPos.length];
-					for (int k = 0; k < gridPos.length; k++) {
-						particlePosition0[k] = gridPos[k] * as;
-						particlePosition1[k] = gridPos[k] * as ;
-						if(k == direction) {
-							particlePosition0[k] += t0 * orientation + dz;
-							particlePosition1[k] += (t0 + at) * orientation + dz;
-						}
-					}
-
-					// Particle velocity
-					double[] particleVelocity = new double[gridPos.length];
-					for (int k = 0; k < gridPos.length; k++) {
-						if(k == direction) {
-							particleVelocity[k] = 1.0 * orientation;
-						} else {
-							particleVelocity[k] = 0.0;
-						}
-					}
-
-					// Create particle instance and add to particle array.
-					if(charge.square() > 10E-10 * prefactor) {
-						Particle p = new Particle();
-						p.pos0 = particlePosition0;
-						p.pos1 = particlePosition1;
-						p.vel = particleVelocity;
-						p.Q0 = charge;
-						p.Q1 = charge.copy();
-
-						particles.add(p);
-					}
-				}
-			}
-		}
-		*/
-
 		System.out.println("N = " + particles.size());
 
 	}
@@ -289,6 +228,7 @@ public class ParticleLCCurrent implements ICurrentGenerator {
 				// two cell move
 				int cellIndexOld = s.grid.getCellIndex(GridFunctions.flooredGridPoint(p.pos0, as));
 				int cellIndexNew = s.grid.getCellIndex(GridFunctions.flooredGridPoint(p.pos1, as));
+
 				if(longitudinalIndexOld < longitudinalIndexNew) {
 					// right move
 					// path is split into two parts
@@ -297,18 +237,20 @@ public class ParticleLCCurrent implements ICurrentGenerator {
 
 					GroupElement U0 = s.grid.getU(cellIndexOld, direction).getAlgebraElement().mult(d0).getLink();
 					GroupElement U1 = s.grid.getU(cellIndexNew, direction).getAlgebraElement().mult(d1).getLink();
+					GroupElement U = U1.mult(U0);
 
-					p.evolve(U0.mult(U1));
+					p.evolve(U);
 				} else {
 					// left move
 					// path is split into two parts
 					double d0 = Math.abs(longitudinalIndexOld - p.pos0[direction] / as);
 					double d1 = Math.abs(longitudinalIndexOld - p.pos1[direction] / as);
 
-					GroupElement U0 = s.grid.getU(cellIndexNew, direction).adj().getAlgebraElement().mult(d0).getLink();
-					GroupElement U1 = s.grid.getU(cellIndexOld, direction).adj().getAlgebraElement().mult(d1).getLink();
+					GroupElement U0 = s.grid.getU(cellIndexOld, direction).getAlgebraElement().mult(d0).getLink();
+					GroupElement U1 = s.grid.getU(cellIndexNew, direction).getAlgebraElement().mult(d1).getLink();
+					GroupElement U = U1.mult(U0);
 
-					p.evolve(U0.mult(U1));
+					p.evolve(U.adj());
 				}
 			}
 
@@ -370,7 +312,7 @@ public class ParticleLCCurrent implements ICurrentGenerator {
 				if(longitudinalIndexNew > longitudinalIndexOld) {
 					// Two-cell move right
 					AlgebraElement JOld = Q0Old.mult(c);
-					AlgebraElement JNew = JOld.act(UNew);
+					AlgebraElement JNew = JOld.act(UOld.adj());
 					JNew.addAssign(Q0New.sub(Q1Old).mult(-c));
 
 					s.grid.addJ(cellIndex0Old, direction, JOld);
@@ -378,7 +320,7 @@ public class ParticleLCCurrent implements ICurrentGenerator {
 				} else {
 					// Two-cell move left
 					AlgebraElement JNew = Q0New.mult(-c);
-					AlgebraElement JOld = JNew.act(UNew);
+					AlgebraElement JOld = JNew.act(UNew.adj());
 					JOld.addAssign(Q1New.sub(Q0Old).mult(-c));
 
 					s.grid.addJ(cellIndex0Old, direction, JOld);
