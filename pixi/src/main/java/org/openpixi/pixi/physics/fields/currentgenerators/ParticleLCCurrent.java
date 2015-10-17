@@ -237,7 +237,7 @@ public class ParticleLCCurrent implements ICurrentGenerator {
 
 					GroupElement U0 = s.grid.getU(cellIndexOld, direction).getAlgebraElement().mult(d0).getLink();
 					GroupElement U1 = s.grid.getU(cellIndexNew, direction).getAlgebraElement().mult(d1).getLink();
-					GroupElement U = U1.mult(U0);
+					GroupElement U = U0.mult(U1);
 
 					p.evolve(U);
 				} else {
@@ -246,11 +246,11 @@ public class ParticleLCCurrent implements ICurrentGenerator {
 					double d0 = Math.abs(longitudinalIndexOld - p.pos0[direction] / as);
 					double d1 = Math.abs(longitudinalIndexOld - p.pos1[direction] / as);
 
-					GroupElement U0 = s.grid.getU(cellIndexOld, direction).getAlgebraElement().mult(d0).getLink();
-					GroupElement U1 = s.grid.getU(cellIndexNew, direction).getAlgebraElement().mult(d1).getLink();
-					GroupElement U = U1.mult(U0);
+					GroupElement U0 = s.grid.getU(cellIndexOld, direction).getAlgebraElement().mult(d0).getLink().adj();
+					GroupElement U1 = s.grid.getU(cellIndexNew, direction).getAlgebraElement().mult(d1).getLink().adj();
+					GroupElement U = U0.mult(U1);
 
-					p.evolve(U.adj());
+					p.evolve(U);
 				}
 			}
 
@@ -283,8 +283,8 @@ public class ParticleLCCurrent implements ICurrentGenerator {
 			GroupElement UNew = s.grid.getU(cellIndex0New, direction);
 
 			// Interpolated gauge links
-			GroupElement U0New = UNew.getAlgebraElement().mult(d0New).getLink().adj();
-			GroupElement U1New = UNew.getAlgebraElement().mult(d1New).getLink();
+			GroupElement U0New = UNew.getAlgebraElement().mult(d0New).getLink();
+			GroupElement U1New = UNew.getAlgebraElement().mult(d1New).getLink().adj();
 
 			// Charge interpolation to neighbouring lattice sites
 			AlgebraElement Q0New = p.Q1.act(U0New).mult(d1New);
@@ -298,15 +298,15 @@ public class ParticleLCCurrent implements ICurrentGenerator {
 
 			if(longitudinalIndexNew == longitudinalIndexOld) {
 				// One-cell move
-				GroupElement U0Old = UOld.getAlgebraElement().mult(d0Old).getLink().adj();
+				GroupElement U0Old = UOld.getAlgebraElement().mult(d0Old).getLink();
 				AlgebraElement Q0Old = p.Q0.act(U0Old).mult(d1Old);
 
 				AlgebraElement J = Q0New.sub(Q0Old).mult(-c);
 				s.grid.addJ(cellIndex0New, direction, J);
 
 			} else {
-				GroupElement U0Old = UOld.getAlgebraElement().mult(d0Old).getLink().adj();
-				GroupElement U1Old = UOld.getAlgebraElement().mult(d1Old).getLink();
+				GroupElement U0Old = UOld.getAlgebraElement().mult(d0Old).getLink();
+				GroupElement U1Old = UOld.getAlgebraElement().mult(d1Old).getLink().adj();
 				AlgebraElement Q0Old = p.Q0.act(U0Old).mult(d1Old);
 				AlgebraElement Q1Old = p.Q0.act(U1Old).mult(d0Old);
 				if(longitudinalIndexNew > longitudinalIndexOld) {
