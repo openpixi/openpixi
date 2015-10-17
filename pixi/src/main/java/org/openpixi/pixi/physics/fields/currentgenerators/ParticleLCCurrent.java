@@ -154,6 +154,7 @@ public class ParticleLCCurrent implements ICurrentGenerator {
 
 	public void applyCurrent(Simulation s) {
 		evolveCharges(s);
+		removeParticles(s);
 		interpolateChargesAndCurrents(s);
 	}
 
@@ -255,6 +256,20 @@ public class ParticleLCCurrent implements ICurrentGenerator {
 			}
 
 		}
+	}
+
+
+	private void removeParticles(Simulation s) {
+		// Remove particles which have left the simulation box.
+		ArrayList<Particle> removeList = new ArrayList<Particle>();
+		for(Particle p : particles) {
+			for (int i = 0; i < s.getNumberOfDimensions(); i++) {
+				if(p.pos1[i] > s.getSimulationBoxSize(i) || p.pos1[i] < 0) {
+					removeList.add(p);
+				}
+			}
+		}
+		particles.removeAll(removeList);
 	}
 
 	private void interpolateChargesAndCurrents(Simulation s) {
