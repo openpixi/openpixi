@@ -247,11 +247,11 @@ public class ParticleLCCurrent implements ICurrentGenerator {
 					double d0 = Math.abs(longitudinalIndexOld - p.pos0[direction] / as);
 					double d1 = Math.abs(longitudinalIndexOld - p.pos1[direction] / as);
 
-					GroupElement U0 = s.grid.getU(cellIndexOld, direction).getAlgebraElement().mult(d0).getLink().adj();
-					GroupElement U1 = s.grid.getU(cellIndexNew, direction).getAlgebraElement().mult(d1).getLink().adj();
+					GroupElement U0 = s.grid.getU(cellIndexOld, direction).getAlgebraElement().mult(d0).getLink();
+					GroupElement U1 = s.grid.getU(cellIndexNew, direction).getAlgebraElement().mult(d1).getLink();
 					GroupElement U = U0.mult(U1);
 
-					p.evolve(U);
+					p.evolve(U.adj());
 				}
 			}
 
@@ -327,7 +327,7 @@ public class ParticleLCCurrent implements ICurrentGenerator {
 				if(longitudinalIndexNew > longitudinalIndexOld) {
 					// Two-cell move right
 					AlgebraElement JOld = Q0Old.mult(c);
-					AlgebraElement JNew = JOld.act(UOld.adj());
+					AlgebraElement JNew = JOld.act(s.grid.getU(cellIndex0Old,direction).adj());
 					JNew.addAssign(Q0New.sub(Q1Old).mult(-c));
 
 					s.grid.addJ(cellIndex0Old, direction, JOld);
