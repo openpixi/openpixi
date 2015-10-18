@@ -21,6 +21,9 @@ public class BulkQuantitiesInTime implements Diagnostics {
 	private boolean supressOutput;
 	private Simulation s;
 	private FieldMeasurements fieldMeasurements;
+	private boolean useRestrictedRegion;
+	private int[] regionPoint1;
+	private int[] regionPoint2;
 
 	public double eSquared;
 	public double bSquared;
@@ -36,9 +39,19 @@ public class BulkQuantitiesInTime implements Diagnostics {
 
 	public BulkQuantitiesInTime(String path, double timeInterval, boolean supressOutput)
 	{
+		this(path, timeInterval, supressOutput, null, null);
+	}
+
+	public BulkQuantitiesInTime(String path, double timeInterval, boolean supressOutput, int[] regionPoint1, int[] regionPoint2)
+	{
 		this.path = path;
 		this.timeInterval = timeInterval;
 		this.supressOutput = supressOutput;
+		if(regionPoint1 != null && regionPoint2 != null) {
+			this.useRestrictedRegion = true;
+			this.regionPoint1 = regionPoint1;
+			this.regionPoint2 = regionPoint2;
+		}
 	}
 
 	/**
@@ -51,7 +64,25 @@ public class BulkQuantitiesInTime implements Diagnostics {
 	{
 		this.s = s;
 		this.stepInterval = (int) (timeInterval / this.s.getTimeStep());
-		this.fieldMeasurements = new FieldMeasurements();
+
+		if(useRestrictedRegion) {
+			// Convert region points to boolean grid.
+			int totalNumberOfCells = s.grid.getTotalNumberOfCells();
+			boolean[] restrictedRegion = new boolean[totalNumberOfCells];
+			for (int i = 0; i < totalNumberOfCells; i++) {
+				int[] gridPos = s.grid.getCellPos(i);
+				for (int j = 0; j < s.getNumberOfDimensions(); j++) {
+					if(regionPoint1[j] > gridPos[j] || gridPos[j] > regionPoint2[j]) {
+						restrictedRegion[i] = true;
+						break;
+					}
+				}
+			}
+
+			this.fieldMeasurements = new FieldMeasurements(restrictedRegion);
+		} else {
+			this.fieldMeasurements = new FieldMeasurements();
+		}
 
 
 		if(!supressOutput) {
