@@ -1,6 +1,5 @@
 package org.openpixi.pixi.physics.fields.currentgenerators;
 
-import org.apache.commons.math3.special.Erf;
 import org.openpixi.pixi.math.AlgebraElement;
 import org.openpixi.pixi.math.GroupElement;
 import org.openpixi.pixi.physics.Simulation;
@@ -65,30 +64,22 @@ public class ParticleLCCurrent implements ICurrentGenerator {
 		}
 
 		// Iterate over (point) charges, round them to the nearest grid point and add them to the transversal charge density.
-		int[] refPos = new int[transversalNumCells.length];
-		for (int k = 0; k < transversalNumCells.length; k++) {
-			refPos[k] = (int) (transversalNumCells[k] / 2.0);
-		}
-		double meanDistance = 0.0;
 		for (int i = 0; i < charges.size(); i++) {
 			PointCharge c = charges.get(i);
 			AlgebraElement chargeAmplitude = s.grid.getElementFactory().algebraZero(s.getNumberOfColors());
 			for (int j = 0; j < numberOfComponents; j++) {
 				chargeAmplitude.set(j, c.colorDirection[j] * c.magnitude / Math.pow(as, s.getNumberOfDimensions() - 1));
 			}
-
 			int[] gridPos = GridFunctions.nearestGridPoint(c.location, as);
 			transversalChargeDensity[GridFunctions.getCellIndex(gridPos, transversalNumCells)].addAssign(chargeAmplitude);
 
-			for (int k = 0; k < transversalNumCells.length; k++) {
-				meanDistance += Math.pow(gridPos[k] - refPos[k], 2);
-			}
 		}
-		meanDistance /= charges.size();
-		meanDistance = Math.sqrt(meanDistance) * as;
 
-		// 1b) Remove dipole moment.
+		// 1b) Remove monopole and dipole moment.
+		removeMonopoleMoment(s);
+		removeDipoleMoment(s);
 
+		/*
 		// Compute dipole charge
 		AlgebraElement dipoleCharge = s.grid.getElementFactory().algebraZero();
 		//double dipoleDistance = Math.sqrt(totalTransversalCells) * as / 2.0;
@@ -136,6 +127,7 @@ public class ParticleLCCurrent implements ICurrentGenerator {
 			transversalChargeDensity[dipoleIndex2].addAssign(dipoleCharge2);
 
 		}
+		*/
 
 
 		// 2) Initialize the NewLCPoissonSolver with the transversal charge density and solve for the fields U and E.
@@ -156,6 +148,131 @@ public class ParticleLCCurrent implements ICurrentGenerator {
 		evolveCharges(s);
 		removeParticles(s);
 		interpolateChargesAndCurrents(s);
+	}
+
+	private void removeMonopoleMoment(Simulation s) {
+		AlgebraElement totalCharge = computeTotalCharge(s);
+		totalCharge  = totalCharge.mult(1.0 / totalTransversalCells);
+		for (int i = 0; i < totalTransversalCells; i++) {
+			transversalChargeDensity[i].sub(totalCharge);
+		}
+	}
+
+	private void removeDipoleMoment(Simulation s) {
+		for (int c = 0; c < numberOfComponents; c++) {
+			// Position of dipole
+			double[] centerOfAbsCharge = computeCenterOfAbsCharge(c);
+			// Distance of dipole charges
+			double averageDist = computeAverageDistance(s, c);
+
+			double dipoleCharge = 0.0;
+			double[] dipoleVector = new double[transversalNumCells.length];
+			for (int i = 0; i < totalTransversalCells; i++) {
+				int[] gridPos = GridFunctions.getCellPos(i, transversalNumCells);
+				double charge = transversalChargeDensity[i].get(c);
+				double dist = 0.0;
+				for (int j = 0; j < transversalNumCells.length; j++) {
+					dist += Math.pow(gridPos[j] * as - centerOfAbsCharge[j], 2);
+					dipoleVector[j] += charge * (gridPos[j] * as - centerOfAbsCharge[j]);
+				}
+				dist = Math.sqrt(dist);
+				dipoleCharge += charge * dist / averageDist;
+			}
+			for (int j = 0; j < transversalNumCells.length; j++) {
+				dipoleVector[j] /= dipoleCharge * averageDist;
+			}
+
+			// Add two charges to cancel dipole moment at center of abs. charge
+			double[] dipoleChargePos1 = centerOfAbsCharge.clone();
+			double[] dipoleChargePos2 = centerOfAbsCharge.clone();
+
+			for (int j = 0; j < transversalNumCells.length; j++) {
+				dipoleChargePos1[j] += dipoleVector[j] * averageDist / 2.0;
+				dipoleChargePos2[j] -= dipoleVector[j] * averageDist / 2.0;
+			}
+
+			int dipoleChargeIndex1 = GridFunctions.getCellIndex(GridFunctions.nearestGridPoint(dipoleChargePos1, as), transversalNumCells);
+			int dipoleChargeIndex2 = GridFunctions.getCellIndex(GridFunctions.nearestGridPoint(dipoleChargePos2, as), transversalNumCells);
+
+			AlgebraElement dipoleCharge1 = s.grid.getElementFactory().algebraZero();
+			AlgebraElement dipoleCharge2 = s.grid.getElementFactory().algebraZero();
+			dipoleCharge1.set(c, -dipoleCharge);
+			dipoleCharge2.set(c, dipoleCharge);
+
+			transversalChargeDensity[dipoleChargeIndex1].addAssign(dipoleCharge1);
+			transversalChargeDensity[dipoleChargeIndex2].addAssign(dipoleCharge2);
+		}
+	}
+
+	private AlgebraElement computeTotalCharge(Simulation s) {
+		AlgebraElement totalCharge =  s.grid.getElementFactory().algebraZero();
+		for (int i = 0; i < totalTransversalCells; i++) {
+			totalCharge.addAssign(transversalChargeDensity[i]);
+		}
+		return totalCharge;
+	}
+
+	private double[] computeCenterOfAbsCharge(int component) {
+		double[] center = new double[transversalNumCells.length];
+		for (int j = 0; j < transversalNumCells.length; j++) {
+			center[j] = 0.0;
+		}
+
+		double totalCharge = 0.0;
+		for (int i = 0; i < totalTransversalCells; i++) {
+			int[] gridPos = GridFunctions.getCellPos(i, transversalNumCells);
+			double charge = Math.abs(transversalChargeDensity[i].get(component));
+			totalCharge += charge;
+			for (int j = 0; j < transversalNumCells.length; j++) {
+				center[j] += charge * gridPos[j] * as;
+			}
+		}
+
+		for (int j = 0; j < transversalNumCells.length; j++) {
+			center[j] /= totalCharge;
+		}
+
+		return center;
+	}
+
+	private double computeAverageDistance(Simulation s, int component) {
+		double averageDistance = 0.0;
+		double[] centerOfCharge = computeCenterOfAbsCharge(component);
+		double totalAbsCharge = 0.0;
+		for (int i = 0; i < totalTransversalCells; i++) {
+			int[] gridPos = GridFunctions.getCellPos(i, transversalNumCells);
+			double charge = Math.abs(transversalChargeDensity[i].get(component));
+			totalAbsCharge += charge;
+			double dist = 0.0;
+			for (int j = 0; j < transversalNumCells.length; j++) {
+				dist += Math.pow(gridPos[j] * as - centerOfCharge[j], 2);
+			}
+			averageDistance += charge * Math.sqrt(dist);
+		}
+		return averageDistance / totalAbsCharge;
+	}
+
+	private double[] computeCenterOfInvariantCharge() {
+		double[] center = new double[transversalNumCells.length];
+		for (int j = 0; j < transversalNumCells.length; j++) {
+			center[j] = 0.0;
+		}
+
+		double totalInvCharge = 0.0;
+		for (int i = 0; i < totalTransversalCells; i++) {
+			int[] gridPos = GridFunctions.getCellPos(i, transversalNumCells);
+			double invCharge = Math.sqrt(transversalChargeDensity[i].square());
+			totalInvCharge += invCharge;
+			for (int j = 0; j < transversalNumCells.length; j++) {
+				center[j] += invCharge * gridPos[j] * as;
+			}
+		}
+
+		for (int j = 0; j < transversalNumCells.length; j++) {
+			center[j] /= totalInvCharge;
+		}
+
+		return center;
 	}
 
 	private void initializeParticles(Simulation s, int particlesPerLink) {
@@ -222,8 +339,13 @@ public class ParticleLCCurrent implements ICurrentGenerator {
 			if(longitudinalIndexOld == longitudinalIndexNew) {
 				// one cell move
 				int cellIndexNew = s.grid.getCellIndex(GridFunctions.flooredGridPoint(p.pos0, as));
-				double d = p.vel[direction] * at / as;
-				GroupElement U = s.grid.getU(cellIndexNew, direction).getAlgebraElement().mult(d).getLink();
+				double d = Math.abs(p.vel[direction] * at / as);
+				GroupElement U;
+				if(p.vel[direction] > 0) {
+					U = s.grid.getU(cellIndexNew, direction).getAlgebraElement().mult(d).getLink();
+				} else {
+					U = s.grid.getU(cellIndexNew, direction).getAlgebraElement().mult(d).getLink().adj();
+				}
 				p.evolve(U);
 			} else {
 				// two cell move
@@ -257,7 +379,6 @@ public class ParticleLCCurrent implements ICurrentGenerator {
 
 		}
 	}
-
 
 	private void removeParticles(Simulation s) {
 		// Remove particles which have left the simulation box.
