@@ -82,7 +82,7 @@ public class GridFunctions {
 	public static int[] flooredGridPoint(double[] pos, double as) {
 		int[] roundedGridPosition = new int[pos.length];
 		for (int i = 0; i < pos.length; i++) {
-			roundedGridPosition[i] = (int) (pos[i] / as);
+			roundedGridPosition[i] = (int) Math.floor(pos[i] / as);
 		}
 		return roundedGridPosition;
 	}

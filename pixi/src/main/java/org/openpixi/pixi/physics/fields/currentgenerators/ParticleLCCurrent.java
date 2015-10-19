@@ -156,13 +156,13 @@ public class ParticleLCCurrent implements ICurrentGenerator {
 				chargeAmplitude.set(j, c.colorDirection[j] * c.magnitude / Math.pow(as, s.getNumberOfDimensions() - 1));
 			}
 			int[] gridPos = GridFunctions.nearestGridPoint(c.location, as);
-			transversalChargeDensity[GridFunctions.getCellIndex(gridPos, transversalNumCells)].addAssign(chargeAmplitude);
-
+			interpolateChargeToGridCIC(s, c.location, chargeAmplitude);
+			//interpolateChargeToGridNGP(s, c.location, chargeAmplitude);
 		}
 
 		// 1b) Remove monopole and dipole moment.
-		removeMonopoleMoment(s);
-		removeDipoleMoment(s);
+		// removeMonopoleMoment(s);
+		// removeDipoleMoment(s);
 
 		// 2) Initialize the NewLCPoissonSolver with the transversal charge density and solve for the fields U and E.
 		poissonSolver = new NewLCPoissonSolver(direction, orientation, location, longitudinalWidth,
@@ -187,6 +187,57 @@ public class ParticleLCCurrent implements ICurrentGenerator {
 		evolveCharges(s);
 		removeParticles(s);
 		interpolateChargesAndCurrents(s);
+	}
+
+	/**
+	 * Interpolates a point charge to the transversal grid. The charge is smeared according to the cloud-in-cell shape.
+	 *
+	 * @param s
+	 * @param chargePosition
+	 * @param charge
+	 */
+	private void interpolateChargeToGridCIC(Simulation s, double[] chargePosition, AlgebraElement charge) {
+
+		int effNumberOfDimensions = transversalNumCells.length;
+
+		// Add all relevant points of the hypercube defining the cell.
+		ArrayList<int[]> listOfPoints = new ArrayList<int[]>();
+		int[] gridPos0 = GridFunctions.flooredGridPoint(chargePosition, as);
+		listOfPoints.add(gridPos0);
+		for (int i = 0; i < effNumberOfDimensions; i++) {
+			ArrayList<int[]> newPoints = new ArrayList<int[]>();
+			for (int j = 0; j < listOfPoints.size(); j++) {
+				int[] currentPoint = listOfPoints.get(j).clone();
+				currentPoint[i] += 1;
+				newPoints.add(currentPoint);
+			}
+			listOfPoints.addAll(newPoints);
+		}
+
+		// Interpolate to each grid point of the hypercube.
+		double total = 0.0;
+		for(int[] p : listOfPoints) {
+			double weigth = 1.0;
+			for (int i = 0; i < effNumberOfDimensions; i++) {
+				double dist = 1.0 - Math.abs(p[i] - chargePosition[i] / as);
+				weigth *= dist;
+			}
+			total += weigth;
+			transversalChargeDensity[GridFunctions.getCellIndex(p, transversalNumCells)].addAssign(charge.mult(weigth));
+		}
+		System.out.println(total);
+	}
+
+	/**
+	 * Interpolates a point charge to the transversal grid. The charge is "smeared" (not really) according to the nearest-grid-point method.
+	 *
+	 * @param s
+	 * @param chargePosition
+	 * @param charge
+	 */
+	private void interpolateChargeToGridNGP(Simulation s, double[] chargePosition, AlgebraElement charge) {
+		int[] gridPos0 = GridFunctions.nearestGridPoint(chargePosition, as);
+		transversalChargeDensity[GridFunctions.getCellIndex(gridPos0, transversalNumCells)].addAssign(charge);
 	}
 
 	/**
@@ -241,18 +292,14 @@ public class ParticleLCCurrent implements ICurrentGenerator {
 				dipoleChargePos2[j] -= dipoleVector[j] * averageDist / 2.0;
 			}
 
-			// Positions of the dipole charges
-			int dipoleChargeIndex1 = GridFunctions.getCellIndex(GridFunctions.nearestGridPoint(dipoleChargePos1, as), transversalNumCells);
-			int dipoleChargeIndex2 = GridFunctions.getCellIndex(GridFunctions.nearestGridPoint(dipoleChargePos2, as), transversalNumCells);
-
 			// Charges of the dipoles
 			AlgebraElement dipoleCharge1 = s.grid.getElementFactory().algebraZero();
 			AlgebraElement dipoleCharge2 = s.grid.getElementFactory().algebraZero();
 			dipoleCharge1.set(c, -dipoleCharge);
 			dipoleCharge2.set(c, dipoleCharge);
 
-			transversalChargeDensity[dipoleChargeIndex1].addAssign(dipoleCharge1);
-			transversalChargeDensity[dipoleChargeIndex2].addAssign(dipoleCharge2);
+			interpolateChargeToGridCIC(s, dipoleChargePos1, dipoleCharge1);
+			interpolateChargeToGridCIC(s, dipoleChargePos2, dipoleCharge2);
 		}
 	}
 
