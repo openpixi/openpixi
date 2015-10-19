@@ -8,44 +8,130 @@ import org.openpixi.pixi.physics.util.GridFunctions;
 
 import java.util.ArrayList;
 
+/**
+ * This current generator uses particles on fixed trajectories to correctly interpolate the charge and current density
+ * on the grid according to CGC initial conditions.
+ */
 public class ParticleLCCurrent implements ICurrentGenerator {
 
+	/**
+	 * Direction of movement of the charge density. Values range from 0 to numberOfDimensions-1.
+	 */
 	private int direction;
+
+	/**
+	 * Orientation of movement. Values are -1 or 1.
+	 */
 	private int orientation;
+
+	/**
+	 * Longitudinal location of the initial charge density in the simulation box.
+	 */
 	private double location;
+
+	/**
+	 * Longitudinal width of the charge density.
+	 */
 	private double longitudinalWidth;
 
+	/**
+	 * List of point charges to use as intial conditions.
+	 */
 	private ArrayList<PointCharge> charges;
+
+	/**
+	 * Array containing the size of the transversal grid.
+	 */
 	private int[] transversalNumCells;
+
+	/**
+	 * Transversal charge density.
+	 */
 	private AlgebraElement[] transversalChargeDensity;
+
+	/**
+	 * Total number of cells in the transversal grid.
+	 */
 	private int totalTransversalCells;
 
+	/**
+	 * Number of colors used in the simulation.
+	 */
 	private int numberOfColors;
+
+	/**
+	 * Number of components associated with the number of colors Nc. For Nc > 1 it is Nc^2-1.
+	 */
 	private int numberOfComponents;
+
+	/**
+	 * Lattice spacing of the grid.
+	 */
 	private double as;
+
+	/**
+	 * Time step used in the simulation.
+	 */
 	private double at;
+
+	/**
+	 * Coupling constant used in the simulation.
+	 */
 	private double g;
 
-	private int[] numCells;
-
+	/**
+	 * List of particles which sample the charge distributions. The charges of these particles are evolved and interpolated consistently according to the field.
+	 */
 	private ArrayList<Particle> particles;
 
+	/**
+	 * Poisson solver for solving the CGC intitial conditions.
+	 */
 	NewLCPoissonSolver poissonSolver;
 
+	/**
+	 * Standard constructor for the ParticleLCCurrent class.
+	 *
+	 * @param direction Direction of the transversal charge density movement.
+	 * @param orientation Orientation fo the transversal charge density movement.
+	 * @param location Longitudinal starting location.
+	 * @param longitudinalWidth Longitudinal width of the Gaussian shape for the charge density.
+	 */
 	public ParticleLCCurrent(int direction, int orientation, double location, double longitudinalWidth){
 		this.direction = direction;
 		this.orientation = orientation;
 		this.location = location;
 		this.longitudinalWidth = longitudinalWidth;
-
 		this.charges = new ArrayList<PointCharge>();
 	}
 
+	/**
+	 * Adds a point charge at a certain position. This is mainly used to specify initial conditions.
+	 *
+	 * @param location
+	 * @param colorDirection
+	 * @param magnitude
+	 */
 	public void addCharge(double[] location, double[] colorDirection, double magnitude) {
 		// This method should be called from the YAML object to add the charges for the current generator.
 		this.charges.add(new PointCharge(location, colorDirection, magnitude));
 	}
 
+	/**
+	 * Sets the intitial transversal charge density.
+	 *
+	 * @param transversalChargeDensity
+	 */
+	public void setTransversalChargeDensity(AlgebraElement[] transversalChargeDensity) {
+		this.transversalChargeDensity = transversalChargeDensity;
+	}
+
+	/**
+	 * Initializes the fields, charges and currents on the grid.
+	 *
+	 * @param s
+	 * @param totalInstances
+	 */
 	public void initializeCurrent(Simulation s, int totalInstances) {
 		// 0) Define some variables.
 		numberOfColors = s.getNumberOfColors();
@@ -55,8 +141,7 @@ public class ParticleLCCurrent implements ICurrentGenerator {
 		g = s.getCouplingConstant();
 
 		// 1) Initialize transversal charge density grid using the charges array.
-		numCells = s.grid.getNumCells();
-		transversalNumCells = GridFunctions.reduceGridPos(numCells, direction);
+		transversalNumCells = GridFunctions.reduceGridPos(s.grid.getNumCells(), direction);
 		totalTransversalCells = GridFunctions.getTotalNumberOfCells(transversalNumCells);
 		transversalChargeDensity = new AlgebraElement[totalTransversalCells];
 		for (int i = 0; i < totalTransversalCells; i++) {
@@ -93,12 +178,23 @@ public class ParticleLCCurrent implements ICurrentGenerator {
 		// You're done: charge density, current density and the fields are set up correctly.
 	}
 
+
+	/**
+	 * Interpolates and evolves the charges and currents to the grid.
+	 * @param s
+	 */
 	public void applyCurrent(Simulation s) {
 		evolveCharges(s);
 		removeParticles(s);
 		interpolateChargesAndCurrents(s);
 	}
 
+	/**
+	 * Removes the monopole moment by subtracting a constant charge at each lattice site of the transversal charge density.
+	 * This is not a good way to do this, so make sure the initial conditions are colorless at initialization.
+	 *
+	 * @param s
+	 */
 	private void removeMonopoleMoment(Simulation s) {
 		AlgebraElement totalCharge = computeTotalCharge(s);
 		totalCharge  = totalCharge.mult(1.0 / totalTransversalCells);
@@ -107,6 +203,11 @@ public class ParticleLCCurrent implements ICurrentGenerator {
 		}
 	}
 
+	/**
+	 * Removes the dipole moment by adding dipoles for each color component. These dipoles cancel the total dipole moment.
+	 *
+	 * @param s
+	 */
 	private void removeDipoleMoment(Simulation s) {
 		for (int c = 0; c < numberOfComponents; c++) {
 			// Position of dipole
@@ -155,6 +256,12 @@ public class ParticleLCCurrent implements ICurrentGenerator {
 		}
 	}
 
+	/**
+	 * Computes the total charge on the transversal lattice.
+	 *
+	 * @param s
+	 * @return
+	 */
 	private AlgebraElement computeTotalCharge(Simulation s) {
 		AlgebraElement totalCharge =  s.grid.getElementFactory().algebraZero();
 		for (int i = 0; i < totalTransversalCells; i++) {
@@ -163,6 +270,13 @@ public class ParticleLCCurrent implements ICurrentGenerator {
 		return totalCharge;
 	}
 
+	/**
+	 * Computes the "center of charge" for a given component on the transversal lattice. The center is computed from the
+	 * absolute values of the charges.
+	 *
+	 * @param component
+	 * @return
+	 */
 	private double[] computeCenterOfAbsCharge(int component) {
 		double[] center = new double[transversalNumCells.length];
 		for (int j = 0; j < transversalNumCells.length; j++) {
@@ -186,6 +300,14 @@ public class ParticleLCCurrent implements ICurrentGenerator {
 		return center;
 	}
 
+	/**
+	 * Computes the average (weighted) distance of the charges of a certain component to the center of charge.
+	 * This can be used to estimate the size of the charge distribution.
+	 *
+	 * @param s
+	 * @param component
+	 * @return
+	 */
 	private double computeAverageDistance(Simulation s, int component) {
 		double averageDistance = 0.0;
 		double[] centerOfCharge = computeCenterOfAbsCharge(component);
@@ -203,6 +325,11 @@ public class ParticleLCCurrent implements ICurrentGenerator {
 		return averageDistance / totalAbsCharge;
 	}
 
+	/**
+	 * Computes the center of charge using the invariant charge (tr(Q^2))^0.5.
+	 *
+	 * @return
+	 */
 	private double[] computeCenterOfInvariantCharge() {
 		double[] center = new double[transversalNumCells.length];
 		for (int j = 0; j < transversalNumCells.length; j++) {
@@ -226,6 +353,14 @@ public class ParticleLCCurrent implements ICurrentGenerator {
 		return center;
 	}
 
+
+	/**
+	 * Initializes the particles according to the field initial conditions. The charge density is computed from the Gauss law
+	 * violations of the initial fields. The particles are then sampled from this charge density.
+	 *
+	 * @param s
+	 * @param particlesPerLink
+	 */
 	private void initializeParticles(Simulation s, int particlesPerLink) {
 		particles = new ArrayList<Particle>();
 
@@ -272,6 +407,11 @@ public class ParticleLCCurrent implements ICurrentGenerator {
 		}
 	}
 
+	/**
+	 * Evolves the particle positions and charges according to the Wong equations.
+	 *
+	 * @param s
+	 */
 	private void evolveCharges(Simulation s) {
 		for(Particle p : particles) {
 			// swap variables for charge and position
@@ -329,6 +469,11 @@ public class ParticleLCCurrent implements ICurrentGenerator {
 		}
 	}
 
+	/**
+	 * Checks if particles have left the simulation box and removes them if necessary.
+	 *
+	 * @param s
+	 */
 	private void removeParticles(Simulation s) {
 		// Remove particles which have left the simulation box.
 		ArrayList<Particle> removeList = new ArrayList<Particle>();
@@ -342,10 +487,17 @@ public class ParticleLCCurrent implements ICurrentGenerator {
 		particles.removeAll(removeList);
 	}
 
+	/**
+	 * Interpolates the particle charges to the grid and computes charge conserving currents.
+	 *
+	 * @param s
+	 */
 	private void interpolateChargesAndCurrents(Simulation s) {
 		double c = as / at;
 		// Interpolate particle charges to charge density on the grid
 		for(Particle p : particles) {
+			// 1) Charge interpolation
+
 			// "Floored" grid points of the particle
 			int[] gridPosOld = GridFunctions.flooredGridPoint(p.pos0, as);
 			int[] gridPosNew = GridFunctions.flooredGridPoint(p.pos1, as);
@@ -377,6 +529,8 @@ public class ParticleLCCurrent implements ICurrentGenerator {
 
 			s.grid.addRho(cellIndex0New, Q0New);
 			s.grid.addRho(cellIndex1New, Q1New);
+
+			// 2) Charge conserving current calculation
 
 			int longitudinalIndexOld = (int) (p.pos0[direction] / as);
 			int longitudinalIndexNew = (int) (p.pos1[direction] / as);
@@ -416,6 +570,9 @@ public class ParticleLCCurrent implements ICurrentGenerator {
 		}
 	}
 
+	/**
+	 * Particle class used by the current generator to evolve and interpolate charges on the grid.
+	 */
 	class Particle {
 		public double[] pos0;
 		public double[] pos1;
@@ -445,6 +602,9 @@ public class ParticleLCCurrent implements ICurrentGenerator {
 		}
 	}
 
+	/**
+	 * Utility class to deal with point charges. Only used to specify the initial conditions.
+	 */
 	class PointCharge {
 		public double[] location;
 		public double[] colorDirection;
