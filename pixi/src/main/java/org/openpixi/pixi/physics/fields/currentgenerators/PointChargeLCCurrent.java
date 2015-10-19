@@ -93,7 +93,7 @@ public class PointChargeLCCurrent implements ICurrentGenerator {
 	private ParticleLCCurrent particleLCCurrent;
 
 	/**
-	 * Standard consturctor.
+	 * Standard constructor.
 	 *
 	 * @param direction
 	 * @param orientation

@@ -50,16 +50,6 @@ public class ParticleLCCurrent implements ICurrentGenerator {
 	private int totalTransversalCells;
 
 	/**
-	 * Number of colors used in the simulation.
-	 */
-	private int numberOfColors;
-
-	/**
-	 * Number of components associated with the number of colors Nc. For Nc > 1 it is Nc^2-1.
-	 */
-	private int numberOfComponents;
-
-	/**
 	 * Lattice spacing of the grid.
 	 */
 	private double as;
@@ -116,8 +106,6 @@ public class ParticleLCCurrent implements ICurrentGenerator {
 	 */
 	public void initializeCurrent(Simulation s, int totalInstances) {
 		// 0) Define some variables.
-		numberOfColors = s.getNumberOfColors();
-		numberOfComponents = s.grid.getElementFactory().numberOfComponents;
 		as = s.grid.getLatticeSpacing();
 		at = s.getTimeStep();
 		g = s.getCouplingConstant();
