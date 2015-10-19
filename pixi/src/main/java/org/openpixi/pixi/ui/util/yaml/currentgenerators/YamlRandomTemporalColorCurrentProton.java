@@ -42,11 +42,6 @@ public class YamlRandomTemporalColorCurrentProton {
 	public Integer numberOfCharges;
 
 	/**
-	 * Width of the Gaussian distribution from which the random charges are sampled
-	 */
-	public Double colorDistributionWidth;
-
-	/**
 	 * Width of the Gaussian distribution of the valence quark charge
 	 */
 	public Double partonWidth;
@@ -75,31 +70,25 @@ public class YamlRandomTemporalColorCurrentProton {
 		}
 
 		ArrayList<double[]> listOfChargeLocations = new ArrayList<double[]>();
-		ArrayList<double[]> listOfChargeColorAmplitudes = new ArrayList<double[]>();
 
 		double[] totalCharge = new double[numberOfComponents];
 		for(int i = 0; i < numberOfCharges; i++) {
 			double[] chargeLocation = new double[transversalLocation.size()];
-			double[] chargeColorAmplitude = new double[numberOfComponents];
 			for (int j = 0; j < transversalLocation.size(); j++) {
 				chargeLocation[j] = transversalLocation.get(j) + rand.nextGaussian() * transversalWidth;
 			}
-			for (int j = 0; j < numberOfComponents; j++) {
-				chargeColorAmplitude[j] = rand.nextGaussian() * colorDistributionWidth;
-				totalCharge[j] += chargeColorAmplitude[j];
-			}
 			listOfChargeLocations.add(chargeLocation);
-			listOfChargeColorAmplitudes.add(chargeColorAmplitude);
 		}
 
 		// Subtract a certain amount from each charge to make the whole distribution colorless.
 		for(int i = 0; i < numberOfCharges; i++) {
+			/*
 			double[] amplitude = listOfChargeColorAmplitudes.get(i);
 			for (int j = 0; j < numberOfComponents; j++) {
 				amplitude[j] -= totalCharge[j] / numberOfCharges;
 			}
-
-			generator.addCharge(listOfChargeLocations.get(i), amplitude, getMagnitude(amplitude), partonWidth);
+			*/
+			generator.addCharge(listOfChargeLocations.get(i), partonWidth);
 		}
 
 		return generator;

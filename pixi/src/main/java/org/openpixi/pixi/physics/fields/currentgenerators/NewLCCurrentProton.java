@@ -41,9 +41,9 @@ public class NewLCCurrentProton implements ICurrentGenerator {
 		this.charges = new ArrayList<GaussianCharge>();
 	}
 
-	public void addCharge(double[] location, double[] colorDirection, double magnitude, double width) {
+	public void addCharge(double[] location, double width) {
 		// This method should be called from the YAML object to add the charges for the current generator.
-		this.charges.add(new GaussianCharge(location, colorDirection, magnitude, width));
+		this.charges.add(new GaussianCharge(location, width));
 	}
 
 	public void initializeCurrent(Simulation s, int totalInstances) {
@@ -58,6 +58,7 @@ public class NewLCCurrentProton implements ICurrentGenerator {
 		numCells = s.grid.getNumCells();
 		transversalNumCells = GridFunctions.reduceGridPos(numCells, direction);
 		totalTransversalCells = GridFunctions.getTotalNumberOfCells(transversalNumCells);
+		double[] transversalWidths = new double[totalTransversalCells];
 		transversalChargeDensity = new AlgebraElement[totalTransversalCells];
 		for (int i = 0; i < totalTransversalCells; i++) {
 			transversalChargeDensity[i] = s.grid.getElementFactory().algebraZero();
@@ -66,14 +67,24 @@ public class NewLCCurrentProton implements ICurrentGenerator {
 		// Iterate over (point) charges, create a Gaussian charge distribution around them and add them to the transversal charge density.
 		for (int i = 0; i < charges.size(); i++) {
 			GaussianCharge c = charges.get(i);
-			AlgebraElement chargeAmplitude = s.grid.getElementFactory().algebraZero(s.getNumberOfColors());
+			/*AlgebraElement chargeAmplitude = s.grid.getElementFactory().algebraZero(s.getNumberOfColors());
 			for (int j = 0; j < numberOfComponents; j++) {
 				chargeAmplitude.set(j, c.colorDirection[j] * c.magnitude / Math.pow(as, s.getNumberOfDimensions() - 1));
-			}
+			}*/
 			for (int k = 0; k < totalTransversalCells; k++) {
+				double distance = getDistance(c.location, GridFunctions.getCellPos(k, transversalNumCells), as);
+				transversalWidths[k] += shapeFunction(distance, 0.0, 0, c.width)/Math.PI/transversalNumCells.length;
 				//initializeGlauber(c, k, chargeAmplitude);
-				initializeCGC(c, k, chargeAmplitude);
+				//initializeCGC(c, k, chargeAmplitude);
 			}
+		}
+
+		for (int k = 0; k < totalTransversalCells; k++) {
+			AlgebraElement chargeAmplitude = s.grid.getElementFactory().algebraZero(s.getNumberOfColors());
+			for (int j = 0; j < numberOfComponents; j++) {
+				chargeAmplitude.set(j, rand.nextGaussian()*transversalWidths[k] / Math.pow(as, s.getNumberOfDimensions() - 1));
+			}
+			transversalChargeDensity[k].addAssign(chargeAmplitude);
 		}
 
 		// 2) Interpolate grid charge and current density.
@@ -190,14 +201,10 @@ public class NewLCCurrentProton implements ICurrentGenerator {
 
 	class GaussianCharge extends PointCharge {
 		public double[] location;
-		public double[] colorDirection;
-		double magnitude;
 		double width;
 
-		public GaussianCharge(double[] location, double[] colorDirection, double magnitude, double width) {
+		public GaussianCharge(double[] location, double width) {
 			this.location = location;
-			this.colorDirection = super.normalize(colorDirection);
-			this.magnitude = magnitude;
 			this.width = width;
 		}
 	}

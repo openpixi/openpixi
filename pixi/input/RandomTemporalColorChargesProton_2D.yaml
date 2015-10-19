@@ -18,7 +18,6 @@ currents:
       transversalWidth: 4.0
       transversalLocation: [64, 0]
       numberOfCharges: 3
-      colorDistributionWidth: 0.1
       partonWidth: 2
       numberOfColors: 2
     - direction: 0
@@ -28,7 +27,6 @@ currents:
       transversalWidth: 4.0
       transversalLocation: [64, 0]
       numberOfCharges: 3
-      colorDistributionWidth: 0.1
       partonWidth: 2
       numberOfColors: 2
 
