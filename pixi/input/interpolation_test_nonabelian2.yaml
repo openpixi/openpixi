@@ -20,6 +20,7 @@ currents:
       numberOfCharges: 30
       colorDistributionWidth: 0.1
       numberOfColors: 2
+      useDipoleRemoval: true
       randomSeed: 1
     - direction: 0
       orientation: -1
@@ -30,7 +31,8 @@ currents:
       numberOfCharges: 30
       colorDistributionWidth: 0.1
       numberOfColors: 2
-      randomSeed: 1
+      useDipoleRemoval: true
+      randomSeed: 2
 
 output:
   boundaryFixer:
@@ -47,7 +49,7 @@ panels:
     leftPanel:
       chartPanel:
         logarithmicScale: true
-        restrictedRegion: '[0,0,0]-[62,63,1]'
+        restrictedRegion: '[2,0,0]-[62,63,1]'
         showCharts:
         - Gauss law violation
         - E squared

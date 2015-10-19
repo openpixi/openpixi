@@ -9,11 +9,13 @@ timeStep: 0.1
 duration: 1000
 
 currents:
-  particleLCCurrents:
+  pointChargeLCCurrents:
     - direction: 0
       orientation: 1
       location: 64
       longitudinalWidth: 4
+      useMonopoleRemoval: false
+      useDipoleRemoval: false
       charges:
         - location: [88, 0]
           amplitudeColorDirection: [1.0, 0.0, 0.0]

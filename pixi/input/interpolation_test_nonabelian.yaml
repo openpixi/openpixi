@@ -20,6 +20,7 @@ currents:
       numberOfCharges: 30
       colorDistributionWidth: 0.1
       numberOfColors: 2
+      useDipoleRemoval: true
       randomSeed: 1
 
 output:

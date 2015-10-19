@@ -1,6 +1,6 @@
 package org.openpixi.pixi.ui.util.yaml.currentgenerators;
 
-import org.openpixi.pixi.physics.fields.currentgenerators.ParticleLCCurrent;
+import org.openpixi.pixi.physics.fields.currentgenerators.PointChargeLCCurrent;
 
 import java.util.ArrayList;
 import java.util.Random;
@@ -56,11 +56,16 @@ public class YamlRandomTemporalParticleColorCurrent {
 	 */
 	public Integer randomSeed = null;
 
+	/**
+	 * Option whether to use the dipole removal method.
+	 */
+	public Boolean useDipoleRemoval = true;
+
 
 	//public NewLCCurrent getCurrentGenerator() {
-	public ParticleLCCurrent getCurrentGenerator() {
+	public PointChargeLCCurrent getCurrentGenerator() {
 		//NewLCCurrent generator = new NewLCCurrent(direction, orientation, longitudinalLocation, longitudinalWidth);
-		ParticleLCCurrent generator = new ParticleLCCurrent(direction, orientation, longitudinalLocation, longitudinalWidth);
+		PointChargeLCCurrent generator = new PointChargeLCCurrent(direction, orientation, longitudinalLocation, longitudinalWidth, true, useDipoleRemoval);
 		Random rand = new Random();
 		if(randomSeed != null) {
 			rand.setSeed(randomSeed);

@@ -22,7 +22,7 @@ public class YamlCurrents {
 
     public ArrayList<YamlNewLCCurrent> newLCCurrents = new ArrayList<YamlNewLCCurrent>();
 
-	public ArrayList<YamlParticleLCCurrent> particleLCCurrents = new ArrayList<YamlParticleLCCurrent>();
+	public ArrayList<YamlPointChargeLCCurrent> pointChargeLCCurrents = new ArrayList<YamlPointChargeLCCurrent>();
 
     public ArrayList<YamlNewLorenzLCCurrent> newLorenzLCCurrents = new ArrayList<YamlNewLorenzLCCurrent>();
 
@@ -73,7 +73,7 @@ public class YamlCurrents {
 			}
 		}
 
-		for (YamlParticleLCCurrent current : particleLCCurrents) {
+		for (YamlPointChargeLCCurrent current : pointChargeLCCurrents) {
 			if (current.checkConsistency(s)) {
 				s.addCurrentGenerator(current.getCurrentGenerator());
 			}
