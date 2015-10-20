@@ -18,6 +18,7 @@
  */
 package org.openpixi.pixi.ui.panel.gl;
 
+import org.openpixi.pixi.math.AlgebraElement;
 import org.openpixi.pixi.physics.Simulation;
 import org.openpixi.pixi.ui.SimulationAnimation;
 import org.openpixi.pixi.ui.panel.properties.CoordinateProperties;
@@ -85,11 +86,21 @@ public class GaussViolation2DGLPanel extends AnimationGLPanel {
 				pos[xAxisIndex] = i;
 				pos[yAxisIndex] = k;
 				int index = s.grid.getCellIndex(pos);
-				double gauss = s.grid.getGaussConstraintSquared(index);
+				AlgebraElement gaussAlg = s.grid.getGaussConstraint(index);
+				double gauss = gaussAlg.square();
 				double value = Math.min(1, scale * gauss);
+
+				double red = Math.min(1, scale * Math.pow(gaussAlg.get(0), 2));
+				double green = Math.min(1, scale * Math.pow(gaussAlg.get(1), 2));
+				double blue = Math.min(1, scale * Math.pow(gaussAlg.get(2), 2));
+
+				double norm = red + green + blue;
+
 				scaleProperties.putValue(gauss);
 
-				gl2.glColor3d( value, value, value );
+				gl2.glColor3d( Math.sqrt(red/norm) * value,
+						Math.sqrt(green/norm) * value,
+						Math.sqrt(blue/norm) * value);
 				gl2.glVertex2f( xstart2, ystart2 );
 				gl2.glVertex2f( xstart3, ystart2 );
 			}

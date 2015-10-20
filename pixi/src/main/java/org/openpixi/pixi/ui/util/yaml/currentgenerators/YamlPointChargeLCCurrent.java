@@ -1,17 +1,11 @@
 package org.openpixi.pixi.ui.util.yaml.currentgenerators;
 
 import org.openpixi.pixi.physics.Settings;
-import org.openpixi.pixi.physics.fields.currentgenerators.NewLCCurrent;
-import org.openpixi.pixi.physics.fields.currentgenerators.ParticleLCCurrent;
-import org.openpixi.pixi.physics.util.GridFunctions;
+import org.openpixi.pixi.physics.fields.currentgenerators.PointChargeLCCurrent;
 
 import java.util.ArrayList;
-import java.util.List;
 
-/**
- * Created by dmueller on 9/3/15.
- */
-public class YamlNewLCCurrent {
+public class YamlPointChargeLCCurrent {
 
 	/**
 	 * Direction of the current pulse (0 to d)
@@ -34,6 +28,16 @@ public class YamlNewLCCurrent {
 	public Double longitudinalWidth;
 
 	/**
+	 * Option whether to use the monopole removal method.
+	 */
+	public Boolean useMonopoleRemoval = false;
+
+	/**
+	 * Option whether to use the dipole removal method.
+	 */
+	public Boolean useDipoleRemoval = false;
+
+	/**
 	 * List of charges on the pulse plane
 	 */
 	public ArrayList<YamlPointCharge> charges = new ArrayList<YamlPointCharge>();
@@ -46,12 +50,12 @@ public class YamlNewLCCurrent {
 	 */
 	public boolean checkConsistency(Settings settings) {
 		if (direction >= settings.getNumberOfDimensions()) {
-			System.out.println("NewLCCurrent: direction index exceeds the dimensions of the system.");
+			System.out.println("PointChargeLCCurrent: direction index exceeds the dimensions of the system.");
 			return false;
 		}
 
 		if(Math.abs(orientation) != 1) {
-			System.out.println("NewLCCurrent: orientation must be either -1 or 1.");
+			System.out.println("PointChargeLCCurrent: orientation must be either -1 or 1.");
 			return false;
 		}
 
@@ -61,12 +65,12 @@ public class YamlNewLCCurrent {
 		for(YamlPointCharge c : charges) {
 			// Check color vectors
 			if (c.amplitudeColorDirection.size() != numberOfComponents) {
-				System.out.println("NewLCCurrent: aColor vector does not have the right dimensions.");
+				System.out.println("PointChargeLCCurrent: aColor vector does not have the right dimensions.");
 				return false;
 			}
 			// Check location vectors
 			if(c.location.size() != effDim) {
-				System.out.println("NewLCCurrent: location vector does not have the right dimensions.");
+				System.out.println("PointChargeLCCurrent: location vector does not have the right dimensions.");
 				return false;
 			}
 
@@ -77,8 +81,8 @@ public class YamlNewLCCurrent {
 	}
 
 
-	public NewLCCurrent getCurrentGenerator() {
-		NewLCCurrent generator = new NewLCCurrent(direction, orientation, location, longitudinalWidth);
+	public PointChargeLCCurrent getCurrentGenerator() {
+		PointChargeLCCurrent generator = new PointChargeLCCurrent(direction, orientation, location, longitudinalWidth, useMonopoleRemoval, useDipoleRemoval);
 
 		for(YamlPointCharge c: charges) {
 			double[] chargeLocation = new double[c.location.size()];

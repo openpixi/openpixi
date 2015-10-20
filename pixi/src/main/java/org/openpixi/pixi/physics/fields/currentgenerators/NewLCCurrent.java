@@ -29,6 +29,8 @@ public class NewLCCurrent implements ICurrentGenerator {
 
 	private int[] numCells;
 
+	NewLCPoissonSolver poissonSolver;
+
 	public NewLCCurrent(int direction, int orientation, double location, double longitudinalWidth){
 		this.direction = direction;
 		this.orientation = orientation;
@@ -69,15 +71,14 @@ public class NewLCCurrent implements ICurrentGenerator {
 			}
 			transversalChargeDensity[GridFunctions.getCellIndex(GridFunctions.nearestGridPoint(c.location, as), transversalNumCells)].addAssign(chargeAmplitude);
 		}
-
-		// 2) Interpolate grid charge and current density.
-		applyCurrent(s);
-
-		// 3) Initialize the NewLightConePoissonSolver with the transversal charge density and solve for the fields U and E.
-		NewLCPoissonSolver poissonSolver = new NewLCPoissonSolver(direction, orientation, location, longitudinalWidth,
+		// 2) Initialize the NewLightConePoissonSolver with the transversal charge density and solve for the fields U and E.
+		poissonSolver = new NewLCPoissonSolver(direction, orientation, location, longitudinalWidth,
 				transversalChargeDensity, transversalNumCells);
 		poissonSolver.initialize(s);
 		poissonSolver.solve(s);
+
+		// 3) Interpolate grid charge and current density.
+		applyCurrent(s);
 
 		// You're done: charge density, current density and the fields are set up correctly.
 	}
@@ -94,10 +95,10 @@ public class NewLCCurrent implements ICurrentGenerator {
 			double z = i * as - location;
 
 
-			double s0 = g * as * shapeFunction(z, t - at, orientation, longitudinalWidth);  // shape at t-dt times g*as
+			//double s0 = g * as * shapeFunction(z, t - at, orientation, longitudinalWidth);  // shape at t-dt times g*as
 			double s1 = g * as * shapeFunction(z, t, orientation, longitudinalWidth);  // shape at t times g*as
-			double s2 = g * as * shapeFunction(z, t - at/2, orientation, longitudinalWidth);  // shape at t-dt/2 times g*as
-			double ds = (s1 - s0)/at; // time derivative of the shape function
+			double s2 = g * as * shapeFunction(z + 0.5 * as, t - at/2, orientation, longitudinalWidth);  // shape at t-dt/2 times g*as
+			//double ds = (s1 - s0)/at; // time derivative of the shape function
 
 			for (int j = 0; j < totalTransversalCells; j++) {
 				int[] transversalGridPos = GridFunctions.getCellPos(j, transversalNumCells);
@@ -105,29 +106,14 @@ public class NewLCCurrent implements ICurrentGenerator {
 				int cellIndex = s.grid.getCellIndex(gridPos);
 
 				// a) Interpolate transversal charge density to grid charge density with a Gauss profile (at t).
-				s.grid.addRho(cellIndex, transversalChargeDensity[j].mult(s1));
+				GroupElement V = poissonSolver.getV(i, j, t);
+				s.grid.addRho(cellIndex, transversalChargeDensity[j].act(V).mult(s1));
 
 				// b) Compute gird current density in a charge conserving manner at (t-dt/2).
+				// Method: Sampling the analytical result on the grid (not charge conserving)
+				GroupElement V2 = poissonSolver.getV(as * (i + 0.5), j, (t - at/2));
+				s.grid.addJ(cellIndex, direction, transversalChargeDensity[j].act(V2).mult(s2*orientation));
 
-				// Method 1: Sampling the analytical result on the grid (not charge conserving)
-				//s.grid.addJ(cellIndex, direction, transversalChargeDensity[j].mult(s2*orientation));
-
-				// Method 2: Setting the current according to the continuity equation (charge conserving)
-				if(Math.abs(ds * as) > 0.00000001) {
-					// In the case of CGC initial conditions the continuity equation reduces to
-					//     j^a_{x+i, i} = j^a_{x,i} - \dot{\rho^a} as,
-					// where i is the direction in which the sheet is moving.
-					// For a single thin sheet of charges this is correct since there are no longitudinal gauge fields
-					// A_{x,i}. However during the collision of two sheets I don't want to assume that this can not
-					// happen. Therefore I generalize the spatial derivative to a covariant spatial derivative by
-					// parallel transporting the current for the neighbouring lattice site. The equation then reads
-					//     j^a_{x+i} = U_{x, i}^t j^a_x U_{x,i} - \dot{\rho^a} as.
-					GroupElement U = s.grid.getLink(cellIndex, direction, 1, 0);
-					lastCurrents[j].addAssign(transversalChargeDensity[j].mult(-ds * as).act(U));
-					s.grid.addJ(cellIndex, direction,
-							lastCurrents[j]
-					);
-				}
 			}
 		}
 	}

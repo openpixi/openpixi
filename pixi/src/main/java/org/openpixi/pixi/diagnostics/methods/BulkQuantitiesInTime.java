@@ -2,8 +2,10 @@ package org.openpixi.pixi.diagnostics.methods;
 
 import java.io.File;
 import java.io.FileWriter;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.io.IOException;
+import java.util.Locale;
 
 import org.openpixi.pixi.diagnostics.Diagnostics;
 import org.openpixi.pixi.physics.Simulation;
@@ -19,6 +21,9 @@ public class BulkQuantitiesInTime implements Diagnostics {
 	private boolean supressOutput;
 	private Simulation s;
 	private FieldMeasurements fieldMeasurements;
+	private boolean useRestrictedRegion;
+	private int[] regionPoint1;
+	private int[] regionPoint2;
 
 	public double eSquared;
 	public double bSquared;
@@ -34,9 +39,19 @@ public class BulkQuantitiesInTime implements Diagnostics {
 
 	public BulkQuantitiesInTime(String path, double timeInterval, boolean supressOutput)
 	{
+		this(path, timeInterval, supressOutput, null, null);
+	}
+
+	public BulkQuantitiesInTime(String path, double timeInterval, boolean supressOutput, int[] regionPoint1, int[] regionPoint2)
+	{
 		this.path = path;
 		this.timeInterval = timeInterval;
 		this.supressOutput = supressOutput;
+		if(regionPoint1 != null && regionPoint2 != null) {
+			this.useRestrictedRegion = true;
+			this.regionPoint1 = regionPoint1;
+			this.regionPoint2 = regionPoint2;
+		}
 	}
 
 	/**
@@ -49,7 +64,25 @@ public class BulkQuantitiesInTime implements Diagnostics {
 	{
 		this.s = s;
 		this.stepInterval = (int) (timeInterval / this.s.getTimeStep());
-		this.fieldMeasurements = new FieldMeasurements();
+
+		if(useRestrictedRegion) {
+			// Convert region points to boolean grid.
+			int totalNumberOfCells = s.grid.getTotalNumberOfCells();
+			boolean[] restrictedRegion = new boolean[totalNumberOfCells];
+			for (int i = 0; i < totalNumberOfCells; i++) {
+				int[] gridPos = s.grid.getCellPos(i);
+				for (int j = 0; j < s.getNumberOfDimensions(); j++) {
+					if(regionPoint1[j] > gridPos[j] || gridPos[j] > regionPoint2[j]) {
+						restrictedRegion[i] = true;
+						break;
+					}
+				}
+			}
+
+			this.fieldMeasurements = new FieldMeasurements(restrictedRegion);
+		} else {
+			this.fieldMeasurements = new FieldMeasurements();
+		}
 
 
 		if(!supressOutput) {
@@ -95,18 +128,18 @@ public class BulkQuantitiesInTime implements Diagnostics {
 
 			gaussViolation = fieldMeasurements.calculateGaussConstraint(grid);
 
-
 			if(!supressOutput) {
 				File file = getOutputFile(path);
 				FileWriter pw = new FileWriter(file, true);
+				DecimalFormat formatter = new DecimalFormat("0.################E0");
 
-				pw.write(steps * s.getTimeStep() + "\t");
-				pw.write(eSquared+ "\t");
-				pw.write(bSquared + "\t");
-				pw.write(px + "\t");
-				pw.write(py + "\t");
-				pw.write(pz + "\t");
-				pw.write(gaussViolation + "\t");
+				pw.write(formatter.format(steps * s.getTimeStep()) + "\t");
+				pw.write(formatter.format(eSquared)+ "\t");
+				pw.write(formatter.format(bSquared) + "\t");
+				pw.write(formatter.format(px) + "\t");
+				pw.write(formatter.format(py) + "\t");
+				pw.write(formatter.format(pz) + "\t");
+				pw.write(formatter.format(gaussViolation));
 				pw.write("\n");
 
 				pw.close();
