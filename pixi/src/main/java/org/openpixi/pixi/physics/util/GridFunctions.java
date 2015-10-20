@@ -120,7 +120,6 @@ public class GridFunctions {
 		int cellIndex;
 		// Make periodic
 		int[] periodicCoordinates = new int[coordinates.length];
-		System.arraycopy(coordinates, 0, periodicCoordinates, 0, coordinates.length);
 		for (int i = 0; i < numCells.length; i++) {
 			periodicCoordinates[i] = (coordinates[i] % numCells[i] + numCells[i]) % numCells[i];
 		}
