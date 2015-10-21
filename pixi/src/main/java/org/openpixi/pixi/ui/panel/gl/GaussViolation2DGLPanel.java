@@ -35,7 +35,7 @@ import javax.swing.*;
  */
 public class GaussViolation2DGLPanel extends AnimationGLPanel {
 
-	ScaleProperties scaleProperties;
+	public ScaleProperties scaleProperties;
 	public CoordinateProperties showCoordinateProperties;
 
 	/** Constructor */
@@ -113,9 +113,5 @@ public class GaussViolation2DGLPanel extends AnimationGLPanel {
 		addLabel(box, "Gauss Constraint Violation 2D (OpenGL) panel");
 		scaleProperties.addComponents(box);
 		showCoordinateProperties.addComponents(box);
-	}
-
-	public ScaleProperties getScaleProperties() {
-		return scaleProperties;
 	}
 }

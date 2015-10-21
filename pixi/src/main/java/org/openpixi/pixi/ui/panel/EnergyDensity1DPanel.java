@@ -17,7 +17,7 @@ import org.openpixi.pixi.ui.panel.properties.ScaleProperties;
  */
 public class EnergyDensity1DPanel extends AnimationPanel {
 	
-	ScaleProperties scaleProperties;
+	public ScaleProperties scaleProperties;
 
 	/** Constructor */
 	public EnergyDensity1DPanel(SimulationAnimation simulationAnimation) {
@@ -188,10 +188,6 @@ public class EnergyDensity1DPanel extends AnimationPanel {
 	public void addPropertyComponents(Box box) {
 		addLabel(box, "Energy density panel");
 		scaleProperties.addComponents(box);
-	}
-	
-	public ScaleProperties getScaleProperties() {
-		return scaleProperties;
 	}
 
 }

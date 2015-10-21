@@ -22,8 +22,8 @@ public class YamlGaussViolation2DGLPanel {
 	public YamlGaussViolation2DGLPanel(Component component) {
 		if (component instanceof GaussViolation2DGLPanel) {
 			GaussViolation2DGLPanel panel = (GaussViolation2DGLPanel) component;
-			scaleFactor = panel.getScaleProperties().getScaleFactor();
-			automaticScaling = panel.getScaleProperties().getAutomaticScaling();
+			scaleFactor = panel.scaleProperties.getScaleFactor();
+			automaticScaling = panel.scaleProperties.getAutomaticScaling();
 			showCoordinates = panel.showCoordinateProperties.getValue();
 		}
 	}
@@ -33,11 +33,11 @@ public class YamlGaussViolation2DGLPanel {
 		GaussViolation2DGLPanel panel = new GaussViolation2DGLPanel(panelManager.getSimulationAnimation());
 
 		if (scaleFactor != null) {
-			panel.getScaleProperties().setScaleFactor(scaleFactor);
+			panel.scaleProperties.setScaleFactor(scaleFactor);
 		}
 
 		if (automaticScaling != null) {
-			panel.getScaleProperties().setAutomaticScaling(automaticScaling);
+			panel.scaleProperties.setAutomaticScaling(automaticScaling);
 		}
 
 		if (showCoordinates != null) {

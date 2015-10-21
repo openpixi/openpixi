@@ -39,10 +39,10 @@ import java.util.Arrays;
  */
 public class OccupationNumbers2DGLPanel extends AnimationGLPanel {
 
-	ScaleProperties scaleProperties;
-	BooleanProperties colorfulProperties;
+	public ScaleProperties scaleProperties;
+	public BooleanProperties colorfulProperties;
 	BooleanProperties mirrorProperties;
-	IntegerProperties frameSkipProperties;
+	public IntegerProperties frameSkipProperties;
 	CoordinateProperties showCoordinateProperties;
 
 	OccupationNumbersInTime diagnostic;
@@ -208,16 +208,5 @@ public class OccupationNumbers2DGLPanel extends AnimationGLPanel {
 		frameSkipProperties.addComponents(box);
 		showCoordinateProperties.addComponents(box);
 		mirrorProperties.addComponents(box);
-	}
-
-	public ScaleProperties getScaleProperties() {
-		return scaleProperties;
-	}
-
-	public BooleanProperties getColorfulPropteries() {
-		return colorfulProperties;
-	}
-	public IntegerProperties getFrameSkipProperties() {
-		return frameSkipProperties;
 	}
 }

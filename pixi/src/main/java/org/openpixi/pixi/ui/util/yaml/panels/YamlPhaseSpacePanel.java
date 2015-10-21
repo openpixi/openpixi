@@ -18,8 +18,8 @@ public class YamlPhaseSpacePanel {
 	public YamlPhaseSpacePanel(Component component) {
 		if (component instanceof PhaseSpacePanel) {
 			PhaseSpacePanel panel = (PhaseSpacePanel) component;
-			scaleFactor = panel.getScaleProperties().getScaleFactor();
-			automaticScaling = panel.getScaleProperties().getAutomaticScaling();
+			scaleFactor = panel.scaleProperties.getScaleFactor();
+			automaticScaling = panel.scaleProperties.getAutomaticScaling();
 		}
 	}
 
@@ -29,11 +29,11 @@ public class YamlPhaseSpacePanel {
 
 
 		if (scaleFactor != null) {
-			panel.getScaleProperties().setScaleFactor(scaleFactor);
+			panel.scaleProperties.setScaleFactor(scaleFactor);
 		}
 
 		if (automaticScaling != null) {
-			panel.getScaleProperties().setAutomaticScaling(automaticScaling);
+			panel.scaleProperties.setAutomaticScaling(automaticScaling);
 		}
 
 		return panel;
