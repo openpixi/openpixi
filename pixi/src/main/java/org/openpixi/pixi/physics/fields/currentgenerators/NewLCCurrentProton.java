@@ -15,6 +15,7 @@ public class NewLCCurrentProton implements ICurrentGenerator {
 	private int direction;
 	private int orientation;
 	private double location;
+	private double[] locationTransverse;
 	private double longitudinalWidth;
 
 	private ArrayList<GaussianCharge> charges;
@@ -31,10 +32,11 @@ public class NewLCCurrentProton implements ICurrentGenerator {
 
 	private int[] numCells;
 
-	public NewLCCurrentProton(int direction, int orientation, double location, double longitudinalWidth){
+	public NewLCCurrentProton(int direction, int orientation, double location, double longitudinalWidth, double[] transversalLocation){
 		this.direction = direction;
 		this.orientation = orientation;
 		this.location = location;
+		this.locationTransverse = transversalLocation;
 		this.longitudinalWidth = longitudinalWidth;
 		rand = new Random();
 
@@ -72,8 +74,9 @@ public class NewLCCurrentProton implements ICurrentGenerator {
 				chargeAmplitude.set(j, c.colorDirection[j] * c.magnitude / Math.pow(as, s.getNumberOfDimensions() - 1));
 			}*/
 			for (int k = 0; k < totalTransversalCells; k++) {
-				double distance = getDistance(c.location, GridFunctions.getCellPos(k, transversalNumCells), as);
-				transversalWidths[k] += shapeFunction(distance, 0.0, 0, c.width)/Math.PI/transversalNumCells.length;
+				double distanceConstituent = getDistance(c.location, GridFunctions.getCellPos(k, transversalNumCells), as);
+				double distanceSpherical = getDistance(this.locationTransverse, GridFunctions.getCellPos(k, transversalNumCells), as);
+				transversalWidths[k] += shapeFunction(distanceConstituent, 0.0, 0, c.width)/Math.PI/transversalNumCells.length;
 				//initializeGlauber(c, k, chargeAmplitude);
 				//initializeCGC(c, k, chargeAmplitude);
 			}

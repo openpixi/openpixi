@@ -58,7 +58,11 @@ public class YamlRandomTemporalColorCurrentProton {
 
 
 	public NewLCCurrentProton getCurrentGenerator() {
-		NewLCCurrentProton generator = new NewLCCurrentProton(direction, orientation, longitudinalLocation, longitudinalWidth);
+		double[] locationTransverse = new double[transversalLocation.size()];
+		for (int i = 0; i < transversalLocation.size(); i++) {
+			locationTransverse[i] = transversalLocation.get(i);
+		}
+		NewLCCurrentProton generator = new NewLCCurrentProton(direction, orientation, longitudinalLocation, longitudinalWidth, locationTransverse);
 		Random rand = new Random();
 		if(randomSeed != null) {
 			rand.setSeed(randomSeed);
@@ -88,7 +92,7 @@ public class YamlRandomTemporalColorCurrentProton {
 				amplitude[j] -= totalCharge[j] / numberOfCharges;
 			}
 			*/
-			generator.addCharge(listOfChargeLocations.get(i), partonWidth);
+			generator.addCharge(listOfChargeLocations.get(i), partonWidth);//For the spherical model the partonWidth should be identical to the transversalWidth!!!
 		}
 
 		return generator;
