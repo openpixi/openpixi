@@ -1,6 +1,7 @@
 package org.openpixi.pixi.ui.util.yaml;
 
 import java.awt.Component;
+import java.util.List;
 
 import javax.swing.JSplitPane;
 
@@ -25,6 +26,8 @@ public class YamlPanels {
 	public YamlPanels rightPanel;
 	public Integer orientation;
 	public Integer dividerLocation;
+	public Integer windowWidth;
+	public Integer windowHeight;
 
 	public YamlElectricFieldPanel electricFieldPanel;
 	public YamlParticle2DPanel particle2DPanel;
@@ -41,6 +44,19 @@ public class YamlPanels {
 
 	/** Empty constructor called by SnakeYaml */
 	public YamlPanels() {
+	}
+
+	/**
+	 * Constructor which fills the values of this class according to
+	 * the component attached.
+	 * @param component Java swing component from which to extract the parameters.
+	 * @param windowWidth Width of window
+	 * @param windowHeight Height of Window
+	 */
+	public YamlPanels(Component component, int windowWidth, int windowHeight) {
+		this(component);
+		this.windowWidth = windowWidth;
+		this.windowHeight = windowHeight;
 	}
 
 	/**

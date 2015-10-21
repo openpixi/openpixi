@@ -17,6 +17,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 
 import org.openpixi.pixi.physics.Settings;
+import org.openpixi.pixi.ui.MainControlApplet;
 import org.openpixi.pixi.ui.PanelManager;
 import org.openpixi.pixi.ui.SimulationAnimation;
 import org.openpixi.pixi.ui.util.FileIO;
@@ -26,7 +27,7 @@ import org.openpixi.pixi.ui.util.yaml.YamlParser;
 
 public class FileTab extends Box {
 
-	private Component parent;
+	private MainControlApplet parent;
 	private SimulationAnimation simulationAnimation;
 	private PanelManager panelManager;
 	private JFileChooser fc;
@@ -38,7 +39,7 @@ public class FileTab extends Box {
 	JMenuItem itemApplyPanelSettings;
 	JMenuItem itemWritePanelSettings;
 
-	public FileTab(Component parent, SimulationAnimation simulationAnimation, PanelManager panelManager) {
+	public FileTab(MainControlApplet parent, SimulationAnimation simulationAnimation, PanelManager panelManager) {
 		super(BoxLayout.PAGE_AXIS);
 		this.parent = parent;
 		this.simulationAnimation = simulationAnimation;
@@ -196,6 +197,10 @@ public class FileTab extends Box {
 			YamlParser parser = new YamlParser(settings);
 			parser.parseString(string);
 			YamlPanels panels = settings.getYamlPanels();
+			if (panels.windowWidth != null && panels.windowHeight != null) {
+				parent.web.setSize(panels.windowWidth, panels.windowHeight);
+				parent.web.validate();
+			}
 			if (panels != null) {
 				Component component = panels.inflate(panelManager);
 				if (component != null) {
@@ -212,8 +217,10 @@ public class FileTab extends Box {
 	 * Append the current panel settings to the text area.
 	 */
 	public void writeTextAreaPanelSettings() {
+		int width = parent.web.getWidth();
+		int height = parent.web.getHeight();
 		Component component = panelManager.getMainComponent();
-		YamlPanels yamlPanels = new YamlPanels(component);
+		YamlPanels yamlPanels = new YamlPanels(component, width, height);
 		YamlPanelWriter panelWriter = new YamlPanelWriter();
 		String yamlString = panelWriter.getYamlString(yamlPanels);
 		yamlString = "\n\n# Generated panel code:\n" + yamlString;

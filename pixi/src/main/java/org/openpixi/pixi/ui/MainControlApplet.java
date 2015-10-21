@@ -229,13 +229,14 @@ public class MainControlApplet extends JApplet
 		setSlidersValue();
 	}
 
+	public static JFrame web;
+
 	/**
 	 * Entry point for java application.
 	 */
 	public static void main(String[] args) {
 
-		JFrame web = new JFrame();
-
+		web = new JFrame();
 		web.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		web.setTitle("OpenPixi");
 		MainControlApplet applet = new MainControlApplet();
