@@ -1,0 +1,87 @@
+gridStep: 1
+couplingConstant: 1
+numberOfDimensions: 3
+numberOfColors: 2
+numberOfThreads: 12
+gridCells: [128, 128, 1]
+poissonsolver: empty
+timeStep: 0.1
+duration: 1000
+
+currents:
+  pointChargeLCCurrents:
+    - direction: 0
+      orientation: 1
+      location: 64
+      longitudinalWidth: 4
+      useMonopoleRemoval: false
+      useDipoleRemoval: false
+      charges:
+        - location: [88, 0]
+          amplitudeColorDirection: [1.0, 0.0, 0.0]
+          magnitude: 1
+        - location: [72, 0]
+          amplitudeColorDirection: [1.0, 0.0, 0.0]
+          magnitude: -1
+        - location: [56, 0]
+          amplitudeColorDirection: [1.0, 0.0, 0.0]
+          magnitude: -1
+        - location: [40, 0]
+          amplitudeColorDirection: [1.0, 0.0, 0.0]
+          magnitude: 1
+
+output:
+  boundaryFixer:
+    - plane: yz0
+    - plane: yz1
+
+# Generated panel code:
+panels:
+  dividerLocation: 1036
+  leftPanel:
+    dividerLocation: 715
+    leftPanel:
+      chartPanel:
+        logarithmicScale: true
+        restrictedRegion: ''
+        showCharts:
+        - Gauss law violation
+        useRestrictedRegion: false
+    orientation: 0
+    rightPanel:
+      electricFieldPanel:
+        automaticScaling: false
+        colorIndex: 0
+        directionIndex: 0
+        scaleFactor: 1.0
+        showCoordinates: x, i, 0
+        showFields:
+        - j
+        - rho
+  orientation: 1
+  rightPanel:
+    dividerLocation: 456
+    leftPanel:
+      dividerLocation: 359
+      leftPanel:
+        gaussViolation2DGLPanel:
+          automaticScaling: false
+          scaleFactor: 1000000.0
+          showCoordinates: x, y, 0
+      orientation: 1
+      rightPanel:
+        energyDensity2DGLPanel:
+          automaticScaling: false
+          scaleFactor: 1000.0
+          showCoordinates: x, y, 13
+    orientation: 0
+    rightPanel:
+      electricFieldPanel:
+        automaticScaling: false
+        colorIndex: 0
+        directionIndex: 0
+        scaleFactor: 1.0
+        showCoordinates: x, i, 0
+        showFields:
+        - E
+        - U

@@ -2,6 +2,7 @@ package org.openpixi.pixi.gauge;
 
 import junit.framework.Assert;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.openpixi.pixi.math.GroupElement;
 import org.openpixi.pixi.math.SU2AlgebraElement;
@@ -42,6 +43,7 @@ public class CoulombGaugeTest {
 	}
 
 	@Test
+	@Ignore
 	public void testNonAbelianCoulombConfiguration() {
 		if (printDebugOutput) {
 			System.out.println("NonAbelian Coulomb Configuration");

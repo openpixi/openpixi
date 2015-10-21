@@ -40,6 +40,8 @@ public class OccupationNumbersInTime implements Diagnostics {
 	private int numberOfComponents;
 	private int effectiveNumberOfDimensions;
 	private double simulationBoxVolume;
+	private boolean useMirroredGrid;
+	private int mirroredDirection;
 
 	private String separator = ", ";
 	private String linebreak = "\n";
@@ -70,13 +72,17 @@ public class OccupationNumbersInTime implements Diagnostics {
 		}
 	}
 
+	public OccupationNumbersInTime(double timeInterval, String outputType, String filename, boolean colorful, int mirroredDirection) {
+		this(timeInterval, outputType, filename, colorful);
+
+		this.useMirroredGrid = true;
+		this.mirroredDirection = mirroredDirection;
+	}
+
 	public void initialize(Simulation s) {
 		this.s = s;
 		this.stepInterval = (int) (this.timeInterval / s.getTimeStep());
-		this.fft = new DoubleFFTWrapper(s.grid.getNumCells());
 		this.numberOfComponents = s.getNumberOfColors() * s.getNumberOfColors() - 1;
-
-		occupationNumbers = new double[s.grid.getTotalNumberOfCells()][numberOfComponents];
 		effectiveNumberOfDimensions = getEffectiveNumberOfDimensions(s.grid.getNumCells());
 
 		simulationBoxVolume = 1.0;
@@ -85,6 +91,20 @@ public class OccupationNumbersInTime implements Diagnostics {
 				simulationBoxVolume *= s.getSimulationBoxSize(i);
 			}
 		}
+
+		if(useMirroredGrid) {
+			int[] numCells = s.grid.getNumCells().clone();
+			numCells[mirroredDirection] *= 2;
+			this.fft = new DoubleFFTWrapper(numCells);
+			occupationNumbers = new double[2 * s.grid.getTotalNumberOfCells()][numberOfComponents];
+			simulationBoxVolume *= 2;
+		} else {
+			this.fft = new DoubleFFTWrapper(s.grid.getNumCells());
+			occupationNumbers = new double[s.grid.getTotalNumberOfCells()][numberOfComponents];
+		}
+
+
+
 
 		// Write header
 		if(!outputType.equals(OUTPUT_NONE)) {
@@ -108,7 +128,12 @@ public class OccupationNumbersInTime implements Diagnostics {
 	public void calculate(Grid grid_reference, ArrayList<IParticle> particles, int steps) {
 		if (steps % stepInterval == 0) {
 			// Apply Coulomb gauge.
-			Grid grid = new Grid(grid_reference);	// Copy grid.
+			Grid grid;
+			if(useMirroredGrid) {
+				grid = new MirroredGrid(grid_reference, mirroredDirection);
+			} else {
+				grid = new Grid(grid_reference);	// Copy grid.
+			}
 			CoulombGauge coulombGauge = new CoulombGauge(grid);
 			coulombGauge.applyGaugeTransformation(grid);
 
@@ -424,5 +449,28 @@ public class OccupationNumbersInTime implements Diagnostics {
 			}
 		}
 		return effectiveNumberOfDimensions;
+	}
+
+	private class MirroredGrid extends Grid {
+		public MirroredGrid(Grid grid, int mirroredDirection) {
+			super(grid);
+			this.numCells[mirroredDirection] *= 2;
+			createGrid();
+			this.cellIterator.setNormalMode(numCells);
+
+			// Copy and mirror cells.
+			for (int i = 0; i < grid.getTotalNumberOfCells(); i++) {
+				int[] cellPos = grid.getCellPos(i);
+				int newGridIndex = this.getCellIndex(cellPos);
+
+				int[] newMirroredGridPos = cellPos.clone();
+				newMirroredGridPos[mirroredDirection] = 2 * grid.getNumCells(mirroredDirection) - cellPos[mirroredDirection];
+				int mirroredIndex = this.getCellIndex(newMirroredGridPos);
+
+				cells[newGridIndex] = grid.getCell(i).copy();
+				cells[mirroredIndex] = grid.getCell(i).copy();
+			}
+
+		}
 	}
 }

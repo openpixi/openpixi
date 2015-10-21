@@ -6,7 +6,10 @@ import org.openpixi.pixi.math.GroupElement;
 import org.openpixi.pixi.physics.Simulation;
 import org.openpixi.pixi.physics.gauge.DoubleFFTWrapper;
 import org.apache.commons.math3.special.Erf;
+import org.openpixi.pixi.physics.grid.Grid;
 import org.openpixi.pixi.physics.util.GridFunctions;
+
+import java.security.acl.Group;
 
 public class NewLCPoissonSolver {
 
@@ -29,6 +32,10 @@ public class NewLCPoissonSolver {
 	private double g;
 
 	private ElementFactory factory;
+	private Simulation s;
+
+	private AlgebraElement[] gaussViolation;
+	private Grid gridCopy;
 
 	public NewLCPoissonSolver(int direction, int orientation, double location, double longitudinalWidth, AlgebraElement[] transversalChargeDensity, int[] transversalNumCells) {
 		this.direction = direction;
@@ -54,6 +61,11 @@ public class NewLCPoissonSolver {
 		for (int i = 0; i < totalTransversalCells; i++) {
 			phi[i] = factory.algebraZero();
 		}
+		this.s = s;
+
+		// Create a copy of the grid.
+		gridCopy = new Grid(s.grid);
+		gridCopy.createGrid();
 	}
 
 	public void solve(Simulation s) {
@@ -121,6 +133,10 @@ public class NewLCPoissonSolver {
 					// U_x,i = V_x V_{x+i}^t
 					s.grid.setU(i, j, V0.mult(U).mult(V1.adj()));
 					s.grid.setUnext(i, j, V0next.mult(Unext).mult(V1next.adj()));
+
+					// Also write to copy of the grid.
+					gridCopy.setU(i, j, V0.mult(V1.adj()));
+					gridCopy.setUnext(i, j, V0next.mult(V1next.adj()));
 				}
 			}
 		}
@@ -129,11 +145,41 @@ public class NewLCPoissonSolver {
 		// Third step: Compute electric field from temporal plaquette
 		for (int i = 0; i < totalCells; i++) {
 			for (int j = 0; j < numberOfDimensions; j++) {
-				if(j != direction) {
+				//if(j != direction) {
 					s.grid.setE(i, j, s.grid.getEFromLinks(i, j));
-				}
+				//}
 			}
 		}
+
+		// Compute gauss violation from grid copy
+		gaussViolation = new AlgebraElement[s.grid.getTotalNumberOfCells()];
+		for (int i = 0; i < gridCopy.getTotalNumberOfCells(); i++) {
+			gaussViolation[i] = gridCopy.getGaussConstraint(i);
+		}
+	}
+
+	public AlgebraElement getGaussConstraint(int i) {
+		return gaussViolation[i];
+	}
+
+	public GroupElement getV(int index, double t) {
+		int[] gridPos = s.grid.getCellPos(index);
+		int[] transversalGridPos = GridFunctions.reduceGridPos(gridPos, direction);
+		int transversalCellIndex = GridFunctions.getCellIndex(transversalGridPos, transversalNumCells);
+		int longitudinalGridPos = gridPos[direction];
+		return getV(longitudinalGridPos, transversalCellIndex, t);
+	}
+
+	public GroupElement getV(int longitudinalIndex, int transversalIndex, double t) {
+		double z = longitudinalIndex * as - location;
+		double shape = integratedShapeFunction(z, t, orientation, longitudinalWidth);
+		return phi[transversalIndex].mult(- shape * g).getLink();
+	}
+
+	public GroupElement getV(double longitudinalPosition, int transversalIndex, double t) {
+		double z = longitudinalPosition - location;
+		double shape = integratedShapeFunction(z, t, orientation, longitudinalWidth);
+		return phi[transversalIndex].mult(- shape * g).getLink();
 	}
 
 	private double integratedShapeFunction(double z, double t, int o, double width) {
