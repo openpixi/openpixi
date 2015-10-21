@@ -82,21 +82,19 @@ public class Particle2DPanel extends AnimationPanel {
 				graph.drawRect((int) (par.getPosition(0)*sx), (int) (par.getPosition(1)*sy), 0, 0);
 			}
 		}
-		
+
 		int[] pos = new int[s.getNumberOfDimensions()];
 		for(int w = 2; w < s.getNumberOfDimensions(); w++) {
 			pos[w] = s.grid.getNumCells(w)/2;
 		}
-		
+
 		int colorIndex = colorProperties.getColorIndex();
 		int directionIndex = colorProperties.getDirectionIndex();
-		
+
 		if(fieldProperties.isDrawCurrent())
 		{
 			graph.setColor(Color.black);
-			
-			
-			
+
 			for(int i = 0; i < s.grid.getNumCells(0); i++)
 				for(int k = 0; k < s.grid.getNumCells(1); k++)
 				{
@@ -144,28 +142,28 @@ public class Particle2DPanel extends AnimationPanel {
 
 		int ARR_SIZE = 5;
 
-        double dx = x2 - x1, dy = y2 - y1;
-        double angle = Math.atan2(dy, dx);
-        int len = (int) Math.sqrt(dx*dx + dy*dy);
-        // get the old transform matrix
-        AffineTransform old = g.getTransform();
-        AffineTransform at = getTranslateInstance(x1, y1);
-        at.concatenate(getRotateInstance(angle));
-        g.transform(at);
-        //g.setTransform(at);
+		double dx = x2 - x1, dy = y2 - y1;
+		double angle = Math.atan2(dy, dx);
+		int len = (int) Math.sqrt(dx*dx + dy*dy);
+		// get the old transform matrix
+		AffineTransform old = g.getTransform();
+		AffineTransform at = getTranslateInstance(x1, y1);
+		at.concatenate(getRotateInstance(angle));
+		g.transform(at);
+		//g.setTransform(at);
 
-        // Draw horizontal arrow starting in (0, 0)
-        Color colold = g.getColor();
-        g.setColor(col);
-        g.drawLine(0, 0, (int) len, 0);
-        if(Math.abs(x2 - x1) > 0 || Math.abs(y2 - y1) > 0)
-        	g.fillPolygon(new int[] {len, len-ARR_SIZE, len-ARR_SIZE, len},
-        				  new int[] {0, -ARR_SIZE, ARR_SIZE, 0}, 4);
-        g.setColor(colold);
+		// Draw horizontal arrow starting in (0, 0)
+		Color colold = g.getColor();
+		g.setColor(col);
+		g.drawLine(0, 0, (int) len, 0);
+		if(Math.abs(x2 - x1) > 0 || Math.abs(y2 - y1) > 0)
+			g.fillPolygon(new int[] {len, len-ARR_SIZE, len-ARR_SIZE, len},
+					new int[] {0, -ARR_SIZE, ARR_SIZE, 0}, 4);
+		g.setColor(colold);
 
-        // reset transformationmatrix
-        g.setTransform(old);
-     }
+		// reset transformationmatrix
+		g.setTransform(old);
+	}
 
 	public void addPropertyComponents(Box box) {
 		addLabel(box, "Particle panel");
