@@ -34,7 +34,6 @@ panels:
       drawCurrent: false
       drawFields: true
       showInfo: false
-      showTrace: false
   orientation: 1
   rightPanel:
     dividerLocation: 292

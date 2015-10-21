@@ -18,9 +18,6 @@ public class YamlParticle2DPanel {
 	// Info properties
 	public Boolean showInfo;
 
-	// Trace properties
-	public Boolean showTrace;
-
 	/** Empty constructor called by SnakeYaml */
 	public YamlParticle2DPanel() {
 	}
@@ -33,7 +30,6 @@ public class YamlParticle2DPanel {
 			drawCurrent = panel.getFieldProperties().isDrawCurrent();
 			drawFields = panel.getFieldProperties().isDrawFields();
 			showInfo = panel.getInfoProperties().isShowInfo();
-			showTrace = panel.getTraceProperties().isShowTrace();
 		}
 	}
 
@@ -59,10 +55,6 @@ public class YamlParticle2DPanel {
 
 		if (showInfo != null) {
 			panel.getInfoProperties().setShowInfo(showInfo);
-		}
-
-		if (showTrace != null) {
-			panel.getTraceProperties().setShowTrace(showTrace);
 		}
 
 		return panel;

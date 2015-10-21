@@ -33,7 +33,6 @@ import org.openpixi.pixi.ui.SimulationAnimation;
 import org.openpixi.pixi.ui.panel.properties.ColorProperties;
 import org.openpixi.pixi.ui.panel.properties.FieldProperties;
 import org.openpixi.pixi.ui.panel.properties.InfoProperties;
-import org.openpixi.pixi.ui.panel.properties.TraceProperties;
 
 
 /**
@@ -44,7 +43,6 @@ public class Particle2DPanel extends AnimationPanel {
 	ColorProperties colorProperties;
 	FieldProperties fieldProperties;
 	InfoProperties infoProperties;
-	TraceProperties traceProperties;
 
 	/** Constructor */
 	public Particle2DPanel(SimulationAnimation simulationAnimation) {
@@ -52,11 +50,6 @@ public class Particle2DPanel extends AnimationPanel {
 		colorProperties = new ColorProperties(simulationAnimation);
 		fieldProperties = new FieldProperties(simulationAnimation);
 		infoProperties = new InfoProperties(simulationAnimation);
-		traceProperties = new TraceProperties(simulationAnimation);
-	}
-
-	public void clear() {
-		traceProperties.clear();
 	}
 
 	/** Display the particles */
@@ -69,9 +62,7 @@ public class Particle2DPanel extends AnimationPanel {
 
 		colorProperties.checkConsistency();
 
-		if (traceProperties.isCallSuper()) {
-			super.paintComponent(graph1);
-		}
+		super.paintComponent(graph1);
 
 
 		Simulation s = getSimulationAnimation().getSimulation();
@@ -87,7 +78,7 @@ public class Particle2DPanel extends AnimationPanel {
 			double radius = par.getRadius();//double radius = par.getRadius()*(2 - 1.9*par.getZ()/s.getDepth());
 			int width = (int) (2*sx*radius);
 			int height = (int) (2*sy*radius);
-			if(width > 2 && height > 2 && !traceProperties.isShowTrace()) {
+			if(width > 2 && height > 2) {
 				graph.fillOval((int) (par.getPosition(0)*sx) - width/2, (int) (par.getPosition(1)*sy) - height/2,  width,  height);
 			}
 			else {
@@ -186,7 +177,6 @@ public class Particle2DPanel extends AnimationPanel {
 		colorProperties.addComponents(box);
 		fieldProperties.addComponents(box);
 		infoProperties.addComponents(box);
-		traceProperties.addComponents(box);
 	}
 
 	public ColorProperties getColorProperties() {
@@ -199,9 +189,5 @@ public class Particle2DPanel extends AnimationPanel {
 
 	public InfoProperties getInfoProperties() {
 		return infoProperties;
-	}
-
-	public TraceProperties getTraceProperties() {
-		return traceProperties;
 	}
 }
