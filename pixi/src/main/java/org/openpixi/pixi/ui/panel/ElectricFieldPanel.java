@@ -12,9 +12,9 @@ import org.openpixi.pixi.physics.grid.Grid;
 import org.openpixi.pixi.physics.particles.IParticle;
 import org.openpixi.pixi.ui.SimulationAnimation;
 import org.openpixi.pixi.ui.panel.properties.BooleanArrayProperties;
+import org.openpixi.pixi.ui.panel.properties.BooleanProperties;
 import org.openpixi.pixi.ui.panel.properties.ColorProperties;
 import org.openpixi.pixi.ui.panel.properties.CoordinateProperties;
-import org.openpixi.pixi.ui.panel.properties.GaugeProperties;
 import org.openpixi.pixi.ui.panel.properties.ScaleProperties;
 
 /**
@@ -24,9 +24,9 @@ import org.openpixi.pixi.ui.panel.properties.ScaleProperties;
  */
 public class ElectricFieldPanel extends AnimationPanel {
 
-	ColorProperties colorProperties;
-	ScaleProperties scaleProperties;
-	GaugeProperties gaugeProperties;
+	public ColorProperties colorProperties;
+	public ScaleProperties scaleProperties;
+	public BooleanProperties gaugeProperties;
 	public BooleanArrayProperties showFieldProperties;
 	public CoordinateProperties showCoordinateProperties;
 
@@ -77,7 +77,7 @@ public class ElectricFieldPanel extends AnimationPanel {
 		super(simulationAnimation);
 		colorProperties = new ColorProperties(simulationAnimation);
 		scaleProperties = new ScaleProperties(simulationAnimation);
-		gaugeProperties = new GaugeProperties(simulationAnimation);
+		gaugeProperties = new BooleanProperties(simulationAnimation, "Coulomb gauge", false);
 		showFieldProperties = new BooleanArrayProperties(simulationAnimation, fieldLabel, fieldInit);
 		showCoordinateProperties = new CoordinateProperties(simulationAnimation, CoordinateProperties.Mode.MODE_1D_LOOP);
 	}
@@ -108,7 +108,7 @@ public class ElectricFieldPanel extends AnimationPanel {
 		double panelWidth = getWidth();
 		double panelHeight = getHeight();
 
-		boolean useCoulombGauge = gaugeProperties.isCoulombGauge();
+		boolean useCoulombGauge = gaugeProperties.getValue();
 		Grid drawGrid = s.grid;
 		if (useCoulombGauge) {
 			CoulombGauge coulombGauge = new CoulombGauge(s.grid);
@@ -250,17 +250,5 @@ public class ElectricFieldPanel extends AnimationPanel {
 		showCoordinateProperties.addComponents(box);
 		scaleProperties.addComponents(box);
 		gaugeProperties.addComponents(box);
-	}
-
-	public ColorProperties getColorProperties() {
-		return colorProperties;
-	}
-
-	public ScaleProperties getScaleProperties() {
-		return scaleProperties;
-	}
-
-	public GaugeProperties getGaugeProperties() {
-		return gaugeProperties;
 	}
 }
