@@ -33,7 +33,6 @@ panels:
       directionIndex: 2
       drawCurrent: false
       drawFields: true
-      showInfo: false
   orientation: 1
   rightPanel:
     dividerLocation: 292

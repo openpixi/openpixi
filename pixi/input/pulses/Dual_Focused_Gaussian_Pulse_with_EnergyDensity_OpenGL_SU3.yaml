@@ -40,7 +40,6 @@ panels:
         directionIndex: 2
         drawCurrent: false
         drawFields: true
-        showInfo: false
     orientation: 0
     rightPanel:
       energyDensity2DGLPanel:

@@ -31,7 +31,6 @@ import org.openpixi.pixi.physics.Simulation;
 import org.openpixi.pixi.physics.particles.IParticle;
 import org.openpixi.pixi.ui.SimulationAnimation;
 import org.openpixi.pixi.ui.panel.properties.ScaleProperties;
-import org.openpixi.pixi.ui.panel.properties.InfoProperties;
 
 
 /**
@@ -39,14 +38,12 @@ import org.openpixi.pixi.ui.panel.properties.InfoProperties;
  */
 public class EnergyDensity2DPanel extends AnimationPanel {
 
-	ScaleProperties scaleProperties;
-	InfoProperties infoProperties;
+	public ScaleProperties scaleProperties;
 	
 	/** Constructor */
 	public EnergyDensity2DPanel(SimulationAnimation simulationAnimation) {
 		super(simulationAnimation);
 		scaleProperties = new ScaleProperties(simulationAnimation);
-		infoProperties = new InfoProperties(simulationAnimation);
 	}
 
 	/** Display the particles */
@@ -106,8 +103,6 @@ public class EnergyDensity2DPanel extends AnimationPanel {
 				}
 
 			scaleProperties.calculateAutomaticScale(1.0);
-			
-			infoProperties.showInfo(graph, this);
 	}
 
 
@@ -141,14 +136,5 @@ public class EnergyDensity2DPanel extends AnimationPanel {
 	public void addPropertyComponents(Box box) {
 		addLabel(box, "Energy density 2D panel");
 		scaleProperties.addComponents(box);
-		infoProperties.addComponents(box);
-	}
-
-	public ScaleProperties getScaleProperties() {
-		return scaleProperties;
-	}
-	
-	public InfoProperties getInfoProperties() {
-		return infoProperties;
 	}
 }

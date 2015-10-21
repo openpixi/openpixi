@@ -35,5 +35,4 @@ panels:
       drawCurrent: false
       drawFields: true
       phi: 0.009999999999999959
-      showInfo: false
       theta: 0.8100000000000006

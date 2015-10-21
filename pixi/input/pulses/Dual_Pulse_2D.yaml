@@ -35,7 +35,6 @@ panels:
         drawCurrent: false
         drawFields: true
         phi: 0.0
-        showInfo: false
         theta: 0.9
     orientation: 1
     rightPanel:
@@ -45,7 +44,6 @@ panels:
         drawCurrent: false
         drawFields: true
         phi: 0.0
-        showInfo: false
         theta: 0.9
   orientation: 0
   rightPanel:

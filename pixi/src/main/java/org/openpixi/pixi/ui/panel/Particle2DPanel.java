@@ -32,7 +32,6 @@ import org.openpixi.pixi.physics.particles.IParticle;
 import org.openpixi.pixi.ui.SimulationAnimation;
 import org.openpixi.pixi.ui.panel.properties.ColorProperties;
 import org.openpixi.pixi.ui.panel.properties.FieldProperties;
-import org.openpixi.pixi.ui.panel.properties.InfoProperties;
 
 
 /**
@@ -40,16 +39,14 @@ import org.openpixi.pixi.ui.panel.properties.InfoProperties;
  */
 public class Particle2DPanel extends AnimationPanel {
 
-	ColorProperties colorProperties;
-	FieldProperties fieldProperties;
-	InfoProperties infoProperties;
+	public ColorProperties colorProperties;
+	public FieldProperties fieldProperties;
 
 	/** Constructor */
 	public Particle2DPanel(SimulationAnimation simulationAnimation) {
 		super(simulationAnimation);
 		colorProperties = new ColorProperties(simulationAnimation);
 		fieldProperties = new FieldProperties(simulationAnimation);
-		infoProperties = new InfoProperties(simulationAnimation);
 	}
 
 	/** Display the particles */
@@ -140,8 +137,6 @@ public class Particle2DPanel extends AnimationPanel {
 				}
 			//return;
 		}
-
-		infoProperties.showInfo(graph, this);
 	}
 
 
@@ -176,18 +171,5 @@ public class Particle2DPanel extends AnimationPanel {
 		addLabel(box, "Particle panel");
 		colorProperties.addComponents(box);
 		fieldProperties.addComponents(box);
-		infoProperties.addComponents(box);
-	}
-
-	public ColorProperties getColorProperties() {
-		return colorProperties;
-	}
-
-	public FieldProperties getFieldProperties() {
-		return fieldProperties;
-	}
-
-	public InfoProperties getInfoProperties() {
-		return infoProperties;
 	}
 }
