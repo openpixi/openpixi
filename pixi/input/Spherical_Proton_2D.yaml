@@ -1,0 +1,83 @@
+gridStep: 2
+couplingConstant: 0.5
+numberOfDimensions: 3
+numberOfColors: 2
+numberOfThreads: 8
+gridCells: [64, 64, 1]
+poissonsolver: empty
+fieldsolver: temporal yang mills
+timeStep: 0.5
+duration: 1000
+
+currents:
+  randomTemporalParticleColorCurrentsSphericalProton:
+    - direction: 0
+      orientation: 1
+      longitudinalLocation: 32
+      longitudinalWidth: 4.0
+      transversalWidth: 12.0
+      transversalLocation: [64, 0]
+      numberOfCharges: 3
+      colorDistributionWidth: 0.1
+      numberOfColors: 2
+      useDipoleRemoval: true
+      randomSeed: 1
+    - direction: 0
+      orientation: -1
+      longitudinalLocation: 96
+      longitudinalWidth: 4.0
+      transversalWidth: 12.0
+      transversalLocation: [64, 0]
+      numberOfCharges: 3
+      colorDistributionWidth: 0.1
+      numberOfColors: 2
+      useDipoleRemoval: true
+      randomSeed: 2
+
+output:
+  boundaryFixer:
+    - plane: yz0
+    - plane: yz1
+
+
+
+# Generated panel code:
+panels:
+  dividerLocation: 1015
+  leftPanel:
+    dividerLocation: 714
+    leftPanel:
+      chartPanel:
+        logarithmicScale: true
+        restrictedRegion: '[2,0,0]-[62,63,1]'
+        showCharts:
+        - Gauss law violation
+        - E squared
+        - B squared
+        - Energy density
+        useRestrictedRegion: true
+    orientation: 0
+    rightPanel:
+      electricFieldPanel:
+        automaticScaling: false
+        colorIndex: 0
+        directionIndex: 1
+        scaleFactor: 1.0
+        showCoordinates: i, x, 16
+        showFields:
+        - E
+        - U
+  orientation: 1
+  rightPanel:
+    dividerLocation: 415
+    leftPanel:
+      energyDensity2DGLPanel:
+        automaticScaling: false
+        scaleFactor: 10000.0
+        showCoordinates: x, y, 16
+    orientation: 0
+    rightPanel:
+      gaussViolation2DGLPanel:
+        automaticScaling: true
+        scaleFactor: 1.0
+        showCoordinates: x, y, 0
