@@ -103,13 +103,14 @@ public class ElectricFieldPanel extends AnimationPanel {
 
 		Simulation s = getSimulationAnimation().getSimulation();
 		/** Scaling factor for the displayed panel in x-direction*/
-		double sx = getWidth() / s.getWidth();
+		double sx = getWidth() / s.getWidth() / 2.0;
 
 		double panelWidth = getWidth();
 		double panelHeight = getHeight();
 
 		boolean useCoulombGauge = gaugeProperties.getValue();
-		Grid drawGrid = s.grid;
+		//Grid drawGrid = s.grid;
+		Grid drawGrid = new MirroredGrid(s.grid, 0);
 		if (useCoulombGauge) {
 			CoulombGauge coulombGauge = new CoulombGauge(s.grid);
 			Grid gridCopy = new Grid(s.grid);
@@ -178,14 +179,14 @@ public class ElectricFieldPanel extends AnimationPanel {
 		if (loopIndex != -1) {
 			// Show all lines
 			kmin = 0;
-			kmax = s.grid.getNumCells(loopIndex);
+			kmax = drawGrid.getNumCells(loopIndex);
 		}
-		double sx = panelWidth / s.getSimulationBoxSize(abscissaIndex);
+		double sx = panelWidth / s.getSimulationBoxSize(abscissaIndex) / 2;
 		for(int k = kmin; k < kmax; k++)
 		{
 			int newPosition = 0;
 			int newValue = 0;
-			for(int i = 0; i < s.grid.getNumCells(abscissaIndex); i++)
+			for(int i = 0; i < drawGrid.getNumCells(abscissaIndex); i++)
 			{
 
 				int oldPosition = newPosition;
@@ -250,5 +251,34 @@ public class ElectricFieldPanel extends AnimationPanel {
 		showCoordinateProperties.addComponents(box);
 		scaleProperties.addComponents(box);
 		gaugeProperties.addComponents(box);
+	}
+
+	private class MirroredGrid extends Grid {
+		public MirroredGrid(Grid grid, int mirroredDirection) {
+			super(grid);
+			this.numCells[mirroredDirection] *= 2;
+			this.cellIterator = null;
+			createGrid();
+
+			// Copy and mirror cells.
+			for (int i = 0; i < grid.getTotalNumberOfCells(); i++) {
+				int[] cellPos = grid.getCellPos(i);
+				int newGridIndex = this.getCellIndex(cellPos);
+
+				int[] newMirroredGridPos = cellPos.clone();
+				newMirroredGridPos[mirroredDirection] = numCells[mirroredDirection] - cellPos[mirroredDirection] - 1;
+				int mirroredIndex = this.getCellIndex(newMirroredGridPos);
+
+				cells[newGridIndex] = grid.getCell(i).copy();
+				cells[mirroredIndex] = grid.getCell(i).copy();
+				/*
+				for (int j = 0; j < grid.getNumberOfDimensions(); j++) {
+					AlgebraElement E = grid.getCell(i).getE(j).copy().mult(-1.0);
+					cells[mirroredIndex].setE(j, E);
+				}
+				*/
+			}
+
+		}
 	}
 }
