@@ -18,8 +18,8 @@ public class YamlEnergyDensity1DPanel {
 	public YamlEnergyDensity1DPanel(Component component) {
 		if (component instanceof EnergyDensity1DPanel) {
 			EnergyDensity1DPanel panel = (EnergyDensity1DPanel) component;
-			scaleFactor = panel.getScaleProperties().getScaleFactor();
-			automaticScaling = panel.getScaleProperties().getAutomaticScaling();
+			scaleFactor = panel.scaleProperties.getScaleFactor();
+			automaticScaling = panel.scaleProperties.getAutomaticScaling();
 		}
 	}
 
@@ -28,11 +28,11 @@ public class YamlEnergyDensity1DPanel {
 		EnergyDensity1DPanel panel = new EnergyDensity1DPanel(panelManager.getSimulationAnimation());
 
 		if (scaleFactor != null) {
-			panel.getScaleProperties().setScaleFactor(scaleFactor);
+			panel.scaleProperties.setScaleFactor(scaleFactor);
 		}
 
 		if (automaticScaling != null) {
-			panel.getScaleProperties().setAutomaticScaling(automaticScaling);
+			panel.scaleProperties.setAutomaticScaling(automaticScaling);
 		}
 		return panel;
 	}

@@ -1,8 +1,9 @@
 # Dual focused gaussian pulse test with impact parameter
 
 gridStep: 1
+couplingConstant: 1
 numberOfDimensions: 3
-numberOfColors: 2
+numberOfColors: 3
 numberOfThreads: 6
 gridCells: [128, 128, 1]
 poissonsolver: empty
@@ -14,7 +15,7 @@ fields:
     - dir: [1.0, 0.0, 0.0]
       pos: [64, 74, 0.0]
       aSpatial: [0.0, 0.0, 1.0]
-      aColor: [1.0, 0.0, 0.0]
+      aColor: [1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
       a: 4
       sigma: 3
       angle: 1.0
@@ -22,7 +23,7 @@ fields:
     - dir: [-1.0, 0.0, 0.0]
       pos: [64, 56, 0.0]
       aSpatial: [0.0, 0.0, 1.0]
-      aColor: [0.0, 1.0, 0.0]
+      aColor: [0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
       a: 4
       sigma: 3
       angle: 1.0
@@ -30,18 +31,23 @@ fields:
 
 # Generated panel code:
 panels:
-  dividerLocation: 971
+  dividerLocation: 420
   leftPanel:
-    particle2DPanel:
-      colorIndex: 2
-      directionIndex: 2
-      drawCurrent: false
-      drawFields: true
-      showInfo: false
-      showTrace: false
+    dividerLocation: 318
+    leftPanel:
+      particle2DPanel:
+        colorIndex: 2
+        directionIndex: 2
+        drawCurrent: false
+        drawFields: true
+    orientation: 0
+    rightPanel:
+      energyDensity2DGLPanel:
+        automaticScaling: true
+        scaleFactor: 1.0
   orientation: 1
   rightPanel:
-    dividerLocation: 334
+    dividerLocation: 318
     leftPanel:
       electricFieldPanel:
         automaticScaling: false
@@ -50,17 +56,8 @@ panels:
         scaleFactor: 1.0
     orientation: 0
     rightPanel:
-      dividerLocation: 311
-      leftPanel:
-        electricFieldPanel:
-          automaticScaling: false
-          colorIndex: 1
-          directionIndex: 2
-          scaleFactor: 1.0
-      orientation: 0
-      rightPanel:
-        electricFieldPanel:
-          automaticScaling: false
-          colorIndex: 2
-          directionIndex: 2
-          scaleFactor: 1.0
+      energyDensity3DGLPanel:
+        automaticScaling: true
+        phi: -1.5707963267948966
+        scaleFactor: 1.0
+        theta: 0.7853981633974483

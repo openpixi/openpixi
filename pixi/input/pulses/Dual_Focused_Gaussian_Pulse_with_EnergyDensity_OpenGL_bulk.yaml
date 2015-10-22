@@ -3,7 +3,7 @@
 gridStep: 1
 couplingConstant: 1
 numberOfDimensions: 3
-numberOfColors: 3
+numberOfColors: 2
 numberOfThreads: 6
 gridCells: [128, 128, 1]
 poissonsolver: empty
@@ -15,7 +15,7 @@ fields:
     - dir: [1.0, 0.0, 0.0]
       pos: [64, 74, 0.0]
       aSpatial: [0.0, 0.0, 1.0]
-      aColor: [1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+      aColor: [1.0, 0.0, 0.0]
       a: 4
       sigma: 3
       angle: 1.0
@@ -23,11 +23,19 @@ fields:
     - dir: [-1.0, 0.0, 0.0]
       pos: [64, 56, 0.0]
       aSpatial: [0.0, 0.0, 1.0]
-      aColor: [0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+      aColor: [0.0, 1.0, 0.0]
       a: 4
       sigma: 3
       angle: 1.0
       distance: 32.0
+
+output:
+  bulkQuantitiesInTime:
+      # File path
+    - path: "bulk.txt"
+
+      # Measurement interval
+      interval: 1.0
 
 # Generated panel code:
 panels:
@@ -40,8 +48,6 @@ panels:
         directionIndex: 2
         drawCurrent: false
         drawFields: true
-        showInfo: false
-        showTrace: false
     orientation: 0
     rightPanel:
       energyDensity2DGLPanel:

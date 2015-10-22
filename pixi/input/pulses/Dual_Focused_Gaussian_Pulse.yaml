@@ -1,7 +1,6 @@
 # Dual focused gaussian pulse test with impact parameter
 
 gridStep: 1
-couplingConstant: 1
 numberOfDimensions: 3
 numberOfColors: 2
 numberOfThreads: 6
@@ -29,35 +28,18 @@ fields:
       angle: 1.0
       distance: 32.0
 
-output:
-  bulkQuantitiesInTime:
-      # File path
-    - path: "bulk.txt"
-
-      # Measurement interval
-      interval: 1.0
-
 # Generated panel code:
 panels:
-  dividerLocation: 420
+  dividerLocation: 971
   leftPanel:
-    dividerLocation: 318
-    leftPanel:
-      particle2DPanel:
-        colorIndex: 2
-        directionIndex: 2
-        drawCurrent: false
-        drawFields: true
-        showInfo: false
-        showTrace: false
-    orientation: 0
-    rightPanel:
-      energyDensity2DGLPanel:
-        automaticScaling: true
-        scaleFactor: 1.0
+    particle2DPanel:
+      colorIndex: 2
+      directionIndex: 2
+      drawCurrent: false
+      drawFields: true
   orientation: 1
   rightPanel:
-    dividerLocation: 318
+    dividerLocation: 334
     leftPanel:
       electricFieldPanel:
         automaticScaling: false
@@ -66,8 +48,17 @@ panels:
         scaleFactor: 1.0
     orientation: 0
     rightPanel:
-      energyDensity3DGLPanel:
-        automaticScaling: true
-        phi: -1.5707963267948966
-        scaleFactor: 1.0
-        theta: 0.7853981633974483
+      dividerLocation: 311
+      leftPanel:
+        electricFieldPanel:
+          automaticScaling: false
+          colorIndex: 1
+          directionIndex: 2
+          scaleFactor: 1.0
+      orientation: 0
+      rightPanel:
+        electricFieldPanel:
+          automaticScaling: false
+          colorIndex: 2
+          directionIndex: 2
+          scaleFactor: 1.0

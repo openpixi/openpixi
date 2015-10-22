@@ -15,12 +15,6 @@ public class YamlParticle2DPanel {
 	public Boolean drawCurrent;
 	public Boolean drawFields;
 
-	// Info properties
-	public Boolean showInfo;
-
-	// Trace properties
-	public Boolean showTrace;
-
 	/** Empty constructor called by SnakeYaml */
 	public YamlParticle2DPanel() {
 	}
@@ -28,12 +22,10 @@ public class YamlParticle2DPanel {
 	public YamlParticle2DPanel(Component component) {
 		if (component instanceof Particle2DPanel) {
 			Particle2DPanel panel = (Particle2DPanel) component;
-			colorIndex = panel.getColorProperties().getColorIndex();
-			directionIndex = panel.getColorProperties().getDirectionIndex();
-			drawCurrent = panel.getFieldProperties().isDrawCurrent();
-			drawFields = panel.getFieldProperties().isDrawFields();
-			showInfo = panel.getInfoProperties().isShowInfo();
-			showTrace = panel.getTraceProperties().isShowTrace();
+			colorIndex = panel.colorProperties.getColorIndex();
+			directionIndex = panel.colorProperties.getDirectionIndex();
+			drawCurrent = panel.fieldProperties.isDrawCurrent();
+			drawFields = panel.fieldProperties.isDrawFields();
 		}
 	}
 
@@ -42,27 +34,19 @@ public class YamlParticle2DPanel {
 		Particle2DPanel panel = new Particle2DPanel(panelManager.getSimulationAnimation());
 
 		if (colorIndex != null) {
-			panel.getColorProperties().setColorIndex(colorIndex);
+			panel.colorProperties.setColorIndex(colorIndex);
 		}
 
 		if (directionIndex != null) {
-			panel.getColorProperties().setDirectionIndex(directionIndex);
+			panel.colorProperties.setDirectionIndex(directionIndex);
 		}
 
 		if (drawCurrent != null) {
-			panel.getFieldProperties().setDrawCurrent(drawCurrent);
+			panel.fieldProperties.setDrawCurrent(drawCurrent);
 		}
 
 		if (drawFields != null) {
-			panel.getFieldProperties().setDrawFields(drawFields);
-		}
-
-		if (showInfo != null) {
-			panel.getInfoProperties().setShowInfo(showInfo);
-		}
-
-		if (showTrace != null) {
-			panel.getTraceProperties().setShowTrace(showTrace);
+			panel.fieldProperties.setDrawFields(drawFields);
 		}
 
 		return panel;

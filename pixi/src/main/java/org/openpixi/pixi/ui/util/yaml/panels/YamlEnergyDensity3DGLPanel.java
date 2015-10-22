@@ -28,8 +28,8 @@ public class YamlEnergyDensity3DGLPanel {
 	public YamlEnergyDensity3DGLPanel(Component component) {
 		if (component instanceof EnergyDensity3DGLPanel) {
 			EnergyDensity3DGLPanel panel = (EnergyDensity3DGLPanel) component;
-			scaleFactor = panel.getScaleProperties().getScaleFactor();
-			automaticScaling = panel.getScaleProperties().getAutomaticScaling();
+			scaleFactor = panel.scaleProperties.getScaleFactor();
+			automaticScaling = panel.scaleProperties.getAutomaticScaling();
 			phi = panel.phi;
 			theta = panel.theta;
 			distanceFactor = panel.distanceFactor;
@@ -42,11 +42,11 @@ public class YamlEnergyDensity3DGLPanel {
 		EnergyDensity3DGLPanel panel = new EnergyDensity3DGLPanel(panelManager.getSimulationAnimation());
 
 		if (scaleFactor != null) {
-			panel.getScaleProperties().setScaleFactor(scaleFactor);
+			panel.scaleProperties.setScaleFactor(scaleFactor);
 		}
 
 		if (automaticScaling != null) {
-			panel.getScaleProperties().setAutomaticScaling(automaticScaling);
+			panel.scaleProperties.setAutomaticScaling(automaticScaling);
 		}
 
 		if (phi != null) {

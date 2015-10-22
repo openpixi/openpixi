@@ -34,7 +34,7 @@ import org.openpixi.pixi.ui.panel.properties.ScaleProperties;
  */
 public class EnergyDensity2DGLPanel extends AnimationGLPanel {
 
-	ScaleProperties scaleProperties;
+	public ScaleProperties scaleProperties;
 	public CoordinateProperties showCoordinateProperties;
 
 	/** Constructor */
@@ -136,9 +136,5 @@ public class EnergyDensity2DGLPanel extends AnimationGLPanel {
 		addLabel(box, "Energy density 2D (OpenGL) panel");
 		scaleProperties.addComponents(box);
 		showCoordinateProperties.addComponents(box);
-	}
-
-	public ScaleProperties getScaleProperties() {
-		return scaleProperties;
 	}
 }

@@ -15,9 +15,6 @@ public class YamlParticle3DPanel {
 	public Boolean drawCurrent;
 	public Boolean drawFields;
 
-	// Info properties
-	public Boolean showInfo;
-
 	// Projection properties
 	public Double phi;
 	public Double theta;
@@ -29,13 +26,12 @@ public class YamlParticle3DPanel {
 	public YamlParticle3DPanel(Component component) {
 		if (component instanceof Particle3DPanel) {
 			Particle3DPanel panel = (Particle3DPanel) component;
-			colorIndex = panel.getColorProperties().getColorIndex();
-			directionIndex = panel.getColorProperties().getDirectionIndex();
-			drawCurrent = panel.getFieldProperties().isDrawCurrent();
-			drawFields = panel.getFieldProperties().isDrawFields();
-			showInfo = panel.getInfoProperties().isShowInfo();
-			phi = panel.getProjection().phi;
-			theta = panel.getProjection().theta;
+			colorIndex = panel.colorProperties.getColorIndex();
+			directionIndex = panel.colorProperties.getDirectionIndex();
+			drawCurrent = panel.fieldProperties.isDrawCurrent();
+			drawFields = panel.fieldProperties.isDrawFields();
+			phi = panel.projection.phi;
+			theta = panel.projection.theta;
 		}
 	}
 
@@ -44,31 +40,27 @@ public class YamlParticle3DPanel {
 		Particle3DPanel panel = new Particle3DPanel(panelManager.getSimulationAnimation());
 
 		if (colorIndex != null) {
-			panel.getColorProperties().setColorIndex(colorIndex);
+			panel.colorProperties.setColorIndex(colorIndex);
 		}
 
 		if (directionIndex != null) {
-			panel.getColorProperties().setDirectionIndex(directionIndex);
+			panel.colorProperties.setDirectionIndex(directionIndex);
 		}
 
 		if (drawCurrent != null) {
-			panel.getFieldProperties().setDrawCurrent(drawCurrent);
+			panel.fieldProperties.setDrawCurrent(drawCurrent);
 		}
 
 		if (drawFields != null) {
-			panel.getFieldProperties().setDrawFields(drawFields);
-		}
-
-		if (showInfo != null) {
-			panel.getInfoProperties().setShowInfo(showInfo);
+			panel.fieldProperties.setDrawFields(drawFields);
 		}
 
 		if (phi != null) {
-			panel.getProjection().phi = phi;
+			panel.projection.phi = phi;
 		}
 
 		if (theta != null) {
-			panel.getProjection().theta = theta;
+			panel.projection.theta = theta;
 		}
 		return panel;
 	}

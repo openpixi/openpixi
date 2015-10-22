@@ -22,10 +22,6 @@ public class SimulationAnimation {
 
 	protected Simulation s;
 
-//	private boolean relativistic = true;
-
-//	private boolean calculateFields = false;
-
 	/** Milliseconds between updates */
 	private int interval = 30;
 
@@ -58,7 +54,6 @@ public class SimulationAnimation {
 
 	public void stopAnimation() {
 		timer.stop();
-		//test = false;
 	}
 
 	/**
@@ -139,87 +134,7 @@ public class SimulationAnimation {
 		timer.stop();
 		clear();
 		s = new Simulation(settings);
-		//updateFieldForce();
-		//s.prepareAllParticles();
-		//s.turnGridForceOn();
-//		timer.start();
 		repaint();
 	}
-
-//	public void calculateFields() {
-//		calculateFields =! calculateFields;
-//		updateFieldForce();
-//	}
-
-//	private void updateFieldForce() {
-//
-//		if(calculateFields) {
-//			s.turnGridForceOn();
-//		}
-//		else {
-//			s.turnGridForceOff();
-//		}
-//	}
-
-//	public void algorithmChange(int id)
-//	{
-//		s.completeAllParticles();
-//
-//		switch(id)
-//		{
-//			case 0:
-//				s.getParticleMover().setSolver(new LeapFrog());
-//				break;
-//		}
-//
-//		s.prepareAllParticles();
-//	}
-
-//	public void relativisticEffects(int i) {
-//		relativistic =! relativistic;
-//
-//		if(relativistic == false) {
-//			s.relativistic = false;
-//			if (s.f instanceof CombinedForce) {
-//				ArrayList<Force> forces = s.f.forces;
-//				for (int j = 0; j < forces.size(); j++) {
-//					if (forces.get(j) instanceof ConstantForceRelativistic){
-//						forces.set(j, new ConstantForce());
-//					}
-//					if (forces.get(j) instanceof SimpleGridForceRelativistic){
-//						forces.set(j, new SimpleGridForce());
-//					}
-//				}
-//			}
-//			switch(i) {
-//			case 0:
-//				s.getParticleMover().setSolver(new LeapFrog());
-//				break;
-//			}
-//		}
-//
-//		if(relativistic == true) {
-//			s.relativistic = true;
-//			//System.out.println("relativistic version on");
-//			if (s.f instanceof CombinedForce) {
-//				ArrayList<Force> forces = s.f.forces;
-//				for (int j = 0; j < forces.size(); j++) {
-//					if (forces.get(j) instanceof ConstantForce){
-//						forces.set(j, new ConstantForceRelativistic(s));
-//					}
-//					if (forces.get(j) instanceof SimpleGridForce){
-//						forces.set(j, new SimpleGridForceRelativistic(s));
-//					}
-//				}
-//			}
-//			switch(i)
-//			{
-//				case 0:
-//					s.getParticleMover().setSolver(new LeapFrogRelativistic(s));
-//					break;
-//			}
-//		}
-//
-//	}
 
 }

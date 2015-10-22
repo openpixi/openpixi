@@ -1,11 +1,13 @@
 package org.openpixi.pixi.ui.util.yaml;
 
 import java.awt.Component;
+import java.util.List;
 
 import javax.swing.JSplitPane;
 
 import org.openpixi.pixi.ui.PanelManager;
 import org.openpixi.pixi.ui.panel.ElectricFieldPanel;
+import org.openpixi.pixi.ui.panel.InfoPanel;
 import org.openpixi.pixi.ui.panel.Particle2DPanel;
 import org.openpixi.pixi.ui.panel.Particle3DPanel;
 import org.openpixi.pixi.ui.panel.PhaseSpacePanel;
@@ -16,7 +18,6 @@ import org.openpixi.pixi.ui.panel.gl.EnergyDensity2DGLPanel;
 import org.openpixi.pixi.ui.panel.gl.EnergyDensity3DGLPanel;
 import org.openpixi.pixi.ui.panel.gl.GaussViolation2DGLPanel;
 import org.openpixi.pixi.ui.panel.gl.OccupationNumbers2DGLPanel;
-import org.openpixi.pixi.ui.util.yaml.filegenerators.YamlGaussConstraintRestoration;
 import org.openpixi.pixi.ui.util.yaml.panels.*;
 
 public class YamlPanels {
@@ -25,6 +26,8 @@ public class YamlPanels {
 	public YamlPanels rightPanel;
 	public Integer orientation;
 	public Integer dividerLocation;
+	public Integer windowWidth;
+	public Integer windowHeight;
 
 	public YamlElectricFieldPanel electricFieldPanel;
 	public YamlParticle2DPanel particle2DPanel;
@@ -37,9 +40,23 @@ public class YamlPanels {
 	public YamlOccupationNumbers2DGLPanel occupationNumbers2DGLPanel;
 	public YamlGaussViolation2DGLPanel gaussViolation2DGLPanel;
 	public YamlChart2DPanel chartPanel;
+	public YamlInfoPanel infoPanel;
 
 	/** Empty constructor called by SnakeYaml */
 	public YamlPanels() {
+	}
+
+	/**
+	 * Constructor which fills the values of this class according to
+	 * the component attached.
+	 * @param component Java swing component from which to extract the parameters.
+	 * @param windowWidth Width of window
+	 * @param windowHeight Height of Window
+	 */
+	public YamlPanels(Component component, int windowWidth, int windowHeight) {
+		this(component);
+		this.windowWidth = windowWidth;
+		this.windowHeight = windowHeight;
 	}
 
 	/**
@@ -78,6 +95,8 @@ public class YamlPanels {
 			chartPanel = new YamlChart2DPanel(component);
 		} else if (component instanceof GaussViolation2DGLPanel) {
 			gaussViolation2DGLPanel = new YamlGaussViolation2DGLPanel(component);
+		} else if (component instanceof InfoPanel) {
+			infoPanel = new YamlInfoPanel(component);
 		}
 	}
 
@@ -114,8 +133,10 @@ public class YamlPanels {
 			component = occupationNumbers2DGLPanel.inflate(panelManager);
 		} else if (chartPanel != null) {
 			component = chartPanel.inflate(panelManager);
-		}else if (gaussViolation2DGLPanel != null) {
+		} else if (gaussViolation2DGLPanel != null) {
 			component = gaussViolation2DGLPanel.inflate(panelManager);
+		} else if (infoPanel != null) {
+			component = infoPanel.inflate(panelManager);
 		}
 
 		return component;
