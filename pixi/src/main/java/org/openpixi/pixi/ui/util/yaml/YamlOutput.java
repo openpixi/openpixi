@@ -27,6 +27,8 @@ public class YamlOutput {
 
 	public ArrayList<YamlBoundaryFixer> boundaryFixer = new ArrayList<YamlBoundaryFixer>();
 
+	public ArrayList<YamlProjectedEnergyDensity> projectedEnergyDensity = new ArrayList<YamlProjectedEnergyDensity>();
+
 
 	/**
 	 * Creates FileGenerator instances and applies them to the Settings instance.
@@ -66,6 +68,10 @@ public class YamlOutput {
 		}
 
 		for(YamlBoundaryFixer output : boundaryFixer) {
+			s.addDiagnostics(output.getFileGenerator());
+		}
+
+		for(YamlProjectedEnergyDensity output : projectedEnergyDensity) {
 			s.addDiagnostics(output.getFileGenerator());
 		}
 	}
