@@ -36,6 +36,9 @@ public class YamlCurrents {
 
     public ArrayList<YamlRandomTemporalParticleColorCurrentSphericalProton> randomTemporalParticleColorCurrentsSphericalProton = new ArrayList<YamlRandomTemporalParticleColorCurrentSphericalProton>();
 
+    public ArrayList<YamlRandomTemporalParticleColorCurrentConstituentProton> randomTemporalParticleColorCurrentsConstituentProton = new ArrayList<YamlRandomTemporalParticleColorCurrentConstituentProton>();
+
+
     /**
      * Creates CurrentGenerator instances and applies them to the Settings instance.
      * @param s
@@ -106,6 +109,10 @@ public class YamlCurrents {
 		}
 
         for (YamlRandomTemporalParticleColorCurrentSphericalProton current : randomTemporalParticleColorCurrentsSphericalProton) {
+            s.addCurrentGenerator(current.getCurrentGenerator());
+        }
+
+        for (YamlRandomTemporalParticleColorCurrentConstituentProton current : randomTemporalParticleColorCurrentsConstituentProton) {
             s.addCurrentGenerator(current.getCurrentGenerator());
         }
 
