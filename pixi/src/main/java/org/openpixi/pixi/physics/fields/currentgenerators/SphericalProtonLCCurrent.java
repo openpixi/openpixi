@@ -54,6 +54,11 @@ public class SphericalProtonLCCurrent implements ICurrentGenerator {
 	private int[] transversalNumCells;
 
 	/**
+	 * Profile of the transversal charge density.
+	 */
+	private double[] transversalWidths;
+
+	/**
 	 * Transversal charge density.
 	 */
 	private AlgebraElement[] transversalChargeDensity;
@@ -138,18 +143,23 @@ public class SphericalProtonLCCurrent implements ICurrentGenerator {
 		transversalNumCells = GridFunctions.reduceGridPos(s.grid.getNumCells(), direction);
 		totalTransversalCells = GridFunctions.getTotalNumberOfCells(transversalNumCells);
 		transversalChargeDensity = new AlgebraElement[totalTransversalCells];
-		double[] transversalWidths = new double[totalTransversalCells];
+		transversalWidths = new double[totalTransversalCells];
 		for (int i = 0; i < totalTransversalCells; i++) {
 			transversalChargeDensity[i] = s.grid.getElementFactory().algebraZero();
 		}
 
 		// Iterate over (point) charges, create a Gaussian charge distribution around them and add them to the transversal charge density.
+		double norm = 0.0;
 		for (int i = 0; i < charges.size(); i++) {
 			GaussianCharge c = charges.get(i);
 			for (int k = 0; k < totalTransversalCells; k++) {
 				double distance = getDistance(c.location, GridFunctions.getCellPos(k, transversalNumCells), as);
-				transversalWidths[k] += shapeFunction(distance, c.width)/Math.pow(c.width*Math.sqrt(2*Math.PI), transversalNumCells.length)/charges.size();
+				transversalWidths[k] += Math.abs(shapeFunction(distance, c.width)/Math.pow(c.width*Math.sqrt(2*Math.PI), transversalNumCells.length)/charges.size());
+				norm += Math.abs(shapeFunction(distance, c.width)/Math.pow(c.width*Math.sqrt(2*Math.PI), transversalNumCells.length)/charges.size());
 			}
+		}
+		for (int k = 0; k < totalTransversalCells; k++) {
+			transversalWidths[k] /= norm;
 		}
 
 		for (int k = 0; k < totalTransversalCells; k++) {
@@ -181,55 +191,6 @@ public class SphericalProtonLCCurrent implements ICurrentGenerator {
 		particleLCCurrent.applyCurrent(s);
 	}
 
-
-	/**
-	 * Interpolates a point charge to the transversal grid. The charge is smeared according to the cloud-in-cell shape.
-	 *
-	 * @param s
-	 * @param chargePosition
-	 * @param charge
-	 */
-	private void interpolateChargeToGridCIC(Simulation s, double[] chargePosition, AlgebraElement charge) {
-
-		int effNumberOfDimensions = transversalNumCells.length;
-
-		// Add all relevant points of the hypercube defining the cell.
-		ArrayList<int[]> listOfPoints = new ArrayList<int[]>();
-		int[] gridPos0 = GridFunctions.flooredGridPoint(chargePosition, as);
-		listOfPoints.add(gridPos0);
-		for (int i = 0; i < effNumberOfDimensions; i++) {
-			ArrayList<int[]> newPoints = new ArrayList<int[]>();
-			for (int j = 0; j < listOfPoints.size(); j++) {
-				int[] currentPoint = listOfPoints.get(j).clone();
-				currentPoint[i] += 1;
-				newPoints.add(currentPoint);
-			}
-			listOfPoints.addAll(newPoints);
-		}
-
-		// Interpolate to each grid point of the hypercube.
-		for(int[] p : listOfPoints) {
-			double weigth = 1.0;
-			for (int i = 0; i < effNumberOfDimensions; i++) {
-				double dist = 1.0 - Math.abs(p[i] - chargePosition[i] / as);
-				weigth *= dist;
-			}
-			transversalChargeDensity[GridFunctions.getCellIndex(p, transversalNumCells)].addAssign(charge.mult(weigth));
-		}
-	}
-
-	/**
-	 * Interpolates a point charge to the transversal grid. The charge is "smeared" (not really) according to the nearest-grid-point method.
-	 *
-	 * @param s
-	 * @param chargePosition
-	 * @param charge
-	 */
-	private void interpolateChargeToGridNGP(Simulation s, double[] chargePosition, AlgebraElement charge) {
-		int[] gridPos0 = GridFunctions.nearestGridPoint(chargePosition, as);
-		transversalChargeDensity[GridFunctions.getCellIndex(gridPos0, transversalNumCells)].addAssign(charge);
-	}
-
 	/**
 	 * Removes the monopole moment by subtracting a constant charge at each lattice site of the transversal charge density.
 	 * This is not a good way to do this, so make sure the initial conditions are colorless at initialization.
@@ -238,10 +199,19 @@ public class SphericalProtonLCCurrent implements ICurrentGenerator {
 	 */
 	private void removeMonopoleMoment(Simulation s) {
 		AlgebraElement totalCharge = computeTotalCharge(s);
+		for (int i = 0; i < numberOfComponents; i++) {
+			System.out.println(totalCharge.get(i));
+		}
+		double check = 0.0;
 		GaussianCharge c = charges.get(0);
 		for (int i = 0; i < totalTransversalCells; i++) {
-			double distance = getDistance(c.location, GridFunctions.getCellPos(i, transversalNumCells), as);
-			transversalChargeDensity[i].sub(totalCharge.mult(shapeFunction(distance, c.width)/Math.pow(c.width*Math.sqrt(2*Math.PI), transversalNumCells.length)));
+			transversalChargeDensity[i].addAssign(totalCharge.mult(-1.0*transversalWidths[i]));
+			check += transversalWidths[i];
+		}
+		System.out.println(check);
+		totalCharge = computeTotalCharge(s);
+		for (int i = 0; i < numberOfComponents; i++) {
+			System.out.println(totalCharge.get(i));
 		}
 	}
 
