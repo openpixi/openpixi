@@ -199,20 +199,20 @@ public class SphericalProtonLCCurrent implements ICurrentGenerator {
 	 */
 	private void removeMonopoleMoment(Simulation s) {
 		AlgebraElement totalCharge = computeTotalCharge(s);
-		for (int i = 0; i < numberOfComponents; i++) {
+		/*for (int i = 0; i < numberOfComponents; i++) {
 			System.out.println(totalCharge.get(i));
-		}
+		}*/
 		double check = 0.0;
 		GaussianCharge c = charges.get(0);
 		for (int i = 0; i < totalTransversalCells; i++) {
 			transversalChargeDensity[i].addAssign(totalCharge.mult(-1.0*transversalWidths[i]));
 			check += transversalWidths[i];
 		}
-		System.out.println(check);
+		/*System.out.println(check);
 		totalCharge = computeTotalCharge(s);
 		for (int i = 0; i < numberOfComponents; i++) {
 			System.out.println(totalCharge.get(i));
-		}
+		}*/
 	}
 
 	/**
@@ -234,14 +234,36 @@ public class SphericalProtonLCCurrent implements ICurrentGenerator {
 		}
 
 		for (int c = 0; c < transversalNumCells.length; c++) {
+			for (int i = 0; i < numberOfComponents; i++) {
+				System.out.println(dipoleVector[c].get(i));
+			}
+		}
+
+		for (int c = 0; c < transversalNumCells.length; c++) {
 			for (int i = 0; i < totalTransversalCells; i++) {
-				int[] gridPos1 = GridFunctions.getCellPos(i, transversalNumCells);
-				int[] gridPos2 = GridFunctions.getCellPos(i, transversalNumCells);
-				gridPos2[c]++;
-				double distance1 = getDistance(parton.location, gridPos1, as);
-				double distance2 = getDistance(parton.location, gridPos2, as);
-				transversalChargeDensity[i].add(dipoleVector[c].mult(shapeFunction(distance2, parton.width) / Math.pow(parton.width * Math.sqrt(2 * Math.PI), transversalNumCells.length) / as));
-				transversalChargeDensity[i].sub(dipoleVector[c].mult(shapeFunction(distance1, parton.width) / Math.pow(parton.width * Math.sqrt(2 * Math.PI), transversalNumCells.length) / as));
+				int[] gridPos = GridFunctions.getCellPos(i, transversalNumCells);
+				gridPos[c]++;
+				int z = GridFunctions.getCellIndex(gridPos, transversalNumCells);
+				transversalChargeDensity[i].addAssign(dipoleVector[c].mult(transversalWidths[z] / as));
+				transversalChargeDensity[i].addAssign(dipoleVector[c].mult(-1.0 * transversalWidths[i] / as));
+			}
+		}
+
+
+		AlgebraElement[] checkDipoleVector = new AlgebraElement[transversalNumCells.length];
+		for (int i = 0; i < transversalNumCells.length; i++) {
+			checkDipoleVector[i] = s.grid.getElementFactory().algebraZero(s.getNumberOfColors());
+		}
+		for (int c = 0; c < transversalNumCells.length; c++) {
+			for (int i = 0; i < totalTransversalCells; i++) {
+				int[] gridPos = GridFunctions.getCellPos(i, transversalNumCells);
+				checkDipoleVector[c].addAssign(transversalChargeDensity[i].mult(gridPos[c] * as - parton.location[c]));
+			}
+		}
+
+		for (int c = 0; c < transversalNumCells.length; c++) {
+			for (int i = 0; i < numberOfComponents; i++) {
+				System.out.println(checkDipoleVector[c].get(i));
 			}
 		}
 	}
