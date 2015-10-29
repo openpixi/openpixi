@@ -62,9 +62,14 @@ public class YamlRandomTemporalParticleColorCurrentSphericalProton {
 	 */
 	public Boolean useDipoleRemoval = true;
 
+	/**
+	 * Option whether to use the monopole removal method.
+	 */
+	public Boolean useMonopoleRemoval = true;
+
 
 	public SphericalProtonLCCurrent getCurrentGenerator() {
-		SphericalProtonLCCurrent generator = new SphericalProtonLCCurrent(direction, orientation, longitudinalLocation, longitudinalWidth, true, useDipoleRemoval);
+		SphericalProtonLCCurrent generator = new SphericalProtonLCCurrent(direction, orientation, longitudinalLocation, longitudinalWidth, useMonopoleRemoval, useDipoleRemoval);
 
 		double[] locationTransverse = new double[transversalLocation.size()];
 		for (int i = 0; i < transversalLocation.size(); i++) {

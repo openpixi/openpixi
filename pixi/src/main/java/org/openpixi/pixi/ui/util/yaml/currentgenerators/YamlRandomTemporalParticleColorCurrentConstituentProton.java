@@ -62,12 +62,17 @@ public class YamlRandomTemporalParticleColorCurrentConstituentProton {
 	 */
 	public Boolean useDipoleRemoval = true;
 
+	/**
+	 * Option whether to use the monopole removal method.
+	 */
+	public Boolean useMonopoleRemoval = true;
+
 	public ConstituentProtonLCCurrent getCurrentGenerator() {
 		double[] locationTransverse = new double[transversalLocation.size()];
 		for (int j = 0; j < transversalLocation.size(); j++) {
 			locationTransverse[j] = transversalLocation.get(j);
 		}
-		ConstituentProtonLCCurrent generator = new ConstituentProtonLCCurrent(direction, orientation, longitudinalLocation, longitudinalWidth, locationTransverse, true, useDipoleRemoval);
+		ConstituentProtonLCCurrent generator = new ConstituentProtonLCCurrent(direction, orientation, longitudinalLocation, longitudinalWidth, locationTransverse, useMonopoleRemoval, useDipoleRemoval);
 		Random rand = new Random();
 		if(randomSeed != null) {
 			rand.setSeed(randomSeed);

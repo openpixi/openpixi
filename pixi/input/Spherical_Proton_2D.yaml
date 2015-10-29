@@ -21,6 +21,7 @@ currents:
       colorDistributionWidth: 0.1
       numberOfColors: 2
       useDipoleRemoval: true
+      useMonopoleRemoval: true
       randomSeed: 1
     - direction: 0
       orientation: -1
@@ -32,6 +33,7 @@ currents:
       colorDistributionWidth: 0.1
       numberOfColors: 2
       useDipoleRemoval: true
+      useMonopoleRemoval: true
       randomSeed: 2
 
 output:

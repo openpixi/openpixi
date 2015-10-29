@@ -232,13 +232,13 @@ public class SphericalProtonLCCurrent implements ICurrentGenerator {
 				dipoleVector[c].addAssign(transversalChargeDensity[i].mult(gridPos[c] * as - parton.location[c]));
 			}
 		}
-
+		/*
 		for (int c = 0; c < transversalNumCells.length; c++) {
 			for (int i = 0; i < numberOfComponents; i++) {
 				System.out.println(dipoleVector[c].get(i));
 			}
 		}
-
+		*/
 		for (int c = 0; c < transversalNumCells.length; c++) {
 			for (int i = 0; i < totalTransversalCells; i++) {
 				int[] gridPos = GridFunctions.getCellPos(i, transversalNumCells);
@@ -249,7 +249,7 @@ public class SphericalProtonLCCurrent implements ICurrentGenerator {
 			}
 		}
 
-
+		/*
 		AlgebraElement[] checkDipoleVector = new AlgebraElement[transversalNumCells.length];
 		for (int i = 0; i < transversalNumCells.length; i++) {
 			checkDipoleVector[i] = s.grid.getElementFactory().algebraZero(s.getNumberOfColors());
@@ -266,6 +266,7 @@ public class SphericalProtonLCCurrent implements ICurrentGenerator {
 				System.out.println(checkDipoleVector[c].get(i));
 			}
 		}
+		*/
 	}
 
 	/**
