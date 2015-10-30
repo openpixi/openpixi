@@ -72,7 +72,7 @@ public class YamlRandomTemporalParticleColorCurrentConstituentProton {
 		for (int j = 0; j < transversalLocation.size(); j++) {
 			locationTransverse[j] = transversalLocation.get(j);
 		}
-		ConstituentProtonLCCurrent generator = new ConstituentProtonLCCurrent(direction, orientation, longitudinalLocation, longitudinalWidth, locationTransverse, useMonopoleRemoval, useDipoleRemoval);
+		ConstituentProtonLCCurrent generator = new ConstituentProtonLCCurrent(direction, orientation, longitudinalLocation, longitudinalWidth, locationTransverse, useMonopoleRemoval, useDipoleRemoval, randomSeed);
 		Random rand = new Random();
 		if(randomSeed != null) {
 			rand.setSeed(randomSeed);

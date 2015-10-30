@@ -43,11 +43,6 @@ public class YamlRandomTemporalParticleColorCurrentSphericalProton {
 	public Integer numberOfCharges;
 
 	/**
-	 * Width of the Gaussian distribution from which the random charges are sampled
-	 */
-	public Double colorDistributionWidth;
-
-	/**
 	 * Number of colors
 	 */
 	public Integer numberOfColors;
@@ -69,7 +64,7 @@ public class YamlRandomTemporalParticleColorCurrentSphericalProton {
 
 
 	public SphericalProtonLCCurrent getCurrentGenerator() {
-		SphericalProtonLCCurrent generator = new SphericalProtonLCCurrent(direction, orientation, longitudinalLocation, longitudinalWidth, useMonopoleRemoval, useDipoleRemoval);
+		SphericalProtonLCCurrent generator = new SphericalProtonLCCurrent(direction, orientation, longitudinalLocation, longitudinalWidth, useMonopoleRemoval, useDipoleRemoval, randomSeed);
 
 		double[] locationTransverse = new double[transversalLocation.size()];
 		for (int i = 0; i < transversalLocation.size(); i++) {

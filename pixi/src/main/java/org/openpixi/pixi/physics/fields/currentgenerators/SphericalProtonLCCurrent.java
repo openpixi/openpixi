@@ -93,6 +93,11 @@ public class SphericalProtonLCCurrent implements ICurrentGenerator {
 	 */
 	private double g;
 
+	/**
+	 * Random seed.
+	 */
+	private Random rand;
+
 
 	/**
 	 * ParticleLCCurrent which is called to interpolate charges and currents.
@@ -107,13 +112,18 @@ public class SphericalProtonLCCurrent implements ICurrentGenerator {
 	 * @param location
 	 * @param longitudinalWidth
 	 */
-	public SphericalProtonLCCurrent(int direction, int orientation, double location, double longitudinalWidth, boolean useMonopoleRemoval, boolean useDipoleRemoval) {
+	public SphericalProtonLCCurrent(int direction, int orientation, double location, double longitudinalWidth, boolean useMonopoleRemoval, boolean useDipoleRemoval, Integer seed) {
 		this.direction = direction;
 		this.orientation = orientation;
 		this.location = location;
 		this.longitudinalWidth = longitudinalWidth;
 		this.useMonopoleRemoval = useMonopoleRemoval;
 		this.useDipoleRemoval = useDipoleRemoval;
+
+		rand = new Random();
+		if(seed != null) {
+			rand.setSeed(seed);
+		}
 
 		this.charges = new ArrayList<GaussianCharge>();
 		this.particleLCCurrent = new ParticleLCCurrent(direction, orientation, location, longitudinalWidth);
@@ -137,7 +147,6 @@ public class SphericalProtonLCCurrent implements ICurrentGenerator {
 		as = s.grid.getLatticeSpacing();
 		at = s.getTimeStep();
 		g = s.getCouplingConstant();
-		Random rand = new Random();
 
 		// 1) Initialize transversal charge density grid using the charges array.
 		transversalNumCells = GridFunctions.reduceGridPos(s.grid.getNumCells(), direction);
@@ -312,60 +321,6 @@ public class SphericalProtonLCCurrent implements ICurrentGenerator {
 
 		return center;
 	}
-
-	/**
-	 * Computes the average (weighted) distance of the charges of a certain component to the center of charge.
-	 * This can be used to estimate the size of the charge distribution.
-	 *
-	 * @param s
-	 * @param component
-	 * @return
-	 */
-	private double computeAverageDistance(Simulation s, int component) {
-		double averageDistance = 0.0;
-		double[] centerOfCharge = computeCenterOfAbsCharge(component);
-		double totalAbsCharge = 0.0;
-		for (int i = 0; i < totalTransversalCells; i++) {
-			int[] gridPos = GridFunctions.getCellPos(i, transversalNumCells);
-			double charge = Math.abs(transversalChargeDensity[i].get(component));
-			totalAbsCharge += charge;
-			double dist = 0.0;
-			for (int j = 0; j < transversalNumCells.length; j++) {
-				dist += Math.pow(gridPos[j] * as - centerOfCharge[j], 2);
-			}
-			averageDistance += charge * Math.sqrt(dist);
-		}
-		return averageDistance / totalAbsCharge;
-	}
-
-	/**
-	 * Computes the center of charge using the invariant charge (tr(Q^2))^0.5.
-	 *
-	 * @return
-	 */
-	private double[] computeCenterOfInvariantCharge() {
-		double[] center = new double[transversalNumCells.length];
-		for (int j = 0; j < transversalNumCells.length; j++) {
-			center[j] = 0.0;
-		}
-
-		double totalInvCharge = 0.0;
-		for (int i = 0; i < totalTransversalCells; i++) {
-			int[] gridPos = GridFunctions.getCellPos(i, transversalNumCells);
-			double invCharge = Math.sqrt(transversalChargeDensity[i].square());
-			totalInvCharge += invCharge;
-			for (int j = 0; j < transversalNumCells.length; j++) {
-				center[j] += invCharge * gridPos[j] * as;
-			}
-		}
-
-		for (int j = 0; j < transversalNumCells.length; j++) {
-			center[j] /= totalInvCharge;
-		}
-
-		return center;
-	}
-
 
 	/**
 	 * Utility class to deal with Gaussian charges. Only used to specify the initial conditions.

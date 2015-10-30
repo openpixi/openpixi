@@ -98,6 +98,11 @@ public class ConstituentProtonLCCurrent implements ICurrentGenerator {
 	 */
 	private double g;
 
+	/**
+	 * Random seed.
+	 */
+	private Random rand;
+
 
 	/**
 	 * ParticleLCCurrent which is called to interpolate charges and currents.
@@ -112,7 +117,7 @@ public class ConstituentProtonLCCurrent implements ICurrentGenerator {
 	 * @param location
 	 * @param longitudinalWidth
 	 */
-	public ConstituentProtonLCCurrent(int direction, int orientation, double location, double longitudinalWidth, double[] locationTransverse, boolean useMonopoleRemoval, boolean useDipoleRemoval) {
+	public ConstituentProtonLCCurrent(int direction, int orientation, double location, double longitudinalWidth, double[] locationTransverse, boolean useMonopoleRemoval, boolean useDipoleRemoval, Integer seed) {
 		this.direction = direction;
 		this.orientation = orientation;
 		this.location = location;
@@ -120,6 +125,11 @@ public class ConstituentProtonLCCurrent implements ICurrentGenerator {
 		this.locationTransverse = locationTransverse;
 		this.useMonopoleRemoval = useMonopoleRemoval;
 		this.useDipoleRemoval = useDipoleRemoval;
+
+		rand = new Random();
+		if(seed != null) {
+			rand.setSeed(seed);
+		}
 
 		this.charges = new ArrayList<GaussianCharge>();
 		this.particleLCCurrent = new ParticleLCCurrent(direction, orientation, location, longitudinalWidth);
@@ -143,7 +153,6 @@ public class ConstituentProtonLCCurrent implements ICurrentGenerator {
 		as = s.grid.getLatticeSpacing();
 		at = s.getTimeStep();
 		g = s.getCouplingConstant();
-		Random rand = new Random();
 
 		// 1) Initialize transversal charge density grid using the charges array.
 		transversalNumCells = GridFunctions.reduceGridPos(s.grid.getNumCells(), direction);

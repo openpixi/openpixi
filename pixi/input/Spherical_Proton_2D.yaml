@@ -18,7 +18,6 @@ currents:
       transversalWidth: 12.0
       transversalLocation: [64, 0]
       numberOfCharges: 3
-      colorDistributionWidth: 0.1
       numberOfColors: 2
       useDipoleRemoval: true
       useMonopoleRemoval: true
@@ -30,7 +29,6 @@ currents:
       transversalWidth: 12.0
       transversalLocation: [64, 0]
       numberOfCharges: 3
-      colorDistributionWidth: 0.1
       numberOfColors: 2
       useDipoleRemoval: true
       useMonopoleRemoval: true
