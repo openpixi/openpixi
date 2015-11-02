@@ -293,36 +293,6 @@ public class SphericalProtonLCCurrent implements ICurrentGenerator {
 	}
 
 	/**
-	 * Computes the "center of charge" for a given component on the transversal lattice. The center is computed from the
-	 * absolute values of the charges.
-	 *
-	 * @param component
-	 * @return
-	 */
-	private double[] computeCenterOfAbsCharge(int component) {
-		double[] center = new double[transversalNumCells.length];
-		for (int j = 0; j < transversalNumCells.length; j++) {
-			center[j] = 0.0;
-		}
-
-		double totalCharge = 0.0;
-		for (int i = 0; i < totalTransversalCells; i++) {
-			int[] gridPos = GridFunctions.getCellPos(i, transversalNumCells);
-			double charge = Math.abs(transversalChargeDensity[i].get(component));
-			totalCharge += charge;
-			for (int j = 0; j < transversalNumCells.length; j++) {
-				center[j] += charge * gridPos[j] * as;
-			}
-		}
-
-		for (int j = 0; j < transversalNumCells.length; j++) {
-			center[j] /= totalCharge;
-		}
-
-		return center;
-	}
-
-	/**
 	 * Utility class to deal with Gaussian charges. Only used to specify the initial conditions.
 	 */
 	class GaussianCharge {

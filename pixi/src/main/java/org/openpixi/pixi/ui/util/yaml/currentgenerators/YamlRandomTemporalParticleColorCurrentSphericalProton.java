@@ -64,17 +64,12 @@ public class YamlRandomTemporalParticleColorCurrentSphericalProton {
 
 
 	public SphericalProtonLCCurrent getCurrentGenerator() {
-		SphericalProtonLCCurrent generator = new SphericalProtonLCCurrent(direction, orientation, longitudinalLocation, longitudinalWidth, useMonopoleRemoval, useDipoleRemoval, randomSeed);
-
 		double[] locationTransverse = new double[transversalLocation.size()];
 		for (int i = 0; i < transversalLocation.size(); i++) {
 			locationTransverse[i] = transversalLocation.get(i);
 		}
 
-		int numberOfComponents = numberOfColors * numberOfColors - 1;
-		if(numberOfColors == 1) {
-			numberOfComponents = 1;
-		}
+		SphericalProtonLCCurrent generator = new SphericalProtonLCCurrent(direction, orientation, longitudinalLocation, longitudinalWidth, useMonopoleRemoval, useDipoleRemoval, randomSeed);
 
 		for(int i = 0; i < numberOfCharges; i++) {
 			generator.addCharge(locationTransverse, transversalWidth);

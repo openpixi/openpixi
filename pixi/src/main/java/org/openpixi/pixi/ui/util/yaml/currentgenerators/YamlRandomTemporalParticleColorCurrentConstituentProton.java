@@ -72,15 +72,10 @@ public class YamlRandomTemporalParticleColorCurrentConstituentProton {
 		for (int j = 0; j < transversalLocation.size(); j++) {
 			locationTransverse[j] = transversalLocation.get(j);
 		}
-		ConstituentProtonLCCurrent generator = new ConstituentProtonLCCurrent(direction, orientation, longitudinalLocation, longitudinalWidth, locationTransverse, useMonopoleRemoval, useDipoleRemoval, randomSeed);
+
 		Random rand = new Random();
 		if(randomSeed != null) {
 			rand.setSeed(randomSeed);
-		}
-
-		int numberOfComponents = numberOfColors * numberOfColors - 1;
-		if(numberOfColors == 1) {
-			numberOfComponents = 1;
 		}
 
 		ArrayList<double[]> listOfChargeLocations = new ArrayList<double[]>();
@@ -91,6 +86,8 @@ public class YamlRandomTemporalParticleColorCurrentConstituentProton {
 			}
 			listOfChargeLocations.add(chargeLocation);
 		}
+
+		ConstituentProtonLCCurrent generator = new ConstituentProtonLCCurrent(direction, orientation, longitudinalLocation, longitudinalWidth, locationTransverse, useMonopoleRemoval, useDipoleRemoval, rand);
 
 		for(int i = 0; i < numberOfCharges; i++) {
 			generator.addCharge(listOfChargeLocations.get(i), partonWidth);
