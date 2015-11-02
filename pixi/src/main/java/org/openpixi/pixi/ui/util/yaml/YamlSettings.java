@@ -164,11 +164,13 @@ public class YamlSettings {
 				settings.setRegionPoint2(point2);
 			} else {
 				System.out.println("Please check length of regionPoint1 and regionPoint2.");
+				settings.setRestrictedRegionEnabled(false);
 			}
 		} else {
 			if(restrictedRegionEnabled != null) {
 				if(restrictedRegionEnabled) {
 					System.out.println("Please define region points for restricted region.");
+					settings.setRestrictedRegionEnabled(false);
 				}
 			}
 		}

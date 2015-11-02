@@ -202,7 +202,7 @@ public class Settings {
 	}
 
 	public int[] getRegionPoint2() {
-		return regionPoint1;
+		return regionPoint2;
 	}
 
 	//----------------------------------------------------------------------------------------------
