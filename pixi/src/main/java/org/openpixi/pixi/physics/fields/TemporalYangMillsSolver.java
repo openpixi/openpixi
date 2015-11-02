@@ -55,22 +55,20 @@ public class TemporalYangMillsSolver extends FieldSolver
 		 * @param index  Lattice index
 		 */
 		public void execute(Grid grid, int index) {
-			for(int i = 0; i < grid.getNumberOfDimensions(); i++)
-			{
-				GroupElement temp = grid.getElementFactory().groupZero();
-				for(int j = 0; j < grid.getNumberOfDimensions(); j++)
-				{
-					if(j != i)
-					{
-						temp.addAssign(grid.getPlaquette(index, i, j, 1 , 1, 0));
-						temp.addAssign(grid.getPlaquette(index, i, j, 1 , -1, 0));
+			if(grid.isRestricted(index)) {
+				for (int i = 0; i < grid.getNumberOfDimensions(); i++) {
+					GroupElement temp = grid.getElementFactory().groupZero();
+					for (int j = 0; j < grid.getNumberOfDimensions(); j++) {
+						if (j != i) {
+							temp.addAssign(grid.getPlaquette(index, i, j, 1, 1, 0));
+							temp.addAssign(grid.getPlaquette(index, i, j, 1, -1, 0));
+						}
 					}
-				}
 
-				AlgebraElement currentE = grid.getE(index, i).add(temp.proj().mult(at / (as * as )));
-				//currentE.addAssign(grid.getJ(index, i).mult(-at / as));  // TODO: check factor 1/as !!!
-				currentE.addAssign(grid.getJ(index, i).mult(-at));
-				grid.setE(index, i, currentE);
+					AlgebraElement currentE = grid.getE(index, i).add(temp.proj().mult(at / (as * as)));
+					currentE.addAssign(grid.getJ(index, i).mult(-at));
+					grid.setE(index, i, currentE);
+				}
 			}
 		}
 	}
@@ -86,14 +84,13 @@ public class TemporalYangMillsSolver extends FieldSolver
 		 * @param index	Cell index
 		 */
 		public void execute(Grid grid, int index) {
+			if(grid.isRestricted(index)) {
+				GroupElement V;
+				for (int k = 0; k < grid.getNumberOfDimensions(); k++) {
+					V = grid.getE(index, k).mult(-at).getLink();    //minus sign takes take of conjugation
+					grid.setUnext(index, k, V.mult(grid.getU(index, k)));
 
-			GroupElement V;
-
-			for(int k=0;k<grid.getNumberOfDimensions();k++) {
-
-				V = grid.getE(index, k).mult(-at).getLink();	//minus sign takes take of conjugation
-				grid.setUnext( index, k, V.mult(grid.getU(index, k)) );
-
+				}
 			}
 		}
 	}
