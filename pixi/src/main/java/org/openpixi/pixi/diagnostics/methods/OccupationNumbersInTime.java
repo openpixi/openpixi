@@ -135,7 +135,7 @@ public class OccupationNumbersInTime implements Diagnostics {
 				grid = new Grid(grid_reference);	// Copy grid.
 			}
 			CoulombGauge coulombGauge = new CoulombGauge(grid);
-			//coulombGauge.applyGaugeTransformation(grid);
+			coulombGauge.applyGaugeTransformation(grid);
 
 
 			// Fill arrays for FFT.
@@ -157,7 +157,6 @@ public class OccupationNumbersInTime implements Diagnostics {
 						double gaugeFieldComponent0 = gaugeFieldAsAlgebraElement0.get(k) * gainv;
 						double gaugeFieldComponent1 = gaugeFieldAsAlgebraElement1.get(k) * gainv;
 						aFFTdata[j][k][fftIndex] = 0.5 * (gaugeFieldComponent0 + gaugeFieldComponent1);
-						//aFFTdata[j][k][fftIndex] = gaugeFieldComponent0;
 						aFFTdata[j][k][fftIndex + 1] = 0.0;
 					}
 				}
@@ -470,12 +469,6 @@ public class OccupationNumbersInTime implements Diagnostics {
 
 				cells[newGridIndex] = grid.getCell(i).copy();
 				cells[mirroredIndex] = grid.getCell(i).copy();
-				/*
-				for (int j = 0; j < grid.getNumberOfDimensions(); j++) {
-					AlgebraElement E = grid.getCell(i).getE(j).copy().mult(-1.0);
-					cells[mirroredIndex].setE(j, E);
-				}
-				*/
 			}
 
 		}
