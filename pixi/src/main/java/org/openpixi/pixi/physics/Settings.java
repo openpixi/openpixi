@@ -56,6 +56,9 @@ public class Settings {
 	private PoissonSolver poissonSolver = new EmptyPoissonSolver();
 	private boolean useGrid = true;
 	private boolean relativistic = true;
+	private boolean restrictedRegionEneabled = false;
+	private int[] regionPoint1;
+	private int[] regionPoint2;
 
 	// Particle related settings
 	private int numOfParticles = 0;
@@ -188,6 +191,18 @@ public class Settings {
 
 	public YamlPanels getYamlPanels() {
 		return yamlPanels;
+	}
+
+	public boolean isRestrictedRegionEnabled() {
+		return restrictedRegionEneabled;
+	}
+
+	public int[] getRegionPoint1() {
+		return regionPoint1;
+	}
+
+	public int[] getRegionPoint2() {
+		return regionPoint1;
 	}
 
 	//----------------------------------------------------------------------------------------------
@@ -415,6 +430,19 @@ public class Settings {
 	public void setYamlPanels(YamlPanels yamlPanels) {
 		this.yamlPanels = yamlPanels;
 	}
+
+	public void setRestrictedRegionEnabled(boolean value) {
+		restrictedRegionEneabled = value;
+	}
+
+	public void setRegionPoint1(int[] point) {
+		this.regionPoint1 = point;
+	}
+
+	public void setRegionPoint2(int[] point) {
+		this.regionPoint2 = point;
+	}
+
 
 	//----------------------------------------------------------------------------------------------
 	// VARIOUS

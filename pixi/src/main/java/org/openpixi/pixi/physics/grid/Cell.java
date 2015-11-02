@@ -40,6 +40,9 @@ public class Cell implements Serializable {
 	private int dimensions;
 	private int colors;
 
+	/** Restricted region property. If true then the cell is considered in various calculations. */
+	private boolean restricted;
+
 	/**
 	 * Constructor for Cell.
 	 * @param dimensions Number of spatial dimensions (e.g. 3)
@@ -49,6 +52,7 @@ public class Cell implements Serializable {
 		this.dimensions = dimensions;
 		this.colors = colors;
 		this.factory = factory;
+		this.restricted = true;
 
 		F = new AlgebraElement[dimensions][dimensions];
 		U = new GroupElement[dimensions];
@@ -144,7 +148,14 @@ public class Cell implements Serializable {
 	public void setFieldStrength(int i, int j, AlgebraElement field) {
 		F[i][j].set(field);
 	}
-	
+
+	public boolean isRestricted() {
+		return restricted;
+	}
+
+	public void setRestricted(boolean value) {
+		this.restricted = value;
+	}
 
 	public void resetCurrent() {
 		for (int i=0;i<J.length;i++) {
@@ -197,6 +208,7 @@ public class Cell implements Serializable {
 		this.rho.set(other.rho);
 		this.U0.set(other.U0);
 		this.U0next.set(other.U0next);
+		this.restricted = other.restricted;
 	}
 
 	/**

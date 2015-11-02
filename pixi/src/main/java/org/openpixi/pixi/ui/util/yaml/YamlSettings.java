@@ -29,6 +29,11 @@ public class YamlSettings {
 	public List<Integer> gridCells;
 	public String fieldsolver;
 	public String poissonsolver;
+
+	public Boolean restrictedRegionEnabled;
+	public ArrayList<Integer> regionPoint1;
+	public ArrayList<Integer> regionPoint2;
+
 	public List<YamlParticle> particles;
 	public List<YamlParticleStream> streams;
     public YamlFields fields;
@@ -138,6 +143,42 @@ public class YamlSettings {
 
 		if (panels != null) {
 			settings.setYamlPanels(panels);
+		}
+
+		// Restricted region
+		if(regionPoint1 != null && regionPoint2 != null) {
+			// Check length of vectors.
+			if(regionPoint1.size() == numberOfDimensions && regionPoint2.size() == numberOfDimensions) {
+				settings.setRestrictedRegionEnabled(true);
+
+				// Convert from List<Integer> to int[].
+				int[] point1 = new int[numberOfDimensions];
+				int[] point2 = new int[numberOfDimensions];
+
+				for (int i = 0; i < numberOfDimensions; i++) {
+					point1[i] = regionPoint1.get(i);
+					point2[i] = regionPoint2.get(i);
+				}
+
+				settings.setRegionPoint1(point1);
+				settings.setRegionPoint2(point2);
+			} else {
+				System.out.println("Please check length of regionPoint1 and regionPoint2.");
+			}
+		} else {
+			if(restrictedRegionEnabled != null) {
+				if(restrictedRegionEnabled) {
+					System.out.println("Please define region points for restricted region.");
+				}
+			}
+		}
+
+		if(restrictedRegionEnabled != null) {
+			// If true then region points must be defined. This is taken care of in the code above.
+			// If false then override restricted region settings.
+			if(restrictedRegionEnabled == false) {
+				settings.setRestrictedRegionEnabled(false);
+			}
 		}
 	}
 }

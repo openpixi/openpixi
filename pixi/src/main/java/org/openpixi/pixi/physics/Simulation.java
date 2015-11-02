@@ -215,6 +215,11 @@ public class Simulation {
 			turnGridForceOff();
 		}
 
+		// Restricted region
+		if(settings.isRestrictedRegionEnabled()) {
+			grid.setRestrictedRegion(settings.getRegionPoint1(), settings.getRegionPoint2());
+		}
+
 		poisolver = settings.getPoissonSolver();
 		interpolation = new LocalInterpolation(
 				settings.getInterpolator(), settings.getParticleIterator());
