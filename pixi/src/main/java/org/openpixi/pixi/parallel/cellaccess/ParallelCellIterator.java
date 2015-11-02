@@ -48,6 +48,8 @@ public class ParallelCellIterator extends CellIterator {
 	public CellIterator copy(){
 		ParallelCellIterator copy = new ParallelCellIterator(this.numOfThreads, this.threadExecutor);
 		copy.dimensions = dimensions.copy();
+		copy.numOfCells = this.numOfCells;
+
 		return copy;
 	}
 
