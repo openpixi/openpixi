@@ -31,7 +31,6 @@ import org.openpixi.pixi.physics.particles.IParticle;
 import org.openpixi.pixi.ui.SimulationAnimation;
 import org.openpixi.pixi.ui.panel.properties.ColorProperties;
 import org.openpixi.pixi.ui.panel.properties.FieldProperties;
-import org.openpixi.pixi.ui.panel.properties.InfoProperties;
 import org.openpixi.pixi.ui.util.projection.LineObject;
 import org.openpixi.pixi.ui.util.projection.Projection;
 import org.openpixi.pixi.ui.util.projection.Scene;
@@ -43,9 +42,8 @@ import org.openpixi.pixi.ui.util.projection.SphereObject;
  */
 public class Particle3DPanel extends AnimationPanel {
 
-	ColorProperties colorProperties;
-	FieldProperties fieldProperties;
-	InfoProperties infoProperties;
+	public ColorProperties colorProperties;
+	public FieldProperties fieldProperties;
 
 	/** Whether to combine the spatial components of the fields into a single vector
 	 * or whether to keep them separate. */
@@ -55,7 +53,7 @@ public class Particle3DPanel extends AnimationPanel {
 	private int gridstepadjusted = 0;
 	private long currentrendertime = 0;
 
-	private Projection projection = new Projection();
+	public Projection projection = new Projection();
 
 	private LineObject cuboid = new LineObject();
 	private LineObject fields = new LineObject();
@@ -67,7 +65,6 @@ public class Particle3DPanel extends AnimationPanel {
 		super(simulationAnimation);
 		colorProperties = new ColorProperties(simulationAnimation);
 		fieldProperties = new FieldProperties(simulationAnimation);
-		infoProperties = new InfoProperties(simulationAnimation);
 
 		projection.phi = 0;
 		projection.theta = 0;
@@ -257,8 +254,6 @@ public class Particle3DPanel extends AnimationPanel {
 		}
 
 		scene.paint(projection, graph);
-
-		infoProperties.showInfo(graph, this);
 	}
 
 	private int mouseOldX, mouseOldY;
@@ -294,22 +289,5 @@ public class Particle3DPanel extends AnimationPanel {
 		addLabel(box, "Particle 3D panel");
 		colorProperties.addComponents(box);
 		fieldProperties.addComponents(box);
-		infoProperties.addComponents(box);
-	}
-
-	public ColorProperties getColorProperties() {
-		return colorProperties;
-	}
-
-	public FieldProperties getFieldProperties() {
-		return fieldProperties;
-	}
-
-	public InfoProperties getInfoProperties() {
-		return infoProperties;
-	}
-
-	public Projection getProjection() {
-		return projection;
 	}
 }

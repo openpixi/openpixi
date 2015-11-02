@@ -32,8 +32,6 @@ import org.openpixi.pixi.physics.particles.IParticle;
 import org.openpixi.pixi.ui.SimulationAnimation;
 import org.openpixi.pixi.ui.panel.properties.ColorProperties;
 import org.openpixi.pixi.ui.panel.properties.FieldProperties;
-import org.openpixi.pixi.ui.panel.properties.InfoProperties;
-import org.openpixi.pixi.ui.panel.properties.TraceProperties;
 
 
 /**
@@ -41,22 +39,14 @@ import org.openpixi.pixi.ui.panel.properties.TraceProperties;
  */
 public class Particle2DPanel extends AnimationPanel {
 
-	ColorProperties colorProperties;
-	FieldProperties fieldProperties;
-	InfoProperties infoProperties;
-	TraceProperties traceProperties;
+	public ColorProperties colorProperties;
+	public FieldProperties fieldProperties;
 
 	/** Constructor */
 	public Particle2DPanel(SimulationAnimation simulationAnimation) {
 		super(simulationAnimation);
 		colorProperties = new ColorProperties(simulationAnimation);
 		fieldProperties = new FieldProperties(simulationAnimation);
-		infoProperties = new InfoProperties(simulationAnimation);
-		traceProperties = new TraceProperties(simulationAnimation);
-	}
-
-	public void clear() {
-		traceProperties.clear();
 	}
 
 	/** Display the particles */
@@ -69,9 +59,7 @@ public class Particle2DPanel extends AnimationPanel {
 
 		colorProperties.checkConsistency();
 
-		if (traceProperties.isCallSuper()) {
-			super.paintComponent(graph1);
-		}
+		super.paintComponent(graph1);
 
 
 		Simulation s = getSimulationAnimation().getSimulation();
@@ -87,28 +75,26 @@ public class Particle2DPanel extends AnimationPanel {
 			double radius = par.getRadius();//double radius = par.getRadius()*(2 - 1.9*par.getZ()/s.getDepth());
 			int width = (int) (2*sx*radius);
 			int height = (int) (2*sy*radius);
-			if(width > 2 && height > 2 && !traceProperties.isShowTrace()) {
+			if(width > 2 && height > 2) {
 				graph.fillOval((int) (par.getPosition(0)*sx) - width/2, (int) (par.getPosition(1)*sy) - height/2,  width,  height);
 			}
 			else {
 				graph.drawRect((int) (par.getPosition(0)*sx), (int) (par.getPosition(1)*sy), 0, 0);
 			}
 		}
-		
+
 		int[] pos = new int[s.getNumberOfDimensions()];
 		for(int w = 2; w < s.getNumberOfDimensions(); w++) {
 			pos[w] = s.grid.getNumCells(w)/2;
 		}
-		
+
 		int colorIndex = colorProperties.getColorIndex();
 		int directionIndex = colorProperties.getDirectionIndex();
-		
+
 		if(fieldProperties.isDrawCurrent())
 		{
 			graph.setColor(Color.black);
-			
-			
-			
+
 			for(int i = 0; i < s.grid.getNumCells(0); i++)
 				for(int k = 0; k < s.grid.getNumCells(1); k++)
 				{
@@ -149,8 +135,6 @@ public class Particle2DPanel extends AnimationPanel {
 				}
 			//return;
 		}
-
-		infoProperties.showInfo(graph, this);
 	}
 
 
@@ -158,50 +142,32 @@ public class Particle2DPanel extends AnimationPanel {
 
 		int ARR_SIZE = 5;
 
-        double dx = x2 - x1, dy = y2 - y1;
-        double angle = Math.atan2(dy, dx);
-        int len = (int) Math.sqrt(dx*dx + dy*dy);
-        // get the old transform matrix
-        AffineTransform old = g.getTransform();
-        AffineTransform at = getTranslateInstance(x1, y1);
-        at.concatenate(getRotateInstance(angle));
-        g.transform(at);
-        //g.setTransform(at);
+		double dx = x2 - x1, dy = y2 - y1;
+		double angle = Math.atan2(dy, dx);
+		int len = (int) Math.sqrt(dx*dx + dy*dy);
+		// get the old transform matrix
+		AffineTransform old = g.getTransform();
+		AffineTransform at = getTranslateInstance(x1, y1);
+		at.concatenate(getRotateInstance(angle));
+		g.transform(at);
+		//g.setTransform(at);
 
-        // Draw horizontal arrow starting in (0, 0)
-        Color colold = g.getColor();
-        g.setColor(col);
-        g.drawLine(0, 0, (int) len, 0);
-        if(Math.abs(x2 - x1) > 0 || Math.abs(y2 - y1) > 0)
-        	g.fillPolygon(new int[] {len, len-ARR_SIZE, len-ARR_SIZE, len},
-        				  new int[] {0, -ARR_SIZE, ARR_SIZE, 0}, 4);
-        g.setColor(colold);
+		// Draw horizontal arrow starting in (0, 0)
+		Color colold = g.getColor();
+		g.setColor(col);
+		g.drawLine(0, 0, (int) len, 0);
+		if(Math.abs(x2 - x1) > 0 || Math.abs(y2 - y1) > 0)
+			g.fillPolygon(new int[] {len, len-ARR_SIZE, len-ARR_SIZE, len},
+					new int[] {0, -ARR_SIZE, ARR_SIZE, 0}, 4);
+		g.setColor(colold);
 
-        // reset transformationmatrix
-        g.setTransform(old);
-     }
+		// reset transformationmatrix
+		g.setTransform(old);
+	}
 
 	public void addPropertyComponents(Box box) {
 		addLabel(box, "Particle panel");
 		colorProperties.addComponents(box);
 		fieldProperties.addComponents(box);
-		infoProperties.addComponents(box);
-		traceProperties.addComponents(box);
-	}
-
-	public ColorProperties getColorProperties() {
-		return colorProperties;
-	}
-
-	public FieldProperties getFieldProperties() {
-		return fieldProperties;
-	}
-
-	public InfoProperties getInfoProperties() {
-		return infoProperties;
-	}
-
-	public TraceProperties getTraceProperties() {
-		return traceProperties;
 	}
 }

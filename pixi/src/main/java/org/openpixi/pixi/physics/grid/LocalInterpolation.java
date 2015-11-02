@@ -21,14 +21,11 @@ public class LocalInterpolation extends Interpolation {
 	private InterpolateToParticle interpolateToParticle = new InterpolateToParticle();
 	private InterpolateChargedensity interpolateChargedensity = new InterpolateChargedensity();
 
-
-	public LocalInterpolation(
-			InterpolatorAlgorithm interpolator,
+	public LocalInterpolation(InterpolatorAlgorithm interpolator,
 			ParticleIterator particleIterator) {
 		super(interpolator);
 		this.particleIterator = particleIterator;
 	}
-
 
 	@Override
 	public void interpolateToGrid(List<IParticle> particles, Grid grid, double timeStep) {
@@ -51,20 +48,17 @@ public class LocalInterpolation extends Interpolation {
 		particleIterator.execute(particles, interpolateChargedensity);
 	}
 
-
 	private class InterpolateToGrid implements ParticleAction {
 		public void execute(IParticle particle) {
 			interpolator.interpolateToGrid(particle, grid, timeStep);
 		}
 	}
 
-
 	private class InterpolateToParticle implements ParticleAction {
 		public void execute(IParticle particle) {
 			interpolator.interpolateToParticle(particle, grid);
 		}
 	}
-
 
 	private class InterpolateChargedensity implements ParticleAction {
 		public void execute(IParticle particle) {

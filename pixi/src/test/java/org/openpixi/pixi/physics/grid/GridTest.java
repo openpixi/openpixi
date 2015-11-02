@@ -24,7 +24,7 @@ public class GridTest {
 		settings.addFieldGenerator(new SU2RandomFields());
 		Simulation s = new Simulation(settings);
 		Grid g = s.grid;
-
+		initializeUnitVectors(g);
 
 		//Test for getLinearizedLink() method and shift() method
 		int numberOfTests = 100;
@@ -90,6 +90,7 @@ public class GridTest {
 		settings.addFieldGenerator(new SU2RandomFields());
 		Simulation s = new Simulation(settings);
 		Grid g = s.grid;
+		initializeUnitVectors(g);
 
 		// Test getCellIndex() and getCellPos()
 		for(int t = 0; t < numberOfTests; t++) {
@@ -116,6 +117,7 @@ public class GridTest {
 		settings.addFieldGenerator(new SU2RandomFields());
 		Simulation s = new Simulation(settings);
 		Grid g = s.grid;
+		initializeUnitVectors(g);
 
 		// Test periodic()
 		for(int i = 0; i < g.getNumberOfDimensions(); i++)
@@ -135,7 +137,6 @@ public class GridTest {
 			Assert.assertEquals(0, pos2[i]);
 		}
 
-
 		// Test shift()
 		for(int t = 0; t < numberOfTests; t++) {
 			// Create random lattice position
@@ -144,8 +145,8 @@ public class GridTest {
 			// Choose random direction
 			int d = (int) (Math.random() * s.getNumberOfDimensions());
 
-			int[] pos2 = g.shift(pos0, d, 1);
-			int[] pos3 = g.shift(pos2, d, -1);
+			int[] pos2 = shiftTesting(g, pos0, d, 1);
+			int[] pos3 = shiftTesting(g, pos2, d, -1);
 
 			// Test if equal
 			Assert.assertArrayEquals(pos0, pos3);
@@ -173,6 +174,7 @@ public class GridTest {
 		settings.addFieldGenerator(new SU2RandomFields());
 		Simulation s = new Simulation(settings);
 		Grid g = s.grid;
+		initializeUnitVectors(g);
 
 		// Create random lattice position
 		int[] pos = getRandomLatticePosition(s);
@@ -192,7 +194,7 @@ public class GridTest {
 			int d = generator1.nextInt(s.getNumberOfDimensions());
 			int o = generator1.nextInt(2) * 2 - 1;
 
-			pos = g.shift(pos, d, o);
+			pos = shiftTesting(g, pos, d, o);
 		}
 		time1 += System.currentTimeMillis();
 
@@ -266,5 +268,56 @@ public class GridTest {
 		s.setNumOfThreads(6);
 
 		return s;
+	}
+
+
+	// Alternative shift method
+
+	/**
+	 * Unit vectors to be used for the testing shift method.
+	 */
+	protected int[][] unitVectors;
+
+	void initializeUnitVectors(Grid grid) {
+		unitVectors = new int[grid.numDim][grid.numDim];
+
+		int length = 1;
+		for(int i = 0; i < grid.numDim; i++) {
+			length *= grid.numCells[i];
+
+			/*
+				Setup unit vectors.
+			 */
+			unitVectors[i][i] = 1;
+		}
+	}
+
+	/**
+	 * Shifts a lattice coordinate vector by one unit step in a certain direction. The direction is passed as an integer
+	 * for the direction and an orientation.
+	 * <br>
+	 * This is an alternative implementation used to test the implementation of Grid.shift().
+	 * <br>
+	 * Examples:
+	 * <ul><li>Shift by one in negative x-direction: shift(coor, 0, -1)</li>
+	 * <li>Shift by one in positive x-direction: shift(coor, 0, 1)</li>
+	 * <li>Shift by one in positive z-direction: shift(coor, 2, 1)</li></ul>
+	 *
+	 * @param grid          Grid on which to shift
+	 * @param coordinates   Input lattice coordinate vector
+	 * @param direction     Direction of the shift (0 - (numberOfDirections-1))
+	 * @param orientation   Orientation of the direction (1 or -1)
+	 * @return              Shifted coordinate with respect to periodic boundary conditions.
+	 */
+	protected int[] shiftTesting(Grid grid, int[] coordinates, int direction, int orientation)
+	{
+		int[] shiftedCoordinate = coordinates.clone();
+
+		for(int i = 0; i < grid.numDim; i++)
+		{
+			shiftedCoordinate[i] += orientation * unitVectors[direction][i];
+		}
+
+		return grid.periodic(shiftedCoordinate);
 	}
 }

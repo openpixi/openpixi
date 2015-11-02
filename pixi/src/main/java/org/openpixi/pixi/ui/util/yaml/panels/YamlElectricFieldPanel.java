@@ -29,10 +29,10 @@ public class YamlElectricFieldPanel {
 		if (component instanceof ElectricFieldPanel) {
 			ElectricFieldPanel panel = (ElectricFieldPanel) component;
 			showFields = panel.showFieldProperties.getStringArrayFromValues();
-			colorIndex = panel.getColorProperties().getColorIndex();
-			directionIndex = panel.getColorProperties().getDirectionIndex();
-			scaleFactor = panel.getScaleProperties().getScaleFactor();
-			automaticScaling = panel.getScaleProperties().getAutomaticScaling();
+			colorIndex = panel.colorProperties.getColorIndex();
+			directionIndex = panel.colorProperties.getDirectionIndex();
+			scaleFactor = panel.scaleProperties.getScaleFactor();
+			automaticScaling = panel.scaleProperties.getAutomaticScaling();
 			showCoordinates = panel.showCoordinateProperties.getValue();
 		}
 	}
@@ -46,19 +46,19 @@ public class YamlElectricFieldPanel {
 		}
 
 		if (colorIndex != null) {
-			panel.getColorProperties().setColorIndex(colorIndex);
+			panel.colorProperties.setColorIndex(colorIndex);
 		}
 
 		if (directionIndex != null) {
-			panel.getColorProperties().setDirectionIndex(directionIndex);
+			panel.colorProperties.setDirectionIndex(directionIndex);
 		}
 
 		if (scaleFactor != null) {
-			panel.getScaleProperties().setScaleFactor(scaleFactor);
+			panel.scaleProperties.setScaleFactor(scaleFactor);
 		}
 
 		if (automaticScaling != null) {
-			panel.getScaleProperties().setAutomaticScaling(automaticScaling);
+			panel.scaleProperties.setAutomaticScaling(automaticScaling);
 		}
 
 		if (showCoordinates != null) {
