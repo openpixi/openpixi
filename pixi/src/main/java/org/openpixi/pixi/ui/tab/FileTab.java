@@ -5,6 +5,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
+import java.util.prefs.Preferences;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -20,6 +21,7 @@ import org.openpixi.pixi.physics.Settings;
 import org.openpixi.pixi.ui.MainControlApplet;
 import org.openpixi.pixi.ui.PanelManager;
 import org.openpixi.pixi.ui.SimulationAnimation;
+import org.openpixi.pixi.ui.UserPreferences;
 import org.openpixi.pixi.ui.util.FileIO;
 import org.openpixi.pixi.ui.util.yaml.YamlPanelWriter;
 import org.openpixi.pixi.ui.util.yaml.YamlPanels;
@@ -47,12 +49,18 @@ public class FileTab extends Box {
 
 		fc = new JFileChooser();
 		File workingDirectory = new File(System.getProperty("user.dir"));
+		File initialDirectory = workingDirectory;
+
 		File inputDirectory = new File(workingDirectory, "input");
 		if (inputDirectory.exists()) {
-			fc.setCurrentDirectory(inputDirectory);
-		} else {
-			fc.setCurrentDirectory(workingDirectory);
+			initialDirectory = inputDirectory;
 		}
+
+		File preferenceDirectory = getPathFromPreferences();
+		if (preferenceDirectory != null) {
+			initialDirectory = preferenceDirectory;
+		}
+		fc.setCurrentDirectory(initialDirectory);
 
 		openButton = new JButton("Open...");
 		openButton.addActionListener(new OpenButtonListener());
@@ -77,7 +85,6 @@ public class FileTab extends Box {
 
 	class OpenButtonListener implements ActionListener {
 		public void actionPerformed(ActionEvent event) {
-
 			int returnVal = fc.showOpenDialog(parent);
 
 			if (returnVal == JFileChooser.APPROVE_OPTION) {
@@ -90,6 +97,7 @@ public class FileTab extends Box {
 				} catch (IOException e) {
 					// TODO Error message
 				}
+				putPathInPreferences(file);
 			} else {
 				// Open command cancelled by user
 			}
@@ -124,6 +132,7 @@ public class FileTab extends Box {
 				} catch (IOException e) {
 					// TODO Error message
 				}
+				putPathInPreferences(file);
 			} else {
 				// Save command cancelled by user
 			}
@@ -225,5 +234,23 @@ public class FileTab extends Box {
 		String yamlString = panelWriter.getYamlString(yamlPanels);
 		yamlString = "\n\n# Generated panel code:\n" + yamlString;
 		fileTextArea.append(yamlString);
+	}
+
+	void putPathInPreferences(File file) {
+		File directoryPath = file.getParentFile();
+		Preferences preferences = UserPreferences.getUserPreferences();
+		preferences.put(UserPreferences.DEFAULT_YAML_PATH,
+				directoryPath.getPath());
+	}
+
+	File getPathFromPreferences() {
+		Preferences preferences = UserPreferences.getUserPreferences();
+		String directoryPath = preferences.get(
+				UserPreferences.DEFAULT_YAML_PATH, null);
+		if (directoryPath != null) {
+			return new File(directoryPath);
+		} else {
+			return null;
+		}
 	}
 }
