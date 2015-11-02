@@ -471,7 +471,10 @@ public class OccupationNumbersInTime implements Diagnostics {
 				cells[mirroredIndex] = grid.getCell(i).copy();
 
 				// Switch gauge links in the mirrored direction.
-				cellPos[mirroredDirection]--;
+				// TODO: This shift of the gauge links is a bit ambiguous. Not sure what would be the correct way to do it.
+				if(cellPos[mirroredDirection] > 0) {
+					cellPos[mirroredDirection]--;
+				}
 				int shiftedIndex = grid.getCellIndex(cellPos);
 				cells[mirroredIndex].setU(mirroredDirection, grid.getU(shiftedIndex, mirroredDirection).copy());
 			}
