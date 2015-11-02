@@ -2,12 +2,11 @@ package org.openpixi.pixi.physics.fields.currentgenerators;
 
 import org.apache.commons.math3.analysis.function.Gaussian;
 import org.openpixi.pixi.math.SU2AlgebraElement;
-import org.openpixi.pixi.math.SU2GroupElement;
 import org.openpixi.pixi.physics.Simulation;
-import org.openpixi.pixi.physics.fields.*;
+import org.openpixi.pixi.physics.fields.LorentzGaugeLightConeGaussPoissonSolver;
 import org.openpixi.pixi.physics.grid.Grid;
 
-public class SU2LightConeGaussPulseCurrent implements ICurrentGenerator {
+public class SU2LorenzLightConeGaussPulseCurrent implements ICurrentGenerator {
 
 	public static int numberOfInstances;
 	private int direction;
@@ -17,11 +16,9 @@ public class SU2LightConeGaussPulseCurrent implements ICurrentGenerator {
 	private double width;
 	private Grid grid;
 	private int orientation;
-	private SU2GroupElement transform;
-	private PolychromTempGaugeLightConeGaussPoissonSolver poisson;
-	//private NumericPolychromTempGaugeLightConeGaussPoissonSolver poisson;
+	private LorentzGaugeLightConeGaussPoissonSolver poisson;
 
-	public SU2LightConeGaussPulseCurrent(int direction, double[] location, double width, double[] amplitudeColorDirection, double magnitude, int orientation) {
+	public SU2LorenzLightConeGaussPulseCurrent(int direction, double[] location, double width, double[] amplitudeColorDirection, double magnitude, int orientation) {
 
 		numberOfInstances = 0;
 		this.direction = direction;
@@ -35,10 +32,7 @@ public class SU2LightConeGaussPulseCurrent implements ICurrentGenerator {
 		this.magnitude = magnitude;
 		this.width = width;
 		this.orientation = orientation;
-		//this.poisson = new TempGaugeLightConeGaussPoissonSolver(location, direction, Integer.signum(orientation), width);
-		this.poisson = new PolychromTempGaugeLightConeGaussPoissonSolver();
-		//this.poisson = new NumericPolychromTempGaugeLightConeGaussPoissonSolver();
-		transform = new SU2GroupElement();
+		this.poisson = new LorentzGaugeLightConeGaussPoissonSolver();
 	}
 
 	public void initializeCurrent(Simulation s, int totalInstances) {
@@ -46,12 +40,8 @@ public class SU2LightConeGaussPulseCurrent implements ICurrentGenerator {
 		poisson.saveValues(totalInstances, numberOfInstances, location, direction, Integer.signum(orientation), width);
 		numberOfInstances++;
 		if(numberOfInstances == totalInstances) {
-			poisson.solve(s);
+			poisson.solve(grid);
 		}
-	}
-
-	public void gaugeTransform(SU2GroupElement transformationMatrix) {
-		transform.set(transformationMatrix);
 	}
 
 	public void applyCurrent(Simulation s) {
@@ -66,7 +56,7 @@ public class SU2LightConeGaussPulseCurrent implements ICurrentGenerator {
 		for (int i = 0; i < location.length; i++) {
 			pos[i] = (int) Math.rint(location[i]/as);
 			if( (s.totalSimulationSteps == 0) && (Math.abs((location[i]/as) % pos[i]) > 0.0001) ) {
-				System.out.println("SU2LightConeGaussPulseCurrent: location is at a non-integer grid position!.");
+				System.out.println("SU2LorenzLightConeGaussPulseCurrent: location is at a non-integer grid position!.");
 			}
 		}
 
@@ -93,8 +83,8 @@ public class SU2LightConeGaussPulseCurrent implements ICurrentGenerator {
 			Find the nearest grid point and apply the current configuration to the cell current.
 		 */
 
-		double position = location[direction] + speed * time * at;
-		double posCharge = position - speed*at/2;
+		double posCharge = location[direction] + speed * time * at;
+		double position = posCharge - speed*at/2 + speed*as/2;
 
 		for (int i = 0; i < numberOfCells; i++) {
 			pos[direction] = i;
