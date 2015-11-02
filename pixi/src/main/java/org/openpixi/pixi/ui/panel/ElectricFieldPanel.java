@@ -109,11 +109,10 @@ public class ElectricFieldPanel extends AnimationPanel {
 		double panelHeight = getHeight();
 
 		boolean useCoulombGauge = gaugeProperties.getValue();
-		//Grid drawGrid = s.grid;
-		Grid drawGrid = new Grid(s.grid);
+		Grid drawGrid = s.grid;
 		if (useCoulombGauge) {
-			CoulombGauge coulombGauge = new CoulombGauge(s.grid);
 			Grid gridCopy = new Grid(s.grid);
+			CoulombGauge coulombGauge = new CoulombGauge(gridCopy);
 			coulombGauge.applyGaugeTransformation(gridCopy);
 			drawGrid = gridCopy;
 
