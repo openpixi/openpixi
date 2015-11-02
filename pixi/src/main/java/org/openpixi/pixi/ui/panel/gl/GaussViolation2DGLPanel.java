@@ -87,7 +87,7 @@ public class GaussViolation2DGLPanel extends AnimationGLPanel {
 				pos[yAxisIndex] = k;
 				int index = s.grid.getCellIndex(pos);
 				AlgebraElement gaussAlg;
-				if(s.grid.isRestricted(index)){
+				if(s.grid.isEvaluatable(index)){
 					 gaussAlg = s.grid.getGaussConstraint(index);
 				} else {
 					gaussAlg = s.grid.getElementFactory().algebraZero();

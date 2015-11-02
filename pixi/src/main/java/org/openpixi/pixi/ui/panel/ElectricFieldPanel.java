@@ -3,7 +3,6 @@ package org.openpixi.pixi.ui.panel;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.util.ArrayList;
 
 import javax.swing.Box;
 import org.openpixi.pixi.physics.Simulation;
@@ -203,34 +202,38 @@ public class ElectricFieldPanel extends AnimationPanel {
 					In the flipped and translated coordinate system defined above we have to add the fields to the
 					center of the panel in order to get the expected result.
 				*/
+				int index = drawGrid.getCellIndex(pos);
 				double value = 0;
 				switch(type) {
 				case INDEX_E:
-					value = drawGrid.getE(s.grid.getCellIndex(pos), directionIndex).get(colorIndex) / (as * g);
+					value = drawGrid.getE(index, directionIndex).get(colorIndex) / (as * g);
 					break;
 				case INDEX_U:
-					value = drawGrid.getU(s.grid.getCellIndex(pos), directionIndex).proj().get(colorIndex) / (as * g);
+					value = drawGrid.getU(index, directionIndex).proj().get(colorIndex) / (as * g);
 					break;
 				case INDEX_U_NEXT:
-					value = drawGrid.getUnext(s.grid.getCellIndex(pos), directionIndex).proj().get(colorIndex) / (as * g);
+					value = drawGrid.getUnext(index, directionIndex).proj().get(colorIndex) / (as * g);
 					break;
 				case INDEX_U0:
-					value = drawGrid.getU0(s.grid.getCellIndex(pos)).proj().get(colorIndex) / (at * g);
+					value = drawGrid.getU0(index).proj().get(colorIndex) / (at * g);
 					break;
 				case INDEX_U0_NEXT:
-					value = drawGrid.getU0next(s.grid.getCellIndex(pos)).proj().get(colorIndex) / (at * g);
+					value = drawGrid.getU0next(index).proj().get(colorIndex) / (at * g);
 					break;
 				case INDEX_J:
 					newPosition = (int) (s.grid.getLatticeSpacing() * (i + .5) * sx);
-					value = drawGrid.getJ(s.grid.getCellIndex(pos), directionIndex).get(colorIndex) / (as * g);
+					value = drawGrid.getJ(index, directionIndex).get(colorIndex) / (as * g);
 					break;
 				case INDEX_RHO:
-					newPosition = (int) (s.grid.getLatticeSpacing() * (i + .5) * sx);
-					value = drawGrid.getRho(s.grid.getCellIndex(pos)).get(colorIndex) / (as * g);
+					value = drawGrid.getRho(index).get(colorIndex) / (as * g);
 					break;
 				case INDEX_GAUSS:
 					newPosition = (int) (s.grid.getLatticeSpacing() * (i + .5) * sx);
-					value = drawGrid.getGaussConstraint(s.grid.getCellIndex(pos)).get(colorIndex) / (as * g);
+					if(drawGrid.isEvaluatable(index)) {
+						value = drawGrid.getGaussConstraint(s.grid.getCellIndex(pos)).get(colorIndex) / (as * g);
+					} else {
+						value = 0.0;
+					}
 					break;
 				}
 				scaleProperties.putValue(value);

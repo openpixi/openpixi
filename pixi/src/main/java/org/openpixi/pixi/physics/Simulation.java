@@ -215,9 +215,13 @@ public class Simulation {
 			turnGridForceOff();
 		}
 
-		// Restricted region
-		if(settings.isRestrictedRegionEnabled()) {
-			grid.setRestrictedRegion(settings.getRegionPoint1(), settings.getRegionPoint2());
+		// Regions
+		if(settings.isEvaluationRegionEnabled()) {
+			grid.setEvaluationRegion(settings.getEvaluationRegionPoint1(), settings.getEvaluationRegionPoint2());
+		}
+
+		if(settings.isActiveRegionEnabled()) {
+			grid.setActiveRegion(settings.getActiveRegionPoint1(), settings.getActiveRegionPoint2());
 		}
 
 		poisolver = settings.getPoissonSolver();

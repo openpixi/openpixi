@@ -91,7 +91,7 @@ public class EnergyDensity2DGLPanel extends AnimationGLPanel {
 				double red = 0;
 				double green = 0;
 				double blue = 0;
-				if(s.grid.isRestricted(index)) {
+				if(s.grid.isEvaluatable(index)) {
 					for (int w = 0; w < s.getNumberOfDimensions(); w++) {
 						EfieldSquared += s.grid.getEsquaredFromLinks(index, w) / (as * g * as * g) / 2;
 						// Time averaging for B field.

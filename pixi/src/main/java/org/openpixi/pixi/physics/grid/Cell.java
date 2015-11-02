@@ -40,8 +40,12 @@ public class Cell implements Serializable {
 	private int dimensions;
 	private int colors;
 
-	/** Restricted region property. If true then the cell is considered in various calculations. */
-	private boolean restricted;
+	/** Evaluation region property. If true then the cell is considered in various calculations (energy density, Gauss law, ...). */
+	private boolean evaluatable;
+
+	/** Active region property. If true then the cell is considered in the equations of motion. */
+	private boolean active;
+
 
 	/**
 	 * Constructor for Cell.
@@ -52,7 +56,8 @@ public class Cell implements Serializable {
 		this.dimensions = dimensions;
 		this.colors = colors;
 		this.factory = factory;
-		this.restricted = true;
+		this.evaluatable = true;
+		this.active = true;
 
 		F = new AlgebraElement[dimensions][dimensions];
 		U = new GroupElement[dimensions];
@@ -149,13 +154,22 @@ public class Cell implements Serializable {
 		F[i][j].set(field);
 	}
 
-	public boolean isRestricted() {
-		return restricted;
+	public boolean isEvaluatable() {
+		return evaluatable;
 	}
 
-	public void setRestricted(boolean value) {
-		this.restricted = value;
+	public void setEvaluatable(boolean value) {
+		this.evaluatable = value;
 	}
+
+	public boolean isActive() {
+		return active;
+	}
+
+	public void setActive(boolean value) {
+		this.active = value;
+	}
+
 
 	public void resetCurrent() {
 		for (int i=0;i<J.length;i++) {
@@ -208,7 +222,8 @@ public class Cell implements Serializable {
 		this.rho.set(other.rho);
 		this.U0.set(other.U0);
 		this.U0next.set(other.U0next);
-		this.restricted = other.restricted;
+		this.evaluatable = other.evaluatable;
+		this.active = other.active;
 	}
 
 	/**

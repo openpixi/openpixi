@@ -30,9 +30,8 @@ public class YamlSettings {
 	public String fieldsolver;
 	public String poissonsolver;
 
-	public Boolean restrictedRegionEnabled;
-	public ArrayList<Integer> regionPoint1;
-	public ArrayList<Integer> regionPoint2;
+	public YamlRegion evaluationRegion;
+	public YamlRegion activeRegion;
 
 	public List<YamlParticle> particles;
 	public List<YamlParticleStream> streams;
@@ -145,41 +144,29 @@ public class YamlSettings {
 			settings.setYamlPanels(panels);
 		}
 
-		// Restricted region
-		if(regionPoint1 != null && regionPoint2 != null) {
-			// Check length of vectors.
-			if(regionPoint1.size() == numberOfDimensions && regionPoint2.size() == numberOfDimensions) {
-				settings.setRestrictedRegionEnabled(true);
-
-				// Convert from List<Integer> to int[].
-				int[] point1 = new int[numberOfDimensions];
-				int[] point2 = new int[numberOfDimensions];
-
-				for (int i = 0; i < numberOfDimensions; i++) {
-					point1[i] = regionPoint1.get(i);
-					point2[i] = regionPoint2.get(i);
+		// Evaluation region (used for energy density, Gauss law, ... )
+		if(evaluationRegion != null) {
+			if(evaluationRegion.checkPoints(numberOfDimensions)) {
+				if(evaluationRegion.enabled != null) {
+					settings.setEvaluationRegionEnabled(evaluationRegion.enabled);
 				}
-
-				settings.setRegionPoint1(point1);
-				settings.setRegionPoint2(point2);
+				settings.setEvaluationRegionPoint1(evaluationRegion.getPoint1());
+				settings.setEvaluationRegionPoint2(evaluationRegion.getPoint2());
 			} else {
-				System.out.println("Please check length of regionPoint1 and regionPoint2.");
-				settings.setRestrictedRegionEnabled(false);
-			}
-		} else {
-			if(restrictedRegionEnabled != null) {
-				if(restrictedRegionEnabled) {
-					System.out.println("Please define region points for restricted region.");
-					settings.setRestrictedRegionEnabled(false);
-				}
+				System.out.println("Evaluation region: check region points.");
 			}
 		}
 
-		if(restrictedRegionEnabled != null) {
-			// If true then region points must be defined. This is taken care of in the code above.
-			// If false then override restricted region settings.
-			if(restrictedRegionEnabled == false) {
-				settings.setRestrictedRegionEnabled(false);
+		// Active region (used for equations of motion)
+		if(activeRegion != null) {
+			if(activeRegion.checkPoints(numberOfDimensions)) {
+				if(activeRegion.enabled != null) {
+					settings.setActiveRegionEnabled(activeRegion.enabled);
+				}
+				settings.setActiveRegionPoint1(activeRegion.getPoint1());
+				settings.setActiveRegionPoint2(activeRegion.getPoint2());
+			} else {
+				System.out.println("Active region: check region points.");
 			}
 		}
 	}

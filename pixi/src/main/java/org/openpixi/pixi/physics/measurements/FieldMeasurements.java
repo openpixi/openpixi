@@ -76,7 +76,7 @@ public class FieldMeasurements {
         }
 
         public void execute(Grid grid, int index) {
-			if(grid.isRestricted(index)) {
+			if(grid.isEvaluatable(index)) {
 				int numDir = grid.getNumberOfDimensions();
 				double[] res = new double[numDir];
 				for (int i = 0; i < numDir; i++) {
@@ -112,7 +112,7 @@ public class FieldMeasurements {
 		}
         
         public void execute(Grid grid, int index) {
-			if(grid.isRestricted(index)) {
+			if(grid.isEvaluatable(index)) {
 				int numDir = grid.getNumberOfDimensions();
 				double[] res = new double[numDir];
 				for (int i = 0; i < numDir; i++) {
@@ -144,7 +144,7 @@ public class FieldMeasurements {
         }
         
         public void execute(Grid grid, int index) {
-			if(grid.isRestricted(index)) {
+			if(grid.isEvaluatable(index)) {
 				double result = grid.getGaussConstraintSquared(index);
 				synchronized (this) {
 					sum += result;   // Synchronisierte Summenbildung
@@ -168,7 +168,7 @@ public class FieldMeasurements {
 		}
 
 		public void execute(Grid grid, int index) {
-			if(grid.isRestricted(index)) {
+			if(grid.isEvaluatable(index)) {
 				synchronized (this) {
 					charge.addAssign(grid.getRho(index));   // Synchronisierte Summenbildung
 				}

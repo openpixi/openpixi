@@ -59,7 +59,7 @@ public class LorenzYangMillsSolver extends FieldSolver
 
 		public void execute(Grid grid, int index) {
 
-			if (grid.isRestricted(index)) {
+			if (grid.isActive(index)) {
 				for (int i = 0; i < grid.getNumberOfDimensions(); i++) {
 					AlgebraElement result = grid.getElementFactory().algebraZero();
 
@@ -98,7 +98,7 @@ public class LorenzYangMillsSolver extends FieldSolver
 
 		public void execute(Grid grid, int index) {
 
-			if (grid.isRestricted(index)) {
+			if (grid.isActive(index)) {
 				AlgebraElement result = grid.getElementFactory().algebraZero();
 				result.addAssign(grid.getU0next(index).proj());
 				GroupElement spatialLinks = grid.getElementFactory().groupZero();
@@ -132,7 +132,7 @@ public class LorenzYangMillsSolver extends FieldSolver
 	{
 		public void execute(Grid grid, int index) {
 
-			if(grid.isRestricted(index)) {
+			if(grid.isActive(index)) {
 				for (int i = 0; i < grid.getNumberOfDimensions(); i++) {
 					grid.setE(index, i, grid.getEFromLinks(index, i));
 				}

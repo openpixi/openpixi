@@ -55,7 +55,7 @@ public class TemporalYangMillsSolver extends FieldSolver
 		 * @param index  Lattice index
 		 */
 		public void execute(Grid grid, int index) {
-			if(grid.isRestricted(index)) {
+			if(grid.isActive(index)) {
 				for (int i = 0; i < grid.getNumberOfDimensions(); i++) {
 					GroupElement temp = grid.getElementFactory().groupZero();
 					for (int j = 0; j < grid.getNumberOfDimensions(); j++) {
@@ -84,7 +84,7 @@ public class TemporalYangMillsSolver extends FieldSolver
 		 * @param index	Cell index
 		 */
 		public void execute(Grid grid, int index) {
-			if(grid.isRestricted(index)) {
+			if(grid.isActive(index)) {
 				GroupElement V;
 				for (int k = 0; k < grid.getNumberOfDimensions(); k++) {
 					V = grid.getE(index, k).mult(-at).getLink();    //minus sign takes take of conjugation

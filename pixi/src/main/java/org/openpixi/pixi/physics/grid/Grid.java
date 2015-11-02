@@ -888,18 +888,36 @@ public class Grid {
 		return gauss;
 	}
 
-	public boolean isRestricted(int index) {
-		return cells[index].isRestricted();
+	public boolean isEvaluatable(int index) {
+		return cells[index].isEvaluatable();
 	}
 
-	public void setRestrictedRegion(int[] regionPoint1, int[] regionPoint2) {
+	public boolean isActive(int index) {
+		return cells[index].isActive();
+	}
+
+	public void setEvaluationRegion(int[] regionPoint1, int[] regionPoint2) {
 		int totalNumberOfCells = getTotalNumberOfCells();
 		for (int i = 0; i < totalNumberOfCells; i++) {
 			int[] gridPos = getCellPos(i);
-			cells[i].setRestricted(true);
+			cells[i].setEvaluatable(true);
 			for (int j = 0; j < numDim; j++) {
 				if(gridPos[j] < regionPoint1[j] || regionPoint2[j] < gridPos[j]) {
-					cells[i].setRestricted(false);
+					cells[i].setEvaluatable(false);
+					break;
+				}
+			}
+		}
+	}
+
+	public void setActiveRegion(int[] regionPoint1, int[] regionPoint2) {
+		int totalNumberOfCells = getTotalNumberOfCells();
+		for (int i = 0; i < totalNumberOfCells; i++) {
+			int[] gridPos = getCellPos(i);
+			cells[i].setActive(true);
+			for (int j = 0; j < numDim; j++) {
+				if(gridPos[j] < regionPoint1[j] || regionPoint2[j] < gridPos[j]) {
+					cells[i].setActive(false);
 					break;
 				}
 			}
