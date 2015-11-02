@@ -18,7 +18,7 @@ public class YamlCurrents {
 
     public ArrayList<YamlSU2LightConeGaussPulseCurrent> SU2LightConeGaussPulseCurrent = new ArrayList<YamlSU2LightConeGaussPulseCurrent>();
 
-    public ArrayList<YamlSU2LightConeGaussPulseCurrentMono> SU2LightConeGaussPulseCurrentMono = new ArrayList<YamlSU2LightConeGaussPulseCurrentMono>();
+    public ArrayList<YamlSU2LorenzLightConeGaussPulseCurrent> SU2LorenzLightConeGaussPulseCurrent = new ArrayList<YamlSU2LorenzLightConeGaussPulseCurrent>();
 
     public ArrayList<YamlNewLCCurrent> newLCCurrents = new ArrayList<YamlNewLCCurrent>();
 
@@ -30,7 +30,14 @@ public class YamlCurrents {
 
     public ArrayList<YamlRandomTemporalColorCurrent> randomTemporalColorCurrents = new ArrayList<YamlRandomTemporalColorCurrent>();
 
+    public ArrayList<YamlRandomTemporalColorCurrentProton> randomTemporalColorCurrentsProton = new ArrayList<YamlRandomTemporalColorCurrentProton>();
+
 	public ArrayList<YamlRandomTemporalParticleColorCurrent> randomTemporalParticleColorCurrents = new ArrayList<YamlRandomTemporalParticleColorCurrent>();
+
+    public ArrayList<YamlRandomTemporalParticleColorCurrentSphericalProton> randomTemporalParticleColorCurrentsSphericalProton = new ArrayList<YamlRandomTemporalParticleColorCurrentSphericalProton>();
+
+    public ArrayList<YamlRandomTemporalParticleColorCurrentConstituentProton> randomTemporalParticleColorCurrentsConstituentProton = new ArrayList<YamlRandomTemporalParticleColorCurrentConstituentProton>();
+
 
     /**
      * Creates CurrentGenerator instances and applies them to the Settings instance.
@@ -61,9 +68,9 @@ public class YamlCurrents {
             }
         }
 
-        for (YamlSU2LightConeGaussPulseCurrentMono mono : SU2LightConeGaussPulseCurrentMono) {
-            if (mono.checkConsistency(s)) {
-                s.addCurrentGenerator(mono.getCurrentGenerator());
+        for (YamlSU2LorenzLightConeGaussPulseCurrent lorenz : SU2LorenzLightConeGaussPulseCurrent) {
+            if (lorenz.checkConsistency(s)) {
+                s.addCurrentGenerator(lorenz.getCurrentGenerator());
             }
         }
 
@@ -93,9 +100,21 @@ public class YamlCurrents {
 			s.addCurrentGenerator(current.getCurrentGenerator());
 		}
 
+        for (YamlRandomTemporalColorCurrentProton current : randomTemporalColorCurrentsProton) {
+            s.addCurrentGenerator(current.getCurrentGenerator());
+        }
+
 		for (YamlRandomTemporalParticleColorCurrent current : randomTemporalParticleColorCurrents) {
 			s.addCurrentGenerator(current.getCurrentGenerator());
 		}
+
+        for (YamlRandomTemporalParticleColorCurrentSphericalProton current : randomTemporalParticleColorCurrentsSphericalProton) {
+            s.addCurrentGenerator(current.getCurrentGenerator());
+        }
+
+        for (YamlRandomTemporalParticleColorCurrentConstituentProton current : randomTemporalParticleColorCurrentsConstituentProton) {
+            s.addCurrentGenerator(current.getCurrentGenerator());
+        }
 
 
 	}
