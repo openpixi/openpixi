@@ -72,11 +72,6 @@ public class Chart2DPanel extends AnimationChart2DPanel {
 
 	private OccupationNumbersInTime occupationNumbers;
 
-	public BooleanProperties useRestrictedRegionProperty;
-	public RegionProperty regionPropery;
-	private boolean[] oldRestrictedRegion;
-	private boolean oldUseRestrictedRegionProperty;
-
 	/** Constructor */
 	public Chart2DPanel(SimulationAnimation simulationAnimation) {
 		super(simulationAnimation);
@@ -102,21 +97,10 @@ public class Chart2DPanel extends AnimationChart2DPanel {
 				new LabelFormatterSimple(),
 				new MyAxisScalePolicyAutomaticBestFit());
 		setAxisYLeft(axisy, 0);
-
-		this.oldRestrictedRegion = new boolean[simulationAnimation.getSimulation().grid.getTotalNumberOfCells()];
-		this.useRestrictedRegionProperty = new BooleanProperties(simulationAnimation, "Use restricted region", false);
-		this.regionPropery = new RegionProperty(simulationAnimation, "Region", "");
-		oldUseRestrictedRegionProperty = this.useRestrictedRegionProperty.getValue();
 	}
 
 	public void update() {
-		// Update restricted region if settings have changed.
-		if (useRestrictedRegionProperty.getValue() != oldUseRestrictedRegionProperty || oldRestrictedRegion != regionPropery.restrictedRegion) {
-			oldUseRestrictedRegionProperty = useRestrictedRegionProperty.getValue();
-			oldRestrictedRegion = regionPropery.restrictedRegion;
-			this.fieldMeasurements = new FieldMeasurements(regionPropery.restrictedRegion);
-
-		}
+		this.fieldMeasurements = new FieldMeasurements();
 
 		if (logarithmicProperty.getValue() != oldLogarithmicValue) {
 			oldLogarithmicValue = logarithmicProperty.getValue();
@@ -190,64 +174,5 @@ public class Chart2DPanel extends AnimationChart2DPanel {
 		addLabel(box, "Chart panel");
 		logarithmicProperty.addComponents(box);
 		showChartsProperty.addComponents(box);
-		useRestrictedRegionProperty.addComponents(box);
-		regionPropery.addComponents(box);
-	}
-
-	public class RegionProperty extends StringProperties {
-
-		private Simulation s;
-
-		public int[] latticeCoordinate0;
-		public int[] latticeCoordinate1;
-
-		public boolean[] restrictedRegion;
-
-		public RegionProperty(SimulationAnimation simulationAnimation, String name, String initialValue) {
-			super(simulationAnimation, name, initialValue);
-			this.s = simulationAnimation.getSimulation();
-			this.restrictedRegion = new boolean[s.grid.getTotalNumberOfCells()];
-		}
-
-		@Override
-		public void update() {
-			// Format "[x0,y0,z0]-[x1,y1,z1]"
-			String[] splitString = getValue().trim().split("-");    // remove all whitespaces and split at the '-' symbol.
-			if (splitString.length == 2) {
-				// remove square brackets and split at ','
-				String[] stringCoord0 = splitString[0].replace("[", "").replace("]", "").split(",");
-				String[] stringCoord1 = splitString[1].replace("[", "").replace("]", "").split(",");
-
-				if (stringCoord0.length == s.getNumberOfDimensions() && stringCoord1.length == s.getNumberOfDimensions()) {
-					latticeCoordinate0 = new int[s.getNumberOfDimensions()];
-					latticeCoordinate1 = new int[s.getNumberOfDimensions()];
-
-					for (int i = 0; i < stringCoord0.length; i++) {
-						latticeCoordinate0[i] = Integer.parseInt(stringCoord0[i]);
-					}
-
-					for (int i = 0; i < stringCoord1.length; i++) {
-						latticeCoordinate1[i] = Integer.parseInt(stringCoord1[i]);
-					}
-
-					// Compute restricted region.
-					this.restrictedRegion = new boolean[s.grid.getTotalNumberOfCells()];
-
-					for (int i = 0; i < s.grid.getTotalNumberOfCells(); i++) {
-						int[] currentCoordinate = s.grid.getCellPos(i);
-						for (int j = 0; j < s.getNumberOfDimensions(); j++) {
-							if (latticeCoordinate0[j] > currentCoordinate[j] || currentCoordinate[j] > latticeCoordinate1[j]) {
-								this.restrictedRegion[i] = true;
-								break;
-							}
-						}
-					}
-
-				} else {
-					System.out.println("Chart2DPanel: Coordinate parsing failed. Check size of the vectors.");
-				}
-			}
-
-		}
 	}
 }
