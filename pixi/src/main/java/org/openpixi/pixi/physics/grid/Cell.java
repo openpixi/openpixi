@@ -165,8 +165,8 @@ public class Cell implements Serializable {
 
 	public void reassignLinks() {
 		GroupElement[] temp = U;
-	    U = Unext;
-	    Unext = temp;
+		U = Unext;
+		Unext = temp;
 
 		GroupElement tmp = U0;
 		U0 = U0next;
