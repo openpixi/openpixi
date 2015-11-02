@@ -111,8 +111,8 @@ public class ElectricFieldPanel extends AnimationPanel {
 		boolean useCoulombGauge = gaugeProperties.getValue();
 		Grid drawGrid = s.grid;
 		if (useCoulombGauge) {
-			CoulombGauge coulombGauge = new CoulombGauge(s.grid);
 			Grid gridCopy = new Grid(s.grid);
+			CoulombGauge coulombGauge = new CoulombGauge(gridCopy);
 			coulombGauge.applyGaugeTransformation(gridCopy);
 			drawGrid = gridCopy;
 
@@ -178,14 +178,14 @@ public class ElectricFieldPanel extends AnimationPanel {
 		if (loopIndex != -1) {
 			// Show all lines
 			kmin = 0;
-			kmax = s.grid.getNumCells(loopIndex);
+			kmax = drawGrid.getNumCells(loopIndex);
 		}
 		double sx = panelWidth / s.getSimulationBoxSize(abscissaIndex);
 		for(int k = kmin; k < kmax; k++)
 		{
 			int newPosition = 0;
 			int newValue = 0;
-			for(int i = 0; i < s.grid.getNumCells(abscissaIndex); i++)
+			for(int i = 0; i < drawGrid.getNumCells(abscissaIndex); i++)
 			{
 
 				int oldPosition = newPosition;

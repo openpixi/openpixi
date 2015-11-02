@@ -464,12 +464,22 @@ public class OccupationNumbersInTime implements Diagnostics {
 				int newGridIndex = this.getCellIndex(cellPos);
 
 				int[] newMirroredGridPos = cellPos.clone();
-				newMirroredGridPos[mirroredDirection] = 2 * grid.getNumCells(mirroredDirection) - cellPos[mirroredDirection];
+				newMirroredGridPos[mirroredDirection] = 2 * grid.getNumCells(mirroredDirection) - cellPos[mirroredDirection] - 1;
 				int mirroredIndex = this.getCellIndex(newMirroredGridPos);
 
 				cells[newGridIndex] = grid.getCell(i).copy();
 				cells[mirroredIndex] = grid.getCell(i).copy();
+
+				// Switch gauge links in the mirrored direction.
+				// TODO: This shift of the gauge links is a bit ambiguous. Not sure what would be the correct way to do it.
+				if(cellPos[mirroredDirection] > 0) {
+					cellPos[mirroredDirection]--;
+				}
+				int shiftedIndex = grid.getCellIndex(cellPos);
+				cells[mirroredIndex].setU(mirroredDirection, grid.getU(shiftedIndex, mirroredDirection).copy());
 			}
+
+
 
 		}
 	}

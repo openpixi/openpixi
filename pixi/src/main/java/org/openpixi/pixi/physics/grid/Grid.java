@@ -432,9 +432,8 @@ public class Grid {
 
 		copyValuesFrom(grid);
 
-		// TODO: Share iterators is ok?
 		this.fsolver = grid.fsolver;
-		this.cellIterator = grid.cellIterator;
+		this.cellIterator = grid.cellIterator.copy();
 	}
 
 	/**
