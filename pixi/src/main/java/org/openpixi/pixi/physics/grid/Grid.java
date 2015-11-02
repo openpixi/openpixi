@@ -689,12 +689,11 @@ public class Grid {
 	 * @param coordinates  lattice coordinate vector
 	 * @return             shifted lattice coordinate vector
 	 */
-	@Deprecated
 	protected int[] periodic(int[] coordinates) {
 		
 		int[] res = new int[numDim];
 		for (int i = 0; i < numDim; ++i) {
-			res[i] = (coordinates[i] + numCells[i]) % numCells[i];
+			res[i] = (coordinates[i] % numCells[i] + numCells[i]) % numCells[i];
 		}
 		return res;
 	}
