@@ -28,4 +28,6 @@ public abstract class CellIterator {
 		dimensions = new IntBox(length, min, max);
 	}
 
+	public abstract CellIterator copy();
+
 }

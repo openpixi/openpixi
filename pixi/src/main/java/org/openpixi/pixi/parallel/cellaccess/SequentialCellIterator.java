@@ -15,4 +15,10 @@ public class SequentialCellIterator extends CellIterator {
 			action.execute(grid, cellIdx);
 		}
 	}
+
+	public CellIterator copy() {
+		SequentialCellIterator copy = new SequentialCellIterator();
+		copy.dimensions = dimensions.copy();
+		return copy;
+	}
 }

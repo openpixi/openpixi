@@ -60,6 +60,11 @@ public class IntBox implements Serializable
         return this.contains(new int[] {x,y,z});
 	}
 
+	public IntBox copy(){
+		IntBox copy = new IntBox(this.dim, this.min.clone(), this.max.clone());
+		return copy;
+	}
+
 	@Override
 	public String toString()
     {

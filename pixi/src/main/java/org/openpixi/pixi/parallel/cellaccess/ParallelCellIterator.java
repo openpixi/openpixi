@@ -20,6 +20,7 @@ public class ParallelCellIterator extends CellIterator {
 	private Grid grid;
 	private CellAction action;
 	int numOfCells;
+	int numOfThreads;
 
 	private List<Callable<Object>> tasks = new ArrayList<Callable<Object>>();
 	private ExecutorService threadExecutor;
@@ -27,6 +28,7 @@ public class ParallelCellIterator extends CellIterator {
 
 	public ParallelCellIterator(int numOfThreads, ExecutorService threadExecutor) {
 		this.threadExecutor = threadExecutor;
+		this.numOfThreads = numOfThreads;
 		for (int i = 0; i < numOfThreads; ++i) {
 			tasks.add(new Task(i, numOfThreads));
 		}
@@ -43,6 +45,11 @@ public class ParallelCellIterator extends CellIterator {
 		}
 	}
 
+	public CellIterator copy(){
+		ParallelCellIterator copy = new ParallelCellIterator(this.numOfThreads, this.threadExecutor);
+		copy.dimensions = dimensions.copy();
+		return copy;
+	}
 
 	@Override
 	public void setNormalMode(int[] numCells) {
