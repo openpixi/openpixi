@@ -469,7 +469,14 @@ public class OccupationNumbersInTime implements Diagnostics {
 
 				cells[newGridIndex] = grid.getCell(i).copy();
 				cells[mirroredIndex] = grid.getCell(i).copy();
+
+				// Switch gauge links in the mirrored direction.
+				cellPos[mirroredDirection]--;
+				int shiftedIndex = grid.getCellIndex(cellPos);
+				cells[mirroredIndex].setU(mirroredDirection, grid.getU(shiftedIndex, mirroredDirection).copy());
 			}
+
+
 
 		}
 	}
