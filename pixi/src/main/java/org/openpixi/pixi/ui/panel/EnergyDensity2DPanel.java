@@ -88,14 +88,17 @@ public class EnergyDensity2DPanel extends AnimationPanel {
 
 				double EfieldSquared = 0.0;
 				double BfieldSquared = 0.0;
-				for (int w = 0; w < s.getNumberOfDimensions(); w++) {
-					EfieldSquared += s.grid.getEsquaredFromLinks(index, w)
-							/ (as * g * as * g) / 2;
-					// Time averaging for B field.
-					BfieldSquared += s.grid.getBsquaredFromLinks(index, w, 0)
-							/ (as * g * as * g) / 4.0;
-					BfieldSquared += s.grid.getBsquaredFromLinks(index, w, 1)
-							/ (as * g * as * g) / 4.0;
+
+				if(s.grid.isRestricted(index)) {
+					for (int w = 0; w < s.getNumberOfDimensions(); w++) {
+						EfieldSquared += s.grid.getEsquaredFromLinks(index, w)
+								/ (as * g * as * g) / 2;
+						// Time averaging for B field.
+						BfieldSquared += s.grid.getBsquaredFromLinks(index, w, 0)
+								/ (as * g * as * g) / 4.0;
+						BfieldSquared += s.grid.getBsquaredFromLinks(index, w, 1)
+								/ (as * g * as * g) / 4.0;
+					}
 				}
 				scaleProperties.putValue(EfieldSquared + BfieldSquared);
 
