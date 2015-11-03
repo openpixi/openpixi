@@ -17,12 +17,24 @@ public class YamlRegion {
 		return false;
 	}
 
-	public int[] getPoint1() {
-		return convertList(point1);
+	public int[] getPoint1(List<Integer> gridCells) {
+		int[] point = convertList(point1);
+		for (int i = 0; i < gridCells.size(); i++) {
+			if(point[i] < 0) {
+				point[i] += gridCells.get(i);
+			}
+		}
+		return point;
 	}
 
-	public int[] getPoint2() {
-		return convertList(point2);
+	public int[] getPoint2(List<Integer> gridCells) {
+		int[] point = convertList(point2);
+		for (int i = 0; i < gridCells.size(); i++) {
+			if(point[i] < 0) {
+				point[i] += gridCells.get(i);
+			}
+		}
+		return point;
 	}
 
 	private int[] convertList(List<Integer> list) {

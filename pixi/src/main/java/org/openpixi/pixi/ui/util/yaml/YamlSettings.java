@@ -150,8 +150,8 @@ public class YamlSettings {
 				if(evaluationRegion.enabled != null) {
 					settings.setEvaluationRegionEnabled(evaluationRegion.enabled);
 				}
-				settings.setEvaluationRegionPoint1(evaluationRegion.getPoint1());
-				settings.setEvaluationRegionPoint2(evaluationRegion.getPoint2());
+				settings.setEvaluationRegionPoint1(evaluationRegion.getPoint1(gridCells));
+				settings.setEvaluationRegionPoint2(evaluationRegion.getPoint2(gridCells));
 			} else {
 				System.out.println("Evaluation region: check region points.");
 			}
@@ -163,8 +163,8 @@ public class YamlSettings {
 				if(activeRegion.enabled != null) {
 					settings.setActiveRegionEnabled(activeRegion.enabled);
 				}
-				settings.setActiveRegionPoint1(activeRegion.getPoint1());
-				settings.setActiveRegionPoint2(activeRegion.getPoint2());
+				settings.setActiveRegionPoint1(activeRegion.getPoint1(gridCells));
+				settings.setActiveRegionPoint2(activeRegion.getPoint2(gridCells));
 			} else {
 				System.out.println("Active region: check region points.");
 			}
