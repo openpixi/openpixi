@@ -774,7 +774,7 @@ public class Grid {
 	 * @return
 	 */
 	public AlgebraElement getEFromLinks(int index, int direction) {
-		return getTemporalPlaquette(index, direction, 1).proj().mult(-1.0/at);
+		return getTemporalPlaquette(index, direction, 1).proj().mult(-1.0 / at);
 	}
 
 	/**
@@ -844,5 +844,41 @@ public class Grid {
 		gauss.multAssign(1.0/as);
 		gauss = gauss.sub(getRho(index));
 		return gauss;
+	}
+
+	public boolean isEvaluatable(int index) {
+		return cells[index].isEvaluatable();
+	}
+
+	public boolean isActive(int index) {
+		return cells[index].isActive();
+	}
+
+	public void setEvaluationRegion(int[] regionPoint1, int[] regionPoint2) {
+		int totalNumberOfCells = getTotalNumberOfCells();
+		for (int i = 0; i < totalNumberOfCells; i++) {
+			int[] gridPos = getCellPos(i);
+			cells[i].setEvaluatable(true);
+			for (int j = 0; j < numDim; j++) {
+				if(gridPos[j] < regionPoint1[j] || regionPoint2[j] < gridPos[j]) {
+					cells[i].setEvaluatable(false);
+					break;
+				}
+			}
+		}
+	}
+
+	public void setActiveRegion(int[] regionPoint1, int[] regionPoint2) {
+		int totalNumberOfCells = getTotalNumberOfCells();
+		for (int i = 0; i < totalNumberOfCells; i++) {
+			int[] gridPos = getCellPos(i);
+			cells[i].setActive(true);
+			for (int j = 0; j < numDim; j++) {
+				if(gridPos[j] < regionPoint1[j] || regionPoint2[j] < gridPos[j]) {
+					cells[i].setActive(false);
+					break;
+				}
+			}
+		}
 	}
 }

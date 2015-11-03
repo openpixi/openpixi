@@ -29,6 +29,10 @@ public class YamlSettings {
 	public List<Integer> gridCells;
 	public String fieldsolver;
 	public String poissonsolver;
+
+	public YamlRegion evaluationRegion;
+	public YamlRegion activeRegion;
+
 	public List<YamlParticle> particles;
 	public List<YamlParticleStream> streams;
     public YamlFields fields;
@@ -138,6 +142,32 @@ public class YamlSettings {
 
 		if (panels != null) {
 			settings.setYamlPanels(panels);
+		}
+
+		// Evaluation region (used for energy density, Gauss law, ... )
+		if(evaluationRegion != null) {
+			if(evaluationRegion.checkPoints(numberOfDimensions)) {
+				if(evaluationRegion.enabled != null) {
+					settings.setEvaluationRegionEnabled(evaluationRegion.enabled);
+				}
+				settings.setEvaluationRegionPoint1(evaluationRegion.getPoint1(gridCells));
+				settings.setEvaluationRegionPoint2(evaluationRegion.getPoint2(gridCells));
+			} else {
+				System.out.println("Evaluation region: check region points.");
+			}
+		}
+
+		// Active region (used for equations of motion)
+		if(activeRegion != null) {
+			if(activeRegion.checkPoints(numberOfDimensions)) {
+				if(activeRegion.enabled != null) {
+					settings.setActiveRegionEnabled(activeRegion.enabled);
+				}
+				settings.setActiveRegionPoint1(activeRegion.getPoint1(gridCells));
+				settings.setActiveRegionPoint2(activeRegion.getPoint2(gridCells));
+			} else {
+				System.out.println("Active region: check region points.");
+			}
 		}
 	}
 }

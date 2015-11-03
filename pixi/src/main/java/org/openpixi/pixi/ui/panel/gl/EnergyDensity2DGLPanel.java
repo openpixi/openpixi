@@ -91,28 +91,33 @@ public class EnergyDensity2DGLPanel extends AnimationGLPanel {
 				double red = 0;
 				double green = 0;
 				double blue = 0;
-				for(int w = 0; w < s.getNumberOfDimensions(); w++) {
-					EfieldSquared += s.grid.getEsquaredFromLinks(index, w) / (as * g * as * g) / 2;
-					// Time averaging for B field.
-					BfieldSquared += s.grid.getBsquaredFromLinks(index, w, 0) / (as * g * as * g) / 4.0;
-					BfieldSquared += s.grid.getBsquaredFromLinks(index, w, 1) / (as * g * as * g) / 4.0;
-					// get color:
-					double color;
-					for (int n = 0; n < colors * colors - 1; n++) {
-						color = s.grid.getE(index, w).get(n);
-						// cycle through colors if there are more than three
-						switch (n % 3) {
-							case 0: red += color * color;
-								break;
-							case 1: green += color * color;
-								break;
-							case 2: blue += color * color;
-								break;
+				if(s.grid.isEvaluatable(index)) {
+					for (int w = 0; w < s.getNumberOfDimensions(); w++) {
+						EfieldSquared += s.grid.getEsquaredFromLinks(index, w) / (as * g * as * g) / 2;
+						// Time averaging for B field.
+						BfieldSquared += s.grid.getBsquaredFromLinks(index, w, 0) / (as * g * as * g) / 4.0;
+						BfieldSquared += s.grid.getBsquaredFromLinks(index, w, 1) / (as * g * as * g) / 4.0;
+						// get color:
+						double color;
+						for (int n = 0; n < colors * colors - 1; n++) {
+							color = s.grid.getE(index, w).get(n);
+							// cycle through colors if there are more than three
+							switch (n % 3) {
+								case 0:
+									red += color * color;
+									break;
+								case 1:
+									green += color * color;
+									break;
+								case 2:
+									blue += color * color;
+									break;
+							}
 						}
 					}
 				}
 				// Normalize
-				double norm = red + green + blue;
+				double norm = Math.max(red + green + blue, 10E-20);
 				double value = Math.min(1, scale * (EfieldSquared + BfieldSquared));
 
 				// Set color according to E-field, and brightness according

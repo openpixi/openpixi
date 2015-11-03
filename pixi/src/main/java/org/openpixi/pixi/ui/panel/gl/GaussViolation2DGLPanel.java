@@ -86,7 +86,13 @@ public class GaussViolation2DGLPanel extends AnimationGLPanel {
 				pos[xAxisIndex] = i;
 				pos[yAxisIndex] = k;
 				int index = s.grid.getCellIndex(pos);
-				AlgebraElement gaussAlg = s.grid.getGaussConstraint(index);
+				AlgebraElement gaussAlg;
+				if(s.grid.isEvaluatable(index)){
+					 gaussAlg = s.grid.getGaussConstraint(index);
+				} else {
+					gaussAlg = s.grid.getElementFactory().algebraZero();
+
+				}
 				double gauss = gaussAlg.square();
 				double value = Math.min(1, scale * gauss);
 
@@ -94,7 +100,7 @@ public class GaussViolation2DGLPanel extends AnimationGLPanel {
 				double green = Math.min(1, scale * Math.pow(gaussAlg.get(1), 2));
 				double blue = Math.min(1, scale * Math.pow(gaussAlg.get(2), 2));
 
-				double norm = red + green + blue;
+				double norm = Math.max(red + green + blue, 10E-20);
 
 				scaleProperties.putValue(gauss);
 
@@ -102,7 +108,7 @@ public class GaussViolation2DGLPanel extends AnimationGLPanel {
 						Math.sqrt(green/norm) * value,
 						Math.sqrt(blue/norm) * value);
 				gl2.glVertex2f( xstart2, ystart2 );
-				gl2.glVertex2f( xstart3, ystart2 );
+				gl2.glVertex2f(xstart3, ystart2);
 			}
 			gl2.glEnd();
 		}

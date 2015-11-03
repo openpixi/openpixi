@@ -215,6 +215,15 @@ public class Simulation {
 			turnGridForceOff();
 		}
 
+		// Regions
+		if(settings.isEvaluationRegionEnabled()) {
+			grid.setEvaluationRegion(settings.getEvaluationRegionPoint1(), settings.getEvaluationRegionPoint2());
+		}
+
+		if(settings.isActiveRegionEnabled()) {
+			grid.setActiveRegion(settings.getActiveRegionPoint1(), settings.getActiveRegionPoint2());
+		}
+
 		poisolver = settings.getPoissonSolver();
 		interpolation = new LocalInterpolation(
 				settings.getInterpolator(), settings.getParticleIterator());

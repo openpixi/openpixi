@@ -5,9 +5,7 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import javax.swing.Box;
 import org.openpixi.pixi.physics.Simulation;
-import org.openpixi.pixi.physics.particles.IParticle;
 import org.openpixi.pixi.ui.SimulationAnimation;
-import org.openpixi.pixi.ui.panel.properties.ColorProperties;
 import org.openpixi.pixi.ui.panel.properties.ScaleProperties;
 
 /**
@@ -93,8 +91,10 @@ public class EnergyDensity1DPanel extends AnimationPanel {
 				*/
 				double EfieldSquared = 0.0;
 				int index = s.grid.getCellIndex(pos);
-				for(int w = 0; w < s.getNumberOfDimensions(); w++) {
-					EfieldSquared += s.grid.getEsquaredFromLinks(index, w) / (as * g * as * g) / 2;
+				if(s.grid.isEvaluatable(index)) {
+					for (int w = 0; w < s.getNumberOfDimensions(); w++) {
+						EfieldSquared += s.grid.getEsquaredFromLinks(index, w) / (as * g * as * g) / 2;
+					}
 				}
 				scaleProperties.putValue(EfieldSquared);
 				newValue = (int) (((scaleE * EfieldSquared) * panelHeight));

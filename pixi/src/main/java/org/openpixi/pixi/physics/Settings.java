@@ -56,6 +56,13 @@ public class Settings {
 	private PoissonSolver poissonSolver = new EmptyPoissonSolver();
 	private boolean useGrid = true;
 	private boolean relativistic = true;
+	// Regions
+	private boolean evaluationRegionEneabled = false;
+	private int[] evaluationRegionPoint1;
+	private int[] evaluationRegionPoint2;
+	private boolean activeRegionEnabled = false;
+	private int[] activeRegionPoint1;
+	private int[] activeRegionPoint2;
 
 	// Particle related settings
 	private int numOfParticles = 0;
@@ -186,6 +193,30 @@ public class Settings {
 
 	public YamlPanels getYamlPanels() {
 		return yamlPanels;
+	}
+
+	public boolean isEvaluationRegionEnabled() {
+		return evaluationRegionEneabled;
+	}
+
+	public int[] getEvaluationRegionPoint1() {
+		return evaluationRegionPoint1;
+	}
+
+	public int[] getEvaluationRegionPoint2() {
+		return evaluationRegionPoint2;
+	}
+
+	public boolean isActiveRegionEnabled() {
+		return activeRegionEnabled;
+	}
+
+	public int[] getActiveRegionPoint1() {
+		return activeRegionPoint1;
+	}
+
+	public int[] getActiveRegionPoint2() {
+		return activeRegionPoint2;
 	}
 
 	//----------------------------------------------------------------------------------------------
@@ -410,6 +441,31 @@ public class Settings {
 	public void setYamlPanels(YamlPanels yamlPanels) {
 		this.yamlPanels = yamlPanels;
 	}
+
+	public void setEvaluationRegionEnabled(boolean value) {
+		this.evaluationRegionEneabled = value;
+	}
+
+	public void setEvaluationRegionPoint1(int[] point) {
+		this.evaluationRegionPoint1 = point;
+	}
+
+	public void setEvaluationRegionPoint2(int[] point) {
+		this.evaluationRegionPoint2 = point;
+	}
+
+	public void setActiveRegionEnabled(boolean value) {
+		this.activeRegionEnabled = value;
+	}
+
+	public void setActiveRegionPoint1(int[] point) {
+		this.activeRegionPoint1 = point;
+	}
+
+	public void setActiveRegionPoint2(int[] point) {
+		this.activeRegionPoint2 = point;
+	}
+
 
 	//----------------------------------------------------------------------------------------------
 	// VARIOUS
