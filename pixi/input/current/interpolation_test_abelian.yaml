@@ -7,6 +7,14 @@ gridCells: [128, 128, 1]
 poissonsolver: empty
 timeStep: 0.1
 duration: 1000
+evaluationRegion:
+  enabled: true
+  point1: [2, 0, 0]
+  point2: [-3, -1, -1]
+activeRegion:
+  enabled: true
+  point1: [1, 0, 0]
+  point2: [-2, -1, -1]
 
 currents:
   pointChargeLCCurrents:
@@ -30,10 +38,6 @@ currents:
           amplitudeColorDirection: [1.0, 0.0, 0.0]
           magnitude: 1
 
-output:
-  boundaryFixer:
-    - plane: yz0
-    - plane: yz1
 
 # Generated panel code:
 panels:
@@ -43,10 +47,8 @@ panels:
     leftPanel:
       chartPanel:
         logarithmicScale: true
-        restrictedRegion: ''
         showCharts:
         - Gauss law violation
-        useRestrictedRegion: false
     orientation: 0
     rightPanel:
       electricFieldPanel:

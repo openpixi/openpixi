@@ -8,6 +8,14 @@ poissonsolver: empty
 fieldsolver: temporal yang mills
 timeStep: 0.1
 duration: 1000
+evaluationRegion:
+  enabled: true
+  point1: [2, 0, 0]
+  point2: [-3, -1, -1]
+activeRegion:
+  enabled: true
+  point1: [1, 0, 0]
+  point2: [-2, -1, -1]
 
 currents:
   randomTemporalColorCurrents:
@@ -30,13 +38,6 @@ currents:
       colorDistributionWidth: 0.2
       numberOfColors: 2
 
-output:
-  boundaryFixer:
-    - plane: yz0
-    - plane: yz1
-
-
-
 # Generated panel code:
 panels:
   dividerLocation: 1003
@@ -45,13 +46,11 @@ panels:
     leftPanel:
       chartPanel:
         logarithmicScale: false
-        restrictedRegion: '[0,0,0]-[30,31,31]'
         showCharts:
         - Gauss law violation
         - E squared
         - B squared
         - Energy density
-        useRestrictedRegion: true
     orientation: 0
     rightPanel:
       dividerLocation: 495

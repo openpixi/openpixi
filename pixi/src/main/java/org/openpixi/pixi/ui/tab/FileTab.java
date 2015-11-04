@@ -5,6 +5,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
+import java.util.prefs.Preferences;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -17,8 +18,10 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 
 import org.openpixi.pixi.physics.Settings;
+import org.openpixi.pixi.ui.MainControlApplet;
 import org.openpixi.pixi.ui.PanelManager;
 import org.openpixi.pixi.ui.SimulationAnimation;
+import org.openpixi.pixi.ui.UserPreferences;
 import org.openpixi.pixi.ui.util.FileIO;
 import org.openpixi.pixi.ui.util.yaml.YamlPanelWriter;
 import org.openpixi.pixi.ui.util.yaml.YamlPanels;
@@ -26,7 +29,7 @@ import org.openpixi.pixi.ui.util.yaml.YamlParser;
 
 public class FileTab extends Box {
 
-	private Component parent;
+	private MainControlApplet parent;
 	private SimulationAnimation simulationAnimation;
 	private PanelManager panelManager;
 	private JFileChooser fc;
@@ -38,7 +41,7 @@ public class FileTab extends Box {
 	JMenuItem itemApplyPanelSettings;
 	JMenuItem itemWritePanelSettings;
 
-	public FileTab(Component parent, SimulationAnimation simulationAnimation, PanelManager panelManager) {
+	public FileTab(MainControlApplet parent, SimulationAnimation simulationAnimation, PanelManager panelManager) {
 		super(BoxLayout.PAGE_AXIS);
 		this.parent = parent;
 		this.simulationAnimation = simulationAnimation;
@@ -46,12 +49,18 @@ public class FileTab extends Box {
 
 		fc = new JFileChooser();
 		File workingDirectory = new File(System.getProperty("user.dir"));
+		File initialDirectory = workingDirectory;
+
 		File inputDirectory = new File(workingDirectory, "input");
 		if (inputDirectory.exists()) {
-			fc.setCurrentDirectory(inputDirectory);
-		} else {
-			fc.setCurrentDirectory(workingDirectory);
+			initialDirectory = inputDirectory;
 		}
+
+		File preferenceDirectory = getPathFromPreferences();
+		if (preferenceDirectory != null) {
+			initialDirectory = preferenceDirectory;
+		}
+		fc.setCurrentDirectory(initialDirectory);
 
 		openButton = new JButton("Open...");
 		openButton.addActionListener(new OpenButtonListener());
@@ -76,7 +85,6 @@ public class FileTab extends Box {
 
 	class OpenButtonListener implements ActionListener {
 		public void actionPerformed(ActionEvent event) {
-
 			int returnVal = fc.showOpenDialog(parent);
 
 			if (returnVal == JFileChooser.APPROVE_OPTION) {
@@ -89,6 +97,7 @@ public class FileTab extends Box {
 				} catch (IOException e) {
 					// TODO Error message
 				}
+				putPathInPreferences(file);
 			} else {
 				// Open command cancelled by user
 			}
@@ -123,6 +132,7 @@ public class FileTab extends Box {
 				} catch (IOException e) {
 					// TODO Error message
 				}
+				putPathInPreferences(file);
 			} else {
 				// Save command cancelled by user
 			}
@@ -196,6 +206,10 @@ public class FileTab extends Box {
 			YamlParser parser = new YamlParser(settings);
 			parser.parseString(string);
 			YamlPanels panels = settings.getYamlPanels();
+			if (panels.windowWidth != null && panels.windowHeight != null) {
+				parent.web.setSize(panels.windowWidth, panels.windowHeight);
+				parent.web.validate();
+			}
 			if (panels != null) {
 				Component component = panels.inflate(panelManager);
 				if (component != null) {
@@ -212,11 +226,31 @@ public class FileTab extends Box {
 	 * Append the current panel settings to the text area.
 	 */
 	public void writeTextAreaPanelSettings() {
+		int width = parent.web.getWidth();
+		int height = parent.web.getHeight();
 		Component component = panelManager.getMainComponent();
-		YamlPanels yamlPanels = new YamlPanels(component);
+		YamlPanels yamlPanels = new YamlPanels(component, width, height);
 		YamlPanelWriter panelWriter = new YamlPanelWriter();
 		String yamlString = panelWriter.getYamlString(yamlPanels);
 		yamlString = "\n\n# Generated panel code:\n" + yamlString;
 		fileTextArea.append(yamlString);
+	}
+
+	void putPathInPreferences(File file) {
+		File directoryPath = file.getParentFile();
+		Preferences preferences = UserPreferences.getUserPreferences();
+		preferences.put(UserPreferences.DEFAULT_YAML_PATH,
+				directoryPath.getPath());
+	}
+
+	File getPathFromPreferences() {
+		Preferences preferences = UserPreferences.getUserPreferences();
+		String directoryPath = preferences.get(
+				UserPreferences.DEFAULT_YAML_PATH, null);
+		if (directoryPath != null) {
+			return new File(directoryPath);
+		} else {
+			return null;
+		}
 	}
 }

@@ -6,14 +6,22 @@ numberOfThreads: 8
 gridCells: [64, 64, 1]
 poissonsolver: empty
 fieldsolver: temporal yang mills
-timeStep: 0.5
-duration: 1000
+timeStep: 1
+duration: 48
+evaluationRegion:
+  enabled: true
+  point1: [2, 0, 0]
+  point2: [-3, -1, -1]
+activeRegion:
+  enabled: true
+  point1: [1, 0, 0]
+  point2: [-2, -1, -1]
 
 currents:
   randomTemporalParticleColorCurrents:
     - direction: 0
       orientation: 1
-      longitudinalLocation: 32
+      longitudinalLocation: 64
       longitudinalWidth: 4.0
       transversalWidth: 12.0
       transversalLocation: [64, 0]
@@ -22,40 +30,17 @@ currents:
       numberOfColors: 2
       useDipoleRemoval: true
       randomSeed: 1
-    - direction: 0
-      orientation: -1
-      longitudinalLocation: 96
-      longitudinalWidth: 4.0
-      transversalWidth: 12.0
-      transversalLocation: [64, 0]
-      numberOfCharges: 30
-      colorDistributionWidth: 0.1
-      numberOfColors: 2
-      useDipoleRemoval: true
-      randomSeed: 2
-
-output:
-  boundaryFixer:
-    - plane: yz0
-    - plane: yz1
-
-
 
 # Generated panel code:
 panels:
-  dividerLocation: 1015
+  dividerLocation: 1036
   leftPanel:
-    dividerLocation: 714
+    dividerLocation: 715
     leftPanel:
       chartPanel:
         logarithmicScale: true
-        restrictedRegion: '[2,0,0]-[62,63,1]'
         showCharts:
         - Gauss law violation
-        - E squared
-        - B squared
-        - Energy density
-        useRestrictedRegion: true
     orientation: 0
     rightPanel:
       electricFieldPanel:

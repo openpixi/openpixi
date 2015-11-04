@@ -3,7 +3,6 @@ package org.openpixi.pixi.ui.panel;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.util.ArrayList;
 
 import javax.swing.Box;
 import org.openpixi.pixi.physics.Simulation;
@@ -12,9 +11,9 @@ import org.openpixi.pixi.physics.grid.Grid;
 import org.openpixi.pixi.physics.particles.IParticle;
 import org.openpixi.pixi.ui.SimulationAnimation;
 import org.openpixi.pixi.ui.panel.properties.BooleanArrayProperties;
+import org.openpixi.pixi.ui.panel.properties.BooleanProperties;
 import org.openpixi.pixi.ui.panel.properties.ColorProperties;
 import org.openpixi.pixi.ui.panel.properties.CoordinateProperties;
-import org.openpixi.pixi.ui.panel.properties.GaugeProperties;
 import org.openpixi.pixi.ui.panel.properties.ScaleProperties;
 
 /**
@@ -24,9 +23,9 @@ import org.openpixi.pixi.ui.panel.properties.ScaleProperties;
  */
 public class ElectricFieldPanel extends AnimationPanel {
 
-	ColorProperties colorProperties;
-	ScaleProperties scaleProperties;
-	GaugeProperties gaugeProperties;
+	public ColorProperties colorProperties;
+	public ScaleProperties scaleProperties;
+	public BooleanProperties gaugeProperties;
 	public BooleanArrayProperties showFieldProperties;
 	public CoordinateProperties showCoordinateProperties;
 
@@ -77,7 +76,7 @@ public class ElectricFieldPanel extends AnimationPanel {
 		super(simulationAnimation);
 		colorProperties = new ColorProperties(simulationAnimation);
 		scaleProperties = new ScaleProperties(simulationAnimation);
-		gaugeProperties = new GaugeProperties(simulationAnimation);
+		gaugeProperties = new BooleanProperties(simulationAnimation, "Coulomb gauge", false);
 		showFieldProperties = new BooleanArrayProperties(simulationAnimation, fieldLabel, fieldInit);
 		showCoordinateProperties = new CoordinateProperties(simulationAnimation, CoordinateProperties.Mode.MODE_1D_LOOP);
 	}
@@ -108,11 +107,11 @@ public class ElectricFieldPanel extends AnimationPanel {
 		double panelWidth = getWidth();
 		double panelHeight = getHeight();
 
-		boolean useCoulombGauge = gaugeProperties.isCoulombGauge();
+		boolean useCoulombGauge = gaugeProperties.getValue();
 		Grid drawGrid = s.grid;
 		if (useCoulombGauge) {
-			CoulombGauge coulombGauge = new CoulombGauge(s.grid);
 			Grid gridCopy = new Grid(s.grid);
+			CoulombGauge coulombGauge = new CoulombGauge(gridCopy);
 			coulombGauge.applyGaugeTransformation(gridCopy);
 			drawGrid = gridCopy;
 
@@ -178,14 +177,14 @@ public class ElectricFieldPanel extends AnimationPanel {
 		if (loopIndex != -1) {
 			// Show all lines
 			kmin = 0;
-			kmax = s.grid.getNumCells(loopIndex);
+			kmax = drawGrid.getNumCells(loopIndex);
 		}
 		double sx = panelWidth / s.getSimulationBoxSize(abscissaIndex);
 		for(int k = kmin; k < kmax; k++)
 		{
 			int newPosition = 0;
 			int newValue = 0;
-			for(int i = 0; i < s.grid.getNumCells(abscissaIndex); i++)
+			for(int i = 0; i < drawGrid.getNumCells(abscissaIndex); i++)
 			{
 
 				int oldPosition = newPosition;
@@ -203,34 +202,38 @@ public class ElectricFieldPanel extends AnimationPanel {
 					In the flipped and translated coordinate system defined above we have to add the fields to the
 					center of the panel in order to get the expected result.
 				*/
+				int index = drawGrid.getCellIndex(pos);
 				double value = 0;
 				switch(type) {
 				case INDEX_E:
-					value = drawGrid.getE(s.grid.getCellIndex(pos), directionIndex).get(colorIndex) / (as * g);
+					value = drawGrid.getE(index, directionIndex).get(colorIndex) / (as * g);
 					break;
 				case INDEX_U:
-					value = drawGrid.getU(s.grid.getCellIndex(pos), directionIndex).proj().get(colorIndex) / (as * g);
+					value = drawGrid.getU(index, directionIndex).proj().get(colorIndex) / (as * g);
 					break;
 				case INDEX_U_NEXT:
-					value = drawGrid.getUnext(s.grid.getCellIndex(pos), directionIndex).proj().get(colorIndex) / (as * g);
+					value = drawGrid.getUnext(index, directionIndex).proj().get(colorIndex) / (as * g);
 					break;
 				case INDEX_U0:
-					value = drawGrid.getU0(s.grid.getCellIndex(pos)).proj().get(colorIndex) / (at * g);
+					value = drawGrid.getU0(index).proj().get(colorIndex) / (at * g);
 					break;
 				case INDEX_U0_NEXT:
-					value = drawGrid.getU0next(s.grid.getCellIndex(pos)).proj().get(colorIndex) / (at * g);
+					value = drawGrid.getU0next(index).proj().get(colorIndex) / (at * g);
 					break;
 				case INDEX_J:
 					newPosition = (int) (s.grid.getLatticeSpacing() * (i + .5) * sx);
-					value = drawGrid.getJ(s.grid.getCellIndex(pos), directionIndex).get(colorIndex) / (as * g);
+					value = drawGrid.getJ(index, directionIndex).get(colorIndex) / (as * g);
 					break;
 				case INDEX_RHO:
-					newPosition = (int) (s.grid.getLatticeSpacing() * (i + .5) * sx);
-					value = drawGrid.getRho(s.grid.getCellIndex(pos)).get(colorIndex) / (as * g);
+					value = drawGrid.getRho(index).get(colorIndex) / (as * g);
 					break;
 				case INDEX_GAUSS:
 					newPosition = (int) (s.grid.getLatticeSpacing() * (i + .5) * sx);
-					value = drawGrid.getGaussConstraint(s.grid.getCellIndex(pos)).get(colorIndex) / (as * g);
+					if(drawGrid.isEvaluatable(index)) {
+						value = drawGrid.getGaussConstraint(s.grid.getCellIndex(pos)).get(colorIndex) / (as * g);
+					} else {
+						value = 0.0;
+					}
 					break;
 				}
 				scaleProperties.putValue(value);
@@ -250,17 +253,5 @@ public class ElectricFieldPanel extends AnimationPanel {
 		showCoordinateProperties.addComponents(box);
 		scaleProperties.addComponents(box);
 		gaugeProperties.addComponents(box);
-	}
-
-	public ColorProperties getColorProperties() {
-		return colorProperties;
-	}
-
-	public ScaleProperties getScaleProperties() {
-		return scaleProperties;
-	}
-
-	public GaugeProperties getGaugeProperties() {
-		return gaugeProperties;
 	}
 }

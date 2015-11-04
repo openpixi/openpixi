@@ -43,7 +43,6 @@ public class CoulombGaugeTest {
 	}
 
 	@Test
-	@Ignore
 	public void testNonAbelianCoulombConfiguration() {
 		if (printDebugOutput) {
 			System.out.println("NonAbelian Coulomb Configuration");
@@ -79,7 +78,7 @@ public class CoulombGaugeTest {
 		transformation.getG()[0] = transformation.getG()[0].mult(g1);
 
 		GroupElement g2 = field2.getLink();
-		transformation.getG()[0] = transformation.getG()[0].mult(g2);
+		transformation.getG()[1] = transformation.getG()[1].mult(g2);
 
 		transformation.applyGaugeTransformation(grid);
 

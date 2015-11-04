@@ -16,7 +16,7 @@ import org.openpixi.pixi.ui.panel.properties.ScaleProperties;
  */
 public class PhaseSpacePanel extends AnimationPanel {
 
-	ScaleProperties scaleProperties;
+	public ScaleProperties scaleProperties;
 
 	/** Constructor */
 	public PhaseSpacePanel(SimulationAnimation simulationAnimation) {
@@ -69,9 +69,5 @@ public class PhaseSpacePanel extends AnimationPanel {
 	public void addPropertyComponents(Box box) {
 		addLabel(box, "Phase space panel");
 		scaleProperties.addComponents(box);
-	}
-
-	public ScaleProperties getScaleProperties() {
-		return scaleProperties;
 	}
 }

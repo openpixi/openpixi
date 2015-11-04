@@ -11,35 +11,14 @@ public class FieldMeasurements {
 	private BFieldSquared Bsquared;
 	private GaussLaw GaussConstraint;
 	private TotalCharge totalCharge;
-
-	private boolean useRestrictedRegion;
-	private boolean[] restrictedRegion;
-
 	/**
 	 * Empty constructor for standard usage.
 	 */
 	public FieldMeasurements() {
-		this.useRestrictedRegion = false;
-
 		Esquared = new EFieldSquared();
 		Bsquared = new BFieldSquared();
 		GaussConstraint = new GaussLaw();
 		totalCharge = new TotalCharge();
-	}
-
-	/**
-	 * Alternative constructor for use with non-periodic boundaries.
-	 * @param restrictedRegion
-	 */
-	public FieldMeasurements(boolean[] restrictedRegion) {
-		this.useRestrictedRegion = true;
-
-		Esquared = new EFieldSquared(restrictedRegion);
-		Bsquared = new BFieldSquared(restrictedRegion);
-		GaussConstraint = new GaussLaw(restrictedRegion);
-		totalCharge = new TotalCharge(restrictedRegion);
-
-		this.restrictedRegion = restrictedRegion;
 	}
 
 	public double calculateEsquared(Grid grid) {
@@ -78,35 +57,9 @@ public class FieldMeasurements {
 		return totalCharge.getSum(grid);
 	}
 
-	private class FieldMeasurementAction implements CellAction {
-		protected boolean useRestrictedRegion;
-		protected boolean[] restrictedRegion;
-
-		public FieldMeasurementAction() {
-			this.useRestrictedRegion = false;
-		}
-
-		public FieldMeasurementAction(boolean[] restrictedRegion) {
-			this.useRestrictedRegion = true;
-			this.restrictedRegion = restrictedRegion;
-		}
-
-		public void execute(Grid grid, int index) {
-
-		}
-	}
-
-	private class EFieldSquared extends FieldMeasurementAction {
+	private class EFieldSquared implements CellAction {
 
 		private double[] sum;
-
-		public EFieldSquared() {
-			super();
-		}
-
-		public EFieldSquared(boolean[] restrictedRegion) {
-			super(restrictedRegion);
-		}
 
         public void reset() {
         	sum = new double[3];//TODO Make this method d-dimensional!!
@@ -123,7 +76,7 @@ public class FieldMeasurements {
         }
 
         public void execute(Grid grid, int index) {
-			if(!useRestrictedRegion || !restrictedRegion[index]) {
+			if(grid.isEvaluatable(index)) {
 				int numDir = grid.getNumberOfDimensions();
 				double[] res = new double[numDir];
 				for (int i = 0; i < numDir; i++) {
@@ -139,17 +92,9 @@ public class FieldMeasurements {
 		}
 	}
 
-	private class BFieldSquared extends FieldMeasurementAction {
+	private class BFieldSquared implements CellAction {
 
 		private double[] sum;
-
-		public BFieldSquared() {
-			super();
-		}
-
-		public BFieldSquared(boolean[] restrictedRegion) {
-			super(restrictedRegion);
-		}
 
         public void reset() {
         	sum = new double[3];
@@ -167,7 +112,7 @@ public class FieldMeasurements {
 		}
         
         public void execute(Grid grid, int index) {
-			if(!useRestrictedRegion || !restrictedRegion[index]) {
+			if(grid.isEvaluatable(index)) {
 				int numDir = grid.getNumberOfDimensions();
 				double[] res = new double[numDir];
 				for (int i = 0; i < numDir; i++) {
@@ -185,17 +130,9 @@ public class FieldMeasurements {
 		}
 	}
 	
-	private class GaussLaw extends FieldMeasurementAction {
+	private class GaussLaw implements CellAction {
 
 		private double sum;
-
-		public GaussLaw() {
-			super();
-		}
-
-		public GaussLaw(boolean[] restrictedRegion) {
-			super(restrictedRegion);
-		}
 
         public void reset() {
         	sum = 0.0;
@@ -207,7 +144,7 @@ public class FieldMeasurements {
         }
         
         public void execute(Grid grid, int index) {
-			if(!useRestrictedRegion || !restrictedRegion[index]) {
+			if(grid.isEvaluatable(index)) {
 				double result = grid.getGaussConstraintSquared(index);
 				synchronized (this) {
 					sum += result;   // Synchronisierte Summenbildung
@@ -216,17 +153,9 @@ public class FieldMeasurements {
 		}
 	}
 
-	private class TotalCharge extends FieldMeasurementAction {
+	private class TotalCharge implements CellAction  {
 
 		private AlgebraElement charge;
-
-		public TotalCharge() {
-			super();
-		}
-
-		public TotalCharge(boolean[] restrictedRegion) {
-			super(restrictedRegion);
-		}
 
 		public void reset(Grid grid) {
 			charge = grid.getElementFactory().algebraZero();
@@ -239,7 +168,7 @@ public class FieldMeasurements {
 		}
 
 		public void execute(Grid grid, int index) {
-			if(!useRestrictedRegion || !restrictedRegion[index]) {
+			if(grid.isEvaluatable(index)) {
 				synchronized (this) {
 					charge.addAssign(grid.getRho(index));   // Synchronisierte Summenbildung
 				}

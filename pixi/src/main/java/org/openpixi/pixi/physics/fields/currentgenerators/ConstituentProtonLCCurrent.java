@@ -117,7 +117,11 @@ public class ConstituentProtonLCCurrent implements ICurrentGenerator {
 	 * @param location
 	 * @param longitudinalWidth
 	 */
+<<<<<<< HEAD
 	public ConstituentProtonLCCurrent(int direction, int orientation, double location, double longitudinalWidth, double[] locationTransverse, boolean useMonopoleRemoval, boolean useDipoleRemoval, Random rand) {
+=======
+	public ConstituentProtonLCCurrent(int direction, int orientation, double location, double longitudinalWidth, double[] locationTransverse, boolean useMonopoleRemoval, boolean useDipoleRemoval, Random ranGen) {
+>>>>>>> origin/YM
 		this.direction = direction;
 		this.orientation = orientation;
 		this.location = location;
@@ -125,7 +129,11 @@ public class ConstituentProtonLCCurrent implements ICurrentGenerator {
 		this.locationTransverse = locationTransverse;
 		this.useMonopoleRemoval = useMonopoleRemoval;
 		this.useDipoleRemoval = useDipoleRemoval;
+<<<<<<< HEAD
 		this.rand = rand;
+=======
+		this.rand = ranGen;
+>>>>>>> origin/YM
 
 		this.charges = new ArrayList<GaussianCharge>();
 		this.particleLCCurrent = new ParticleLCCurrent(direction, orientation, location, longitudinalWidth);

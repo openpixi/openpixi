@@ -40,6 +40,13 @@ public class Cell implements Serializable {
 	private int dimensions;
 	private int colors;
 
+	/** Evaluation region property. If true then the cell is considered in various calculations (energy density, Gauss law, ...). */
+	private boolean evaluatable;
+
+	/** Active region property. If true then the cell is considered in the equations of motion. */
+	private boolean active;
+
+
 	/**
 	 * Constructor for Cell.
 	 * @param dimensions Number of spatial dimensions (e.g. 3)
@@ -49,6 +56,8 @@ public class Cell implements Serializable {
 		this.dimensions = dimensions;
 		this.colors = colors;
 		this.factory = factory;
+		this.evaluatable = true;
+		this.active = true;
 
 		F = new AlgebraElement[dimensions][dimensions];
 		U = new GroupElement[dimensions];
@@ -144,7 +153,23 @@ public class Cell implements Serializable {
 	public void setFieldStrength(int i, int j, AlgebraElement field) {
 		F[i][j].set(field);
 	}
-	
+
+	public boolean isEvaluatable() {
+		return evaluatable;
+	}
+
+	public void setEvaluatable(boolean value) {
+		this.evaluatable = value;
+	}
+
+	public boolean isActive() {
+		return active;
+	}
+
+	public void setActive(boolean value) {
+		this.active = value;
+	}
+
 
 	public void resetCurrent() {
 		for (int i=0;i<J.length;i++) {
@@ -165,8 +190,8 @@ public class Cell implements Serializable {
 
 	public void reassignLinks() {
 		GroupElement[] temp = U;
-	    U = Unext;
-	    Unext = temp;
+		U = Unext;
+		Unext = temp;
 
 		GroupElement tmp = U0;
 		U0 = U0next;
@@ -197,6 +222,8 @@ public class Cell implements Serializable {
 		this.rho.set(other.rho);
 		this.U0.set(other.U0);
 		this.U0next.set(other.U0next);
+		this.evaluatable = other.evaluatable;
+		this.active = other.active;
 	}
 
 	/**

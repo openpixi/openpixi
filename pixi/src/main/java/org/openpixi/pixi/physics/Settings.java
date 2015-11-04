@@ -41,8 +41,8 @@ public class Settings {
 	//----------------------------------------------------------------------------------------------
 	private double speedOfLight = 1;
 	private int    numberOfColors = 2;
-	private int	   numberOfDimensions = 3;
-    private double couplingConstant = 1.0;
+	private int    numberOfDimensions = 3;
+	private double couplingConstant = 1.0;
 	private double timeStep = 0.1;
 	private double gridStep = 1;
 	private double tMax = 1000;
@@ -56,6 +56,13 @@ public class Settings {
 	private PoissonSolver poissonSolver = new EmptyPoissonSolver();
 	private boolean useGrid = true;
 	private boolean relativistic = true;
+	// Regions
+	private boolean evaluationRegionEneabled = false;
+	private int[] evaluationRegionPoint1;
+	private int[] evaluationRegionPoint2;
+	private boolean activeRegionEnabled = false;
+	private int[] activeRegionPoint1;
+	private int[] activeRegionPoint2;
 
 	// Particle related settings
 	private int numOfParticles = 0;
@@ -109,7 +116,7 @@ public class Settings {
 	public int[] getGridCells() {
 		return gridCells;
 	}
-	
+
 	public double getGridStep() {
 		return gridStep;
 	}
@@ -130,10 +137,9 @@ public class Settings {
 		return numberOfDimensions;
 	}
 
-    public double getCouplingConstant()
-    {
-        return couplingConstant;
-    }
+	public double getCouplingConstant() {
+		return couplingConstant;
+	}
 
 	public double getTimeStep() {
 		return timeStep;
@@ -176,10 +182,9 @@ public class Settings {
 		return useGrid;
 	}
 
-    public ArrayList<IFieldGenerator> getFieldGenerators()
-    {
-        return this.fieldGenerators;
-    }
+	public ArrayList<IFieldGenerator> getFieldGenerators() {
+		return this.fieldGenerators;
+	}
 
 	public ArrayList<ICurrentGenerator> getCurrentGenerators()
 	{
@@ -188,6 +193,30 @@ public class Settings {
 
 	public YamlPanels getYamlPanels() {
 		return yamlPanels;
+	}
+
+	public boolean isEvaluationRegionEnabled() {
+		return evaluationRegionEneabled;
+	}
+
+	public int[] getEvaluationRegionPoint1() {
+		return evaluationRegionPoint1;
+	}
+
+	public int[] getEvaluationRegionPoint2() {
+		return evaluationRegionPoint2;
+	}
+
+	public boolean isActiveRegionEnabled() {
+		return activeRegionEnabled;
+	}
+
+	public int[] getActiveRegionPoint1() {
+		return activeRegionPoint1;
+	}
+
+	public int[] getActiveRegionPoint2() {
+		return activeRegionPoint2;
 	}
 
 	//----------------------------------------------------------------------------------------------
@@ -272,9 +301,9 @@ public class Settings {
 
 	public void setGridCells(int i, int num) {
 		gridCells[i] = num;
-		simulationWidth[i] = gridStep*num;
+		simulationWidth[i] = gridStep * num;
 	}
-	
+
 	public void setGridCellsX(int gridCellsX) 
 	{
 		setGridCells(0, gridCellsX);
@@ -283,13 +312,13 @@ public class Settings {
 	public void setGridCellsY(int gridCellsY) {
 		setGridCells(1, gridCellsY);
 	}
-	
+
 	public void setGridCellsZ(int gridCellsZ) {
 		setGridCells(2, gridCellsZ);
 	}
 
 	public void setSpeedOfLight(double speedOfLight) {
-        this.speedOfLight = speedOfLight;
+		this.speedOfLight = speedOfLight;
 	}
 
 	public void setNumberOfColors(int numberOfColors)
@@ -304,21 +333,20 @@ public class Settings {
 		simulationWidth = new double[numberOfDimensions];
 	}
 
-    public void setCouplingConstant(double g)
-    {
-        this.couplingConstant = g;
-    }
+	public void setCouplingConstant(double g) {
+		this.couplingConstant = g;
+	}
 
 	public void setTimeStep(double timeStep) {
 		this.timeStep = timeStep;
-		this.iterations = (int) Math.ceil(tMax/timeStep);
+		this.iterations = (int) Math.ceil(tMax / timeStep);
 	}
-	
+
 	public void setTMax(double TMax) {
 		this.tMax = TMax;
-		this.iterations = (int) Math.ceil(TMax/timeStep);
+		this.iterations = (int) Math.ceil(TMax / timeStep);
 	}
-	
+
 	public void setGridStep(double gridstep) {
 		this.gridStep = gridstep;
 	}
@@ -392,20 +420,18 @@ public class Settings {
 		this.numOfThreads = numOfThreads;
 	}
 
-    public void setFieldGenerators(ArrayList<IFieldGenerator> fieldGenerators)
-    {
-        this.fieldGenerators = fieldGenerators;
-    }
+	public void setFieldGenerators(ArrayList<IFieldGenerator> fieldGenerators) {
+		this.fieldGenerators = fieldGenerators;
+	}
 
 	public void addFieldGenerator(IFieldGenerator generator)
 	{
 		this.fieldGenerators.add(generator);
 	}
 
-    public void addCurrentGenerator(ICurrentGenerator generator)
-    {
-        this.currentGenerators.add(generator);
-    }
+	public void addCurrentGenerator(ICurrentGenerator generator) {
+		this.currentGenerators.add(generator);
+	}
 
 	public void setCurrentGenerators(ArrayList<ICurrentGenerator> currentGenerators)
 	{
@@ -415,6 +441,31 @@ public class Settings {
 	public void setYamlPanels(YamlPanels yamlPanels) {
 		this.yamlPanels = yamlPanels;
 	}
+
+	public void setEvaluationRegionEnabled(boolean value) {
+		this.evaluationRegionEneabled = value;
+	}
+
+	public void setEvaluationRegionPoint1(int[] point) {
+		this.evaluationRegionPoint1 = point;
+	}
+
+	public void setEvaluationRegionPoint2(int[] point) {
+		this.evaluationRegionPoint2 = point;
+	}
+
+	public void setActiveRegionEnabled(boolean value) {
+		this.activeRegionEnabled = value;
+	}
+
+	public void setActiveRegionPoint1(int[] point) {
+		this.activeRegionPoint1 = point;
+	}
+
+	public void setActiveRegionPoint2(int[] point) {
+		this.activeRegionPoint2 = point;
+	}
+
 
 	//----------------------------------------------------------------------------------------------
 	// VARIOUS

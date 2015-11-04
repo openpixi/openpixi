@@ -64,12 +64,6 @@ public class Grid {
 	protected double gaugeCoupling;
 
 	/**
-	 * Unit vectors to be used for the shift method.
-	 */
-	@Deprecated
-	protected int[][] unitVectors;
-
-	/**
 	 * Holds the cummulated cell count. This array is used by {@link #shift(int, int, int)}
 	 * to quickly calculate index shifts in various directions.
 	 * <pre>
@@ -438,9 +432,8 @@ public class Grid {
 
 		copyValuesFrom(grid);
 
-		// TODO: Share iterators is ok?
 		this.fsolver = grid.fsolver;
-		this.cellIterator = grid.cellIterator;
+		this.cellIterator = grid.cellIterator.copy();
 	}
 
 	/**
@@ -461,16 +454,9 @@ public class Grid {
 
 		factory = new ElementFactory(numCol);
 
-		unitVectors = new int[numDim][numDim];
-
 		int length = 1;
 		for(int i = 0; i < numDim; i++) {
 			length *= numCells[i];
-
-			/*
-				Setup unit vectors.
-			 */
-			unitVectors[i][i] = 1;
 		}
 
 		cummulatedCellCount = new int[numDim + 1];
@@ -689,42 +675,13 @@ public class Grid {
 	 * @param coordinates  lattice coordinate vector
 	 * @return             shifted lattice coordinate vector
 	 */
-	@Deprecated
 	protected int[] periodic(int[] coordinates) {
 		
 		int[] res = new int[numDim];
 		for (int i = 0; i < numDim; ++i) {
-			res[i] = (coordinates[i] + numCells[i]) % numCells[i];
+			res[i] = (coordinates[i] % numCells[i] + numCells[i]) % numCells[i];
 		}
 		return res;
-	}
-
-	/**
-	 * Shifts a lattice coordinate vector by one unit step in a certain direction. The direction is passed as an integer
-	 * for the direction and an orientation.
-	 * <br>
-	 * Examples:
-	 * <ul><li>Shift by one in negative x-direction: shift(coor, 0, -1)</li>
-	 * <li>Shift by one in positive x-direction: shift(coor, 0, 1)</li>
-	 * <li>Shift by one in positive z-direction: shift(coor, 2, 1)</li></ul>
-	 *
-	 * @param coordinates   Input lattice coordinate vector
-	 * @param direction     Direction of the shift (0 - (numberOfDirections-1))
-	 * @param orientation   Orientation of the direction (1 or -1)
-	 * @return              Shifted coordinate with respect to periodic boundary conditions.
-	 */
-	@Deprecated
-	protected int[] shift(int[] coordinates, int direction, int orientation)
-	{
-		int[] shiftedCoordinate = coordinates.clone();
-
-		for(int i = 0; i < numDim; i++)
-		{
-			shiftedCoordinate[i] += orientation * unitVectors[direction][i];
-		}
-
-
-		return periodic(shiftedCoordinate);
 	}
 
 	/**
@@ -817,7 +774,7 @@ public class Grid {
 	 * @return
 	 */
 	public AlgebraElement getEFromLinks(int index, int direction) {
-		return getTemporalPlaquette(index, direction, 1).proj().mult(-1.0/at);
+		return getTemporalPlaquette(index, direction, 1).proj().mult(-1.0 / at);
 	}
 
 	/**
@@ -887,5 +844,41 @@ public class Grid {
 		gauss.multAssign(1.0/as);
 		gauss = gauss.sub(getRho(index));
 		return gauss;
+	}
+
+	public boolean isEvaluatable(int index) {
+		return cells[index].isEvaluatable();
+	}
+
+	public boolean isActive(int index) {
+		return cells[index].isActive();
+	}
+
+	public void setEvaluationRegion(int[] regionPoint1, int[] regionPoint2) {
+		int totalNumberOfCells = getTotalNumberOfCells();
+		for (int i = 0; i < totalNumberOfCells; i++) {
+			int[] gridPos = getCellPos(i);
+			cells[i].setEvaluatable(true);
+			for (int j = 0; j < numDim; j++) {
+				if(gridPos[j] < regionPoint1[j] || regionPoint2[j] < gridPos[j]) {
+					cells[i].setEvaluatable(false);
+					break;
+				}
+			}
+		}
+	}
+
+	public void setActiveRegion(int[] regionPoint1, int[] regionPoint2) {
+		int totalNumberOfCells = getTotalNumberOfCells();
+		for (int i = 0; i < totalNumberOfCells; i++) {
+			int[] gridPos = getCellPos(i);
+			cells[i].setActive(true);
+			for (int j = 0; j < numDim; j++) {
+				if(gridPos[j] < regionPoint1[j] || regionPoint2[j] < gridPos[j]) {
+					cells[i].setActive(false);
+					break;
+				}
+			}
+		}
 	}
 }
