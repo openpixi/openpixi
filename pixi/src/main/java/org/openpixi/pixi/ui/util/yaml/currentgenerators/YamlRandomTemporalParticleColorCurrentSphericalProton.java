@@ -69,14 +69,10 @@ public class YamlRandomTemporalParticleColorCurrentSphericalProton {
 			locationTransverse[i] = transversalLocation.get(i);
 		}
 
-<<<<<<< HEAD
 		Random rand = new Random();
 		if(randomSeed != null) {
 			rand.setSeed(randomSeed);
 		}
-=======
-		SphericalProtonLCCurrent generator = new SphericalProtonLCCurrent(direction, orientation, longitudinalLocation, longitudinalWidth, useMonopoleRemoval, useDipoleRemoval, randomSeed);
->>>>>>> origin/YM
 
 		SphericalProtonLCCurrent generator = new SphericalProtonLCCurrent(direction, orientation, longitudinalLocation, longitudinalWidth, useMonopoleRemoval, useDipoleRemoval, rand);
 
