@@ -206,10 +206,6 @@ public class NucleusLCCurrent implements ICurrentGenerator {
 			}
 		}
 
-		if(useDipoleRemoval) {
-			removeDipoleMoment(s);
-		}
-
 		particleLCCurrent.setTransversalChargeDensity(transversalChargeDensity);
 		particleLCCurrent.initializeCurrent(s, dummy);
 	}
@@ -235,59 +231,6 @@ public class NucleusLCCurrent implements ICurrentGenerator {
 			totalCharge.addAssign(transversalChargeDensity[i]);
 		}
 		return totalCharge;
-	}
-
-	/**
-	 * Removes the dipole moment by adding dipoles for each color component. These dipoles cancel the total dipole moment.
-	 *
-	 * @param s
-	 */
-	private void removeDipoleMoment(Simulation s) {
-		AlgebraElement[] dipoleVector = new AlgebraElement[transversalNumCells.length];
-		for (int i = 0; i < transversalNumCells.length; i++) {
-			dipoleVector[i] = s.grid.getElementFactory().algebraZero(s.getNumberOfColors());
-		}
-		for (int c = 0; c < transversalNumCells.length; c++) {
-			for (int i = 0; i < totalTransversalCells; i++) {
-				int[] gridPos = GridFunctions.getCellPos(i, transversalNumCells);
-				dipoleVector[c].addAssign(transversalChargeDensity[i].mult(gridPos[c] * as - locationTransverse[c]));
-			}
-		}
-		/*
-		for (int c = 0; c < transversalNumCells.length; c++) {
-			for (int i = 0; i < numberOfComponents; i++) {
-				System.out.println(dipoleVector[c].get(i));
-			}
-		}
-		*/
-		for (int c = 0; c < transversalNumCells.length; c++) {
-			for (int i = 0; i < totalTransversalCells; i++) {
-				int[] gridPos = GridFunctions.getCellPos(i, transversalNumCells);
-				gridPos[c]++;
-				int z = GridFunctions.getCellIndex(gridPos, transversalNumCells);
-				transversalChargeDensity[i].addAssign(dipoleVector[c].mult(transversalWidths[z] / as));
-				transversalChargeDensity[i].addAssign(dipoleVector[c].mult(-1.0 * transversalWidths[i] / as));
-			}
-		}
-
-		/*
-		AlgebraElement[] checkDipoleVector = new AlgebraElement[transversalNumCells.length];
-		for (int i = 0; i < transversalNumCells.length; i++) {
-			checkDipoleVector[i] = s.grid.getElementFactory().algebraZero(s.getNumberOfColors());
-		}
-		for (int c = 0; c < transversalNumCells.length; c++) {
-			for (int i = 0; i < totalTransversalCells; i++) {
-				int[] gridPos = GridFunctions.getCellPos(i, transversalNumCells);
-				checkDipoleVector[c].addAssign(transversalChargeDensity[i].mult(gridPos[c] * as - locationTransverse[c]));
-			}
-		}
-
-		for (int c = 0; c < transversalNumCells.length; c++) {
-			for (int i = 0; i < numberOfComponents; i++) {
-				System.out.println(checkDipoleVector[c].get(i));
-			}
-		}
-		*/
 	}
 
 	/**
