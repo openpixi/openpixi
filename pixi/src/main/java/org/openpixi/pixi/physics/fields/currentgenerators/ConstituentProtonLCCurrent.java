@@ -99,7 +99,7 @@ public class ConstituentProtonLCCurrent implements ICurrentGenerator {
 	private double g;
 
 	/**
-	 * Random seed.
+	 * Random generator.
 	 */
 	private Random rand;
 
@@ -117,7 +117,7 @@ public class ConstituentProtonLCCurrent implements ICurrentGenerator {
 	 * @param location
 	 * @param longitudinalWidth
 	 */
-	public ConstituentProtonLCCurrent(int direction, int orientation, double location, double longitudinalWidth, double[] locationTransverse, boolean useMonopoleRemoval, boolean useDipoleRemoval, Integer seed) {
+	public ConstituentProtonLCCurrent(int direction, int orientation, double location, double longitudinalWidth, double[] locationTransverse, boolean useMonopoleRemoval, boolean useDipoleRemoval, Random rand) {
 		this.direction = direction;
 		this.orientation = orientation;
 		this.location = location;
@@ -125,11 +125,7 @@ public class ConstituentProtonLCCurrent implements ICurrentGenerator {
 		this.locationTransverse = locationTransverse;
 		this.useMonopoleRemoval = useMonopoleRemoval;
 		this.useDipoleRemoval = useDipoleRemoval;
-
-		rand = new Random();
-		if(seed != null) {
-			rand.setSeed(seed);
-		}
+		this.rand = rand;
 
 		this.charges = new ArrayList<GaussianCharge>();
 		this.particleLCCurrent = new ParticleLCCurrent(direction, orientation, location, longitudinalWidth);
@@ -195,6 +191,52 @@ public class ConstituentProtonLCCurrent implements ICurrentGenerator {
 
 		particleLCCurrent.setTransversalChargeDensity(transversalChargeDensity);
 		particleLCCurrent.initializeCurrent(s, dummy);
+	}
+
+	public AlgebraElement[] computeChargeDensity(Simulation s) {
+		// 0) Define some variables.
+		numberOfColors = s.getNumberOfColors();
+		numberOfComponents = s.grid.getElementFactory().numberOfComponents;
+		as = s.grid.getLatticeSpacing();
+		at = s.getTimeStep();
+		g = s.getCouplingConstant();
+
+		// 1) Initialize transversal charge density grid using the charges array.
+		transversalNumCells = GridFunctions.reduceGridPos(s.grid.getNumCells(), direction);
+		totalTransversalCells = GridFunctions.getTotalNumberOfCells(transversalNumCells);
+		transversalChargeDensity = new AlgebraElement[totalTransversalCells];
+		transversalWidths = new double[totalTransversalCells];
+		for (int i = 0; i < totalTransversalCells; i++) {
+			transversalChargeDensity[i] = s.grid.getElementFactory().algebraZero();
+		}
+
+		// Iterate over (point) charges, create a Gaussian charge distribution around them and add them to the transversal charge density.
+		double norm = 0.0;
+		for (int i = 0; i < charges.size(); i++) {
+			GaussianCharge c = charges.get(i);
+			for (int k = 0; k < totalTransversalCells; k++) {
+				double distance = getDistance(c.location, GridFunctions.getCellPos(k, transversalNumCells), as);
+				transversalWidths[k] += Math.abs(shapeFunction(distance, c.width)/Math.pow(c.width*Math.sqrt(2*Math.PI), transversalNumCells.length));
+				norm += Math.abs(shapeFunction(distance, c.width)/Math.pow(c.width*Math.sqrt(2*Math.PI), transversalNumCells.length));
+			}
+		}
+		for (int k = 0; k < totalTransversalCells; k++) {
+			transversalWidths[k] /= norm;
+		}
+
+		for (int k = 0; k < totalTransversalCells; k++) {
+			AlgebraElement chargeAmplitude = s.grid.getElementFactory().algebraZero(s.getNumberOfColors());
+			for (int j = 0; j < numberOfComponents; j++) {
+				chargeAmplitude.set(j, rand.nextGaussian()*transversalWidths[k] / Math.pow(as, s.getNumberOfDimensions() - 1));
+			}
+			transversalChargeDensity[k].addAssign(chargeAmplitude);
+		}
+
+		if(useMonopoleRemoval) {
+			removeMonopoleMoment(s);
+		}
+
+		return transversalChargeDensity;
 	}
 
 

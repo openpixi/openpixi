@@ -88,31 +88,44 @@ public class YamlRandomTemporalParticleColorCurrentNucleus {
 		for (int j = 0; j < transversalLocation.size(); j++) {
 			locationTransverse[j] = transversalLocation.get(j);
 		}
-		NucleusLCCurrent generator = new NucleusLCCurrent(direction, orientation, longitudinalLocation, longitudinalWidth, locationTransverse, useMonopoleRemoval, useDipoleRemoval, randomSeed);
+
 		Random rand = new Random();
 		if(randomSeed != null) {
 			rand.setSeed(randomSeed);
 		}
 
-		int numberOfComponents = numberOfColors * numberOfColors - 1;
-		if(numberOfColors == 1) {
-			numberOfComponents = 1;
-		}
-
-		ArrayList<double[]> listOfChargeLocations = new ArrayList<double[]>();
+		ArrayList<double[]> listOfNucleonLocations = new ArrayList<double[]>();
 		for(int i = 0; i < numberOfNucleons; i++) {
 			double[] chargeLocation = new double[transversalLocation.size()];
 			for (int j = 0; j < transversalLocation.size(); j++) {
-				chargeLocation[j] = transversalLocation.get(j) + rand.nextGaussian() * transversalRadius;
+				chargeLocation[j] = transversalLocation.get(j) + getWoodsSaxonMonteCarlo(rand);
 			}
-			listOfChargeLocations.add(chargeLocation);
+			listOfNucleonLocations.add(chargeLocation);
 		}
 
+		NucleusLCCurrent generator = new NucleusLCCurrent(direction, orientation, longitudinalLocation, longitudinalWidth, locationTransverse, useMonopoleRemoval, useDipoleRemoval, useConstituentQuarks, rand);
+
+
 		for(int i = 0; i < numberOfNucleons; i++) {
-			generator.addCharge(listOfChargeLocations.get(i), partonWidth);
+			generator.addNucleon(listOfNucleonLocations.get(i), nucleonWidth, partonWidth);
 		}
 
 		return generator;
+	}
+
+	private double getWoodsSaxonMonteCarlo(Random rand) {
+		double random1, random2, y;
+		do {
+			random1 = rand.nextDouble();
+			random2 = rand.nextDouble();
+			double norm = 2.0*Math.pow(Math.PI, transversalLocation.size() - 1)/surfaceThickness*Math.log(1.0 + Math.exp(transversalRadius/surfaceThickness));
+			double range = transversalRadius + surfaceThickness*Math.log(1.0/(10e-17*norm) - 1.0);
+			random1 *= range;
+			random2 /= norm;
+			y = 1.0/(norm*(Math.exp((random1 - transversalRadius)/surfaceThickness) + 1));
+		} while (random2 > y);
+
+		return random1;
 	}
 
 
