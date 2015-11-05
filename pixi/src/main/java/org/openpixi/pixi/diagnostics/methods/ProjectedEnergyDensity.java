@@ -44,10 +44,12 @@ public class ProjectedEnergyDensity implements Diagnostics {
 			}
 
 			for (int i = 0; i < grid.getTotalNumberOfCells(); i++) {
-				int projIndex = grid.getCellPos(i)[direction];
-				for (int j = 0; j < grid.getNumberOfDimensions(); j++) {
-					double energy = grid.getE(i, j).square() + 0.5 * (grid.getBsquaredFromLinks(i, j, 0) + grid.getBsquaredFromLinks(i, j, 1));
-					energyDensity[projIndex] += energy / 2;
+				if(grid.isEvaluatable(i)) {
+					int projIndex = grid.getCellPos(i)[direction];
+					for (int j = 0; j < grid.getNumberOfDimensions(); j++) {
+						double energy = grid.getE(i, j).square() + 0.5 * (grid.getBsquaredFromLinks(i, j, 0) + grid.getBsquaredFromLinks(i, j, 1));
+						energyDensity[projIndex] += energy / 2;
+					}
 				}
 			}
 

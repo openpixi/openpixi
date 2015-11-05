@@ -89,11 +89,14 @@ public class MVModel implements ICurrentGenerator {
 
 		// Initialize particle light-cone current
 		double L = s.grid.getNumCells(direction) * s.grid.getLatticeSpacing();
+
+		// Wrap location
 		if(location < 0) {
 			location += L;
 		} else if(location > L) {
 			location -= L;
 		}
+
 		this.particleLCCurrent = new ParticleLCCurrent(direction, orientation, location, longitudinalWidth);
 		particleLCCurrent.setTransversalChargeDensity(transversalChargeDensity);
 		particleLCCurrent.initializeCurrent(s, totalInstances);
