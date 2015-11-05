@@ -64,11 +64,6 @@ public class NucleusLCCurrent implements ICurrentGenerator {
 	private int[] transversalNumCells;
 
 	/**
-	 * Profile of the transversal charge density.
-	 */
-	private double[] transversalWidths;
-
-	/**
 	 * Transversal charge density.
 	 */
 	private AlgebraElement[] transversalChargeDensity;
@@ -205,6 +200,12 @@ public class NucleusLCCurrent implements ICurrentGenerator {
 				transversalChargeDensity[w].addAssign(nucleonChargeDensity[w]);
 			}
 		}
+
+		/*
+		if(useDipoleRemoval) {
+			removeDipoleMoment(s);
+		}
+		*/
 
 		particleLCCurrent.setTransversalChargeDensity(transversalChargeDensity);
 		particleLCCurrent.initializeCurrent(s, dummy);

@@ -229,11 +229,11 @@ public class SphericalProtonLCCurrent implements ICurrentGenerator {
 		if(useMonopoleRemoval) {
 			removeMonopoleMoment(s);
 		}
-
+		/*
 		if(useDipoleRemoval) {
 			removeDipoleMoment(s);
 		}
-
+		*/
 		return transversalChargeDensity;
 	}
 

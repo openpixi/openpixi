@@ -1,6 +1,5 @@
 package org.openpixi.pixi.ui.util.yaml.currentgenerators;
 
-import org.openpixi.pixi.physics.fields.currentgenerators.ConstituentProtonLCCurrent;
 import org.openpixi.pixi.physics.fields.currentgenerators.NucleusLCCurrent;
 
 import java.util.ArrayList;

@@ -235,11 +235,11 @@ public class ConstituentProtonLCCurrent implements ICurrentGenerator {
 		if(useMonopoleRemoval) {
 			removeMonopoleMoment(s);
 		}
-
+		/*
 		if(useDipoleRemoval) {
 			removeDipoleMoment(s);
 		}
-
+		*/
 		return transversalChargeDensity;
 	}
 
