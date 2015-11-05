@@ -102,7 +102,7 @@ public class YamlRandomTemporalParticleColorCurrentNucleus {
 			listOfNucleonLocations.add(chargeLocation);
 		}
 
-		NucleusLCCurrent generator = new NucleusLCCurrent(direction, orientation, longitudinalLocation, longitudinalWidth, locationTransverse, useMonopoleRemoval, useDipoleRemoval, useConstituentQuarks, rand);
+		NucleusLCCurrent generator = new NucleusLCCurrent(direction, orientation, longitudinalLocation, longitudinalWidth, locationTransverse, useMonopoleRemoval, useDipoleRemoval, useConstituentQuarks, rand, transversalRadius, surfaceThickness);
 
 
 		for(int i = 0; i < numberOfNucleons; i++) {

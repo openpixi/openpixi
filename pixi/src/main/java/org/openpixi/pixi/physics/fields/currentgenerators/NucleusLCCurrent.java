@@ -103,7 +103,15 @@ public class NucleusLCCurrent implements ICurrentGenerator {
 	 */
 	private Random rand;
 
+	/**
+	 * Transversal radius of the Woods-Saxon (Fermi-Dirac) distribution
+	 */
+	public double transversalRadius;
 
+	/**
+	 * Transversal surface thickness of the Woods-Saxon (Fermi-Dirac) distribution
+	 */
+	public double surfaceThickness;
 	/**
 	 * SphericalProtonLCCurrent for the spherical proton model.
 	 */
@@ -127,7 +135,7 @@ public class NucleusLCCurrent implements ICurrentGenerator {
 	 * @param location
 	 * @param longitudinalWidth
 	 */
-	public NucleusLCCurrent(int direction, int orientation, double location, double longitudinalWidth, double[] locationTransverse, boolean useMonopoleRemoval, boolean useDipoleRemoval, boolean useConstituentQuarks, Random rand) {
+	public NucleusLCCurrent(int direction, int orientation, double location, double longitudinalWidth, double[] locationTransverse, boolean useMonopoleRemoval, boolean useDipoleRemoval, boolean useConstituentQuarks, Random rand, double transversalRadius, double surfaceThickness) {
 		this.direction = direction;
 		this.orientation = orientation;
 		this.location = location;
@@ -137,6 +145,8 @@ public class NucleusLCCurrent implements ICurrentGenerator {
 		this.useDipoleRemoval = useDipoleRemoval;
 		this.useConstituentQuarks = useConstituentQuarks;
 		this.rand = rand;
+		this.transversalRadius = transversalRadius;
+		this.surfaceThickness = surfaceThickness;
 
 		this.charges = new ArrayList<NucleonCharge>();
 		this.particleLCCurrent = new ParticleLCCurrent(direction, orientation, location, longitudinalWidth);
@@ -201,16 +211,80 @@ public class NucleusLCCurrent implements ICurrentGenerator {
 			}
 		}
 
-		/*
 		if(useDipoleRemoval) {
-			removeDipoleMoment(s);
+			removeDipoleMomentNucleus(s);
 		}
-		*/
 
 		particleLCCurrent.setTransversalChargeDensity(transversalChargeDensity);
 		particleLCCurrent.initializeCurrent(s, dummy);
 	}
 
+	/**
+	 * Removes the dipole moment by adding dipoles for each color component. These dipoles cancel the total dipole moment.
+	 *
+	 * @param s
+	 */
+	private void removeDipoleMomentNucleus(Simulation s) {
+		AlgebraElement[] dipoleVector = new AlgebraElement[transversalNumCells.length];
+		double[] transversalDensityShape = new double[totalTransversalCells];
+		for (int i = 0; i < transversalNumCells.length; i++) {
+			dipoleVector[i] = s.grid.getElementFactory().algebraZero(s.getNumberOfColors());
+		}
+
+		// Iterate over the transversal plane and construct normalized nucleus shape..
+		double norm = 0.0;
+		for (int k = 0; k < totalTransversalCells; k++) {
+			double distance = getDistance(locationTransverse, GridFunctions.getCellPos(k, transversalNumCells), as);
+			transversalDensityShape[k] = Math.abs(getWoodsSaxonProfile(distance));
+			norm += Math.abs(getWoodsSaxonProfile(distance));
+		}
+
+		for (int k = 0; k < totalTransversalCells; k++) {
+			transversalDensityShape[k] /= norm;
+		}
+
+		for (int c = 0; c < transversalNumCells.length; c++) {
+			for (int i = 0; i < totalTransversalCells; i++) {
+				int[] gridPos = GridFunctions.getCellPos(i, transversalNumCells);
+				dipoleVector[c].addAssign(transversalChargeDensity[i].mult(gridPos[c] * as - locationTransverse[c]));
+			}
+		}
+		/*
+		for (int c = 0; c < transversalNumCells.length; c++) {
+			for (int i = 0; i < numberOfComponents; i++) {
+				System.out.println(dipoleVector[c].get(i));
+			}
+		}
+		*/
+		for (int c = 0; c < transversalNumCells.length; c++) {
+			for (int i = 0; i < totalTransversalCells; i++) {
+				int[] gridPos = GridFunctions.getCellPos(i, transversalNumCells);
+				gridPos[c]++;
+				int z = GridFunctions.getCellIndex(gridPos, transversalNumCells);
+				transversalChargeDensity[i].addAssign(dipoleVector[c].mult(transversalDensityShape[z] / as));
+				transversalChargeDensity[i].addAssign(dipoleVector[c].mult(-1.0 * transversalDensityShape[i] / as));
+			}
+		}
+
+		/*
+		AlgebraElement[] checkDipoleVector = new AlgebraElement[transversalNumCells.length];
+		for (int i = 0; i < transversalNumCells.length; i++) {
+			checkDipoleVector[i] = s.grid.getElementFactory().algebraZero(s.getNumberOfColors());
+		}
+		for (int c = 0; c < transversalNumCells.length; c++) {
+			for (int i = 0; i < totalTransversalCells; i++) {
+				int[] gridPos = GridFunctions.getCellPos(i, transversalNumCells);
+				checkDipoleVector[c].addAssign(transversalChargeDensity[i].mult(gridPos[c] * as - parton.location[c]));
+			}
+		}
+
+		for (int c = 0; c < transversalNumCells.length; c++) {
+			for (int i = 0; i < numberOfComponents; i++) {
+				System.out.println(checkDipoleVector[c].get(i));
+			}
+		}
+		*/
+	}
 
 	/**
 	 *
@@ -232,6 +306,20 @@ public class NucleusLCCurrent implements ICurrentGenerator {
 			totalCharge.addAssign(transversalChargeDensity[i]);
 		}
 		return totalCharge;
+	}
+
+	private double getDistance(double[] center, int[] position, double spacing) {
+		double distance = 0.0;
+		for (int j = 0; j < position.length; j++) {
+			distance += Math.pow(center[j] - spacing*position[j], 2);
+		}
+		return Math.sqrt(distance);
+	}
+
+	private double getWoodsSaxonProfile(double distance) {
+		double norm = 2.0*Math.pow(Math.PI, transversalNumCells.length - 1)/surfaceThickness*Math.log(1.0 + Math.exp(transversalRadius/surfaceThickness));
+		double y = 1.0/(norm*(Math.exp((distance - transversalRadius)/surfaceThickness) + 1));
+		return y;
 	}
 
 	/**
