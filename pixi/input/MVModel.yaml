@@ -30,6 +30,12 @@ currents:
       longitudinalWidth: 3.0
       mu: 0.04
 
+output:
+  projectedEnergyDensity:
+    - path: "energydensity.tsv"
+      interval: 1.0
+      direction: 0
+
 # Generated panel code:
 panels:
   dividerLocation: 1015
