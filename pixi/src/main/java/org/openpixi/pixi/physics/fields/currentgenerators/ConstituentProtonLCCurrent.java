@@ -84,6 +84,11 @@ public class ConstituentProtonLCCurrent implements ICurrentGenerator {
 	private int numberOfComponents;
 
 	/**
+	 * Density of the color charge
+	 */
+	public double colorChargeDensity;
+
+	/**
 	 * Lattice spacing of the grid.
 	 */
 	private double as;
@@ -117,7 +122,7 @@ public class ConstituentProtonLCCurrent implements ICurrentGenerator {
 	 * @param location
 	 * @param longitudinalWidth
 	 */
-	public ConstituentProtonLCCurrent(int direction, int orientation, double location, double longitudinalWidth, double[] locationTransverse, boolean useMonopoleRemoval, boolean useDipoleRemoval, Random rand) {
+	public ConstituentProtonLCCurrent(int direction, int orientation, double location, double longitudinalWidth, double[] locationTransverse, boolean useMonopoleRemoval, boolean useDipoleRemoval, Random rand, double colorChargeDensity) {
 		this.direction = direction;
 		this.orientation = orientation;
 		this.location = location;
@@ -126,6 +131,7 @@ public class ConstituentProtonLCCurrent implements ICurrentGenerator {
 		this.useMonopoleRemoval = useMonopoleRemoval;
 		this.useDipoleRemoval = useDipoleRemoval;
 		this.rand = rand;
+		this.colorChargeDensity = colorChargeDensity;
 
 		this.charges = new ArrayList<GaussianCharge>();
 		this.particleLCCurrent = new ParticleLCCurrent(direction, orientation, location, longitudinalWidth);
@@ -176,7 +182,7 @@ public class ConstituentProtonLCCurrent implements ICurrentGenerator {
 		for (int k = 0; k < totalTransversalCells; k++) {
 			AlgebraElement chargeAmplitude = s.grid.getElementFactory().algebraZero(s.getNumberOfColors());
 			for (int j = 0; j < numberOfComponents; j++) {
-				chargeAmplitude.set(j, rand.nextGaussian()*transversalWidths[k] / Math.pow(as, s.getNumberOfDimensions() - 1));
+				chargeAmplitude.set(j, rand.nextGaussian()*transversalWidths[k]*charges.size()*colorChargeDensity / Math.pow(as, s.getNumberOfDimensions() - 1));
 			}
 			transversalChargeDensity[k].addAssign(chargeAmplitude);
 		}
@@ -227,7 +233,7 @@ public class ConstituentProtonLCCurrent implements ICurrentGenerator {
 		for (int k = 0; k < totalTransversalCells; k++) {
 			AlgebraElement chargeAmplitude = s.grid.getElementFactory().algebraZero(s.getNumberOfColors());
 			for (int j = 0; j < numberOfComponents; j++) {
-				chargeAmplitude.set(j, rand.nextGaussian()*transversalWidths[k] / Math.pow(as, s.getNumberOfDimensions() - 1));
+				chargeAmplitude.set(j, rand.nextGaussian()*transversalWidths[k]*charges.size()*colorChargeDensity / Math.pow(as, s.getNumberOfDimensions() - 1));
 			}
 			transversalChargeDensity[k].addAssign(chargeAmplitude);
 		}

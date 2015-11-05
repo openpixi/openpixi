@@ -79,6 +79,11 @@ public class SphericalProtonLCCurrent implements ICurrentGenerator {
 	private int numberOfComponents;
 
 	/**
+	 * Density of the color charge
+	 */
+	public double colorChargeDensity;
+
+	/**
 	 * Lattice spacing of the grid.
 	 */
 	private double as;
@@ -112,7 +117,7 @@ public class SphericalProtonLCCurrent implements ICurrentGenerator {
 	 * @param location
 	 * @param longitudinalWidth
 	 */
-	public SphericalProtonLCCurrent(int direction, int orientation, double location, double longitudinalWidth, boolean useMonopoleRemoval, boolean useDipoleRemoval, Random rand) {
+	public SphericalProtonLCCurrent(int direction, int orientation, double location, double longitudinalWidth, boolean useMonopoleRemoval, boolean useDipoleRemoval, Random rand, double colorChargeDensity) {
 		this.direction = direction;
 		this.orientation = orientation;
 		this.location = location;
@@ -120,6 +125,7 @@ public class SphericalProtonLCCurrent implements ICurrentGenerator {
 		this.useMonopoleRemoval = useMonopoleRemoval;
 		this.useDipoleRemoval = useDipoleRemoval;
 		this.rand = rand;
+		this.colorChargeDensity = colorChargeDensity;
 
 		this.charges = new ArrayList<GaussianCharge>();
 		this.particleLCCurrent = new ParticleLCCurrent(direction, orientation, location, longitudinalWidth);
@@ -159,8 +165,8 @@ public class SphericalProtonLCCurrent implements ICurrentGenerator {
 			GaussianCharge c = charges.get(i);
 			for (int k = 0; k < totalTransversalCells; k++) {
 				double distance = getDistance(c.location, GridFunctions.getCellPos(k, transversalNumCells), as);
-				transversalWidths[k] += Math.abs(shapeFunction(distance, c.width)/Math.pow(c.width*Math.sqrt(2*Math.PI), transversalNumCells.length)/charges.size());
-				norm += Math.abs(shapeFunction(distance, c.width)/Math.pow(c.width*Math.sqrt(2*Math.PI), transversalNumCells.length)/charges.size());
+				transversalWidths[k] += Math.abs(shapeFunction(distance, c.width)/Math.pow(c.width*Math.sqrt(2*Math.PI), transversalNumCells.length));
+				norm += Math.abs(shapeFunction(distance, c.width)/Math.pow(c.width*Math.sqrt(2*Math.PI), transversalNumCells.length));
 			}
 		}
 		for (int k = 0; k < totalTransversalCells; k++) {
@@ -170,7 +176,7 @@ public class SphericalProtonLCCurrent implements ICurrentGenerator {
 		for (int k = 0; k < totalTransversalCells; k++) {
 			AlgebraElement chargeAmplitude = s.grid.getElementFactory().algebraZero(s.getNumberOfColors());
 			for (int j = 0; j < numberOfComponents; j++) {
-				chargeAmplitude.set(j, rand.nextGaussian()*transversalWidths[k] / Math.pow(as, s.getNumberOfDimensions() - 1));
+				chargeAmplitude.set(j, rand.nextGaussian()*transversalWidths[k]*charges.size()*colorChargeDensity / Math.pow(as, s.getNumberOfDimensions() - 1));
 			}
 			transversalChargeDensity[k].addAssign(chargeAmplitude);
 		}
@@ -221,7 +227,7 @@ public class SphericalProtonLCCurrent implements ICurrentGenerator {
 		for (int k = 0; k < totalTransversalCells; k++) {
 			AlgebraElement chargeAmplitude = s.grid.getElementFactory().algebraZero(s.getNumberOfColors());
 			for (int j = 0; j < numberOfComponents; j++) {
-				chargeAmplitude.set(j, rand.nextGaussian()*transversalWidths[k] / Math.pow(as, s.getNumberOfDimensions() - 1));
+				chargeAmplitude.set(j, rand.nextGaussian()*transversalWidths[k]*charges.size()*colorChargeDensity / Math.pow(as, s.getNumberOfDimensions() - 1));
 			}
 			transversalChargeDensity[k].addAssign(chargeAmplitude);
 		}

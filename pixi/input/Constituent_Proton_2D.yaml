@@ -28,6 +28,7 @@ currents:
       numberOfCharges: 3
       partonWidth: 2
       numberOfColors: 2
+      colorChargeDensity: 1.0
       useDipoleRemoval: true
       useMonopoleRemoval: true
       randomSeed: 1
@@ -40,6 +41,7 @@ currents:
       numberOfCharges: 3
       partonWidth: 2
       numberOfColors: 2
+      colorChargeDensity: 1.0
       useDipoleRemoval: true
       useMonopoleRemoval: true
       randomSeed: 2

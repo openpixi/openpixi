@@ -30,6 +30,7 @@ currents:
       partonWidth: 1
       nucleonWidth: 2
       numberOfColors: 2
+      colorChargeDensity: 1.0
       useDipoleRemoval: true
       useMonopoleRemoval: true
       useConstituentQuarks: true
@@ -45,6 +46,7 @@ currents:
       partonWidth: 1
       nucleonWidth: 2
       numberOfColors: 2
+      colorChargeDensity: 1.0
       useDipoleRemoval: true
       useMonopoleRemoval: true
       useConstituentQuarks: true

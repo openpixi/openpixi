@@ -84,6 +84,11 @@ public class NucleusLCCurrent implements ICurrentGenerator {
 	private int numberOfComponents;
 
 	/**
+	 * Density of the color charge
+	 */
+	public double colorChargeDensity;
+
+	/**
 	 * Lattice spacing of the grid.
 	 */
 	private double as;
@@ -135,7 +140,7 @@ public class NucleusLCCurrent implements ICurrentGenerator {
 	 * @param location
 	 * @param longitudinalWidth
 	 */
-	public NucleusLCCurrent(int direction, int orientation, double location, double longitudinalWidth, double[] locationTransverse, boolean useMonopoleRemoval, boolean useDipoleRemoval, boolean useConstituentQuarks, Random rand, double transversalRadius, double surfaceThickness) {
+	public NucleusLCCurrent(int direction, int orientation, double location, double longitudinalWidth, double[] locationTransverse, boolean useMonopoleRemoval, boolean useDipoleRemoval, boolean useConstituentQuarks, Random rand, double transversalRadius, double surfaceThickness, double colorChargeDensity) {
 		this.direction = direction;
 		this.orientation = orientation;
 		this.location = location;
@@ -147,6 +152,7 @@ public class NucleusLCCurrent implements ICurrentGenerator {
 		this.rand = rand;
 		this.transversalRadius = transversalRadius;
 		this.surfaceThickness = surfaceThickness;
+		this.colorChargeDensity = colorChargeDensity;
 
 		this.charges = new ArrayList<NucleonCharge>();
 		this.particleLCCurrent = new ParticleLCCurrent(direction, orientation, location, longitudinalWidth);
@@ -186,7 +192,7 @@ public class NucleusLCCurrent implements ICurrentGenerator {
 
 			if (useConstituentQuarks) {
 
-				constituentProtonLCCurrent = new ConstituentProtonLCCurrent(direction, orientation, location, longitudinalWidth, locationTransverse, useMonopoleRemoval, useDipoleRemoval, rand);
+				constituentProtonLCCurrent = new ConstituentProtonLCCurrent(direction, orientation, location, longitudinalWidth, locationTransverse, useMonopoleRemoval, useDipoleRemoval, rand, colorChargeDensity);
 				for (int j = 0; j < 3; j++) {
 					double[] protonLocation = new double[c.location.length];
 					for (int k = 0; k < c.location.length; k++) {
@@ -198,7 +204,7 @@ public class NucleusLCCurrent implements ICurrentGenerator {
 
 			} else {
 
-				sphericalProtonLCCurrent = new SphericalProtonLCCurrent(direction, orientation, location, longitudinalWidth, useMonopoleRemoval, useDipoleRemoval, rand);
+				sphericalProtonLCCurrent = new SphericalProtonLCCurrent(direction, orientation, location, longitudinalWidth, useMonopoleRemoval, useDipoleRemoval, rand, colorChargeDensity);
 				for (int j = 0; j < 3; j++) {
 					sphericalProtonLCCurrent.addCharge(c.location, c.width);
 				}

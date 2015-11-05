@@ -67,6 +67,11 @@ public class YamlRandomTemporalParticleColorCurrentNucleus {
 	public Integer randomSeed = null;
 
 	/**
+	 * Density of the color charge
+	 */
+	public Double colorChargeDensity;
+
+	/**
 	 * Option whether to use the dipole removal method.
 	 */
 	public Boolean useDipoleRemoval = true;
@@ -102,7 +107,7 @@ public class YamlRandomTemporalParticleColorCurrentNucleus {
 			listOfNucleonLocations.add(chargeLocation);
 		}
 
-		NucleusLCCurrent generator = new NucleusLCCurrent(direction, orientation, longitudinalLocation, longitudinalWidth, locationTransverse, useMonopoleRemoval, useDipoleRemoval, useConstituentQuarks, rand, transversalRadius, surfaceThickness);
+		NucleusLCCurrent generator = new NucleusLCCurrent(direction, orientation, longitudinalLocation, longitudinalWidth, locationTransverse, useMonopoleRemoval, useDipoleRemoval, useConstituentQuarks, rand, transversalRadius, surfaceThickness, colorChargeDensity);
 
 
 		for(int i = 0; i < numberOfNucleons; i++) {
@@ -118,7 +123,7 @@ public class YamlRandomTemporalParticleColorCurrentNucleus {
 			random1 = rand.nextDouble();
 			random2 = rand.nextDouble();
 			double norm = 2.0*Math.pow(Math.PI, transversalLocation.size() - 1)/surfaceThickness*Math.log(1.0 + Math.exp(transversalRadius/surfaceThickness));
-			double range = transversalRadius + surfaceThickness*Math.log(1.0/(10e-17*norm) - 1.0);
+			double range = transversalRadius + surfaceThickness*Math.log(1.0/(10e-10*norm) - 1.0);
 			random1 *= range;
 			random2 /= norm;
 			y = 1.0/(norm*(Math.exp((random1 - transversalRadius)/surfaceThickness) + 1));
