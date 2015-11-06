@@ -149,6 +149,7 @@ public class SphericalProtonLCCurrent implements ICurrentGenerator {
 		as = s.grid.getLatticeSpacing();
 		at = s.getTimeStep();
 		g = s.getCouplingConstant();
+		double colorStrengthFactor = charges.size()*g*g*colorChargeDensity*colorChargeDensity;
 
 		// 1) Initialize transversal charge density grid using the charges array.
 		transversalNumCells = GridFunctions.reduceGridPos(s.grid.getNumCells(), direction);
@@ -176,7 +177,7 @@ public class SphericalProtonLCCurrent implements ICurrentGenerator {
 		for (int k = 0; k < totalTransversalCells; k++) {
 			AlgebraElement chargeAmplitude = s.grid.getElementFactory().algebraZero(s.getNumberOfColors());
 			for (int j = 0; j < numberOfComponents; j++) {
-				chargeAmplitude.set(j, rand.nextGaussian()*transversalWidths[k]*charges.size()*colorChargeDensity / Math.pow(as, s.getNumberOfDimensions() - 1));
+				chargeAmplitude.set(j, rand.nextGaussian()*transversalWidths[k]*colorStrengthFactor / Math.pow(as, s.getNumberOfDimensions() - 1));
 			}
 			transversalChargeDensity[k].addAssign(chargeAmplitude);
 		}
@@ -200,6 +201,7 @@ public class SphericalProtonLCCurrent implements ICurrentGenerator {
 		as = s.grid.getLatticeSpacing();
 		at = s.getTimeStep();
 		g = s.getCouplingConstant();
+		double colorStrengthFactor = charges.size()*g*g*colorChargeDensity*colorChargeDensity;
 
 		// 1) Initialize transversal charge density grid using the charges array.
 		transversalNumCells = GridFunctions.reduceGridPos(s.grid.getNumCells(), direction);
@@ -227,7 +229,7 @@ public class SphericalProtonLCCurrent implements ICurrentGenerator {
 		for (int k = 0; k < totalTransversalCells; k++) {
 			AlgebraElement chargeAmplitude = s.grid.getElementFactory().algebraZero(s.getNumberOfColors());
 			for (int j = 0; j < numberOfComponents; j++) {
-				chargeAmplitude.set(j, rand.nextGaussian()*transversalWidths[k]*charges.size()*colorChargeDensity / Math.pow(as, s.getNumberOfDimensions() - 1));
+				chargeAmplitude.set(j, rand.nextGaussian()*transversalWidths[k]*colorStrengthFactor / Math.pow(as, s.getNumberOfDimensions() - 1));
 			}
 			transversalChargeDensity[k].addAssign(chargeAmplitude);
 		}

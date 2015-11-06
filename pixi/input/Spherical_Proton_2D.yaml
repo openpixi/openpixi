@@ -1,12 +1,12 @@
-gridStep: 2
-couplingConstant: 0.5
+gridStep: 1 #1/3 fm
+couplingConstant: 0.35 #alpha_s=0.01
 numberOfDimensions: 3
 numberOfColors: 2
 numberOfThreads: 8
-gridCells: [64, 64, 1]
+gridCells: [128, 128, 1]
 poissonsolver: empty
 fieldsolver: temporal yang mills
-timeStep: 0.5
+timeStep: 0.25
 duration: 1000
 evaluationRegion:
   enabled: true
@@ -22,24 +22,24 @@ currents:
     - direction: 0
       orientation: 1
       longitudinalLocation: 32
-      longitudinalWidth: 4.0
-      transversalWidth: 12.0
+      longitudinalWidth: 3.0 # 1 fm
+      transversalWidth: 6.0
       transversalLocation: [64, 0]
       numberOfCharges: 3
       numberOfColors: 2
-      colorChargeDensity: 1.0
+      colorChargeDensity: 2.65 # 7.96/fm
       useDipoleRemoval: true
       useMonopoleRemoval: true
       randomSeed: 1
     - direction: 0
       orientation: -1
       longitudinalLocation: 96
-      longitudinalWidth: 4.0
-      transversalWidth: 12.0
+      longitudinalWidth: 3.0 # 1 fm
+      transversalWidth: 6.0
       transversalLocation: [64, 0]
       numberOfCharges: 3
       numberOfColors: 2
-      colorChargeDensity: 1.0
+      colorChargeDensity: 2.65 # 7.96/fm
       useDipoleRemoval: true
       useMonopoleRemoval: true
       randomSeed: 2
