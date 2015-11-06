@@ -120,7 +120,7 @@ public class YamlCurrents {
         }
 
         for (YamlRandomTemporalParticleColorCurrentNucleus current : randomTemporalParticleColorCurrentsNucleus) {
-            s.addCurrentGenerator(current.getCurrentGenerator());
+            s.addCurrentGenerator(current.getCurrentGenerator(s));
         }
 
 

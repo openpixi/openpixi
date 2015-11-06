@@ -1,6 +1,8 @@
 package org.openpixi.pixi.ui.util.yaml.currentgenerators;
 
+import org.openpixi.pixi.physics.Settings;
 import org.openpixi.pixi.physics.fields.currentgenerators.NucleusLCCurrent;
+import org.openpixi.pixi.physics.util.GridFunctions;
 
 import java.util.ArrayList;
 import java.util.Random;
@@ -87,10 +89,22 @@ public class YamlRandomTemporalParticleColorCurrentNucleus {
 	public Boolean useConstituentQuarks = true;
 
 
-	public NucleusLCCurrent getCurrentGenerator() {
+	public NucleusLCCurrent getCurrentGenerator(Settings set) {
 		double[] locationTransverse = new double[transversalLocation.size()];
 		for (int j = 0; j < transversalLocation.size(); j++) {
 			locationTransverse[j] = transversalLocation.get(j);
+		}
+		int [] transversalNumCells = GridFunctions.reduceGridPos(set.getGridCells(), direction);
+		int start = 0, range;
+		if(transversalNumCells[start] > 1) {
+			range = transversalNumCells[start];
+		} else {
+			range = transversalNumCells[start+1];
+		}
+		for (int j = 0; j < transversalNumCells.length; j++) {
+			if( (transversalNumCells[j] > 1) && (transversalNumCells[j] < range) ) {
+				range = transversalNumCells[j];
+			}
 		}
 
 		Random rand = new Random();
@@ -102,7 +116,7 @@ public class YamlRandomTemporalParticleColorCurrentNucleus {
 		for(int i = 0; i < numberOfNucleons; i++) {
 			double[] chargeLocation = new double[transversalLocation.size()];
 			for (int j = 0; j < transversalLocation.size(); j++) {
-				chargeLocation[j] = transversalLocation.get(j) + getWoodsSaxonMonteCarlo(rand);
+				chargeLocation[j] = transversalLocation.get(j) + getWoodsSaxonMonteCarlo(rand, range*set.getGridStep());
 			}
 			listOfNucleonLocations.add(chargeLocation);
 		}
@@ -117,19 +131,21 @@ public class YamlRandomTemporalParticleColorCurrentNucleus {
 		return generator;
 	}
 
-	private double getWoodsSaxonMonteCarlo(Random rand) {
+	private double getWoodsSaxonMonteCarlo(Random rand, double range) {
 		double random1, random2, y;
 		do {
 			random1 = rand.nextDouble();
 			random2 = rand.nextDouble();
 			double norm = 2.0*Math.pow(Math.PI, transversalLocation.size() - 1)/surfaceThickness*Math.log(1.0 + Math.exp(transversalRadius/surfaceThickness));
-			double range = transversalRadius + surfaceThickness*Math.log(1.0/(10e-10*norm) - 1.0);
+			//double range = transversalRadius + surfaceThickness*Math.log(1.0/(10e-10*norm) - 1.0);
 			random1 *= range;
 			random2 /= norm;
 			y = 1.0/(norm*(Math.exp((random1 - transversalRadius)/surfaceThickness) + 1));
 		} while (random2 > y);
 
-		return random1;
+		double randSign = Math.signum(rand.nextDouble() - 0.5);//TODO: Make this method spherical!!
+
+		return random1*randSign;
 	}
 
 
