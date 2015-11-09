@@ -20,7 +20,7 @@ public class Cell implements Serializable {
 	private AlgebraElement[] E;
 	
 	/**Purely spatial components of the field-strength tensor at time*/
-	private AlgebraElement[][] F;
+	//private AlgebraElement[][] F;
 	
 	/**Link matrices at time t - dt/2 */
 	private GroupElement[] U;
@@ -59,7 +59,7 @@ public class Cell implements Serializable {
 		this.evaluatable = true;
 		this.active = true;
 
-		F = new AlgebraElement[dimensions][dimensions];
+		//F = new AlgebraElement[dimensions][dimensions];
 		U = new GroupElement[dimensions];
 		Unext = new GroupElement[dimensions];
 		E = new AlgebraElement[dimensions];
@@ -74,7 +74,7 @@ public class Cell implements Serializable {
 			J[i] = factory.algebraZero(colors);
 
 			for(int j = 0; j < dimensions; j++) {
-				F[i][j] = factory.algebraZero(colors);
+			//	F[i][j] = factory.algebraZero(colors);
 			}
 		}
 
@@ -146,13 +146,13 @@ public class Cell implements Serializable {
 
 	public void setU0next(GroupElement link) { U0next.set(link); }
 
-	public AlgebraElement getFieldStrength(int i, int j) {
+	/*public AlgebraElement getFieldStrength(int i, int j) {
 		return F[i][j];
 	}
 
 	public void setFieldStrength(int i, int j, AlgebraElement field) {
 		F[i][j].set(field);
-	}
+	}*/
 
 	public boolean isEvaluatable() {
 		return evaluatable;
@@ -206,12 +206,13 @@ public class Cell implements Serializable {
 	 * thus, a manual solution is more preferable than reflection.
 	 */
 	public void copyFrom(Cell other) {
-		
+		/*
 		for (int i = 0; i < F.length; i++) {
 			for (int j = 0; j < F.length; j++) {
 				this.F[i][j] = other.F[i][j].copy();
 			}
 		}
+		*/
 
 		for(int i = 0; i < E.length; i++) {
 			this.E[i] = other.E[i].copy();
