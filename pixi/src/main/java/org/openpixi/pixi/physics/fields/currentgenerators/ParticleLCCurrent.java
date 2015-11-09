@@ -160,6 +160,7 @@ public class ParticleLCCurrent implements ICurrentGenerator {
 		// Traverse through charge density and add particles by sampling the charge distribution
 		double t0 = - 2*at;
 		double prefactor = g * as;
+		double FIX_ROUND_ERRORS = 10E-12 * as;
 		for (int i = 0; i < s.grid.getTotalNumberOfCells(); i++) {
 			AlgebraElement charge = poissonSolver.getGaussConstraint(i);
 			int[] gridPos = s.grid.getCellPos(i);
@@ -168,8 +169,8 @@ public class ParticleLCCurrent implements ICurrentGenerator {
 			double[] particlePosition0 = new double[gridPos.length];
 			double[] particlePosition1 = new double[gridPos.length];
 			for (int k = 0; k < gridPos.length; k++) {
-				particlePosition0[k] = gridPos[k] * as;
-				particlePosition1[k] = gridPos[k] * as ;
+				particlePosition0[k] = gridPos[k] * as + FIX_ROUND_ERRORS;
+				particlePosition1[k] = gridPos[k] * as + FIX_ROUND_ERRORS;
 				if(k == direction) {
 					particlePosition0[k] += t0 * orientation + dz;
 					particlePosition1[k] += (t0 + at) * orientation + dz;
@@ -187,7 +188,7 @@ public class ParticleLCCurrent implements ICurrentGenerator {
 			}
 
 			// Create particle instance and add to particle array.
-			if(charge.square() > 10E-18 * prefactor) {
+			if(charge.square() > 10E-20 * prefactor) {
 				Particle p = new Particle();
 				p.pos0 = particlePosition0;
 				p.pos1 = particlePosition1;
