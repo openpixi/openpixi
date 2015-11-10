@@ -11,6 +11,7 @@ public class FieldMeasurements {
 	private BFieldSquared Bsquared;
 	private GaussLaw GaussConstraint;
 	private TotalCharge totalCharge;
+	private TotalChargeSquared totalChargeSquared;
 	/**
 	 * Empty constructor for standard usage.
 	 */
@@ -19,6 +20,7 @@ public class FieldMeasurements {
 		Bsquared = new BFieldSquared();
 		GaussConstraint = new GaussLaw();
 		totalCharge = new TotalCharge();
+		totalChargeSquared = new TotalChargeSquared();
 	}
 
 	public double calculateEsquared(Grid grid) {
@@ -55,6 +57,12 @@ public class FieldMeasurements {
 		totalCharge.reset(grid);
 		grid.getCellIterator().execute(grid, totalCharge);
 		return totalCharge.getSum(grid);
+	}
+
+	public double calculateTotalChargeSquared(Grid grid) {
+		totalChargeSquared.reset(grid);
+		grid.getCellIterator().execute(grid, totalChargeSquared);
+		return totalChargeSquared.getSum(grid);
 	}
 
 	private class EFieldSquared implements CellAction {
@@ -175,5 +183,27 @@ public class FieldMeasurements {
 			}
 		}
 	}
-	
+
+	private class TotalChargeSquared implements CellAction  {
+
+		private double charge;
+
+		public void reset(Grid grid) {
+			charge = 0.0;
+		}
+
+		public double getSum(Grid grid) {
+			charge *= (Math.pow(grid.getLatticeSpacing(), 2*grid.getNumberOfDimensions()));
+			double latticeUnitsNorm = grid.getGaugeCoupling() * grid.getLatticeSpacing();
+			return Math.sqrt(charge) / latticeUnitsNorm;
+		}
+
+		public void execute(Grid grid, int index) {
+			if(grid.isEvaluatable(index)) {
+				synchronized (this) {
+					charge += grid.getRho(index).square();   // Synchronisierte Summenbildung
+				}
+			}
+		}
+	}
 }
