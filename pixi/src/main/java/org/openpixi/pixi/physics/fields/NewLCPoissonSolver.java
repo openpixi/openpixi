@@ -71,6 +71,13 @@ public class NewLCPoissonSolver {
 	public void solve(Simulation s) {
 		DoubleFFTWrapper fft = new DoubleFFTWrapper(transversalNumCells);
 
+		// IR Regulator
+		double m = 0.0;
+
+		// UV Regulator
+		double psqrMax = 4.0 * effTransversalDimensions / (as * as);
+		double lambda = 1.0;
+
 		// First step: compute transversal potential phi
 		for (int i = 0; i < factory.numberOfComponents; i++) {
 			// Initialize array for FFT and fill it with charge density of component i.
@@ -83,8 +90,15 @@ public class NewLCPoissonSolver {
 			// Solve Poisson equation in momentum space.
 			for (int j = 1; j < totalTransversalCells; j++) {
 				double psqr = computeLatticeMomentumSquared(j);
-				fftArray[fft.getFFTArrayIndex(j)] /= psqr;
-				fftArray[fft.getFFTArrayIndex(j) + 1] /= psqr;
+				double x = psqr / psqrMax;
+				double invLaplace;
+				if(x < lambda) {
+					invLaplace = 1.0 / psqr;
+				} else {
+					invLaplace = 0.0;
+				}
+				fftArray[fft.getFFTArrayIndex(j)] *= invLaplace;
+				fftArray[fft.getFFTArrayIndex(j) + 1] *= invLaplace;
 			}
 			fftArray[0] = 0.0;
 			fftArray[1] = 0.0;
@@ -154,7 +168,11 @@ public class NewLCPoissonSolver {
 		// Compute gauss violation from grid copy
 		gaussViolation = new AlgebraElement[s.grid.getTotalNumberOfCells()];
 		for (int i = 0; i < gridCopy.getTotalNumberOfCells(); i++) {
-			gaussViolation[i] = gridCopy.getGaussConstraint(i);
+			if(s.grid.isActive(i)) {
+				gaussViolation[i] = gridCopy.getGaussConstraint(i);
+			} else {
+				gaussViolation[i] = factory.algebraZero();
+			}
 		}
 	}
 
