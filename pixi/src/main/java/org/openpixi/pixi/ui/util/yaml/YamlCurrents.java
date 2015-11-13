@@ -40,7 +40,7 @@ public class YamlCurrents {
 
 	public ArrayList<YamlMVModel> MVModels = new ArrayList<YamlMVModel>();
 
-
+    public ArrayList<YamlRandomTemporalParticleColorCurrentNucleus> randomTemporalParticleColorCurrentsNucleus = new ArrayList<YamlRandomTemporalParticleColorCurrentNucleus>();
 
 	/**
      * Creates CurrentGenerator instances and applies them to the Settings instance.
@@ -123,6 +123,9 @@ public class YamlCurrents {
 			s.addCurrentGenerator(current.getCurrentGenerator());
 		}
 
+        for (YamlRandomTemporalParticleColorCurrentNucleus current : randomTemporalParticleColorCurrentsNucleus) {
+            s.addCurrentGenerator(current.getCurrentGenerator(s));
+        }
 	}
 
 }

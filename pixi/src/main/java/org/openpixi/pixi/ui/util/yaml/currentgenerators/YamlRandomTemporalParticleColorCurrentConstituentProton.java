@@ -38,6 +38,11 @@ public class YamlRandomTemporalParticleColorCurrentConstituentProton {
 	public Double transversalWidth;
 
 	/**
+	 * Density of the color charge
+	 */
+	public Double colorChargeDensity;
+
+	/**
 	 * Number of point-like charges in the distribution
 	 */
 	public Integer numberOfCharges;
@@ -87,7 +92,7 @@ public class YamlRandomTemporalParticleColorCurrentConstituentProton {
 			listOfChargeLocations.add(chargeLocation);
 		}
 
-		ConstituentProtonLCCurrent generator = new ConstituentProtonLCCurrent(direction, orientation, longitudinalLocation, longitudinalWidth, locationTransverse, useMonopoleRemoval, useDipoleRemoval, rand);
+		ConstituentProtonLCCurrent generator = new ConstituentProtonLCCurrent(direction, orientation, longitudinalLocation, longitudinalWidth, locationTransverse, useMonopoleRemoval, useDipoleRemoval, rand, colorChargeDensity);
 
 		for(int i = 0; i < numberOfCharges; i++) {
 			generator.addCharge(listOfChargeLocations.get(i), partonWidth);
