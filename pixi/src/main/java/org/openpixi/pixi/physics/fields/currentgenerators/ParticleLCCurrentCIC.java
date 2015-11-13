@@ -12,7 +12,7 @@ import java.util.ArrayList;
  * This current generator uses particles on fixed trajectories to correctly interpolate the charge and current density
  * on the grid according to CGC initial conditions.
  */
-public class ParticleLCCurrent implements ICurrentGenerator {
+public class ParticleLCCurrentCIC implements ICurrentGenerator {
 
 	/**
 	 * Direction of movement of the charge density. Values range from 0 to numberOfDimensions-1.
@@ -75,14 +75,14 @@ public class ParticleLCCurrent implements ICurrentGenerator {
 	NewLCPoissonSolver poissonSolver;
 
 	/**
-	 * Standard constructor for the ParticleLCCurrent class.
+	 * Standard constructor for the ParticleLCCurrentCIC class.
 	 *
 	 * @param direction Direction of the transversal charge density movement.
 	 * @param orientation Orientation fo the transversal charge density movement.
 	 * @param location Longitudinal starting location.
 	 * @param longitudinalWidth Longitudinal width of the Gaussian shape for the charge density.
 	 */
-	public ParticleLCCurrent(int direction, int orientation, double location, double longitudinalWidth){
+	public ParticleLCCurrentCIC(int direction, int orientation, double location, double longitudinalWidth){
 		this.direction = direction;
 		this.orientation = orientation;
 		this.location = location;

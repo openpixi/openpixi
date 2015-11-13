@@ -7,7 +7,7 @@ import org.openpixi.pixi.physics.util.GridFunctions;
 import java.util.ArrayList;
 
 /**
- * A simple current generator for point-like charges based on ParticleLCCurrent.
+ * A simple current generator for point-like charges based on ParticleLCCurrentCIC.
  */
 public class PointChargeLCCurrent implements ICurrentGenerator {
 
@@ -90,7 +90,7 @@ public class PointChargeLCCurrent implements ICurrentGenerator {
 	/**
 	 * ParticleLCCurrent which is called to interpolate charges and currents.
 	 */
-	private ParticleLCCurrent particleLCCurrent;
+	private ParticleLCCurrentCIC particleLCCurrent;
 
 	/**
 	 * Standard constructor.
@@ -109,7 +109,7 @@ public class PointChargeLCCurrent implements ICurrentGenerator {
 		this.useDipoleRemoval = useDipoleRemoval;
 
 		this.charges = new ArrayList<PointCharge>();
-		this.particleLCCurrent = new ParticleLCCurrent(direction, orientation, location, longitudinalWidth);
+		this.particleLCCurrent = new ParticleLCCurrentCIC(direction, orientation, location, longitudinalWidth);
 	}
 
 	/**

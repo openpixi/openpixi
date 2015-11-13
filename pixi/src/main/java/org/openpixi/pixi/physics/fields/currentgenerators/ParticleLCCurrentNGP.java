@@ -75,7 +75,7 @@ public class ParticleLCCurrentNGP implements ICurrentGenerator {
 	NewLCPoissonSolver poissonSolver;
 
 	/**
-	 * Standard constructor for the ParticleLCCurrent class.
+	 * Standard constructor for the ParticleLCCurrentNGP class.
 	 *
 	 * @param direction Direction of the transversal charge density movement.
 	 * @param orientation Orientation fo the transversal charge density movement.
