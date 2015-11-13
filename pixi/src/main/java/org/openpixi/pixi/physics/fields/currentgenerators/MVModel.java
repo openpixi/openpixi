@@ -39,7 +39,7 @@ public class MVModel implements ICurrentGenerator {
 	private boolean useSeed = false;
 	private int seed;
 
-	private ParticleLCCurrentNGP particleLCCurrent;
+	private ParticleLCCurrentCIC particleLCCurrent;
 
 
 	public MVModel(int direction, int orientation, double location, double longitudinalWidth, double mu) {
@@ -97,7 +97,7 @@ public class MVModel implements ICurrentGenerator {
 			location -= L;
 		}
 
-		this.particleLCCurrent = new ParticleLCCurrentNGP(direction, orientation, location, longitudinalWidth);
+		this.particleLCCurrent = new ParticleLCCurrentCIC(direction, orientation, location, longitudinalWidth);
 		particleLCCurrent.setTransversalChargeDensity(transversalChargeDensity);
 		particleLCCurrent.initializeCurrent(s, totalInstances);
 	}
