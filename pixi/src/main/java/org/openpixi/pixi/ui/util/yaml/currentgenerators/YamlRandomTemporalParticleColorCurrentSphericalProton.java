@@ -38,6 +38,11 @@ public class YamlRandomTemporalParticleColorCurrentSphericalProton {
 	public Double transversalWidth;
 
 	/**
+	 * Density of the color charge
+	 */
+	public Double colorChargeDensity;
+
+	/**
 	 * Number of point-like charges in the distribution
 	 */
 	public Integer numberOfCharges;
@@ -69,7 +74,12 @@ public class YamlRandomTemporalParticleColorCurrentSphericalProton {
 			locationTransverse[i] = transversalLocation.get(i);
 		}
 
-		SphericalProtonLCCurrent generator = new SphericalProtonLCCurrent(direction, orientation, longitudinalLocation, longitudinalWidth, useMonopoleRemoval, useDipoleRemoval, randomSeed);
+		Random rand = new Random();
+		if(randomSeed != null) {
+			rand.setSeed(randomSeed);
+		}
+
+		SphericalProtonLCCurrent generator = new SphericalProtonLCCurrent(direction, orientation, longitudinalLocation, longitudinalWidth, useMonopoleRemoval, useDipoleRemoval, rand,colorChargeDensity);
 
 		for(int i = 0; i < numberOfCharges; i++) {
 			generator.addCharge(locationTransverse, transversalWidth);

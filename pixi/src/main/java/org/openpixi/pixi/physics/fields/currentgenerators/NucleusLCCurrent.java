@@ -11,7 +11,7 @@ import java.util.Random;
 /**
  * A simple current generator for point-like charges based on ParticleLCCurrent.
  */
-public class ConstituentProtonLCCurrent implements ICurrentGenerator {
+public class NucleusLCCurrent implements ICurrentGenerator {
 
 	/**
 	 * Direction of movement of the charge density. Values range from 0 to numberOfDimensions-1.
@@ -49,19 +49,19 @@ public class ConstituentProtonLCCurrent implements ICurrentGenerator {
 	private boolean useDipoleRemoval;
 
 	/**
+	 * Option whether to use the constituent quark model or not. In the latter case spherical proton model is used!!
+	 */
+	private boolean useConstituentQuarks;
+
+	/**
 	 * List of point charges to use as intial conditions.
 	 */
-	private ArrayList<GaussianCharge> charges;
+	private ArrayList<NucleonCharge> charges;
 
 	/**
 	 * Array containing the size of the transversal grid.
 	 */
 	private int[] transversalNumCells;
-
-	/**
-	 * Profile of the transversal charge density.
-	 */
-	private double[] transversalWidths;
 
 	/**
 	 * Transversal charge density.
@@ -108,6 +108,24 @@ public class ConstituentProtonLCCurrent implements ICurrentGenerator {
 	 */
 	private Random rand;
 
+	/**
+	 * Transversal radius of the Woods-Saxon (Fermi-Dirac) distribution
+	 */
+	public double transversalRadius;
+
+	/**
+	 * Transversal surface thickness of the Woods-Saxon (Fermi-Dirac) distribution
+	 */
+	public double surfaceThickness;
+	/**
+	 * SphericalProtonLCCurrent for the spherical proton model.
+	 */
+	private SphericalProtonLCCurrent sphericalProtonLCCurrent;
+
+	/**
+	 * ConstituentProtonLCCurrent for the constituent quark proton model.
+	 */
+	private ConstituentProtonLCCurrent constituentProtonLCCurrent;
 
 	/**
 	 * ParticleLCCurrent which is called to interpolate charges and currents.
@@ -122,7 +140,7 @@ public class ConstituentProtonLCCurrent implements ICurrentGenerator {
 	 * @param location
 	 * @param longitudinalWidth
 	 */
-	public ConstituentProtonLCCurrent(int direction, int orientation, double location, double longitudinalWidth, double[] locationTransverse, boolean useMonopoleRemoval, boolean useDipoleRemoval, Random rand, double colorChargeDensity) {
+	public NucleusLCCurrent(int direction, int orientation, double location, double longitudinalWidth, double[] locationTransverse, boolean useMonopoleRemoval, boolean useDipoleRemoval, boolean useConstituentQuarks, Random rand, double transversalRadius, double surfaceThickness, double colorChargeDensity) {
 		this.direction = direction;
 		this.orientation = orientation;
 		this.location = location;
@@ -130,10 +148,13 @@ public class ConstituentProtonLCCurrent implements ICurrentGenerator {
 		this.locationTransverse = locationTransverse;
 		this.useMonopoleRemoval = useMonopoleRemoval;
 		this.useDipoleRemoval = useDipoleRemoval;
+		this.useConstituentQuarks = useConstituentQuarks;
 		this.rand = rand;
+		this.transversalRadius = transversalRadius;
+		this.surfaceThickness = surfaceThickness;
 		this.colorChargeDensity = colorChargeDensity;
 
-		this.charges = new ArrayList<GaussianCharge>();
+		this.charges = new ArrayList<NucleonCharge>();
 		this.particleLCCurrent = new ParticleLCCurrent(direction, orientation, location, longitudinalWidth);
 	}
 
@@ -143,9 +164,9 @@ public class ConstituentProtonLCCurrent implements ICurrentGenerator {
 	 * @param location
 	 * @param width
 	 */
-	public void addCharge(double[] location, double width) {
-		// This method should be called from the YAML object to add the charges for the current generator.
-		this.charges.add(new GaussianCharge(location, width));
+	public void addNucleon(double[] location, double width, double partonWidth) {
+		// This method should be called from the YAML object to add the nucleons for the current generator.
+		this.charges.add(new NucleonCharge(location, width, partonWidth));
 	}
 
 	public void initializeCurrent(Simulation s, int dummy) {
@@ -155,134 +176,53 @@ public class ConstituentProtonLCCurrent implements ICurrentGenerator {
 		as = s.grid.getLatticeSpacing();
 		at = s.getTimeStep();
 		g = s.getCouplingConstant();
-		double colorStrengthFactor = charges.size()*g*g*colorChargeDensity*colorChargeDensity;
 
 		// 1) Initialize transversal charge density grid using the charges array.
 		transversalNumCells = GridFunctions.reduceGridPos(s.grid.getNumCells(), direction);
 		totalTransversalCells = GridFunctions.getTotalNumberOfCells(transversalNumCells);
 		transversalChargeDensity = new AlgebraElement[totalTransversalCells];
-		transversalWidths = new double[totalTransversalCells];
 		for (int i = 0; i < totalTransversalCells; i++) {
 			transversalChargeDensity[i] = s.grid.getElementFactory().algebraZero();
 		}
 
-		// Iterate over (point) charges, create a Gaussian charge distribution around them and add them to the transversal charge density.
-		double norm = 0.0;
+		// Iterate over nucleons, create a charge distribution around them and add them to the transversal charge density.
 		for (int i = 0; i < charges.size(); i++) {
-			GaussianCharge c = charges.get(i);
-			for (int k = 0; k < totalTransversalCells; k++) {
-				double distance = getDistance(c.location, GridFunctions.getCellPos(k, transversalNumCells), as);
-				transversalWidths[k] += Math.abs(shapeFunction(distance, c.width)/Math.pow(c.width*Math.sqrt(2*Math.PI), transversalNumCells.length));
-				norm += Math.abs(shapeFunction(distance, c.width)/Math.pow(c.width*Math.sqrt(2*Math.PI), transversalNumCells.length));
-			}
-		}
-		for (int k = 0; k < totalTransversalCells; k++) {
-			transversalWidths[k] /= norm;
-		}
+			AlgebraElement[] nucleonChargeDensity;
+			NucleonCharge c = charges.get(i);
 
-		for (int k = 0; k < totalTransversalCells; k++) {
-			AlgebraElement chargeAmplitude = s.grid.getElementFactory().algebraZero(s.getNumberOfColors());
-			for (int j = 0; j < numberOfComponents; j++) {
-				chargeAmplitude.set(j, rand.nextGaussian()*transversalWidths[k]*colorStrengthFactor / Math.pow(as, s.getNumberOfDimensions() - 1));
-			}
-			transversalChargeDensity[k].addAssign(chargeAmplitude);
-		}
+			if (useConstituentQuarks) {
 
-		if(useMonopoleRemoval) {
-			removeMonopoleMoment(s);
+				constituentProtonLCCurrent = new ConstituentProtonLCCurrent(direction, orientation, location, longitudinalWidth, locationTransverse, useMonopoleRemoval, useDipoleRemoval, rand, colorChargeDensity);
+				for (int j = 0; j < 3; j++) {
+					double[] protonLocation = new double[c.location.length];
+					for (int k = 0; k < c.location.length; k++) {
+						protonLocation[k] = c.location[k] + rand.nextGaussian() * c.width;
+					}
+					constituentProtonLCCurrent.addCharge(protonLocation, c.partonWidth);
+				}
+				nucleonChargeDensity = constituentProtonLCCurrent.computeChargeDensity(s);
+
+			} else {
+
+				sphericalProtonLCCurrent = new SphericalProtonLCCurrent(direction, orientation, location, longitudinalWidth, useMonopoleRemoval, useDipoleRemoval, rand, colorChargeDensity);
+				for (int j = 0; j < 3; j++) {
+					sphericalProtonLCCurrent.addCharge(c.location, c.width);
+				}
+				nucleonChargeDensity = sphericalProtonLCCurrent.computeChargeDensity(s);
+
+			}
+
+			for (int w = 0; w < totalTransversalCells; w++) {
+				transversalChargeDensity[w].addAssign(nucleonChargeDensity[w]);
+			}
 		}
 
 		if(useDipoleRemoval) {
-			removeDipoleMoment(s);
+			removeDipoleMomentNucleus(s);
 		}
 
 		particleLCCurrent.setTransversalChargeDensity(transversalChargeDensity);
 		particleLCCurrent.initializeCurrent(s, dummy);
-	}
-
-	public AlgebraElement[] computeChargeDensity(Simulation s) {
-		// 0) Define some variables.
-		numberOfColors = s.getNumberOfColors();
-		numberOfComponents = s.grid.getElementFactory().numberOfComponents;
-		as = s.grid.getLatticeSpacing();
-		at = s.getTimeStep();
-		g = s.getCouplingConstant();
-		double colorStrengthFactor = charges.size()*g*g*colorChargeDensity*colorChargeDensity;
-
-		// 1) Initialize transversal charge density grid using the charges array.
-		transversalNumCells = GridFunctions.reduceGridPos(s.grid.getNumCells(), direction);
-		totalTransversalCells = GridFunctions.getTotalNumberOfCells(transversalNumCells);
-		transversalChargeDensity = new AlgebraElement[totalTransversalCells];
-		transversalWidths = new double[totalTransversalCells];
-		for (int i = 0; i < totalTransversalCells; i++) {
-			transversalChargeDensity[i] = s.grid.getElementFactory().algebraZero();
-		}
-
-		// Iterate over (point) charges, create a Gaussian charge distribution around them and add them to the transversal charge density.
-		double norm = 0.0;
-		for (int i = 0; i < charges.size(); i++) {
-			GaussianCharge c = charges.get(i);
-			for (int k = 0; k < totalTransversalCells; k++) {
-				double distance = getDistance(c.location, GridFunctions.getCellPos(k, transversalNumCells), as);
-				transversalWidths[k] += Math.abs(shapeFunction(distance, c.width)/Math.pow(c.width*Math.sqrt(2*Math.PI), transversalNumCells.length));
-				norm += Math.abs(shapeFunction(distance, c.width)/Math.pow(c.width*Math.sqrt(2*Math.PI), transversalNumCells.length));
-			}
-		}
-		for (int k = 0; k < totalTransversalCells; k++) {
-			transversalWidths[k] /= norm;
-		}
-
-		for (int k = 0; k < totalTransversalCells; k++) {
-			AlgebraElement chargeAmplitude = s.grid.getElementFactory().algebraZero(s.getNumberOfColors());
-			for (int j = 0; j < numberOfComponents; j++) {
-				chargeAmplitude.set(j, rand.nextGaussian()*transversalWidths[k]*colorStrengthFactor / Math.pow(as, s.getNumberOfDimensions() - 1));
-			}
-			transversalChargeDensity[k].addAssign(chargeAmplitude);
-		}
-
-		if(useMonopoleRemoval) {
-			removeMonopoleMoment(s);
-		}
-		/*
-		if(useDipoleRemoval) {
-			removeDipoleMoment(s);
-		}
-		*/
-		return transversalChargeDensity;
-	}
-
-
-	/**
-	 *
-	 * @param s
-	 */
-	public void applyCurrent(Simulation s) {
-		particleLCCurrent.applyCurrent(s);
-	}
-
-	/**
-	 * Removes the monopole moment by subtracting a constant charge at each lattice site of the transversal charge density.
-	 * This is not a good way to do this, so make sure the initial conditions are colorless at initialization.
-	 *
-	 * @param s
-	 */
-	private void removeMonopoleMoment(Simulation s) {
-		AlgebraElement totalCharge = computeTotalCharge(s);
-		/*for (int i = 0; i < numberOfComponents; i++) {
-			System.out.println(totalCharge.get(i));
-		}*/
-		double check = 0.0;
-		for (int i = 0; i < totalTransversalCells; i++) {
-			transversalChargeDensity[i].addAssign(totalCharge.mult(-1.0*transversalWidths[i]));
-			check += transversalWidths[i];
-		}
-		//System.out.println(check);
-		/*
-		totalCharge = computeTotalCharge(s);
-		for (int i = 0; i < numberOfComponents; i++) {
-			System.out.println(totalCharge.get(i));
-		}
-		*/
 	}
 
 	/**
@@ -290,11 +230,25 @@ public class ConstituentProtonLCCurrent implements ICurrentGenerator {
 	 *
 	 * @param s
 	 */
-	private void removeDipoleMoment(Simulation s) {
+	private void removeDipoleMomentNucleus(Simulation s) {
 		AlgebraElement[] dipoleVector = new AlgebraElement[transversalNumCells.length];
+		double[] transversalDensityShape = new double[totalTransversalCells];
 		for (int i = 0; i < transversalNumCells.length; i++) {
 			dipoleVector[i] = s.grid.getElementFactory().algebraZero(s.getNumberOfColors());
 		}
+
+		// Iterate over the transversal plane and construct normalized nucleus shape..
+		double norm = 0.0;
+		for (int k = 0; k < totalTransversalCells; k++) {
+			double distance = getDistance(locationTransverse, GridFunctions.getCellPos(k, transversalNumCells), as);
+			transversalDensityShape[k] = Math.abs(getWoodsSaxonProfile(distance));
+			norm += Math.abs(getWoodsSaxonProfile(distance));
+		}
+
+		for (int k = 0; k < totalTransversalCells; k++) {
+			transversalDensityShape[k] /= norm;
+		}
+
 		for (int c = 0; c < transversalNumCells.length; c++) {
 			for (int i = 0; i < totalTransversalCells; i++) {
 				int[] gridPos = GridFunctions.getCellPos(i, transversalNumCells);
@@ -313,8 +267,8 @@ public class ConstituentProtonLCCurrent implements ICurrentGenerator {
 				int[] gridPos = GridFunctions.getCellPos(i, transversalNumCells);
 				gridPos[c]++;
 				int z = GridFunctions.getCellIndex(gridPos, transversalNumCells);
-				transversalChargeDensity[i].addAssign(dipoleVector[c].mult(transversalWidths[z] / as));
-				transversalChargeDensity[i].addAssign(dipoleVector[c].mult(-1.0 * transversalWidths[i] / as));
+				transversalChargeDensity[i].addAssign(dipoleVector[c].mult(transversalDensityShape[z] / as));
+				transversalChargeDensity[i].addAssign(dipoleVector[c].mult(-1.0 * transversalDensityShape[i] / as));
 			}
 		}
 
@@ -326,7 +280,7 @@ public class ConstituentProtonLCCurrent implements ICurrentGenerator {
 		for (int c = 0; c < transversalNumCells.length; c++) {
 			for (int i = 0; i < totalTransversalCells; i++) {
 				int[] gridPos = GridFunctions.getCellPos(i, transversalNumCells);
-				checkDipoleVector[c].addAssign(transversalChargeDensity[i].mult(gridPos[c] * as - locationTransverse[c]));
+				checkDipoleVector[c].addAssign(transversalChargeDensity[i].mult(gridPos[c] * as - parton.location[c]));
 			}
 		}
 
@@ -336,6 +290,14 @@ public class ConstituentProtonLCCurrent implements ICurrentGenerator {
 			}
 		}
 		*/
+	}
+
+	/**
+	 *
+	 * @param s
+	 */
+	public void applyCurrent(Simulation s) {
+		particleLCCurrent.applyCurrent(s);
 	}
 
 	/**
@@ -352,19 +314,6 @@ public class ConstituentProtonLCCurrent implements ICurrentGenerator {
 		return totalCharge;
 	}
 
-	/**
-	 * Utility class to deal with Gaussian charges. Only used to specify the initial conditions.
-	 */
-	class GaussianCharge {
-		public double[] location;
-		double width;
-
-		public GaussianCharge(double[] location, double width) {
-			this.location = location;
-			this.width = width;
-		}
-	}
-
 	private double getDistance(double[] center, int[] position, double spacing) {
 		double distance = 0.0;
 		for (int j = 0; j < position.length; j++) {
@@ -373,8 +322,23 @@ public class ConstituentProtonLCCurrent implements ICurrentGenerator {
 		return Math.sqrt(distance);
 	}
 
-	private double shapeFunction(double z, double width) {
-		Gaussian gauss = new Gaussian(0.0, width);
-		return gauss.value(z);
+	private double getWoodsSaxonProfile(double distance) {
+		double norm = 2.0*Math.pow(Math.PI, transversalNumCells.length - 1)/surfaceThickness*Math.log(1.0 + Math.exp(transversalRadius/surfaceThickness));
+		double y = 1.0/(norm*(Math.exp((distance - transversalRadius)/surfaceThickness) + 1));
+		return y;
+	}
+
+	/**
+	 * Utility class to deal with nucleon charges. Only used to specify the initial conditions.
+	 */
+	class NucleonCharge {
+		public double[] location;
+		double width, partonWidth;
+
+		public NucleonCharge(double[] location, double width, double partonWidth) {
+			this.location = location;
+			this.width = width;
+			this.partonWidth = partonWidth;
+		}
 	}
 }
