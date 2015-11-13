@@ -158,14 +158,14 @@ public class ParticleLCCurrentNGP implements ICurrentGenerator {
 		particles = new ArrayList<Particle>();
 
 		// Traverse through charge density and add particles by sampling the charge distribution
-		double t0 = - 2*at;
+		double t0 = -2 * at;
 		double prefactor = g * as;
 		double FIX_ROUND_ERRORS = 10E-12 * as;
 		//double FIX_ROUND_ERRORS = 0;
 		for (int i = 0; i < s.grid.getTotalNumberOfCells(); i++) {
 			//AlgebraElement charge = poissonSolver.getGaussConstraint(i);
 			for (int j = 0; j < particlesPerLink; j++) {
-				double x = (1.0 * j + 1.0) / (particlesPerLink + 1.0);
+				double x = (1.0 * j) / (particlesPerLink);
 				int[] gridPos = s.grid.getCellPos(i);
 				double dz = x * as;
 				// Particle position
@@ -225,20 +225,12 @@ public class ParticleLCCurrentNGP implements ICurrentGenerator {
 			p.move(at);
 
 			// Evolve particle charges
-			// check if one cell or two cell move
 			int cellIndexOld = s.grid.getCellIndex(GridFunctions.nearestGridPoint(p.pos0, as));
 			int cellIndexNew = s.grid.getCellIndex(GridFunctions.nearestGridPoint(p.pos1, as));
 
 			if(cellIndexOld != cellIndexNew) {
 				// two cell move
-
-				GroupElement U;
-				if(p.vel[direction] > 0) {
-					U = s.grid.getU(cellIndexOld, direction);
-				} else {
-					U = s.grid.getU(cellIndexNew, direction).adj();
-				}
-
+				GroupElement U = s.grid.getLink(cellIndexOld, direction, orientation, 1);
 				p.evolve(U);
 			}
 		}
@@ -280,14 +272,11 @@ public class ParticleLCCurrentNGP implements ICurrentGenerator {
 			// 2) Charge conserving current calculation
 			if(cellIndexOld != cellIndexNew) {
 				// two cell move
-				GroupElement U;
-				if (p.vel[direction] > 0) {
-					// Right move
-					AlgebraElement J = p.Q0.mult(c);
+				if(cellIndexOld < cellIndexNew) {
+					AlgebraElement J = p.Q0.mult(c * orientation);
 					s.grid.addJ(cellIndexOld, direction, J);
 				} else {
-					// Left move
-					AlgebraElement J = p.Q1.mult(-c);
+					AlgebraElement J = p.Q1.mult(c * orientation);
 					s.grid.addJ(cellIndexNew, direction, J);
 				}
 			}
