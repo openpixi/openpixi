@@ -67,15 +67,27 @@ public class MainBatch {
 	}
 
 	public static void runSimulationFromString(String configurationString) {
+		initializeSimulationFromString(configurationString);
+		try {
+			simulation.run();
+		} catch (IOException e) {
+			System.out.println("MainBatch: something went wrong.");
+		}
+	}
+
+	public static void initializeSimulationFromString(String configurationString) {
 		// Creates a settings class with the default parameters
 		Settings settings = new Settings();
 		YamlParser yamlParser = new YamlParser(settings);
 		yamlParser.parseString(configurationString);
 
-		// Runs the simulation
+		// Initialize the simulation
 		simulation = new Simulation(settings);
+	}
+
+	public static void step() {
 		try {
-			simulation.run();
+			simulation.step();
 		} catch (IOException e) {
 			System.out.println("MainBatch: something went wrong.");
 		}

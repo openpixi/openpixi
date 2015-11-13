@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.Random;
 
 /**
- * A simple current generator for point-like charges based on ParticleLCCurrent.
+ * A simple current generator for point-like charges based on ParticleLCCurrentCIC.
  */
 public class ConstituentProtonLCCurrent implements ICurrentGenerator {
 
@@ -110,9 +110,9 @@ public class ConstituentProtonLCCurrent implements ICurrentGenerator {
 
 
 	/**
-	 * ParticleLCCurrent which is called to interpolate charges and currents.
+	 * ParticleLCCurrentCIC which is called to interpolate charges and currents.
 	 */
-	private ParticleLCCurrent particleLCCurrent;
+	private ParticleLCCurrentCIC particleLCCurrent;
 
 	/**
 	 * Standard constructor.
@@ -134,7 +134,7 @@ public class ConstituentProtonLCCurrent implements ICurrentGenerator {
 		this.colorChargeDensity = colorChargeDensity;
 
 		this.charges = new ArrayList<GaussianCharge>();
-		this.particleLCCurrent = new ParticleLCCurrent(direction, orientation, location, longitudinalWidth);
+		this.particleLCCurrent = new ParticleLCCurrentCIC(direction, orientation, location, longitudinalWidth);
 	}
 
 	/**

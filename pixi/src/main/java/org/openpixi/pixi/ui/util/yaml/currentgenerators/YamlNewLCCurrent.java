@@ -2,15 +2,9 @@ package org.openpixi.pixi.ui.util.yaml.currentgenerators;
 
 import org.openpixi.pixi.physics.Settings;
 import org.openpixi.pixi.physics.fields.currentgenerators.NewLCCurrent;
-import org.openpixi.pixi.physics.fields.currentgenerators.ParticleLCCurrent;
-import org.openpixi.pixi.physics.util.GridFunctions;
 
 import java.util.ArrayList;
-import java.util.List;
 
-/**
- * Created by dmueller on 9/3/15.
- */
 public class YamlNewLCCurrent {
 
 	/**

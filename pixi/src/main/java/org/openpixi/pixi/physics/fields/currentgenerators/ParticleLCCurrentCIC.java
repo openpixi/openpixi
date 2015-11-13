@@ -12,7 +12,7 @@ import java.util.ArrayList;
  * This current generator uses particles on fixed trajectories to correctly interpolate the charge and current density
  * on the grid according to CGC initial conditions.
  */
-public class ParticleLCCurrent implements ICurrentGenerator {
+public class ParticleLCCurrentCIC implements ICurrentGenerator {
 
 	/**
 	 * Direction of movement of the charge density. Values range from 0 to numberOfDimensions-1.
@@ -75,14 +75,14 @@ public class ParticleLCCurrent implements ICurrentGenerator {
 	NewLCPoissonSolver poissonSolver;
 
 	/**
-	 * Standard constructor for the ParticleLCCurrent class.
+	 * Standard constructor for the ParticleLCCurrentCIC class.
 	 *
 	 * @param direction Direction of the transversal charge density movement.
 	 * @param orientation Orientation fo the transversal charge density movement.
 	 * @param location Longitudinal starting location.
 	 * @param longitudinalWidth Longitudinal width of the Gaussian shape for the charge density.
 	 */
-	public ParticleLCCurrent(int direction, int orientation, double location, double longitudinalWidth){
+	public ParticleLCCurrentCIC(int direction, int orientation, double location, double longitudinalWidth){
 		this.direction = direction;
 		this.orientation = orientation;
 		this.location = location;
@@ -160,34 +160,50 @@ public class ParticleLCCurrent implements ICurrentGenerator {
 		// Traverse through charge density and add particles by sampling the charge distribution
 		double t0 = - 2*at;
 		double prefactor = g * as;
+		double FIX_ROUND_ERRORS = 10E-12 * as;
+		//double FIX_ROUND_ERRORS = 0;
 		for (int i = 0; i < s.grid.getTotalNumberOfCells(); i++) {
-			AlgebraElement charge = poissonSolver.getGaussConstraint(i);
-			int[] gridPos = s.grid.getCellPos(i);
-			double dz = 0.0;
-			// Particle position
-			double[] particlePosition0 = new double[gridPos.length];
-			double[] particlePosition1 = new double[gridPos.length];
-			for (int k = 0; k < gridPos.length; k++) {
-				particlePosition0[k] = gridPos[k] * as;
-				particlePosition1[k] = gridPos[k] * as ;
-				if(k == direction) {
-					particlePosition0[k] += t0 * orientation + dz;
-					particlePosition1[k] += (t0 + at) * orientation + dz;
+			//AlgebraElement charge = poissonSolver.getGaussConstraint(i);
+			for (int j = 0; j < particlesPerLink; j++) {
+				double x = (1.0 * j) / (particlesPerLink);
+				AlgebraElement charge = interpolateChargeFromGrid(s, i, direction, x).mult(1.0 / particlesPerLink);
+				int[] gridPos = s.grid.getCellPos(i);
+				double dz = x * as;
+				// Particle position
+				double[] particlePosition0 = new double[gridPos.length];
+				double[] particlePosition1 = new double[gridPos.length];
+				for (int k = 0; k < gridPos.length; k++) {
+					particlePosition0[k] = gridPos[k] * as + FIX_ROUND_ERRORS;
+					particlePosition1[k] = gridPos[k] * as + FIX_ROUND_ERRORS;
+					if(k == direction) {
+						particlePosition0[k] += t0 * orientation + dz;
+						particlePosition1[k] += (t0 + at) * orientation + dz;
+					}
 				}
-			}
 
-			// Particle velocity
-			double[] particleVelocity = new double[gridPos.length];
-			for (int k = 0; k < gridPos.length; k++) {
-				if(k == direction) {
-					particleVelocity[k] = 1.0 * orientation;
-				} else {
-					particleVelocity[k] = 0.0;
+				// Particle velocity
+				double[] particleVelocity = new double[gridPos.length];
+				for (int k = 0; k < gridPos.length; k++) {
+					if(k == direction) {
+						particleVelocity[k] = 1.0 * orientation;
+					} else {
+						particleVelocity[k] = 0.0;
+					}
 				}
-			}
 
-			// Create particle instance and add to particle array.
-			if(charge.square() > 10E-18 * prefactor) {
+				// Create particle instance and add to particle array.
+				/*
+				if(charge.square() > 10E-20 * prefactor) {
+					Particle p = new Particle();
+					p.pos0 = particlePosition0;
+					p.pos1 = particlePosition1;
+					p.vel = particleVelocity;
+					p.Q0 = charge;
+					p.Q1 = charge.copy();
+
+					particles.add(p);
+				}
+				*/
 				Particle p = new Particle();
 				p.pos0 = particlePosition0;
 				p.pos1 = particlePosition1;
@@ -196,8 +212,31 @@ public class ParticleLCCurrent implements ICurrentGenerator {
 				p.Q1 = charge.copy();
 
 				particles.add(p);
+
 			}
 		}
+	}
+
+	private AlgebraElement interpolateChargeFromGrid(Simulation s, int index, int direction, double x) {
+		int shiftedIndex = s.grid.shift(index, direction, 1);
+		AlgebraElement charge1 = poissonSolver.getGaussConstraint(index);
+		AlgebraElement charge2 = poissonSolver.getGaussConstraint(shiftedIndex);
+
+		charge1 = charge1.mult(1.0 - x);
+		charge2 = charge2.mult(x);
+
+
+		GroupElement U = s.grid.getU(index, direction);
+		GroupElement U1 = U.getAlgebraElement().mult(x).getLink().adj();
+		GroupElement U2 = U.getAlgebraElement().mult(1.0 - x).getLink();
+
+		charge1.actAssign(U1);
+		charge2.actAssign(U2);
+
+
+		charge1.addAssign(charge2);
+
+		return charge1;
 	}
 
 	/**
@@ -206,6 +245,7 @@ public class ParticleLCCurrent implements ICurrentGenerator {
 	 * @param s
 	 */
 	private void evolveCharges(Simulation s) {
+		double totalCharge = 0.0;
 		for(Particle p : particles) {
 			// swap variables for charge and position
 			p.swap();
@@ -258,8 +298,10 @@ public class ParticleLCCurrent implements ICurrentGenerator {
 					p.evolve(U.adj());
 				}
 			}
-
+			//totalCharge += p.Q1.square();
 		}
+		//totalCharge /= particles.size();
+		//System.out.println(totalCharge + ", ");
 	}
 
 	/**

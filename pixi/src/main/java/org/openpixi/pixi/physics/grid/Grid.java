@@ -178,9 +178,11 @@ public class Grid {
 	 * @param dir2      Second spatial component (0 - (numberOfDimensions-1))
 	 * @return          AlgebraElement instance of the (dir1, dir2)-component
 	 */
+	/*
 	public AlgebraElement getFTensor(int index, int dir1, int dir2) {
 		return cells[index].getFieldStrength(dir1, dir2);
 	}
+	*/
 
 	/**
 	 * Sets the (dir1, dir2)-component of the field strength tensor at a certain lattice index.
@@ -189,9 +191,11 @@ public class Grid {
 	 * @param dir2      Second space component (0 - (numberOfDimensions-1))
 	 * @param field     AlgebraElement instance which the field strength tensor should be set to.
 	 */
+	/*
 	public void setFTensor(int index, int dir1, int dir2, AlgebraElement field) {
 		cells[index].setFieldStrength(dir1, dir2, field);
 	}
+	*/
 
 	/**
 	 * Returns the gauge link at time (t) at a given lattice index in a given direction.

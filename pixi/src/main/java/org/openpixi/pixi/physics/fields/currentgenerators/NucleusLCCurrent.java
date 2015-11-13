@@ -130,7 +130,7 @@ public class NucleusLCCurrent implements ICurrentGenerator {
 	/**
 	 * ParticleLCCurrent which is called to interpolate charges and currents.
 	 */
-	private ParticleLCCurrent particleLCCurrent;
+	private ParticleLCCurrentCIC particleLCCurrent;
 
 	/**
 	 * Standard constructor.
@@ -155,7 +155,7 @@ public class NucleusLCCurrent implements ICurrentGenerator {
 		this.colorChargeDensity = colorChargeDensity;
 
 		this.charges = new ArrayList<NucleonCharge>();
-		this.particleLCCurrent = new ParticleLCCurrent(direction, orientation, location, longitudinalWidth);
+		this.particleLCCurrent = new ParticleLCCurrentCIC(direction, orientation, location, longitudinalWidth);
 	}
 
 	/**
