@@ -1,13 +1,13 @@
 gridStep: 1
-couplingConstant: 0.5
+couplingConstant: 2
 numberOfDimensions: 3
 numberOfColors: 2
 numberOfThreads: 8
-gridCells: [512, 64, 1]
+gridCells: [128, 8, 8]
 poissonsolver: empty
 fieldsolver: temporal yang mills
-timeStep: 0.5
-duration: 316
+timeStep: 0.3
+duration: 96
 evaluationRegion:
   enabled: true
   point1: [2, 0, 0]
@@ -21,31 +21,26 @@ currents:
   MVModels:
     - direction: 0
       orientation: 1
-      longitudinalLocation: 196
-      longitudinalWidth: 5.0
-      mu: 0.04
+      longitudinalLocation: 32
+      longitudinalWidth: 3.0
+      mu: 0.2
       randomSeed: 1
     - direction: 0
       orientation: -1
-      longitudinalLocation: -196
-      longitudinalWidth: 5.0
-      mu: 0.04
+      longitudinalLocation: -32
+      longitudinalWidth: 3.0
+      mu: 0.2
       randomSeed: 2
 
-output:
-  projectedEnergyDensity:
-    - path: "energydensity.tsv"
-      interval: 1.0
-      direction: 0
 
 # Generated panel code:
 panels:
   dividerLocation: 1015
   leftPanel:
-    dividerLocation: 714
+    dividerLocation: 483
     leftPanel:
       chartPanel:
-        logarithmicScale: true
+        logarithmicScale: false
         showCharts:
         - Gauss law violation
         - E squared
@@ -53,15 +48,27 @@ panels:
         - Energy density
     orientation: 0
     rightPanel:
-      electricFieldPanel:
-        automaticScaling: false
-        colorIndex: 0
-        directionIndex: 1
-        scaleFactor: 1.0
-        showCoordinates: i, x, 16
-        showFields:
-        - E
-        - U
+      dividerLocation: 501
+      leftPanel:
+        electricFieldPanel:
+          automaticScaling: false
+          colorIndex: 0
+          directionIndex: 0
+          scaleFactor: 25.0
+          showCoordinates: x, i, 0
+          showFields:
+          - E
+          - Gauss
+      orientation: 1
+      rightPanel:
+        electricFieldPanel:
+          automaticScaling: false
+          colorIndex: 0
+          directionIndex: 1
+          scaleFactor: 25.0
+          showCoordinates: x, i, 4
+          showFields:
+          - E
   orientation: 1
   rightPanel:
     dividerLocation: 415
@@ -76,3 +83,5 @@ panels:
         automaticScaling: true
         scaleFactor: 1.0
         showCoordinates: x, y, 0
+  windowHeight: 1054
+  windowWidth: 1922
