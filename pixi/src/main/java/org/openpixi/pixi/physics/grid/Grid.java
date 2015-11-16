@@ -790,16 +790,14 @@ public class Grid {
 	}
 
 	/**
-	 * Calculates the square of the magnetic field from the spatial plaquette starting at a lattice index in a direction.
+	 * Calculates the magnetic field from the spatial plaquette starting at a lattice index in a direction.
 	 *
 	 * @param index    	Lattice index from where the plaquette starts
 	 * @param direction	Index of the direction
 	 * @param timeIndex	Option to compute B from U (timeIndex = 0) or Unext (timeIndex != 0)
 	 * @return          B^2 calculated from the spatial plaquette
 	 */
-	public double getBsquaredFromLinks(int index, int direction, int timeIndex) {
-		
-		double norm = as*as;
+	public AlgebraElement getB(int index, int direction, int timeIndex) {
 		int j=0, k=0;
 		switch (direction) {
 		case 0:
@@ -817,9 +815,19 @@ public class Grid {
 			k = 1;
 			break;
 		}
-		double res = getPlaquette(index, j, k, 1, 1, timeIndex).proj().square()/norm;
+		return getPlaquette(index, j, k, 1, 1, timeIndex).proj().mult(1/as);
+	}
 
-		return res;
+	/**
+	 * Calculates the square of the magnetic field from the spatial plaquette starting at a lattice index in a direction.
+	 *
+	 * @param index    	Lattice index from where the plaquette starts
+	 * @param direction	Index of the direction
+	 * @param timeIndex	Option to compute B from U (timeIndex = 0) or Unext (timeIndex != 0)
+	 * @return          B^2 calculated from the spatial plaquette
+	 */
+	public double getBsquaredFromLinks(int index, int direction, int timeIndex) {
+		return getB(index, direction, timeIndex).square();
 	}
 
 	/**
