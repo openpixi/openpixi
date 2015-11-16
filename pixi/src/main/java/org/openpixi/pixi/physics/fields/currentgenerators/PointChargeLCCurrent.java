@@ -200,12 +200,12 @@ public class PointChargeLCCurrent implements ICurrentGenerator {
 
 		// Interpolate to each grid point of the hypercube.
 		for(int[] p : listOfPoints) {
-			double weigth = 1.0;
+			double weight = 1.0;
 			for (int i = 0; i < effNumberOfDimensions; i++) {
 				double dist = 1.0 - Math.abs(p[i] - chargePosition[i] / as);
-				weigth *= dist;
+				weight *= dist;
 			}
-			transversalChargeDensity[GridFunctions.getCellIndex(p, transversalNumCells)].addAssign(charge.mult(weigth));
+			transversalChargeDensity[GridFunctions.getCellIndex(p, transversalNumCells)].addAssign(charge.mult(weight));
 		}
 	}
 
