@@ -32,6 +32,7 @@ import org.openpixi.pixi.physics.grid.Grid;
 import org.openpixi.pixi.physics.grid.Interpolation;
 import org.openpixi.pixi.physics.grid.LocalInterpolation;
 import org.openpixi.pixi.physics.movement.ParticleMover;
+import org.openpixi.pixi.physics.movement.boundary.AbsorbingParticleBoundaryConditions;
 import org.openpixi.pixi.physics.movement.boundary.IParticleBoundaryConditions;
 import org.openpixi.pixi.physics.movement.boundary.PeriodicParticleBoundaryConditions;
 import org.openpixi.pixi.physics.particles.IParticle;
@@ -189,16 +190,16 @@ public class Simulation {
 
 		diagnostics = settings.getDiagnostics();
 
-		DoubleBox simulationBox = new DoubleBox(numberOfDimensions, new double[] {0, 0, 0},
-				new double[] {this.getWidth(), this.getHeight(), this.getDepth()});
 		IParticleBoundaryConditions particleBoundaryConditions;
 		switch (settings.getBoundaryType())
 		{
 			case Periodic:
-				particleBoundaryConditions = new PeriodicParticleBoundaryConditions(simulationBox, numberOfDimensions);
+				particleBoundaryConditions = new PeriodicParticleBoundaryConditions(this);
 				break;
+			case Absorbing:
+				particleBoundaryConditions = new AbsorbingParticleBoundaryConditions(this);
 			default:
-				particleBoundaryConditions = new PeriodicParticleBoundaryConditions(simulationBox, numberOfDimensions);
+				particleBoundaryConditions = new PeriodicParticleBoundaryConditions(this);
 				break;
 
 		}
