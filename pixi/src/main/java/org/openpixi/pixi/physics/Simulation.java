@@ -257,9 +257,9 @@ public class Simulation {
 		grid.updateLinks(tstep);
 
 		interpolation.interpolateToParticle(particles, grid);
-
+		//particlePush();
+		interpolation.interpolateChargedensity(particles, grid);
 		interpolation.interpolateToGrid(particles, grid);
-
 		//updateVelocities(); TODO: Write this method!!
 
 	}
@@ -303,7 +303,7 @@ public class Simulation {
 	 * 9) Particle velocities at t + 3at/2 are determined using the interpolated fields at t = t + at.
 	 * 10) Diagnostics routines are called in order to produce data output.
 	 */
-	public void step() throws FileNotFoundException,IOException {
+	public void step() throws IOException {
 
 		// Initialize and run diagnostics before first simulation step.
 		if(totalSimulationSteps == 0) {
@@ -324,6 +324,7 @@ public class Simulation {
 		//Generation of internal and external currents and charges
 		grid.resetCurrent();
 		grid.resetCharge();
+		interpolation.interpolateChargedensity(particles, grid);
 		interpolation.interpolateToGrid(particles, grid);
 		// Generate external currents on the grid!!
 		for (ICurrentGenerator c: currentGenerators)
@@ -341,6 +342,7 @@ public class Simulation {
 		interpolation.interpolateToParticle(particles, grid);
 
 		//Particle velocities are updated using the interpolated fields
+		particlePush();
 		//updateVelocities(); TODO: Write this method!!
 
 		//Output in text files
@@ -358,7 +360,7 @@ public class Simulation {
 	/**
 	 * Runs the entire simulation at once. (for non-interactive simulations)
 	 */
-	public void run() throws FileNotFoundException,IOException {
+	public void run() throws IOException {
 		while (continues()) {
 			step();
 		}

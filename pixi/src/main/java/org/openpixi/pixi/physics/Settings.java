@@ -46,8 +46,8 @@ public class Settings {
 	private double timeStep = 0.1;
 	private double gridStep = 1;
 	private double tMax = 1000;
-	private GeneralBoundaryType boundaryType = GeneralBoundaryType.Periodic;
-	private InterpolatorAlgorithm interpolator = new EmptyInterpolator();
+	private GeneralBoundaryType boundaryType = GeneralBoundaryType.Absorbing;
+	private InterpolatorAlgorithm interpolator = new CGCParticleInterpolation();
 
 	// Grid related settings
 	private int[] gridCells;
@@ -69,7 +69,7 @@ public class Settings {
 
 	private int simulationType = 0;
 	private List<IParticle> particles = new ArrayList<IParticle>();
-	private ParticleSolver particleSolver = new EmptyParticleSolver();
+	private ParticleSolver particleSolver = new CGCParticleSolver();
 	private List<Force> forces = new ArrayList<Force>();
 
 

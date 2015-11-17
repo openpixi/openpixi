@@ -44,15 +44,15 @@ public class YamlSettings {
 
 		// Default settings:
 		settings.setRelativistic(false);
-		settings.setBoundary(GeneralBoundaryType.Periodic);
+		//settings.setBoundary(GeneralBoundaryType.Periodic);
 		settings.setFieldSolver(new TemporalYangMillsSolver());//settings.setFieldSolver(new YangMillsSolver());
 		settings.useGrid(true);
-		settings.setInterpolator(new EmptyInterpolator());
+		//settings.setInterpolator(new EmptyInterpolator());
         settings.setSpeedOfLight(1.0);
         settings.setNumberOfDimensions(3);
         settings.setNumberOfColors(1);
         settings.setCouplingConstant(1.0);
-        settings.setParticleSolver(new LeapFrogRelativisticParticleSolver(settings.getNumberOfDimensions(), settings.getSpeedOfLight()));
+       // settings.setParticleSolver(new LeapFrogRelativisticParticleSolver(settings.getNumberOfDimensions(), settings.getSpeedOfLight()));
         settings.setNumOfThreads(4);
         settings.setFieldGenerators(new ArrayList<IFieldGenerator>());
 		settings.setCurrentGenerators(new ArrayList<ICurrentGenerator>());

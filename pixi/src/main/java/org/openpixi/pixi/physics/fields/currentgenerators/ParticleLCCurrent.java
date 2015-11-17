@@ -4,6 +4,7 @@ import org.openpixi.pixi.math.AlgebraElement;
 import org.openpixi.pixi.math.GroupElement;
 import org.openpixi.pixi.physics.Simulation;
 import org.openpixi.pixi.physics.fields.NewLCPoissonSolver;
+import org.openpixi.pixi.physics.particles.CGCParticle;
 import org.openpixi.pixi.physics.util.GridFunctions;
 
 import java.util.ArrayList;
@@ -63,11 +64,6 @@ public class ParticleLCCurrent implements ICurrentGenerator {
 	 * Coupling constant used in the simulation.
 	 */
 	private double g;
-
-	/**
-	 * List of particles which sample the charge distributions. The charges of these particles are evolved and interpolated consistently according to the field.
-	 */
-	private ArrayList<Particle> particles;
 
 	/**
 	 * Poisson solver for solving the CGC intitial conditions.
@@ -131,7 +127,6 @@ public class ParticleLCCurrent implements ICurrentGenerator {
 
 		// 3) Interpolate grid charge and current density.
 		initializeParticles(s, 1);
-		applyCurrent(s);
 
 		// You're done: charge density, current density and the fields are set up correctly.
 	}
@@ -142,9 +137,6 @@ public class ParticleLCCurrent implements ICurrentGenerator {
 	 * @param s
 	 */
 	public void applyCurrent(Simulation s) {
-		evolveCharges(s);
-		removeParticles(s);
-		interpolateChargesAndCurrents(s);
 	}
 
 	/**
@@ -155,10 +147,9 @@ public class ParticleLCCurrent implements ICurrentGenerator {
 	 * @param particlesPerLink
 	 */
 	private void initializeParticles(Simulation s, int particlesPerLink) {
-		particles = new ArrayList<Particle>();
 
 		// Traverse through charge density and add particles by sampling the charge distribution
-		double t0 = - 2*at;
+		double t0 = - at;
 		double FIX_ROUND_ERRORS = 10E-12 * as;
 		for (int i = 0; i < s.grid.getTotalNumberOfCells(); i++) {
 			for (int j = 0; j < particlesPerLink; j++) {
@@ -189,14 +180,14 @@ public class ParticleLCCurrent implements ICurrentGenerator {
 					}
 				}
 
-				Particle p = new Particle();
+				CGCParticle p = new CGCParticle(s.getNumberOfDimensions(), s.getNumberOfColors(), direction);
 				p.pos0 = particlePosition0;
 				p.pos1 = particlePosition1;
 				p.vel = particleVelocity;
 				p.Q0 = charge;
 				p.Q1 = charge.copy();
 
-				particles.add(p);
+				s.particles.add(p);
 			}
 		}
 	}
@@ -221,203 +212,5 @@ public class ParticleLCCurrent implements ICurrentGenerator {
 		charge1.addAssign(charge2);
 
 		return charge1;
-	}
-
-	/**
-	 * Evolves the particle positions and charges according to the Wong equations.
-	 *
-	 * @param s
-	 */
-	private void evolveCharges(Simulation s) {
-		double totalCharge = 0.0;
-		for(Particle p : particles) {
-			// swap variables for charge and position
-			p.swap();
-			// move particle position according to velocity
-			p.move(at);
-
-			// Evolve particle charges
-			// check if one cell or two cell move
-			int longitudinalIndexOld = (int) (p.pos0[direction] / as);
-			int longitudinalIndexNew = (int) (p.pos1[direction] / as);
-
-
-			if(longitudinalIndexOld == longitudinalIndexNew) {
-				// one cell move
-				int cellIndexNew = s.grid.getCellIndex(GridFunctions.flooredGridPoint(p.pos0, as));
-				double d = Math.abs(p.vel[direction] * at / as);
-				GroupElement U;
-				if(p.vel[direction] > 0) {
-					U = s.grid.getU(cellIndexNew, direction).getAlgebraElement().mult(d).getLink();
-				} else {
-					U = s.grid.getU(cellIndexNew, direction).getAlgebraElement().mult(d).getLink().adj();
-				}
-				p.evolve(U);
-			} else {
-				// two cell move
-				int cellIndexOld = s.grid.getCellIndex(GridFunctions.flooredGridPoint(p.pos0, as));
-				int cellIndexNew = s.grid.getCellIndex(GridFunctions.flooredGridPoint(p.pos1, as));
-
-				if(longitudinalIndexOld < longitudinalIndexNew) {
-					// right move
-					// path is split into two parts
-					double d0 = Math.abs(longitudinalIndexNew - p.pos0[direction] / as);
-					double d1 = Math.abs(longitudinalIndexNew - p.pos1[direction] / as);
-
-					GroupElement U0 = s.grid.getU(cellIndexOld, direction).getAlgebraElement().mult(d0).getLink();
-					GroupElement U1 = s.grid.getU(cellIndexNew, direction).getAlgebraElement().mult(d1).getLink();
-					GroupElement U = U0.mult(U1);
-
-					p.evolve(U);
-				} else {
-					// left move
-					// path is split into two parts
-					double d0 = Math.abs(longitudinalIndexOld - p.pos0[direction] / as);
-					double d1 = Math.abs(longitudinalIndexOld - p.pos1[direction] / as);
-
-					GroupElement U0 = s.grid.getU(cellIndexOld, direction).getAlgebraElement().mult(d0).getLink();
-					GroupElement U1 = s.grid.getU(cellIndexNew, direction).getAlgebraElement().mult(d1).getLink();
-					GroupElement U = U0.mult(U1);
-
-					p.evolve(U.adj());
-				}
-			}
-			//totalCharge += p.Q1.square();
-		}
-		//totalCharge /= particles.size();
-		//System.out.println(totalCharge + ", ");
-	}
-
-	/**
-	 * Checks if particles have left the simulation box and removes them if necessary.
-	 *
-	 * @param s
-	 */
-	private void removeParticles(Simulation s) {
-		// Remove particles which have left the simulation box.
-		ArrayList<Particle> removeList = new ArrayList<Particle>();
-		for(Particle p : particles) {
-			for (int i = 0; i < s.getNumberOfDimensions(); i++) {
-				if(p.pos1[i] > s.getSimulationBoxSize(i) || p.pos1[i] < 0) {
-					removeList.add(p);
-				}
-			}
-		}
-		particles.removeAll(removeList);
-	}
-
-	/**
-	 * Interpolates the particle charges to the grid and computes charge conserving currents.
-	 *
-	 * @param s
-	 */
-	private void interpolateChargesAndCurrents(Simulation s) {
-		double c = as / at;
-		// Interpolate particle charges to charge density on the grid
-		for(Particle p : particles) {
-			// 1) Charge interpolation
-
-			// "Floored" grid points of the particle
-			int[] gridPosOld = GridFunctions.flooredGridPoint(p.pos0, as);
-			int[] gridPosNew = GridFunctions.flooredGridPoint(p.pos1, as);
-
-			// Cell indices
-			int cellIndex0Old = s.grid.getCellIndex(gridPosOld);
-			int cellIndex1Old = s.grid.shift(cellIndex0Old, direction, 1);
-
-			int cellIndex0New = s.grid.getCellIndex(gridPosNew);
-			int cellIndex1New = s.grid.shift(cellIndex0New, direction, 1);
-
-			// Relative distances to the lattice sites
-			double d0New = p.pos1[direction] / as - gridPosNew[direction];
-			double d1New = 1 - d0New;
-			double d0Old = p.pos0[direction] / as - gridPosOld[direction];
-			double d1Old = 1 - d0Old;
-
-			// Links at old and new position
-			GroupElement UOld = s.grid.getUnext(cellIndex0Old, direction);
-			GroupElement UNew = s.grid.getU(cellIndex0New, direction);
-
-			// Interpolated gauge links
-			GroupElement U0New = UNew.getAlgebraElement().mult(d0New).getLink();
-			GroupElement U1New = UNew.getAlgebraElement().mult(d1New).getLink().adj();
-
-			// Charge interpolation to neighbouring lattice sites
-			AlgebraElement Q0New = p.Q1.act(U0New).mult(d1New);
-			AlgebraElement Q1New = p.Q1.act(U1New).mult(d0New);
-
-			s.grid.addRho(cellIndex0New, Q0New);
-			s.grid.addRho(cellIndex1New, Q1New);
-
-			// 2) Charge conserving current calculation
-
-			int longitudinalIndexOld = (int) (p.pos0[direction] / as);
-			int longitudinalIndexNew = (int) (p.pos1[direction] / as);
-
-			if(longitudinalIndexNew == longitudinalIndexOld) {
-				// One-cell move
-				GroupElement U0Old = UOld.getAlgebraElement().mult(d0Old).getLink();
-				AlgebraElement Q0Old = p.Q0.act(U0Old).mult(d1Old);
-
-				AlgebraElement J = Q0New.sub(Q0Old).mult(-c);
-				s.grid.addJ(cellIndex0New, direction, J);
-
-			} else {
-				GroupElement U0Old = UOld.getAlgebraElement().mult(d0Old).getLink();
-				GroupElement U1Old = UOld.getAlgebraElement().mult(d1Old).getLink().adj();
-				AlgebraElement Q0Old = p.Q0.act(U0Old).mult(d1Old);
-				AlgebraElement Q1Old = p.Q0.act(U1Old).mult(d0Old);
-				if(longitudinalIndexNew > longitudinalIndexOld) {
-					// Two-cell move right
-					AlgebraElement JOld = Q0Old.mult(c);
-					AlgebraElement JNew = JOld.act(s.grid.getU(cellIndex0Old,direction).adj());
-					JNew.addAssign(Q0New.sub(Q1Old).mult(-c));
-
-					s.grid.addJ(cellIndex0Old, direction, JOld);
-					s.grid.addJ(cellIndex0New, direction, JNew);
-				} else {
-					// Two-cell move left
-					AlgebraElement JNew = Q0New.mult(-c);
-					AlgebraElement JOld = JNew.act(UNew.adj());
-					JOld.addAssign(Q1New.sub(Q0Old).mult(-c));
-
-					s.grid.addJ(cellIndex0Old, direction, JOld);
-					s.grid.addJ(cellIndex0New, direction, JNew);
-				}
-
-			}
-		}
-	}
-
-	/**
-	 * Particle class used by the current generator to evolve and interpolate charges on the grid.
-	 */
-	class Particle {
-		public double[] pos0;
-		public double[] pos1;
-		public double[] vel;
-
-		public AlgebraElement Q0;
-		public AlgebraElement Q1;
-
-		public void swap() {
-			AlgebraElement tQ = Q0;
-			Q0 = Q1;
-			Q1 = tQ;
-
-			double[] tPos = pos0;
-			pos0 = pos1;
-			pos1 = tPos;
-		}
-
-		public void move(double dt) {
-			for (int i = 0; i < pos0.length; i++) {
-				pos1[i] = pos0[i] + vel[i] * dt;
-			}
-		}
-
-		public void evolve(GroupElement U) {
-			Q1 = Q0.act(U.adj());
-		}
 	}
 }
