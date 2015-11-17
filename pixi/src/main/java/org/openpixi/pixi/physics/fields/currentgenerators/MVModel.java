@@ -71,10 +71,11 @@ public class MVModel implements ICurrentGenerator {
 		// Initialize transversal charge density with random charges from a Gaussian distribution with zero mean and width \mu.
 		AlgebraElement[] transversalChargeDensity = new AlgebraElement[totalTransversalCells];
 		AlgebraElement totalCharge = s.grid.getElementFactory().algebraZero();
+		double gaussianWidth = mu * s.getCouplingConstant() / s.grid.getLatticeSpacing();
 		for (int i = 0; i < totalTransversalCells; i++) {
 			AlgebraElement charge = s.grid.getElementFactory().algebraZero();
 			for (int c = 0; c < numberOfComponents; c++) {
-				double value = rand.nextGaussian() * mu;
+				double value = rand.nextGaussian() * gaussianWidth;
 				charge.set(c, value);
 			}
 			totalCharge.addAssign(charge);
