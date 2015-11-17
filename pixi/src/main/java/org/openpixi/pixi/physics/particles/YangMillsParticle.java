@@ -6,30 +6,29 @@ import org.openpixi.pixi.math.ElementFactory;
 import java.awt.Color;
 import java.io.Serializable;
 
-public class YangMillsParticle implements IParticle, Serializable
-{
-	protected int     numberOfDimensions;
-	protected int     numberOfColors;
-	protected int     numberOfComponents;
+/**
+ * Particle class to be used in CPIC simulations.
+ */
+public class YangMillsParticle implements IParticle, Serializable {
+	protected int numberOfDimensions;
+	protected int numberOfColors;
+	protected int numberOfComponents;
 
 	public AlgebraElement Q0;
 	public AlgebraElement Q1;
-	public double  mass;
+	public double mass;
 
-	protected double  pos[];
-	protected double  prevPos[];
-	protected double  vel[];
-	protected double  acc[];
+	public double pos0[];
+	public double pos1[];
+	public double vel[];
+	public double acc[];
 
-	protected double  r;
-	protected Color   col;
+	public double r;
+	public Color col;
 
-	/*
-			CONSTRUCTOR
-	 */
+	// CONSTRUCTOR
 
-	public YangMillsParticle(int numberOfDimensions, int numberOfColors)
-	{
+	public YangMillsParticle(int numberOfDimensions, int numberOfColors) {
 		this.setNumberOfDimensions(numberOfDimensions);
 		ElementFactory factory = new ElementFactory(numberOfColors);
 		this.Q0 = factory.algebraZero();
@@ -39,69 +38,97 @@ public class YangMillsParticle implements IParticle, Serializable
 		this.numberOfComponents = factory.numberOfComponents;
 	}
 
-	/*
-			GETTERS
-	 */
+	// GETTERS
 
-	public double getPosition(int i)        {   return pos[i];                  }
-	public double getPrevPosition(int i)    {   return prevPos[i];              }
-	public double getVelocity(int i)        {   return vel[i];                  }
+	public double getPosition(int i) {
+		return pos0[i];
+	}
 
-    public double[] getPosition()           {   return pos;                     }
-    public double[] getPrevPosition()       {   return prevPos;                 }
-    public double[] getVelocity()           {   return vel;                     }
+	public double getPrevPosition(int i) {
+		return pos1[i];
+	}
 
-	public double getRadius()               {   return r;                       }
-	public Color getDisplayColor()                {   return col;                     }
+	public double getVelocity(int i) {
+		return vel[i];
+	}
 
-    public int getNumberOfDimensions()      {   return this.numberOfDimensions; }
+	public double[] getPosition() {
+		return pos0;
+	}
 
-	/*
-			SETTERS
-	 */
+	public double[] getPrevPosition() {
+		return pos1;
+	}
 
-	public void setPosition(int i, double value)                {   this.pos[i] = value;            }
-	public void addPosition(int i, double value)                {   this.pos[i] += value;           }
+	public double[] getVelocity() {
+		return vel;
+	}
 
-	public void setPrevPosition(int i, double value)            {   this.prevPos[i] = value;        }
-	public void addPrevPosition(int i, double value)            {   this.prevPos[i] += value;       }
+	public double getRadius() {
+		return r;
+	}
 
-	public void setVelocity(int i, double value)                {   this.vel[i] = value;            }
-	public void addVelocity(int i, double value)                {   this.vel[i] += value;           }
+	public Color getDisplayColor() {
+		return col;
+	}
 
-	public void setNumberOfDimensions(int numberOfDimensions)
-	{
+	public int getNumberOfDimensions() {
+		return this.numberOfDimensions;
+	}
+
+	// SETTERS
+
+	public void setPosition(int i, double value) {
+		this.pos0[i] = value;
+	}
+
+	public void addPosition(int i, double value) {
+		this.pos0[i] += value;
+	}
+
+	public void setPrevPosition(int i, double value) {
+		this.pos1[i] = value;
+	}
+
+	public void addPrevPosition(int i, double value) {
+		this.pos1[i] += value;
+	}
+
+	public void setVelocity(int i, double value) {
+		this.vel[i] = value;
+	}
+
+	public void addVelocity(int i, double value) {
+		this.vel[i] += value;
+	}
+
+	public void setNumberOfDimensions(int numberOfDimensions) {
 		this.numberOfDimensions = numberOfDimensions;
 
-		this.pos = new double[this.numberOfDimensions];
-		this.prevPos = new double[this.numberOfDimensions];
+		this.pos0 = new double[this.numberOfDimensions];
+		this.pos1 = new double[this.numberOfDimensions];
 		this.vel = new double[this.numberOfDimensions];
 		this.acc = new double[this.numberOfDimensions];
 	}
 
-	public void setRadius(double r)
-	{
+	public void setRadius(double r) {
 		this.r = r;
 	}
 
-	public void setDisplayColor(Color color)
-	{
+	public void setDisplayColor(Color color) {
 		this.col = color;
 	}
 
-	public void storePosition()
-	{
-        prevPos = pos.clone();
+	public void storePosition() {
+		pos1 = pos0.clone();
 	}
 
-	public IParticle copy()
-	{
+	public IParticle copy() {
 		YangMillsParticle p = new YangMillsParticle(this.numberOfDimensions, this.numberOfColors);
 
-		for (int i = 0; i < this.numberOfDimensions; i++)
-		{
-			p.pos[i] = this.pos[i];
-			p.prevPos[i] = this.prevPos[i];
+		for (int i = 0; i < this.numberOfDimensions; i++) {
+			p.pos0[i] = this.pos0[i];
+			p.pos1[i] = this.pos1[i];
 			p.vel[i] = this.vel[i];
 			p.acc[i] = this.acc[i];
 		}
