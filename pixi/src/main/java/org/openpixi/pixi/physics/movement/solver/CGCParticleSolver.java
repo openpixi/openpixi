@@ -13,7 +13,6 @@ public class CGCParticleSolver implements ParticleSolver {
 
 	public void step(IParticle p, Force f, double dt) {
 		CGCParticle P = (CGCParticle) p;
-		P.storeValues();
 
 		for (int i = 0; i < P.pos0.length; i++) {
 			P.pos1[i] = P.pos0[i] + P.vel[i] * dt;
