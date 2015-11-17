@@ -28,10 +28,10 @@ public class LocalInterpolation extends Interpolation {
 	}
 
 	@Override
-	public void interpolateToGrid(List<IParticle> particles, Grid grid, double timeStep) {
+	public void interpolateToGrid(List<IParticle> particles, Grid grid) {
 		//grid.resetCurrent();
 		this.grid = grid;
-		this.timeStep = timeStep;
+		this.timeStep = grid.getTemporalSpacing();
 		particleIterator.execute(particles, interpolateToGrid);
 	}
 
@@ -50,7 +50,7 @@ public class LocalInterpolation extends Interpolation {
 
 	private class InterpolateToGrid implements ParticleAction {
 		public void execute(IParticle particle) {
-			interpolator.interpolateToGrid(particle, grid, timeStep);
+			interpolator.interpolateToGrid(particle, grid);
 		}
 	}
 

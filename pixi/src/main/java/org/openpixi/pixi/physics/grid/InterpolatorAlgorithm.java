@@ -9,9 +9,8 @@ public interface InterpolatorAlgorithm {
 	 *
 	 * @param p     Particle instance
 	 * @param g     Reference to the grid
-	 * @param tstep Time step used in the simulation
 	 */
-	void interpolateToGrid(IParticle p, Grid g, double tstep);
+	void interpolateToGrid(IParticle p, Grid g);
 
 	/**
 	 * This method interpolates the charge density of a single particle to the charge density on the grid.

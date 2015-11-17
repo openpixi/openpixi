@@ -12,10 +12,11 @@ import org.openpixi.pixi.physics.util.GridFunctions;
  * that there is no ambiguity in defining parallel transport for the color charges of the particles.
  */
 public class CGCParticleInterpolation implements  InterpolatorAlgorithm {
-	public void interpolateToGrid(IParticle p, Grid g, double dt) {
+	public void interpolateToGrid(IParticle p, Grid g) {
 		CGCParticle P = (CGCParticle) p;
 
 		double as = g.getLatticeSpacing();
+		double dt = g.getTemporalSpacing();
 		double c = as / dt;
 		int direction = P.direction;
 
@@ -115,6 +116,57 @@ public class CGCParticleInterpolation implements  InterpolatorAlgorithm {
 	}
 
 	public void interpolateToParticle(IParticle p, Grid g) {
-		// Nothing to do here.
+		// Compute parallel transport for the particle.
+		CGCParticle P = (CGCParticle) p;
+
+		double at = g.getTemporalSpacing();
+		double as = g.getLatticeSpacing();
+		int direction = P.direction;
+
+		// check if one cell or two cell move
+		int longitudinalIndexOld = (int) (P.pos0[direction] / as);
+		int longitudinalIndexNew = (int) (P.pos1[direction] / as);
+
+
+		if(longitudinalIndexOld == longitudinalIndexNew) {
+			// one cell move
+			int cellIndexNew = g.getCellIndex(GridFunctions.flooredGridPoint(P.pos0, as));
+			double d = Math.abs(P.vel[direction] * at / as);
+			GroupElement U;
+			if(P.vel[direction] > 0) {
+				U = g.getU(cellIndexNew, direction).getAlgebraElement().mult(d).getLink();
+			} else {
+				U = g.getU(cellIndexNew, direction).getAlgebraElement().mult(d).getLink().adj();
+			}
+			P.U = U;
+		} else {
+			// two cell move
+			int cellIndexOld = g.getCellIndex(GridFunctions.flooredGridPoint(P.pos0, as));
+			int cellIndexNew = g.getCellIndex(GridFunctions.flooredGridPoint(P.pos1, as));
+
+			if(longitudinalIndexOld < longitudinalIndexNew) {
+				// right move
+				// path is split into two parts
+				double d0 = Math.abs(longitudinalIndexNew - P.pos0[direction] / as);
+				double d1 = Math.abs(longitudinalIndexNew - P.pos1[direction] / as);
+
+				GroupElement U0 = g.getU(cellIndexOld, direction).getAlgebraElement().mult(d0).getLink();
+				GroupElement U1 = g.getU(cellIndexNew, direction).getAlgebraElement().mult(d1).getLink();
+				GroupElement U = U0.mult(U1);
+
+				P.U = U;
+			} else {
+				// left move
+				// path is split into two parts
+				double d0 = Math.abs(longitudinalIndexOld - P.pos0[direction] / as);
+				double d1 = Math.abs(longitudinalIndexOld - P.pos1[direction] / as);
+
+				GroupElement U0 = g.getU(cellIndexOld, direction).getAlgebraElement().mult(d0).getLink();
+				GroupElement U1 = g.getU(cellIndexNew, direction).getAlgebraElement().mult(d1).getLink();
+				GroupElement U = U0.mult(U1);
+
+				P.U = U;
+			}
+		}
 	}
 }
