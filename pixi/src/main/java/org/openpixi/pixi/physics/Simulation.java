@@ -257,7 +257,7 @@ public class Simulation {
 
 		interpolation.interpolateToParticle(particles, grid);
 
-		interpolation.interpolateToGrid(particles, grid, tstep);
+		interpolation.interpolateToGrid(particles, grid);
 
 		//updateVelocities(); TODO: Write this method!!
 
@@ -323,7 +323,7 @@ public class Simulation {
 		//Generation of internal and external currents and charges
 		grid.resetCurrent();
 		grid.resetCharge();
-		interpolation.interpolateToGrid(particles, grid, tstep);
+		interpolation.interpolateToGrid(particles, grid);
 		// Generate external currents on the grid!!
 		for (ICurrentGenerator c: currentGenerators)
 		{
