@@ -72,7 +72,7 @@ public class ParticleMover {
 
 	private class Push implements ParticleAction {
 		public void execute(IParticle particle) {
-			particle.storePosition();
+			particle.storeValues();
 			particleSolver.step(particle, force, timeStep);
 			boundaries.applyOnParticle(particle);
 		}
