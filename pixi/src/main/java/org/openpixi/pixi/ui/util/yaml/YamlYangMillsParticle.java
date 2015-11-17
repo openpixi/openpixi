@@ -5,9 +5,9 @@ import java.lang.reflect.Field;
 import java.util.List;
 
 import org.openpixi.pixi.physics.Settings;
-import org.openpixi.pixi.physics.particles.Particle;
+import org.openpixi.pixi.physics.particles.YangMillsParticle;
 
-public class YamlParticle {
+public class YamlYangMillsParticle {
 	public List<Double> position;
 	public List<Double> velocity;
 	public Double r;
@@ -17,7 +17,7 @@ public class YamlParticle {
 
 	public void applyTo(Settings settings) {
 
-		Particle p = getParticle(settings.getNumberOfDimensions(), settings.getNumberOfColors());
+		YangMillsParticle p = getParticle(settings.getNumberOfDimensions(), settings.getNumberOfColors());
 
 		settings.addParticle(p);
 	}
@@ -27,8 +27,8 @@ public class YamlParticle {
 	 * YAML document to it.
 	 * @return new particle
 	 */
-	public Particle getParticle(int numberOfDimensions, int numberOfColors) {
-		Particle p = new Particle(numberOfDimensions, numberOfColors);
+	public YangMillsParticle getParticle(int numberOfDimensions, int numberOfColors) {
+		YangMillsParticle p = new YangMillsParticle(numberOfDimensions, numberOfColors);
 		
 
 		if(position != null)
@@ -44,15 +44,17 @@ public class YamlParticle {
 		}
 
 		if (m != null) {
-			p.setMass(m);
+			p.mass = m;
 		}
 
 		if (q != null)
-			for(int c = 0; c < q.size(); c++)
-				p.setCharge(c, q.get(c));
+			for(int c = 0; c < q.size(); c++) {
+				p.Q0.set(c, q.get(c));
+				p.Q1.set(c, q.get(c));
+			}
 
 		if (color != null) {
-			p.setColor(getColorFromString(color));
+			p.setDisplayColor(getColorFromString(color));
 		}
 		return p;
 	}

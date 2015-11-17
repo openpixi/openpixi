@@ -33,8 +33,8 @@ public class YamlSettings {
 	public YamlRegion evaluationRegion;
 	public YamlRegion activeRegion;
 
-	public List<YamlParticle> particles;
-	public List<YamlParticleStream> streams;
+	public List<YamlYangMillsParticle> particles;
+	public List<YamlYangMillsParticleStream> streams;
     public YamlFields fields;
 	public YamlCurrents currents;
 	public YamlOutput output;
@@ -115,13 +115,13 @@ public class YamlSettings {
 		}
 
 		if (particles != null) {
-			for (YamlParticle p : particles) {
+			for (YamlYangMillsParticle p : particles) {
 				p.applyTo(settings);
 			}
 		}
 
 		if (streams != null) {
-			for (YamlParticleStream s : streams) {
+			for (YamlYangMillsParticleStream s : streams) {
 				s.applyTo(settings);
 			}
 		}

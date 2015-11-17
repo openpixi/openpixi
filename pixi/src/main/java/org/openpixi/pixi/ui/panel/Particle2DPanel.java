@@ -71,7 +71,7 @@ public class Particle2DPanel extends AnimationPanel {
 
 		for (int i = 0; i < s.particles.size(); i++) {
 			IParticle par = (IParticle) s.particles.get(i);
-			graph.setColor(par.getColor());
+			graph.setColor(par.getDisplayColor());
 			double radius = par.getRadius();//double radius = par.getRadius()*(2 - 1.9*par.getZ()/s.getDepth());
 			int width = (int) (2*sx*radius);
 			int height = (int) (2*sy*radius);

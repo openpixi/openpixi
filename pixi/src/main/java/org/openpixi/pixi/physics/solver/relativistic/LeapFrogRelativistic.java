@@ -60,10 +60,12 @@ public class LeapFrogRelativistic implements Solver{
      */
     public void step(IParticle p, Force f, double dt)
     {
-        double gamma = relVelocity.calculateGamma(p);
         /*
             Warning: This is really inefficient and should be changed in the future.
          */
+
+		/*
+		double gamma = relVelocity.calculateGamma(p);
         for(int i = 0 ; i < this.numberOfDimensions; i++)
         {
             // x(t+dt) = x(t) + v(t+dt/2)*dt
@@ -76,6 +78,7 @@ public class LeapFrogRelativistic implements Solver{
             // v(t+3*dt/2) = v(t+dt/2) + a(t+dt)*dt
             p.addVelocity(i, p.getAcceleration(i) * dt);
         }
+        */
     }
     /**
      * prepare method for bringing the velocity in the desired half step
@@ -87,6 +90,7 @@ public class LeapFrogRelativistic implements Solver{
          /*
             Warning: This is really inefficient and should be changed in the future.
          */
+		/*
         for(int i = 0 ; i < this.numberOfDimensions; i++)
         {
             //a(t) = F(v(t), x(t)) / m
@@ -95,6 +99,7 @@ public class LeapFrogRelativistic implements Solver{
             //v(t + dt / 2) = v(t) + a(t)*dt / 2
             p.addVelocity(i, p.getAcceleration(i) * dt / 2.0);
         }
+        */
 
     }
     /**
@@ -107,11 +112,13 @@ public class LeapFrogRelativistic implements Solver{
         /*
             Warning: This is really inefficient and should be changed in the future.
          */
+		/*
         for(int i = 0 ; i < this.numberOfDimensions; i++)
         {
             //v(t) = v(t + dt / 2) - a(t)*dt / 2
             p.addVelocity(i,  - p.getAcceleration(i) * dt / 2.0);
         }
+        */
     }
 
 }

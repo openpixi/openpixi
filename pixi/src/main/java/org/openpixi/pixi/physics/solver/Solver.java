@@ -24,9 +24,9 @@ import org.openpixi.pixi.physics.particles.IParticle;
 
 public interface Solver {
 	
-	public void step(IParticle p, Force f, double step);
+	void step(IParticle p, Force f, double step);
 	
-	public void prepare(IParticle p, Force f, double step);
+	void prepare(IParticle p, Force f, double step);
 	
-	public void complete(IParticle p, Force f, double step);
+	void complete(IParticle p, Force f, double step);
 }

@@ -49,8 +49,9 @@ public class SimpleGridForceRelativistic implements Force {
 
     public double getForce(int i, IParticle p)
     {
+		double f = 0.0;
+		/*
         double gamma = relVelocity.calculateGamma(p);
-        double f = 0.0;
         for(int c = 0; c < this.numberOfComponents; c++)
         {
             f += p.getCharge(c) * p.getE(i, c);
@@ -60,19 +61,7 @@ public class SimpleGridForceRelativistic implements Force {
             }
         }
         f *= this.couplingConstant;
+        */
         return f;
     }
-
-    public double getForceX(IParticle p) {
-        return  getForce(0, p);
-    }
-
-    public double getForceY(IParticle p) {
-        return  getForce(1, p);
-    }
-
-    public double getForceZ(IParticle p) {
-        return  getForce(2, p);
-    }
-
 }
