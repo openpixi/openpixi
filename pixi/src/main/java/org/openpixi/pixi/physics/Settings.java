@@ -9,7 +9,7 @@ import org.openpixi.pixi.physics.fields.currentgenerators.ICurrentGenerator;
 import org.openpixi.pixi.physics.force.*;
 import org.openpixi.pixi.physics.grid.*;
 import org.openpixi.pixi.physics.particles.*;
-import org.openpixi.pixi.physics.solver.*;
+import org.openpixi.pixi.physics.movement.solver.*;
 import org.openpixi.pixi.ui.util.yaml.YamlPanels;
 
 import java.util.ArrayList;
@@ -69,7 +69,7 @@ public class Settings {
 
 	private int simulationType = 0;
 	private List<IParticle> particles = new ArrayList<IParticle>();
-	private Solver particleSolver = new EmptyParticleSolver();
+	private ParticleSolver particleSolver = new EmptyParticleSolver();
 	private List<Force> forces = new ArrayList<Force>();
 
 
@@ -157,7 +157,7 @@ public class Settings {
 		return poissonSolver;
 	}
 
-	public Solver getParticleSolver() {
+	public ParticleSolver getParticleSolver() {
 		return particleSolver;
 	}
 
@@ -363,7 +363,7 @@ public class Settings {
 		this.poissonSolver = poissonSolver;
 	}
 
-	public void setParticleSolver(Solver particleSolver) {
+	public void setParticleSolver(ParticleSolver particleSolver) {
 		this.particleSolver = particleSolver;
 	}
 

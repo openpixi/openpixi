@@ -5,7 +5,7 @@ import org.openpixi.pixi.parallel.particleaccess.ParticleIterator;
 import org.openpixi.pixi.physics.force.Force;
 import org.openpixi.pixi.physics.movement.boundary.IParticleBoundaryConditions;
 import org.openpixi.pixi.physics.particles.IParticle;
-import org.openpixi.pixi.physics.solver.Solver;
+import org.openpixi.pixi.physics.movement.solver.ParticleSolver;
 import org.openpixi.pixi.physics.grid.Grid;
 
 import java.util.List;
@@ -16,7 +16,7 @@ import java.util.List;
 public class ParticleMover {
 
 	/** Solver for the particle equations of motion. */
-	private Solver solver;
+	private ParticleSolver particleSolver;
 	private IParticleBoundaryConditions boundaries;
 	private ParticleIterator particleIterator;
 
@@ -29,20 +29,20 @@ public class ParticleMover {
 	private Complete complete = new Complete();
 
 
-	public Solver getSolver() {
-		return solver;
+	public ParticleSolver getParticleSolver() {
+		return particleSolver;
 	}
 
-	public void setSolver(Solver psolver) {
-		this.solver = psolver;
+	public void setParticleSolver(ParticleSolver psolver) {
+		this.particleSolver = psolver;
 	}
 
 
 	public ParticleMover(
-			Solver solver,
+			ParticleSolver particleSolver,
 			IParticleBoundaryConditions boundaries,
 			ParticleIterator particleIterator) {
-		this.solver = solver;
+		this.particleSolver = particleSolver;
 		this.boundaries = boundaries;
 		this.particleIterator = particleIterator;
 	}
@@ -73,7 +73,7 @@ public class ParticleMover {
 	private class Push implements ParticleAction {
 		public void execute(IParticle particle) {
 			particle.storePosition();
-			solver.step(particle, force, timeStep);
+			particleSolver.step(particle, force, timeStep);
 			boundaries.applyOnParticle(particle);
 		}
 	}
@@ -81,14 +81,14 @@ public class ParticleMover {
 
 	private class Prepare implements ParticleAction {
 		public void execute(IParticle particle) {
-			solver.prepare(particle, force, timeStep);
+			particleSolver.prepare(particle, force, timeStep);
 		}
 	}
 
 
 	private class Complete implements ParticleAction {
 		public void execute(IParticle particle) {
-			solver.complete(particle, force, timeStep);
+			particleSolver.complete(particle, force, timeStep);
 		}
 	}
 }

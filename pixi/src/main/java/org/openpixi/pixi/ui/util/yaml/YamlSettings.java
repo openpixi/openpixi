@@ -11,7 +11,7 @@ import org.openpixi.pixi.physics.fields.fieldgenerators.IFieldGenerator;
 import org.openpixi.pixi.physics.fields.currentgenerators.ICurrentGenerator;
 import org.openpixi.pixi.physics.fields.TemporalYangMillsSolver;
 import org.openpixi.pixi.physics.grid.EmptyInterpolator;
-import org.openpixi.pixi.physics.solver.relativistic.LeapFrogRelativistic;
+import org.openpixi.pixi.physics.movement.solver.LeapFrogRelativisticParticleSolver;
 import org.openpixi.pixi.diagnostics.Diagnostics;
 
 /**
@@ -52,7 +52,7 @@ public class YamlSettings {
         settings.setNumberOfDimensions(3);
         settings.setNumberOfColors(1);
         settings.setCouplingConstant(1.0);
-        settings.setParticleSolver(new LeapFrogRelativistic(settings.getNumberOfDimensions(), settings.getSpeedOfLight()));
+        settings.setParticleSolver(new LeapFrogRelativisticParticleSolver(settings.getNumberOfDimensions(), settings.getSpeedOfLight()));
         settings.setNumOfThreads(4);
         settings.setFieldGenerators(new ArrayList<IFieldGenerator>());
 		settings.setCurrentGenerators(new ArrayList<ICurrentGenerator>());
@@ -73,7 +73,7 @@ public class YamlSettings {
 		if (speedOfLight != null) {
             settings.setRelativistic(true);
 			settings.setSpeedOfLight(speedOfLight);
-            settings.setParticleSolver(new LeapFrogRelativistic(settings.getNumberOfDimensions(), speedOfLight));
+            settings.setParticleSolver(new LeapFrogRelativisticParticleSolver(settings.getNumberOfDimensions(), speedOfLight));
 		}
 
         if(numberOfColors != null)
