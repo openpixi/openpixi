@@ -119,8 +119,14 @@ public class YangMillsParticle implements IParticle, Serializable {
 		this.col = color;
 	}
 
-	public void storePosition() {
-		pos1 = pos0.clone();
+	public void storeValues() {
+		double[] tempPos = pos0;
+		pos0 = pos1;
+		pos1 = tempPos;
+
+		AlgebraElement tempQ = Q0;
+		Q0 = Q1;
+		Q1 = tempQ;
 	}
 
 	public IParticle copy() {

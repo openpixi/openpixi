@@ -67,7 +67,7 @@ public interface IParticle
 	// UTILITY METHODS
 	//----------------------------------------------------------------------------------------------
 
-	void storePosition();
+	void storeValues();
 
 	IParticle copy();
 }
