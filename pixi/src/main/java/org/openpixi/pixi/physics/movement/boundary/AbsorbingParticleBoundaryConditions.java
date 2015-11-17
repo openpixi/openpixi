@@ -24,7 +24,7 @@ public class AbsorbingParticleBoundaryConditions implements IParticleBoundaryCon
 		}
 
 		this.simulationBox = new DoubleBox(numberOfDimensions, min, max);
-		this.numberOfDimensions = s.grid.getNumberOfDimensions();
+		this.numberOfDimensions = s.getNumberOfDimensions();
 		this.s = s;
     }
 
