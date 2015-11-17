@@ -149,7 +149,7 @@ public class ParticleLCCurrent implements ICurrentGenerator {
 	private void initializeParticles(Simulation s, int particlesPerLink) {
 
 		// Traverse through charge density and add particles by sampling the charge distribution
-		double t0 = - at;
+		double t0 = 0.0;	// Particles should be initialized at t = 0 and t = dt.
 		double FIX_ROUND_ERRORS = 10E-12 * as;
 		for (int i = 0; i < s.grid.getTotalNumberOfCells(); i++) {
 			for (int j = 0; j < particlesPerLink; j++) {
@@ -181,11 +181,11 @@ public class ParticleLCCurrent implements ICurrentGenerator {
 				}
 
 				CGCParticle p = new CGCParticle(s.getNumberOfDimensions(), s.getNumberOfColors(), direction);
-				p.pos0 = particlePosition0;
-				p.pos1 = particlePosition1;
-				p.vel = particleVelocity;
-				p.Q0 = charge;
-				p.Q1 = charge.copy();
+				p.pos0 = particlePosition0; // position at t = 0
+				p.pos1 = particlePosition1; // position at t = dt
+				p.vel = particleVelocity;   // particle velocity is fixed
+				p.Q0 = charge;              // charge at t = 0
+				p.Q1 = charge.copy();       // charge at t = dt, assume that there is no parallel transport initially.
 
 				s.particles.add(p);
 			}

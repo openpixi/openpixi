@@ -35,8 +35,8 @@ public class CGCParticleInterpolation implements  InterpolatorAlgorithm {
 		double d1Old = 1 - d0Old;
 
 		// Links at old and new position
-		GroupElement UOld = g.getUnext(cellIndex0Old, direction);
-		GroupElement UNew = g.getU(cellIndex0New, direction);
+		GroupElement UOld = g.getU(cellIndex0Old, direction);
+		GroupElement UNew = g.getUnext(cellIndex0New, direction);
 
 		// Interpolated gauge links
 		GroupElement U0New = UNew.getAlgebraElement().mult(d0New).getLink();
@@ -134,9 +134,9 @@ public class CGCParticleInterpolation implements  InterpolatorAlgorithm {
 			double d = Math.abs(P.vel[direction] * at / as);
 			GroupElement U;
 			if(P.vel[direction] > 0) {
-				U = g.getU(cellIndexNew, direction).getAlgebraElement().mult(d).getLink();
+				U = g.getUnext(cellIndexNew, direction).getAlgebraElement().mult(d).getLink();
 			} else {
-				U = g.getU(cellIndexNew, direction).getAlgebraElement().mult(d).getLink().adj();
+				U = g.getUnext(cellIndexNew, direction).getAlgebraElement().mult(d).getLink().adj();
 			}
 			P.U = U;
 		} else {
@@ -150,8 +150,8 @@ public class CGCParticleInterpolation implements  InterpolatorAlgorithm {
 				double d0 = Math.abs(longitudinalIndexNew - P.pos0[direction] / as);
 				double d1 = Math.abs(longitudinalIndexNew - P.pos1[direction] / as);
 
-				GroupElement U0 = g.getU(cellIndexOld, direction).getAlgebraElement().mult(d0).getLink();
-				GroupElement U1 = g.getU(cellIndexNew, direction).getAlgebraElement().mult(d1).getLink();
+				GroupElement U0 = g.getUnext(cellIndexOld, direction).getAlgebraElement().mult(d0).getLink();
+				GroupElement U1 = g.getUnext(cellIndexNew, direction).getAlgebraElement().mult(d1).getLink();
 				GroupElement U = U0.mult(U1);
 
 				P.U = U;
@@ -161,8 +161,8 @@ public class CGCParticleInterpolation implements  InterpolatorAlgorithm {
 				double d0 = Math.abs(longitudinalIndexOld - P.pos0[direction] / as);
 				double d1 = Math.abs(longitudinalIndexOld - P.pos1[direction] / as);
 
-				GroupElement U0 = g.getU(cellIndexOld, direction).getAlgebraElement().mult(d0).getLink();
-				GroupElement U1 = g.getU(cellIndexNew, direction).getAlgebraElement().mult(d1).getLink();
+				GroupElement U0 = g.getUnext(cellIndexOld, direction).getAlgebraElement().mult(d0).getLink();
+				GroupElement U1 = g.getUnext(cellIndexNew, direction).getAlgebraElement().mult(d1).getLink();
 				GroupElement U = U0.mult(U1);
 
 				P.U = U;

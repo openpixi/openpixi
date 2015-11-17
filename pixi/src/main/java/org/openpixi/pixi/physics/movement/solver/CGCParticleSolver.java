@@ -18,6 +18,8 @@ public class CGCParticleSolver implements ParticleSolver {
 			P.pos1[i] = P.pos0[i] + P.vel[i] * dt;
 		}
 
+		// velocities do not need to be updated as they are constant.
+
 		P.Q1 = P.Q0.act(P.U.adj());
 
 	}

@@ -291,11 +291,11 @@ public class Simulation {
 	 * The algorithm goes as follows:
 	 * 1) At time == 0 the diagnostics routines are initialized and called for the first time in order to produce data output.
 	 * 2) Simulation time is increased by at.
-	 * 3) The link fields U(t - at/2) and Unext(t + at/2) are reassigned, such that U(t - at/2) can be overwritten
-	 * with Unext(t + 3at/2).
-	 * 4) Particle velocities are reassigned.
-	 * 5) New currents at t = t + at/2 are generated from external ones and from new particle velocities
+	 * 3) Particle velocities are reassigned.
+	 * 4) New currents at t = t + at/2 are generated from external ones and from new particle velocities
 	 * at t = t + at/2.
+	 * 5) The link fields U(t - at/2) and Unext(t + at/2) are reassigned, such that U(t - at/2) can be overwritten
+	 * with Unext(t + 3at/2).
 	 * 6) Gauge links and electric fields are updated, Unext(t + 3at/2) and E(t + at) are determined from E(t),
 	 * U(t + at/2) and J(t + at/2).
 	 * 7) Particle positions at t = t + at are computed using their velocities at t = t + at/2.
@@ -317,8 +317,6 @@ public class Simulation {
 		totalSimulationSteps++;
 		totalSimulationTime =  totalSimulationSteps * tstep;
 
-		//Link and particle reassignment
-		grid.storeFields();
 		//reassignParticles(); TODO: Write this method!!
 
 		//Generation of internal and external currents and charges
@@ -331,6 +329,10 @@ public class Simulation {
 		{
 			c.applyCurrent(this);
 		}
+
+
+		//Link and particle reassignment
+		grid.storeFields();
 
 		//Combined update of gauge links and fields
 		grid.updateGrid(tstep);
