@@ -34,7 +34,7 @@ public class AbsorbingParticleBoundaryConditions implements IParticleBoundaryCon
         {
 			double x = particle.getPosition(i);
 			if(x < simulationBox.getMin(i) || x > simulationBox.getMax(i)) {
-				s.particles.remove(particle);
+				//s.particles.remove(particle);
 			}
         }
     }
