@@ -11,17 +11,19 @@ import org.openpixi.pixi.physics.particles.IParticle;
  */
 public class CGCParticleSolver implements ParticleSolver {
 
-	public void step(IParticle p, Force f, double dt) {
+	public void updatePosition(IParticle p, Force f, double dt) {
 		CGCParticle P = (CGCParticle) p;
 
 		for (int i = 0; i < P.pos0.length; i++) {
 			P.pos1[i] = P.pos0[i] + P.vel[i] * dt;
 		}
+	}
 
-		// velocities do not need to be updated as they are constant.
+
+	public void updateCharge(IParticle p, Force f, double dt) {
+		CGCParticle P = (CGCParticle) p;
 
 		P.Q1 = P.Q0.act(P.U.adj());
-
 	}
 
 	public void prepare(IParticle p, Force f, double step) {

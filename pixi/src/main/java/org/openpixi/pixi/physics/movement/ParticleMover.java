@@ -24,9 +24,11 @@ public class ParticleMover {
 	private Force force;
 	private double timeStep;
 
-	private Push push = new Push();
+	private PositionUpdate positionUpdate = new PositionUpdate();
+	private ChargeUpdate chargeUpdate = new ChargeUpdate();
 	private Prepare prepare = new Prepare();
 	private Complete complete = new Complete();
+	private Reassign reassign = new Reassign();
 
 
 	public ParticleSolver getParticleSolver() {
@@ -48,13 +50,17 @@ public class ParticleMover {
 	}
 
 
-	public void push(List<IParticle> particles, Force force, Grid g, double timeStep) {
+	public void updatePositions(List<IParticle> particles, Force force, Grid g, double timeStep) {
 		this.force = force;
 		this.timeStep = timeStep;
-		particleIterator.execute(particles, push);
-
+		particleIterator.execute(particles, positionUpdate);
 	}
 
+	public void updateCharges(List<IParticle> particles, Force force, Grid g, double timeStep) {
+		this.force = force;
+		this.timeStep = timeStep;
+		particleIterator.execute(particles, chargeUpdate);
+	}
 
 	public void prepare(List<IParticle> particles, Force force, double timeStep) {
 		this.force = force;
@@ -69,15 +75,23 @@ public class ParticleMover {
 		particleIterator.execute(particles, complete);
 	}
 
+	public void reassign(List<IParticle> particles) {
+		particleIterator.execute(particles, reassign);
+	}
 
-	private class Push implements ParticleAction {
+
+	private class PositionUpdate implements ParticleAction {
 		public void execute(IParticle particle) {
-			particle.storeValues();
-			particleSolver.step(particle, force, timeStep);
+			particleSolver.updatePosition(particle, force, timeStep);
 			boundaries.applyOnParticle(particle);
 		}
 	}
 
+	private class ChargeUpdate implements ParticleAction {
+		public void execute(IParticle particle) {
+			particleSolver.updateCharge(particle, force, timeStep);
+		}
+	}
 
 	private class Prepare implements ParticleAction {
 		public void execute(IParticle particle) {
@@ -85,10 +99,15 @@ public class ParticleMover {
 		}
 	}
 
-
 	private class Complete implements ParticleAction {
 		public void execute(IParticle particle) {
 			particleSolver.complete(particle, force, timeStep);
+		}
+	}
+
+	private class Reassign implements ParticleAction {
+		public void execute(IParticle particle) {
+			particle.reassignValues();
 		}
 	}
 }

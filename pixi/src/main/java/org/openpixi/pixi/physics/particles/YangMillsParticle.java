@@ -119,7 +119,7 @@ public class YangMillsParticle implements IParticle, Serializable {
 		this.col = color;
 	}
 
-	public void storeValues() {
+	public void reassignValues() {
 		double[] tempPos = pos0;
 		pos0 = pos1;
 		pos1 = tempPos;

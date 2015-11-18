@@ -18,7 +18,6 @@
  */
 package org.openpixi.pixi.physics;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 
 import org.openpixi.pixi.physics.fields.fieldgenerators.IFieldGenerator;
@@ -36,7 +35,6 @@ import org.openpixi.pixi.physics.movement.boundary.AbsorbingParticleBoundaryCond
 import org.openpixi.pixi.physics.movement.boundary.IParticleBoundaryConditions;
 import org.openpixi.pixi.physics.movement.boundary.PeriodicParticleBoundaryConditions;
 import org.openpixi.pixi.physics.particles.IParticle;
-import org.openpixi.pixi.physics.util.DoubleBox;
 import org.openpixi.pixi.diagnostics.Diagnostics;
 
 import java.util.ArrayList;
@@ -248,20 +246,7 @@ public class Simulation {
 			c.initializeCurrent(this, currentGenerators.size());
 		}
 
-		/**
-		 * In order to read out the initial state without specifying the Unext(t = at/2) links by hand we calculate them
-		 * according to the equations of motion from the electric fields at t = 0 and gauge links U(t = -at/2). We also
-		 * compute both internal and external currents at t = -at/2 from the given particle velocities (specified also
-		 * at t = -at/2) and determine new velocities at t = at/2.
-		 */
-		grid.updateLinks(tstep);
-
-		interpolation.interpolateToParticle(particles, grid);
-		//particlePush();
-		interpolation.interpolateChargedensity(particles, grid);
-		interpolation.interpolateToGrid(particles, grid);
-		//updateVelocities(); TODO: Write this method!!
-
+		initialize();
 	}
 
 	public void turnGridForceOn() {
@@ -286,26 +271,77 @@ public class Simulation {
 		}
 	}
 
+
+	/**
+	 * Initialization step.
+	 * 1) Update links from U(-dt/2) to U(dt/2) using E(0)
+	 * 2) Interpolate rho(0) using particle positions x(0) and charges Q(0)
+	 * 3) Update velocities from v(-dt/2) using E(0), U(-dt/2), U(dt/2) to v(dt/2)
+	 * 4) Update velocities from x(0) to x(dt) using v(dt/2)
+	 * 5) Interpolate fields to particles at x(0)
+	 * 6) Update charges Q(0) to Q(dt) using parallel transport from last step.
+	 * 7) Interpolate current j(dt/2) using x(0), x(dt), v(dt/2) and Q(0), Q(dt).
+	 * 9) Apply external currents and charge densities to rho(0), j(dt/2).
+	 *
+	 */
+	public void initialize() {
+		/*
+		 * In order to read out the initial state without specifying the Unext(t = at/2) links by hand we calculate them
+		 * according to the equations of motion from the electric fields at t = 0 and gauge links U(t = -at/2).
+		 * We also compute both internal and external currents at t = -at/2 from the given particle velocities
+		 * (specified also at t = -at/2) and determine new velocities at t = at/2.
+		 */
+		grid.updateLinks(tstep);
+
+		// Interpolate charge density
+		grid.resetCharge();
+		interpolation.interpolateChargedensity(particles, grid);
+
+		// Update particle velocities
+		//updateVelocities();
+
+		// Update particle positions and charges (without reassigning values)
+		mover.updatePositions(particles, f, grid, tstep);
+
+		// Interpolate fields to particles
+		interpolation.interpolateToParticle(particles, grid);
+
+		// Update charges
+		mover.updateCharges(particles, f, grid, tstep);
+
+		// Interpolate currents
+		grid.resetCurrent();
+		interpolation.interpolateToGrid(particles, grid);
+
+		// Generate external currents on the grid
+		for (ICurrentGenerator c: currentGenerators)
+		{
+			c.applyCurrent(this);
+		}
+	}
+
 	/**
 	 * Runs the simulation in steps. (for interactive simulations)
 	 * The algorithm goes as follows:
-	 * 1) At time == 0 the diagnostics routines are initialized and called for the first time in order to produce data output.
-	 * 2) Simulation time is increased by at.
-	 * 3) Particle velocities are reassigned.
-	 * 4) New currents at t = t + at/2 are generated from external ones and from new particle velocities
-	 * at t = t + at/2.
-	 * 5) The link fields U(t - at/2) and Unext(t + at/2) are reassigned, such that U(t - at/2) can be overwritten
-	 * with Unext(t + 3at/2).
-	 * 6) Gauge links and electric fields are updated, Unext(t + 3at/2) and E(t + at) are determined from E(t),
-	 * U(t + at/2) and J(t + at/2).
-	 * 7) Particle positions at t = t + at are computed using their velocities at t = t + at/2.
-	 * 8) Electric and magnetic field values are interpolated to particle positions.
-	 * 9) Particle velocities at t + 3at/2 are determined using the interpolated fields at t = t + at.
-	 * 10) Diagnostics routines are called in order to produce data output.
+	 * 1) Initialize and run diagnostics if first simulation step, i.e. t == 0.
+	 * 2) Increase simulation time variable from t to t+dt.
+	 * 3) Reassign particle positions, charges and gauge links.
+	 *    Particle position and charge and now refer to quantities at t+dt.
+	 *    U refers to U(t+dt/2), Unext to U(t+3d/2).
+	 * 4) Compute E(t+dt) from E(t), U(t+dt/2) and j(t+dt/2).
+	 * 5) Compute U(t+3dt/2) using E(t+dt) and U(t+dt/2).
+	 * 6) Interpolate charge density rho(t+dt) using particle position x(t+dt) and charge Q(t+dt).
+	 * 7) Update particle velocities v(t+dt/2) using E(t+dt), and U(t+dt/2), U(t+3dt/2) to v(t+3dt/2).
+	 * 8) Update particle positions x(t+dt) using particle velocity from last step to x(t+2dt).
+	 * 9) Interpolate fields (E, parallel transport) to particle positions x(t+dt) [and x(t+2dt) in case of parallel transport].
+	 * 10) Update particle charges Q(t+dt) using parallel transport from last step (applies to non-abelian simulations) to Q(t+2dt).
+	 * 11) Interpolate current j(t+3dt/2) using particle positions [x(t+dt) and x(t+2dt)] velocities [v(t+3dt/2)] charges [Q(t+dt) and Q(t+2dt)].
+	 * 12) Apply external currents and charge densities to j(t+3dt/2) and rho(t+dt).
+	 * 13) Run diagnostics at t+dt.
 	 */
 	public void step() throws IOException {
 
-		// Initialize and run diagnostics before first simulation step.
+		// 1) Initialize and run diagnostics before first simulation step.
 		if(totalSimulationSteps == 0) {
 			for (Diagnostics d: diagnostics) {
 				d.initialize(this);
@@ -313,41 +349,45 @@ public class Simulation {
 			runDiagnostics();
 		}
 
-		// Step counter
+		// 2) Step counter
 		totalSimulationSteps++;
 		totalSimulationTime =  totalSimulationSteps * tstep;
 
-		//reassignParticles(); TODO: Write this method!!
+		// 3) Reassign particle charges, positions and gauge links
+		mover.reassign(particles);
+		grid.storeFields();
 
-		//Generation of internal and external currents and charges
-		grid.resetCurrent();
+		// 4) Compute electric fields from links and currents
+		// 5) Update links
+		grid.updateGrid(tstep);
+
+		// 6) Interpolate charge density
 		grid.resetCharge();
 		interpolation.interpolateChargedensity(particles, grid);
+
+		// 7) Update particle velocities
+		//updateVelocities();
+
+		// 8) Update particle positions
+		mover.updatePositions(particles, f, grid, tstep);
+
+		// 9) Interpolate fields to particles
+		interpolation.interpolateToParticle(particles, grid);
+
+		// 10) Update particle charges
+		mover.updateCharges(particles, f, grid, tstep);
+
+		// 11) Interpolate currents
+		grid.resetCurrent();
 		interpolation.interpolateToGrid(particles, grid);
-		// Generate external currents on the grid!!
+
+		// 12) Generate external currents on the grid
 		for (ICurrentGenerator c: currentGenerators)
 		{
 			c.applyCurrent(this);
 		}
 
-
-		//Link and particle reassignment
-		grid.storeFields();
-
-		//Combined update of gauge links and fields
-		grid.updateGrid(tstep);
-
-		//Particle positions are updated using their velocities
-		//updatePositions(); TODO: Write this method!!
-
-		// Field values are interpolated to particle positions
-		interpolation.interpolateToParticle(particles, grid);
-
-		//Particle velocities are updated using the interpolated fields
-		particlePush();
-		//updateVelocities(); TODO: Write this method!!
-
-		//Output in text files
+		// 13) Run diagnostics.
 		runDiagnostics();
 	}
 
@@ -375,10 +415,9 @@ public class Simulation {
 			diagnostics.get(f).calculate(grid, particles, this.totalSimulationSteps);
         }
 	}
-	
-	public void particlePush() {
-		mover.push(particles, f, grid, tstep);
-	}
+
+	/*
+	Not used right now.
 
 	public void prepareAllParticles() {
 		mover.prepare(particles, f, tstep);
@@ -387,4 +426,5 @@ public class Simulation {
 	public void completeAllParticles() {
 		mover.complete(particles, f, tstep);
 	}
+	*/
 }

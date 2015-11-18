@@ -56,7 +56,7 @@ public class LeapFrogRelativisticParticleSolver implements ParticleSolver {
      * @param p before the update: x(t), v(t+dt/2), a(t);
      *                 after the update: x(t+dt), v(t+3*dt/2), a(t+dt)
      */
-    public void step(IParticle p, Force f, double dt)
+    public void updatePosition(IParticle p, Force f, double dt)
     {
         /*
             Warning: This is really inefficient and should be changed in the future.
@@ -78,6 +78,11 @@ public class LeapFrogRelativisticParticleSolver implements ParticleSolver {
         }
         */
     }
+
+	public void updateCharge(IParticle p, Force f, double dt) {
+
+	}
+
     /**
      * prepare method for bringing the velocity in the desired half step
      * @param p before the update: v(t);

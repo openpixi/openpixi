@@ -10,10 +10,14 @@ public class EmptyParticleSolver implements ParticleSolver
 
     }
 
-    public void step(IParticle p, Force f, double step)
+    public void updatePosition(IParticle p, Force f, double step)
     {
 
     }
+
+	public void updateCharge(IParticle p, Force f, double dt) {
+
+	}
 
     public void prepare(IParticle p, Force f, double step)
     {
