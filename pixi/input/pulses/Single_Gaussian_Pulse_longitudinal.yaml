@@ -1,11 +1,11 @@
 # Single gaussian pulse test with longitudinal amplitude
 
+simulationType: temporal yang-mills
 gridStep: 1
 numberOfDimensions: 3
 numberOfColors: 2
 numberOfThreads: 6
 gridCells: [64, 64, 1]
-poissonsolver: empty
 timeStep: 0.1
 duration: 1000
 

@@ -1,11 +1,10 @@
 # Wave test
 
+simulationType: lorenz yang-mills
 gridStep: 1
 numberOfDimensions: 3
 numberOfColors: 2
 gridCells: [64, 64, 1]
-poissonsolver: empty
-fieldsolver: lorenz yang mills
 timeStep: 0.1
 duration: 1000
 

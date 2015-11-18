@@ -1,10 +1,10 @@
 # Dual pulse test
 
+simulationType: temporal yang-mills
 gridStep: 1
 numberOfDimensions: 3
 numberOfColors: 2
 gridCells: [1024, 1, 1]
-poissonsolver: empty
 timeStep: 0.3
 duration: 1000
 

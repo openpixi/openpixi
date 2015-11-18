@@ -1,11 +1,10 @@
+simulationType: temporal cgc
 gridStep: 2
 couplingConstant: 0.5
 numberOfDimensions: 3
 numberOfColors: 2
 numberOfThreads: 8
 gridCells: [64, 64, 1]
-poissonsolver: empty
-fieldsolver: temporal yang mills
 timeStep: 0.5
 duration: 1000
 evaluationRegion:

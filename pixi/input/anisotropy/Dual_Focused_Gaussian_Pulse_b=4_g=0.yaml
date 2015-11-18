@@ -1,9 +1,9 @@
+simulationType: temporal yang-mills
 gridStep: 1
 numberOfDimensions: 3
 numberOfColors: 2
 numberOfThreads: 12
 gridCells: [128, 128, 1]
-poissonsolver: empty
 timeStep: 0.1
 duration: 128.0
 couplingConstant: 0.0000001

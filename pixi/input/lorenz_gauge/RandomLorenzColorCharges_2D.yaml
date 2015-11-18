@@ -1,11 +1,10 @@
+simulationType: lorenz yang-mills
 gridStep: 2
 couplingConstant: 0.5
 numberOfDimensions: 3
 numberOfColors: 2
 numberOfThreads: 8
 gridCells: [64, 64, 1]
-poissonsolver: empty
-fieldsolver: lorenz yang mills
 timeStep: 0.1
 duration: 1000
 
