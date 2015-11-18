@@ -19,9 +19,16 @@ public class ParticleLCCurrentNGP extends ParticleLCCurrent {
 	}
 
 	@Override
+	public void initializeCurrent(Simulation s, int totalInstances) {
+		particlesPerCell = (int) (s.grid.getLatticeSpacing() / s.getTimeStep());
+
+		super.initializeCurrent(s, totalInstances);
+	}
+
+	@Override
 	protected AlgebraElement interpolateChargeFromGrid(Simulation s, double[] particlePosition) {
 		int[] ngp = GridFunctions.nearestGridPoint(particlePosition, as);
-		return poissonSolver.getGaussConstraint(s.grid.getCellIndex(ngp));
+		return poissonSolver.getGaussConstraint(s.grid.getCellIndex(ngp)).copy();
 	}
 
 

@@ -117,6 +117,11 @@ public class Simulation {
 	 */
 	private ArrayList<ICurrentGenerator>  currentGenerators;
 
+
+	public SimulationType getSimulationType() {
+		return simulationType;
+	}
+
 	public Interpolation getInterpolation() {
 		return interpolation;
 	}

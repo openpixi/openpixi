@@ -46,8 +46,8 @@ public class Settings {
 	private double timeStep = 0.1;
 	private double gridStep = 1;
 	private double tMax = 1000;
-	private GeneralBoundaryType boundaryType = GeneralBoundaryType.Absorbing;
-	private InterpolatorAlgorithm interpolator = new CGCParticleInterpolation();
+	private GeneralBoundaryType boundaryType = GeneralBoundaryType.Periodic;
+	private InterpolatorAlgorithm interpolator = new EmptyInterpolator();
 
 	// Grid related settings
 	private int[] gridCells;
@@ -69,7 +69,7 @@ public class Settings {
 
 	private SimulationType simulationType = SimulationType.TemporalYangMills;
 	private List<IParticle> particles = new ArrayList<IParticle>();
-	private ParticleSolver particleSolver = new CGCParticleSolver();
+	private ParticleSolver particleSolver = new EmptyParticleSolver();
 	private List<Force> forces = new ArrayList<Force>();
 
 
@@ -508,7 +508,7 @@ public class Settings {
 				setBoundary(GeneralBoundaryType.Absorbing);
 				setFieldSolver(new TemporalYangMillsSolver());
 				setParticleSolver(new CGCParticleSolver());
-				setInterpolator(new CGCParticleInterpolation());
+				setInterpolator(new CGCParticleInterpolationNGP());
 				break;
 			case LorenzYangMills:
 				setBoundary(GeneralBoundaryType.Periodic);

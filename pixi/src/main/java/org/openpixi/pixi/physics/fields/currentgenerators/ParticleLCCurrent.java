@@ -71,6 +71,11 @@ public class ParticleLCCurrent implements ICurrentGenerator {
 	protected NewLCPoissonSolver poissonSolver;
 
 	/**
+	 * Number of particles per cell.
+	 */
+	protected int particlesPerCell = 1;
+
+	/**
 	 * Standard constructor for the ParticleLCCurrent class.
 	 *
 	 * @param direction Direction of the transversal charge density movement.
@@ -126,7 +131,7 @@ public class ParticleLCCurrent implements ICurrentGenerator {
 
 
 		// 3) Interpolate grid charge and current density.
-		initializeParticles(s, 1);
+		initializeParticles(s, particlesPerCell);
 
 		// You're done: charge density, current density and the fields are set up correctly.
 	}
