@@ -41,6 +41,12 @@ import java.util.ArrayList;
 
 public class Simulation {
 
+
+	/**
+	 * Type of the simulation (pure temporal/lorenz Yang-Mills, CGC, boost-invariant CGC, temporal CPIC, ..)
+	 */
+	private SimulationType simulationType;
+
 	/**
 	 * Timestep
 	 */
@@ -163,6 +169,8 @@ public class Simulation {
 	 * Constructor for non distributed simulation.
 	 */
 	public Simulation(Settings settings) {
+
+		simulationType = settings.getSimulationType();
 		tstep = settings.getTimeStep();
 
 		this.simulationBoxSize = new double[settings.getNumberOfDimensions()];
@@ -196,10 +204,10 @@ public class Simulation {
 				break;
 			case Absorbing:
 				particleBoundaryConditions = new AbsorbingParticleBoundaryConditions(this);
+				break;
 			default:
 				particleBoundaryConditions = new PeriodicParticleBoundaryConditions(this);
 				break;
-
 		}
 
 		mover = new ParticleMover(
@@ -241,7 +249,7 @@ public class Simulation {
 
 		// Copy current generators from Settings.
 		currentGenerators = settings.getCurrentGenerators();
-		// Initialize external currents on the grid!!
+		// Initialize external currents on the grid
 		for (ICurrentGenerator c: currentGenerators) {
 			c.initializeCurrent(this, currentGenerators.size());
 		}

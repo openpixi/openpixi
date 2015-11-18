@@ -4,5 +4,6 @@ public enum SimulationType {
 	TemporalYangMills,
 	LorenzYangMills,
 	TemporalCGC,
+	TemporalCGCNGP,
 	BoostInvariantCGC
 }

@@ -67,7 +67,7 @@ public class Settings {
 	// Particle related settings
 	private int numOfParticles = 0;
 
-	private int simulationType = 0;
+	private SimulationType simulationType = SimulationType.TemporalYangMills;
 	private List<IParticle> particles = new ArrayList<IParticle>();
 	private ParticleSolver particleSolver = new CGCParticleSolver();
 	private List<Force> forces = new ArrayList<Force>();
@@ -100,7 +100,7 @@ public class Settings {
 	//----------------------------------------------------------------------------------------------
 	// SIMPLE GETTERS
 	//----------------------------------------------------------------------------------------------
-	public int getSimulationType() {
+	public SimulationType getSimulationType() {
 		return this.simulationType;
 	}
 	
@@ -284,8 +284,9 @@ public class Settings {
 	//----------------------------------------------------------------------------------------------
 	// SETTERS (Overwrite default values programatically)
 	//----------------------------------------------------------------------------------------------
-	public void setSimulationType(int simulationType) {
+	public void setSimulationType(SimulationType simulationType) {
 		this.simulationType = simulationType;
+		applySimulationTypeSetting();
 	}
 
 	/**
@@ -480,22 +481,44 @@ public class Settings {
 		for (int i = 0; i < numberOfDimensions; i++) {
 			gridCells[i] = 1;
 		}
+
+		applySimulationTypeSetting();
 	}
 
 	/**
-	 * Overwrites default values with file input.
+	 * Sets up the components of the simulation (Grid, FieldSolver, ParticleSolver, Interpolation, ..)
+	 * according to SimulationType.
 	 */
-	public Settings(String fileName) {
-		this();
-		// Parse file
-		throw new UnsupportedOperationException();
-	}
+	private void applySimulationTypeSetting() {
+		switch(simulationType) {
+			case TemporalYangMills:
+				setBoundary(GeneralBoundaryType.Periodic);
+				setFieldSolver(new TemporalYangMillsSolver());
+				setParticleSolver(new EmptyParticleSolver());
+				setInterpolator(new EmptyInterpolator());
+				break;
+			case TemporalCGC:
+				setBoundary(GeneralBoundaryType.Absorbing);
+				setFieldSolver(new TemporalYangMillsSolver());
+				setParticleSolver(new CGCParticleSolver());
+				setInterpolator(new CGCParticleInterpolation());
+				break;
+			case TemporalCGCNGP:
 
-	/**
-	 * Overwrites default values with command line input.
-	 */
-	public Settings(String[] cmdLine) {
-		throw new UnsupportedOperationException();
+				setBoundary(GeneralBoundaryType.Absorbing);
+				setFieldSolver(new TemporalYangMillsSolver());
+				setParticleSolver(new CGCParticleSolver());
+				setInterpolator(new CGCParticleInterpolation());
+				break;
+			case LorenzYangMills:
+				setBoundary(GeneralBoundaryType.Periodic);
+				setFieldSolver(new LorenzYangMillsSolver());
+				setParticleSolver(new EmptyParticleSolver());
+				setInterpolator(new EmptyInterpolator());
+				break;
+			case BoostInvariantCGC:
+				break;
+		}
 	}
 
 	/**
