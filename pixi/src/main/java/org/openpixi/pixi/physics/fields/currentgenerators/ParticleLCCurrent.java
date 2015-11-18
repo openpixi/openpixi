@@ -18,57 +18,57 @@ public class ParticleLCCurrent implements ICurrentGenerator {
 	/**
 	 * Direction of movement of the charge density. Values range from 0 to numberOfDimensions-1.
 	 */
-	private int direction;
+	protected int direction;
 
 	/**
 	 * Orientation of movement. Values are -1 or 1.
 	 */
-	private int orientation;
+	protected int orientation;
 
 	/**
 	 * Longitudinal location of the initial charge density in the simulation box.
 	 */
-	private double location;
+	protected double location;
 
 	/**
 	 * Longitudinal width of the charge density.
 	 */
-	private double longitudinalWidth;
+	protected double longitudinalWidth;
 
 	/**
 	 * Array containing the size of the transversal grid.
 	 */
-	private int[] transversalNumCells;
+	protected int[] transversalNumCells;
 
 	/**
 	 * Transversal charge density.
 	 */
-	private AlgebraElement[] transversalChargeDensity;
+	protected AlgebraElement[] transversalChargeDensity;
 
 	/**
 	 * Total number of cells in the transversal grid.
 	 */
-	private int totalTransversalCells;
+	protected int totalTransversalCells;
 
 	/**
 	 * Lattice spacing of the grid.
 	 */
-	private double as;
+	protected double as;
 
 	/**
 	 * Time step used in the simulation.
 	 */
-	private double at;
+	protected double at;
 
 	/**
 	 * Coupling constant used in the simulation.
 	 */
-	private double g;
+	protected double g;
 
 	/**
 	 * Poisson solver for solving the CGC intitial conditions.
 	 */
-	NewLCPoissonSolver poissonSolver;
+	protected NewLCPoissonSolver poissonSolver;
 
 	/**
 	 * Standard constructor for the ParticleLCCurrent class.
@@ -146,7 +146,7 @@ public class ParticleLCCurrent implements ICurrentGenerator {
 	 * @param s
 	 * @param particlesPerLink
 	 */
-	private void initializeParticles(Simulation s, int particlesPerLink) {
+	protected void initializeParticles(Simulation s, int particlesPerLink) {
 
 		// Traverse through charge density and add particles by sampling the charge distribution
 		double t0 = 0.0;	// Particles should be initialized at t = 0 and t = dt.
@@ -154,7 +154,6 @@ public class ParticleLCCurrent implements ICurrentGenerator {
 		for (int i = 0; i < s.grid.getTotalNumberOfCells(); i++) {
 			for (int j = 0; j < particlesPerLink; j++) {
 				double x = (1.0 * j) / (particlesPerLink);
-				AlgebraElement charge = interpolateChargeFromGrid(s, i, direction, x).mult(1.0 / particlesPerLink);
 				int[] gridPos = s.grid.getCellPos(i);
 				double dz = x * as;
 
@@ -169,6 +168,9 @@ public class ParticleLCCurrent implements ICurrentGenerator {
 						particlePosition1[k] += (t0 + at) * orientation + dz;
 					}
 				}
+
+
+				AlgebraElement charge = interpolateChargeFromGrid(s, particlePosition0).mult(1.0 / particlesPerLink);
 
 				// Particle velocity
 				double[] particleVelocity = new double[gridPos.length];
@@ -192,22 +194,19 @@ public class ParticleLCCurrent implements ICurrentGenerator {
 		}
 	}
 
-	private AlgebraElement interpolateChargeFromGrid(Simulation s, int index, int direction, double x) {
+	protected AlgebraElement interpolateChargeFromGrid(Simulation s, double[] particlePosition) {
+		int[] flooredGridPos = GridFunctions.flooredGridPoint(particlePosition, as);
+		int index = s.grid.getCellIndex(flooredGridPos);
 		int shiftedIndex = s.grid.shift(index, direction, 1);
 		AlgebraElement charge1 = poissonSolver.getGaussConstraint(index);
 		AlgebraElement charge2 = poissonSolver.getGaussConstraint(shiftedIndex);
 
+		double x = particlePosition[direction] / as - flooredGridPos[direction];
+
 		charge1 = charge1.mult(1.0 - x);
 		charge2 = charge2.mult(x);
 
-
-		GroupElement U = s.grid.getU(index, direction);
-		GroupElement U1 = U.getAlgebraElement().mult(x).getLink().adj();
-		GroupElement U2 = U.getAlgebraElement().mult(1.0 - x).getLink();
-
-		charge1.actAssign(U1);
-		charge2.actAssign(U2);
-
+		// Parallel transport is not needed because we assume that initial conditions are purely transversal fields.
 
 		charge1.addAssign(charge2);
 
