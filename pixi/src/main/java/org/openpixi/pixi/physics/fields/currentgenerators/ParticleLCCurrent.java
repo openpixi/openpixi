@@ -182,10 +182,10 @@ public class ParticleLCCurrent implements ICurrentGenerator {
 
 				CGCParticle p = new CGCParticle(s.getNumberOfDimensions(), s.getNumberOfColors(), direction);
 				p.pos0 = particlePosition0; // position at t = 0
-				p.pos1 = particlePosition1; // position at t = dt
-				p.vel = particleVelocity;   // particle velocity is fixed
+				p.pos1 = particlePosition1; // position at t = dt (optional)
+				p.vel = particleVelocity;   // particle velocity at t = -dt/2.
 				p.Q0 = charge;              // charge at t = 0
-				p.Q1 = charge.copy();       // charge at t = dt, assume that there is no parallel transport initially.
+				p.Q1 = charge.copy();       // charge at t = dt, assume that there is no parallel transport initially (also optional).
 
 				s.particles.add(p);
 			}
