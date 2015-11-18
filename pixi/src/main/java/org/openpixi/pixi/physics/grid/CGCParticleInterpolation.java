@@ -90,14 +90,14 @@ public class CGCParticleInterpolation implements  InterpolatorAlgorithm {
 		int direction = P.direction;
 
 		// "Floored" grid points of the particle
-		int[] gridPosNew = GridFunctions.flooredGridPoint(P.pos1, as);
+		int[] gridPosOld = GridFunctions.flooredGridPoint(P.pos0, as);
 
 		// Cell indices
-		int cellIndex0New = g.getCellIndex(gridPosNew);
+		int cellIndex0New = g.getCellIndex(gridPosOld);
 		int cellIndex1New = g.shift(cellIndex0New, direction, 1);
 
 		// Relative distances to the lattice sites
-		double d0New = P.pos1[direction] / as - gridPosNew[direction];
+		double d0New = P.pos0[direction] / as - gridPosOld[direction];
 		double d1New = 1 - d0New;
 
 		// Links
@@ -108,8 +108,8 @@ public class CGCParticleInterpolation implements  InterpolatorAlgorithm {
 		GroupElement U1New = UNew.getAlgebraElement().mult(d1New).getLink().adj();
 
 		// Charge interpolation to neighbouring lattice sites
-		AlgebraElement Q0New = P.Q1.act(U0New).mult(d1New);
-		AlgebraElement Q1New = P.Q1.act(U1New).mult(d0New);
+		AlgebraElement Q0New = P.Q0.act(U0New).mult(d1New);
+		AlgebraElement Q1New = P.Q0.act(U1New).mult(d0New);
 
 		g.addRho(cellIndex0New, Q0New);
 		g.addRho(cellIndex1New, Q1New);
@@ -123,14 +123,18 @@ public class CGCParticleInterpolation implements  InterpolatorAlgorithm {
 		double as = g.getLatticeSpacing();
 		int direction = P.direction;
 
+		// Particle positions
+		double[] oldPosition = P.pos1;
+		double[] newPosition = P.pos0;
+
 		// check if one cell or two cell move
-		int longitudinalIndexOld = (int) (P.pos0[direction] / as);
-		int longitudinalIndexNew = (int) (P.pos1[direction] / as);
+		int longitudinalIndexOld = (int) (oldPosition[direction] / as);
+		int longitudinalIndexNew = (int) (newPosition[direction] / as);
 
 
 		if(longitudinalIndexOld == longitudinalIndexNew) {
 			// one cell move
-			int cellIndexNew = g.getCellIndex(GridFunctions.flooredGridPoint(P.pos0, as));
+			int cellIndexNew = g.getCellIndex(GridFunctions.flooredGridPoint(oldPosition, as));
 			double d = Math.abs(P.vel[direction] * at / as);
 			GroupElement U;
 			if(P.vel[direction] > 0) {
@@ -141,25 +145,25 @@ public class CGCParticleInterpolation implements  InterpolatorAlgorithm {
 			P.U = U;
 		} else {
 			// two cell move
-			int cellIndexOld = g.getCellIndex(GridFunctions.flooredGridPoint(P.pos0, as));
-			int cellIndexNew = g.getCellIndex(GridFunctions.flooredGridPoint(P.pos1, as));
+			int cellIndexOld = g.getCellIndex(GridFunctions.flooredGridPoint(oldPosition, as));
+			int cellIndexNew = g.getCellIndex(GridFunctions.flooredGridPoint(newPosition, as));
 
 			if(longitudinalIndexOld < longitudinalIndexNew) {
 				// right move
 				// path is split into two parts
-				double d0 = Math.abs(longitudinalIndexNew - P.pos0[direction] / as);
-				double d1 = Math.abs(longitudinalIndexNew - P.pos1[direction] / as);
+				double d0 = Math.abs(longitudinalIndexNew - oldPosition[direction] / as);
+				double d1 = Math.abs(longitudinalIndexNew - newPosition[direction] / as);
 
 				GroupElement U0 = g.getUnext(cellIndexOld, direction).getAlgebraElement().mult(d0).getLink();
 				GroupElement U1 = g.getUnext(cellIndexNew, direction).getAlgebraElement().mult(d1).getLink();
 				GroupElement U = U0.mult(U1);
 
-				P.U = U;
+				P.U = U.adj();
 			} else {
 				// left move
 				// path is split into two parts
-				double d0 = Math.abs(longitudinalIndexOld - P.pos0[direction] / as);
-				double d1 = Math.abs(longitudinalIndexOld - P.pos1[direction] / as);
+				double d0 = Math.abs(longitudinalIndexOld - oldPosition[direction] / as);
+				double d1 = Math.abs(longitudinalIndexOld - newPosition[direction] / as);
 
 				GroupElement U0 = g.getUnext(cellIndexOld, direction).getAlgebraElement().mult(d0).getLink();
 				GroupElement U1 = g.getUnext(cellIndexNew, direction).getAlgebraElement().mult(d1).getLink();
