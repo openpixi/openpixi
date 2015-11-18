@@ -62,6 +62,7 @@ public class ParticleMover {
 		particleIterator.execute(particles, chargeUpdate);
 	}
 
+	/*
 	public void prepare(List<IParticle> particles, Force force, double timeStep) {
 		this.force = force;
 		this.timeStep = timeStep;
@@ -74,11 +75,11 @@ public class ParticleMover {
 		this.timeStep = timeStep;
 		particleIterator.execute(particles, complete);
 	}
+	*/
 
 	public void reassign(List<IParticle> particles) {
 		particleIterator.execute(particles, reassign);
 	}
-
 
 	private class PositionUpdate implements ParticleAction {
 		public void execute(IParticle particle) {
