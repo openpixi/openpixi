@@ -159,9 +159,8 @@ public class NewLCPoissonSolver {
 		// Third step: Compute electric field from temporal plaquette
 		for (int i = 0; i < totalCells; i++) {
 			for (int j = 0; j < numberOfDimensions; j++) {
-				//if(j != direction) {
-					s.grid.setE(i, j, s.grid.getEFromLinks(i, j));
-				//}
+				s.grid.setE(i, j, s.grid.getEFromLinks(i, j));
+				gridCopy.setE(i, j, gridCopy.getEFromLinks(i, j));
 			}
 		}
 

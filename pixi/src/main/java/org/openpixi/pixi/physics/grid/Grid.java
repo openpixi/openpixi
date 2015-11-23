@@ -848,10 +848,16 @@ public class Grid {
 		AlgebraElement gauss = factory.algebraZero();
 		for (int i = 0; i < numDim; i++) {
 			int shiftedIndex = shift(index, i, -1);
+			AlgebraElement E = getE(shiftedIndex, i).copy();
+			E.actAssign(getLink(index, i, -1, 0));
+			gauss.addAssign(getE(index, i));
+			gauss.addAssign(E.mult(-1.0));
+			/*
 			AlgebraElement E = getEFromLinks(shiftedIndex, i);
 			E.actAssign(getLink(shiftedIndex, i, 1, 0).adj());
 			gauss.addAssign(getEFromLinks(index, i));
 			gauss.addAssign(E.mult(-1.0));
+			*/
 		}
 		gauss.multAssign(1.0/as);
 		gauss = gauss.sub(getRho(index));
