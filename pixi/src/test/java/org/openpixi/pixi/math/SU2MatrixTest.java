@@ -369,6 +369,28 @@ public class SU2MatrixTest {
 
 	}
 
+	@Test
+	public void testPow() {
+		// This test needs a different accuracy limit to pass.
+		double acc = 10E-10;
+		for (int i = 0; i < 10; i++) {
+			// Create a random matrix close to the unit matrix (specifically the unit matrix component needs to be positive).
+			SU2GroupElement m1 = createRandomSU2MatrixCloseToUnitMatrix(0.5);
+			Array2DRowFieldMatrix<Complex> mm1 = convertToMatrix(m1);
+
+			// Test integer powers
+			SU2GroupElement m2 = (SU2GroupElement) m1.pow(2);
+			Array2DRowFieldMatrix<Complex> mm2 = (Array2DRowFieldMatrix<Complex>) mm1.power(2);
+			compareMatrices(mm2, convertToMatrix(m2), acc);
+
+			// Test non-integer powers
+			double x = (Math.random() - 0.5);
+			SU2GroupElement m3 = (SU2GroupElement) m1.pow(x);
+			SU2GroupElement m4 = (SU2GroupElement) m3.pow(1.0 / x);
+			compareMatrices(convertToMatrix(m1), convertToMatrix(m4), acc);
+		}
+	}
+
 	private Array2DRowFieldMatrix<Complex>  adj(Array2DRowFieldMatrix<Complex> arg) {
 		Array2DRowFieldMatrix<Complex> m = (Array2DRowFieldMatrix<Complex>) arg.transpose();
 		for (int i = 0; i < 2; i++) {
@@ -380,6 +402,26 @@ public class SU2MatrixTest {
 		return m;
 	}
 
+	private SU2GroupElement createRandomSU2MatrixCloseToUnitMatrix(double x) {
+		double[] vec = new double[4];
+		vec[0] = Math.random() * x;
+		double modulus = vec[0] * vec[0];
+		for (int i = 1; i < 4; i++) {
+			vec[i] = (Math.random() - 0.5)*x;
+			modulus += vec[i] * vec[i];
+		}
+		modulus = Math.sqrt(modulus);
+
+		for (int i = 0; i < 4; i++) {
+			vec[i] /= modulus;
+		}
+
+		SU2GroupElement m = new SU2GroupElement(vec[0], vec[1], vec[2], vec[3]);
+		Assert.assertEquals(m.computeParameterNorm(), 1.0, accuracy);
+
+		return m;
+	}
+
 	private SU2GroupElement createRandomSU2Matrix() {
 		/*
 			Create random SU2 matrix.
@@ -387,7 +429,7 @@ public class SU2MatrixTest {
 		double[] vec = new double[4];
 		double modulus = 0.0;
 		for (int i = 0; i < 4; i++) {
-			vec[i] = Math.random() - 0.5;
+			vec[i] = (Math.random() - 0.5);
 			modulus += vec[i] * vec[i];
 		}
 		modulus = Math.sqrt(modulus);
@@ -413,6 +455,10 @@ public class SU2MatrixTest {
 	}
 
 	private void compareMatrices(Array2DRowFieldMatrix<Complex> a, Array2DRowFieldMatrix<Complex> b) {
+		compareMatrices(a, b, accuracy);
+	}
+
+	private void compareMatrices(Array2DRowFieldMatrix<Complex> a, Array2DRowFieldMatrix<Complex> b, double accuracy) {
 		for (int i = 0; i < 2; i++) {
 			for (int j = 0; j < 2; j++) {
 				Assert.assertEquals(a.getEntry(i, j).getReal(),

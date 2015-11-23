@@ -502,6 +502,10 @@ public class SU3GroupElement implements GroupElement {
 		return e[0] + e[4] + e[8];
 	}
 
+	public GroupElement pow(double x) {
+		return this.getAlgebraElement().mult(x).getLink();
+	}
+
 	public GroupElement copy() {
 		return new SU3GroupElement(get());
 	}

@@ -229,6 +229,10 @@ public class SU2GroupElement implements GroupElement {
 		return 2*e[0];
 	}
 
+	public GroupElement pow(double x) {
+		return this.getAlgebraElement().mult(x).getLink();
+	}
+
 	public GroupElement copy() {
 		return new SU2GroupElement(e[0], e[1], e[2], e[3]);
 	}
