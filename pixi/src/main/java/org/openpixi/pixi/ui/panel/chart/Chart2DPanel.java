@@ -172,6 +172,7 @@ public class Chart2DPanel extends AnimationChart2DPanel {
 	public void clear() {
 		for (int i = 0; i < showChartsProperty.getSize(); i++) {
 			traces[i].removeAllPoints();
+			((Trace2DLtd) traces[i]).setMaxSize(simulationAnimation.getSimulation().getIterations());
 		}
 	}
 
