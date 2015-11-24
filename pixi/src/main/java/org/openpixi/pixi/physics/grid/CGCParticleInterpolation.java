@@ -175,8 +175,8 @@ public class CGCParticleInterpolation implements  InterpolatorAlgorithm {
 		GroupElement U = Aold.add(Anew).mult(0.5).getLink();
 
 		// Interpolated gauge links
-		GroupElement U0 = U.pow(d0).adj();
-		GroupElement U1 = U.pow(d1);
+		GroupElement U0 = U.pow(d0);
+		GroupElement U1 = U.pow(d1).adj();
 
 		// Charge interpolation to neighbouring lattice sites
 		AlgebraElement rho0 = P.Q0.act(U0).mult(d1);
@@ -202,12 +202,11 @@ public class CGCParticleInterpolation implements  InterpolatorAlgorithm {
 		int longitudinalIndexOld = (int) (oldPosition[direction] / as);
 		int longitudinalIndexNew = (int) (newPosition[direction] / as);
 
-
+		GroupElement U;
 		if(longitudinalIndexOld == longitudinalIndexNew) {
 			// one cell move
 			int cellIndex = g.getCellIndex(GridFunctions.flooredGridPoint(oldPosition, as));
-			double d = Math.abs(P.vel[direction] * at / as);
-			GroupElement U;
+			double d = Math.abs(at / as); // only works for particles moving at c.
 			if(P.vel[direction] > 0) {
 				U = g.getUnext(cellIndex, direction).pow(d);
 			} else {
@@ -227,7 +226,7 @@ public class CGCParticleInterpolation implements  InterpolatorAlgorithm {
 
 				GroupElement U0 = g.getUnext(cellIndexOld, direction).pow(d0);
 				GroupElement U1 = g.getUnext(cellIndexNew, direction).pow(d1);
-				GroupElement U = U0.mult(U1);
+				U = U0.mult(U1);
 
 				P.U = U;
 			} else {
@@ -238,7 +237,7 @@ public class CGCParticleInterpolation implements  InterpolatorAlgorithm {
 
 				GroupElement U0 = g.getUnext(cellIndexOld, direction).pow(d0).adj();
 				GroupElement U1 = g.getUnext(cellIndexNew, direction).pow(d1).adj();
-				GroupElement U = U0.mult(U1);
+				U = U0.mult(U1);
 
 				P.U = U;
 			}
