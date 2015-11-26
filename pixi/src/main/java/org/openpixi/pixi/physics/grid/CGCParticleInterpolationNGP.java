@@ -71,8 +71,8 @@ public class CGCParticleInterpolationNGP implements  InterpolatorAlgorithm {
 		int direction = P.direction;
 
 		// Particle positions
-		double[] oldPosition = P.pos1;
-		double[] newPosition = P.pos0;
+		double[] oldPosition = P.pos0;
+		double[] newPosition = P.pos1;
 
 		// check if one cell or two cell move
 		int[] ngpOld = GridFunctions.nearestGridPoint(oldPosition, as);
