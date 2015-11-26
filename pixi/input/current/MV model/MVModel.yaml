@@ -5,7 +5,7 @@ numberOfDimensions: 3
 numberOfColors: 2
 numberOfThreads: 8
 gridCells: [128, 8, 8]
-timeStep: 0.3
+timeStep: 0.25
 duration: 96
 evaluationRegion:
   enabled: true
