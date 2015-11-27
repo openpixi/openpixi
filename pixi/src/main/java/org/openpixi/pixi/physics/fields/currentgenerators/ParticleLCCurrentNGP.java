@@ -87,6 +87,14 @@ public class ParticleLCCurrentNGP extends ParticleLCCurrent {
 		int numberOfIterations = 50;
 		for (int i = 0; i < totalTransversalCells; i++) {
 			ArrayList<CGCParticle> particleList = longitudinalParticleList.get(i);
+			// 2nd order refinement
+			for (int iteration = 0; iteration < numberOfIterations; iteration++) {
+				for (int j = 0; j < particleList.size(); j++) {
+					refine2(j, particleList, particlesPerLink);
+				}
+			}
+
+			// 4th order refinement
 			for (int iteration = 0; iteration < numberOfIterations; iteration++) {
 				for (int j = 0; j < particleList.size(); j++) {
 					refine2(j, particleList, particlesPerLink);
@@ -151,8 +159,8 @@ public class ParticleLCCurrentNGP extends ParticleLCCurrent {
 			DQ.addAssign(Q5.mult(-1));
 			DQ.multAssign(1.0 / 12.0);
 
-			Q1.addAssign(DQ.mult(-1.0));
-			Q2.addAssign(DQ.mult(1.0));
+			Q2.addAssign(DQ.mult(-1.0));
+			Q3.addAssign(DQ.mult(1.0));
 		}
 	}
 
