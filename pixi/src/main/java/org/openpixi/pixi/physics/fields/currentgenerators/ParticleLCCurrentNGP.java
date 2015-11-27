@@ -1,11 +1,8 @@
 package org.openpixi.pixi.physics.fields.currentgenerators;
 
 import org.openpixi.pixi.math.AlgebraElement;
-import org.openpixi.pixi.math.GroupElement;
 import org.openpixi.pixi.physics.Simulation;
-import org.openpixi.pixi.physics.fields.NewLCPoissonSolver;
 import org.openpixi.pixi.physics.particles.CGCParticle;
-import org.openpixi.pixi.physics.particles.IParticle;
 import org.openpixi.pixi.physics.util.GridFunctions;
 
 import java.util.ArrayList;
@@ -33,9 +30,9 @@ public class ParticleLCCurrentNGP extends ParticleLCCurrent {
 		CGCParticle[][] longitudinalParticleArray = new CGCParticle[totalTransversalCells][longitudinalCells * particlesPerLink];
 
 
-		ArrayList<ArrayList<CGCParticle>> test = new ArrayList<ArrayList<CGCParticle>>(totalTransversalCells);
+		ArrayList<ArrayList<CGCParticle>> longitudinalParticleList = new ArrayList<ArrayList<CGCParticle>>(totalTransversalCells);
 		for (int i = 0; i < totalTransversalCells; i++) {
-			test.add(new ArrayList<CGCParticle>());
+			longitudinalParticleList.add(new ArrayList<CGCParticle>());
 		}
 		// Traverse through charge density and add particles by sampling the charge distribution
 		double t0 = 0.0;	// Particles should be initialized at t = 0 and t = dt.
@@ -81,53 +78,81 @@ public class ParticleLCCurrentNGP extends ParticleLCCurrent {
 				s.particles.add(p);
 
 				// Add to extra particle array for charge refinement.
-
-
-				int[] ngp = GridFunctions.nearestGridPoint(p.pos0, as);
-
-
-
-				int longitudinalPosition = particlesPerLink * ngp[direction] + j;
 				int transversalIndex = GridFunctions.getCellIndex(GridFunctions.reduceGridPos(gridPos, direction), transversalNumCells);
-
-
-				ArrayList<CGCParticle> list = test.get(transversalIndex);
-				list.add(p);
+				longitudinalParticleList.get(transversalIndex).add(p);
 			}
 		}
 
 		// Charge refinement
 		int numberOfIterations = 50;
 		for (int i = 0; i < totalTransversalCells; i++) {
-			ArrayList<CGCParticle> particleArray = test.get(i);
-			int size = particleArray.size();
-			for (int iter = 0; iter < numberOfIterations; iter++) {
-				for (int j = 0; j < particleArray.size(); j++) {
-					int jmod = j % particlesPerLink;
-					if(jmod >= 0 && jmod < particlesPerLink-1)
-					{
-						int longitudinalIndex = j;
-
-						AlgebraElement Q0 = particleArray.get(p(longitudinalIndex-1, size)).Q0;
-						AlgebraElement Q1 = particleArray.get(longitudinalIndex).Q0; // beginning
-						AlgebraElement Q2 = particleArray.get(p(longitudinalIndex+1, size)).Q0;
-						AlgebraElement Q3 = particleArray.get(p(longitudinalIndex+2, size)).Q0;
-						//AlgebraElement Q4 = particleArray.get((longitudinalIndex+3) % size).Q0;
-
-						AlgebraElement DQ = Q0.mult(-1);
-						DQ.addAssign(Q1.mult(3));
-						DQ.addAssign(Q2.mult(-3));
-						DQ.addAssign(Q3.mult(1));
-						//DQ.addAssign(Q4.mult(-1));
-						DQ.multAssign(1.0 / 4.0);
-
-						Q1.addAssign(DQ.mult(-1.0));
-						Q2.addAssign(DQ.mult(1.0));
-						//Q3.addAssign(DQ.mult(-0.5));
-					}
+			ArrayList<CGCParticle> particleList = longitudinalParticleList.get(i);
+			for (int iteration = 0; iteration < numberOfIterations; iteration++) {
+				for (int j = 0; j < particleList.size(); j++) {
+					refine2(j, particleList, particlesPerLink);
 				}
-
 			}
+		}
+	}
+
+	private void refine2(int i, ArrayList<CGCParticle> list, int particlesPerLink) {
+		int jmod = i % particlesPerLink;
+		int n = list.size();
+		// Refinement can not be applied to the last charge in an NGP cell.
+		if(jmod >= 0 && jmod < particlesPerLink-1)
+		{
+			int i0 = p(i-1, n);
+			int i1 = p(i+0, n);
+			int i2 = p(i+1, n);
+			int i3 = p(i+2, n);
+
+			AlgebraElement Q0 = list.get(i0).Q0;
+			AlgebraElement Q1 = list.get(i1).Q0;
+			AlgebraElement Q2 = list.get(i2).Q0;
+			AlgebraElement Q3 = list.get(i3).Q0;
+
+			AlgebraElement DQ = Q0.mult(-1);
+			DQ.addAssign(Q1.mult(3));
+			DQ.addAssign(Q2.mult(-3));
+			DQ.addAssign(Q3.mult(1));
+			DQ.multAssign(1.0 / 4.0);
+
+			Q1.addAssign(DQ.mult(-1.0));
+			Q2.addAssign(DQ.mult(1.0));
+		}
+	}
+
+
+	private void refine4(int i, ArrayList<CGCParticle> list, int particlesPerLink) {
+		int jmod = i % particlesPerLink;
+		int n = list.size();
+		// Refinement can not be applied to the last charge in an NGP cell.
+		if(jmod >= 0 && jmod < particlesPerLink-1)
+		{
+			int i0 = p(i-2, n);
+			int i1 = p(i-1, n);
+			int i2 = p(i+0, n);
+			int i3 = p(i+1, n);
+			int i4 = p(i+2, n);
+			int i5 = p(i+3, n);
+
+			AlgebraElement Q0 = list.get(i0).Q0;
+			AlgebraElement Q1 = list.get(i1).Q0;
+			AlgebraElement Q2 = list.get(i2).Q0;
+			AlgebraElement Q3 = list.get(i3).Q0;
+			AlgebraElement Q4 = list.get(i4).Q0;
+			AlgebraElement Q5 = list.get(i5).Q0;
+
+			AlgebraElement DQ = Q0.mult(+1);
+			DQ.addAssign(Q1.mult(-5));
+			DQ.addAssign(Q2.mult(+10));
+			DQ.addAssign(Q3.mult(-10));
+			DQ.addAssign(Q4.mult(+5));
+			DQ.addAssign(Q5.mult(-1));
+			DQ.multAssign(1.0 / 12.0);
+
+			Q1.addAssign(DQ.mult(-1.0));
+			Q2.addAssign(DQ.mult(1.0));
 		}
 	}
 
