@@ -46,10 +46,47 @@ public class ProjectedEnergyDensity implements Diagnostics {
 			for (int i = 0; i < grid.getTotalNumberOfCells(); i++) {
 				if(grid.isEvaluatable(i)) {
 					int projIndex = grid.getCellPos(i)[direction];
+					// transversal & longitudinal electric energy density
+					double e_T_el = 0.0;
+					double e_L_el = 0.0;
+					// transversal & longitudinal magnetic energy density
+					double e_T_mag = 0.0;
+					double e_L_mag = 0.0;
+
 					for (int j = 0; j < grid.getNumberOfDimensions(); j++) {
-						double energy = grid.getE(i, j).square() + 0.5 * (grid.getBsquaredFromLinks(i, j, 0) + grid.getBsquaredFromLinks(i, j, 1));
-						energyDensity[projIndex] += energy / 2;
+						if(j == direction) {
+							e_L_el += 0.5 * grid.getE(i, j).square();
+							e_L_mag += 0.25 * (grid.getBsquaredFromLinks(i, j, 0) + grid.getBsquaredFromLinks(i, j, 1));
+						} else {
+							e_T_el += 0.5 * grid.getE(i, j).square();
+							e_T_mag += 0.25 * (grid.getBsquaredFromLinks(i, j, 0) + grid.getBsquaredFromLinks(i, j, 1));
+						}
 					}
+
+					// electric energy density
+					double e_el = e_L_el + e_T_el;
+
+					// magnetic energy density
+					double e_mag = e_L_mag + e_T_mag;
+
+					// total energy density
+					double totalEnergyDensity = e_el + e_mag;
+
+					/*
+					// electric pressure
+					double p_el_T = e_L_el;
+					double p_el_L = e_T_el - e_L_el;
+
+					// magnetic pressure
+					double p_mag_T = e_L_mag;
+					double p_mag_L = e_T_mag - e_L_mag;
+
+					// total longitudinal & transversal pressure ratios
+					double p_L_r = (p_el_L + p_mag_L) / totalEnergyDensity;
+					double p_T_r = (p_el_T + p_mag_T) / totalEnergyDensity;
+					*/
+
+					energyDensity[projIndex] += totalEnergyDensity;
 				}
 			}
 
