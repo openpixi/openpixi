@@ -30,6 +30,8 @@ public class ParticleLCCurrentNGP extends ParticleLCCurrent {
 		CGCParticle[][] longitudinalParticleArray = new CGCParticle[totalTransversalCells][longitudinalCells * particlesPerLink];
 
 
+		double cutoffCharge = 10E-15 * Math.pow( g * as, 2) / (Math.pow(as, 3) * particlesPerLink);
+
 		ArrayList<ArrayList<CGCParticle>> longitudinalParticleList = new ArrayList<ArrayList<CGCParticle>>(totalTransversalCells);
 		for (int i = 0; i < totalTransversalCells; i++) {
 			longitudinalParticleList.add(new ArrayList<CGCParticle>());
@@ -75,11 +77,13 @@ public class ParticleLCCurrentNGP extends ParticleLCCurrent {
 				p.Q0 = charge;              // charge at t = 0
 				p.Q1 = charge.copy();       // charge at t = dt, assume that there is no parallel transport initially (also optional).
 
-				s.particles.add(p);
+				if(charge.square() > cutoffCharge) {
+					s.particles.add(p);
 
-				// Add to extra particle array for charge refinement.
-				int transversalIndex = GridFunctions.getCellIndex(GridFunctions.reduceGridPos(gridPos, direction), transversalNumCells);
-				longitudinalParticleList.get(transversalIndex).add(p);
+					// Add to extra particle array for charge refinement.
+					int transversalIndex = GridFunctions.getCellIndex(GridFunctions.reduceGridPos(gridPos, direction), transversalNumCells);
+					longitudinalParticleList.get(transversalIndex).add(p);
+				}
 			}
 		}
 
