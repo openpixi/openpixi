@@ -30,7 +30,7 @@ public class ParticleLCCurrentNGP extends ParticleLCCurrent {
 		CGCParticle[][] longitudinalParticleArray = new CGCParticle[totalTransversalCells][longitudinalCells * particlesPerLink];
 
 
-		double cutoffCharge = 10E-15 * Math.pow( g * as, 2) / (Math.pow(as, 3) * particlesPerLink);
+		double cutoffCharge = 10E-20 * Math.pow( g * as, 2) / (Math.pow(as, 3) * particlesPerLink);
 
 		ArrayList<ArrayList<CGCParticle>> longitudinalParticleList = new ArrayList<ArrayList<CGCParticle>>(totalTransversalCells);
 		for (int i = 0; i < totalTransversalCells; i++) {
@@ -101,7 +101,7 @@ public class ParticleLCCurrentNGP extends ParticleLCCurrent {
 			// 4th order refinement
 			for (int iteration = 0; iteration < numberOfIterations; iteration++) {
 				for (int j = 0; j < particleList.size(); j++) {
-					refine2(j, particleList, particlesPerLink);
+					refine4(j, particleList, particlesPerLink);
 				}
 			}
 		}
