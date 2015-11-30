@@ -2,6 +2,7 @@ package org.openpixi.pixi.physics.fields.currentgenerators;
 
 import org.openpixi.pixi.math.AlgebraElement;
 import org.openpixi.pixi.physics.Simulation;
+import org.openpixi.pixi.physics.SimulationType;
 import org.openpixi.pixi.physics.util.GridFunctions;
 
 import java.util.ArrayList;
@@ -109,7 +110,6 @@ public class PointChargeLCCurrent implements ICurrentGenerator {
 		this.useDipoleRemoval = useDipoleRemoval;
 
 		this.charges = new ArrayList<PointCharge>();
-		this.particleLCCurrent = new ParticleLCCurrent(direction, orientation, location, longitudinalWidth);
 	}
 
 	/**
@@ -159,6 +159,11 @@ public class PointChargeLCCurrent implements ICurrentGenerator {
 			removeDipoleMoment(s);
 		}
 
+		if(s.getSimulationType() == SimulationType.TemporalCGC) {
+			this.particleLCCurrent = new ParticleLCCurrent(direction, orientation, location, longitudinalWidth);
+		} else if(s.getSimulationType() == SimulationType.TemporalCGCNGP) {
+			this.particleLCCurrent = new ParticleLCCurrentNGP(direction, orientation, location, longitudinalWidth);
+		}
 		particleLCCurrent.setTransversalChargeDensity(transversalChargeDensity);
 		particleLCCurrent.initializeCurrent(s, dummy);
 	}
