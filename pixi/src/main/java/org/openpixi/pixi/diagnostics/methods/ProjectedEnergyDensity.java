@@ -11,7 +11,26 @@ import java.io.IOException;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 
-
+/**
+ * This diagnostic averages the energy density over the transversal plane (specified by the longitudinal direction)
+ * and writes 4 energy density components to a file:
+ * Electric longitudinal (energyDensity_L_el), magnetic longitudinal (energyDensity_L_mag),
+ * electric transversal  (energyDensity_T_el) and magnetic transversal (energyDensity_T_mag) energy density.
+ * Using these four components one can compute various quantities:
+ * total energy density = (sum of all components)
+ * longitudinal energy density = (sum of longitudinal components)
+ * transversal energy density = (sum of transversal components)
+ * longitudinal pressure = transversal energy density - longitudinal energy density
+ * transvesal pressure = longitudinal energy density
+ *
+ * The output format:
+ * 1) time
+ * 2) electric transversal
+ * 3) magnetic transversal
+ * 4) electric longitudinal
+ * 5) magnetic longitudinal
+ *
+ */
 public class ProjectedEnergyDensity implements Diagnostics {
 
 	private int direction;
@@ -20,7 +39,11 @@ public class ProjectedEnergyDensity implements Diagnostics {
 	private double timeInterval;
 	private int stepInterval;
 	private int numberOfCells;
-	private double[] energyDensity;
+
+	private double[] energyDensity_T_el;
+	private double[] energyDensity_T_mag;
+	private double[] energyDensity_L_el;
+	private double[] energyDensity_L_mag;
 
 	public ProjectedEnergyDensity(String path, double timeInterval, int direction) {
 		this.direction = direction;
@@ -37,10 +60,17 @@ public class ProjectedEnergyDensity implements Diagnostics {
 
 	public void calculate(Grid grid, ArrayList<IParticle> particles, int steps) throws IOException {
 		if(steps % stepInterval == 0) {
-			// Compute projected energy density
-			energyDensity = new double[numberOfCells];
+			// Compute projected energy density (electric, magnetic, transversal and longitudinal)
+			energyDensity_T_el = new double[numberOfCells];
+			energyDensity_T_mag = new double[numberOfCells];
+			energyDensity_L_el = new double[numberOfCells];
+			energyDensity_L_mag = new double[numberOfCells];
+
 			for (int i = 0; i < numberOfCells; i++) {
-				energyDensity[i] = 0.0;
+				energyDensity_T_el[i] = 0.0;
+				energyDensity_T_mag[i] = 0.0;
+				energyDensity_L_el[i] = 0.0;
+				energyDensity_L_mag[i] = 0.0;
 			}
 
 			for (int i = 0; i < grid.getTotalNumberOfCells(); i++) {
@@ -54,39 +84,21 @@ public class ProjectedEnergyDensity implements Diagnostics {
 					double e_L_mag = 0.0;
 
 					for (int j = 0; j < grid.getNumberOfDimensions(); j++) {
+						double electric = 0.5 * grid.getE(i, j).square();
+						double magnetic = 0.25 * (grid.getBsquaredFromLinks(i, j, 0) + grid.getBsquaredFromLinks(i, j, 1));
 						if(j == direction) {
-							e_L_el += 0.5 * grid.getE(i, j).square();
-							e_L_mag += 0.25 * (grid.getBsquaredFromLinks(i, j, 0) + grid.getBsquaredFromLinks(i, j, 1));
+							e_L_el += electric;
+							e_L_mag += magnetic;
 						} else {
-							e_T_el += 0.5 * grid.getE(i, j).square();
-							e_T_mag += 0.25 * (grid.getBsquaredFromLinks(i, j, 0) + grid.getBsquaredFromLinks(i, j, 1));
+							e_T_el += electric;
+							e_T_mag += magnetic;
 						}
 					}
 
-					// electric energy density
-					double e_el = e_L_el + e_T_el;
-
-					// magnetic energy density
-					double e_mag = e_L_mag + e_T_mag;
-
-					// total energy density
-					double totalEnergyDensity = e_el + e_mag;
-
-					/*
-					// electric pressure
-					double p_el_T = e_L_el;
-					double p_el_L = e_T_el - e_L_el;
-
-					// magnetic pressure
-					double p_mag_T = e_L_mag;
-					double p_mag_L = e_T_mag - e_L_mag;
-
-					// total longitudinal & transversal pressure ratios
-					double p_L_r = (p_el_L + p_mag_L) / totalEnergyDensity;
-					double p_T_r = (p_el_T + p_mag_T) / totalEnergyDensity;
-					*/
-
-					energyDensity[projIndex] += totalEnergyDensity;
+					energyDensity_T_el[projIndex] += e_T_el;
+					energyDensity_T_mag[projIndex] += e_T_mag;
+					energyDensity_L_el[projIndex] += e_L_el;
+					energyDensity_L_mag[projIndex] += e_L_mag;
 				}
 			}
 
@@ -96,7 +108,10 @@ public class ProjectedEnergyDensity implements Diagnostics {
 				FileWriter pw = new FileWriter(file, true);
 				Double time = steps * grid.getTemporalSpacing();
 				pw.write(time.toString() + "\n");
-				pw.write(generateTSVString(energyDensity) + "\n");
+				pw.write(generateTSVString(energyDensity_T_el) + "\n");
+				pw.write(generateTSVString(energyDensity_T_mag) + "\n");
+				pw.write(generateTSVString(energyDensity_L_el) + "\n");
+				pw.write(generateTSVString(energyDensity_L_mag) + "\n");
 				pw.close();
 			} catch (IOException ex) {
 				System.out.println("ProjectedEnergyDensity: Error writing to file.");
