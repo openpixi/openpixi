@@ -504,7 +504,6 @@ public class Settings {
 				setInterpolator(new CGCParticleInterpolation());
 				break;
 			case TemporalCGCNGP:
-
 				setBoundary(GeneralBoundaryType.Absorbing);
 				setFieldSolver(new TemporalYangMillsSolver());
 				setParticleSolver(new CGCParticleSolver());
@@ -515,6 +514,20 @@ public class Settings {
 				setFieldSolver(new LorenzYangMillsSolver());
 				setParticleSolver(new EmptyParticleSolver());
 				setInterpolator(new EmptyInterpolator());
+				break;
+
+			case NewCGC_NGP:
+				setBoundary(GeneralBoundaryType.Absorbing);
+				setFieldSolver(new TemporalYangMillsSolver());
+				setParticleSolver(new CGCParticleSolver());
+				setInterpolator(new NewCGCParticleInterpolationNGP());
+				break;
+
+			case NewCGC_CIC:
+				setBoundary(GeneralBoundaryType.Absorbing);
+				setFieldSolver(new TemporalYangMillsSolver());
+				setParticleSolver(new CGCParticleSolver());
+				setInterpolator(new CGCParticleInterpolationCIC());
 				break;
 			case BoostInvariantCGC:
 				break;
