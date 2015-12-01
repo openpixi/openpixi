@@ -13,4 +13,5 @@ package org.openpixi.pixi.physics;
  */
 public enum GeneralBoundaryType {
 	Periodic,
+	Absorbing,
 }

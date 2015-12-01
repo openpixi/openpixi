@@ -9,7 +9,7 @@ import org.openpixi.pixi.physics.fields.currentgenerators.ICurrentGenerator;
 import org.openpixi.pixi.physics.force.*;
 import org.openpixi.pixi.physics.grid.*;
 import org.openpixi.pixi.physics.particles.*;
-import org.openpixi.pixi.physics.solver.*;
+import org.openpixi.pixi.physics.movement.solver.*;
 import org.openpixi.pixi.ui.util.yaml.YamlPanels;
 
 import java.util.ArrayList;
@@ -67,9 +67,9 @@ public class Settings {
 	// Particle related settings
 	private int numOfParticles = 0;
 
-	private int simulationType = 0;
+	private SimulationType simulationType = SimulationType.TemporalYangMills;
 	private List<IParticle> particles = new ArrayList<IParticle>();
-	private Solver particleSolver = new EmptyParticleSolver();
+	private ParticleSolver particleSolver = new EmptyParticleSolver();
 	private List<Force> forces = new ArrayList<Force>();
 
 
@@ -100,7 +100,7 @@ public class Settings {
 	//----------------------------------------------------------------------------------------------
 	// SIMPLE GETTERS
 	//----------------------------------------------------------------------------------------------
-	public int getSimulationType() {
+	public SimulationType getSimulationType() {
 		return this.simulationType;
 	}
 	
@@ -157,7 +157,7 @@ public class Settings {
 		return poissonSolver;
 	}
 
-	public Solver getParticleSolver() {
+	public ParticleSolver getParticleSolver() {
 		return particleSolver;
 	}
 
@@ -284,8 +284,9 @@ public class Settings {
 	//----------------------------------------------------------------------------------------------
 	// SETTERS (Overwrite default values programatically)
 	//----------------------------------------------------------------------------------------------
-	public void setSimulationType(int simulationType) {
+	public void setSimulationType(SimulationType simulationType) {
 		this.simulationType = simulationType;
+		applySimulationTypeSetting();
 	}
 
 	/**
@@ -363,7 +364,7 @@ public class Settings {
 		this.poissonSolver = poissonSolver;
 	}
 
-	public void setParticleSolver(Solver particleSolver) {
+	public void setParticleSolver(ParticleSolver particleSolver) {
 		this.particleSolver = particleSolver;
 	}
 
@@ -480,22 +481,44 @@ public class Settings {
 		for (int i = 0; i < numberOfDimensions; i++) {
 			gridCells[i] = 1;
 		}
+
+		applySimulationTypeSetting();
 	}
 
 	/**
-	 * Overwrites default values with file input.
+	 * Sets up the components of the simulation (Grid, FieldSolver, ParticleSolver, Interpolation, ..)
+	 * according to SimulationType.
 	 */
-	public Settings(String fileName) {
-		this();
-		// Parse file
-		throw new UnsupportedOperationException();
-	}
+	private void applySimulationTypeSetting() {
+		switch(simulationType) {
+			case TemporalYangMills:
+				setBoundary(GeneralBoundaryType.Periodic);
+				setFieldSolver(new TemporalYangMillsSolver());
+				setParticleSolver(new EmptyParticleSolver());
+				setInterpolator(new EmptyInterpolator());
+				break;
+			case TemporalCGC:
+				setBoundary(GeneralBoundaryType.Absorbing);
+				setFieldSolver(new TemporalYangMillsSolver());
+				setParticleSolver(new CGCParticleSolver());
+				setInterpolator(new CGCParticleInterpolation());
+				break;
+			case TemporalCGCNGP:
 
-	/**
-	 * Overwrites default values with command line input.
-	 */
-	public Settings(String[] cmdLine) {
-		throw new UnsupportedOperationException();
+				setBoundary(GeneralBoundaryType.Absorbing);
+				setFieldSolver(new TemporalYangMillsSolver());
+				setParticleSolver(new CGCParticleSolver());
+				setInterpolator(new CGCParticleInterpolationNGP());
+				break;
+			case LorenzYangMills:
+				setBoundary(GeneralBoundaryType.Periodic);
+				setFieldSolver(new LorenzYangMillsSolver());
+				setParticleSolver(new EmptyParticleSolver());
+				setInterpolator(new EmptyInterpolator());
+				break;
+			case BoostInvariantCGC:
+				break;
+		}
 	}
 
 	/**

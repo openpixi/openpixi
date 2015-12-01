@@ -1,21 +1,26 @@
 package org.openpixi.pixi.physics.movement.boundary;
 
+import org.openpixi.pixi.physics.Simulation;
 import org.openpixi.pixi.physics.particles.IParticle;
 import org.openpixi.pixi.physics.util.DoubleBox;
 
-/**
- * Created by David on 20.04.2015.
- */
 public class PeriodicParticleBoundaryConditions implements IParticleBoundaryConditions
 {
 
     private DoubleBox simulationBox;
     private int numberOfDimensions;
 
-    public PeriodicParticleBoundaryConditions(DoubleBox simulationBox, int numberOfDimensions)
+    public PeriodicParticleBoundaryConditions(Simulation s)
     {
-        this.simulationBox = simulationBox;
-        this.numberOfDimensions = numberOfDimensions;
+		double[] min = new double[s.getNumberOfDimensions()];
+		double[] max = new double[s.getNumberOfDimensions()];
+		for (int i = 0; i < s.getNumberOfDimensions(); i++) {
+			min[i] = 0.0;
+			max[i] = s.getSimulationBoxSize(i);
+		}
+
+		this.simulationBox = new DoubleBox(numberOfDimensions, min, max);
+		this.numberOfDimensions = s.getNumberOfDimensions();
     }
 
     public void applyOnParticle(IParticle particle)

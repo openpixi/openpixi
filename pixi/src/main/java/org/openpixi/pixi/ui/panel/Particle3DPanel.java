@@ -128,7 +128,7 @@ public class Particle3DPanel extends AnimationPanel {
 			double y = p.getPosition(1);
 			double z = p.getPosition(2);
 			double r = p.getRadius();
-			Color color = p.getColor();
+			Color color = p.getDisplayColor();
 			spheres.addSphere(x, y, z, r, color);
 		}
 

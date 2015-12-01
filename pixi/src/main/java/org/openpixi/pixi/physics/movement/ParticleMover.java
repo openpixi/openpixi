@@ -5,7 +5,7 @@ import org.openpixi.pixi.parallel.particleaccess.ParticleIterator;
 import org.openpixi.pixi.physics.force.Force;
 import org.openpixi.pixi.physics.movement.boundary.IParticleBoundaryConditions;
 import org.openpixi.pixi.physics.particles.IParticle;
-import org.openpixi.pixi.physics.solver.Solver;
+import org.openpixi.pixi.physics.movement.solver.ParticleSolver;
 import org.openpixi.pixi.physics.grid.Grid;
 
 import java.util.List;
@@ -16,7 +16,7 @@ import java.util.List;
 public class ParticleMover {
 
 	/** Solver for the particle equations of motion. */
-	private Solver solver;
+	private ParticleSolver particleSolver;
 	private IParticleBoundaryConditions boundaries;
 	private ParticleIterator particleIterator;
 
@@ -24,38 +24,45 @@ public class ParticleMover {
 	private Force force;
 	private double timeStep;
 
-	private Push push = new Push();
+	private PositionUpdate positionUpdate = new PositionUpdate();
+	private ChargeUpdate chargeUpdate = new ChargeUpdate();
 	private Prepare prepare = new Prepare();
 	private Complete complete = new Complete();
+	private Reassign reassign = new Reassign();
 
 
-	public Solver getSolver() {
-		return solver;
+	public ParticleSolver getParticleSolver() {
+		return particleSolver;
 	}
 
-	public void setSolver(Solver psolver) {
-		this.solver = psolver;
+	public void setParticleSolver(ParticleSolver psolver) {
+		this.particleSolver = psolver;
 	}
 
 
 	public ParticleMover(
-			Solver solver,
+			ParticleSolver particleSolver,
 			IParticleBoundaryConditions boundaries,
 			ParticleIterator particleIterator) {
-		this.solver = solver;
+		this.particleSolver = particleSolver;
 		this.boundaries = boundaries;
 		this.particleIterator = particleIterator;
 	}
 
 
-	public void push(List<IParticle> particles, Force force, Grid g, double timeStep) {
+	public void updatePositions(List<IParticle> particles, Force force, Grid g, double timeStep) {
 		this.force = force;
 		this.timeStep = timeStep;
-		particleIterator.execute(particles, push);
-
+		particleIterator.execute(particles, positionUpdate);
 	}
 
+	public void updateCharges(List<IParticle> particles, Force force, Grid g, double timeStep) {
+		this.force = force;
+		this.timeStep = timeStep;
+		particleIterator.execute(particles, chargeUpdate);
+	}
 
+	/*
 	public void prepare(List<IParticle> particles, Force force, double timeStep) {
 		this.force = force;
 		this.timeStep = timeStep;
@@ -68,27 +75,40 @@ public class ParticleMover {
 		this.timeStep = timeStep;
 		particleIterator.execute(particles, complete);
 	}
+	*/
 
+	public void reassign(List<IParticle> particles) {
+		particleIterator.execute(particles, reassign);
+	}
 
-	private class Push implements ParticleAction {
+	private class PositionUpdate implements ParticleAction {
 		public void execute(IParticle particle) {
-			particle.storePosition();
-			solver.step(particle, force, timeStep);
+			particleSolver.updatePosition(particle, force, timeStep);
 			boundaries.applyOnParticle(particle);
 		}
 	}
 
-
-	private class Prepare implements ParticleAction {
+	private class ChargeUpdate implements ParticleAction {
 		public void execute(IParticle particle) {
-			solver.prepare(particle, force, timeStep);
+			particleSolver.updateCharge(particle, force, timeStep);
 		}
 	}
 
+	private class Prepare implements ParticleAction {
+		public void execute(IParticle particle) {
+			particleSolver.prepare(particle, force, timeStep);
+		}
+	}
 
 	private class Complete implements ParticleAction {
 		public void execute(IParticle particle) {
-			solver.complete(particle, force, timeStep);
+			particleSolver.complete(particle, force, timeStep);
+		}
+	}
+
+	private class Reassign implements ParticleAction {
+		public void execute(IParticle particle) {
+			particle.reassignValues();
 		}
 	}
 }

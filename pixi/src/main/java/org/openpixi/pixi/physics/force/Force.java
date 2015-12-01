@@ -29,26 +29,4 @@ public interface Force {
 
     double getForce(int i, IParticle p);
 
-    /*
-        LEGACY
-     */
-
-	/**
-	 * Total force in the x-direction.
-	 */
-
-	double getForceX(IParticle p);
-
-	/**
-	 * Total force in the y-direction.
-	 */
-	double getForceY(IParticle p);
-
-	/**
-	 * Total force in the z-direction.
-	 */
-	double getForceZ(IParticle p);
-
-
-
 }

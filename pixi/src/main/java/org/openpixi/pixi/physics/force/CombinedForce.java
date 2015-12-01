@@ -36,18 +36,6 @@ public class CombinedForce implements Force {
         return sum;
     }
 
-	public double getForceX(IParticle p) {
-		return getForce(0, p);
-	}
-
-	public double getForceY(IParticle p) {
-        return getForce(1, p);
-	}
-	
-	public double getForceZ(IParticle p) {
-        return getForce(2, p);
-	}
-
 	public void remove(Force force) {
 		forces.remove(force);
 	}

@@ -15,7 +15,7 @@ public abstract class Interpolation {
 		this.interpolator = interpolator;
 	}
 
-	public abstract void interpolateToGrid(List<IParticle> particles, Grid grid, double tstep);
+	public abstract void interpolateToGrid(List<IParticle> particles, Grid grid);
 
 	public abstract void interpolateToParticle(List<IParticle> particles, Grid grid);
 

@@ -5,7 +5,7 @@ import org.openpixi.pixi.physics.particles.IParticle;
 public class EmptyInterpolator implements InterpolatorAlgorithm {
 
 	@Override
-	public void interpolateToGrid(IParticle p, Grid g, double tstep) {
+	public void interpolateToGrid(IParticle p, Grid g) {
 		// DO NOTHING
 	}
 

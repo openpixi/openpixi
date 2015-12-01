@@ -132,8 +132,8 @@ public class SimulationAnimation {
 	public void resetAnimation(Settings settings) {
 		// timer.restart();
 		timer.stop();
-		clear();
 		s = new Simulation(settings);
+		clear();
 		repaint();
 	}
 

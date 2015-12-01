@@ -1,12 +1,12 @@
 # Dual focused gaussian pulse test with impact parameter
 
+simulationType: temporal yang-mills
 gridStep: 1
 couplingConstant: 1
 numberOfDimensions: 3
 numberOfColors: 2
 numberOfThreads: 6
 gridCells: [128, 128, 1]
-poissonsolver: empty
 timeStep: 0.2
 duration: 1000
 

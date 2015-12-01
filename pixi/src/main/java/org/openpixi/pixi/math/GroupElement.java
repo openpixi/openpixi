@@ -92,6 +92,16 @@ public interface GroupElement {
 	 */
 	AlgebraElement proj();
 
+	/**
+	 * Returns x'th matrix power of the group element. This works for diagonalizable matrices.
+	 * The most simple implementation of this uses getAlgebraElement() and getLink().
+	 * g.pow(x) should effectively be the same as g.getAlgebraElement().mult(x).getLink().
+	 *
+	 * @param x	exponent
+	 * @return x'th matrix power of the group element
+	 */
+	GroupElement pow(double x);
+
 	void set(GroupElement a);
 
 	GroupElement copy();

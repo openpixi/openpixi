@@ -1,23 +1,27 @@
 package org.openpixi.pixi.ui.util.yaml;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import org.openpixi.pixi.physics.GeneralBoundaryType;
 import org.openpixi.pixi.physics.Settings;
+import org.openpixi.pixi.physics.SimulationType;
 import org.openpixi.pixi.physics.fields.EmptyPoissonSolver;
 import org.openpixi.pixi.physics.fields.LorenzYangMillsSolver;
+import org.openpixi.pixi.physics.fields.currentgenerators.ParticleLCCurrent;
 import org.openpixi.pixi.physics.fields.fieldgenerators.IFieldGenerator;
 import org.openpixi.pixi.physics.fields.currentgenerators.ICurrentGenerator;
 import org.openpixi.pixi.physics.fields.TemporalYangMillsSolver;
 import org.openpixi.pixi.physics.grid.EmptyInterpolator;
-import org.openpixi.pixi.physics.solver.relativistic.LeapFrogRelativistic;
+import org.openpixi.pixi.physics.movement.solver.LeapFrogRelativisticParticleSolver;
 import org.openpixi.pixi.diagnostics.Diagnostics;
 
 /**
  * Generic settings class into which the YAML parser parses
  */
 public class YamlSettings {
+	public String simulationType;
 	public Double timeStep;
 	public Double speedOfLight;
     public Integer numberOfDimensions;
@@ -27,38 +31,51 @@ public class YamlSettings {
 	public Double gridStep;
 	public Double duration;
 	public List<Integer> gridCells;
-	public String fieldsolver;
-	public String poissonsolver;
 
 	public YamlRegion evaluationRegion;
 	public YamlRegion activeRegion;
 
-	public List<YamlParticle> particles;
-	public List<YamlParticleStream> streams;
+	public List<YamlYangMillsParticle> particles;
+	public List<YamlYangMillsParticleStream> streams;
     public YamlFields fields;
 	public YamlCurrents currents;
 	public YamlOutput output;
 	public YamlPanels panels;
 
+	@Deprecated
+	public String fieldsolver;
+
+	@Deprecated
+	public String poissonsolver;
+
 	public void applyTo(Settings settings) {
 
 		// Default settings:
-		settings.setRelativistic(false);
-		settings.setBoundary(GeneralBoundaryType.Periodic);
-		settings.setFieldSolver(new TemporalYangMillsSolver());//settings.setFieldSolver(new YangMillsSolver());
+		settings.setRelativistic(true);
+		settings.setSimulationType(SimulationType.TemporalYangMills);
 		settings.useGrid(true);
-		settings.setInterpolator(new EmptyInterpolator());
         settings.setSpeedOfLight(1.0);
         settings.setNumberOfDimensions(3);
         settings.setNumberOfColors(1);
         settings.setCouplingConstant(1.0);
-        settings.setParticleSolver(new LeapFrogRelativistic(settings.getNumberOfDimensions(), settings.getSpeedOfLight()));
         settings.setNumOfThreads(4);
-        settings.setFieldGenerators(new ArrayList<IFieldGenerator>());
-		settings.setCurrentGenerators(new ArrayList<ICurrentGenerator>());
-        settings.setDiagnostics(new ArrayList<Diagnostics>());
 
 		// Custom settings:
+		if(simulationType != null) {
+			HashMap<String, SimulationType> map = new HashMap<String, SimulationType>();
+			map.put("temporal yang-mills", SimulationType.TemporalYangMills);
+			map.put("temporal cgc", SimulationType.TemporalCGC);
+			map.put("temporal cgc ngp", SimulationType.TemporalCGCNGP);
+			map.put("lorenz yang-mills", SimulationType.LorenzYangMills);
+			map.put("boost-invariant cgc", SimulationType.BoostInvariantCGC);
+
+			if(map.containsKey(simulationType)) {
+				settings.setSimulationType(map.get(simulationType));
+			} else {
+				throw new RuntimeException("Unknown simulation type specified in YAML file.");
+			}
+		}
+
 		if (timeStep != null) {
 			settings.setTimeStep(timeStep);
 		}
@@ -73,7 +90,7 @@ public class YamlSettings {
 		if (speedOfLight != null) {
             settings.setRelativistic(true);
 			settings.setSpeedOfLight(speedOfLight);
-            settings.setParticleSolver(new LeapFrogRelativistic(settings.getNumberOfDimensions(), speedOfLight));
+            settings.setParticleSolver(new LeapFrogRelativisticParticleSolver(settings.getNumberOfDimensions(), speedOfLight));
 		}
 
         if(numberOfColors != null)
@@ -90,38 +107,23 @@ public class YamlSettings {
 		}
 
 		if (gridCells != null) {
-			settings.setGridCellsX(gridCells.get(0));
-			settings.setGridCellsY(gridCells.get(1));
-			settings.setGridCellsZ(gridCells.get(2));
-		}
-
-		if (poissonsolver != null) {
-			if (poissonsolver.equals("fft")) {
-                System.out.println("Warning: FFT Poisson solver not yet implemented. Using EmptyPoissonSolver instead.");
-				settings.setPoissonSolver(new EmptyPoissonSolver());
-			} else if (poissonsolver.equals("empty")) {
-				settings.setPoissonSolver(new EmptyPoissonSolver());
+			if(gridCells.size() != numberOfDimensions) {
+				throw new RuntimeException("Size of gridCells does not match numberOfDimensions.");
 			} else {
-				throw new RuntimeException("Unknown Poisson solver specified in YAML file.");
-			}
-		}
-
-		if(fieldsolver != null) {
-			if(fieldsolver.equals("temporal yang mills")) {
-				settings.setFieldSolver(new TemporalYangMillsSolver());
-			} else if(fieldsolver.equals("lorenz yang mills")) {
-				settings.setFieldSolver(new LorenzYangMillsSolver());
+				for (int i = 0; i < gridCells.size(); i++) {
+					settings.setGridCells(i, gridCells.get(i));
+				}
 			}
 		}
 
 		if (particles != null) {
-			for (YamlParticle p : particles) {
+			for (YamlYangMillsParticle p : particles) {
 				p.applyTo(settings);
 			}
 		}
 
 		if (streams != null) {
-			for (YamlParticleStream s : streams) {
+			for (YamlYangMillsParticleStream s : streams) {
 				s.applyTo(settings);
 			}
 		}

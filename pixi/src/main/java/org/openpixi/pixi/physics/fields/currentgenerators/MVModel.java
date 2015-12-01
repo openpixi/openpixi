@@ -2,6 +2,7 @@ package org.openpixi.pixi.physics.fields.currentgenerators;
 
 import org.openpixi.pixi.math.AlgebraElement;
 import org.openpixi.pixi.physics.Simulation;
+import org.openpixi.pixi.physics.SimulationType;
 import org.openpixi.pixi.physics.util.GridFunctions;
 
 import java.util.Random;
@@ -98,9 +99,14 @@ public class MVModel implements ICurrentGenerator {
 			location -= L;
 		}
 
-		this.particleLCCurrent = new ParticleLCCurrent(direction, orientation, location, longitudinalWidth);
+		if(s.getSimulationType() == SimulationType.TemporalCGC) {
+			this.particleLCCurrent = new ParticleLCCurrent(direction, orientation, location, longitudinalWidth);
+		} else if(s.getSimulationType() == SimulationType.TemporalCGCNGP) {
+			this.particleLCCurrent = new ParticleLCCurrentNGP(direction, orientation, location, longitudinalWidth);
+		}
 		particleLCCurrent.setTransversalChargeDensity(transversalChargeDensity);
 		particleLCCurrent.initializeCurrent(s, totalInstances);
+
 	}
 
 

@@ -11,7 +11,7 @@ import org.openpixi.pixi.physics.Settings;
 import org.openpixi.pixi.physics.Simulation;
 import org.openpixi.pixi.physics.fields.fieldgenerators.SU2RandomFields;
 import org.openpixi.pixi.physics.fields.TemporalYangMillsSolver;
-import org.openpixi.pixi.physics.solver.relativistic.LeapFrogRelativistic;
+import org.openpixi.pixi.physics.movement.solver.LeapFrogRelativisticParticleSolver;
 
 public class GridTest {
 
@@ -264,7 +264,7 @@ public class GridTest {
 		s.setNumberOfColors(2);
 
 		s.setCouplingConstant(1.0);
-		s.setParticleSolver(new LeapFrogRelativistic(s.getNumberOfDimensions(), s.getSpeedOfLight()));
+		s.setParticleSolver(new LeapFrogRelativisticParticleSolver(s.getNumberOfDimensions(), s.getSpeedOfLight()));
 		s.setNumOfThreads(6);
 
 		return s;

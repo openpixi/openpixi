@@ -136,7 +136,7 @@ public class ElectricFieldPanel extends AnimationPanel {
 		// Draw particles on a central line:
 		for (int i = 0; i < s.particles.size(); i++) {
 			IParticle par = s.particles.get(i);
-			graph.setColor(par.getColor());
+			graph.setColor(par.getDisplayColor());
 			double radius = par.getRadius();
 			int width = (int) (2*sx*radius);
 			int height = (int) (2*sx*radius);
@@ -235,14 +235,14 @@ public class ElectricFieldPanel extends AnimationPanel {
 					value = drawGrid.getU0next(index).proj().get(colorIndex) / (at * g);
 					break;
 				case INDEX_J:
-					newPosition = (int) (s.grid.getLatticeSpacing() * (i + .5) * sx);
+					//newPosition = (int) (s.grid.getLatticeSpacing() * (i + .5) * sx);
 					value = drawGrid.getJ(index, directionIndex).get(colorIndex) / (as * g);
 					break;
 				case INDEX_RHO:
 					value = drawGrid.getRho(index).get(colorIndex) / (as * g);
 					break;
 				case INDEX_GAUSS:
-					newPosition = (int) (s.grid.getLatticeSpacing() * (i + .5) * sx);
+					//newPosition = (int) (s.grid.getLatticeSpacing() * (i + .5) * sx);
 					if(drawGrid.isEvaluatable(index)) {
 						value = drawGrid.getGaussConstraint(s.grid.getCellIndex(pos)).get(colorIndex) / (as * g);
 					} else {
