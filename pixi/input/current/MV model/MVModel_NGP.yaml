@@ -5,7 +5,7 @@ numberOfDimensions: 3
 numberOfColors: 2
 numberOfThreads: 8
 gridCells: [128, 8, 8]
-timeStep: 0.3
+timeStep: 0.25
 duration: 96
 evaluationRegion:
   enabled: true
@@ -22,13 +22,13 @@ currents:
       orientation: 1
       longitudinalLocation: 32
       longitudinalWidth: 3.0
-      mu: 0.2
+      mu: 0.05
       randomSeed: 1
     - direction: 0
       orientation: -1
       longitudinalLocation: -32
       longitudinalWidth: 3.0
-      mu: 0.2
+      mu: 0.05
       randomSeed: 2
 
 

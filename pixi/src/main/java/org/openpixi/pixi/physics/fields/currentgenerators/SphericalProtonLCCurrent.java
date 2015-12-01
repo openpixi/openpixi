@@ -3,6 +3,7 @@ package org.openpixi.pixi.physics.fields.currentgenerators;
 import org.apache.commons.math3.analysis.function.Gaussian;
 import org.openpixi.pixi.math.AlgebraElement;
 import org.openpixi.pixi.physics.Simulation;
+import org.openpixi.pixi.physics.SimulationType;
 import org.openpixi.pixi.physics.util.GridFunctions;
 
 import java.util.ArrayList;
@@ -128,7 +129,6 @@ public class SphericalProtonLCCurrent implements ICurrentGenerator {
 		this.colorChargeDensity = colorChargeDensity;
 
 		this.charges = new ArrayList<GaussianCharge>();
-		this.particleLCCurrent = new ParticleLCCurrent(direction, orientation, location, longitudinalWidth);
 	}
 
 	/**
@@ -190,6 +190,11 @@ public class SphericalProtonLCCurrent implements ICurrentGenerator {
 			removeDipoleMoment(s);
 		}
 
+		if(s.getSimulationType() == SimulationType.TemporalCGC) {
+			this.particleLCCurrent = new ParticleLCCurrent(direction, orientation, location, longitudinalWidth);
+		} else if(s.getSimulationType() == SimulationType.TemporalCGCNGP) {
+			this.particleLCCurrent = new ParticleLCCurrentNGP(direction, orientation, location, longitudinalWidth);
+		}
 		particleLCCurrent.setTransversalChargeDensity(transversalChargeDensity);
 		particleLCCurrent.initializeCurrent(s, dummy);
 	}
