@@ -25,7 +25,15 @@ currents:
       randomSeed1: 1
       randomSeed2: 2
       createInitialConditionsOutput: true
-      outputFile: "test.dat"
+      outputFile: "planarInitial.dat"
+
+output:
+  planarFields:
+    - interval: 1.0
+      startingTime: 16.0
+      path: "planarOutput.dat"
+      direction: 0
+      planarIndex: 32
 
 
 

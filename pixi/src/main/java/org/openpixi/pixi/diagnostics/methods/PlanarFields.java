@@ -1,0 +1,159 @@
+package org.openpixi.pixi.diagnostics.methods;
+
+import org.openpixi.pixi.diagnostics.Diagnostics;
+import org.openpixi.pixi.math.AlgebraElement;
+import org.openpixi.pixi.physics.Simulation;
+import org.openpixi.pixi.physics.grid.Grid;
+import org.openpixi.pixi.physics.particles.IParticle;
+import org.openpixi.pixi.physics.util.GridFunctions;
+
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.text.DecimalFormat;
+import java.util.ArrayList;
+
+public class PlanarFields implements Diagnostics {
+
+	private double timeInterval;
+	private int stepInterval;
+	private String outputName;
+	private double startingTime;
+	private int startingStep;
+
+	private int direction;
+	private int planarIndex;
+
+	private int[] transNumCells;
+	private int totalTransCells;
+
+	private int effDimensions;
+
+	private Simulation s;
+	private int numberOfComponents;
+
+	public PlanarFields(double timeInterval, String outputName, double startingTime, int direction, int planarIndex) {
+		this.timeInterval = timeInterval;
+		this.outputName = outputName;
+		this.startingTime =  startingTime;
+		this.direction = direction;
+		this.planarIndex = planarIndex;
+
+
+	}
+
+	public void initialize(Simulation s) {
+		clear();
+
+		this.s = s;
+		this.transNumCells = GridFunctions.reduceGridPos(s.grid.getNumCells(), direction);
+		this.totalTransCells =  GridFunctions.getTotalNumberOfCells(transNumCells);
+
+		this.stepInterval = (int) (timeInterval / s.getTimeStep());
+		this.startingStep = (int) (startingTime / s.getTimeStep());
+		this.effDimensions = GridFunctions.getEffectiveNumberOfDimensions(s.grid.getNumCells());
+
+		this.numberOfComponents = s.grid.getElementFactory().numberOfComponents;
+	}
+
+
+	public void calculate(Grid grid, ArrayList<IParticle> particles, int steps) throws IOException {
+		if(steps > startingStep) {
+			if (steps % stepInterval == 0) {
+				// do stuff
+
+				AlgebraElement[][]  transverseGaugeFields = new AlgebraElement[effDimensions][totalTransCells];
+				AlgebraElement[]  longitudinalElectricFields = new AlgebraElement[totalTransCells];
+				for (int i = 0; i < totalTransCells; i++) {
+					int[] gridPos = GridFunctions.insertGridPos(GridFunctions.getCellPos(i, transNumCells), direction, planarIndex);
+					int cellIndex = grid.getCellIndex(gridPos);
+
+					int ts = 0;
+					for (int j = 0; j < effDimensions; j++) {
+						if(j == direction) {
+							longitudinalElectricFields[i] = grid.getE(cellIndex, j);
+						} else {
+							transverseGaugeFields[ts][i] = grid.getLink(cellIndex, j, 1, 0).getAlgebraElement();
+							ts++;
+						}
+					}
+				}
+
+				File file = this.getOutputFile(outputName);
+				try {
+					FileWriter pw = new FileWriter(file, true);
+
+					pw.write(s.getIterations() + "\t" + s.getIterations() * s.getTimeStep() + "\n");
+
+					// Transverse fields
+					for (int i = 0; i < effDimensions-1; i++) {
+						double[][] output = convertToDoubleArray(transverseGaugeFields[i], numberOfComponents);
+						for (int j = 0; j < numberOfComponents; j++) {
+							pw.write(generateTSVString(output[j]) + "\n");
+						}
+					}
+
+					// Longitudinal fields
+					double[][] output = convertToDoubleArray(longitudinalElectricFields, numberOfComponents);
+					for (int j = 0; j < numberOfComponents; j++) {
+						pw.write(generateTSVString(output[j]) + "\n");
+					}
+
+					pw.close();
+				} catch (IOException ex) {
+					System.out.println("PlanarFields: Error writing to file.");
+				}
+
+			}
+		}
+	}
+
+	/**
+	 * Creates a file with a given name in the output folder.
+	 * @param filename	Filename of the output file.
+	 * @return			File object of the opened file.
+	 */
+	private File getOutputFile(String filename) {
+		// Default output path is
+		// 'output/' + filename
+		File fullpath = new File("output");
+		if(!fullpath.exists()) fullpath.mkdir();
+
+		return new File(fullpath, filename);
+	}
+
+	/**
+	 * 	Checks if the files are already existent and deletes them
+	 */
+	private void clear() {
+		File file = getOutputFile(outputName);
+		boolean fileExists1 = file.exists();
+		if(fileExists1 == true) {
+			file.delete();
+		}
+	}
+
+	private String generateTSVString(double[] array) {
+		StringBuilder outputStringBuilder = new StringBuilder();
+		DecimalFormat formatter = new DecimalFormat("0.################E0");
+		for (int i = 0; i < array.length; i++) {
+			outputStringBuilder.append(formatter.format(array[i]));
+			if(i < array.length - 1) {
+				outputStringBuilder.append("\t");
+			}
+		}
+		return outputStringBuilder.toString();
+	}
+
+	private double[][] convertToDoubleArray(AlgebraElement[] array, int numberOfComponents) {
+		double[][] output = new double[3][array.length];
+		for (int i = 0; i < array.length; i++) {
+			AlgebraElement a = array[i];
+			for (int j = 0; j < numberOfComponents; j++) {
+				output[j][i] = a.get(j);
+			}
+		}
+		return output;
+	}
+
+}
