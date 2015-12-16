@@ -73,7 +73,7 @@ public class ParticleLCCurrent implements ICurrentGenerator {
 	/**
 	 * Number of particles per cell.
 	 */
-	protected int particlesPerCell = 1;
+	protected int particlesPerCell;
 
 	/**
 	 * Standard constructor for the ParticleLCCurrent class.
@@ -131,6 +131,7 @@ public class ParticleLCCurrent implements ICurrentGenerator {
 
 
 		// 3) Interpolate grid charge and current density.
+		particlesPerCell = (int) (as / at);
 		initializeParticles(s, particlesPerCell);
 
 		// You're done: charge density, current density and the fields are set up correctly.
@@ -153,6 +154,13 @@ public class ParticleLCCurrent implements ICurrentGenerator {
 	 */
 	protected void initializeParticles(Simulation s, int particlesPerLink) {
 
+		double cutoffCharge = 10E-20 * Math.pow( g * as, 2) / (Math.pow(as, 3) * particlesPerLink);
+
+		ArrayList<ArrayList<CGCParticle>> longitudinalParticleList = new ArrayList<ArrayList<CGCParticle>>(totalTransversalCells);
+		for (int i = 0; i < totalTransversalCells; i++) {
+			longitudinalParticleList.add(new ArrayList<CGCParticle>());
+		}
+
 		// Traverse through charge density and add particles by sampling the charge distribution
 		double t0 = 0.0;	// Particles should be initialized at t = 0 and t = dt.
 		double FIX_ROUND_ERRORS = 10E-12 * as;
@@ -168,19 +176,23 @@ public class ParticleLCCurrent implements ICurrentGenerator {
 				for (int k = 0; k < gridPos.length; k++) {
 					particlePosition0[k] = gridPos[k] * as + FIX_ROUND_ERRORS;
 					particlePosition1[k] = gridPos[k] * as + FIX_ROUND_ERRORS;
-					if(k == direction) {
+					if (k == direction) {
 						particlePosition0[k] += t0 * orientation + dz;
 						particlePosition1[k] += (t0 + at) * orientation + dz;
 					}
 				}
 
-
-				AlgebraElement charge = interpolateChargeFromGrid(s, particlePosition0).mult(1.0 / particlesPerLink);
+				AlgebraElement charge;
+				if(j == 0) {
+					charge = this.interpolateChargeFromGrid(s, particlePosition0).mult(1.0);
+				} else {
+					charge = this.interpolateChargeFromGrid(s, particlePosition0).mult(0.0);
+				}
 
 				// Particle velocity
 				double[] particleVelocity = new double[gridPos.length];
 				for (int k = 0; k < gridPos.length; k++) {
-					if(k == direction) {
+					if (k == direction) {
 						particleVelocity[k] = 1.0 * orientation;
 					} else {
 						particleVelocity[k] = 0.0;
@@ -195,9 +207,88 @@ public class ParticleLCCurrent implements ICurrentGenerator {
 				p.Q1 = charge.copy();       // charge at t = dt, assume that there is no parallel transport initially (also optional).
 
 				s.particles.add(p);
+
+				// Add to extra particle array for charge refinement.
+				int transversalIndex = GridFunctions.getCellIndex(GridFunctions.reduceGridPos(gridPos, direction), transversalNumCells);
+				longitudinalParticleList.get(transversalIndex).add(p);
+			}
+		}
+		// Charge refinement
+		int numberOfIterations = 10000;
+		for (int i = 0; i < totalTransversalCells; i++) {
+			ArrayList<CGCParticle> particleList = longitudinalParticleList.get(i);
+			// Refinement with curvature for many charges
+			for (int iteration = 0; iteration < numberOfIterations; iteration++) {
+				for (int j = 0; j < particleList.size(); j++) {
+					//refine3(j, particleList, particlesPerLink);
+					refine3Simple(j, particleList, particlesPerLink);
+				}
 			}
 		}
 	}
+
+	private void refine3(int i, ArrayList<CGCParticle> list, int particlesPerLink) {
+		int jmod = i % particlesPerLink;
+		int n = list.size();
+		// Refinement should not be applied across cell boundaries.
+		if(jmod >= 0 && jmod <= particlesPerLink-2)
+		{
+			int i_1 = p(i-1, n);
+			int i0 = p(i+0, n);
+			int i1 = p(i+1, n);
+			int i2 = p(i+2, n);
+			int i3 = p(i+3, n);
+
+			AlgebraElement Q_1 = list.get(i_1).Q0;
+			AlgebraElement Q0 = list.get(i0).Q0;
+			AlgebraElement Q1 = list.get(i1).Q0;
+			AlgebraElement Q2 = list.get(i2).Q0;
+			AlgebraElement Q3 = list.get(i3).Q0;
+
+			AlgebraElement DQ = Q0.mult(4);
+
+			DQ.addAssign(Q_1.mult(-1));
+			DQ.addAssign(Q1.mult(-6));
+			DQ.addAssign(Q2.mult(4));
+			DQ.addAssign(Q3.mult(-1));
+			DQ.multAssign(1.0 / 6.0);
+
+			Q0.addAssign(DQ.mult(-0.5));
+			Q1.addAssign(DQ);
+			Q2.addAssign(DQ.mult(-0.5));
+		}
+	}
+
+	private void refine3Simple(int i, ArrayList<CGCParticle> list, int particlesPerLink) {
+		int jmod = i % particlesPerLink;
+		int n = list.size();
+		// Refinement should not be applied across cell boundaries.
+		if(jmod >= 0 && jmod <= particlesPerLink-2)
+		{
+			int i0 = p(i+0, n);
+			int i1 = p(i+1, n);
+			int i2 = p(i+2, n);
+
+			AlgebraElement Q0 = list.get(i0).Q0;
+			AlgebraElement Q1 = list.get(i1).Q0;
+			AlgebraElement Q2 = list.get(i2).Q0;
+
+			AlgebraElement DQ = Q0;
+
+			DQ.addAssign(Q1.mult(-2.0));
+			DQ.addAssign(Q2);
+			DQ.multAssign(1.0 / 3.0);
+
+			Q0.addAssign(DQ.mult(-0.5));
+			Q1.addAssign(DQ);
+			Q2.addAssign(DQ.mult(-0.5));
+		}
+	}
+
+	private int p(int i, int n) {
+		return (i % n + n) % n;
+	}
+
 
 	protected AlgebraElement interpolateChargeFromGrid(Simulation s, double[] particlePosition) {
 		int[] flooredGridPos = GridFunctions.flooredGridPoint(particlePosition, as);
@@ -217,4 +308,5 @@ public class ParticleLCCurrent implements ICurrentGenerator {
 
 		return charge1;
 	}
+
 }
