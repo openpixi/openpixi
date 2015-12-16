@@ -76,7 +76,7 @@ public class Particle2DPanel extends AnimationPanel {
 			double radius = par.getRadius();//double radius = par.getRadius()*(2 - 1.9*par.getZ()/s.getDepth());
 			int width = (int) (2*sx*radius);
 			int height = (int) (2*sy*radius);
-			int y = (int) (par.getPosition(1)*sy + 100000000*((CGCParticle) par).Q0.square());
+			int y = (int) (par.getPosition(1)*sy + 1000000*((CGCParticle) par).Q0.square());
 			if(width > 2 && height > 2) {
 				graph.fillOval((int) (par.getPosition(0)*sx) - width/2, (int) (y) - height/2,  width,  height);
 			}

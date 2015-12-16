@@ -214,7 +214,7 @@ public class ParticleLCCurrent implements ICurrentGenerator {
 			}
 		}
 		// Charge refinement
-		int numberOfIterations = 10000;
+		int numberOfIterations = 300;
 		for (int i = 0; i < totalTransversalCells; i++) {
 			ArrayList<CGCParticle> particleList = longitudinalParticleList.get(i);
 			// Refinement with curvature for many charges
@@ -222,6 +222,13 @@ public class ParticleLCCurrent implements ICurrentGenerator {
 				for (int j = 0; j < particleList.size(); j++) {
 					//refine3(j, particleList, particlesPerLink);
 					refine3Simple(j, particleList, particlesPerLink);
+				}
+			}
+
+			for (int iteration = 0; iteration < numberOfIterations; iteration++) {
+				for (int j = 0; j < particleList.size(); j++) {
+					refine3(j, particleList, particlesPerLink);
+					//refine3Simple(j, particleList, particlesPerLink);
 				}
 			}
 		}
@@ -273,9 +280,9 @@ public class ParticleLCCurrent implements ICurrentGenerator {
 			AlgebraElement Q1 = list.get(i1).Q0;
 			AlgebraElement Q2 = list.get(i2).Q0;
 
-			AlgebraElement DQ = Q0;
+			AlgebraElement DQ = Q0.mult(1);
 
-			DQ.addAssign(Q1.mult(-2.0));
+			DQ.addAssign(Q1.mult(-2));
 			DQ.addAssign(Q2);
 			DQ.multAssign(1.0 / 3.0);
 
