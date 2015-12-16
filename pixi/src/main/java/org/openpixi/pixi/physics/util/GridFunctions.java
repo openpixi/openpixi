@@ -175,5 +175,22 @@ public class GridFunctions {
 		return newGridPos;
 	}
 
+	/**
+	 * Shifts a cell index in the given direction with given orientation.
+	 * @param index cell index
+	 * @param d direction of the shift
+	 * @param o orienatation of the shift
+	 * @param numCells gridsize of the array
+	 * @return
+	 */
+	public static int shift(int index, int d, int o, int[] numCells) {
+
+		int[] gpos = getCellPos(index, numCells);
+		gpos[d] += o;
+		gpos[d] = (gpos[d] % numCells[d] + numCells[d])  % numCells[d];
+
+		return GridFunctions.getCellIndex(gpos, numCells);
+	}
+
 
 }
