@@ -76,7 +76,7 @@ public class NewLCPoissonSolver {
 
 		// UV Regulator
 		double psqrMax = 4.0 * effTransversalDimensions / (as * as);
-		double lambda = 1.0;
+		double lambda = 0.05;
 
 		// First step: compute transversal potential phi
 		for (int i = 0; i < factory.numberOfComponents; i++) {
@@ -197,6 +197,10 @@ public class NewLCPoissonSolver {
 		double z = longitudinalPosition - location;
 		double shape = integratedShapeFunction(z, t, orientation, longitudinalWidth);
 		return phi[transversalIndex].mult(- shape * g).getLink();
+	}
+
+	public GroupElement getV(int transversalIndex) {
+		return phi[transversalIndex].mult(- g).getLink();
 	}
 
 	private double integratedShapeFunction(double z, double t, int o, double width) {

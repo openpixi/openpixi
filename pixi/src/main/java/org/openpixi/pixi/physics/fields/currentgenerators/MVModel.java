@@ -40,7 +40,7 @@ public class MVModel implements ICurrentGenerator {
 	private boolean useSeed = false;
 	private int seed;
 
-	private ParticleLCCurrent particleLCCurrent;
+	protected ParticleLCCurrent particleLCCurrent;
 
 
 	public MVModel(int direction, int orientation, double location, double longitudinalWidth, double mu) {
