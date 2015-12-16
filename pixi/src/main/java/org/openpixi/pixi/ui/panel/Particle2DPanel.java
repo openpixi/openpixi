@@ -28,6 +28,7 @@ import java.awt.geom.AffineTransform;
 
 import javax.swing.Box;
 import org.openpixi.pixi.physics.Simulation;
+import org.openpixi.pixi.physics.particles.CGCParticle;
 import org.openpixi.pixi.physics.particles.IParticle;
 import org.openpixi.pixi.ui.SimulationAnimation;
 import org.openpixi.pixi.ui.panel.properties.ColorProperties;
@@ -75,11 +76,12 @@ public class Particle2DPanel extends AnimationPanel {
 			double radius = par.getRadius();//double radius = par.getRadius()*(2 - 1.9*par.getZ()/s.getDepth());
 			int width = (int) (2*sx*radius);
 			int height = (int) (2*sy*radius);
+			int y = (int) (par.getPosition(1)*sy + 100000000*((CGCParticle) par).Q0.square());
 			if(width > 2 && height > 2) {
-				graph.fillOval((int) (par.getPosition(0)*sx) - width/2, (int) (par.getPosition(1)*sy) - height/2,  width,  height);
+				graph.fillOval((int) (par.getPosition(0)*sx) - width/2, (int) (y) - height/2,  width,  height);
 			}
 			else {
-				graph.drawRect((int) (par.getPosition(0)*sx), (int) (par.getPosition(1)*sy), 0, 0);
+				graph.drawRect((int) (par.getPosition(0)*sx), (int) (y), 0, 0);
 			}
 		}
 
