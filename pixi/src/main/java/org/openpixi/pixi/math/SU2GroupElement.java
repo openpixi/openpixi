@@ -236,4 +236,16 @@ public class SU2GroupElement implements GroupElement {
 	public GroupElement copy() {
 		return new SU2GroupElement(e[0], e[1], e[2], e[3]);
 	}
+
+	/**
+	 * Computes the inverse matrix.
+	 * @return inverse matrix
+	 */
+	public SU2GroupElement inv() {
+		double n = computeParameterNorm();
+		SU2GroupElement v = (SU2GroupElement) this.adj();
+		v.mult(1.0/n);
+
+		return v;
+	}
 }
