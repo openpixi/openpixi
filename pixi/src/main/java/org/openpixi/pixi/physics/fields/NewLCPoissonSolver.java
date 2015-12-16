@@ -31,6 +31,9 @@ public class NewLCPoissonSolver {
 	private double at;
 	private double g;
 
+	public double infraredRegulator = 0.0;
+	public double lowPassCoefficient = 1.0;
+
 	private ElementFactory factory;
 	private Simulation s;
 
@@ -72,11 +75,11 @@ public class NewLCPoissonSolver {
 		DoubleFFTWrapper fft = new DoubleFFTWrapper(transversalNumCells);
 
 		// IR Regulator
-		double m = 0.0;
+		double m = infraredRegulator;
 
 		// UV Regulator
 		double psqrMax = 4.0 * effTransversalDimensions / (as * as);
-		double lambda = 0.05;
+		double lambda = lowPassCoefficient;
 
 		// First step: compute transversal potential phi
 		for (int i = 0; i < factory.numberOfComponents; i++) {

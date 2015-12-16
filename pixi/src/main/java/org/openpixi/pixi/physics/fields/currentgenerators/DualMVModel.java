@@ -199,10 +199,10 @@ public class DualMVModel implements ICurrentGenerator {
 	 * 	Checks if the files are already existent and deletes them
 	 */
 	private void clear() {
-		File particlesfile = getOutputFile(outputFile);
-		boolean fileExists1 = particlesfile.exists();
+		File file = getOutputFile(outputFile);
+		boolean fileExists1 = file.exists();
 		if(fileExists1 == true) {
-			particlesfile.delete();
+			file.delete();
 		}
 	}
 
