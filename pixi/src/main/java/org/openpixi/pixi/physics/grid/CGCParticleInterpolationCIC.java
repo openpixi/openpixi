@@ -101,6 +101,7 @@ public class CGCParticleInterpolationCIC implements  InterpolatorAlgorithm {
 
 		double as = g.getLatticeSpacing();
 		int direction = P.direction;
+		GroupElement identity = g.getElementFactory().groupIdentity();
 
 		// "Floored" grid points of the particle
 		int[] gridPosOld = GridFunctions.flooredGridPoint(P.pos0, as);
