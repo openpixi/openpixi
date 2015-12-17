@@ -139,7 +139,7 @@ public class DualMVModel implements ICurrentGenerator {
 						SU2GroupElement Um1 = (SU2GroupElement) transverseLinks[ts][i].sub(identity);
 						SU2GroupElement U1 = (SU2GroupElement) ps1.getV(i).mult(ps1.getV(is_a).adj());
 						SU2GroupElement U2 = (SU2GroupElement) ps2.getV(i).mult(ps2.getV(is_a).adj());
-						SU2GroupElement diff1 = (SU2GroupElement) U2.sub(U1);
+						SU2GroupElement diff1 = (SU2GroupElement) U2.adj().sub(U1.adj());
 
 						int is_b = GridFunctions.shift(i, ts, -1, transNumCells);
 						SU2GroupElement Um2 = (SU2GroupElement) transverseLinks[ts][is_b].adj().sub(identity);
