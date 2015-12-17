@@ -83,7 +83,7 @@ public class PlanarFields implements Diagnostics {
 				try {
 					FileWriter pw = new FileWriter(file, true);
 
-					pw.write(s.getIterations() + "\t" + s.getIterations() * s.getTimeStep() + "\n");
+					//pw.write(s.getIterations() + "\t" + s.getIterations() * s.getTimeStep() + "\n");
 
 					// Transverse fields
 					for (int i = 0; i < effDimensions-1; i++) {
