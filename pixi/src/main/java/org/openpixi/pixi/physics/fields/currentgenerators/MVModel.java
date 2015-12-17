@@ -40,15 +40,20 @@ public class MVModel implements ICurrentGenerator {
 	private boolean useSeed = false;
 	private int seed;
 
+	/**
+	 *
+	 */
+	private double lowPassCoefficient = 1.0;
+
 	protected ParticleLCCurrent particleLCCurrent;
 
 
-	public MVModel(int direction, int orientation, double location, double longitudinalWidth, double mu) {
-		this(direction, orientation, location, longitudinalWidth, mu, 0);
+	public MVModel(int direction, int orientation, double location, double longitudinalWidth, double mu, double lowPassCoefficient) {
+		this(direction, orientation, location, longitudinalWidth, mu, 0, lowPassCoefficient);
 		this.useSeed = false;
 	}
 
-	public MVModel(int direction, int orientation, double location, double longitudinalWidth, double mu, int seed){
+	public MVModel(int direction, int orientation, double location, double longitudinalWidth, double mu, int seed, double lowPassCoefficient){
 		this.direction = direction;
 		this.orientation = orientation;
 		this.location = location;
@@ -56,7 +61,7 @@ public class MVModel implements ICurrentGenerator {
 		this.mu = mu;
 		this.seed = seed;
 		this.useSeed = true;
-
+		this.lowPassCoefficient = lowPassCoefficient;
 	}
 
 	public void initializeCurrent(Simulation s, int totalInstances) {
@@ -104,6 +109,7 @@ public class MVModel implements ICurrentGenerator {
 		} else if(s.getSimulationType() == SimulationType.TemporalCGCNGP) {
 			this.particleLCCurrent = new ParticleLCCurrentNGP(direction, orientation, location, longitudinalWidth);
 		}
+		particleLCCurrent.lowPassCoefficient = lowPassCoefficient;
 		particleLCCurrent.setTransversalChargeDensity(transversalChargeDensity);
 		particleLCCurrent.initializeCurrent(s, totalInstances);
 

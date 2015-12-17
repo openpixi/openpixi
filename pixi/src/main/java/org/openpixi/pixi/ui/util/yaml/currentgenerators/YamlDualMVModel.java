@@ -1,7 +1,6 @@
 package org.openpixi.pixi.ui.util.yaml.currentgenerators;
 
 import org.openpixi.pixi.physics.fields.currentgenerators.DualMVModel;
-import org.openpixi.pixi.physics.fields.currentgenerators.MVModel;
 
 public class YamlDualMVModel {
 	/**
@@ -25,13 +24,18 @@ public class YamlDualMVModel {
 	public Double mu;
 
 	/**
+	 * Coefficient for the low pass filter in the Poisson solver
+	 */
+	public Double lowPassCoefficient = 1.0;
+
+	/**
 	 * Seeds to use for the random number generator
 	 */
 	public Integer randomSeed1 = null;
 	public Integer randomSeed2 = null;
 
 	/**
-	 * Option for writing boost-invariant collision initial conditins to file.
+	 * Option for writing boost-invariant collision initial conditions to file.
 	 */
 	public Boolean createInitialConditionsOutput =  false;
 
@@ -43,9 +47,9 @@ public class YamlDualMVModel {
 
 	public DualMVModel getCurrentGenerator() {
 		if(randomSeed1 != null && randomSeed2 != null) {
-			return new DualMVModel(direction, longitudinalLocation, longitudinalWidth, mu, true, randomSeed1, randomSeed2, createInitialConditionsOutput, outputFile);
+			return new DualMVModel(direction, longitudinalLocation, longitudinalWidth, mu, lowPassCoefficient, true, randomSeed1, randomSeed2, createInitialConditionsOutput, outputFile);
 		}
-		return new DualMVModel(direction, longitudinalLocation, longitudinalWidth, mu, false, 0, 0, createInitialConditionsOutput, outputFile);
+		return new DualMVModel(direction, longitudinalLocation, longitudinalWidth, mu, lowPassCoefficient, false, 0, 0, createInitialConditionsOutput, outputFile);
 	}
 
 }

@@ -42,6 +42,12 @@ public class DualMVModel implements ICurrentGenerator {
 	private int seed1;
 	private int seed2;
 
+
+	/**
+	 * Low pass filter for the Poisson solver.
+	 */
+	private double lowPassCoefficient;
+
 	/**
 	 * Initial condition output
 	 */
@@ -52,12 +58,13 @@ public class DualMVModel implements ICurrentGenerator {
 	private MVModel mv2;
 
 
-	public DualMVModel(int direction, double location, double longitudinalWidth, double mu,
+	public DualMVModel(int direction, double location, double longitudinalWidth, double mu, double lowPassCoefficient,
 					   boolean useSeed, int seed1, int seed2, boolean createInitialConditionsOutput, String outputFile){
 		this.direction = direction;
 		this.location = location;
 		this.longitudinalWidth = longitudinalWidth;
 		this.mu = mu;
+		this.lowPassCoefficient = lowPassCoefficient;
 
 		this.useSeed = useSeed;
 		this.seed1 = seed1;
@@ -69,11 +76,11 @@ public class DualMVModel implements ICurrentGenerator {
 
 	public void initializeCurrent(Simulation s, int totalInstances) {
 		if(useSeed){
-			mv1 = new MVModel(direction, 1, location, longitudinalWidth, mu, seed1);
-			mv2 = new MVModel(direction, -1, -(location+1), longitudinalWidth, mu, seed2);
+			mv1 = new MVModel(direction, 1, location, longitudinalWidth, mu, seed1, lowPassCoefficient);
+			mv2 = new MVModel(direction, -1, -(location+1), longitudinalWidth, mu, seed2, lowPassCoefficient);
 		} else {
-			mv1 = new MVModel(direction, 1, location, longitudinalWidth, mu);
-			mv2 = new MVModel(direction, -1, -(location+1), longitudinalWidth, mu);
+			mv1 = new MVModel(direction, 1, location, longitudinalWidth, mu, lowPassCoefficient);
+			mv2 = new MVModel(direction, -1, -(location+1), longitudinalWidth, mu, lowPassCoefficient);
 		}
 
 		mv1.initializeCurrent(s, totalInstances);

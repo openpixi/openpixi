@@ -29,6 +29,11 @@ public class YamlMVModel {
 	public Double mu;
 
 	/**
+	 * Coefficient for the low pass filter in the Poisson solver
+	 */
+	public Double lowPassCoefficient = 1.0;
+
+	/**
 	 * Seed to use for the random number generator
 	 */
 	public Integer randomSeed;
@@ -36,9 +41,9 @@ public class YamlMVModel {
 
 	public MVModel getCurrentGenerator() {
 		if(randomSeed != null) {
-			return new MVModel(direction, orientation, longitudinalLocation, longitudinalWidth, mu, randomSeed);
+			return new MVModel(direction, orientation, longitudinalLocation, longitudinalWidth, mu, randomSeed, lowPassCoefficient);
 		}
-		return new MVModel(direction, orientation, longitudinalLocation, longitudinalWidth, mu);
+		return new MVModel(direction, orientation, longitudinalLocation, longitudinalWidth, mu, lowPassCoefficient);
 	}
 
 }

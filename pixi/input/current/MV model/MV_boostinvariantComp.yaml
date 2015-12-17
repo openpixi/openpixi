@@ -1,12 +1,12 @@
 simulationType: temporal cgc ngp
 gridStep: 1
-couplingConstant: .4
+couplingConstant: 1
 numberOfDimensions: 3
 numberOfColors: 2
 numberOfThreads: 8
-gridCells: [64, 40, 40]
+gridCells: [128, 32, 32]
 timeStep: 0.5
-duration: 96
+duration: 32
 evaluationRegion:
   enabled: true
   point1: [2, 0, 0]
@@ -19,9 +19,10 @@ activeRegion:
 currents:
   dualMVModels:
     - direction: 0
-      longitudinalLocation: 16
-      longitudinalWidth: 3.0
+      longitudinalLocation: 32
+      longitudinalWidth: 8.0
       mu: 0.1
+      lowPassCoefficient: 0.1
       randomSeed1: 1
       randomSeed2: 2
       createInitialConditionsOutput: true
@@ -30,7 +31,7 @@ currents:
 output:
   planarFields:
     - interval: 1.0
-      startingTime: 16.0
+      startingTime: 6.0
       path: "planarOutput.dat"
       direction: 0
       planarIndex: 32
