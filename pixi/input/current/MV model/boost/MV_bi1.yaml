@@ -4,9 +4,9 @@ couplingConstant: .2
 numberOfDimensions: 3
 numberOfColors: 2
 numberOfThreads: 8
-gridCells: [128, 32, 32]
-timeStep: 0.5
-duration: 64
+gridCells: [256, 32, 32]
+timeStep: 0.25
+duration: 128
 evaluationRegion:
   enabled: true
   point1: [2, 0, 0]
@@ -19,7 +19,7 @@ activeRegion:
 currents:
   dualMVModels:
     - direction: 0
-      longitudinalLocation: 32
+      longitudinalLocation: 40
       longitudinalWidth: 10
       mu: 0.3
       lowPassCoefficient: 0.05
@@ -34,7 +34,7 @@ output:
       startingTime: 0.0
       path: "planarOutput1.dat"
       direction: 0
-      planarIndex: 64
+      planarIndex: 128
 
 
 
