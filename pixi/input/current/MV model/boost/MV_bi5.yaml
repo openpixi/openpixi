@@ -1,0 +1,90 @@
+simulationType: temporal cgc ngp
+gridStep: 1
+couplingConstant: .2
+numberOfDimensions: 3
+numberOfColors: 2
+numberOfThreads: 8
+gridCells: [128, 32, 32]
+timeStep: 0.5
+duration: 64
+evaluationRegion:
+  enabled: true
+  point1: [2, 0, 0]
+  point2: [-3, -1, -1]
+activeRegion:
+  enabled: true
+  point1: [1, 0, 0]
+  point2: [-2, -1, -1]
+
+currents:
+  dualMVModels:
+    - direction: 0
+      longitudinalLocation: 32
+      longitudinalWidth: 2
+      mu: 0.3
+      lowPassCoefficient: 0.05
+      randomSeed1: 3
+      randomSeed2: 4
+      createInitialConditionsOutput: true
+      outputFile: "planarInitial5.dat"
+
+output:
+  planarFields:
+    - interval: 1.0
+      startingTime: 0.0
+      path: "planarOutput5.dat"
+      direction: 0
+      planarIndex: 64
+
+
+
+# Generated panel code:
+panels:
+  dividerLocation: 800
+  leftPanel:
+    dividerLocation: 495
+    leftPanel:
+      energyDensity2DGLPanel:
+        automaticScaling: false
+        scaleFactor: 400000.0
+        showCoordinates: 96, y, x
+    orientation: 0
+    rightPanel:
+      dividerLocation: 394
+      leftPanel:
+        electricFieldPanel:
+          automaticScaling: false
+          colorIndex: 0
+          directionIndex: 0
+          scaleFactor: 50.0
+          showCoordinates: x, i, 0
+          showFields:
+          - E
+          - B
+      orientation: 1
+      rightPanel:
+        electricFieldPanel:
+          automaticScaling: false
+          colorIndex: 0
+          directionIndex: 1
+          scaleFactor: 50.0
+          showCoordinates: x, i, 4
+          showFields:
+          - E
+  orientation: 1
+  rightPanel:
+    dividerLocation: 499
+    leftPanel:
+      energyDensity2DGLPanel:
+        automaticScaling: false
+        scaleFactor: 4.0E10
+        showCoordinates: 64, y, x
+    orientation: 0
+    rightPanel:
+      energyDensity2DGLPanel:
+        automaticScaling: false
+        scaleFactor: 400000.0
+        showCoordinates: 32, y, x
+  windowHeight: 1053
+  windowWidth: 1920
+
