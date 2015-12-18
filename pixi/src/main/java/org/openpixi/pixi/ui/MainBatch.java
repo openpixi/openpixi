@@ -26,6 +26,7 @@ import org.openpixi.pixi.physics.Simulation;
 import org.openpixi.pixi.ui.util.*;
 import org.openpixi.pixi.ui.util.yaml.YamlParser;
 
+import java.io.FilenameFilter;
 import java.io.IOException;
 
 public class MainBatch {
@@ -49,21 +50,40 @@ public class MainBatch {
 	 * </pre>
 	 */
 	public static void main(String[] args) throws FileNotFoundException, IOException, InterruptedException {
-		Debug.checkAssertsEnabled();
+		//Debug.checkAssertsEnabled();
 		// Checks if the user has specified at least one parameter.
 		// If so creates a parser and uses the parameter as the
 		// path to the settings file.
 		if (args.length != 0) {
 			File path = new File("input");
 			File file = new File(path, args[0]);
-			try {
-				String string = FileIO.readFile(file);
-				runSimulationFromString(string);
 
-			} catch (IOException e) {
-				System.out.println("Error opening " + args[0]);
+			if(file.exists()) {
+				if(file.isFile()) {
+					try {
+						String string = FileIO.readFile(file);
+						runSimulationFromString(string);
+
+					} catch (IOException e) {
+						System.out.println("Error opening " + args[0]);
+					}
+				} else if(file.isDirectory()){
+					System.out.println("Loading configuration files from " + file.getPath());
+					File[] listOfFiles = file.listFiles();
+					for(File f : listOfFiles) {
+						try {
+							System.out.println("Running " + f.getPath());
+							String string = FileIO.readFile(f);
+							runSimulationFromString(string);
+						} catch (IOException e) {
+							System.out.println("Error opening " + f.getPath());
+						}
+					}
+					System.out.println("Done!");
+				}
 			}
 		}
+		return;
 	}
 
 	public static void runSimulationFromString(String configurationString) {
