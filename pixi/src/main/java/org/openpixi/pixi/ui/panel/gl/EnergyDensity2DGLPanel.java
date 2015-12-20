@@ -38,11 +38,13 @@ public class EnergyDensity2DGLPanel extends AnimationGLPanel {
 
 	public static final int INDEX_ENERGY_DENSITY = 0;
 	public static final int INDEX_ENERGY_DENSITY_DERIVATIVE = 1;
-	public static final int INDEX_ENERGY_DENSITY_DERIVATIVE_POYNTING = 2;
+	public static final int INDEX_NABLA_POYNTING = 2;
+	public static final int INDEX_ENERGY_DENSITY_DERIVATIVE_NABLA_POYNTING = 3;
 
 	String[] typeLabel = new String[] {
 			"Energy density",
 			"dE/dt",
+			"nabla S",
 			"dE/dt + nabla S"
 	};
 
@@ -120,7 +122,10 @@ public class EnergyDensity2DGLPanel extends AnimationGLPanel {
 					case INDEX_ENERGY_DENSITY_DERIVATIVE:
 						value = getEnergyDensityDerivative(s, index);
 						break;
-					case INDEX_ENERGY_DENSITY_DERIVATIVE_POYNTING:
+					case INDEX_NABLA_POYNTING:
+						value = getNablaPoyntingVector(s, index);
+						break;
+					case INDEX_ENERGY_DENSITY_DERIVATIVE_NABLA_POYNTING:
 						value = getEnergyDensityDerivative(s, index)
 							+ getNablaPoyntingVector(s, index);
 						break;
@@ -217,15 +222,15 @@ public class EnergyDensity2DGLPanel extends AnimationGLPanel {
 
 	private double getPoyntingVector(Simulation s, int index, int direction) {
 		// Indices for cross product:
-		int id1 = (index + 1) % 3;
-		int id2 = (index + 2) % 3;
+		int dir1 = (direction + 1) % 3;
+		int dir2 = (direction + 2) % 3;
 
 		// fields at same time:
-		AlgebraElement E1 = s.grid.getE(index, id1);
-		AlgebraElement E2 = s.grid.getE(index, id2);
+		AlgebraElement E1 = s.grid.getE(index, dir1);
+		AlgebraElement E2 = s.grid.getE(index, dir2);
 		// time averaged B-field:
-		AlgebraElement B1 = s.grid.getB(index, id1, 0).add(s.grid.getB(index, id1, 1)).mult(0.5);
-		AlgebraElement B2 = s.grid.getB(index, id2, 0).add(s.grid.getB(index, id2, 1)).mult(0.5);
+		AlgebraElement B1 = s.grid.getB(index, dir1, 0).add(s.grid.getB(index, dir1, 1)).mult(0.5);
+		AlgebraElement B2 = s.grid.getB(index, dir2, 0).add(s.grid.getB(index, dir2, 1)).mult(0.5);
 		double S = E1.mult(B2) - E2.mult(B1);
 		return S;
 	}
