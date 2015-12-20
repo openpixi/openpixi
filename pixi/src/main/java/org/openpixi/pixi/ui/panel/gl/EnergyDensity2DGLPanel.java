@@ -25,6 +25,7 @@ import javax.swing.Box;
 
 import org.openpixi.pixi.physics.Simulation;
 import org.openpixi.pixi.ui.SimulationAnimation;
+import org.openpixi.pixi.ui.panel.properties.ComboBoxProperties;
 import org.openpixi.pixi.ui.panel.properties.CoordinateProperties;
 import org.openpixi.pixi.ui.panel.properties.ScaleProperties;
 
@@ -34,12 +35,26 @@ import org.openpixi.pixi.ui.panel.properties.ScaleProperties;
  */
 public class EnergyDensity2DGLPanel extends AnimationGLPanel {
 
+	public final int INDEX_ENERGY_DENSITY = 0;
+	public final int INDEX_ENERGY_DENSITY_CHANGE = 1;
+
+	String[] typeLabel = new String[] {
+			"Energy density",
+			"dE/dt"
+	};
+
+	public final int RED = 0;
+	public final int GREEN = 1;
+	public final int BLUE = 2;
+
+	public ComboBoxProperties typeProperties;
 	public ScaleProperties scaleProperties;
 	public CoordinateProperties showCoordinateProperties;
 
 	/** Constructor */
 	public EnergyDensity2DGLPanel(SimulationAnimation simulationAnimation) {
 		super(simulationAnimation);
+		typeProperties = new ComboBoxProperties(simulationAnimation, "Type", typeLabel, 0);
 		scaleProperties = new ScaleProperties(simulationAnimation);
 		scaleProperties.setAutomaticScaling(true);
 		showCoordinateProperties = new CoordinateProperties(simulationAnimation, CoordinateProperties.Mode.MODE_2D);
@@ -66,11 +81,10 @@ public class EnergyDensity2DGLPanel extends AnimationGLPanel {
 		/** Scaling factor for the displayed panel in y-direction*/
 		double sy = height / s.getSimulationBoxSize(yAxisIndex);
 
-		// Lattice spacing and coupling constant
-		double as = s.grid.getLatticeSpacing();
-		double g = s.getCouplingConstant();
+		double[] color = new double[3];
 
-		double colors = s.grid.getNumberOfColors();
+		int typeIndex = typeProperties.getIndex();
+
 		for(int i = 0; i < s.grid.getNumCells(xAxisIndex); i++) {
 
 			gl2.glBegin( GL2.GL_QUAD_STRIP );
@@ -86,49 +100,34 @@ public class EnergyDensity2DGLPanel extends AnimationGLPanel {
 				pos[yAxisIndex] = k;
 				int index = s.grid.getCellIndex(pos);
 
-				double EfieldSquared = 0.0;
-				double BfieldSquared = 0.0;
-				double red = 0;
-				double green = 0;
-				double blue = 0;
+				double value = 0.0;
+				color[RED] = 0.0;
+				color[GREEN] = 0.0;
+				color[BLUE] = 0.0;
 				if(s.grid.isEvaluatable(index)) {
-					for (int w = 0; w < s.getNumberOfDimensions(); w++) {
-						EfieldSquared += s.grid.getEsquaredFromLinks(index, w) / (as * g * as * g) / 2;
-						// Time averaging for B field.
-						BfieldSquared += s.grid.getBsquaredFromLinks(index, w, 0) / (as * g * as * g) / 4.0;
-						BfieldSquared += s.grid.getBsquaredFromLinks(index, w, 1) / (as * g * as * g) / 4.0;
-						// get color:
-						double color;
-						for (int n = 0; n < colors * colors - 1; n++) {
-							color = s.grid.getE(index, w).get(n);
-							// cycle through colors if there are more than three
-							switch (n % 3) {
-								case 0:
-									red += color * color;
-									break;
-								case 1:
-									green += color * color;
-									break;
-								case 2:
-									blue += color * color;
-									break;
-							}
-						}
+					switch(typeIndex) {
+					case INDEX_ENERGY_DENSITY:
+						value = getEnergyDensity(s, index);
+						break;
+					case INDEX_ENERGY_DENSITY_CHANGE:
+						value = 0;
+						break;
 					}
+					getColorFromEField(s, index, color);
 				}
 				// Normalize
-				double norm = Math.max(red + green + blue, 10E-20);
-				double value = Math.min(1, scale * (EfieldSquared + BfieldSquared));
+				double norm = Math.max(color[RED] + color[GREEN] + color[BLUE], 10E-20);
+				double limitedValue = Math.min(1, scale * Math.abs(value));
 
 				// Set color according to E-field, and brightness according
 				// to total energy density:
-				red = Math.sqrt(red / norm) * value;
-				green = Math.sqrt(green / norm) * value;
-				blue = Math.sqrt(blue / norm) * value;
+				color[RED] = Math.sqrt(color[RED] / norm) * limitedValue;
+				color[GREEN] = Math.sqrt(color[GREEN] / norm) * limitedValue;
+				color[BLUE] = Math.sqrt(color[BLUE] / norm) * limitedValue;
 
-				scaleProperties.putValue(EfieldSquared + BfieldSquared);
+				scaleProperties.putValue(value);
 
-				gl2.glColor3d( red, green, blue );
+				gl2.glColor3d( color[RED], color[GREEN], color[BLUE] );
 				gl2.glVertex2f( xstart2, ystart2 );
 				gl2.glVertex2f( xstart3, ystart2 );
 			}
@@ -137,8 +136,49 @@ public class EnergyDensity2DGLPanel extends AnimationGLPanel {
 		scaleProperties.calculateAutomaticScale(1.0);
 	}
 
+	private double getEnergyDensity(Simulation s, int index) {
+		double value = 0.0;
+
+		// Lattice spacing and coupling constant
+		double as = s.grid.getLatticeSpacing();
+		double g = s.getCouplingConstant();
+
+		for (int w = 0; w < s.getNumberOfDimensions(); w++) {
+			value += s.grid.getEsquaredFromLinks(index, w);
+			// Time averaging for B field.
+			value += 0.5 * s.grid.getBsquaredFromLinks(index, w, 0);
+			value += 0.5 * s.grid.getBsquaredFromLinks(index, w, 1);
+		};
+		return value / (as * g * as * g) / 2;
+	}
+
+	private void getColorFromEField(Simulation s, int index,
+			double[] color) {
+		int colors = s.grid.getNumberOfColors();
+		for (int w = 0; w < s.getNumberOfDimensions(); w++) {
+			// get color:
+			double c;
+			for (int n = 0; n < colors * colors - 1; n++) {
+				c = s.grid.getE(index, w).get(n);
+				// cycle through colors if there are more than three
+				switch (n % 3) {
+					case 0:
+						color[RED] += c * c;
+						break;
+					case 1:
+						color[GREEN] += c * c;
+						break;
+					case 2:
+						color[BLUE] += c * c;
+						break;
+				}
+			}
+		}
+	}
+
 	public void addPropertyComponents(Box box) {
 		addLabel(box, "Energy density 2D (OpenGL) panel");
+		typeProperties.addComponents(box);
 		scaleProperties.addComponents(box);
 		showCoordinateProperties.addComponents(box);
 	}
