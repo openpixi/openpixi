@@ -203,6 +203,8 @@ public class EnergyDensity2DGLPanel extends AnimationGLPanel {
 	}
 
 	private double getNablaPoyntingVector(Simulation s, int index) {
+		double as = s.grid.getLatticeSpacing();
+
 		double value = 0;
 		if (s.getNumberOfDimensions() != 3) {
 			throw new RuntimeException("Dimension other than 3 has not been implemented yet.");
@@ -217,10 +219,13 @@ public class EnergyDensity2DGLPanel extends AnimationGLPanel {
 			value += getPoyntingVector(s, indexShifted, direction)
 					- getPoyntingVector(s, index, direction);
 		}
-		return value;
+		return value / as;
 	}
 
 	private double getPoyntingVector(Simulation s, int index, int direction) {
+		double as = s.grid.getLatticeSpacing();
+		double g = s.getCouplingConstant();
+
 		// Indices for cross product:
 		int dir1 = (direction + 1) % 3;
 		int dir2 = (direction + 2) % 3;
@@ -232,7 +237,7 @@ public class EnergyDensity2DGLPanel extends AnimationGLPanel {
 		AlgebraElement B1 = s.grid.getB(index, dir1, 0).add(s.grid.getB(index, dir1, 1)).mult(0.5);
 		AlgebraElement B2 = s.grid.getB(index, dir2, 0).add(s.grid.getB(index, dir2, 1)).mult(0.5);
 		double S = E1.mult(B2) - E2.mult(B1);
-		return S;
+		return S / (as * g * as * g);
 	}
 
 	private void getColorFromEField(Simulation s, int index,
