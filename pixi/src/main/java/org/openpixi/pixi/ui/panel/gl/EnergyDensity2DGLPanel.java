@@ -35,21 +35,26 @@ import org.openpixi.pixi.ui.panel.properties.ScaleProperties;
  */
 public class EnergyDensity2DGLPanel extends AnimationGLPanel {
 
-	public final int INDEX_ENERGY_DENSITY = 0;
-	public final int INDEX_ENERGY_DENSITY_CHANGE = 1;
+	public static final int INDEX_ENERGY_DENSITY = 0;
+	public static final int INDEX_ENERGY_DENSITY_DERIVATIVE = 1;
 
 	String[] typeLabel = new String[] {
 			"Energy density",
 			"dE/dt"
 	};
 
-	public final int RED = 0;
-	public final int GREEN = 1;
-	public final int BLUE = 2;
+	public static final int RED = 0;
+	public static final int GREEN = 1;
+	public static final int BLUE = 2;
 
 	public ComboBoxProperties typeProperties;
 	public ScaleProperties scaleProperties;
 	public CoordinateProperties showCoordinateProperties;
+
+	private double[] oldEnergyDensity;
+	private int[] oldTime;
+	private double[] currentEnergyDensity;
+	private int[] currentTime;
 
 	/** Constructor */
 	public EnergyDensity2DGLPanel(SimulationAnimation simulationAnimation) {
@@ -100,17 +105,17 @@ public class EnergyDensity2DGLPanel extends AnimationGLPanel {
 				pos[yAxisIndex] = k;
 				int index = s.grid.getCellIndex(pos);
 
-				double value = 0.0;
-				color[RED] = 0.0;
-				color[GREEN] = 0.0;
-				color[BLUE] = 0.0;
+				double value = 0;
+				color[RED] = 0;
+				color[GREEN] = 0;
+				color[BLUE] = 0;
 				if(s.grid.isEvaluatable(index)) {
 					switch(typeIndex) {
 					case INDEX_ENERGY_DENSITY:
 						value = getEnergyDensity(s, index);
 						break;
-					case INDEX_ENERGY_DENSITY_CHANGE:
-						value = 0;
+					case INDEX_ENERGY_DENSITY_DERIVATIVE:
+						value = getEnergyDensityDerivative(s, index);
 						break;
 					}
 					getColorFromEField(s, index, color);
@@ -137,7 +142,7 @@ public class EnergyDensity2DGLPanel extends AnimationGLPanel {
 	}
 
 	private double getEnergyDensity(Simulation s, int index) {
-		double value = 0.0;
+		double value = 0;
 
 		// Lattice spacing and coupling constant
 		double as = s.grid.getLatticeSpacing();
@@ -150,6 +155,39 @@ public class EnergyDensity2DGLPanel extends AnimationGLPanel {
 			value += 0.5 * s.grid.getBsquaredFromLinks(index, w, 1);
 		};
 		return value / (as * g * as * g) / 2;
+	}
+
+	private double getEnergyDensityDerivative(Simulation s, int index) {
+		double value = 0;
+		if (oldEnergyDensity == null
+				|| index > oldEnergyDensity.length) {
+			// Initialize arrays
+			int cells = s.grid.getTotalNumberOfCells();
+			oldEnergyDensity = new double[cells];
+			oldTime = new int[cells];
+			currentEnergyDensity = new double[cells];
+			currentTime = new int[cells];
+		}
+		if (currentTime[index] > s.totalSimulationSteps) {
+			// Reset values (in case of a simulation reset)
+			oldEnergyDensity[index] = 0;
+			oldTime[index] = 0;
+			currentEnergyDensity[index] = getEnergyDensity(s, index);
+			currentTime[index] = s.totalSimulationSteps;
+		}
+		if (currentTime[index] < s.totalSimulationSteps) {
+			// Update values
+			oldEnergyDensity[index] = currentEnergyDensity[index];
+			oldTime[index] = currentTime[index];
+			currentEnergyDensity[index] = getEnergyDensity(s, index);
+			currentTime[index] = s.totalSimulationSteps;
+		}
+		if (oldTime[index] != 0) {
+			// Calculate derivative
+			double deltaTime = (currentTime[index] - oldTime[index]) * s.tstep;
+			value = (currentEnergyDensity[index] - oldEnergyDensity[index]) / deltaTime;
+		}
+		return value;
 	}
 
 	private void getColorFromEField(Simulation s, int index,
