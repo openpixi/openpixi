@@ -23,6 +23,7 @@ import javax.media.opengl.GL2;
 import javax.media.opengl.GLAutoDrawable;
 import javax.swing.Box;
 
+import org.openpixi.pixi.math.AlgebraElement;
 import org.openpixi.pixi.physics.Simulation;
 import org.openpixi.pixi.ui.SimulationAnimation;
 import org.openpixi.pixi.ui.panel.properties.ComboBoxProperties;
@@ -37,10 +38,12 @@ public class EnergyDensity2DGLPanel extends AnimationGLPanel {
 
 	public static final int INDEX_ENERGY_DENSITY = 0;
 	public static final int INDEX_ENERGY_DENSITY_DERIVATIVE = 1;
+	public static final int INDEX_ENERGY_DENSITY_DERIVATIVE_POYNTING = 2;
 
 	String[] typeLabel = new String[] {
 			"Energy density",
-			"dE/dt"
+			"dE/dt",
+			"dE/dt + nabla S"
 	};
 
 	public static final int RED = 0;
@@ -117,6 +120,10 @@ public class EnergyDensity2DGLPanel extends AnimationGLPanel {
 					case INDEX_ENERGY_DENSITY_DERIVATIVE:
 						value = getEnergyDensityDerivative(s, index);
 						break;
+					case INDEX_ENERGY_DENSITY_DERIVATIVE_POYNTING:
+						value = getEnergyDensityDerivative(s, index)
+							+ getNablaPoyntingVector(s, index);
+						break;
 					}
 					getColorFromEField(s, index, color);
 				}
@@ -188,6 +195,39 @@ public class EnergyDensity2DGLPanel extends AnimationGLPanel {
 			value = (currentEnergyDensity[index] - oldEnergyDensity[index]) / deltaTime;
 		}
 		return value;
+	}
+
+	private double getNablaPoyntingVector(Simulation s, int index) {
+		double value = 0;
+		if (s.getNumberOfDimensions() != 3) {
+			throw new RuntimeException("Dimension other than 3 has not been implemented yet.");
+			// TODO: Implement for arbitrary dimensions
+			// return 0;
+		}
+		for (int direction = 0; direction < s.grid.getNumberOfDimensions(); direction++) {
+			int indexShifted = s.grid.shift(index, direction, 1);
+			if (!s.grid.isEvaluatable(indexShifted)) {
+				return 0;
+			}
+			value += getPoyntingVector(s, indexShifted, direction)
+					- getPoyntingVector(s, index, direction);
+		}
+		return value;
+	}
+
+	private double getPoyntingVector(Simulation s, int index, int direction) {
+		// Indices for cross product:
+		int id1 = (index + 1) % 3;
+		int id2 = (index + 2) % 3;
+
+		// fields at same time:
+		AlgebraElement E1 = s.grid.getE(index, id1);
+		AlgebraElement E2 = s.grid.getE(index, id2);
+		// time averaged B-field:
+		AlgebraElement B1 = s.grid.getB(index, id1, 0).add(s.grid.getB(index, id1, 1)).mult(0.5);
+		AlgebraElement B2 = s.grid.getB(index, id2, 0).add(s.grid.getB(index, id2, 1)).mult(0.5);
+		double S = E1.mult(B2) - E2.mult(B1);
+		return S;
 	}
 
 	private void getColorFromEField(Simulation s, int index,
