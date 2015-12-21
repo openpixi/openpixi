@@ -39,32 +39,19 @@ public class CGCParticleInterpolationCIC implements  InterpolatorAlgorithm {
 
 		if(longitudinalIndexOld == longitudinalIndexNew) {
 			// One-cell move
-			AlgebraElement J;
-			GroupElement U0, U1;
-			// Parallel transport to the left cell.
-			double d0 = P.pos0[direction] / as - longitudinalIndexOld;
-			if(d0 > 0.5) {
-				U0 = g.getUnext(cellIndexOld, direction);
-			} else {
-				U0 = identity;
-			}
-			double d1 = P.pos1[direction] / as - longitudinalIndexOld;
-			if(d1 > 0.5) {
-				U1 = g.getUnext(cellIndexOld, direction);
-			} else {
-				U1 = identity;
-			}
-
-			// This works only for particles moving at c.
-			if(P.pos1[direction] > P.pos0[direction]) {
-				J = P.Q0.act(U0);
-			} else {
-				J = P.Q1.act(U1).mult(-1.0);
-			}
-			g.addJ(cellIndexNew, direction, J);
+			oneCellMove(P, g, longitudinalIndexOld, cellIndexOld);
 		} else {
 			if(longitudinalIndexOld < longitudinalIndexNew) {
 				// Two-cell move to the right
+				CGCParticle first = (CGCParticle) P.copy();
+				CGCParticle second = (CGCParticle) P.copy();
+				first.pos1[direction] = longitudinalIndexNew*as;
+				second.pos0[direction] = longitudinalIndexNew*as;
+				second.Q0.set(P.Q1.copy());
+
+				//oneCellMove(first, g, longitudinalIndexOld, cellIndexOld);
+				//oneCellMove(second, g, longitudinalIndexNew, cellIndexNew);
+
 				// Parallel transport to the left cell.
 				double d0 = longitudinalIndexNew - (P.pos0[direction] / as);
 				GroupElement U0 = g.getUnext(cellIndexOld, direction);
@@ -80,6 +67,15 @@ public class CGCParticleInterpolationCIC implements  InterpolatorAlgorithm {
 
 			} else {
 				// Two-cell move to the left
+				CGCParticle first = (CGCParticle) P.copy();
+				CGCParticle second = (CGCParticle) P.copy();
+				first.pos1[direction] = longitudinalIndexOld*as;
+				second.pos0[direction] = longitudinalIndexOld*as;
+				first.Q1.set(P.Q0.copy());
+
+				//oneCellMove(first, g, longitudinalIndexOld, cellIndexOld);
+				//oneCellMove(second, g, longitudinalIndexNew, cellIndexNew);
+
 				// Parallel transport to the right cell.
 				double d0 = (P.pos0[direction] / as) - longitudinalIndexOld;
 				GroupElement U0 = identity;
@@ -92,6 +88,7 @@ public class CGCParticleInterpolationCIC implements  InterpolatorAlgorithm {
 				AlgebraElement J1 = P.Q1.act(U1).mult(- a * d1); // current at new position
 				g.addJ(cellIndexOld, direction, J0);
 				g.addJ(cellIndexNew, direction, J1);
+
 			}
 		}
 	}
@@ -168,5 +165,37 @@ public class CGCParticleInterpolationCIC implements  InterpolatorAlgorithm {
 				P.U = g.getUnext(cellIndexNew, direction).adj();
 			}
 		}
+	}
+
+	private void oneCellMove(CGCParticle P, Grid g, int longitudinalIndexOld, int cellIndexOld) {
+		double as = g.getLatticeSpacing();
+		double dt = g.getTemporalSpacing();
+		double a = as / dt;
+		int direction = P.direction;
+		double dist = Math.abs(P.pos1[direction] - P.pos0[direction])/as;
+		GroupElement identity = g.getElementFactory().groupIdentity();
+		AlgebraElement J;
+		GroupElement U0, U1;
+		// Parallel transport to the left cell.
+		double d0 = P.pos0[direction] / as - longitudinalIndexOld;
+		if(d0 > 0.5) {
+			U0 = g.getUnext(cellIndexOld, direction);
+		} else {
+			U0 = identity;
+		}
+		double d1 = P.pos1[direction] / as - longitudinalIndexOld;
+		if(d1 > 0.5) {
+			U1 = g.getUnext(cellIndexOld, direction);
+		} else {
+			U1 = identity;
+		}
+
+		// This works only for particles moving at c.
+		if(P.pos1[direction] > P.pos0[direction]) {
+			J = P.Q0.act(U0).mult(a*dist);
+		} else {
+			J = P.Q1.act(U1).mult(-a*dist);
+		}
+		g.addJ(cellIndexOld, direction, J);
 	}
 }
