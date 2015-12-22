@@ -41,7 +41,7 @@ public class EnergyDensity2DGLPanel extends AnimationGLPanel {
 	public static final int INDEX_NABLA_POYNTING = 2;
 	public static final int INDEX_ENERGY_DENSITY_DERIVATIVE_NABLA_POYNTING = 3;
 
-	String[] typeLabel = new String[] {
+	String[] dataLabel = new String[] {
 			"Energy density",
 			"dE/dt",
 			"nabla S",
@@ -52,7 +52,7 @@ public class EnergyDensity2DGLPanel extends AnimationGLPanel {
 	public static final int GREEN = 1;
 	public static final int BLUE = 2;
 
-	public ComboBoxProperties typeProperties;
+	public ComboBoxProperties dataProperties;
 	public ScaleProperties scaleProperties;
 	public CoordinateProperties showCoordinateProperties;
 
@@ -64,7 +64,7 @@ public class EnergyDensity2DGLPanel extends AnimationGLPanel {
 	/** Constructor */
 	public EnergyDensity2DGLPanel(SimulationAnimation simulationAnimation) {
 		super(simulationAnimation);
-		typeProperties = new ComboBoxProperties(simulationAnimation, "Type", typeLabel, 0);
+		dataProperties = new ComboBoxProperties(simulationAnimation, "Data", dataLabel, 0);
 		scaleProperties = new ScaleProperties(simulationAnimation);
 		scaleProperties.setAutomaticScaling(true);
 		showCoordinateProperties = new CoordinateProperties(simulationAnimation, CoordinateProperties.Mode.MODE_2D);
@@ -93,7 +93,7 @@ public class EnergyDensity2DGLPanel extends AnimationGLPanel {
 
 		double[] color = new double[3];
 
-		int typeIndex = typeProperties.getIndex();
+		int dataIndex = dataProperties.getIndex();
 
 		for(int i = 0; i < s.grid.getNumCells(xAxisIndex); i++) {
 
@@ -115,7 +115,7 @@ public class EnergyDensity2DGLPanel extends AnimationGLPanel {
 				color[GREEN] = 0;
 				color[BLUE] = 0;
 				if(s.grid.isEvaluatable(index)) {
-					switch(typeIndex) {
+					switch(dataIndex) {
 					case INDEX_ENERGY_DENSITY:
 						value = getEnergyDensity(s, index);
 						break;
@@ -270,7 +270,7 @@ public class EnergyDensity2DGLPanel extends AnimationGLPanel {
 
 	public void addPropertyComponents(Box box) {
 		addLabel(box, "Energy density 2D (OpenGL) panel");
-		typeProperties.addComponents(box);
+		dataProperties.addComponents(box);
 		scaleProperties.addComponents(box);
 		showCoordinateProperties.addComponents(box);
 	}
