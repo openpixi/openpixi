@@ -83,7 +83,7 @@ public class MainBatch {
 				}
 			}
 		}
-		return;
+		System.exit(0);
 	}
 
 	public static void runSimulationFromString(String configurationString) {
