@@ -810,8 +810,8 @@ public class Grid {
 			break;
 
 		case 1:
-			j = 0;
-			k = 2;
+			j = 2;
+			k = 0;
 			break;
 
 		case 2:
