@@ -69,7 +69,11 @@ public class MainBatch {
 					}
 				} else if(file.isDirectory()){
 					System.out.println("Loading configuration files from " + file.getPath());
-					File[] listOfFiles = file.listFiles();
+					FilenameFilter filter = new FilenameFilter() {
+						public boolean accept(File dir, String name) {
+							return name.toLowerCase().endsWith(".yaml");
+						}};
+					File[] listOfFiles = file.listFiles(filter);
 					for(File f : listOfFiles) {
 						try {
 							System.out.println("Running " + f.getPath());
