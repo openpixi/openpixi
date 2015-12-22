@@ -61,7 +61,7 @@ public class PlanarFields implements Diagnostics {
 		if(steps > startingStep) {
 			if (steps % stepInterval == 0) {
 				// do stuff
-
+				double normalizationFactor = 1.0 / s.getCouplingConstant() * grid.getLatticeSpacing();
 				AlgebraElement[][]  transverseGaugeFields = new AlgebraElement[effDimensions][totalTransCells];
 				AlgebraElement[]  longitudinalElectricFields = new AlgebraElement[totalTransCells];
 				for (int i = 0; i < totalTransCells; i++) {
@@ -71,9 +71,9 @@ public class PlanarFields implements Diagnostics {
 					int ts = 0;
 					for (int j = 0; j < effDimensions; j++) {
 						if(j == direction) {
-							longitudinalElectricFields[i] = grid.getE(cellIndex, j);
+							longitudinalElectricFields[i] = grid.getE(cellIndex, j).mult(normalizationFactor);
 						} else {
-							transverseGaugeFields[ts][i] = grid.getLink(cellIndex, j, 1, 0).getAlgebraElement();
+							transverseGaugeFields[ts][i] = grid.getLink(cellIndex, j, 1, 0).getAlgebraElement().mult(normalizationFactor);
 							ts++;
 						}
 					}

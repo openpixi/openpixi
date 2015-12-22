@@ -91,6 +91,7 @@ public class DualMVModel implements ICurrentGenerator {
 		// Compute boost-invariant initial conditions. Note: this only works for SU2.
 		if(createInitialConditionsOutput && s.getNumberOfColors() == 2) {
 
+			double normalizationFactor = 1.0 / s.getCouplingConstant() * s.grid.getLatticeSpacing();
 			int[] transNumCells = GridFunctions.reduceGridPos(s.grid.getNumCells(), direction);
 			int transverseNumberOfCells = GridFunctions.getTotalNumberOfCells(transNumCells);
 			int effDimensions = GridFunctions.getEffectiveNumberOfDimensions(s.grid.getNumCells());
@@ -122,7 +123,7 @@ public class DualMVModel implements ICurrentGenerator {
 						SU2GroupElement sumInv = ((SU2GroupElement) sum.adj()).inv();
 
 						transverseLinks[ts][i] = (SU2GroupElement) sum.mult(sumInv);
-						transverseFields[ts][i] = (SU2AlgebraElement) transverseLinks[ts][i].getAlgebraElement();
+						transverseFields[ts][i] = (SU2AlgebraElement) transverseLinks[ts][i].getAlgebraElement().mult(normalizationFactor);
 						ts++;
 					}
 				}
@@ -152,7 +153,7 @@ public class DualMVModel implements ICurrentGenerator {
 					}
 				}
 
-				longitudinalFields[i] = (SU2AlgebraElement) temp.proj().mult(1.0 / (2.0 * g));
+				longitudinalFields[i] = (SU2AlgebraElement) temp.proj().mult(normalizationFactor / (2.0 * g));
 			}
 
 			// File output ((d-1)x3 transversal gauge field components, 1x3 longitudinal electric field component)
