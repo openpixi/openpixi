@@ -212,14 +212,18 @@ public class EnergyDensity2DGLPanel extends AnimationGLPanel {
 			// return 0;
 		}
 		for (int direction = 0; direction < s.grid.getNumberOfDimensions(); direction++) {
-			int indexShifted = s.grid.shift(index, direction, 1);
-			if (!s.grid.isEvaluatable(indexShifted)) {
+			int indexShifted1 = s.grid.shift(index, direction, 1);
+			if (!s.grid.isEvaluatable(indexShifted1)) {
 				return 0;
 			}
-			value += getPoyntingVector(s, indexShifted, direction)
-					- getPoyntingVector(s, index, direction);
+			int indexShifted2 = s.grid.shift(index, direction, -1);
+			if (!s.grid.isEvaluatable(indexShifted2)) {
+				return 0;
+			}
+			value += getPoyntingVector(s, indexShifted1, direction)
+					- getPoyntingVector(s, indexShifted2, direction);
 		}
-		return value / as;
+		return value / (2*as);
 	}
 
 	private double getPoyntingVector(Simulation s, int index, int direction) {
