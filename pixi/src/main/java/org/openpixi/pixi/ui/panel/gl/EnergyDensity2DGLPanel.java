@@ -40,12 +40,16 @@ public class EnergyDensity2DGLPanel extends AnimationGLPanel {
 	public static final int INDEX_ENERGY_DENSITY_DERIVATIVE = 1;
 	public static final int INDEX_NABLA_POYNTING = 2;
 	public static final int INDEX_ENERGY_DENSITY_DERIVATIVE_NABLA_POYNTING = 3;
+	public static final int INDEX_CURRENT_ELECTRIC_FIELD = 4;
+	public static final int INDEX_ENERGY_DENSITY_DERIVATIVE_NABLA_POYNTING_CURRENT = 5;
 
 	String[] dataLabel = new String[] {
 			"Energy density",
 			"dE/dt",
 			"nabla S",
-			"dE/dt + nabla S"
+			"dE/dt + nabla S",
+			"j*E",
+			"dE/dt + nabla S + j*E"
 	};
 
 	public static final int RED = 0;
@@ -128,6 +132,14 @@ public class EnergyDensity2DGLPanel extends AnimationGLPanel {
 					case INDEX_ENERGY_DENSITY_DERIVATIVE_NABLA_POYNTING:
 						value = getEnergyDensityDerivative(s, index)
 							+ getNablaPoyntingVector(s, index);
+						break;
+					case INDEX_CURRENT_ELECTRIC_FIELD:
+						value = getCurrentElectricField(s, index);
+						break;
+					case INDEX_ENERGY_DENSITY_DERIVATIVE_NABLA_POYNTING_CURRENT:
+						value = getEnergyDensityDerivative(s, index)
+							+ getNablaPoyntingVector(s, index)
+							+ getCurrentElectricField(s, index);
 						break;
 					}
 					getColorFromEField(s, index, color);
@@ -242,6 +254,20 @@ public class EnergyDensity2DGLPanel extends AnimationGLPanel {
 		AlgebraElement B2 = s.grid.getB(index, dir2, 0).add(s.grid.getB(index, dir2, 1)).mult(0.5);
 		double S = E1.mult(B2) - E2.mult(B1);
 		return S / (as * g * as * g);
+	}
+
+	private double getCurrentElectricField(Simulation s, int index) {
+		double as = s.grid.getLatticeSpacing();
+		double g = s.getCouplingConstant();
+
+		double value = 0;
+
+		for (int direction = 0; direction < s.grid.getNumberOfDimensions(); direction++) {
+			AlgebraElement J = s.grid.getJ(index, direction);
+			AlgebraElement E = s.grid.getE(index, direction);
+			value += J.mult(E);
+		}
+		return value / (as * g * as * g);
 	}
 
 	private void getColorFromEField(Simulation s, int index,
