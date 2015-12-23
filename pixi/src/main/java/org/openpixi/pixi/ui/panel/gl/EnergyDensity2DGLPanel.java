@@ -127,18 +127,18 @@ public class EnergyDensity2DGLPanel extends AnimationGLPanel {
 						value = getEnergyDensityDerivative(s, index);
 						break;
 					case INDEX_NABLA_POYNTING:
-						value = getNablaPoyntingVector(s, index);
+						value = getNablaPoyntingVector2(s, index);
 						break;
 					case INDEX_ENERGY_DENSITY_DERIVATIVE_NABLA_POYNTING:
 						value = getEnergyDensityDerivative(s, index)
-							+ getNablaPoyntingVector(s, index);
+							+ getNablaPoyntingVector2(s, index);
 						break;
 					case INDEX_CURRENT_ELECTRIC_FIELD:
 						value = getCurrentElectricField(s, index);
 						break;
 					case INDEX_ENERGY_DENSITY_DERIVATIVE_NABLA_POYNTING_CURRENT:
 						value = getEnergyDensityDerivative(s, index)
-							+ getNablaPoyntingVector(s, index)
+							+ getNablaPoyntingVector2(s, index)
 							+ getCurrentElectricField(s, index);
 						break;
 					}
@@ -254,6 +254,94 @@ public class EnergyDensity2DGLPanel extends AnimationGLPanel {
 		AlgebraElement B2 = s.grid.getB(index, dir2, 0).add(s.grid.getB(index, dir2, 1)).mult(0.5);
 		double S = E1.mult(B2) - E2.mult(B1);
 		return S / (as * g * as * g);
+	}
+
+	private double getNablaPoyntingVector2(Simulation s, int index) {
+		double as = s.grid.getLatticeSpacing();
+		double g = s.getCouplingConstant();
+
+		double value = 0;
+		if (s.getNumberOfDimensions() != 3) {
+			throw new RuntimeException("Dimension other than 3 has not been implemented yet.");
+			// TODO: Implement for arbitrary dimensions
+			// return 0;
+		}
+		for (int direction = 0; direction < s.grid.getNumberOfDimensions(); direction++) {
+			AlgebraElement E = s.grid.getE(index, direction);
+			AlgebraElement rotE = rotE(s, index, direction);
+			// time averaged B-fields:
+			AlgebraElement B = (s.grid.getB(index, direction, 0).add(s.grid.getB(index, direction, 0))).mult(0.5);
+			AlgebraElement rotB = (rotB(s, index, direction, 0).add(rotB(s, index, direction, 1))).mult(0.5);
+
+			value += E.mult(rotB) - B.mult(rotE);
+		}
+		return value / (as * g);
+	}
+
+	private AlgebraElement rotB(Simulation s, int index, int direction, int timeIndex) {
+		double as = s.grid.getLatticeSpacing();
+		double g = s.getCouplingConstant();
+
+		// Indices for cross product:
+		int dir1 = (direction + 1) % 3;
+		int dir2 = (direction + 2) % 3;
+
+		int indexShifted1 = s.grid.shift(index, dir1, -1);
+		if (!s.grid.isEvaluatable(indexShifted1)) {
+			//return 0;
+		}
+
+		int indexShifted2 = s.grid.shift(index, dir2, -1);
+		if (!s.grid.isEvaluatable(indexShifted2)) {
+			//return 0;
+		}
+
+		AlgebraElement By1 = s.grid.getB(index, dir1, timeIndex);
+		AlgebraElement By2 = s.grid.getB(indexShifted2, dir1, timeIndex);
+		AlgebraElement Bz1 = s.grid.getB(index, dir2, timeIndex);
+		AlgebraElement Bz2 = s.grid.getB(indexShifted1, dir2, timeIndex);
+
+		// By2 - By1
+		AlgebraElement dBy = (By2.add(By1.mult(-1)));
+
+		// Bz2 - Bz1
+		AlgebraElement dBz = (Bz2.add(Bz1.mult(-1)));
+
+		// dBy - dBz
+		return (dBy.add(dBz.mult(-1))).mult(-1 / (as * as * g));
+	}
+
+	private AlgebraElement rotE(Simulation s, int index, int direction) {
+		double as = s.grid.getLatticeSpacing();
+		double g = s.getCouplingConstant();
+
+		// Indices for cross product:
+		int dir1 = (direction + 1) % 3;
+		int dir2 = (direction + 2) % 3;
+
+		int indexShifted1 = s.grid.shift(index, dir1, 1);
+		if (!s.grid.isEvaluatable(indexShifted1)) {
+			//return 0;
+		}
+
+		int indexShifted2 = s.grid.shift(index, dir2, 1);
+		if (!s.grid.isEvaluatable(indexShifted2)) {
+			//return 0;
+		}
+
+		AlgebraElement Ey1 = s.grid.getE(index, dir1);
+		AlgebraElement Ey2 = s.grid.getE(indexShifted2, dir1);
+		AlgebraElement Ez1 = s.grid.getE(index, dir2);
+		AlgebraElement Ez2 = s.grid.getE(indexShifted1, dir2);
+
+		// Ey2 - Ey1
+		AlgebraElement dEy = (Ey2.add(Ey1.mult(-1)));
+
+		// Ez2 - Ez1
+		AlgebraElement dEz = (Ez2.add(Ez1.mult(-1)));
+
+		// dEy - dEz
+		return (dEy.add(dEz.mult(-1))).mult(1 / (as * as * g));
 	}
 
 	private double getCurrentElectricField(Simulation s, int index) {
