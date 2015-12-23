@@ -14,6 +14,11 @@ public class YamlPlanarFields {
 	public Double startingTime;
 
 	/**
+	 * Measurement stopping time.
+	 */
+	public Double finalTime;
+
+	/**
 	 * Output file path.
 	 */
 	public String path;
@@ -30,6 +35,14 @@ public class YamlPlanarFields {
 
 
 	public PlanarFields getFileGenerator() {
-		return new PlanarFields(interval, path, startingTime, direction, planarIndex);
+		if(startingTime == null) {
+			startingTime = 0.0;
+		}
+
+		if(finalTime == null) {
+			finalTime = Double.MAX_VALUE;
+		}
+
+		return new PlanarFields(interval, path, startingTime, finalTime, direction, planarIndex);
 	}
 }

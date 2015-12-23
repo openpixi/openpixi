@@ -20,6 +20,8 @@ public class PlanarFields implements Diagnostics {
 	private String outputName;
 	private double startingTime;
 	private int startingStep;
+	private double finalTime;
+	private int finalStep;
 
 	private int direction;
 	private int planarIndex;
@@ -32,13 +34,13 @@ public class PlanarFields implements Diagnostics {
 	private Simulation s;
 	private int numberOfComponents;
 
-	public PlanarFields(double timeInterval, String outputName, double startingTime, int direction, int planarIndex) {
+	public PlanarFields(double timeInterval, String outputName, double startingTime, double finalTime, int direction, int planarIndex) {
 		this.timeInterval = timeInterval;
 		this.outputName = outputName;
 		this.startingTime =  startingTime;
+		this.finalTime = finalTime;
 		this.direction = direction;
 		this.planarIndex = planarIndex;
-
 
 	}
 
@@ -51,6 +53,7 @@ public class PlanarFields implements Diagnostics {
 
 		this.stepInterval = (int) (timeInterval / s.getTimeStep());
 		this.startingStep = (int) (startingTime / s.getTimeStep());
+		this.finalStep = (int) (finalTime / s.getTimeStep());
 		this.effDimensions = GridFunctions.getEffectiveNumberOfDimensions(s.grid.getNumCells());
 
 		this.numberOfComponents = s.grid.getElementFactory().numberOfComponents;
@@ -58,7 +61,7 @@ public class PlanarFields implements Diagnostics {
 
 
 	public void calculate(Grid grid, ArrayList<IParticle> particles, int steps) throws IOException {
-		if(steps > startingStep) {
+		if(steps > startingStep && steps < finalStep) {
 			if (steps % stepInterval == 0) {
 				// do stuff
 				double normalizationFactor = 1.0 / s.getCouplingConstant() * grid.getLatticeSpacing();
