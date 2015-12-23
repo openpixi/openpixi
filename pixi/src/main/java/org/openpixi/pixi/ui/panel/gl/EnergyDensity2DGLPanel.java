@@ -267,11 +267,19 @@ public class EnergyDensity2DGLPanel extends AnimationGLPanel {
 			// return 0;
 		}
 		for (int direction = 0; direction < s.grid.getNumberOfDimensions(); direction++) {
-			AlgebraElement E = s.grid.getE(index, direction);
 			AlgebraElement rotE = rotE(s, index, direction);
+			AlgebraElement rotB0 = rotB(s, index, direction, 0);
+			AlgebraElement rotB1 = rotB(s, index, direction, 1);
+
+			if (rotE == null || rotB0 == null || rotB1 == null) {
+				// One of the neighbouring cells is not evaluatable.
+				return 0;
+			}
+
+			AlgebraElement E = s.grid.getE(index, direction);
 			// time averaged B-fields:
 			AlgebraElement B = (s.grid.getB(index, direction, 0).add(s.grid.getB(index, direction, 0))).mult(0.5);
-			AlgebraElement rotB = (rotB(s, index, direction, 0).add(rotB(s, index, direction, 1))).mult(0.5);
+			AlgebraElement rotB = (rotB0.add(rotB1)).mult(0.5);
 
 			value += E.mult(rotB) - B.mult(rotE);
 		}
@@ -288,12 +296,12 @@ public class EnergyDensity2DGLPanel extends AnimationGLPanel {
 
 		int indexShifted1 = s.grid.shift(index, dir1, -1);
 		if (!s.grid.isEvaluatable(indexShifted1)) {
-			//return 0;
+			return null;
 		}
 
 		int indexShifted2 = s.grid.shift(index, dir2, -1);
 		if (!s.grid.isEvaluatable(indexShifted2)) {
-			//return 0;
+			return null;
 		}
 
 		AlgebraElement By1 = s.grid.getB(index, dir1, timeIndex);
@@ -321,12 +329,12 @@ public class EnergyDensity2DGLPanel extends AnimationGLPanel {
 
 		int indexShifted1 = s.grid.shift(index, dir1, 1);
 		if (!s.grid.isEvaluatable(indexShifted1)) {
-			//return 0;
+			return null;
 		}
 
 		int indexShifted2 = s.grid.shift(index, dir2, 1);
 		if (!s.grid.isEvaluatable(indexShifted2)) {
-			//return 0;
+			return null;
 		}
 
 		AlgebraElement Ey1 = s.grid.getE(index, dir1);
