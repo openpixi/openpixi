@@ -89,14 +89,14 @@ panels:
       leftPanel:
         energyDensity2DGLPanel:
           automaticScaling: false
-          data: nabla S
+          data: div S
           scaleFactor: 100.0
           showCoordinates: x, y, 0
       orientation: 0
       rightPanel:
         energyDensity2DGLPanel:
           automaticScaling: false
-          data: dE/dt + nabla S
+          data: dE/dt + div S
           scaleFactor: 100.0
           showCoordinates: x, y, 0
     orientation: 1
@@ -112,7 +112,7 @@ panels:
       rightPanel:
         energyDensity2DGLPanel:
           automaticScaling: false
-          data: dE/dt + nabla S + j*E
+          data: dE/dt + div S + j*E
           scaleFactor: 100.0
           showCoordinates: x, y, 0
   windowHeight: 832

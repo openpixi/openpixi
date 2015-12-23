@@ -38,18 +38,18 @@ public class EnergyDensity2DGLPanel extends AnimationGLPanel {
 
 	public static final int INDEX_ENERGY_DENSITY = 0;
 	public static final int INDEX_ENERGY_DENSITY_DERIVATIVE = 1;
-	public static final int INDEX_NABLA_POYNTING = 2;
-	public static final int INDEX_ENERGY_DENSITY_DERIVATIVE_NABLA_POYNTING = 3;
+	public static final int INDEX_DIV_POYNTING = 2;
+	public static final int INDEX_ENERGY_DENSITY_DERIVATIVE_DIV_POYNTING = 3;
 	public static final int INDEX_CURRENT_ELECTRIC_FIELD = 4;
-	public static final int INDEX_ENERGY_DENSITY_DERIVATIVE_NABLA_POYNTING_CURRENT = 5;
+	public static final int INDEX_ENERGY_DENSITY_DERIVATIVE_DIV_POYNTING_CURRENT = 5;
 
 	String[] dataLabel = new String[] {
 			"Energy density",
 			"dE/dt",
-			"nabla S",
-			"dE/dt + nabla S",
+			"div S",
+			"dE/dt + div S",
 			"j*E",
-			"dE/dt + nabla S + j*E"
+			"dE/dt + div S + j*E"
 	};
 
 	public static final int RED = 0;
@@ -126,19 +126,19 @@ public class EnergyDensity2DGLPanel extends AnimationGLPanel {
 					case INDEX_ENERGY_DENSITY_DERIVATIVE:
 						value = getEnergyDensityDerivative(s, index);
 						break;
-					case INDEX_NABLA_POYNTING:
-						value = getNablaPoyntingVector2(s, index);
+					case INDEX_DIV_POYNTING:
+						value = getDivPoyntingVector2(s, index);
 						break;
-					case INDEX_ENERGY_DENSITY_DERIVATIVE_NABLA_POYNTING:
+					case INDEX_ENERGY_DENSITY_DERIVATIVE_DIV_POYNTING:
 						value = getEnergyDensityDerivative(s, index)
-							+ getNablaPoyntingVector2(s, index);
+							+ getDivPoyntingVector2(s, index);
 						break;
 					case INDEX_CURRENT_ELECTRIC_FIELD:
 						value = getCurrentElectricField(s, index);
 						break;
-					case INDEX_ENERGY_DENSITY_DERIVATIVE_NABLA_POYNTING_CURRENT:
+					case INDEX_ENERGY_DENSITY_DERIVATIVE_DIV_POYNTING_CURRENT:
 						value = getEnergyDensityDerivative(s, index)
-							+ getNablaPoyntingVector2(s, index)
+							+ getDivPoyntingVector2(s, index)
 							+ getCurrentElectricField(s, index);
 						break;
 					}
@@ -214,7 +214,7 @@ public class EnergyDensity2DGLPanel extends AnimationGLPanel {
 		return value;
 	}
 
-	private double getNablaPoyntingVector(Simulation s, int index) {
+	private double getDivPoyntingVector(Simulation s, int index) {
 		double as = s.grid.getLatticeSpacing();
 
 		double value = 0;
@@ -256,7 +256,7 @@ public class EnergyDensity2DGLPanel extends AnimationGLPanel {
 		return S / (as * g * as * g);
 	}
 
-	private double getNablaPoyntingVector2(Simulation s, int index) {
+	private double getDivPoyntingVector2(Simulation s, int index) {
 		double as = s.grid.getLatticeSpacing();
 		double g = s.getCouplingConstant();
 
