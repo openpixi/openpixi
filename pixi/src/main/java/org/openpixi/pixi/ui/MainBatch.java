@@ -61,6 +61,7 @@ public class MainBatch {
 			if(file.exists()) {
 				if(file.isFile()) {
 					try {
+						System.out.println("Running " + file.getPath());
 						String string = FileIO.readFile(file);
 						runSimulationFromString(string);
 
@@ -83,10 +84,10 @@ public class MainBatch {
 							System.out.println("Error opening " + f.getPath());
 						}
 					}
-					System.out.println("Done!");
 				}
 			}
 		}
+		System.out.println("Done!");
 		System.exit(0);
 	}
 

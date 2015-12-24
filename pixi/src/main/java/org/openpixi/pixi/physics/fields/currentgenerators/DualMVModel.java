@@ -136,6 +136,7 @@ public class DualMVModel implements ICurrentGenerator {
 				int ts = 0;
 				for (int j = 0; j < effDimensions; j++) {
 					if(j != direction) {
+						/*
 						int is_a = GridFunctions.shift(i, ts, 1, transNumCells);
 						SU2GroupElement Um1 = (SU2GroupElement) transverseLinks[ts][i].sub(identity);
 						SU2GroupElement U1 = (SU2GroupElement) ps1.getV(i).mult(ps1.getV(is_a).adj());
@@ -149,6 +150,15 @@ public class DualMVModel implements ICurrentGenerator {
 						SU2GroupElement diff2 = (SU2GroupElement) U4.sub(U3);
 
 						temp.addAssign(Um1.mult(diff1).add(Um2.mult(diff2)));
+						*/
+
+						int is = GridFunctions.shift(i, ts, -1, transNumCells);
+						SU2GroupElement Um1 = (SU2GroupElement) transverseLinks[ts][i].adj().sub(identity);
+						SU2GroupElement diff1 = (SU2GroupElement) ps1.getU(i, ts).sub(ps2.getU(i, ts));
+						SU2GroupElement Um2 = (SU2GroupElement) transverseLinks[ts][is].adj().sub(identity);
+						SU2GroupElement diff2 = (SU2GroupElement) ps1.getU(is, ts).sub(ps2.getU(is, ts));
+						temp.addAssign(diff1.mult(Um1).sub(Um2.mult(diff2)));
+
 						ts++;
 					}
 				}

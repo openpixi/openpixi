@@ -206,6 +206,11 @@ public class NewLCPoissonSolver {
 		return phi[transversalIndex].mult(- g).getLink();
 	}
 
+	public GroupElement getU(int transversalIndex, int direction) {
+		int shiftedIndex = GridFunctions.shift(transversalIndex, direction, 1 , transversalNumCells);
+		return getV(transversalIndex).mult(getV(shiftedIndex).adj());
+	}
+
 	private double integratedShapeFunction(double z, double t, int o, double width) {
 
 		double arg = (t - o*z)/(width*Math.sqrt(2));
