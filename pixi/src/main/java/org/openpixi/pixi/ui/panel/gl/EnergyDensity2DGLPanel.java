@@ -309,6 +309,9 @@ public class EnergyDensity2DGLPanel extends AnimationGLPanel {
 		AlgebraElement Bz1 = s.grid.getB(index, dir2, timeIndex);
 		AlgebraElement Bz2 = s.grid.getB(indexShifted1, dir2, timeIndex);
 
+		By2 = By2.act(s.grid.getLink(index, dir2, -1, timeIndex));
+		Bz2 = Bz2.act(s.grid.getLink(index, dir1, -1, timeIndex));
+
 		// By2 - By1
 		AlgebraElement dBy = (By2.add(By1.mult(-1)));
 
@@ -341,6 +344,9 @@ public class EnergyDensity2DGLPanel extends AnimationGLPanel {
 		AlgebraElement Ey2 = s.grid.getE(indexShifted2, dir1);
 		AlgebraElement Ez1 = s.grid.getE(index, dir2);
 		AlgebraElement Ez2 = s.grid.getE(indexShifted1, dir2);
+
+		Ey2 = Ey2.act(s.grid.getLink(index, dir2, 1, 0));
+		Ez2 = Ez2.act(s.grid.getLink(index, dir1, 1, 0));
 
 		// Ey2 - Ey1
 		AlgebraElement dEy = (Ey2.add(Ey1.mult(-1)));
