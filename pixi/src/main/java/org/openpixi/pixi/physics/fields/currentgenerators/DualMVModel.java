@@ -132,11 +132,13 @@ public class DualMVModel implements ICurrentGenerator {
 			// Compute longitudinal fields
 			for (int i = 0; i < transverseNumberOfCells; i++) {
 				SU2GroupElement temp = (SU2GroupElement) zero.copy();
+				SU2AlgebraElement temp2 = (SU2AlgebraElement) s.grid.getElementFactory().algebraZero(2);
 
 				int ts = 0;
 				for (int j = 0; j < effDimensions; j++) {
 					if(j != direction) {
 						/*
+						// Lattice calculation 1
 						int is_a = GridFunctions.shift(i, ts, 1, transNumCells);
 						SU2GroupElement Um1 = (SU2GroupElement) transverseLinks[ts][i].sub(identity);
 						SU2GroupElement U1 = (SU2GroupElement) ps1.getV(i).mult(ps1.getV(is_a).adj());
@@ -152,18 +154,26 @@ public class DualMVModel implements ICurrentGenerator {
 						temp.addAssign(Um1.mult(diff1).add(Um2.mult(diff2)));
 						*/
 
+						/*
+						// Lattice calculation 2
 						int is = GridFunctions.shift(i, ts, -1, transNumCells);
 						SU2GroupElement Um1 = (SU2GroupElement) transverseLinks[ts][i].adj().sub(identity);
 						SU2GroupElement diff1 = (SU2GroupElement) ps1.getU(i, ts).sub(ps2.getU(i, ts));
 						SU2GroupElement Um2 = (SU2GroupElement) transverseLinks[ts][is].adj().sub(identity);
 						SU2GroupElement diff2 = (SU2GroupElement) ps1.getU(is, ts).sub(ps2.getU(is, ts));
 						temp.addAssign(diff1.mult(Um1).sub(Um2.mult(diff2)));
+						*/
 
+						// Continuum calculation
+						SU2AlgebraElement A1 = (SU2AlgebraElement) ps1.getU(i, ts).getAlgebraElement().mult(normalizationFactor);
+						SU2AlgebraElement A2 = (SU2AlgebraElement) ps2.getU(i, ts).getAlgebraElement().mult(normalizationFactor);
+						temp2.addAssign(comm(A1,A2));
 						ts++;
 					}
 				}
 
 				longitudinalFields[i] = (SU2AlgebraElement) temp.proj().mult(normalizationFactor / (2.0 * g));
+				longitudinalFields[i] = temp2;
 			}
 
 			// File output ((d-1)x3 transversal gauge field components, 1x3 longitudinal electric field component)
@@ -197,6 +207,13 @@ public class DualMVModel implements ICurrentGenerator {
 	public void applyCurrent(Simulation s) {
 		mv1.applyCurrent(s);
 		mv2.applyCurrent(s);
+	}
+
+	private SU2AlgebraElement comm(SU2AlgebraElement A, SU2AlgebraElement B) {
+		SU2GroupElement a = new SU2GroupElement(0.0, A.get(0), A.get(1), A.get(2));
+		SU2GroupElement b = new SU2GroupElement(0.0, B.get(0), B.get(1), B.get(2));
+		SU2GroupElement c = (SU2GroupElement) a.mult(b).sub(b.mult(a));
+		return (SU2AlgebraElement) c.proj().mult(1.0);
 	}
 
 	/**
