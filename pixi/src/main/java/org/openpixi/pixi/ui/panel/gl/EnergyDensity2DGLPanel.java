@@ -266,96 +266,23 @@ public class EnergyDensity2DGLPanel extends AnimationGLPanel {
 			// TODO: Implement for arbitrary dimensions
 			// return 0;
 		}
+		if (!s.grid.isRotBEvaluatable(index) || !s.grid.isRotBEvaluatable(index)) {
+			// One of the neighbouring cells is not evaluatable.
+			return 0;
+		}
 		for (int direction = 0; direction < s.grid.getNumberOfDimensions(); direction++) {
-			AlgebraElement rotE = rotE(s, index, direction);
-			AlgebraElement rotB0 = rotB(s, index, direction, 0);
-			AlgebraElement rotB1 = rotB(s, index, direction, 1);
-
-			if (rotE == null || rotB0 == null || rotB1 == null) {
-				// One of the neighbouring cells is not evaluatable.
-				return 0;
-			}
+			AlgebraElement rotE = s.grid.getRotE(index, direction);
+			AlgebraElement rotB0 = s.grid.getRotB(index, direction, 0);
+			AlgebraElement rotB1 = s.grid.getRotB(index, direction, 1);
 
 			AlgebraElement E = s.grid.getE(index, direction);
 			// time averaged B-fields:
 			AlgebraElement B = (s.grid.getB(index, direction, 0).add(s.grid.getB(index, direction, 0))).mult(0.5);
 			AlgebraElement rotB = (rotB0.add(rotB1)).mult(0.5);
 
-			value += E.mult(rotB) - B.mult(rotE);
+			value += B.mult(rotE) - E.mult(rotB);
 		}
-		return value / (as * g);
-	}
-
-	private AlgebraElement rotB(Simulation s, int index, int direction, int timeIndex) {
-		double as = s.grid.getLatticeSpacing();
-		double g = s.getCouplingConstant();
-
-		// Indices for cross product:
-		int dir1 = (direction + 1) % 3;
-		int dir2 = (direction + 2) % 3;
-
-		int indexShifted1 = s.grid.shift(index, dir1, -1);
-		if (!s.grid.isEvaluatable(indexShifted1)) {
-			return null;
-		}
-
-		int indexShifted2 = s.grid.shift(index, dir2, -1);
-		if (!s.grid.isEvaluatable(indexShifted2)) {
-			return null;
-		}
-
-		AlgebraElement By1 = s.grid.getB(index, dir1, timeIndex);
-		AlgebraElement By2 = s.grid.getB(indexShifted2, dir1, timeIndex);
-		AlgebraElement Bz1 = s.grid.getB(index, dir2, timeIndex);
-		AlgebraElement Bz2 = s.grid.getB(indexShifted1, dir2, timeIndex);
-
-		By2 = By2.act(s.grid.getLink(index, dir2, -1, timeIndex));
-		Bz2 = Bz2.act(s.grid.getLink(index, dir1, -1, timeIndex));
-
-		// By2 - By1
-		AlgebraElement dBy = (By2.add(By1.mult(-1)));
-
-		// Bz2 - Bz1
-		AlgebraElement dBz = (Bz2.add(Bz1.mult(-1)));
-
-		// dBy - dBz
-		return (dBy.add(dBz.mult(-1))).mult(-1 / (as * as * g));
-	}
-
-	private AlgebraElement rotE(Simulation s, int index, int direction) {
-		double as = s.grid.getLatticeSpacing();
-		double g = s.getCouplingConstant();
-
-		// Indices for cross product:
-		int dir1 = (direction + 1) % 3;
-		int dir2 = (direction + 2) % 3;
-
-		int indexShifted1 = s.grid.shift(index, dir1, 1);
-		if (!s.grid.isEvaluatable(indexShifted1)) {
-			return null;
-		}
-
-		int indexShifted2 = s.grid.shift(index, dir2, 1);
-		if (!s.grid.isEvaluatable(indexShifted2)) {
-			return null;
-		}
-
-		AlgebraElement Ey1 = s.grid.getE(index, dir1);
-		AlgebraElement Ey2 = s.grid.getE(indexShifted2, dir1);
-		AlgebraElement Ez1 = s.grid.getE(index, dir2);
-		AlgebraElement Ez2 = s.grid.getE(indexShifted1, dir2);
-
-		Ey2 = Ey2.act(s.grid.getLink(index, dir2, 1, 0));
-		Ez2 = Ez2.act(s.grid.getLink(index, dir1, 1, 0));
-
-		// Ey2 - Ey1
-		AlgebraElement dEy = (Ey2.add(Ey1.mult(-1)));
-
-		// Ez2 - Ez1
-		AlgebraElement dEz = (Ez2.add(Ez1.mult(-1)));
-
-		// dEy - dEz
-		return (dEy.add(dEz.mult(-1))).mult(1 / (as * as * g));
+		return value / (as * g * as * g);
 	}
 
 	private double getCurrentElectricField(Simulation s, int index) {
