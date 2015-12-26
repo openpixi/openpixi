@@ -55,8 +55,7 @@ public class MainBatch {
 		// If so creates a parser and uses the parameter as the
 		// path to the settings file.
 		if (args.length != 0) {
-			File path = new File("input");
-			File file = new File(path, args[0]);
+			File file = new File(args[0]);
 
 			if(file.exists()) {
 				if(file.isFile()) {
