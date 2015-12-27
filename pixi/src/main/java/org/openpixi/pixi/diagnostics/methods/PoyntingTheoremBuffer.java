@@ -393,6 +393,8 @@ public class PoyntingTheoremBuffer implements Diagnostics {
 				evaluatableCells++;
 			}
 		}
+		// TODO: Use "evaluatableCells" here and below, but only if it
+		// is also used in physics.measurements.FieldMeasurements.
 		//double norm = evaluatableCells;
 		double norm = s.grid.getTotalNumberOfCells();
 		return result / norm;
