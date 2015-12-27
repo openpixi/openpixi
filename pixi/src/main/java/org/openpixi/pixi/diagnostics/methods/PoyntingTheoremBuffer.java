@@ -22,6 +22,14 @@ public class PoyntingTheoremBuffer implements Diagnostics {
 	private double[] oldEnergyDensity;
 	private double[] currentEnergyDensity;
 
+	private boolean storeOldEJ = false;
+	private AlgebraElement[][] Ecurrent;
+	private AlgebraElement[][] Eold;
+	private AlgebraElement[][] Jcurrent;
+	private AlgebraElement[][] Jold;
+	private AlgebraElement[][] RotEcurrent;
+	private AlgebraElement[][] RotEold;
+
 	PoyntingTheoremBuffer(Simulation s) {
 		this.s = s;
 	}
@@ -31,6 +39,8 @@ public class PoyntingTheoremBuffer implements Diagnostics {
 		this.s = s;
 		resetEnergyDensityDerivative();
 		calculateEnergyDensityDerivative = true;
+		resetEJ();
+		storeOldEJ = true;
 	}
 
 	@Override
@@ -45,6 +55,15 @@ public class PoyntingTheoremBuffer implements Diagnostics {
 			}
 		} else {
 			resetEnergyDensityDerivative();
+		}
+
+		if (storeOldEJ) {
+			updateEJ();
+			if (s.totalSimulationSteps > 2) {
+				storeOldEJ = false;
+			}
+		} else {
+			resetEJ();
 		}
 	}
 
@@ -68,7 +87,43 @@ public class PoyntingTheoremBuffer implements Diagnostics {
 		currentTime = s.totalSimulationSteps;
 		for (int i = 0; i < s.grid.getTotalNumberOfCells(); i++) {
 			oldEnergyDensity[i] = currentEnergyDensity[i];
-			currentEnergyDensity[i] = getEnergyDensity(i);
+			currentEnergyDensity[i] = getEnergyDensity2(i);
+		}
+	}
+
+	private void resetEJ() {
+		Ecurrent = null;
+		Eold = null;
+		Jcurrent = null;
+		Jold = null;
+		RotEcurrent = null;
+		RotEold = null;
+	}
+
+	private void updateEJ() {
+		int cells = s.grid.getTotalNumberOfCells();
+		int dimensions = s.grid.getNumberOfDimensions();
+		if (Ecurrent == null) {
+			// Initialize arrays
+			Ecurrent = new AlgebraElement[cells][];
+			Eold = new AlgebraElement[cells][];
+			Jcurrent = new AlgebraElement[cells][];
+			Jold = new AlgebraElement[cells][];
+			RotEcurrent = new AlgebraElement[cells][];
+			RotEold = new AlgebraElement[cells][];
+		}
+		for (int i = 0; i < cells; i++) {
+			Eold[i] = Ecurrent[i];
+			Jold[i] = Jcurrent[i];
+			RotEold[i] = RotEcurrent[i];
+			Ecurrent[i] = new AlgebraElement[dimensions];
+			Jcurrent[i] = new AlgebraElement[dimensions];
+			RotEcurrent[i] = new AlgebraElement[dimensions];
+			// Fields are copied when they are used
+			//for (int d = 0; d < dimensions; d++) {
+			//	Ecurrent[i][d] = s.grid.getE(i, d).copy();
+			//	Jcurrent[i][d] = s.grid.getJ(i, d).copy();
+			//}
 		}
 	}
 
@@ -91,7 +146,8 @@ public class PoyntingTheoremBuffer implements Diagnostics {
 		return p;
 	}
 
-	public double getEnergyDensity(int index) {
+	@Deprecated
+	private double getEnergyDensity(int index) {
 		double value = 0;
 
 		// Lattice spacing and coupling constant
@@ -107,6 +163,35 @@ public class PoyntingTheoremBuffer implements Diagnostics {
 		return value / (as * g * as * g) / 2;
 	}
 
+	/**
+	 * Calculates the energy density at the time of the E-field
+	 * correctly through order O(t^2).
+	 * @param index cell index
+	 * @return energy density
+	 */
+	public double getEnergyDensity2(int index) {
+		double value = 0;
+
+		// Lattice spacing and coupling constant
+		double as = s.grid.getLatticeSpacing();
+		double g = s.getCouplingConstant();
+
+		for (int w = 0; w < s.getNumberOfDimensions(); w++) {
+			value += s.grid.getE(index, w).square();
+			// Time averaging for B field.
+			AlgebraElement B = s.grid.getB(index, w, 0);
+			AlgebraElement Bnext = s.grid.getB(index, w, 1);
+			value += (B.add(Bnext)).mult(0.5).square();
+		};
+		return value / (as * g * as * g) / 2;
+	}
+
+	/**
+	 * Calculates the derivative of the energy density
+	 * at the time of the B-field correctly through order O(t^2).
+	 * @param index cell index
+	 * @return derivative of energy density
+	 */
 	public double getEnergyDensityDerivative(int index) {
 		double value = 0;
 		calculateEnergyDensityDerivative = true;
@@ -123,6 +208,7 @@ public class PoyntingTheoremBuffer implements Diagnostics {
 		return value;
 	}
 
+	@Deprecated
 	public double getDivPoyntingVector(int index) {
 		double as = s.grid.getLatticeSpacing();
 
@@ -147,6 +233,7 @@ public class PoyntingTheoremBuffer implements Diagnostics {
 		return value / (2*as);
 	}
 
+	@Deprecated
 	public double getPoyntingVector(int index, int direction) {
 		double as = s.grid.getLatticeSpacing();
 		double g = s.getCouplingConstant();
@@ -165,7 +252,9 @@ public class PoyntingTheoremBuffer implements Diagnostics {
 		return S / (as * g * as * g);
 	}
 
+	@Deprecated
 	public double getDivPoyntingVector2(int index) {
+		storeOldEJ = true;
 		double as = s.grid.getLatticeSpacing();
 		double g = s.getCouplingConstant();
 
@@ -175,10 +264,10 @@ public class PoyntingTheoremBuffer implements Diagnostics {
 			// TODO: Implement for arbitrary dimensions
 			// return 0;
 		}
-		if (!s.grid.isRotBEvaluatable(index) || !s.grid.isRotBEvaluatable(index)) {
-			// One of the neighbouring cells is not evaluatable.
-			return 0;
-		}
+//		if (!s.grid.isRotBEvaluatable(index) || !s.grid.isRotBEvaluatable(index)) {
+//			// One of the neighbouring cells is not evaluatable.
+//			return 0;
+//		}
 		for (int direction = 0; direction < s.grid.getNumberOfDimensions(); direction++) {
 			AlgebraElement rotE = s.grid.getRotE(index, direction);
 			AlgebraElement rotB0 = s.grid.getRotB(index, direction, 0);
@@ -186,7 +275,7 @@ public class PoyntingTheoremBuffer implements Diagnostics {
 
 			AlgebraElement E = s.grid.getE(index, direction);
 			// time averaged B-fields:
-			AlgebraElement B = (s.grid.getB(index, direction, 0).add(s.grid.getB(index, direction, 0))).mult(0.5);
+			AlgebraElement B = (s.grid.getB(index, direction, 0).add(s.grid.getB(index, direction, 1))).mult(0.5);
 			AlgebraElement rotB = (rotB0.add(rotB1)).mult(0.5);
 
 			value += B.mult(rotE) - E.mult(rotB);
@@ -194,6 +283,56 @@ public class PoyntingTheoremBuffer implements Diagnostics {
 		return value / (as * g * as * g);
 	}
 
+	/**
+	 * Calculates the divergence of the Poynting vector on the lattice
+	 * at the time of the B-field correctly through order O(t^2).
+	 * @param index cell index
+	 * @return divergence of Poynting vector
+	 */
+	public double getDivPoyntingVector3(int index) {
+		storeOldEJ = true;
+		double as = s.grid.getLatticeSpacing();
+		double g = s.getCouplingConstant();
+
+		double value = 0;
+		if (s.getNumberOfDimensions() != 3) {
+			throw new RuntimeException("Dimension other than 3 has not been implemented yet.");
+			// TODO: Implement for arbitrary dimensions
+			// return 0;
+		}
+//		if (!s.grid.isRotBEvaluatable(index) || !s.grid.isRotBEvaluatable(index)) {
+//			// One of the neighbouring cells is not evaluatable.
+//			return 0;
+//		}
+		for (int direction = 0; direction < s.grid.getNumberOfDimensions(); direction++) {
+			// Time-averaged at time of B-field
+			AlgebraElement rotE = s.grid.getRotE(index, direction);
+			if (RotEcurrent != null) {
+				RotEcurrent[index][direction] = rotE.copy();
+				if (RotEold[index][direction] != null) {
+					// Form average
+					rotE = (rotE.add(RotEold[index][direction])).mult(0.5);
+				}
+			}
+
+			AlgebraElement E = s.grid.getE(index, direction);
+			if (Ecurrent != null) {
+				Ecurrent[index][direction] = E.copy();
+				if (Eold[index][direction] != null) {
+					// Form average
+					E = (E.add(Eold[index][direction])).mult(0.5);
+				}
+			}
+
+			AlgebraElement rotB = s.grid.getRotB(index, direction, 0);
+			AlgebraElement B = s.grid.getB(index, direction, 0);
+
+			value += B.mult(rotE) - E.mult(rotB);
+		}
+		return value / (as * g * as * g);
+	}
+
+	@Deprecated
 	public double getCurrentElectricField(int index) {
 		double as = s.grid.getLatticeSpacing();
 		double g = s.getCouplingConstant();
@@ -208,4 +347,37 @@ public class PoyntingTheoremBuffer implements Diagnostics {
 		return value / (as * g * as * g);
 	}
 
+	/**
+	 * Calculates current times the electric field at the time of the
+	 * B-field through order O(t^2).
+	 * @param index cell index
+	 * @return current times electric field J*E
+	 */
+	public double getCurrentElectricField2(int index) {
+		double as = s.grid.getLatticeSpacing();
+		double g = s.getCouplingConstant();
+
+		double value = 0;
+
+		for (int direction = 0; direction < s.grid.getNumberOfDimensions(); direction++) {
+			AlgebraElement J = s.grid.getJ(index, direction);
+			if (Jcurrent != null) {
+				Jcurrent[index][direction] = J.copy();
+				if (Jold[index][direction] != null) {
+					// Use previous value
+					J = Jold[index][direction];
+				}
+			}
+			AlgebraElement E = s.grid.getE(index, direction);
+			if (Ecurrent != null) {
+				Ecurrent[index][direction] = E.copy();
+				if (Eold[index][direction] != null) {
+					// Form average
+					E = (E.add(Eold[index][direction])).mult(0.5);
+				}
+			}
+			value += J.mult(E);
+		}
+		return value / (as * g * as * g);
+	}
 }

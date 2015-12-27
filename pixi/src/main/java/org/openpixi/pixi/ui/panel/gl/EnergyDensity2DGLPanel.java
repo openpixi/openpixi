@@ -119,25 +119,25 @@ public class EnergyDensity2DGLPanel extends AnimationGLPanel {
 				if(s.grid.isEvaluatable(index)) {
 					switch(dataIndex) {
 					case INDEX_ENERGY_DENSITY:
-						value = poyntingTheorem.getEnergyDensity(index);
+						value = poyntingTheorem.getEnergyDensity2(index);
 						break;
 					case INDEX_ENERGY_DENSITY_DERIVATIVE:
 						value = poyntingTheorem.getEnergyDensityDerivative(index);
 						break;
 					case INDEX_DIV_POYNTING:
-						value = poyntingTheorem.getDivPoyntingVector2(index);
+						value = poyntingTheorem.getDivPoyntingVector3(index);
 						break;
 					case INDEX_ENERGY_DENSITY_DERIVATIVE_DIV_POYNTING:
 						value = poyntingTheorem.getEnergyDensityDerivative(index)
-							+ poyntingTheorem.getDivPoyntingVector2(index);
+							+ poyntingTheorem.getDivPoyntingVector3(index);
 						break;
 					case INDEX_CURRENT_ELECTRIC_FIELD:
-						value = poyntingTheorem.getCurrentElectricField(index);
+						value = poyntingTheorem.getCurrentElectricField2(index);
 						break;
 					case INDEX_ENERGY_DENSITY_DERIVATIVE_DIV_POYNTING_CURRENT:
 						value = poyntingTheorem.getEnergyDensityDerivative(index)
-							+ poyntingTheorem.getDivPoyntingVector2(index)
-							+ poyntingTheorem.getCurrentElectricField(index);
+							+ poyntingTheorem.getDivPoyntingVector3(index)
+							+ poyntingTheorem.getCurrentElectricField2(index);
 						break;
 					}
 					getColorFromEField(s, index, color);
