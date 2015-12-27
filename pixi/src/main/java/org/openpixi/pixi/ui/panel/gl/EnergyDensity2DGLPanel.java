@@ -23,6 +23,7 @@ import javax.media.opengl.GL2;
 import javax.media.opengl.GLAutoDrawable;
 import javax.swing.Box;
 
+import org.openpixi.pixi.diagnostics.methods.PoyntingTheoremBuffer;
 import org.openpixi.pixi.math.AlgebraElement;
 import org.openpixi.pixi.physics.Simulation;
 import org.openpixi.pixi.ui.SimulationAnimation;
@@ -60,10 +61,7 @@ public class EnergyDensity2DGLPanel extends AnimationGLPanel {
 	public ScaleProperties scaleProperties;
 	public CoordinateProperties showCoordinateProperties;
 
-	private double[] oldEnergyDensity;
-	private int[] oldTime;
-	private double[] currentEnergyDensity;
-	private int[] currentTime;
+	PoyntingTheoremBuffer poyntingTheorem;
 
 	/** Constructor */
 	public EnergyDensity2DGLPanel(SimulationAnimation simulationAnimation) {
@@ -72,6 +70,7 @@ public class EnergyDensity2DGLPanel extends AnimationGLPanel {
 		scaleProperties = new ScaleProperties(simulationAnimation);
 		scaleProperties.setAutomaticScaling(true);
 		showCoordinateProperties = new CoordinateProperties(simulationAnimation, CoordinateProperties.Mode.MODE_2D);
+		poyntingTheorem = PoyntingTheoremBuffer.getOrAppendInstance(simulationAnimation.getSimulation());
 	}
 
 	@Override
@@ -121,25 +120,25 @@ public class EnergyDensity2DGLPanel extends AnimationGLPanel {
 				if(s.grid.isEvaluatable(index)) {
 					switch(dataIndex) {
 					case INDEX_ENERGY_DENSITY:
-						value = getEnergyDensity(s, index);
+						value = poyntingTheorem.getEnergyDensity(index);
 						break;
 					case INDEX_ENERGY_DENSITY_DERIVATIVE:
-						value = getEnergyDensityDerivative(s, index);
+						value = poyntingTheorem.getEnergyDensityDerivative(index);
 						break;
 					case INDEX_DIV_POYNTING:
-						value = getDivPoyntingVector2(s, index);
+						value = poyntingTheorem.getDivPoyntingVector2(index);
 						break;
 					case INDEX_ENERGY_DENSITY_DERIVATIVE_DIV_POYNTING:
-						value = getEnergyDensityDerivative(s, index)
-							+ getDivPoyntingVector2(s, index);
+						value = poyntingTheorem.getEnergyDensityDerivative(index)
+							+ poyntingTheorem.getDivPoyntingVector2(index);
 						break;
 					case INDEX_CURRENT_ELECTRIC_FIELD:
-						value = getCurrentElectricField(s, index);
+						value = poyntingTheorem.getCurrentElectricField(index);
 						break;
 					case INDEX_ENERGY_DENSITY_DERIVATIVE_DIV_POYNTING_CURRENT:
-						value = getEnergyDensityDerivative(s, index)
-							+ getDivPoyntingVector2(s, index)
-							+ getCurrentElectricField(s, index);
+						value = poyntingTheorem.getEnergyDensityDerivative(index)
+							+ poyntingTheorem.getDivPoyntingVector2(index)
+							+ poyntingTheorem.getCurrentElectricField(index);
 						break;
 					}
 					getColorFromEField(s, index, color);
@@ -165,139 +164,6 @@ public class EnergyDensity2DGLPanel extends AnimationGLPanel {
 		scaleProperties.calculateAutomaticScale(1.0);
 	}
 
-	private double getEnergyDensity(Simulation s, int index) {
-		double value = 0;
-
-		// Lattice spacing and coupling constant
-		double as = s.grid.getLatticeSpacing();
-		double g = s.getCouplingConstant();
-
-		for (int w = 0; w < s.getNumberOfDimensions(); w++) {
-			value += s.grid.getEsquaredFromLinks(index, w);
-			// Time averaging for B field.
-			value += 0.5 * s.grid.getBsquaredFromLinks(index, w, 0);
-			value += 0.5 * s.grid.getBsquaredFromLinks(index, w, 1);
-		};
-		return value / (as * g * as * g) / 2;
-	}
-
-	private double getEnergyDensityDerivative(Simulation s, int index) {
-		double value = 0;
-		if (oldEnergyDensity == null
-				|| index > oldEnergyDensity.length) {
-			// Initialize arrays
-			int cells = s.grid.getTotalNumberOfCells();
-			oldEnergyDensity = new double[cells];
-			oldTime = new int[cells];
-			currentEnergyDensity = new double[cells];
-			currentTime = new int[cells];
-		}
-		if (currentTime[index] > s.totalSimulationSteps) {
-			// Reset values (in case of a simulation reset)
-			oldEnergyDensity[index] = 0;
-			oldTime[index] = 0;
-			currentEnergyDensity[index] = getEnergyDensity(s, index);
-			currentTime[index] = s.totalSimulationSteps;
-		}
-		if (currentTime[index] < s.totalSimulationSteps) {
-			// Update values
-			oldEnergyDensity[index] = currentEnergyDensity[index];
-			oldTime[index] = currentTime[index];
-			currentEnergyDensity[index] = getEnergyDensity(s, index);
-			currentTime[index] = s.totalSimulationSteps;
-		}
-		if (oldTime[index] != 0) {
-			// Calculate derivative
-			double deltaTime = (currentTime[index] - oldTime[index]) * s.tstep;
-			value = (currentEnergyDensity[index] - oldEnergyDensity[index]) / deltaTime;
-		}
-		return value;
-	}
-
-	private double getDivPoyntingVector(Simulation s, int index) {
-		double as = s.grid.getLatticeSpacing();
-
-		double value = 0;
-		if (s.getNumberOfDimensions() != 3) {
-			throw new RuntimeException("Dimension other than 3 has not been implemented yet.");
-			// TODO: Implement for arbitrary dimensions
-			// return 0;
-		}
-		for (int direction = 0; direction < s.grid.getNumberOfDimensions(); direction++) {
-			int indexShifted1 = s.grid.shift(index, direction, 1);
-			if (!s.grid.isEvaluatable(indexShifted1)) {
-				return 0;
-			}
-			int indexShifted2 = s.grid.shift(index, direction, -1);
-			if (!s.grid.isEvaluatable(indexShifted2)) {
-				return 0;
-			}
-			value += getPoyntingVector(s, indexShifted1, direction)
-					- getPoyntingVector(s, indexShifted2, direction);
-		}
-		return value / (2*as);
-	}
-
-	private double getPoyntingVector(Simulation s, int index, int direction) {
-		double as = s.grid.getLatticeSpacing();
-		double g = s.getCouplingConstant();
-
-		// Indices for cross product:
-		int dir1 = (direction + 1) % 3;
-		int dir2 = (direction + 2) % 3;
-
-		// fields at same time:
-		AlgebraElement E1 = s.grid.getE(index, dir1);
-		AlgebraElement E2 = s.grid.getE(index, dir2);
-		// time averaged B-field:
-		AlgebraElement B1 = s.grid.getB(index, dir1, 0).add(s.grid.getB(index, dir1, 1)).mult(0.5);
-		AlgebraElement B2 = s.grid.getB(index, dir2, 0).add(s.grid.getB(index, dir2, 1)).mult(0.5);
-		double S = E1.mult(B2) - E2.mult(B1);
-		return S / (as * g * as * g);
-	}
-
-	private double getDivPoyntingVector2(Simulation s, int index) {
-		double as = s.grid.getLatticeSpacing();
-		double g = s.getCouplingConstant();
-
-		double value = 0;
-		if (s.getNumberOfDimensions() != 3) {
-			throw new RuntimeException("Dimension other than 3 has not been implemented yet.");
-			// TODO: Implement for arbitrary dimensions
-			// return 0;
-		}
-		if (!s.grid.isRotBEvaluatable(index) || !s.grid.isRotBEvaluatable(index)) {
-			// One of the neighbouring cells is not evaluatable.
-			return 0;
-		}
-		for (int direction = 0; direction < s.grid.getNumberOfDimensions(); direction++) {
-			AlgebraElement rotE = s.grid.getRotE(index, direction);
-			AlgebraElement rotB0 = s.grid.getRotB(index, direction, 0);
-			AlgebraElement rotB1 = s.grid.getRotB(index, direction, 1);
-
-			AlgebraElement E = s.grid.getE(index, direction);
-			// time averaged B-fields:
-			AlgebraElement B = (s.grid.getB(index, direction, 0).add(s.grid.getB(index, direction, 0))).mult(0.5);
-			AlgebraElement rotB = (rotB0.add(rotB1)).mult(0.5);
-
-			value += B.mult(rotE) - E.mult(rotB);
-		}
-		return value / (as * g * as * g);
-	}
-
-	private double getCurrentElectricField(Simulation s, int index) {
-		double as = s.grid.getLatticeSpacing();
-		double g = s.getCouplingConstant();
-
-		double value = 0;
-
-		for (int direction = 0; direction < s.grid.getNumberOfDimensions(); direction++) {
-			AlgebraElement J = s.grid.getJ(index, direction);
-			AlgebraElement E = s.grid.getE(index, direction);
-			value += J.mult(E);
-		}
-		return value / (as * g * as * g);
-	}
 
 	private void getColorFromEField(Simulation s, int index,
 			double[] color) {

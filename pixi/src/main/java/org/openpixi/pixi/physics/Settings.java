@@ -167,7 +167,11 @@ public class Settings {
 
 
 	public ArrayList<Diagnostics> getDiagnostics() {
-		return diagnostics;
+		ArrayList<Diagnostics> diagnosticsCopy = new ArrayList<Diagnostics>();
+		for (Diagnostics d : diagnostics) {
+			diagnosticsCopy.add(d);
+		}
+		return diagnosticsCopy;
 	}
 
 	public GeneralBoundaryType getBoundaryType() {
