@@ -120,10 +120,6 @@ public class PoyntingTheoremBuffer implements Diagnostics {
 			Jcurrent[i] = new AlgebraElement[dimensions];
 			RotEcurrent[i] = new AlgebraElement[dimensions];
 			// Fields are copied when they are used
-			//for (int d = 0; d < dimensions; d++) {
-			//	Ecurrent[i][d] = s.grid.getE(i, d).copy();
-			//	Jcurrent[i][d] = s.grid.getJ(i, d).copy();
-			//}
 		}
 	}
 
@@ -264,10 +260,6 @@ public class PoyntingTheoremBuffer implements Diagnostics {
 			// TODO: Implement for arbitrary dimensions
 			// return 0;
 		}
-//		if (!s.grid.isRotBEvaluatable(index) || !s.grid.isRotBEvaluatable(index)) {
-//			// One of the neighbouring cells is not evaluatable.
-//			return 0;
-//		}
 		for (int direction = 0; direction < s.grid.getNumberOfDimensions(); direction++) {
 			AlgebraElement rotE = s.grid.getRotE(index, direction);
 			AlgebraElement rotB0 = s.grid.getRotB(index, direction, 0);
@@ -300,16 +292,12 @@ public class PoyntingTheoremBuffer implements Diagnostics {
 			// TODO: Implement for arbitrary dimensions
 			// return 0;
 		}
-//		if (!s.grid.isRotBEvaluatable(index) || !s.grid.isRotBEvaluatable(index)) {
-//			// One of the neighbouring cells is not evaluatable.
-//			return 0;
-//		}
 		for (int direction = 0; direction < s.grid.getNumberOfDimensions(); direction++) {
 			// Time-averaged at time of B-field
 			AlgebraElement rotE = s.grid.getRotE(index, direction);
 			if (RotEcurrent != null) {
 				RotEcurrent[index][direction] = rotE.copy();
-				if (RotEold[index][direction] != null) {
+				if (RotEold != null && RotEold[index] != null && RotEold[index][direction] != null) {
 					// Form average
 					rotE = (rotE.add(RotEold[index][direction])).mult(0.5);
 				}
@@ -318,7 +306,7 @@ public class PoyntingTheoremBuffer implements Diagnostics {
 			AlgebraElement E = s.grid.getE(index, direction);
 			if (Ecurrent != null) {
 				Ecurrent[index][direction] = E.copy();
-				if (Eold[index][direction] != null) {
+				if (Eold != null && Eold[index] != null && Eold[index][direction] != null) {
 					// Form average
 					E = (E.add(Eold[index][direction])).mult(0.5);
 				}
@@ -354,6 +342,7 @@ public class PoyntingTheoremBuffer implements Diagnostics {
 	 * @return current times electric field J*E
 	 */
 	public double getCurrentElectricField2(int index) {
+		storeOldEJ = true;
 		double as = s.grid.getLatticeSpacing();
 		double g = s.getCouplingConstant();
 
@@ -363,7 +352,7 @@ public class PoyntingTheoremBuffer implements Diagnostics {
 			AlgebraElement J = s.grid.getJ(index, direction);
 			if (Jcurrent != null) {
 				Jcurrent[index][direction] = J.copy();
-				if (Jold[index][direction] != null) {
+				if (Jold != null && Jold[index] != null && Jold[index][direction] != null) {
 					// Use previous value
 					J = Jold[index][direction];
 				}
@@ -371,7 +360,7 @@ public class PoyntingTheoremBuffer implements Diagnostics {
 			AlgebraElement E = s.grid.getE(index, direction);
 			if (Ecurrent != null) {
 				Ecurrent[index][direction] = E.copy();
-				if (Eold[index][direction] != null) {
+				if (Eold != null && Eold[index] != null && Eold[index][direction] != null) {
 					// Form average
 					E = (E.add(Eold[index][direction])).mult(0.5);
 				}

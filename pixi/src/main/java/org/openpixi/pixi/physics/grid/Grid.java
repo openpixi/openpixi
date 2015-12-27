@@ -901,34 +901,6 @@ public class Grid {
 	}
 
 	/**
-	 * Check whether rotor is evaluatable at the given position.
-	 * This is true if all neighboring cells for the forward or backward derivative
-	 * are also evaluatable.
-	 * @param index       Lattice index
-	 * @param orientation +1 for forward derivative rotor; -1 for backward derivative rotor.
-	 * @return            True if evaluatable, false otherwise
-	 */
-	private boolean isRotorEvaluatable(int index, int orientation) {
-		for (int direction = 0; direction < numDim; direction++) {
-			int indexShifted = shift(index, direction, orientation);
-			if (!isEvaluatable(indexShifted)) {
-				return false;
-			}
-		}
-		return true;
-	}
-
-	/**
-	 * Check whether rot B is evaluatable at the given position.
-	 * This is true if all neighboring cells for the backward derivative are also evaluatable.
-	 * @param index Lattice index
-	 * @return      True if evaluatable, false otherwise
-	 */
-	public boolean isRotBEvaluatable(int index) {
-		return isRotorEvaluatable(index, -1);
-	}
-
-	/**
 	 * Calculate rot B using a backward derivative.
 	 * @param index    	Lattice index
 	 * @param direction	Index of the direction
@@ -961,16 +933,6 @@ public class Grid {
 
 		// dBz/dy - dBy/dz
 		return (dBzdy.add(dBydz.mult(-1))).mult(-1 / as);
-	}
-
-	/**
-	 * Check whether rot E is evaluatable at the given position.
-	 * This is true if all neighboring cells for the forward derivative are also evaluatable.
-	 * @param index Lattice index
-	 * @return      True if evaluatable, false otherwise
-	 */
-	public boolean isRotEEvaluatable(int index) {
-		return isRotorEvaluatable(index, 1);
 	}
 
 	/**
