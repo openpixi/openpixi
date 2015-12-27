@@ -369,4 +369,60 @@ public class PoyntingTheoremBuffer implements Diagnostics {
 		}
 		return value / (as * g * as * g);
 	}
+
+	public double getTotalEnergyDensity() {
+		double result = 0;
+		int evaluatableCells = 0;
+		for (int i = 0; i < s.grid.getTotalNumberOfCells(); i++) {
+			if (s.grid.isEvaluatable(i)) {
+				result += getEnergyDensity2(i);
+				evaluatableCells++;
+			}
+		}
+		//double norm = evaluatableCells;
+		double norm = s.grid.getTotalNumberOfCells();
+		return result / norm;
+	}
+
+	public double getTotalEnergyDensityDerivative() {
+		double result = 0;
+		int evaluatableCells = 0;
+		for (int i = 0; i < s.grid.getTotalNumberOfCells(); i++) {
+			if (s.grid.isEvaluatable(i)) {
+				result += getEnergyDensityDerivative(i);
+				evaluatableCells++;
+			}
+		}
+		//double norm = evaluatableCells;
+		double norm = s.grid.getTotalNumberOfCells();
+		return result / norm;
+	}
+
+	public double getTotalDivS() {
+		double result = 0;
+		int evaluatableCells = 0;
+		for (int i = 0; i < s.grid.getTotalNumberOfCells(); i++) {
+			if (s.grid.isEvaluatable(i)) {
+				result += getDivPoyntingVector3(i);
+				evaluatableCells++;
+			}
+		}
+		//double norm = evaluatableCells;
+		double norm = s.grid.getTotalNumberOfCells();
+		return result / norm;
+	}
+
+	public double getTotalJE() {
+		double result = 0;
+		int evaluatableCells = 0;
+		for (int i = 0; i < s.grid.getTotalNumberOfCells(); i++) {
+			if (s.grid.isEvaluatable(i)) {
+				result += getCurrentElectricField2(i);
+				evaluatableCells++;
+			}
+		}
+		//double norm = evaluatableCells;
+		double norm = s.grid.getTotalNumberOfCells();
+		return result / norm;
+	}
 }

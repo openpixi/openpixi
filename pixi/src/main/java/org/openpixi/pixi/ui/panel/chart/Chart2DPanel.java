@@ -15,6 +15,7 @@ import java.text.DecimalFormat;
 import javax.swing.Box;
 
 import org.openpixi.pixi.diagnostics.methods.OccupationNumbersInTime;
+import org.openpixi.pixi.diagnostics.methods.PoyntingTheoremBuffer;
 import org.openpixi.pixi.physics.Simulation;
 import org.openpixi.pixi.physics.measurements.FieldMeasurements;
 import org.openpixi.pixi.ui.SimulationAnimation;
@@ -39,6 +40,12 @@ public class Chart2DPanel extends AnimationChart2DPanel {
 	public final int INDEX_ENERGY_DENSITY_2 = 7;
 	public final int INDEX_TOTAL_CHARGE = 8;
 	public final int INDEX_TOTAL_CHARGE_SQUARED = 9;
+	public final int INDEX_ENERGY_DENSITY_DERIVATIVE = 10;
+	public final int INDEX_DIV_S = 11;
+	public final int INDEX_JE = 12;
+	public final int INDEX_POYNTING_THEOREM = 13;
+	public final int INDEX_INTEGRATED_DIV_S = 14;
+	public final int INDEX_INTEGRATED_JE = 15;
 
 	String[] chartLabel = new String[] {
 			"Gauss law violation",
@@ -50,7 +57,13 @@ public class Chart2DPanel extends AnimationChart2DPanel {
 			"pz",
 			"Energy density (occupation numbers)",
 			"Total charge",
-			"Total charge squared"
+			"Total charge squared",
+			"dE/dt",
+			"div S",
+			"J*E",
+			"dE/dt + div S + J*E",
+			"Integrated div S",
+			"Integrated J*E"
 	};
 
 	Color[] traceColors = new Color[] {
@@ -63,7 +76,13 @@ public class Chart2DPanel extends AnimationChart2DPanel {
 			Color.blue,
 			Color.magenta,
 			Color.darkGray,
-			Color.darkGray
+			Color.darkGray,
+			Color.orange,
+			Color.cyan,
+			Color.blue,
+			Color.black,
+			Color.red,
+			Color.green
 	};
 
 	public BooleanProperties logarithmicProperty;
@@ -74,6 +93,8 @@ public class Chart2DPanel extends AnimationChart2DPanel {
 	private FieldMeasurements fieldMeasurements;
 
 	private OccupationNumbersInTime occupationNumbers;
+
+	private PoyntingTheoremBuffer poyntingTheorem;
 
 	/** Constructor */
 	public Chart2DPanel(SimulationAnimation simulationAnimation) {
@@ -124,6 +145,7 @@ public class Chart2DPanel extends AnimationChart2DPanel {
 
 		Simulation s = getSimulationAnimation().getSimulation();
 		double time = s.totalSimulationTime;
+		poyntingTheorem = PoyntingTheoremBuffer.getOrAppendInstance(s);
 
 		//TODO Make this method d-dimensional!!
 		// The values computed from fieldMeasurements already come in "physical units", i.e. the factor g*a is accounted for.
@@ -146,6 +168,13 @@ public class Chart2DPanel extends AnimationChart2DPanel {
 		double totalCharge = fieldMeasurements.calculateTotalCharge(s.grid);
 		double totalChargeSquared = fieldMeasurements.calculateTotalChargeSquared(s.grid);
 
+		double energyDensityDerivative = poyntingTheorem.getTotalEnergyDensityDerivative();
+		double divS = poyntingTheorem.getTotalDivS();
+		double jS = poyntingTheorem.getTotalJE();
+		double poyntingTheorem = energyDensityDerivative + divS + jS;
+		double integratedDivS = 0;//poyntingTheorem.getIntegratedTotalDivS();
+		double integratedJS = 0;//poyntingTheorem.getIntegratedTotalJE();
+
 		traces[INDEX_E_SQUARED].addPoint(time, eSquared);
 		traces[INDEX_B_SQUARED].addPoint(time, bSquared);
 		traces[INDEX_GAUSS_VIOLATION].addPoint(time, gaussViolation);
@@ -155,6 +184,12 @@ public class Chart2DPanel extends AnimationChart2DPanel {
 		traces[INDEX_PZ].addPoint(time, pz);
 		traces[INDEX_TOTAL_CHARGE].addPoint(time, totalCharge);
 		traces[INDEX_TOTAL_CHARGE_SQUARED].addPoint(time, totalChargeSquared);
+		traces[INDEX_ENERGY_DENSITY_DERIVATIVE].addPoint(time, energyDensityDerivative);
+		traces[INDEX_DIV_S].addPoint(time, divS);
+		traces[INDEX_JE].addPoint(time, jS);
+		traces[INDEX_POYNTING_THEOREM].addPoint(time, poyntingTheorem);
+		traces[INDEX_INTEGRATED_DIV_S].addPoint(time, integratedDivS);
+		traces[INDEX_INTEGRATED_JE].addPoint(time, integratedJS);
 
 		if (showChartsProperty.getValue(INDEX_ENERGY_DENSITY_2)) {
 			occupationNumbers.initialize(s);

@@ -60,7 +60,7 @@ public class EnergyDensity2DGLPanel extends AnimationGLPanel {
 	public ScaleProperties scaleProperties;
 	public CoordinateProperties showCoordinateProperties;
 
-	PoyntingTheoremBuffer poyntingTheorem;
+	private PoyntingTheoremBuffer poyntingTheorem;
 
 	/** Constructor */
 	public EnergyDensity2DGLPanel(SimulationAnimation simulationAnimation) {
