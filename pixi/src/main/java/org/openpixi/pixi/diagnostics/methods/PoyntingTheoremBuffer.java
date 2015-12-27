@@ -12,15 +12,15 @@ import org.openpixi.pixi.physics.particles.IParticle;
 /**
  * Shared buffer that stores previous values of the grid for calculating pieces of
  * the Poynting Theorem.
- *
  */
 public class PoyntingTheoremBuffer implements Diagnostics {
 
 	Simulation s;
+	private boolean calculateEnergyDensityDerivative = false;
+	private int oldTime;
+	private int currentTime;
 	private double[] oldEnergyDensity;
-	private int[] oldTime;
 	private double[] currentEnergyDensity;
-	private int[] currentTime;
 
 	PoyntingTheoremBuffer(Simulation s) {
 		this.s = s;
@@ -28,22 +28,48 @@ public class PoyntingTheoremBuffer implements Diagnostics {
 
 	@Override
 	public void initialize(Simulation s) {
-		System.out.println("initialize");
 		this.s = s;
-		// Initialize arrays
-		int cells = s.grid.getTotalNumberOfCells();
-		oldEnergyDensity = new double[cells];
-		oldTime = new int[cells];
-		currentEnergyDensity = new double[cells];
-		currentTime = new int[cells];
+		resetEnergyDensityDerivative();
+		calculateEnergyDensityDerivative = true;
 	}
 
 	@Override
 	public void calculate(Grid grid, ArrayList<IParticle> particles, int steps)
 			throws IOException {
-		// TODO Auto-generated method stub
-		System.out.println("calculate");
+		if (calculateEnergyDensityDerivative) {
+			updateEnergyDensityDerivative();
+			if (s.totalSimulationSteps > 2) {
+				// Stop calculating the derivative unless the method getEnergyDensityDerivative()
+				// is explicitly called below after each iteration
+				calculateEnergyDensityDerivative = false;
+			}
+		} else {
+			resetEnergyDensityDerivative();
+		}
+	}
 
+	private void resetEnergyDensityDerivative() {
+		oldTime = -1;
+		currentTime = -1;
+		oldEnergyDensity = null;
+		currentEnergyDensity = null;
+	}
+
+	private void updateEnergyDensityDerivative() {
+		if (oldEnergyDensity == null) {
+			// Initialize arrays
+			int cells = s.grid.getTotalNumberOfCells();
+			oldTime = -1;
+			currentTime = -1;
+			oldEnergyDensity = new double[cells];
+			currentEnergyDensity = new double[cells];
+		}
+		oldTime = currentTime;
+		currentTime = s.totalSimulationSteps;
+		for (int i = 0; i < s.grid.getTotalNumberOfCells(); i++) {
+			oldEnergyDensity[i] = currentEnergyDensity[i];
+			currentEnergyDensity[i] = getEnergyDensity(i);
+		}
 	}
 
 	/**
@@ -83,27 +109,15 @@ public class PoyntingTheoremBuffer implements Diagnostics {
 
 	public double getEnergyDensityDerivative(int index) {
 		double value = 0;
-		if (currentTime == null) {
+		calculateEnergyDensityDerivative = true;
+		if (currentEnergyDensity == null) {
 			// Buffer has not been initialized yet
+			//updateEnergyDensityDerivative();
 			return 0;
 		}
-		if (currentTime[index] > s.totalSimulationSteps) {
-			// Reset values (in case of a simulation reset)
-			oldEnergyDensity[index] = 0;
-			oldTime[index] = 0;
-			currentEnergyDensity[index] = getEnergyDensity(index);
-			currentTime[index] = s.totalSimulationSteps;
-		}
-		if (currentTime[index] < s.totalSimulationSteps) {
-			// Update values
-			oldEnergyDensity[index] = currentEnergyDensity[index];
-			oldTime[index] = currentTime[index];
-			currentEnergyDensity[index] = getEnergyDensity(index);
-			currentTime[index] = s.totalSimulationSteps;
-		}
-		if (oldTime[index] != 0) {
+		if (oldTime >= 0) {
 			// Calculate derivative
-			double deltaTime = (currentTime[index] - oldTime[index]) * s.tstep;
+			double deltaTime = (currentTime - oldTime) * s.tstep;
 			value = (currentEnergyDensity[index] - oldEnergyDensity[index]) / deltaTime;
 		}
 		return value;

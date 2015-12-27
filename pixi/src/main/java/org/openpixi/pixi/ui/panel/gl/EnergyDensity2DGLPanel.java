@@ -24,7 +24,6 @@ import javax.media.opengl.GLAutoDrawable;
 import javax.swing.Box;
 
 import org.openpixi.pixi.diagnostics.methods.PoyntingTheoremBuffer;
-import org.openpixi.pixi.math.AlgebraElement;
 import org.openpixi.pixi.physics.Simulation;
 import org.openpixi.pixi.ui.SimulationAnimation;
 import org.openpixi.pixi.ui.panel.properties.ComboBoxProperties;
@@ -70,7 +69,6 @@ public class EnergyDensity2DGLPanel extends AnimationGLPanel {
 		scaleProperties = new ScaleProperties(simulationAnimation);
 		scaleProperties.setAutomaticScaling(true);
 		showCoordinateProperties = new CoordinateProperties(simulationAnimation, CoordinateProperties.Mode.MODE_2D);
-		poyntingTheorem = PoyntingTheoremBuffer.getOrAppendInstance(simulationAnimation.getSimulation());
 	}
 
 	@Override
@@ -84,6 +82,7 @@ public class EnergyDensity2DGLPanel extends AnimationGLPanel {
 		double scale = scaleProperties.getScale();
 		scaleProperties.resetAutomaticScale();
 		Simulation s = getSimulationAnimation().getSimulation();
+		poyntingTheorem = PoyntingTheoremBuffer.getOrAppendInstance(s);
 
 		int xAxisIndex = showCoordinateProperties.getXAxisIndex();
 		int yAxisIndex = showCoordinateProperties.getYAxisIndex();
