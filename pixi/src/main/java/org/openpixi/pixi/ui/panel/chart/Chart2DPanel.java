@@ -46,6 +46,7 @@ public class Chart2DPanel extends AnimationChart2DPanel {
 	public final int INDEX_POYNTING_THEOREM = 13;
 	public final int INDEX_INTEGRATED_DIV_S = 14;
 	public final int INDEX_INTEGRATED_JE = 15;
+	public final int INDEX_INTEGRATED_POYNTING_THEOREM = 16;
 
 	String[] chartLabel = new String[] {
 			"Gauss law violation",
@@ -63,7 +64,8 @@ public class Chart2DPanel extends AnimationChart2DPanel {
 			"J*E",
 			"dE/dt + div S + J*E",
 			"Integrated div S",
-			"Integrated J*E"
+			"Integrated J*E",
+			"Integrated dE/dt + div S + J*E"
 	};
 
 	Color[] traceColors = new Color[] {
@@ -82,7 +84,8 @@ public class Chart2DPanel extends AnimationChart2DPanel {
 			Color.blue,
 			Color.black,
 			Color.red,
-			Color.green
+			Color.green,
+			Color.pink
 	};
 
 	public BooleanProperties logarithmicProperty;
@@ -171,9 +174,11 @@ public class Chart2DPanel extends AnimationChart2DPanel {
 		double energyDensityDerivative = poyntingTheorem.getTotalEnergyDensityDerivative();
 		double divS = poyntingTheorem.getTotalDivS();
 		double jS = poyntingTheorem.getTotalJE();
-		double poyntingTheorem = energyDensityDerivative + divS + jS;
-		double integratedDivS = 0;//poyntingTheorem.getIntegratedTotalDivS();
-		double integratedJS = 0;//poyntingTheorem.getIntegratedTotalJE();
+		double poyntingTheoremSum = energyDensityDerivative + divS + jS;
+		double integratedDivS = poyntingTheorem.getIntegratedTotalDivS();
+		double integratedJS = poyntingTheorem.getIntegratedTotalJE();
+		double integratedPoyntingTheorem = poyntingTheorem.getTotalEnergyDensity()
+				+ integratedDivS + integratedJS;
 
 		traces[INDEX_E_SQUARED].addPoint(time, eSquared);
 		traces[INDEX_B_SQUARED].addPoint(time, bSquared);
@@ -187,9 +192,10 @@ public class Chart2DPanel extends AnimationChart2DPanel {
 		traces[INDEX_ENERGY_DENSITY_DERIVATIVE].addPoint(time, energyDensityDerivative);
 		traces[INDEX_DIV_S].addPoint(time, divS);
 		traces[INDEX_JE].addPoint(time, jS);
-		traces[INDEX_POYNTING_THEOREM].addPoint(time, poyntingTheorem);
+		traces[INDEX_POYNTING_THEOREM].addPoint(time, poyntingTheoremSum);
 		traces[INDEX_INTEGRATED_DIV_S].addPoint(time, integratedDivS);
 		traces[INDEX_INTEGRATED_JE].addPoint(time, integratedJS);
+		traces[INDEX_INTEGRATED_POYNTING_THEOREM].addPoint(time, integratedPoyntingTheorem);
 
 		if (showChartsProperty.getValue(INDEX_ENERGY_DENSITY_2)) {
 			occupationNumbers.initialize(s);

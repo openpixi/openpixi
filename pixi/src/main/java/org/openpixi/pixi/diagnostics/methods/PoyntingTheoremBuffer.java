@@ -30,6 +30,13 @@ public class PoyntingTheoremBuffer implements Diagnostics {
 	private AlgebraElement[][] RotEcurrent;
 	private AlgebraElement[][] RotEold;
 
+	private double integratedDivS;
+	private double integratedJE;
+	private boolean currentDivSCalculated;
+	private boolean currentJECalculated;
+	private double currentDivS;
+	private double currentJE;
+
 	PoyntingTheoremBuffer(Simulation s) {
 		this.s = s;
 	}
@@ -41,6 +48,10 @@ public class PoyntingTheoremBuffer implements Diagnostics {
 		calculateEnergyDensityDerivative = true;
 		resetEJ();
 		storeOldEJ = true;
+		integratedDivS = 0;
+		integratedJE = 0;
+		currentDivSCalculated = false;
+		currentJECalculated = false;
 	}
 
 	@Override
@@ -65,6 +76,9 @@ public class PoyntingTheoremBuffer implements Diagnostics {
 		} else {
 			resetEJ();
 		}
+
+		currentDivSCalculated = false;
+		currentJECalculated = false;
 	}
 
 	private void resetEnergyDensityDerivative() {
@@ -399,30 +413,54 @@ public class PoyntingTheoremBuffer implements Diagnostics {
 	}
 
 	public double getTotalDivS() {
-		double result = 0;
-		int evaluatableCells = 0;
-		for (int i = 0; i < s.grid.getTotalNumberOfCells(); i++) {
-			if (s.grid.isEvaluatable(i)) {
-				result += getDivPoyntingVector3(i);
-				evaluatableCells++;
+		if (!currentDivSCalculated) {
+			double result = 0;
+			int evaluatableCells = 0;
+			for (int i = 0; i < s.grid.getTotalNumberOfCells(); i++) {
+				if (s.grid.isEvaluatable(i)) {
+					result += getDivPoyntingVector3(i);
+					evaluatableCells++;
+				}
 			}
+			//double norm = evaluatableCells;
+			double norm = s.grid.getTotalNumberOfCells();
+			currentDivS = result / norm;
+			integratedDivS += currentDivS * s.tstep;
+			currentDivSCalculated = true;
 		}
-		//double norm = evaluatableCells;
-		double norm = s.grid.getTotalNumberOfCells();
-		return result / norm;
+		return currentDivS;
 	}
 
 	public double getTotalJE() {
-		double result = 0;
-		int evaluatableCells = 0;
-		for (int i = 0; i < s.grid.getTotalNumberOfCells(); i++) {
-			if (s.grid.isEvaluatable(i)) {
-				result += getCurrentElectricField2(i);
-				evaluatableCells++;
+		if (!currentJECalculated) {
+			double result = 0;
+			int evaluatableCells = 0;
+			for (int i = 0; i < s.grid.getTotalNumberOfCells(); i++) {
+				if (s.grid.isEvaluatable(i)) {
+					result += getCurrentElectricField2(i);
+					evaluatableCells++;
+				}
 			}
+			//double norm = evaluatableCells;
+			double norm = s.grid.getTotalNumberOfCells();
+			currentJE = result / norm;
+			integratedJE += currentJE * s.tstep;
+			currentJECalculated = true;
 		}
-		//double norm = evaluatableCells;
-		double norm = s.grid.getTotalNumberOfCells();
-		return result / norm;
+		return currentJE;
+	}
+
+	public double getIntegratedTotalDivS() {
+		if (!currentDivSCalculated) {
+			getTotalDivS();
+		}
+		return integratedDivS;
+	}
+
+	public double getIntegratedTotalJE() {
+		if (!currentJECalculated) {
+			getTotalJE();
+		}
+		return integratedJE;
 	}
 }
