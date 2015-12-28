@@ -65,7 +65,7 @@ public class Chart2DPanel extends AnimationChart2DPanel {
 			"dE/dt + div S + J*E",
 			"Integrated div S",
 			"Integrated J*E",
-			"Integrated dE/dt + div S + J*E"
+			"E + Integrated(div S + J*E)"
 	};
 
 	Color[] traceColors = new Color[] {
