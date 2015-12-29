@@ -391,6 +391,25 @@ public class SU2MatrixTest {
 		}
 	}
 
+	@Test
+	public void testInv() {
+		// Create random matrix which is not SU2 in general.
+		SU2GroupElement m = new SU2GroupElement();
+		for (int i = 0; i < 3; i++) {
+			double r = Math.random() - 0.5;
+			m.set(i, r);
+		}
+
+		SU2GroupElement m2 = m.inv();
+
+		SU2GroupElement m3 = (SU2GroupElement) m.mult(m2);
+
+		Assert.assertEquals(1.0, m3.get(0), accuracy);
+		for (int i = 1; i < 3; i++) {
+			Assert.assertEquals(0.0, m3.get(i), accuracy);
+		}
+	}
+
 	private Array2DRowFieldMatrix<Complex>  adj(Array2DRowFieldMatrix<Complex> arg) {
 		Array2DRowFieldMatrix<Complex> m = (Array2DRowFieldMatrix<Complex>) arg.transpose();
 		for (int i = 0; i < 2; i++) {
@@ -569,6 +588,7 @@ public class SU2MatrixTest {
 
 		return output;
 	}
+
 
 
 }

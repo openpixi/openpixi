@@ -244,8 +244,7 @@ public class SU2GroupElement implements GroupElement {
 	public SU2GroupElement inv() {
 		double n = computeParameterNorm();
 		SU2GroupElement v = (SU2GroupElement) this.adj();
-		v.mult(1.0/n);
 
-		return v;
+		return (SU2GroupElement) v.mult(1.0/n);
 	}
 }
