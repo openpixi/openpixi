@@ -46,7 +46,7 @@ output:
 #$ -N %job_name%
 #$ -pe mpich 16
 #$ -V
-#$ -M your.email@adre.ess
+#$ -M your.email@addr.ess
 #$ -m e
 #$ -l h_rt=1:00:00
 #$ -o ./tmp_output/
