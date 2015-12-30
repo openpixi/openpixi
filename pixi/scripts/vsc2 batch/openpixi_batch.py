@@ -105,8 +105,9 @@ def empty_path(path):
     """
     make_sure_path_exists(path)
     for f in os.listdir(path):
-        if os.path.isfile(path + f):
-            os.remove(path + f)
+        p = os.path.join(path, f)
+        if os.path.isfile(p):
+            os.remove(p)
 
 
 def submit_qjobs(o_path):
@@ -180,6 +181,7 @@ def create_files(i_path, o_path):
         float_ranges.append(frange(b, e, int_range_len))
 
     # generate yaml files in output folder
+    empty_path(o_path)
     make_sure_path_exists(o_path)
     c = 0
     yaml_files = []
@@ -218,7 +220,8 @@ def create_files(i_path, o_path):
         current_qjob_string = str(qjob_template_string)
         current_qjob_string = current_qjob_string.replace("%job_name%", job_name)
         current_qjob_string = current_qjob_string.replace("%jar_path%", jar_path)
-        current_qjob_string = current_qjob_string.replace("%input_path%", o_path + yf)
+        path = os.path.join(o_path, yf)
+        current_qjob_string = current_qjob_string.replace("%input_path%", path)
         file_object.write(current_qjob_string)
         c += 1
 
@@ -232,7 +235,6 @@ def frange(start, end, num):
     :param num: total number of floats in range
     :return: range array with floats
     """
-    """"""
     r = []
     d = (end - start) / (num - 1)
     for k in range(0, num):
