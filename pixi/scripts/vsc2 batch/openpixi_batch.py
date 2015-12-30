@@ -236,8 +236,8 @@ def frange(start, end, num):
     :return: range array with floats
     """
     r = []
-    d = (end - start) / (num - 1)
-    for k in range(0, num):
+    d = (end - start) / num
+    for k in range(0, num + 1):
         r.append(start + k * d)
     return r
 
