@@ -1,6 +1,7 @@
 package org.openpixi.pixi.diagnostics.methods;
 
 import org.openpixi.pixi.diagnostics.Diagnostics;
+import org.openpixi.pixi.diagnostics.FileFunctions;
 import org.openpixi.pixi.math.AlgebraElement;
 import org.openpixi.pixi.physics.Simulation;
 import org.openpixi.pixi.physics.gauge.CoulombGauge;
@@ -61,7 +62,7 @@ public class OccupationNumbersInTime implements Diagnostics {
 		this.outputFileName = filename;
 		this.colorful = colorful;
 
-		this.clear(filename);
+		FileFunctions.clearFile("output/" + outputFileName);
 
 		if (!Arrays.asList(supportedOutputTypes).contains(outputType)) {
 			System.out.print("OccupationNumbersInTime: unsupported output type. Allowed types are ");
@@ -291,7 +292,7 @@ public class OccupationNumbersInTime implements Diagnostics {
 	 * @param path	Path to output file
 	 */
 	public void writeHeader(String path) {
-		File file = this.getOutputFile(path);
+		File file = FileFunctions.getFile("output/" + path);
 
 		try {
 			FileWriter pw = new FileWriter(file, true);
@@ -319,7 +320,7 @@ public class OccupationNumbersInTime implements Diagnostics {
 	 * @param path	Path to the output file
 	 */
 	private void writeMomentumVectors(String path) {
-		File file = this.getOutputFile(path);
+		File file = FileFunctions.getFile("output/" + path);
 		try {
 			FileWriter pw = new FileWriter(file, true);
 			for(int i = 0; i < s.grid.getTotalNumberOfCells(); i++) {
@@ -357,7 +358,7 @@ public class OccupationNumbersInTime implements Diagnostics {
 	 */
 	private void writeCSVFile(String path, boolean includeOccupationNumbers)
 	{
-		File file = this.getOutputFile(path);
+		File file = FileFunctions.getFile("output/" + path);
 		try {
 			FileWriter pw = new FileWriter(file, true);
 			pw.write(this.generateCSVString(includeOccupationNumbers));
@@ -407,30 +408,6 @@ public class OccupationNumbersInTime implements Diagnostics {
 			}
 		}
 		return outputStringBuilder.toString();
-	}
-
-	/**
-	 * 	Checks if the files are already existent and deletes them
-	 */
-	public void clear(String path) {
-		File file = getOutputFile(path);
-		if(file.exists()) {
-			file.delete();
-		}
-	}
-
-	/**
-	 * Creates a file with a given name in the output folder.
-	 * @param filename	Filename of the output file.
-	 * @return			File object of the opened file.
-	 */
-	private File getOutputFile(String filename) {
-		// Default output path is
-		// 'output/' + filename
-		File fullpath = new File("output");
-		if(!fullpath.exists()) fullpath.mkdir();
-
-		return new File(fullpath, filename);
 	}
 
 	/**

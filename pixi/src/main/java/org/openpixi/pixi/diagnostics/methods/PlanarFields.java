@@ -1,6 +1,7 @@
 package org.openpixi.pixi.diagnostics.methods;
 
 import org.openpixi.pixi.diagnostics.Diagnostics;
+import org.openpixi.pixi.diagnostics.FileFunctions;
 import org.openpixi.pixi.math.AlgebraElement;
 import org.openpixi.pixi.physics.Simulation;
 import org.openpixi.pixi.physics.grid.Grid;
@@ -45,7 +46,7 @@ public class PlanarFields implements Diagnostics {
 	}
 
 	public void initialize(Simulation s) {
-		clear();
+		FileFunctions.clearFile("output/" + outputName);
 
 		this.s = s;
 		this.transNumCells = GridFunctions.reduceGridPos(s.grid.getNumCells(), direction);
@@ -82,7 +83,7 @@ public class PlanarFields implements Diagnostics {
 					}
 				}
 
-				File file = this.getOutputFile(outputName);
+				File file = FileFunctions.getFile("output/" + outputName);
 				try {
 					FileWriter pw = new FileWriter(file, true);
 
@@ -108,31 +109,6 @@ public class PlanarFields implements Diagnostics {
 				}
 
 			}
-		}
-	}
-
-	/**
-	 * Creates a file with a given name in the output folder.
-	 * @param filename	Filename of the output file.
-	 * @return			File object of the opened file.
-	 */
-	private File getOutputFile(String filename) {
-		// Default output path is
-		// 'output/' + filename
-		File fullpath = new File("output");
-		if(!fullpath.exists()) fullpath.mkdir();
-
-		return new File(fullpath, filename);
-	}
-
-	/**
-	 * 	Checks if the files are already existent and deletes them
-	 */
-	private void clear() {
-		File file = getOutputFile(outputName);
-		boolean fileExists1 = file.exists();
-		if(fileExists1 == true) {
-			file.delete();
 		}
 	}
 
