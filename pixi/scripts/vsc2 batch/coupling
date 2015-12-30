@@ -1,0 +1,57 @@
+%range 0 8%
+%jar pixi-0.6-SNAPSHOT.jar%
+
+%yaml begin%
+# run simulations with varying coupling constants and record fields in the transverse plane.
+simulationType: temporal cgc ngp
+gridStep: 1
+couplingConstant: %f 0.1 2.0%
+numberOfDimensions: 3
+numberOfColors: 2
+numberOfThreads: 16
+gridCells: [512, 64, 64]
+timeStep: 0.5
+duration: 256.0
+evaluationRegion:
+  enabled: true
+  point1: [2, 0, 0]
+  point2: [-3, -1, -1]
+activeRegion:
+  enabled: true
+  point1: [1, 0, 0]
+  point2: [-2, -1, -1]
+
+currents:
+  dualMVModels:
+    - direction: 0
+      longitudinalLocation: 64
+      longitudinalWidth: 4.0
+      mu: 0.04
+      lowPassCoefficient: 0.15
+      randomSeed1: 564
+      randomSeed2: 213
+      createInitialConditionsOutput: true
+      outputFile: "coupling/initial%i%.dat"
+
+output:
+  planarFields:
+    - interval: 1.0
+      startingTime: 176.0
+      path: "coupling/planar%i%.dat"
+      direction: 0
+      planarIndex: 255
+
+%yaml end%
+
+%qjob begin%
+#$ -N %job_name%
+#$ -pe mpich 16
+#$ -V
+#$ -M your.email@adre.ess
+#$ -m e
+#$ -l h_rt=1:00:00
+#$ -o ./tmp_output/
+#$ -e ./tmp_output/
+
+java -Xmx16384m -cp %jar_path% org.openpixi.pixi.ui.MainBatch %input_path%
+%qjob end%
