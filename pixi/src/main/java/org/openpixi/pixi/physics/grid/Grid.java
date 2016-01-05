@@ -810,8 +810,8 @@ public class Grid {
 			break;
 
 		case 1:
-			j = 0;
-			k = 2;
+			j = 2;
+			k = 0;
 			break;
 
 		case 2:
@@ -899,4 +899,74 @@ public class Grid {
 			}
 		}
 	}
+
+	/**
+	 * Calculate rot B using a backward derivative.
+	 * @param index    	Lattice index
+	 * @param direction	Index of the direction
+	 * @param timeIndex	Option to compute B from U (timeIndex = 0) or Unext (timeIndex != 0)
+	 * @return          Result of rot B, or null if not all cells are evaluatable.
+	 */
+	public AlgebraElement getRotB(int index, int direction, int timeIndex) {
+		// Indices for cross product:
+		// Labels are for direction == 0 (X-direction), and cyclically rotated.
+		int dirY = (direction + 1) % 3;
+		int dirZ = (direction + 2) % 3;
+
+		int indexShiftedY = shift(index, dirY, -1);
+		int indexShiftedZ = shift(index, dirZ, -1);
+
+		AlgebraElement By = getB(index, dirY, timeIndex); // By(y, z)
+		AlgebraElement Byz1 = getB(indexShiftedZ, dirY, timeIndex); // By(y, z+1)
+		AlgebraElement Bz = getB(index, dirZ, timeIndex); // Bz(y, z)
+		AlgebraElement Bzy1 = getB(indexShiftedY, dirZ, timeIndex); // Bz(y+1, z)
+
+		// Parallel transport all quantities to same position
+		Byz1 = Byz1.act(getLink(index, dirZ, -1, timeIndex));
+		Bzy1 = Bzy1.act(getLink(index, dirY, -1, timeIndex));
+
+		// dBy/dz = By(y, z+1) - By(y, z)
+		AlgebraElement dBydz = (Byz1.add(By.mult(-1)));
+
+		// dBz/dy = Bz(y+1, z) - Bz(y, z)
+		AlgebraElement dBzdy = (Bzy1.add(Bz.mult(-1)));
+
+		// dBz/dy - dBy/dz
+		return (dBzdy.add(dBydz.mult(-1))).mult(-1 / as);
+	}
+
+	/**
+	 * Calculate rot E using a forward derivative.
+	 * @param index    	Lattice index
+	 * @param direction	Index of the direction
+	 * @return          Result of rot E.
+	 */
+	public AlgebraElement getRotE(int index, int direction) {
+		// Indices for cross product:
+		// Labels are for direction == 0 (X-direction), and cyclically rotated.
+		int dirY = (direction + 1) % 3;
+		int dirZ = (direction + 2) % 3;
+
+		int indexShiftedY = shift(index, dirY, 1);
+		int indexShiftedZ = shift(index, dirZ, 1);
+
+		AlgebraElement Ey = getE(index, dirY); // Ey(y, z)
+		AlgebraElement Eyz1 = getE(indexShiftedZ, dirY); // Ey(y, z+1)
+		AlgebraElement Ez = getE(index, dirZ); // Ez(y, z)
+		AlgebraElement Ezy1 = getE(indexShiftedY, dirZ); // Ez(y+1, z)
+
+		// Parallel transport all quantities to same position
+		Eyz1 = Eyz1.act(getLink(index, dirZ, 1, 0));
+		Ezy1 = Ezy1.act(getLink(index, dirY, 1, 0));
+
+		// dEy/dz = Ey(y, z+1) - Ey(y, z)
+		AlgebraElement dEydz = (Eyz1.add(Ey.mult(-1)));
+
+		// dEz/dy = Ez(y+1, z) - Ez(y, z)
+		AlgebraElement dEzdy = (Ezy1.add(Ez.mult(-1)));
+
+		// dEz/dy - dEy/dz
+		return (dEzdy.add(dEydz.mult(-1))).mult(1 / as);
+	}
+
 }

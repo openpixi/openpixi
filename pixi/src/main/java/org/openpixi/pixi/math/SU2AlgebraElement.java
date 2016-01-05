@@ -102,7 +102,12 @@ public class SU2AlgebraElement implements AlgebraElement {
 		this.v[2] *= number;
 
 	}
-	
+
+	public double mult (AlgebraElement arg) {
+		SU2AlgebraElement a = (SU2AlgebraElement) arg;
+		return v[0]*a.v[0]+v[1]*a.v[1]+v[2]*a.v[2];
+	}
+
 	public void set (AlgebraElement arg) {
 
 		SU2AlgebraElement a = (SU2AlgebraElement) arg;

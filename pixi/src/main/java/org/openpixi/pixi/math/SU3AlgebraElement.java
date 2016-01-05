@@ -193,6 +193,13 @@ public class SU3AlgebraElement implements AlgebraElement {
 
 	}
 
+	public double mult (AlgebraElement arg) {
+		throw new RuntimeException("SU(3) code has not been tested yet.");
+		// TODO: Check if the following code is correct for SU(3):
+		// SU3AlgebraElement a = (SU3AlgebraElement) arg;
+		// return 2*(v[0]*a.v[0]+v[4]*a.v[4]+v[8]*a.v[8]+2*(v[1]*a.v[1]+v[2]*a.v[2]+v[3]*a.v[3]+v[5]*a.v[5]+v[6]*a.v[6]+v[7]*a.v[7]));
+	}
+
 	public void set (AlgebraElement arg) {
 
 		SU3AlgebraElement a = (SU3AlgebraElement) arg;
