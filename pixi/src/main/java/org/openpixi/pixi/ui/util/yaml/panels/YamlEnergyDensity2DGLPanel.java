@@ -14,6 +14,9 @@ public class YamlEnergyDensity2DGLPanel {
 	// Coordinate properties
 	public String showCoordinates;
 
+	// ComboBox properties
+	public String data;
+
 	/** Empty constructor called by SnakeYaml */
 	public YamlEnergyDensity2DGLPanel() {
 	}
@@ -24,6 +27,7 @@ public class YamlEnergyDensity2DGLPanel {
 			scaleFactor = panel.scaleProperties.getScaleFactor();
 			automaticScaling = panel.scaleProperties.getAutomaticScaling();
 			showCoordinates = panel.showCoordinateProperties.getValue();
+			data = panel.dataProperties.getStringFromEntry();
 		}
 	}
 
@@ -41,6 +45,10 @@ public class YamlEnergyDensity2DGLPanel {
 
 		if (showCoordinates != null) {
 			panel.showCoordinateProperties.setValue(showCoordinates);
+		}
+
+		if (data != null) {
+			panel.dataProperties.setEntryFromString(data);
 		}
 		return panel;
 	}

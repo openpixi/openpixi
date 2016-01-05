@@ -55,7 +55,16 @@ public interface AlgebraElement {
 	AlgebraElement mult (double number);
 
 	void multAssign(double number);
-	
+
+	/**
+	 * Computes the product of the AlgebraElement instance with another AlgebraElement and returns a copy.
+	 * This method does not change the original AlgebraElement instance.
+	 *
+	 * @param a         algebra element to be multiplied with.
+	 * @return          2 tr (A B).
+	 */
+	double mult (AlgebraElement a);
+
 	void set (AlgebraElement a);
 	
 	void reset ();

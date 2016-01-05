@@ -23,8 +23,10 @@ import javax.media.opengl.GL2;
 import javax.media.opengl.GLAutoDrawable;
 import javax.swing.Box;
 
+import org.openpixi.pixi.diagnostics.methods.PoyntingTheoremBuffer;
 import org.openpixi.pixi.physics.Simulation;
 import org.openpixi.pixi.ui.SimulationAnimation;
+import org.openpixi.pixi.ui.panel.properties.ComboBoxProperties;
 import org.openpixi.pixi.ui.panel.properties.CoordinateProperties;
 import org.openpixi.pixi.ui.panel.properties.ScaleProperties;
 
@@ -34,12 +36,36 @@ import org.openpixi.pixi.ui.panel.properties.ScaleProperties;
  */
 public class EnergyDensity2DGLPanel extends AnimationGLPanel {
 
+	public static final int INDEX_ENERGY_DENSITY = 0;
+	public static final int INDEX_ENERGY_DENSITY_DERIVATIVE = 1;
+	public static final int INDEX_DIV_POYNTING = 2;
+	public static final int INDEX_ENERGY_DENSITY_DERIVATIVE_DIV_POYNTING = 3;
+	public static final int INDEX_CURRENT_ELECTRIC_FIELD = 4;
+	public static final int INDEX_ENERGY_DENSITY_DERIVATIVE_DIV_POYNTING_CURRENT = 5;
+
+	String[] dataLabel = new String[] {
+			"Energy density",
+			"dE/dt",
+			"div S",
+			"dE/dt + div S",
+			"j*E",
+			"dE/dt + div S + j*E"
+	};
+
+	public static final int RED = 0;
+	public static final int GREEN = 1;
+	public static final int BLUE = 2;
+
+	public ComboBoxProperties dataProperties;
 	public ScaleProperties scaleProperties;
 	public CoordinateProperties showCoordinateProperties;
+
+	private PoyntingTheoremBuffer poyntingTheorem;
 
 	/** Constructor */
 	public EnergyDensity2DGLPanel(SimulationAnimation simulationAnimation) {
 		super(simulationAnimation);
+		dataProperties = new ComboBoxProperties(simulationAnimation, "Data", dataLabel, 0);
 		scaleProperties = new ScaleProperties(simulationAnimation);
 		scaleProperties.setAutomaticScaling(true);
 		showCoordinateProperties = new CoordinateProperties(simulationAnimation, CoordinateProperties.Mode.MODE_2D);
@@ -56,6 +82,7 @@ public class EnergyDensity2DGLPanel extends AnimationGLPanel {
 		double scale = scaleProperties.getScale();
 		scaleProperties.resetAutomaticScale();
 		Simulation s = getSimulationAnimation().getSimulation();
+		poyntingTheorem = PoyntingTheoremBuffer.getOrAppendInstance(s);
 
 		int xAxisIndex = showCoordinateProperties.getXAxisIndex();
 		int yAxisIndex = showCoordinateProperties.getYAxisIndex();
@@ -66,11 +93,10 @@ public class EnergyDensity2DGLPanel extends AnimationGLPanel {
 		/** Scaling factor for the displayed panel in y-direction*/
 		double sy = height / s.getSimulationBoxSize(yAxisIndex);
 
-		// Lattice spacing and coupling constant
-		double as = s.grid.getLatticeSpacing();
-		double g = s.getCouplingConstant();
+		double[] color = new double[3];
 
-		double colors = s.grid.getNumberOfColors();
+		int dataIndex = dataProperties.getIndex();
+
 		for(int i = 0; i < s.grid.getNumCells(xAxisIndex); i++) {
 
 			gl2.glBegin( GL2.GL_QUAD_STRIP );
@@ -86,49 +112,49 @@ public class EnergyDensity2DGLPanel extends AnimationGLPanel {
 				pos[yAxisIndex] = k;
 				int index = s.grid.getCellIndex(pos);
 
-				double EfieldSquared = 0.0;
-				double BfieldSquared = 0.0;
-				double red = 0;
-				double green = 0;
-				double blue = 0;
+				double value = 0;
+				color[RED] = 0;
+				color[GREEN] = 0;
+				color[BLUE] = 0;
 				if(s.grid.isEvaluatable(index)) {
-					for (int w = 0; w < s.getNumberOfDimensions(); w++) {
-						EfieldSquared += s.grid.getEsquaredFromLinks(index, w) / (as * g * as * g) / 2;
-						// Time averaging for B field.
-						BfieldSquared += s.grid.getBsquaredFromLinks(index, w, 0) / (as * g * as * g) / 4.0;
-						BfieldSquared += s.grid.getBsquaredFromLinks(index, w, 1) / (as * g * as * g) / 4.0;
-						// get color:
-						double color;
-						for (int n = 0; n < colors * colors - 1; n++) {
-							color = s.grid.getE(index, w).get(n);
-							// cycle through colors if there are more than three
-							switch (n % 3) {
-								case 0:
-									red += color * color;
-									break;
-								case 1:
-									green += color * color;
-									break;
-								case 2:
-									blue += color * color;
-									break;
-							}
-						}
+					switch(dataIndex) {
+					case INDEX_ENERGY_DENSITY:
+						value = poyntingTheorem.getEnergyDensity2(index);
+						break;
+					case INDEX_ENERGY_DENSITY_DERIVATIVE:
+						value = poyntingTheorem.getEnergyDensityDerivative(index);
+						break;
+					case INDEX_DIV_POYNTING:
+						value = poyntingTheorem.getDivPoyntingVector3(index);
+						break;
+					case INDEX_ENERGY_DENSITY_DERIVATIVE_DIV_POYNTING:
+						value = poyntingTheorem.getEnergyDensityDerivative(index)
+							+ poyntingTheorem.getDivPoyntingVector3(index);
+						break;
+					case INDEX_CURRENT_ELECTRIC_FIELD:
+						value = poyntingTheorem.getCurrentElectricField2(index);
+						break;
+					case INDEX_ENERGY_DENSITY_DERIVATIVE_DIV_POYNTING_CURRENT:
+						value = poyntingTheorem.getEnergyDensityDerivative(index)
+							+ poyntingTheorem.getDivPoyntingVector3(index)
+							+ poyntingTheorem.getCurrentElectricField2(index);
+						break;
 					}
+					getColorFromEField(s, index, color);
 				}
 				// Normalize
-				double norm = Math.max(red + green + blue, 10E-20);
-				double value = Math.min(1, scale * (EfieldSquared + BfieldSquared));
+				double norm = Math.max(color[RED] + color[GREEN] + color[BLUE], 10E-20);
+				double limitedValue = Math.min(1, scale * Math.abs(value));
 
 				// Set color according to E-field, and brightness according
 				// to total energy density:
-				red = Math.sqrt(red / norm) * value;
-				green = Math.sqrt(green / norm) * value;
-				blue = Math.sqrt(blue / norm) * value;
+				color[RED] = Math.sqrt(color[RED] / norm) * limitedValue;
+				color[GREEN] = Math.sqrt(color[GREEN] / norm) * limitedValue;
+				color[BLUE] = Math.sqrt(color[BLUE] / norm) * limitedValue;
 
-				scaleProperties.putValue(EfieldSquared + BfieldSquared);
+				scaleProperties.putValue(value);
 
-				gl2.glColor3d( red, green, blue );
+				gl2.glColor3d( color[RED], color[GREEN], color[BLUE] );
 				gl2.glVertex2f( xstart2, ystart2 );
 				gl2.glVertex2f( xstart3, ystart2 );
 			}
@@ -137,8 +163,34 @@ public class EnergyDensity2DGLPanel extends AnimationGLPanel {
 		scaleProperties.calculateAutomaticScale(1.0);
 	}
 
+
+	private void getColorFromEField(Simulation s, int index,
+			double[] color) {
+		int colors = s.grid.getNumberOfColors();
+		for (int w = 0; w < s.getNumberOfDimensions(); w++) {
+			// get color:
+			double c;
+			for (int n = 0; n < colors * colors - 1; n++) {
+				c = s.grid.getE(index, w).get(n);
+				// cycle through colors if there are more than three
+				switch (n % 3) {
+					case 0:
+						color[RED] += c * c;
+						break;
+					case 1:
+						color[GREEN] += c * c;
+						break;
+					case 2:
+						color[BLUE] += c * c;
+						break;
+				}
+			}
+		}
+	}
+
 	public void addPropertyComponents(Box box) {
 		addLabel(box, "Energy density 2D (OpenGL) panel");
+		dataProperties.addComponents(box);
 		scaleProperties.addComponents(box);
 		showCoordinateProperties.addComponents(box);
 	}
