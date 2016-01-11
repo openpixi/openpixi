@@ -55,12 +55,19 @@ public class DualMVModel implements ICurrentGenerator {
 	private String outputFile;
 	private boolean createInitialConditionsOutput;
 
+	/**
+	 * Option whether to use the \mu^2 (true) or the g^2 \mu^2 (false) normalization for the Gaussian
+	 * probability distribution of the color charge densities.
+	 */
+	private boolean useAlternativeNormalization;
+
 	private MVModel mv1;
 	private MVModel mv2;
 
 
 	public DualMVModel(int direction, double location, double longitudinalWidth, double mu, double lowPassCoefficient,
-					   boolean useSeed, int seed1, int seed2, boolean createInitialConditionsOutput, String outputFile){
+					   boolean useSeed, int seed1, int seed2, boolean createInitialConditionsOutput, String outputFile,
+					   boolean useAlternativeNormalization){
 		this.direction = direction;
 		this.location = location;
 		this.longitudinalWidth = longitudinalWidth;
@@ -73,15 +80,17 @@ public class DualMVModel implements ICurrentGenerator {
 
 		this.createInitialConditionsOutput = createInitialConditionsOutput;
 		this.outputFile = outputFile;
+
+		this.useAlternativeNormalization = useAlternativeNormalization;
 	}
 
 	public void initializeCurrent(Simulation s, int totalInstances) {
 		if(useSeed){
-			mv1 = new MVModel(direction, 1, location, longitudinalWidth, mu, seed1, lowPassCoefficient);
-			mv2 = new MVModel(direction, -1, -(location+1), longitudinalWidth, mu, seed2, lowPassCoefficient);
+			mv1 = new MVModel(direction, 1, location, longitudinalWidth, mu, seed1, lowPassCoefficient, useAlternativeNormalization);
+			mv2 = new MVModel(direction, -1, -(location+1), longitudinalWidth, mu, seed2, lowPassCoefficient, useAlternativeNormalization);
 		} else {
-			mv1 = new MVModel(direction, 1, location, longitudinalWidth, mu, lowPassCoefficient);
-			mv2 = new MVModel(direction, -1, -(location+1), longitudinalWidth, mu, lowPassCoefficient);
+			mv1 = new MVModel(direction, 1, location, longitudinalWidth, mu, lowPassCoefficient, useAlternativeNormalization);
+			mv2 = new MVModel(direction, -1, -(location+1), longitudinalWidth, mu, lowPassCoefficient, useAlternativeNormalization);
 		}
 
 		mv1.initializeCurrent(s, totalInstances);

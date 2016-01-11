@@ -38,12 +38,20 @@ public class YamlMVModel {
 	 */
 	public Integer randomSeed;
 
+	/**
+	 * Option whether to use the \mu^2 (true) or the g^2 \mu^2 (false, default) normalization for the Gaussian
+	 * probability distribution of the color charge densities.
+	 */
+	public Boolean useAlternativeNormalization = false;
+
 
 	public MVModel getCurrentGenerator() {
 		if(randomSeed != null) {
-			return new MVModel(direction, orientation, longitudinalLocation, longitudinalWidth, mu, randomSeed, lowPassCoefficient);
+			return new MVModel(direction, orientation, longitudinalLocation, longitudinalWidth, mu, randomSeed,
+					lowPassCoefficient, useAlternativeNormalization);
 		}
-		return new MVModel(direction, orientation, longitudinalLocation, longitudinalWidth, mu, lowPassCoefficient);
+		return new MVModel(direction, orientation, longitudinalLocation, longitudinalWidth, mu, lowPassCoefficient,
+				useAlternativeNormalization);
 	}
 
 }

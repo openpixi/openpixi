@@ -44,12 +44,20 @@ public class YamlDualMVModel {
 	 */
 	public String outputFile = null;
 
+	/**
+	 * Option whether to use the \mu^2 (true) or the g^2 \mu^2 (false, default) normalization for the Gaussian
+	 * probability distribution of the color charge densities.
+	 */
+	public Boolean useAlternativeNormalization = false;
+
 
 	public DualMVModel getCurrentGenerator() {
 		if(randomSeed1 != null && randomSeed2 != null) {
-			return new DualMVModel(direction, longitudinalLocation, longitudinalWidth, mu, lowPassCoefficient, true, randomSeed1, randomSeed2, createInitialConditionsOutput, outputFile);
+			return new DualMVModel(direction, longitudinalLocation, longitudinalWidth, mu, lowPassCoefficient, true,
+					randomSeed1, randomSeed2, createInitialConditionsOutput, outputFile, useAlternativeNormalization);
 		}
-		return new DualMVModel(direction, longitudinalLocation, longitudinalWidth, mu, lowPassCoefficient, false, 0, 0, createInitialConditionsOutput, outputFile);
+		return new DualMVModel(direction, longitudinalLocation, longitudinalWidth, mu, lowPassCoefficient, false, 0, 0,
+				createInitialConditionsOutput, outputFile, useAlternativeNormalization);
 	}
 
 }
