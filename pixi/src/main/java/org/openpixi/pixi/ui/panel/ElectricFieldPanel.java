@@ -39,6 +39,9 @@ public class ElectricFieldPanel extends AnimationPanel {
 	public final int INDEX_J = 7;
 	public final int INDEX_RHO = 8;
 	public final int INDEX_GAUSS = 9;
+	public final int INDEX_ROT_E = 10;
+	public final int INDEX_ROT_B = 11;
+	public final int INDEX_ROT_B_NEXT = 12;
 
 	String[] fieldLabel = new String[] {
 			"E",
@@ -50,7 +53,10 @@ public class ElectricFieldPanel extends AnimationPanel {
 			"U0 next",
 			"j",
 			"rho",
-			"Gauss"
+			"Gauss",
+			"rot E",
+			"rot B",
+			"rot B next"
 	};
 
 	Color[] fieldColors = new Color[] {
@@ -63,7 +69,10 @@ public class ElectricFieldPanel extends AnimationPanel {
 			Color.gray,
 			Color.red,
 			Color.blue,
-			Color.magenta
+			Color.magenta,
+			Color.cyan,
+			Color.pink,
+			Color.yellow
 	};
 
 	boolean[] fieldInit = new boolean[] {
@@ -71,6 +80,9 @@ public class ElectricFieldPanel extends AnimationPanel {
 			false,
 			false,
 			true,
+			false,
+			false,
+			false,
 			false,
 			false,
 			false,
@@ -248,6 +260,15 @@ public class ElectricFieldPanel extends AnimationPanel {
 					} else {
 						value = 0.0;
 					}
+					break;
+				case INDEX_ROT_E:
+					value = drawGrid.getRotE(index, directionIndex).get(colorIndex) / (as * g);
+					break;
+				case INDEX_ROT_B:
+					value = drawGrid.getRotB(index, directionIndex, 0).get(colorIndex) / (as * g);
+					break;
+				case INDEX_ROT_B_NEXT:
+					value = drawGrid.getRotB(index, directionIndex, 1).get(colorIndex) / (as * g);
 					break;
 				}
 				scaleProperties.putValue(value);

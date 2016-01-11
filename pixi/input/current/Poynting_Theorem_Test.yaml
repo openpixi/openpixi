@@ -1,0 +1,119 @@
+# Poynting's theorem test
+#
+# Please execute at least 2 time steps
+# so that dE/dt can be generated properly.
+#
+# By superimposing the moving currents with
+# an electromagnetic wave that travels orthogonal
+# to the current, one can obtain a nonvanishing
+# j*E contribution for testing.
+
+simulationType: temporal cgc ngp
+gridStep: 1
+couplingConstant: 1
+numberOfDimensions: 3
+numberOfColors: 2
+numberOfThreads: 12
+gridCells: [64, 64, 1]
+timeStep: 0.1
+duration: 1000
+evaluationRegion:
+  enabled: true
+  point1: [2, 0, 0]
+  point2: [-3, -1, -1]
+activeRegion:
+  enabled: true
+  point1: [1, 0, 0]
+  point2: [-2, -1, -1]
+
+currents:
+  pointChargeLCCurrents:
+    - direction: 0
+      orientation: 1
+      location: 24
+      longitudinalWidth: 4
+      useMonopoleRemoval: false
+      useDipoleRemoval: false
+      charges:
+        - location: [40, 0]
+          amplitudeColorDirection: [1.0, 0.0, 0.0]
+          magnitude: 1
+        - location: [30, 0]
+          amplitudeColorDirection: [1.0, 0.0, 0.0]
+          magnitude: -1
+        - location: [20, 0]
+          amplitudeColorDirection: [1.0, 0.0, 0.0]
+          magnitude: -1
+        - location: [10, 0]
+          amplitudeColorDirection: [1.0, 0.0, 0.0]
+          magnitude: 1
+
+fields:
+  SU2PlaneWaves:
+      # wave vector of the plane wave
+    - k: [0, 0.098174770, 0.0]
+
+      # spatial part of the wave amplitude
+      aSpatial: [1.0, 0.0,0.0]
+
+      # color part of the wave amplitude
+      aColor: [1.0, 0.0, 0.0]
+
+      # magnitude of the wave amplitude
+      a: 0.01
+
+
+# Generated panel code:
+panels:
+  dividerLocation: 351
+  leftPanel:
+    dividerLocation: 373
+    leftPanel:
+      energyDensity2DGLPanel:
+        automaticScaling: false
+        data: Energy density
+        scaleFactor: 100.0
+        showCoordinates: x, y, 0
+    orientation: 0
+    rightPanel:
+      energyDensity2DGLPanel:
+        automaticScaling: false
+        data: dE/dt
+        scaleFactor: 100.0
+        showCoordinates: x, y, 0
+  orientation: 1
+  rightPanel:
+    dividerLocation: 387
+    leftPanel:
+      dividerLocation: 375
+      leftPanel:
+        energyDensity2DGLPanel:
+          automaticScaling: false
+          data: div S
+          scaleFactor: 100.0
+          showCoordinates: x, y, 0
+      orientation: 0
+      rightPanel:
+        energyDensity2DGLPanel:
+          automaticScaling: false
+          data: dE/dt + div S
+          scaleFactor: 100.0
+          showCoordinates: x, y, 0
+    orientation: 1
+    rightPanel:
+      dividerLocation: 375
+      leftPanel:
+        energyDensity2DGLPanel:
+          automaticScaling: false
+          data: j*E
+          scaleFactor: 100.0
+          showCoordinates: x, y, 0
+      orientation: 0
+      rightPanel:
+        energyDensity2DGLPanel:
+          automaticScaling: false
+          data: dE/dt + div S + j*E
+          scaleFactor: 100.0
+          showCoordinates: x, y, 0
+  windowHeight: 832
+  windowWidth: 1452

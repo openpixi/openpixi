@@ -429,6 +429,14 @@ public class Simulation {
         }
 	}
 
+	/**
+	 * Return list of diagnostics objects.
+	 * @return list of diagnostics objects
+	 */
+	public ArrayList<Diagnostics> getDiagnosticsList() {
+		return diagnostics;
+	}
+
 	/*
 	Not used right now.
 
