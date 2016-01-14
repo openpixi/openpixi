@@ -29,6 +29,8 @@ public class YamlOutput {
 
 	public ArrayList<YamlProjectedEnergyDensity> projectedEnergyDensity = new ArrayList<YamlProjectedEnergyDensity>();
 
+	public ArrayList<YamlPlanarFields> planarFields = new ArrayList<YamlPlanarFields>();
+
 
 	/**
 	 * Creates FileGenerator instances and applies them to the Settings instance.
@@ -72,6 +74,10 @@ public class YamlOutput {
 		}
 
 		for(YamlProjectedEnergyDensity output : projectedEnergyDensity) {
+			s.addDiagnostics(output.getFileGenerator());
+		}
+
+		for(YamlPlanarFields output : planarFields) {
 			s.addDiagnostics(output.getFileGenerator());
 		}
 	}

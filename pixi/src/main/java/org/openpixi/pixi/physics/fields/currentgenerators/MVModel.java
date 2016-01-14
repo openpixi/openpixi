@@ -40,15 +40,26 @@ public class MVModel implements ICurrentGenerator {
 	private boolean useSeed = false;
 	private int seed;
 
-	private ParticleLCCurrent particleLCCurrent;
+	/**
+	 *
+	 */
+	private double lowPassCoefficient = 1.0;
+
+	/**
+	 * Option whether to use the \mu^2 (true) or the g^2 \mu^2 (false) normalization for the Gaussian
+	 * probability distribution of the color charge densities.
+	 */
+	private boolean useAlternativeNormalization;
+
+	protected ParticleLCCurrent particleLCCurrent;
 
 
-	public MVModel(int direction, int orientation, double location, double longitudinalWidth, double mu) {
-		this(direction, orientation, location, longitudinalWidth, mu, 0);
+	public MVModel(int direction, int orientation, double location, double longitudinalWidth, double mu, double lowPassCoefficient, boolean useAlternativeNormalization) {
+		this(direction, orientation, location, longitudinalWidth, mu, 0, lowPassCoefficient, useAlternativeNormalization);
 		this.useSeed = false;
 	}
 
-	public MVModel(int direction, int orientation, double location, double longitudinalWidth, double mu, int seed){
+	public MVModel(int direction, int orientation, double location, double longitudinalWidth, double mu, int seed, double lowPassCoefficient, boolean useAlternativeNormalization){
 		this.direction = direction;
 		this.orientation = orientation;
 		this.location = location;
@@ -56,7 +67,8 @@ public class MVModel implements ICurrentGenerator {
 		this.mu = mu;
 		this.seed = seed;
 		this.useSeed = true;
-
+		this.lowPassCoefficient = lowPassCoefficient;
+		this.useAlternativeNormalization = useAlternativeNormalization;
 	}
 
 	public void initializeCurrent(Simulation s, int totalInstances) {
@@ -72,7 +84,14 @@ public class MVModel implements ICurrentGenerator {
 		// Initialize transversal charge density with random charges from a Gaussian distribution with zero mean and width \mu.
 		AlgebraElement[] transversalChargeDensity = new AlgebraElement[totalTransversalCells];
 		AlgebraElement totalCharge = s.grid.getElementFactory().algebraZero();
-		double gaussianWidth = mu * s.getCouplingConstant() / s.grid.getLatticeSpacing();
+
+		double gaussianWidth;
+		if(useAlternativeNormalization) {
+			gaussianWidth = mu / s.grid.getLatticeSpacing();
+		} else {
+			gaussianWidth = mu * s.getCouplingConstant() / s.grid.getLatticeSpacing();
+		}
+
 		for (int i = 0; i < totalTransversalCells; i++) {
 			AlgebraElement charge = s.grid.getElementFactory().algebraZero();
 			for (int c = 0; c < numberOfComponents; c++) {
@@ -104,6 +123,7 @@ public class MVModel implements ICurrentGenerator {
 		} else if(s.getSimulationType() == SimulationType.TemporalCGCNGP) {
 			this.particleLCCurrent = new ParticleLCCurrentNGP(direction, orientation, location, longitudinalWidth);
 		}
+		particleLCCurrent.lowPassCoefficient = lowPassCoefficient;
 		particleLCCurrent.setTransversalChargeDensity(transversalChargeDensity);
 		particleLCCurrent.initializeCurrent(s, totalInstances);
 

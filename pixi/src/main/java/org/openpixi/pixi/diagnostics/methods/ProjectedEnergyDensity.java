@@ -1,6 +1,7 @@
 package org.openpixi.pixi.diagnostics.methods;
 
 import org.openpixi.pixi.diagnostics.Diagnostics;
+import org.openpixi.pixi.diagnostics.FileFunctions;
 import org.openpixi.pixi.physics.Simulation;
 import org.openpixi.pixi.physics.grid.Grid;
 import org.openpixi.pixi.physics.particles.IParticle;
@@ -55,7 +56,7 @@ public class ProjectedEnergyDensity implements Diagnostics {
 		numberOfCells = s.grid.getNumCells(direction);
 		this.stepInterval = (int) (timeInterval / s.getTimeStep());
 
-		clear();
+		FileFunctions.clearFile("output/" + path);
 	}
 
 	public void calculate(Grid grid, ArrayList<IParticle> particles, int steps) throws IOException {
@@ -103,7 +104,7 @@ public class ProjectedEnergyDensity implements Diagnostics {
 			}
 
 			// Write to file
-			File file = this.getOutputFile(path);
+			File file = FileFunctions.getFile("output/" + path);
 			try {
 				FileWriter pw = new FileWriter(file, true);
 				Double time = steps * grid.getTemporalSpacing();
@@ -116,31 +117,6 @@ public class ProjectedEnergyDensity implements Diagnostics {
 			} catch (IOException ex) {
 				System.out.println("ProjectedEnergyDensity: Error writing to file.");
 			}
-		}
-	}
-
-	/**
-	 * Creates a file with a given name in the output folder.
-	 * @param filename	Filename of the output file.
-	 * @return			File object of the opened file.
-	 */
-	private File getOutputFile(String filename) {
-		// Default output path is
-		// 'output/' + filename
-		File fullpath = new File("output");
-		if(!fullpath.exists()) fullpath.mkdir();
-
-		return new File(fullpath, filename);
-	}
-
-	/**
-	 * 	Checks if the files are already existent and deletes them
-	 */
-	public void clear() {
-		File particlesfile = getOutputFile(path);
-		boolean fileExists1 = particlesfile.exists();
-		if(fileExists1 == true) {
-			particlesfile.delete();
 		}
 	}
 

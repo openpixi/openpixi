@@ -31,6 +31,9 @@ public class NewLCPoissonSolver {
 	private double at;
 	private double g;
 
+	public double infraredRegulator = 0.0;
+	public double lowPassCoefficient = 1.0;
+
 	private ElementFactory factory;
 	private Simulation s;
 
@@ -72,11 +75,11 @@ public class NewLCPoissonSolver {
 		DoubleFFTWrapper fft = new DoubleFFTWrapper(transversalNumCells);
 
 		// IR Regulator
-		double m = 0.0;
+		double m = infraredRegulator;
 
 		// UV Regulator
 		double psqrMax = 4.0 * effTransversalDimensions / (as * as);
-		double lambda = 1.0;
+		double lambda = lowPassCoefficient;
 
 		// First step: compute transversal potential phi
 		for (int i = 0; i < factory.numberOfComponents; i++) {
@@ -197,6 +200,15 @@ public class NewLCPoissonSolver {
 		double z = longitudinalPosition - location;
 		double shape = integratedShapeFunction(z, t, orientation, longitudinalWidth);
 		return phi[transversalIndex].mult(- shape * g).getLink();
+	}
+
+	public GroupElement getV(int transversalIndex) {
+		return phi[transversalIndex].mult(- g).getLink();
+	}
+
+	public GroupElement getU(int transversalIndex, int direction) {
+		int shiftedIndex = GridFunctions.shift(transversalIndex, direction, 1 , transversalNumCells);
+		return getV(transversalIndex).mult(getV(shiftedIndex).adj());
 	}
 
 	private double integratedShapeFunction(double z, double t, int o, double width) {

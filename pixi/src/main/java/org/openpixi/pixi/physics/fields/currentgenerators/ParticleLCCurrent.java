@@ -76,6 +76,11 @@ public class ParticleLCCurrent implements ICurrentGenerator {
 	protected int particlesPerCell = 1;
 
 	/**
+	 * Low pass filter for the Poisson solver
+	 */
+	public double lowPassCoefficient = 1.0;
+
+	/**
 	 * Standard constructor for the ParticleLCCurrent class.
 	 *
 	 * @param direction Direction of the transversal charge density movement.
@@ -126,6 +131,7 @@ public class ParticleLCCurrent implements ICurrentGenerator {
 		// 2) Initialize the NewLCPoissonSolver with the transversal charge density and solve for the fields U and E.
 		poissonSolver = new NewLCPoissonSolver(direction, orientation, location, longitudinalWidth,
 				transversalChargeDensity, transversalNumCells);
+		poissonSolver.lowPassCoefficient = lowPassCoefficient;
 		poissonSolver.initialize(s);
 		poissonSolver.solve(s);
 
