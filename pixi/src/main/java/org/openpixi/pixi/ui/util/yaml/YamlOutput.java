@@ -31,6 +31,7 @@ public class YamlOutput {
 
 	public ArrayList<YamlPlanarFields> planarFields = new ArrayList<YamlPlanarFields>();
 
+	public ArrayList<YamlPoyntingTheoremInTime> poyntingTheoremInTime = new ArrayList<YamlPoyntingTheoremInTime>();
 
 	/**
 	 * Creates FileGenerator instances and applies them to the Settings instance.
@@ -78,6 +79,10 @@ public class YamlOutput {
 		}
 
 		for(YamlPlanarFields output : planarFields) {
+			s.addDiagnostics(output.getFileGenerator());
+		}
+
+		for(YamlPoyntingTheoremInTime output : poyntingTheoremInTime) {
 			s.addDiagnostics(output.getFileGenerator());
 		}
 	}

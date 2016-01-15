@@ -187,7 +187,6 @@ public class Chart2DPanel extends AnimationChart2DPanel {
 		double poyntingTheoremSum = energyDensityDerivative + divS1 + jS;
 		double integratedDivS1 = poyntingTheorem.getIntegratedTotalDivS1();
 		double integratedDivS2 = poyntingTheorem.getIntegratedTotalDivS2();
-		double integratedBrotEminusErotB = poyntingTheorem.getIntegratedTotalDivS2();
 		double integratedJS = poyntingTheorem.getIntegratedTotalJE();
 		double integratedPoyntingTheorem1 = poyntingTheorem.getTotalEnergyDensity()
 				+ integratedDivS1 + integratedJS;
