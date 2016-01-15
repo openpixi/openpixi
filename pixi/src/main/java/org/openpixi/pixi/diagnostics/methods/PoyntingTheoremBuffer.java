@@ -30,11 +30,14 @@ public class PoyntingTheoremBuffer implements Diagnostics {
 	private AlgebraElement[][] RotEcurrent;
 	private AlgebraElement[][] RotEold;
 
-	private double integratedDivS;
+	private double integratedDivS1;
+	private double integratedDivS2;
 	private double integratedJE;
-	private boolean currentDivSCalculated;
+	private boolean currentDivS1Calculated;
+	private boolean currentDivS2Calculated;
 	private boolean currentJECalculated;
-	private double currentDivS;
+	private double currentDivS1;
+	private double currentDivS2;
 	private double currentJE;
 
 	PoyntingTheoremBuffer(Simulation s) {
@@ -48,9 +51,11 @@ public class PoyntingTheoremBuffer implements Diagnostics {
 		calculateEnergyDensityDerivative = true;
 		resetEJ();
 		storeOldEJ = true;
-		integratedDivS = 0;
+		integratedDivS1 = 0;
+		integratedDivS2 = 0;
 		integratedJE = 0;
-		currentDivSCalculated = false;
+		currentDivS1Calculated = false;
+		currentDivS2Calculated = false;
 		currentJECalculated = false;
 	}
 
@@ -77,7 +82,8 @@ public class PoyntingTheoremBuffer implements Diagnostics {
 			resetEJ();
 		}
 
-		currentDivSCalculated = false;
+		currentDivS1Calculated = false;
+		currentDivS2Calculated = false;
 		currentJECalculated = false;
 	}
 
@@ -262,6 +268,12 @@ public class PoyntingTheoremBuffer implements Diagnostics {
 		return S / (as * g * as * g);
 	}
 
+	/**
+	 * Calculates the divergence of the Poynting vector on the lattice.
+	 * Actually, B rot E - E rot B is calculated.
+	 * @param index cell index
+	 * @return B rot E - E rot B
+	 */
 	@Deprecated
 	public double getDivPoyntingVector2(int index) {
 		storeOldEJ = true;
@@ -292,8 +304,9 @@ public class PoyntingTheoremBuffer implements Diagnostics {
 	/**
 	 * Calculates the divergence of the Poynting vector on the lattice
 	 * at the time of the B-field correctly through order O(t^2).
+	 * Actually, B rot E - E rot B is calculated.
 	 * @param index cell index
-	 * @return divergence of Poynting vector
+	 * @return B rot E - E rot B
 	 */
 	public double getDivPoyntingVector3(int index) {
 		storeOldEJ = true;
@@ -332,6 +345,98 @@ public class PoyntingTheoremBuffer implements Diagnostics {
 			value += B.mult(rotE) - E.mult(rotB);
 		}
 		return value / (as * g * as * g);
+	}
+
+	/**
+	 * Calculates the divergence of the Poynting vector on the lattice
+	 * at the time of the B-field correctly through order O(t^2).
+	 * @param index cell index
+	 * @return divergence of Poynting vector
+	 */
+	public double getDivPoyntingVector4(int index) {
+		double as = s.grid.getLatticeSpacing();
+
+		double value = 0;
+		if (s.getNumberOfDimensions() != 3) {
+			throw new RuntimeException("Dimension other than 3 has not been implemented yet.");
+			// TODO: Implement for arbitrary dimensions
+			// return 0;
+		}
+		for (int direction = 0; direction < s.grid.getNumberOfDimensions(); direction++) {
+			int indexShifted1 = s.grid.shift(index, direction, -1);
+			value += getPoyntingVector3(index, direction)
+					- getPoyntingVector3(indexShifted1, direction);
+		}
+		return value / (as);
+	}
+
+	@Deprecated
+	public double getPoyntingVector2(int index, int direction) {
+		double as = s.grid.getLatticeSpacing();
+		double g = s.getCouplingConstant();
+
+		// Indices for cross product:
+		int dir1 = (direction + 1) % 3;
+		int dir2 = (direction + 2) % 3;
+
+		int indexShifted1 = s.grid.shift(index, dir1, 1);
+		int indexShifted2 = s.grid.shift(index, dir2, 1);
+
+		// fields at same time:
+		AlgebraElement E1 = s.grid.getE(indexShifted2, dir1);
+		AlgebraElement E2 = s.grid.getE(indexShifted1, dir2);
+		// time averaged B-field:
+		AlgebraElement B1 = s.grid.getB(index, dir1, 0).add(s.grid.getB(index, dir1, 1)).mult(0.5);
+		AlgebraElement B2 = s.grid.getB(index, dir2, 0).add(s.grid.getB(index, dir2, 1)).mult(0.5);
+		double S = E1.mult(B2) - E2.mult(B1);
+		return S / (as * g * as * g);
+	}
+
+	public double getPoyntingVector3(int index, int direction) {
+		double as = s.grid.getLatticeSpacing();
+		double g = s.getCouplingConstant();
+
+		// Indices for cross product:
+		int dir1 = (direction + 1) % 3;
+		int dir2 = (direction + 2) % 3;
+
+		//int indexShifted1 = s.grid.shift(index, dir1, -1);
+		//int indexShifted2 = s.grid.shift(index, dir2, -1);
+		int indexShifted1 = index;
+		int indexShifted2 = index;
+
+		// fields at same time:
+		AlgebraElement E1 = s.grid.getE(indexShifted2, dir1);
+		AlgebraElement E2 = s.grid.getE(indexShifted1, dir2);
+
+		// Get time-averaged E-field
+		if (Ecurrent != null) {
+			Ecurrent[indexShifted2][dir1] = E1.copy();
+			if (Eold != null && Eold[indexShifted2] != null && Eold[indexShifted2][dir1] != null) {
+				// Form average
+				E1 = (E1.add(Eold[indexShifted2][dir1])).mult(0.5);
+			}
+			Ecurrent[indexShifted1][dir2] = E2.copy();
+			if (Eold != null && Eold[indexShifted1] != null && Eold[indexShifted1][dir2] != null) {
+				// Form average
+				E2 = (E2.add(Eold[indexShifted1][dir2])).mult(0.5);
+			}
+		}
+
+		// time averaged B-field:
+//		AlgebraElement B1 = s.grid.getB(index, dir1, 0).add(s.grid.getB(index, dir1, 1)).mult(0.5);
+//		AlgebraElement B2 = s.grid.getB(index, dir2, 0).add(s.grid.getB(index, dir2, 1)).mult(0.5);
+
+		//indexShifted1 = s.grid.shift(index, dir1, 1);
+		//indexShifted2 = s.grid.shift(index, dir2, 1);
+		indexShifted1 = index;
+		indexShifted2 = index;
+
+		// B-field:
+		AlgebraElement B1 = s.grid.getB(indexShifted2, dir1, 0);
+		AlgebraElement B2 = s.grid.getB(indexShifted1, dir2, 0);
+		double S = E1.mult(B2) - E2.mult(B1);
+		return S / (as * g * as * g);
 	}
 
 	@Deprecated
@@ -414,8 +519,34 @@ public class PoyntingTheoremBuffer implements Diagnostics {
 		return result / norm;
 	}
 
-	public double getTotalDivS() {
-		if (!currentDivSCalculated) {
+	/**
+	 *  Calculate DivS1 via div S
+	 *  @return div S */
+	public double getTotalDivS1() {
+		if (!currentDivS1Calculated) {
+			double result = 0;
+			int evaluatableCells = 0;
+			for (int i = 0; i < s.grid.getTotalNumberOfCells(); i++) {
+				if (s.grid.isEvaluatable(i)) {
+					result += getDivPoyntingVector4(i);
+					evaluatableCells++;
+				}
+			}
+			//double norm = evaluatableCells;
+			double norm = s.grid.getTotalNumberOfCells();
+			currentDivS1 = result / norm;
+			integratedDivS1 += currentDivS1 * s.tstep;
+			currentDivS1Calculated = true;
+		}
+		return currentDivS1;
+	}
+
+	/**
+	 * Calculate DivS2 via B rot E - E rot B
+	 * @return B rot E - E rot B
+	 */
+	public double getTotalDivS2() {
+		if (!currentDivS2Calculated) {
 			double result = 0;
 			int evaluatableCells = 0;
 			for (int i = 0; i < s.grid.getTotalNumberOfCells(); i++) {
@@ -426,11 +557,11 @@ public class PoyntingTheoremBuffer implements Diagnostics {
 			}
 			//double norm = evaluatableCells;
 			double norm = s.grid.getTotalNumberOfCells();
-			currentDivS = result / norm;
-			integratedDivS += currentDivS * s.tstep;
-			currentDivSCalculated = true;
+			currentDivS2 = result / norm;
+			integratedDivS2 += currentDivS2 * s.tstep;
+			currentDivS2Calculated = true;
 		}
-		return currentDivS;
+		return currentDivS2;
 	}
 
 	public double getTotalJE() {
@@ -452,11 +583,18 @@ public class PoyntingTheoremBuffer implements Diagnostics {
 		return currentJE;
 	}
 
-	public double getIntegratedTotalDivS() {
-		if (!currentDivSCalculated) {
-			getTotalDivS();
+	public double getIntegratedTotalDivS1() {
+		if (!currentDivS1Calculated) {
+			getTotalDivS1();
 		}
-		return integratedDivS;
+		return integratedDivS1;
+	}
+
+	public double getIntegratedTotalDivS2() {
+		if (!currentDivS2Calculated) {
+			getTotalDivS2();
+		}
+		return integratedDivS2;
 	}
 
 	public double getIntegratedTotalJE() {
