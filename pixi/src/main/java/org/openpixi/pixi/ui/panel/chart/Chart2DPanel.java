@@ -157,7 +157,6 @@ public class Chart2DPanel extends AnimationChart2DPanel {
 
 		Simulation s = getSimulationAnimation().getSimulation();
 		double time = s.totalSimulationTime;
-		poyntingTheorem = PoyntingTheoremBuffer.getOrAppendInstance(s);
 
 		//TODO Make this method d-dimensional!!
 		// The values computed from fieldMeasurements already come in "physical units", i.e. the factor g*a is accounted for.
@@ -180,19 +179,6 @@ public class Chart2DPanel extends AnimationChart2DPanel {
 		double totalCharge = fieldMeasurements.calculateTotalCharge(s.grid);
 		double totalChargeSquared = fieldMeasurements.calculateTotalChargeSquared(s.grid);
 
-		double energyDensityDerivative = poyntingTheorem.getTotalEnergyDensityDerivative();
-		double divS1 = poyntingTheorem.getTotalDivS1();
-		double divS2 = poyntingTheorem.getTotalDivS2();
-		double jS = poyntingTheorem.getTotalJE();
-		double poyntingTheoremSum = energyDensityDerivative + divS1 + jS;
-		double integratedDivS1 = poyntingTheorem.getIntegratedTotalDivS1();
-		double integratedDivS2 = poyntingTheorem.getIntegratedTotalDivS2();
-		double integratedJS = poyntingTheorem.getIntegratedTotalJE();
-		double integratedPoyntingTheorem1 = poyntingTheorem.getTotalEnergyDensity()
-				+ integratedDivS1 + integratedJS;
-		double integratedPoyntingTheorem2 = poyntingTheorem.getTotalEnergyDensity()
-				+ integratedDivS2 + integratedJS;
-
 		traces[INDEX_E_SQUARED].addPoint(time, eSquared);
 		traces[INDEX_B_SQUARED].addPoint(time, bSquared);
 		traces[INDEX_GAUSS_VIOLATION].addPoint(time, gaussViolation);
@@ -202,21 +188,49 @@ public class Chart2DPanel extends AnimationChart2DPanel {
 		traces[INDEX_PZ].addPoint(time, pz);
 		traces[INDEX_TOTAL_CHARGE].addPoint(time, totalCharge);
 		traces[INDEX_TOTAL_CHARGE_SQUARED].addPoint(time, totalChargeSquared);
-		traces[INDEX_ENERGY_DENSITY_DERIVATIVE].addPoint(time, energyDensityDerivative);
-		traces[INDEX_DIV_S].addPoint(time, divS1);
-		traces[INDEX_B_ROT_E_MINUS_E_ROT_B].addPoint(time, divS2);
-		traces[INDEX_JE].addPoint(time, jS);
-		traces[INDEX_POYNTING_THEOREM].addPoint(time, poyntingTheoremSum);
-		traces[INDEX_INTEGRATED_DIV_S].addPoint(time, integratedDivS1);
-		traces[INDEX_INTEGRATED_B_ROT_E_MINUS_E_ROT_B].addPoint(time, integratedDivS2);
-		traces[INDEX_INTEGRATED_JE].addPoint(time, integratedJS);
-		traces[INDEX_INTEGRATED_POYNTING_THEOREM_1].addPoint(time, integratedPoyntingTheorem1);
-		traces[INDEX_INTEGRATED_POYNTING_THEOREM_2].addPoint(time, integratedPoyntingTheorem2);
 
 		if (showChartsProperty.getValue(INDEX_ENERGY_DENSITY_2)) {
 			occupationNumbers.initialize(s);
 			occupationNumbers.calculate(s.grid, s.particles, 0);
 			traces[INDEX_ENERGY_DENSITY_2].addPoint(time, occupationNumbers.energyDensity);
+		}
+
+		// Poynting theorem calculations
+		if (showChartsProperty.getValue(INDEX_ENERGY_DENSITY_DERIVATIVE)
+				|| showChartsProperty.getValue(INDEX_DIV_S)
+				|| showChartsProperty.getValue(INDEX_B_ROT_E_MINUS_E_ROT_B)
+				|| showChartsProperty.getValue(INDEX_JE)
+				|| showChartsProperty.getValue(INDEX_POYNTING_THEOREM)
+				|| showChartsProperty.getValue(INDEX_INTEGRATED_DIV_S)
+				|| showChartsProperty.getValue(INDEX_INTEGRATED_B_ROT_E_MINUS_E_ROT_B)
+				|| showChartsProperty.getValue(INDEX_INTEGRATED_JE)
+				|| showChartsProperty.getValue(INDEX_INTEGRATED_POYNTING_THEOREM_1)
+				|| showChartsProperty.getValue(INDEX_INTEGRATED_POYNTING_THEOREM_2)) {
+			poyntingTheorem = PoyntingTheoremBuffer.getOrAppendInstance(s);
+
+			double energyDensityDerivative = poyntingTheorem.getTotalEnergyDensityDerivative();
+			double divS1 = poyntingTheorem.getTotalDivS1();
+			double divS2 = poyntingTheorem.getTotalDivS2();
+			double jS = poyntingTheorem.getTotalJE();
+			double poyntingTheoremSum = energyDensityDerivative + divS1 + jS;
+			double integratedDivS1 = poyntingTheorem.getIntegratedTotalDivS1();
+			double integratedDivS2 = poyntingTheorem.getIntegratedTotalDivS2();
+			double integratedJS = poyntingTheorem.getIntegratedTotalJE();
+			double integratedPoyntingTheorem1 = poyntingTheorem.getTotalEnergyDensity()
+					+ integratedDivS1 + integratedJS;
+			double integratedPoyntingTheorem2 = poyntingTheorem.getTotalEnergyDensity()
+					+ integratedDivS2 + integratedJS;
+
+			traces[INDEX_ENERGY_DENSITY_DERIVATIVE].addPoint(time, energyDensityDerivative);
+			traces[INDEX_DIV_S].addPoint(time, divS1);
+			traces[INDEX_B_ROT_E_MINUS_E_ROT_B].addPoint(time, divS2);
+			traces[INDEX_JE].addPoint(time, jS);
+			traces[INDEX_POYNTING_THEOREM].addPoint(time, poyntingTheoremSum);
+			traces[INDEX_INTEGRATED_DIV_S].addPoint(time, integratedDivS1);
+			traces[INDEX_INTEGRATED_B_ROT_E_MINUS_E_ROT_B].addPoint(time, integratedDivS2);
+			traces[INDEX_INTEGRATED_JE].addPoint(time, integratedJS);
+			traces[INDEX_INTEGRATED_POYNTING_THEOREM_1].addPoint(time, integratedPoyntingTheorem1);
+			traces[INDEX_INTEGRATED_POYNTING_THEOREM_2].addPoint(time, integratedPoyntingTheorem2);
 		}
 
 		for (int i = 0; i < showChartsProperty.getSize(); i++) {
