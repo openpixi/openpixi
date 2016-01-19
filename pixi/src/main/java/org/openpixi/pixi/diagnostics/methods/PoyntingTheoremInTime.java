@@ -105,18 +105,18 @@ public class PoyntingTheoremInTime implements Diagnostics {
 				FileWriter pw = new FileWriter(file, true);
 				DecimalFormat formatter = new DecimalFormat("0.################E0");
 
-				pw.write(formatter.format(steps * s.getTimeStep()) + "\t");
-				pw.write(formatter.format(energyDensity)+ "\t");
-				pw.write(formatter.format(energyDensityDerivative) + "\t");
-				pw.write(formatter.format(divS1) + "\t");
-				pw.write(formatter.format(divS2) + "\t");
-				pw.write(formatter.format(jS) + "\t");
-				pw.write(formatter.format(poyntingTheoremSum));
-				pw.write(formatter.format(integratedDivS1));
-				pw.write(formatter.format(integratedDivS2));
-				pw.write(formatter.format(integratedJS));
-				pw.write(formatter.format(integratedPoyntingTheorem1));
-				pw.write(formatter.format(integratedPoyntingTheorem2));
+				pw.write(formatter.format(steps * s.getTimeStep()));
+				pw.write("\t" + formatter.format(energyDensity));
+				pw.write("\t" + formatter.format(energyDensityDerivative));
+				pw.write("\t" + formatter.format(divS1));
+				pw.write("\t" + formatter.format(divS2));
+				pw.write("\t" + formatter.format(jS));
+				pw.write("\t" + formatter.format(poyntingTheoremSum));
+				pw.write("\t" + formatter.format(integratedDivS1));
+				pw.write("\t" + formatter.format(integratedDivS2));
+				pw.write("\t" + formatter.format(integratedJS));
+				pw.write("\t" + formatter.format(integratedPoyntingTheorem1));
+				pw.write("\t" + formatter.format(integratedPoyntingTheorem2));
 				pw.write("\n");
 
 				pw.close();
