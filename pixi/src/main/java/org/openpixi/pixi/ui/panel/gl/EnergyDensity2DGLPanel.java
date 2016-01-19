@@ -39,17 +39,21 @@ public class EnergyDensity2DGLPanel extends AnimationGLPanel {
 	public static final int INDEX_ENERGY_DENSITY = 0;
 	public static final int INDEX_ENERGY_DENSITY_DERIVATIVE = 1;
 	public static final int INDEX_DIV_POYNTING = 2;
-	public static final int INDEX_ENERGY_DENSITY_DERIVATIVE_DIV_POYNTING = 3;
-	public static final int INDEX_CURRENT_ELECTRIC_FIELD = 4;
-	public static final int INDEX_ENERGY_DENSITY_DERIVATIVE_DIV_POYNTING_CURRENT = 5;
+	public static final int INDEX_B_ROT_E_MINUS_E_ROT_B = 3;
+	public static final int INDEX_ENERGY_DENSITY_DERIVATIVE_DIV_POYNTING = 4;
+	public static final int INDEX_CURRENT_ELECTRIC_FIELD = 5;
+	public static final int INDEX_ENERGY_DENSITY_DERIVATIVE_DIV_POYNTING_CURRENT = 6;
+	public static final int INDEX_ENERGY_DENSITY_DERIVATIVE_B_ROT_E_MINUS_E_ROT_B_CURRENT = 7;
 
 	String[] dataLabel = new String[] {
 			"Energy density",
 			"dE/dt",
 			"div S",
+			"B rot E - E rot B",
 			"dE/dt + div S",
 			"j*E",
-			"dE/dt + div S + j*E"
+			"dE/dt + div S + j*E",
+			"dE/dt + (B rot E - E rot B) + j*E"
 	};
 
 	public static final int RED = 0;
@@ -125,16 +129,24 @@ public class EnergyDensity2DGLPanel extends AnimationGLPanel {
 						value = poyntingTheorem.getEnergyDensityDerivative(index);
 						break;
 					case INDEX_DIV_POYNTING:
+						value = poyntingTheorem.getDivPoyntingVector4(index);
+						break;
+					case INDEX_B_ROT_E_MINUS_E_ROT_B:
 						value = poyntingTheorem.getDivPoyntingVector3(index);
 						break;
 					case INDEX_ENERGY_DENSITY_DERIVATIVE_DIV_POYNTING:
 						value = poyntingTheorem.getEnergyDensityDerivative(index)
-							+ poyntingTheorem.getDivPoyntingVector3(index);
+							+ poyntingTheorem.getDivPoyntingVector4(index);
 						break;
 					case INDEX_CURRENT_ELECTRIC_FIELD:
 						value = poyntingTheorem.getCurrentElectricField2(index);
 						break;
 					case INDEX_ENERGY_DENSITY_DERIVATIVE_DIV_POYNTING_CURRENT:
+						value = poyntingTheorem.getEnergyDensityDerivative(index)
+							+ poyntingTheorem.getDivPoyntingVector4(index)
+							+ poyntingTheorem.getCurrentElectricField2(index);
+						break;
+					case INDEX_ENERGY_DENSITY_DERIVATIVE_B_ROT_E_MINUS_E_ROT_B_CURRENT:
 						value = poyntingTheorem.getEnergyDensityDerivative(index)
 							+ poyntingTheorem.getDivPoyntingVector3(index)
 							+ poyntingTheorem.getCurrentElectricField2(index);
