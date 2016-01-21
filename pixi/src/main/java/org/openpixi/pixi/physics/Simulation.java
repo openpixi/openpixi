@@ -356,8 +356,8 @@ public class Simulation {
 
 		// 1) Initialize and run diagnostics before first simulation step.
 		if(totalSimulationSteps == 0) {
-			for (Diagnostics d: diagnostics) {
-				d.initialize(this);
+			for (int i = 0; i< diagnostics.size(); i++) {	//Attention! Size of the diagnostics may change during the initialization!!
+				diagnostics.get(i).initialize(this);
 			}
 			runDiagnostics();
 		}
