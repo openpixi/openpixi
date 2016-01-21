@@ -46,7 +46,7 @@ public class PoyntingTheoremInTime implements Diagnostics {
 		this.s = s;
 		this.stepInterval = (int) (timeInterval / this.s.getTimeStep());
 		poyntingTheorem = PoyntingTheoremBuffer.getOrAppendInstance(s);
-		poyntingTheorem.initialize(s);
+		//poyntingTheorem.initialize(s);
 
 		if(!supressOutput) {
 			// Create/delete file.
