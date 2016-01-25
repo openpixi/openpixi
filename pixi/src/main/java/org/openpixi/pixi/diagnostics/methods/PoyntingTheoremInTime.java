@@ -88,17 +88,17 @@ public class PoyntingTheoremInTime implements Diagnostics {
 
 			double energyDensity = poyntingTheorem.getTotalEnergyDensity();
 			double energyDensityDerivative = poyntingTheorem.getTotalEnergyDensityDerivative();
-			double divS1 = poyntingTheorem.getTotalDivS1();
-			double divS2 = poyntingTheorem.getTotalDivS2();
+			double divS = poyntingTheorem.getTotalDivS();
+			double brotEminusErotB = poyntingTheorem.getTotalBrotEminusErotB();
 			double jS = poyntingTheorem.getTotalJE();
-			double poyntingTheoremSum = energyDensityDerivative + divS1 + jS;
-			double integratedDivS1 = poyntingTheorem.getIntegratedTotalDivS1();
-			double integratedDivS2 = poyntingTheorem.getIntegratedTotalDivS2();
+			double poyntingTheoremSum = energyDensityDerivative + divS + jS;
+			double integratedDivS = poyntingTheorem.getIntegratedTotalDivS();
+			double integratedBrotEminusErotB = poyntingTheorem.getIntegratedTotalBrotEminusErotB();
 			double integratedJS = poyntingTheorem.getIntegratedTotalJE();
 			double integratedPoyntingTheorem1 = poyntingTheorem.getTotalEnergyDensity()
-					+ integratedDivS1 + integratedJS;
+					+ integratedDivS + integratedJS;
 			double integratedPoyntingTheorem2 = poyntingTheorem.getTotalEnergyDensity()
-					+ integratedDivS2 + integratedJS;
+					+ integratedBrotEminusErotB + integratedJS;
 
 			if(!supressOutput) {
 				File file = FileFunctions.getFile("output/" + path);
@@ -108,12 +108,12 @@ public class PoyntingTheoremInTime implements Diagnostics {
 				pw.write(formatter.format(steps * s.getTimeStep()));
 				pw.write("\t" + formatter.format(energyDensity));
 				pw.write("\t" + formatter.format(energyDensityDerivative));
-				pw.write("\t" + formatter.format(divS1));
-				pw.write("\t" + formatter.format(divS2));
+				pw.write("\t" + formatter.format(divS));
+				pw.write("\t" + formatter.format(brotEminusErotB));
 				pw.write("\t" + formatter.format(jS));
 				pw.write("\t" + formatter.format(poyntingTheoremSum));
-				pw.write("\t" + formatter.format(integratedDivS1));
-				pw.write("\t" + formatter.format(integratedDivS2));
+				pw.write("\t" + formatter.format(integratedDivS));
+				pw.write("\t" + formatter.format(integratedBrotEminusErotB));
 				pw.write("\t" + formatter.format(integratedJS));
 				pw.write("\t" + formatter.format(integratedPoyntingTheorem1));
 				pw.write("\t" + formatter.format(integratedPoyntingTheorem2));

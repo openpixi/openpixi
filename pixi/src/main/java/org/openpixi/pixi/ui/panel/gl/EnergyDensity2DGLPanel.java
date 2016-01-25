@@ -123,33 +123,33 @@ public class EnergyDensity2DGLPanel extends AnimationGLPanel {
 				if(s.grid.isEvaluatable(index)) {
 					switch(dataIndex) {
 					case INDEX_ENERGY_DENSITY:
-						value = poyntingTheorem.getEnergyDensity2(index);
+						value = poyntingTheorem.getEnergyDensity(index);
 						break;
 					case INDEX_ENERGY_DENSITY_DERIVATIVE:
 						value = poyntingTheorem.getEnergyDensityDerivative(index);
 						break;
 					case INDEX_DIV_POYNTING:
-						value = poyntingTheorem.getDivPoyntingVector4(index);
+						value = poyntingTheorem.getDivPoyntingVector(index);
 						break;
 					case INDEX_B_ROT_E_MINUS_E_ROT_B:
-						value = poyntingTheorem.getDivPoyntingVector3(index);
+						value = poyntingTheorem.getBrotEminusErotB(index);
 						break;
 					case INDEX_ENERGY_DENSITY_DERIVATIVE_DIV_POYNTING:
 						value = poyntingTheorem.getEnergyDensityDerivative(index)
-							+ poyntingTheorem.getDivPoyntingVector4(index);
+							+ poyntingTheorem.getDivPoyntingVector(index);
 						break;
 					case INDEX_CURRENT_ELECTRIC_FIELD:
-						value = poyntingTheorem.getCurrentElectricField2(index);
+						value = poyntingTheorem.getCurrentElectricField(index);
 						break;
 					case INDEX_ENERGY_DENSITY_DERIVATIVE_DIV_POYNTING_CURRENT:
 						value = poyntingTheorem.getEnergyDensityDerivative(index)
-							+ poyntingTheorem.getDivPoyntingVector4(index)
-							+ poyntingTheorem.getCurrentElectricField2(index);
+							+ poyntingTheorem.getDivPoyntingVector(index)
+							+ poyntingTheorem.getCurrentElectricField(index);
 						break;
 					case INDEX_ENERGY_DENSITY_DERIVATIVE_B_ROT_E_MINUS_E_ROT_B_CURRENT:
 						value = poyntingTheorem.getEnergyDensityDerivative(index)
-							+ poyntingTheorem.getDivPoyntingVector3(index)
-							+ poyntingTheorem.getCurrentElectricField2(index);
+							+ poyntingTheorem.getBrotEminusErotB(index)
+							+ poyntingTheorem.getCurrentElectricField(index);
 						break;
 					}
 					getColorFromEField(s, index, color);

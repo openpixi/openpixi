@@ -16,6 +16,16 @@ import org.openpixi.pixi.physics.particles.IParticle;
 public class PoyntingTheoremBuffer implements Diagnostics {
 
 	Simulation s;
+
+	private enum CalculationAccuracy {
+		NAIVE,
+		SIMPLE,
+		INTERPOLATED
+	}
+//	private CalculationAccuracy accuracy = CalculationAccuracy.NAIVE;
+	private CalculationAccuracy accuracy = CalculationAccuracy.SIMPLE;
+//	private CalculationAccuracy accuracy = CalculationAccuracy.INTERPOLATED;
+
 	private boolean calculateEnergyDensityDerivative = false;
 	private int oldTime;
 	private int currentTime;
@@ -29,15 +39,21 @@ public class PoyntingTheoremBuffer implements Diagnostics {
 	private AlgebraElement[][] Jold;
 	private AlgebraElement[][] RotEcurrent;
 	private AlgebraElement[][] RotEold;
+	private AlgebraElement[][] EAveragecurrent;
+	private AlgebraElement[][] EAverageold;
+	private Double[][] Scurrent;
+	private Double[][] Sold;
+	private Double[] JEcurrent;
+	private Double[] JEold;
 
-	private double integratedDivS1;
-	private double integratedDivS2;
+	private double integratedDivS;
+	private double integratedBrotEminusErotB;
 	private double integratedJE;
-	private boolean currentDivS1Calculated;
-	private boolean currentDivS2Calculated;
+	private boolean currentDivSCalculated;
+	private boolean currentBrotEminusErotBCalculated;
 	private boolean currentJECalculated;
-	private double currentDivS1;
-	private double currentDivS2;
+	private double currentDivS;
+	private double currentBrotEminusErotB;
 	private double currentJE;
 
 	PoyntingTheoremBuffer(Simulation s) {
@@ -51,11 +67,11 @@ public class PoyntingTheoremBuffer implements Diagnostics {
 		calculateEnergyDensityDerivative = true;
 		resetEJ();
 		storeOldEJ = true;
-		integratedDivS1 = 0;
-		integratedDivS2 = 0;
+		integratedDivS = 0;
+		integratedBrotEminusErotB = 0;
 		integratedJE = 0;
-		currentDivS1Calculated = false;
-		currentDivS2Calculated = false;
+		currentDivSCalculated = false;
+		currentBrotEminusErotBCalculated = false;
 		currentJECalculated = false;
 	}
 
@@ -82,8 +98,8 @@ public class PoyntingTheoremBuffer implements Diagnostics {
 			resetEJ();
 		}
 
-		currentDivS1Calculated = false;
-		currentDivS2Calculated = false;
+		currentDivSCalculated = false;
+		currentBrotEminusErotBCalculated = false;
 		currentJECalculated = false;
 	}
 
@@ -107,7 +123,7 @@ public class PoyntingTheoremBuffer implements Diagnostics {
 		currentTime = s.totalSimulationSteps;
 		for (int i = 0; i < s.grid.getTotalNumberOfCells(); i++) {
 			oldEnergyDensity[i] = currentEnergyDensity[i];
-			currentEnergyDensity[i] = getEnergyDensity2(i);
+			currentEnergyDensity[i] = getEnergyDensity(i);
 		}
 	}
 
@@ -118,6 +134,12 @@ public class PoyntingTheoremBuffer implements Diagnostics {
 		Jold = null;
 		RotEcurrent = null;
 		RotEold = null;
+		EAveragecurrent = null;
+		EAverageold = null;
+		Scurrent = null;
+		Sold = null;
+		JEcurrent = null;
+		JEold = null;
 	}
 
 	private void updateEJ() {
@@ -133,13 +155,39 @@ public class PoyntingTheoremBuffer implements Diagnostics {
 			RotEold = new AlgebraElement[cells][];
 		}
 		for (int i = 0; i < cells; i++) {
+			// Move current values to old values
 			Eold[i] = Ecurrent[i];
 			Jold[i] = Jcurrent[i];
 			RotEold[i] = RotEcurrent[i];
+
+			// Reset new values
 			Ecurrent[i] = new AlgebraElement[dimensions];
 			Jcurrent[i] = new AlgebraElement[dimensions];
 			RotEcurrent[i] = new AlgebraElement[dimensions];
 			// Fields are copied when they are used
+		}
+		if (accuracy == CalculationAccuracy.INTERPOLATED) {
+			// Additional fields are required:
+			if (EAveragecurrent == null) {
+				EAveragecurrent = new AlgebraElement[cells][];
+				EAverageold = new AlgebraElement[cells][];
+				Scurrent = new Double[cells][];
+				Sold = new Double[cells][];
+				JEcurrent = new Double[cells];
+				JEold = new Double[cells];
+			}
+			for (int i = 0; i < cells; i++) {
+				// Move current values to old values
+				EAverageold[i] = EAveragecurrent[i];
+				Sold[i] = Scurrent[i];
+
+				// Reset new values
+				EAveragecurrent[i] = new AlgebraElement[dimensions];
+				Scurrent[i] = new Double[dimensions];
+				// Fields are copied when they are used
+			}
+			JEold = JEcurrent;
+			JEcurrent = new Double[cells];
 		}
 	}
 
@@ -162,8 +210,22 @@ public class PoyntingTheoremBuffer implements Diagnostics {
 		return p;
 	}
 
+	public double getEnergyDensity(int index) {
+		switch (accuracy) {
+		case NAIVE:
+			return getEnergyDensity1(index);
+
+		default:
+		case SIMPLE:
+			return getEnergyDensity2(index);
+
+		case INTERPOLATED:
+			return getEnergyDensity3(index);
+		}
+	}
+
 	@Deprecated
-	private double getEnergyDensity(int index) {
+	private double getEnergyDensity1(int index) {
 		double value = 0;
 
 		// Lattice spacing and coupling constant
@@ -185,7 +247,7 @@ public class PoyntingTheoremBuffer implements Diagnostics {
 	 * @param index cell index
 	 * @return energy density
 	 */
-	public double getEnergyDensity2(int index) {
+	private double getEnergyDensity2(int index) {
 		double value = 0;
 
 		// Lattice spacing and coupling constant
@@ -200,6 +262,197 @@ public class PoyntingTheoremBuffer implements Diagnostics {
 			value += (B.add(Bnext)).mult(0.5).square();
 		};
 		return value / (as * g * as * g) / 2;
+	}
+
+	/**
+	 * Calculates the energy density at the time of the E-field
+	 * correctly through order O(x^2) and O(t^2) at the corner
+	 * of the cell at time t = dt/2.
+	 * @param index cell index
+	 * @return energy density
+	 */
+	private double getEnergyDensity3(int index) {
+		double value = 0;
+
+		// Lattice spacing and coupling constant
+		double as = s.grid.getLatticeSpacing();
+		double g = s.getCouplingConstant();
+
+		for (int w = 0; w < s.getNumberOfDimensions(); w++) {
+			/*
+			value += s.grid.getE(index, w).square();
+			// Time averaging for B field.
+			AlgebraElement B = s.grid.getB(index, w, 0);
+			AlgebraElement Bnext = s.grid.getB(index, w, 1);
+			value += (B.add(Bnext)).mult(0.5).square();
+			 */
+			AlgebraElement E = getEHalfShifted(index, w, 0, 0, -1);
+			AlgebraElement B = getBHalfShifted(index, w, 0, 0, -1);
+			value += E.square() + B.square();
+		};
+		return value / (as * g * as * g) / 2;
+	}
+
+	/**
+	 * Get E at particular location within the lattice cell.
+	 * @param index Lattice index of the electric field
+	 * @param direction Index of the component
+	 * @param shiftDirection Direction in which the electric field is shifted by half a time step
+	 * @param shiftOrientation Orientation of shift
+	 * @param shiftTime Shift in time direction: -1: half time step in past; 0: current time.
+	 * @return
+	 */
+	private AlgebraElement getEHalfShifted(int index, int direction, int shiftDirection, int shiftOrientation, int shiftTime) {
+		if (shiftTime == -1 && shiftOrientation == 0) {
+			// shift in time direction, average in spatial direction
+			AlgebraElement E1 = s.grid.getE(index, direction);
+			AlgebraElement E2 = getEShifted(index, direction, direction, -1);
+			AlgebraElement Eaverage = (E1.add(E2)).mult(0.5);
+
+			// Form the time average if available:
+			if (EAveragecurrent != null) {
+				EAveragecurrent[index][direction] = Eaverage.copy();
+				if (EAverageold != null && EAverageold[index] != null && EAverageold[index][direction] != null) {
+					// Form average
+					Eaverage = (Eaverage.add(EAverageold[index][direction])).mult(0.5);
+				}
+			}
+			return Eaverage;
+		} else if (shiftTime == 0 && shiftOrientation != 0) {
+			// Form average over 4 points:
+			AlgebraElement E1 = s.grid.getE(index, direction);
+			AlgebraElement E2 = getEShifted(index, direction, shiftDirection, shiftOrientation);
+			AlgebraElement E3 = getEShifted(index, direction, direction, -1);
+			// For the last points, there are 2 possible ways for parallel transport, so we form the average of both:
+			AlgebraElement E4a = getEDoubleShifted(index, direction, shiftDirection, shiftOrientation, direction, -1);
+			AlgebraElement E4b = getEDoubleShifted(index, direction, direction, -1, shiftDirection, shiftOrientation);
+			AlgebraElement E4 = (E4a.add(E4b)).mult(0.5);
+
+			AlgebraElement Eaverage = (((E1.add(E2)).add(E3)).add(E4)).mult(0.25);
+			return Eaverage;
+		} else {
+			System.out.println("Error in PoyntingTheoremBuffer: Direction not specified yet");
+			return null;
+		}
+	}
+
+	/**
+	 * Obtain a shifted and properly parallel transported E-vector component.
+	 * @param index
+	 * @param direction
+	 * @param shiftDirection
+	 * @param shiftOrientation
+	 * @return
+	 */
+	private AlgebraElement getEShifted(int index, int direction, int shiftDirection, int shiftOrientation) {
+		int indexShifted = s.grid.shift(index, shiftDirection, shiftOrientation);
+		AlgebraElement E = s.grid.getE(indexShifted, direction);
+		E = E.act(s.grid.getLink(index, shiftDirection, shiftOrientation, 0));
+		return E;
+	}
+
+	/**
+	 * Obtain a shifted parallel transported E-vector along 2 path segments.
+	 * @param index
+	 * @param direction
+	 * @param shiftDirection1
+	 * @param shiftOrientation1
+	 * @param shiftDirection2
+	 * @param shiftOrientation2
+	 * @return
+	 */
+	private AlgebraElement getEDoubleShifted(int index, int direction, int shiftDirection1, int shiftOrientation1,
+			int shiftDirection2, int shiftOrientation2) {
+		int indexShifted1 = s.grid.shift(index, shiftDirection1, shiftOrientation1);
+		int indexShifted12 = s.grid.shift(indexShifted1, shiftDirection2, shiftOrientation2);
+
+		AlgebraElement E = s.grid.getE(indexShifted12, direction);
+
+		// Parallel transport back along the path:
+		E = E.act(s.grid.getLink(indexShifted1, shiftDirection2, shiftOrientation2, 0));
+		E = E.act(s.grid.getLink(index, shiftDirection1, shiftOrientation1, 0));
+		return E;
+	}
+	/**
+	 * Get E at particular location within the lattice cell.
+	 * @param index Lattice index of the electric field
+	 * @param direction Index of the component
+	 * @param shiftDirection Direction in which the electric field is shifted by half a time step
+	 * @param shiftOrientation Orientation of shift
+	 * @param shiftTime Shift in time direction: -1: half time step in past; 0: current time.
+	 * @return
+	 */
+	private AlgebraElement getBHalfShifted(int index, int direction, int shiftDirection, int shiftOrientation, int shiftTime) {
+		if (shiftTime == -1 && shiftOrientation == 0) {
+			// shift in time direction, average in spatial direction
+			// Form average over 4 points:
+			AlgebraElement B1 = s.grid.getB(index, direction, 0);
+			AlgebraElement B2 = getBShifted(index, direction, shiftDirection, shiftOrientation, 0);
+			AlgebraElement B3 = getBShifted(index, direction, direction, -1, 0);
+			// For the last points, there are 2 possible ways for parallel transport, so we form the average of both:
+			AlgebraElement B4a = getBDoubleShifted(index, direction, shiftDirection, shiftOrientation, direction, -1, 0);
+			AlgebraElement B4b = getBDoubleShifted(index, direction, direction, -1, shiftDirection, shiftOrientation, 0);
+			AlgebraElement B4 = (B4a.add(B4b)).mult(0.5);
+
+			AlgebraElement Baverage = (((B1.add(B2)).add(B3)).add(B4)).mult(0.25);
+			return Baverage;
+		} else if (shiftTime == 0 && shiftOrientation != 0 && direction != shiftDirection) {
+			// Orthogonal direction:
+			int directionOrthogonal = (3 - direction - shiftDirection) % 3;
+
+			// Average over next time slice
+			AlgebraElement B1 = s.grid.getB(index, direction, 1);
+			AlgebraElement B2 = getBShifted(index, direction, directionOrthogonal, -1, 1);
+
+			// Average over previous time slice
+			AlgebraElement B3 = s.grid.getB(index, direction, 0);
+			AlgebraElement B4 = getBShifted(index, direction, directionOrthogonal, -1, 0);
+
+			AlgebraElement Baverage = (((B1.add(B2)).add(B3)).add(B4)).mult(0.25);
+			return Baverage;
+		} else {
+			System.out.println("Error in PoyntingTheoremBuffer: Direction not specified yet");
+			return null;
+		}
+	}
+
+	/**
+	 * Obtain a shifted and properly parallel transported B-vector component.
+	 * @param index
+	 * @param direction
+	 * @param shiftDirection
+	 * @param shiftOrientation
+	 * @param timeIndex
+	 * @return
+	 */
+	private AlgebraElement getBShifted(int index, int direction, int shiftDirection, int shiftOrientation, int timeIndex) {
+		int indexShifted = s.grid.shift(index, shiftDirection, shiftOrientation);
+		AlgebraElement B = s.grid.getB(indexShifted, direction, timeIndex);
+		B = B.act(s.grid.getLink(index, shiftDirection, shiftOrientation, timeIndex));
+		return B;
+	}
+
+	/**
+	 * Obtain a shifted parallel transported E-vector along 2 path segments.
+	 * @param index
+	 * @param direction
+	 * @param shiftDirection1
+	 * @param shiftOrientation1
+	 * @param shiftDirection2
+	 * @param shiftOrientation2
+	 * @return
+	 */
+	private AlgebraElement getBDoubleShifted(int index, int direction, int shiftDirection1, int shiftOrientation1,
+			int shiftDirection2, int shiftOrientation2, int timeIndex) {
+		int indexShifted1 = s.grid.shift(index, shiftDirection1, shiftOrientation1);
+		int indexShifted12 = s.grid.shift(indexShifted1, shiftDirection2, shiftOrientation2);
+
+		AlgebraElement B = s.grid.getB(indexShifted12, direction, timeIndex);
+
+		// Parallel transport back along the path:
+		B = B.act(s.grid.getLink(indexShifted1, shiftDirection2, shiftOrientation2, timeIndex));
+		B = B.act(s.grid.getLink(index, shiftDirection1, shiftOrientation1, timeIndex));
+		return B;
 	}
 
 	/**
@@ -224,8 +477,32 @@ public class PoyntingTheoremBuffer implements Diagnostics {
 		return value;
 	}
 
-	@Deprecated
 	public double getDivPoyntingVector(int index) {
+		switch (accuracy) {
+		case NAIVE:
+			return getDivPoyntingVector1(index);
+
+		default:
+		case SIMPLE:
+		case INTERPOLATED:
+			return getDivPoyntingVector4(index);
+		}
+	}
+
+	public double getBrotEminusErotB(int index) {
+		switch (accuracy) {
+		case NAIVE:
+			return getBrotEminusErotB1(index);
+
+		default:
+		case SIMPLE:
+		case INTERPOLATED:
+			return getBrotEminusErotB2(index);
+		}
+	}
+
+	@Deprecated
+	private double getDivPoyntingVector1(int index) {
 		double as = s.grid.getLatticeSpacing();
 
 		double value = 0;
@@ -243,14 +520,14 @@ public class PoyntingTheoremBuffer implements Diagnostics {
 			if (!s.grid.isEvaluatable(indexShifted2)) {
 				return 0;
 			}
-			value += getPoyntingVector(indexShifted1, direction)
-					- getPoyntingVector(indexShifted2, direction);
+			value += getPoyntingVector1(indexShifted1, direction)
+					- getPoyntingVector1(indexShifted2, direction);
 		}
 		return value / (2*as);
 	}
 
 	@Deprecated
-	public double getPoyntingVector(int index, int direction) {
+	private double getPoyntingVector1(int index, int direction) {
 		double as = s.grid.getLatticeSpacing();
 		double g = s.getCouplingConstant();
 
@@ -275,7 +552,7 @@ public class PoyntingTheoremBuffer implements Diagnostics {
 	 * @return B rot E - E rot B
 	 */
 	@Deprecated
-	public double getDivPoyntingVector2(int index) {
+	private double getBrotEminusErotB1(int index) {
 		storeOldEJ = true;
 		double as = s.grid.getLatticeSpacing();
 		double g = s.getCouplingConstant();
@@ -308,7 +585,7 @@ public class PoyntingTheoremBuffer implements Diagnostics {
 	 * @param index cell index
 	 * @return B rot E - E rot B
 	 */
-	public double getDivPoyntingVector3(int index) {
+	private double getBrotEminusErotB2(int index) {
 		storeOldEJ = true;
 		double as = s.grid.getLatticeSpacing();
 		double g = s.getCouplingConstant();
@@ -353,7 +630,7 @@ public class PoyntingTheoremBuffer implements Diagnostics {
 	 * @param index cell index
 	 * @return divergence of Poynting vector
 	 */
-	public double getDivPoyntingVector4(int index) {
+	private double getDivPoyntingVector4(int index) {
 		double as = s.grid.getLatticeSpacing();
 
 		double value = 0;
@@ -364,14 +641,29 @@ public class PoyntingTheoremBuffer implements Diagnostics {
 		}
 		for (int direction = 0; direction < s.grid.getNumberOfDimensions(); direction++) {
 			int indexShifted1 = s.grid.shift(index, direction, -1);
-			value += getPoyntingVector3(index, direction)
-					- getPoyntingVector3(indexShifted1, direction);
+			switch (accuracy) {
+			case NAIVE:
+				value += getPoyntingVector2(index, direction)
+					- getPoyntingVector2(indexShifted1, direction);
+				break;
+
+			default:
+			case SIMPLE:
+				value += getPoyntingVector3(index, direction)
+						- getPoyntingVector3(indexShifted1, direction);
+				break;
+
+			case INTERPOLATED:
+				value += getPoyntingVector4(index, direction)
+					- getPoyntingVector4(indexShifted1, direction);
+				break;
+			}
 		}
 		return value / (as);
 	}
 
 	@Deprecated
-	public double getPoyntingVector2(int index, int direction) {
+	private double getPoyntingVector2(int index, int direction) {
 		double as = s.grid.getLatticeSpacing();
 		double g = s.getCouplingConstant();
 
@@ -392,7 +684,7 @@ public class PoyntingTheoremBuffer implements Diagnostics {
 		return S / (as * g * as * g);
 	}
 
-	public double getPoyntingVector3(int index, int direction) {
+	private double getPoyntingVector3(int index, int direction) {
 		double as = s.grid.getLatticeSpacing();
 		double g = s.getCouplingConstant();
 
@@ -439,8 +731,53 @@ public class PoyntingTheoremBuffer implements Diagnostics {
 		return S / (as * g * as * g);
 	}
 
-	@Deprecated
+	private double getPoyntingVector4(int index, int direction) {
+		double as = s.grid.getLatticeSpacing();
+		double g = s.getCouplingConstant();
+
+		// Indices for cross product:
+		// direction -> x
+		int dir1 = (direction + 1) % 3; // dir1 -> y
+		int dir2 = (direction + 2) % 3; // dir2 -> z
+
+		// fields at same time:
+		AlgebraElement E1 = getEHalfShifted(index, dir1, direction, 1, 0);
+		AlgebraElement E2 = getEHalfShifted(index, dir2, direction, 1, 0);
+
+		// B-field:
+		AlgebraElement B1 = getBHalfShifted(index, dir1, direction, 1, 0);
+		AlgebraElement B2 = getBHalfShifted(index, dir2, direction, 1, 0);
+		double S = E1.mult(B2) - E2.mult(B1);
+		S = S / (as * g * as * g);
+
+		// Return the Poynting vector of the previous time step if available:
+		if (Scurrent != null) {
+			// Store value of current time step
+			Scurrent[index][direction] = S;
+			if (Sold != null && Sold[index] != null && Sold[index][direction] != null) {
+				// Use value of previous time step
+				S = Sold[index][direction];
+			}
+		}
+		return S;
+	}
+
 	public double getCurrentElectricField(int index) {
+		switch (accuracy) {
+		case NAIVE:
+			return getCurrentElectricField1(index);
+
+		default:
+		case SIMPLE:
+			return getCurrentElectricField2(index);
+
+		case INTERPOLATED:
+			return getCurrentElectricField3(index);
+		}
+	}
+
+	@Deprecated
+	public double getCurrentElectricField1(int index) {
 		double as = s.grid.getLatticeSpacing();
 		double g = s.getCouplingConstant();
 
@@ -460,7 +797,7 @@ public class PoyntingTheoremBuffer implements Diagnostics {
 	 * @param index cell index
 	 * @return current times electric field J*E
 	 */
-	public double getCurrentElectricField2(int index) {
+	private double getCurrentElectricField2(int index) {
 		storeOldEJ = true;
 		double as = s.grid.getLatticeSpacing();
 		double g = s.getCouplingConstant();
@@ -489,12 +826,98 @@ public class PoyntingTheoremBuffer implements Diagnostics {
 		return value / (as * g * as * g);
 	}
 
+	/**
+	 * Calculates current times the electric field at the time of the
+	 * E-field at the origin through order O(t^2).
+	 * @param index cell index
+	 * @return current times electric field J*E
+	 */
+	private double getCurrentElectricField3(int index) {
+		storeOldEJ = true;
+		double as = s.grid.getLatticeSpacing();
+		double g = s.getCouplingConstant();
+
+		double value = 0;
+
+		for (int direction = 0; direction < s.grid.getNumberOfDimensions(); direction++) {
+			AlgebraElement J1 = s.grid.getJ(index, direction);
+			AlgebraElement J2 = getJShifted(index, direction, direction, -1);
+			AlgebraElement J = (J1.add(J2)).mult(0.5);
+
+			if (Jcurrent != null) {
+				Jcurrent[index][direction] = J1.copy();
+				if (Jold != null && Jold[index] != null && Jold[index][direction] != null) {
+					// Use previous value
+					AlgebraElement J3 = Jold[index][direction];
+					AlgebraElement J4 = getJOldShifted(index, direction, direction, -1);
+					AlgebraElement J34 = (J3.add(J4)).mult(0.5);
+					J = (J.add(J34)).mult(0.5);
+				}
+			}
+
+			AlgebraElement E1 = s.grid.getE(index, direction);
+			AlgebraElement E2 = getEShifted(index, direction, direction, -1);
+			AlgebraElement E = (E1.add(E2)).mult(0.5);
+
+			value += J.mult(E);
+		}
+		value = value / (as * g * as * g);
+
+		// Return the J*E of the previous time step if available:
+		if (JEcurrent != null) {
+			// Store value of current time step
+			JEcurrent[index] = value;
+			if (JEold != null && JEold[index] != null) {
+				// Use value of previous time step
+				value = JEold[index];
+			}
+		}
+
+		return value;
+	}
+
+	/**
+	 * Obtain a shifted and properly parallel transported J-vector component.
+	 * @param index
+	 * @param direction
+	 * @param shiftDirection
+	 * @param shiftOrientation
+	 * @return
+	 */
+	private AlgebraElement getJShifted(int index, int direction, int shiftDirection, int shiftOrientation) {
+		int indexShifted = s.grid.shift(index, shiftDirection, shiftOrientation);
+		AlgebraElement J = s.grid.getJ(indexShifted, direction);
+		J = J.act(s.grid.getLink(index, shiftDirection, shiftOrientation, 1));
+		return J;
+	}
+
+	/**
+	 * Obtain a shifted and properly parallel transported J-vector component.
+	 * @param index
+	 * @param direction
+	 * @param shiftDirection
+	 * @param shiftOrientation
+	 * @return
+	 */
+	private AlgebraElement getJOldShifted(int index, int direction, int shiftDirection, int shiftOrientation) {
+		int indexShifted = s.grid.shift(index, shiftDirection, shiftOrientation);
+		AlgebraElement J;
+		if (Jold != null && Jold[index] != null && Jold[index][direction] != null) {
+			// Use previous value
+			J = Jold[index][direction];
+		} else {
+			J = s.grid.getJ(indexShifted, direction);
+		}
+		J = J.act(s.grid.getLink(index, shiftDirection, shiftOrientation, 0));
+		return J;
+	}
+
 	public double getTotalEnergyDensity() {
 		double result = 0;
 		int evaluatableCells = 0;
 		for (int i = 0; i < s.grid.getTotalNumberOfCells(); i++) {
 			if (s.grid.isEvaluatable(i)) {
-				result += getEnergyDensity2(i);
+				result += getEnergyDensity(i);
 				evaluatableCells++;
 			}
 		}
@@ -520,48 +943,48 @@ public class PoyntingTheoremBuffer implements Diagnostics {
 	}
 
 	/**
-	 *  Calculate DivS1 via div S
+	 *  Calculate div S
 	 *  @return div S */
-	public double getTotalDivS1() {
-		if (!currentDivS1Calculated) {
+	public double getTotalDivS() {
+		if (!currentDivSCalculated) {
 			double result = 0;
 			int evaluatableCells = 0;
 			for (int i = 0; i < s.grid.getTotalNumberOfCells(); i++) {
 				if (s.grid.isEvaluatable(i)) {
-					result += getDivPoyntingVector4(i);
+					result += getDivPoyntingVector(i);
 					evaluatableCells++;
 				}
 			}
 			//double norm = evaluatableCells;
 			double norm = s.grid.getTotalNumberOfCells();
-			currentDivS1 = result / norm;
-			integratedDivS1 += currentDivS1 * s.tstep;
-			currentDivS1Calculated = true;
+			currentDivS = result / norm;
+			integratedDivS += currentDivS * s.tstep;
+			currentDivSCalculated = true;
 		}
-		return currentDivS1;
+		return currentDivS;
 	}
 
 	/**
-	 * Calculate DivS2 via B rot E - E rot B
+	 * Calculate B rot E - E rot B
 	 * @return B rot E - E rot B
 	 */
-	public double getTotalDivS2() {
-		if (!currentDivS2Calculated) {
+	public double getTotalBrotEminusErotB() {
+		if (!currentBrotEminusErotBCalculated) {
 			double result = 0;
 			int evaluatableCells = 0;
 			for (int i = 0; i < s.grid.getTotalNumberOfCells(); i++) {
 				if (s.grid.isEvaluatable(i)) {
-					result += getDivPoyntingVector3(i);
+					result += getBrotEminusErotB(i);
 					evaluatableCells++;
 				}
 			}
 			//double norm = evaluatableCells;
 			double norm = s.grid.getTotalNumberOfCells();
-			currentDivS2 = result / norm;
-			integratedDivS2 += currentDivS2 * s.tstep;
-			currentDivS2Calculated = true;
+			currentBrotEminusErotB = result / norm;
+			integratedBrotEminusErotB += currentBrotEminusErotB * s.tstep;
+			currentBrotEminusErotBCalculated = true;
 		}
-		return currentDivS2;
+		return currentBrotEminusErotB;
 	}
 
 	public double getTotalJE() {
@@ -570,7 +993,7 @@ public class PoyntingTheoremBuffer implements Diagnostics {
 			int evaluatableCells = 0;
 			for (int i = 0; i < s.grid.getTotalNumberOfCells(); i++) {
 				if (s.grid.isEvaluatable(i)) {
-					result += getCurrentElectricField2(i);
+					result += getCurrentElectricField(i);
 					evaluatableCells++;
 				}
 			}
@@ -583,18 +1006,18 @@ public class PoyntingTheoremBuffer implements Diagnostics {
 		return currentJE;
 	}
 
-	public double getIntegratedTotalDivS1() {
-		if (!currentDivS1Calculated) {
-			getTotalDivS1();
+	public double getIntegratedTotalDivS() {
+		if (!currentDivSCalculated) {
+			getTotalDivS();
 		}
-		return integratedDivS1;
+		return integratedDivS;
 	}
 
-	public double getIntegratedTotalDivS2() {
-		if (!currentDivS2Calculated) {
-			getTotalDivS2();
+	public double getIntegratedTotalBrotEminusErotB() {
+		if (!currentBrotEminusErotBCalculated) {
+			getTotalBrotEminusErotB();
 		}
-		return integratedDivS2;
+		return integratedBrotEminusErotB;
 	}
 
 	public double getIntegratedTotalJE() {
