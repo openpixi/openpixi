@@ -85,21 +85,22 @@ public class PoyntingTheoremInTime implements Diagnostics {
 	 * @throws IOException
 	 */
 	public void calculate(Grid grid, ArrayList<IParticle> particles, int steps) throws IOException {
-		if(steps % stepInterval == 0) {
 
-			double energyDensity = poyntingTheorem.getTotalEnergyDensity();
-			double energyDensityDerivative = poyntingTheorem.getTotalEnergyDensityDerivative();
-			double divS1 = poyntingTheorem.getTotalDivS1();
-			double divS2 = poyntingTheorem.getTotalDivS2();
-			double jS = poyntingTheorem.getTotalJE();
-			double poyntingTheoremSum = energyDensityDerivative + divS1 + jS;
-			double integratedDivS1 = poyntingTheorem.getIntegratedTotalDivS1();
-			double integratedDivS2 = poyntingTheorem.getIntegratedTotalDivS2();
-			double integratedJS = poyntingTheorem.getIntegratedTotalJE();
-			double integratedPoyntingTheorem1 = poyntingTheorem.getTotalEnergyDensity()
-					+ integratedDivS1 + integratedJS;
-			double integratedPoyntingTheorem2 = poyntingTheorem.getTotalEnergyDensity()
-					+ integratedDivS2 + integratedJS;
+		// Calculate quantities at each time step
+		double energyDensity = poyntingTheorem.getTotalEnergyDensity();
+		double energyDensityDerivative = poyntingTheorem.getTotalEnergyDensityDerivative();
+		double divS1 = poyntingTheorem.getTotalDivS1();
+		double divS2 = poyntingTheorem.getTotalDivS2();
+		double jS = poyntingTheorem.getTotalJE();
+		double poyntingTheoremSum = energyDensityDerivative + divS1 + jS;
+		double integratedDivS1 = poyntingTheorem.getIntegratedTotalDivS1();
+		double integratedDivS2 = poyntingTheorem.getIntegratedTotalDivS2();
+		double integratedJS = poyntingTheorem.getIntegratedTotalJE();
+		double integratedPoyntingTheorem1 = energyDensity + integratedDivS1 + integratedJS;
+		double integratedPoyntingTheorem2 = energyDensity + integratedDivS2 + integratedJS;
+
+		// Output only at desired interval
+		if(steps % stepInterval == 0) {
 
 			if(!supressOutput) {
 				File file = FileFunctions.getFile("output/" + path);
