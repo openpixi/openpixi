@@ -20,11 +20,13 @@ public class PoyntingTheoremBuffer implements Diagnostics {
 	private enum CalculationAccuracy {
 		NAIVE,
 		SIMPLE,
-		INTERPOLATED
+		INTERPOLATED,
+		YEE_ENERGY
 	}
 //	private CalculationAccuracy accuracy = CalculationAccuracy.NAIVE;
 	private CalculationAccuracy accuracy = CalculationAccuracy.SIMPLE;
 //	private CalculationAccuracy accuracy = CalculationAccuracy.INTERPOLATED;
+//	private CalculationAccuracy accuracy = CalculationAccuracy.YEE_ENERGY;
 
 	private boolean calculateEnergyDensityDerivative = false;
 	private int oldTime;
@@ -221,6 +223,9 @@ public class PoyntingTheoremBuffer implements Diagnostics {
 
 		case INTERPOLATED:
 			return getEnergyDensity3(index);
+
+		case YEE_ENERGY:
+			return getEnergyDensity4(index);
 		}
 	}
 
@@ -453,6 +458,30 @@ public class PoyntingTheoremBuffer implements Diagnostics {
 		B = B.act(s.grid.getLink(indexShifted1, shiftDirection2, shiftOrientation2, timeIndex));
 		B = B.act(s.grid.getLink(index, shiftDirection1, shiftOrientation1, timeIndex));
 		return B;
+	}
+
+	/**
+	 * Calculates the energy density as Yee energy
+	 * E^2(t+dt/2) + B(t+dt)*B(t)
+	 * of the cell at time t = dt/2.
+	 * @param index cell index
+	 * @return energy density
+	 */
+	private double getEnergyDensity4(int index) {
+		double value = 0;
+
+		// Lattice spacing and coupling constant
+		double as = s.grid.getLatticeSpacing();
+		double g = s.getCouplingConstant();
+
+		for (int w = 0; w < s.getNumberOfDimensions(); w++) {
+			value += s.grid.getE(index, w).square();
+			// Geometric time averaging for B field.
+			AlgebraElement B = s.grid.getB(index, w, 0);
+			AlgebraElement Bnext = s.grid.getB(index, w, 1);
+			value += B.mult(Bnext);
+		};
+		return value / (as * g * as * g) / 2;
 	}
 
 	/**
