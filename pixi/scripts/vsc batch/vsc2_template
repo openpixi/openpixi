@@ -1,17 +1,17 @@
-%range 0 8%
+%range 1 4%
 %jar pixi-0.6-SNAPSHOT.jar%
+%jobmanager SGE%
 
 %yaml begin%
-# run simulations with varying coupling constants and record fields in the transverse plane.
 simulationType: temporal cgc ngp
 gridStep: 1
-couplingConstant: %f 0.1 2.0%
+couplingConstant: 2
 numberOfDimensions: 3
 numberOfColors: 2
 numberOfThreads: 16
-gridCells: [512, 64, 64]
+gridCells: [128, 16, 16]
 timeStep: 0.5
-duration: 256.0
+duration: 64.0
 evaluationRegion:
   enabled: true
   point1: [2, 0, 0]
@@ -24,34 +24,33 @@ activeRegion:
 currents:
   dualMVModels:
     - direction: 0
-      longitudinalLocation: 64
-      longitudinalWidth: 4.0
+      longitudinalLocation: 32
+      longitudinalWidth: %f 2.0 12.0%
       mu: 0.04
       lowPassCoefficient: 0.15
-      randomSeed1: 564
-      randomSeed2: 213
       createInitialConditionsOutput: true
-      outputFile: "coupling/initial%i%.dat"
+      outputFile: "test/initial%i%.dat"
 
 output:
   planarFields:
     - interval: 1.0
-      startingTime: 176.0
-      path: "coupling/planar%i%.dat"
+      startingTime: 0.0
+      path: "test/planar%i%.dat"
       direction: 0
-      planarIndex: 255
-
+      planarIndex: 63
 %yaml end%
 
-%qjob begin%
+
+%job begin%
 #$ -N %job_name%
 #$ -pe mpich 16
 #$ -V
-#$ -M your.email@addr.ess
+#$ -M your.email@address.com
 #$ -m e
 #$ -l h_rt=1:00:00
-#$ -o ./tmp_output/
-#$ -e ./tmp_output/
+#$ -o ./job_output/
+#$ -e ./job_output/
+#$ -t %i0%-%i1%
 
-java -Xmx16384m -cp %jar_path% org.openpixi.pixi.ui.MainBatch %input_path%
-%qjob end%
+java -Xmx16g -cp %jar_path% org.openpixi.pixi.ui.MainBatch %input_path%
+%job end%
