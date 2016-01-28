@@ -48,8 +48,8 @@ output:
 #$ -M your.email@address.com
 #$ -m e
 #$ -l h_rt=1:00:00
-#$ -o ./job_output/
-#$ -e ./job_output/
+#$ -o ./job_output/tmp$JOB_ID.out
+#$ -e ./job_output/tmp$JOB_ID.err
 #$ -t %i0%-%i1%
 
 java -Xmx16g -cp %jar_path% org.openpixi.pixi.ui.MainBatch %input_path%
