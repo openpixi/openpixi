@@ -29,6 +29,11 @@ public class YamlDualMVModel {
 	public Double lowPassCoefficient = 1.0;
 
 	/**
+	 * Coefficient infrared regulator in the Poisson solver
+	 */
+	public Double infraredCoefficient = 0.0;
+
+	/**
 	 * Seeds to use for the random number generator
 	 */
 	public Integer randomSeed1 = null;
@@ -52,12 +57,17 @@ public class YamlDualMVModel {
 
 
 	public DualMVModel getCurrentGenerator() {
-		if(randomSeed1 != null && randomSeed2 != null) {
-			return new DualMVModel(direction, longitudinalLocation, longitudinalWidth, mu, lowPassCoefficient, true,
-					randomSeed1, randomSeed2, createInitialConditionsOutput, outputFile, useAlternativeNormalization);
+		boolean useSeed = (randomSeed1 != null && randomSeed2 != null);
+		if(!useSeed) {
+			randomSeed1 = 0;
+			randomSeed2 = 0;
 		}
-		return new DualMVModel(direction, longitudinalLocation, longitudinalWidth, mu, lowPassCoefficient, false, 0, 0,
-				createInitialConditionsOutput, outputFile, useAlternativeNormalization);
+
+		return new DualMVModel(direction, longitudinalLocation, longitudinalWidth, mu,
+				lowPassCoefficient,  infraredCoefficient,
+				useSeed, randomSeed1, randomSeed2,
+				createInitialConditionsOutput, outputFile,
+				useAlternativeNormalization);
 	}
 
 }
