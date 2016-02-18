@@ -11,11 +11,13 @@ public class CGCParticle extends YangMillsParticle {
 
 	public int direction;
 	public GroupElement U;
+	public boolean updateCharge;
 
 	public CGCParticle(int numberOfDimensions, int numberOfColors, int direction) {
 		super(numberOfDimensions, numberOfColors);
 		this.direction = direction;
 		this.U = (new ElementFactory(numberOfColors)).groupIdentity();
+		this.updateCharge = true;
 	}
 
 	public IParticle copy() {
@@ -31,6 +33,7 @@ public class CGCParticle extends YangMillsParticle {
 
 		p.setRadius(this.r);
 		p.setDisplayColor(this.col);
+		p.updateCharge = this.updateCharge;
 
 		return p;
 	}

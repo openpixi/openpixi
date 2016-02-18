@@ -64,9 +64,6 @@ public class CGCParticleInterpolationNGP implements  InterpolatorAlgorithm {
 	public void interpolateToParticle(IParticle p, Grid g) {
 		// Compute parallel transport for the particle.
 		CGCParticle P = (CGCParticle) p;
-		GroupElement identity = g.getElementFactory().groupIdentity();
-
-		double at = g.getTemporalSpacing();
 		double as = g.getLatticeSpacing();
 		int direction = P.direction;
 
@@ -79,8 +76,8 @@ public class CGCParticleInterpolationNGP implements  InterpolatorAlgorithm {
 		int[] ngpNew = GridFunctions.nearestGridPoint(newPosition, as);
 
 		if(ngpOld[direction] == ngpNew[direction]) {
-			// one cell move
-			 P.U = identity;
+			// one cell move: do nothing!
+			//P.U = identity;
 		} else {
 			// two cell move
 			int cellIndexOld = g.getCellIndex(ngpOld);
@@ -91,6 +88,7 @@ public class CGCParticleInterpolationNGP implements  InterpolatorAlgorithm {
 			} else {
 				P.U = g.getUnext(cellIndexNew, direction).adj();
 			}
+			P.updateCharge = true;
 		}
 	}
 }
