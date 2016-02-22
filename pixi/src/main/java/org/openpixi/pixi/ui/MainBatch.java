@@ -60,15 +60,15 @@ public class MainBatch {
 			if(file.exists()) {
 				if(file.isFile()) {
 					try {
-						System.out.println("Running " + file.getPath());
+						System.out.println("MainBatch: Running " + file.getPath());
 						String string = FileIO.readFile(file);
 						runSimulationFromString(string);
 
 					} catch (IOException e) {
-						System.out.println("Error opening " + args[0]);
+						System.out.println("MainBatch: Error opening " + args[0]);
 					}
 				} else if(file.isDirectory()){
-					System.out.println("Loading configuration files from " + file.getPath());
+					System.out.println("MainBatch: Loading configuration files from " + file.getPath());
 					FilenameFilter filter = new FilenameFilter() {
 						public boolean accept(File dir, String name) {
 							return name.toLowerCase().endsWith(".yaml");
@@ -76,27 +76,35 @@ public class MainBatch {
 					File[] listOfFiles = file.listFiles(filter);
 					for(File f : listOfFiles) {
 						try {
-							System.out.println("Running " + f.getPath());
+							System.out.println("MainBatch: Running " + f.getPath());
 							String string = FileIO.readFile(f);
 							runSimulationFromString(string);
 						} catch (IOException e) {
-							System.out.println("Error opening " + f.getPath());
+							System.out.println("MainBatch: Error opening " + f.getPath());
 						}
 					}
 				}
 			}
 		}
-		System.out.println("Done!");
+		System.out.println("MainBatch: Done!");
 		System.exit(0);
 	}
 
 	public static void runSimulationFromString(String configurationString) {
 		initializeSimulationFromString(configurationString);
+
+		// Simulation run and time measurement
+		long t0 = System.nanoTime();
 		try {
 			simulation.run();
 		} catch (IOException e) {
 			System.out.println("MainBatch: something went wrong.");
 		}
+
+		// dt in seconds
+		long t1 = System.nanoTime();
+		int dt = (int) ((t1 - t0) / 1000 / 1000 / 1000);
+		System.out.println("MainBatch: Simulation time: " + dt + " s.");
 	}
 
 	public static void initializeSimulationFromString(String configurationString) {
@@ -105,8 +113,16 @@ public class MainBatch {
 		YamlParser yamlParser = new YamlParser(settings);
 		yamlParser.parseString(configurationString);
 
+		// Initialization time measurement
+		long t0 = System.nanoTime();
+
 		// Initialize the simulation
 		simulation = new Simulation(settings);
+
+		// dt in milliseconds
+		long t1 = System.nanoTime();
+		int dt = (int) ((t1 - t0) / 1000 / 1000);
+		System.out.println("MainBatch: Initialization time: " + dt + " ms.");
 	}
 
 	public static void step() {
