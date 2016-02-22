@@ -9,8 +9,6 @@ import org.apache.commons.math3.special.Erf;
 import org.openpixi.pixi.physics.grid.Grid;
 import org.openpixi.pixi.physics.util.GridFunctions;
 
-import java.security.acl.Group;
-
 public class NewLCPoissonSolver {
 
 	private int direction;
@@ -31,7 +29,7 @@ public class NewLCPoissonSolver {
 	private double at;
 	private double g;
 
-	public double infraredRegulator = 0.0;
+	public double infraredCoefficient = 0.0;
 	public double lowPassCoefficient = 1.0;
 
 	private ElementFactory factory;
@@ -74,12 +72,14 @@ public class NewLCPoissonSolver {
 	public void solve(Simulation s) {
 		DoubleFFTWrapper fft = new DoubleFFTWrapper(transversalNumCells);
 
-		// IR Regulator
-		double m = infraredRegulator;
+
 
 		// UV Regulator
 		double psqrMax = 4.0 * effTransversalDimensions / (as * as);
-		double lambda = lowPassCoefficient;
+		double lambda = lowPassCoefficient * psqrMax;
+
+		// IR Regulator
+		double msqr = infraredCoefficient * psqrMax;
 
 		// First step: compute transversal potential phi
 		for (int i = 0; i < factory.numberOfComponents; i++) {
@@ -93,10 +93,9 @@ public class NewLCPoissonSolver {
 			// Solve Poisson equation in momentum space.
 			for (int j = 1; j < totalTransversalCells; j++) {
 				double psqr = computeLatticeMomentumSquared(j);
-				double x = psqr / psqrMax;
 				double invLaplace;
-				if(x <= lambda) {
-					invLaplace = 1.0 / psqr;
+				if(psqr <= lambda) {
+					invLaplace = 1.0 / (psqr + msqr);
 				} else {
 					invLaplace = 0.0;
 				}

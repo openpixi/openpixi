@@ -50,6 +50,12 @@ public class DualMVModel implements ICurrentGenerator {
 	private double lowPassCoefficient;
 
 	/**
+	 * Infrared regulator for the Poisson solver.
+	 */
+	private double infraredCoefficient;
+
+
+	/**
 	 * Initial condition output
 	 */
 	private String outputFile;
@@ -65,7 +71,8 @@ public class DualMVModel implements ICurrentGenerator {
 	private MVModel mv2;
 
 
-	public DualMVModel(int direction, double location, double longitudinalWidth, double mu, double lowPassCoefficient,
+	public DualMVModel(int direction, double location, double longitudinalWidth, double mu,
+					   double lowPassCoefficient, double infraredCoefficient,
 					   boolean useSeed, int seed1, int seed2, boolean createInitialConditionsOutput, String outputFile,
 					   boolean useAlternativeNormalization){
 		this.direction = direction;
@@ -73,6 +80,7 @@ public class DualMVModel implements ICurrentGenerator {
 		this.longitudinalWidth = longitudinalWidth;
 		this.mu = mu;
 		this.lowPassCoefficient = lowPassCoefficient;
+		this.infraredCoefficient = infraredCoefficient;
 
 		this.useSeed = useSeed;
 		this.seed1 = seed1;
@@ -85,13 +93,12 @@ public class DualMVModel implements ICurrentGenerator {
 	}
 
 	public void initializeCurrent(Simulation s, int totalInstances) {
-		if(useSeed){
-			mv1 = new MVModel(direction, 1, location, longitudinalWidth, mu, seed1, lowPassCoefficient, useAlternativeNormalization);
-			mv2 = new MVModel(direction, -1, -(location+1), longitudinalWidth, mu, seed2, lowPassCoefficient, useAlternativeNormalization);
-		} else {
-			mv1 = new MVModel(direction, 1, location, longitudinalWidth, mu, lowPassCoefficient, useAlternativeNormalization);
-			mv2 = new MVModel(direction, -1, -(location+1), longitudinalWidth, mu, lowPassCoefficient, useAlternativeNormalization);
-		}
+
+		mv1 = new MVModel(direction, 1, location, longitudinalWidth, mu, useSeed, seed1,
+				lowPassCoefficient, infraredCoefficient, useAlternativeNormalization);
+
+		mv2 = new MVModel(direction, -1,  -(location+1), longitudinalWidth, mu, useSeed, seed2,
+				lowPassCoefficient, infraredCoefficient, useAlternativeNormalization);
 
 		mv1.initializeCurrent(s, totalInstances);
 		mv2.initializeCurrent(s, totalInstances);

@@ -34,6 +34,11 @@ public class YamlMVModel {
 	public Double lowPassCoefficient = 1.0;
 
 	/**
+	 * Coefficient infrared regulator in the Poisson solver
+	 */
+	public Double infraredCoefficient = 0.0;
+
+	/**
 	 * Seed to use for the random number generator
 	 */
 	public Integer randomSeed;
@@ -46,12 +51,12 @@ public class YamlMVModel {
 
 
 	public MVModel getCurrentGenerator() {
-		if(randomSeed != null) {
-			return new MVModel(direction, orientation, longitudinalLocation, longitudinalWidth, mu, randomSeed,
-					lowPassCoefficient, useAlternativeNormalization);
+		boolean useSeed = (randomSeed != null);
+		if(!useSeed) {
+			randomSeed = 0;
 		}
-		return new MVModel(direction, orientation, longitudinalLocation, longitudinalWidth, mu, lowPassCoefficient,
-				useAlternativeNormalization);
+		return new MVModel(direction, orientation, longitudinalLocation, longitudinalWidth, mu, useSeed, randomSeed,
+				lowPassCoefficient, infraredCoefficient, useAlternativeNormalization);
 	}
 
 }

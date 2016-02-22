@@ -80,6 +80,12 @@ public class ParticleLCCurrent implements ICurrentGenerator {
 	 */
 	public double lowPassCoefficient = 1.0;
 
+
+	/**
+	 * Infrared regulator for the Poisson solver
+	 */
+	public double infraredCoefficient = 0.0;
+
 	/**
 	 * Standard constructor for the ParticleLCCurrent class.
 	 *
@@ -132,6 +138,7 @@ public class ParticleLCCurrent implements ICurrentGenerator {
 		poissonSolver = new NewLCPoissonSolver(direction, orientation, location, longitudinalWidth,
 				transversalChargeDensity, transversalNumCells);
 		poissonSolver.lowPassCoefficient = lowPassCoefficient;
+		poissonSolver.infraredCoefficient = infraredCoefficient;
 		poissonSolver.initialize(s);
 		poissonSolver.solve(s);
 
