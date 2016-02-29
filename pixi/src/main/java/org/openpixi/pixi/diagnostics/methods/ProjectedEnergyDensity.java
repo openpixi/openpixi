@@ -103,6 +103,17 @@ public class ProjectedEnergyDensity implements Diagnostics {
 				}
 			}
 
+			// Divide by g*a factor
+			double invga = 1.0 / Math.pow(grid.getLatticeSpacing() * grid.getGaugeCoupling(), 2);
+			int longitudinalNumCells = grid.getNumCells(direction);
+
+			for (int i = 0; i < longitudinalNumCells; i++) {
+				energyDensity_T_el[i] *= invga;
+				energyDensity_T_mag[i] *= invga;
+				energyDensity_L_el[i] *= invga;
+				energyDensity_L_mag[i] *= invga;
+			}
+
 			// Write to file
 			File file = FileFunctions.getFile("output/" + path);
 			try {
