@@ -76,10 +76,10 @@ public class NewLCPoissonSolver {
 
 		// UV Regulator
 		double psqrMax = 4.0 * effTransversalDimensions / (as * as);
-		double lambda = lowPassCoefficient * psqrMax;
+		double lambda = lowPassCoefficient * lowPassCoefficient * psqrMax;
 
 		// IR Regulator
-		double msqr = infraredCoefficient * psqrMax;
+		double msqr = infraredCoefficient * infraredCoefficient * psqrMax;
 
 		// First step: compute transversal potential phi
 		for (int i = 0; i < factory.numberOfComponents; i++) {
