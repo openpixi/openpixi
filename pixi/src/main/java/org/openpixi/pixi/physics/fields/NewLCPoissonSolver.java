@@ -90,12 +90,12 @@ public class NewLCPoissonSolver {
 			fft.complexForward(fftArray);
 			// Solve Poisson equation in momentum space.
 			for (int j = 1; j < totalTransversalCells; j++) {
-				double pEffSqaured = computeEffectiveLatticeMomentumSquared(j);
+				double pEffSquared = computeEffectiveLatticeMomentumSquared(j);
 				double pSquare = computeLatticeMomentumSquared(j);
 				double invLaplace;
 				// Implement as momentum cutoff
 				if(pSquare <= lambdaSquared) {
-					invLaplace = 1.0 / (pEffSqaured + mSquared);
+					invLaplace = 1.0 / (pEffSquared + mSquared);
 				} else {
 					invLaplace = 0.0;
 				}
@@ -189,7 +189,7 @@ public class NewLCPoissonSolver {
 		for (int i = 0; i < effTransversalDimensions; i++) {
 			double momentumComponent;
 			int n = transversalNumCells[i];
-			if(i < n / 2) {
+			if(transversalGridPos[i] < n / 2) {
 				momentumComponent = twopi * transversalGridPos[i] / (as * n);
 			} else {
 				momentumComponent = twopi * (n - transversalGridPos[i]) / (as * n);
