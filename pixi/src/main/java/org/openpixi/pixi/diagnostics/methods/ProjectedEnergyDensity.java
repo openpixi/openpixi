@@ -2,6 +2,7 @@ package org.openpixi.pixi.diagnostics.methods;
 
 import org.openpixi.pixi.diagnostics.Diagnostics;
 import org.openpixi.pixi.diagnostics.FileFunctions;
+import org.openpixi.pixi.parallel.cellaccess.CellAction;
 import org.openpixi.pixi.physics.Simulation;
 import org.openpixi.pixi.physics.grid.Grid;
 import org.openpixi.pixi.physics.particles.IParticle;
@@ -39,12 +40,8 @@ public class ProjectedEnergyDensity implements Diagnostics {
 	private String path;
 	private double timeInterval;
 	private int stepInterval;
-	private int numberOfCells;
 
-	private double[] energyDensity_T_el;
-	private double[] energyDensity_T_mag;
-	private double[] energyDensity_L_el;
-	private double[] energyDensity_L_mag;
+	private EnergyDensityComputation energyDensityComputation;
 
 	public ProjectedEnergyDensity(String path, double timeInterval, int direction) {
 		this.direction = direction;
@@ -53,66 +50,18 @@ public class ProjectedEnergyDensity implements Diagnostics {
 	}
 
 	public void initialize(Simulation s) {
-		numberOfCells = s.grid.getNumCells(direction);
 		this.stepInterval = (int) (timeInterval / s.getTimeStep());
+		this.energyDensityComputation = new EnergyDensityComputation();
+		energyDensityComputation.initialize(s.grid, direction);
 
 		FileFunctions.clearFile("output/" + path);
 	}
 
 	public void calculate(Grid grid, ArrayList<IParticle> particles, int steps) throws IOException {
 		if(steps % stepInterval == 0) {
-			// Compute projected energy density (electric, magnetic, transversal and longitudinal)
-			energyDensity_T_el = new double[numberOfCells];
-			energyDensity_T_mag = new double[numberOfCells];
-			energyDensity_L_el = new double[numberOfCells];
-			energyDensity_L_mag = new double[numberOfCells];
-
-			for (int i = 0; i < numberOfCells; i++) {
-				energyDensity_T_el[i] = 0.0;
-				energyDensity_T_mag[i] = 0.0;
-				energyDensity_L_el[i] = 0.0;
-				energyDensity_L_mag[i] = 0.0;
-			}
-
-			for (int i = 0; i < grid.getTotalNumberOfCells(); i++) {
-				if(grid.isEvaluatable(i)) {
-					int projIndex = grid.getCellPos(i)[direction];
-					// transversal & longitudinal electric energy density
-					double e_T_el = 0.0;
-					double e_L_el = 0.0;
-					// transversal & longitudinal magnetic energy density
-					double e_T_mag = 0.0;
-					double e_L_mag = 0.0;
-
-					for (int j = 0; j < grid.getNumberOfDimensions(); j++) {
-						double electric = 0.5 * grid.getE(i, j).square();
-						double magnetic = 0.25 * (grid.getBsquaredFromLinks(i, j, 0) + grid.getBsquaredFromLinks(i, j, 1));
-						if(j == direction) {
-							e_L_el += electric;
-							e_L_mag += magnetic;
-						} else {
-							e_T_el += electric;
-							e_T_mag += magnetic;
-						}
-					}
-
-					energyDensity_T_el[projIndex] += e_T_el;
-					energyDensity_T_mag[projIndex] += e_T_mag;
-					energyDensity_L_el[projIndex] += e_L_el;
-					energyDensity_L_mag[projIndex] += e_L_mag;
-				}
-			}
-
-			// Divide by g*a factor
-			double invga = 1.0 / Math.pow(grid.getLatticeSpacing() * grid.getGaugeCoupling(), 2);
-			int longitudinalNumCells = grid.getNumCells(direction);
-
-			for (int i = 0; i < longitudinalNumCells; i++) {
-				energyDensity_T_el[i] *= invga;
-				energyDensity_T_mag[i] *= invga;
-				energyDensity_L_el[i] *= invga;
-				energyDensity_L_mag[i] *= invga;
-			}
+			energyDensityComputation.reset();
+			grid.getCellIterator().execute(grid, energyDensityComputation);
+			energyDensityComputation.convertToEnergyUnits(grid);
 
 			// Write to file
 			File file = FileFunctions.getFile("output/" + path);
@@ -120,10 +69,10 @@ public class ProjectedEnergyDensity implements Diagnostics {
 				FileWriter pw = new FileWriter(file, true);
 				Double time = steps * grid.getTemporalSpacing();
 				pw.write(time.toString() + "\n");
-				pw.write(generateTSVString(energyDensity_T_el) + "\n");
-				pw.write(generateTSVString(energyDensity_T_mag) + "\n");
-				pw.write(generateTSVString(energyDensity_L_el) + "\n");
-				pw.write(generateTSVString(energyDensity_L_mag) + "\n");
+				pw.write(FileFunctions.generateTSVString(energyDensityComputation.energyDensity_T_el) + "\n");
+				pw.write(FileFunctions.generateTSVString(energyDensityComputation.energyDensity_T_mag) + "\n");
+				pw.write(FileFunctions.generateTSVString(energyDensityComputation.energyDensity_L_el) + "\n");
+				pw.write(FileFunctions.generateTSVString(energyDensityComputation.energyDensity_L_mag) + "\n");
 				pw.close();
 			} catch (IOException ex) {
 				System.out.println("ProjectedEnergyDensity: Error writing to file.");
@@ -131,15 +80,75 @@ public class ProjectedEnergyDensity implements Diagnostics {
 		}
 	}
 
-	public String generateTSVString(double[] array) {
-		StringBuilder outputStringBuilder = new StringBuilder();
-		DecimalFormat formatter = new DecimalFormat("0.################E0");
-		for (int i = 0; i < array.length; i++) {
-			outputStringBuilder.append(formatter.format(array[i]));
-			if(i < array.length - 1) {
-				outputStringBuilder.append("\t");
+	private class EnergyDensityComputation implements CellAction {
+
+		private int direction;
+		private int numberOfCells;
+		private double[] energyDensity_T_el;
+		private double[] energyDensity_T_mag;
+		private double[] energyDensity_L_el;
+		private double[] energyDensity_L_mag;
+
+		public void initialize(Grid grid, int direction) {
+			this.direction = direction;
+			this.numberOfCells = grid.getNumCells(this.direction);
+			this.energyDensity_T_el = new double[numberOfCells];
+			this.energyDensity_T_mag = new double[numberOfCells];
+			this.energyDensity_L_el = new double[numberOfCells];
+			this.energyDensity_L_mag = new double[numberOfCells];
+
+		}
+
+		public void reset() {
+			for (int i = 0; i < numberOfCells; i++) {
+				this.energyDensity_T_el[i] = 0.0;
+				this.energyDensity_T_mag[i] = 0.0;
+				this.energyDensity_L_el[i] = 0.0;
+				this.energyDensity_L_mag[i] = 0.0;
 			}
 		}
-		return outputStringBuilder.toString();
+
+		public void convertToEnergyUnits(Grid grid) {
+			// Divide by g*a factor
+			double invga = 1.0 / Math.pow(grid.getLatticeSpacing() * grid.getGaugeCoupling(), 2);
+
+			for (int i = 0; i < numberOfCells; i++) {
+				energyDensity_T_el[i] *= invga;
+				energyDensity_T_mag[i] *= invga;
+				energyDensity_L_el[i] *= invga;
+				energyDensity_L_mag[i] *= invga;
+			}
+		}
+
+		public void execute(Grid grid, int index) {
+			if(grid.isEvaluatable(index)) {
+				int projIndex = grid.getCellPos(index)[direction];
+				// transversal & longitudinal electric energy density
+				double e_T_el = 0.0;
+				double e_L_el = 0.0;
+				// transversal & longitudinal magnetic energy density
+				double e_T_mag = 0.0;
+				double e_L_mag = 0.0;
+
+				for (int j = 0; j < grid.getNumberOfDimensions(); j++) {
+					double electric = 0.5 * grid.getE(index, j).square();
+					double magnetic = 0.25 * (grid.getBsquaredFromLinks(index, j, 0) + grid.getBsquaredFromLinks(index, j, 1));
+					if(j == direction) {
+						e_L_el += electric;
+						e_L_mag += magnetic;
+					} else {
+						e_T_el += electric;
+						e_T_mag += magnetic;
+					}
+				}
+
+				synchronized (this) {
+					energyDensity_T_el[projIndex] += e_T_el;
+					energyDensity_T_mag[projIndex] += e_T_mag;
+					energyDensity_L_el[projIndex] += e_L_el;
+					energyDensity_L_mag[projIndex] += e_L_mag;
+				}
+			}
+		}
 	}
 }
