@@ -819,7 +819,7 @@ public class Grid {
 			k = 1;
 			break;
 		}
-		return getPlaquette(index, j, k, 1, 1, timeIndex).proj().mult(1/as);
+		return getPlaquette(index, j, k, 1, 1, timeIndex).proj().mult(1 / as);
 	}
 
 	/**
@@ -967,6 +967,57 @@ public class Grid {
 
 		// dEz/dy - dEy/dz
 		return (dEzdy.add(dEydz.mult(-1))).mult(1 / as);
+	}
+
+	/**
+	 * Returns the spatially averaged electric field including parallel transport of the fields.
+	 * @param index Lattice index
+	 * @param d     Index of the direction
+	 * @return      Averaged electric field
+	 */
+	public AlgebraElement getAveragedE(int index, int d) {
+		int shiftedIndex = shift(index, d, -1);
+		AlgebraElement E1 = getE(index, d);
+		AlgebraElement E2 = getE(shiftedIndex, d).act(getLink(index, d, -1, 0));
+		return E1.add(E2).mult(0.5);
+	}
+
+	/**
+	 * Returns the spatially and temporally averaged field strength tensor F_ij including parallel transport.
+	 * @param index Lattice index
+	 * @param i     First component
+	 * @param j     Second component
+	 * @return      Averaged F_ij
+	 */
+	public AlgebraElement getAveragedFieldStrength(int index, int i, int j) {
+		// Average spatial components of field strength tensor in space and time (B-Field).
+		GroupElement FG = factory.groupZero();
+
+		// Spatial average at t-at/2
+		FG.addAssign(getPlaquette(index, i, j, 1, 1, 0));
+
+		FG.addAssign(getPlaquette(index, j, i, -1, 1, 0));
+		FG.addAssign(getPlaquette(index, j, i, 1, -1, 0));
+		FG.addAssign(getPlaquette(index, i, j, -1, -1, 0));
+
+		// Spatial average at t+at/2
+		FG.addAssign(getPlaquette(index, i, j, 1, 1, 1));
+		FG.addAssign(getPlaquette(index, j, i, -1, 1, 1));
+		FG.addAssign(getPlaquette(index, j, i, 1, -1, 1));
+		FG.addAssign(getPlaquette(index, i, j, -1, -1, 1));
+
+		// Divide by factors and convert to AlgebraElement.
+		return FG.proj().mult(1.0 / (8.0 * as));
+	}
+
+	/**
+	 * Returns spatially and temporally averaged B-Field including parallel transport in 3D.
+	 * @param index Lattice index
+	 * @param d     Index of the direction
+	 * @return      Averaged B-Field
+	 */
+	public AlgebraElement getAveragedB(int index, int d) {
+		return getAveragedFieldStrength(index, (d + 1) % 3, (d + 2) % 3);
 	}
 
 }
