@@ -129,6 +129,10 @@ public class NewLCPoissonSolver {
 		gvCalculation.reset(gridCopy);
 		gridCopy.getCellIterator().execute(gridCopy, gvCalculation);
 		gaussViolation = gvCalculation.getResult();
+
+		// Remove reference to gridCopy (?)
+		this.gridCopy = null;
+
 	}
 
 	public AlgebraElement getGaussConstraint(int i) {
