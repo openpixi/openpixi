@@ -22,10 +22,11 @@ currents:
       orientation: 1
       longitudinalLocation: 32
       longitudinalWidth: 4
-      mu: 0.4
+      mu: 1
       randomSeed: 1
-      lowPassCoefficient: 0.729927
-      infraredCoefficient: 0.0324412
+      lowPassCoefficient: 2
+      infraredCoefficient: 0.0
+
 
 
 
