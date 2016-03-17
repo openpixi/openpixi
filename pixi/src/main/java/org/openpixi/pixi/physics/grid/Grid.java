@@ -73,6 +73,8 @@ public class Grid {
 	 */
 	protected int cummulatedCellCount[];
 
+
+	protected int[][][] shiftTable;
 	/**
 	 * Factory for SU(n) group and algebra elements.
 	 */
@@ -474,6 +476,16 @@ public class Grid {
 		for(int i = 0; i < length; i++) {
 			cells[i] = new Cell(numDim, numCol, factory);
 		}
+
+		shiftTable = new int[length][numDim][2];
+		for (int i = 0; i < length; i++) {
+			for (int j = 0; j < numDim; j++) {
+				for (int k = 0; k < 2; k++) {
+					int orientation = 2*k - 1;
+					shiftTable[i][j][k] = shift(i, j, orientation);
+				}
+			}
+		}
 	
 	}
 
@@ -545,9 +557,9 @@ public class Grid {
 			The four lattice indices associated with the plaquette.
 		 */
 		int x1 = index;
-		int x2 = shift(x1, d1, o1);
-		int x3 = shift(x2, d2, o2);
-		int x4 = shift(x3, d1, -o1);
+		int x2 = shift2(x1, d1, o1);
+		int x3 = shift2(x2, d2, o2);
+		int x4 = shift2(x3, d1, -o1);
 
 		/*
 			The four gauge links associated with the plaquette.
@@ -587,7 +599,7 @@ public class Grid {
 	public GroupElement getTemporalPlaquette(int index, int d, int o) {
 		GroupElement U1 = getTemporalLink(index, 0);
 		GroupElement U2 = getLink(index, d, o, 1);
-		GroupElement U3 = getTemporalLink(shift(index, d, o), 0).adj();
+		GroupElement U3 = getTemporalLink(shift2(index, d, o), 0).adj();
 		GroupElement U4 = getLink(index, d, o, 0).adj();
 
 
@@ -622,12 +634,12 @@ public class Grid {
 		{
 			if(orientation < 0)
 			{
-				return getCell(shift(index, direction, orientation)).getU(direction).adj();
+				return getCell(shift2(index, direction, orientation)).getU(direction).adj();
 			}
 			return getCell(index).getU(direction);
 		} else {
 			if(orientation < 0) {
-				return getCell(shift(index, direction, orientation)).getUnext(direction).adj();
+				return getCell(shift2(index, direction, orientation)).getUnext(direction).adj();
 			}
 			return getCell(index).getUnext(direction);
 		}
@@ -741,6 +753,11 @@ public class Grid {
 			// do nothing if orientation == 0
 		}
 		return result;
+	}
+
+	protected int shift2(int index, int direction, int orientation)
+	{
+		return shiftTable[index][direction][(orientation+1)/2];
 	}
 
 	/*
@@ -865,7 +882,7 @@ public class Grid {
 	public AlgebraElement getGaussConstraint(int index) {
 		AlgebraElement gauss = factory.algebraZero();
 		for (int i = 0; i < numDim; i++) {
-			int shiftedIndex = shift(index, i, -1);
+			int shiftedIndex = shift2(index, i, -1);
 			AlgebraElement E = getE(shiftedIndex, i).copy();
 			E.actAssign(getLink(index, i, -1, 0));
 			gauss.addAssign(getE(index, i));
@@ -931,8 +948,8 @@ public class Grid {
 		int dirY = (direction + 1) % 3;
 		int dirZ = (direction + 2) % 3;
 
-		int indexShiftedY = shift(index, dirY, -1);
-		int indexShiftedZ = shift(index, dirZ, -1);
+		int indexShiftedY = shift2(index, dirY, -1);
+		int indexShiftedZ = shift2(index, dirZ, -1);
 
 		AlgebraElement By = getB(index, dirY, timeIndex); // By(y, z)
 		AlgebraElement Byz1 = getB(indexShiftedZ, dirY, timeIndex); // By(y, z+1)
@@ -965,8 +982,8 @@ public class Grid {
 		int dirY = (direction + 1) % 3;
 		int dirZ = (direction + 2) % 3;
 
-		int indexShiftedY = shift(index, dirY, 1);
-		int indexShiftedZ = shift(index, dirZ, 1);
+		int indexShiftedY = shift2(index, dirY, 1);
+		int indexShiftedZ = shift2(index, dirZ, 1);
 
 		AlgebraElement Ey = getE(index, dirY); // Ey(y, z)
 		AlgebraElement Eyz1 = getE(indexShiftedZ, dirY); // Ey(y, z+1)
@@ -994,7 +1011,7 @@ public class Grid {
 	 * @return      Averaged electric field
 	 */
 	public AlgebraElement getAveragedE(int index, int d) {
-		int shiftedIndex = shift(index, d, -1);
+		int shiftedIndex = shift2(index, d, -1);
 		AlgebraElement E1 = getE(index, d);
 		AlgebraElement E2 = getE(shiftedIndex, d).act(getLink(index, d, -1, 0));
 		return E1.add(E2).mult(0.5);
