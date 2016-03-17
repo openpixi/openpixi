@@ -562,7 +562,16 @@ public class Grid {
 			Plaquette calculation
 		 */
 
-		return U1.mult(U2.mult(U3.mult(U4)));
+
+		GroupElement U = factory.groupIdentity();
+		U.multAssign(U1);
+		U.multAssign(U2);
+		U.multAssign(U3);
+		U.multAssign(U4);
+
+		return U;
+
+		//return U1.mult(U2.mult(U3.mult(U4)));
 	}
 
 	/**
@@ -581,7 +590,16 @@ public class Grid {
 		GroupElement U3 = getTemporalLink(shift(index, d, o), 0).adj();
 		GroupElement U4 = getLink(index, d, o, 0).adj();
 
-		return U1.mult(U2.mult(U3.mult(U4)));
+
+		GroupElement U = factory.groupIdentity();
+		U.multAssign(U1);
+		U.multAssign(U2);
+		U.multAssign(U3);
+		U.multAssign(U4);
+
+		return U;
+
+		//return U1.mult(U2.mult(U3.mult(U4)));
 	}
 
 	/**

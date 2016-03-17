@@ -190,6 +190,18 @@ public class SU2GroupElement implements GroupElement {
 
 	}
 
+	public void multAssign(GroupElement arg) {
+		double e0, e1, e2;
+		double[] ae = ((SU2GroupElement) arg).e;
+		e0 = e[0];
+		e1 = e[1];
+		e2 = e[2];
+		e[0] = e[0] * ae[0] - e[1] * ae[1] - e[2] * ae[2] - e[3] * ae[3];
+		e[1] = e0 * ae[1] + e[1] * ae[0] - e[2] * ae[3] + e[3] * ae[2];
+		e[2] = e0 * ae[2] + e[2] * ae[0] - e[3] * ae[1] + e1 * ae[3];
+		e[3] = e0 * ae[3] + e[3] * ae[0] - e1 * ae[2] + e2 * ae[1];
+	}
+
 	public AlgebraElement getAlgebraElement()
 	{
 		double norm = 0.0;
