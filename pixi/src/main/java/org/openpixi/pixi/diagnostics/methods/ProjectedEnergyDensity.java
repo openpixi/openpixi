@@ -48,11 +48,11 @@ public class ProjectedEnergyDensity implements Diagnostics {
 	private double timeInterval;
 	private int stepInterval;
 
-	/*
+
 	private EnergyDensityComputation energyDensityComputation;
 	private PoyntingComputation poyntingComputation;
-	*/
 
+	/*
 	private int totalNumberOfCells;
 	private int numberOfDimensions;
 	private int longitudinalNumberOfCells;
@@ -64,6 +64,7 @@ public class ProjectedEnergyDensity implements Diagnostics {
 
 	private double[] poyntingAveraged;
 	private double[] poyntingTimeAveraged;
+	*/
 
 	private double as;
 	private ElementFactory factory;
@@ -77,6 +78,7 @@ public class ProjectedEnergyDensity implements Diagnostics {
 
 	public void initialize(Simulation s) {
 		this.stepInterval = (int) (timeInterval / s.getTimeStep());
+		/*
 		this.totalNumberOfCells = s.grid.getTotalNumberOfCells();
 		this.numberOfDimensions = s.grid.getNumberOfDimensions();
 		this.longitudinalNumberOfCells = s.grid.getNumCells(direction);
@@ -89,23 +91,23 @@ public class ProjectedEnergyDensity implements Diagnostics {
 
 		this.poyntingAveraged = new double[longitudinalNumberOfCells];
 		this.poyntingTimeAveraged = new double[longitudinalNumberOfCells];
-
+		*/
 		this.as = s.grid.getLatticeSpacing();
 		this.factory = s.grid.getElementFactory();
 
-		/*
+
 		this.energyDensityComputation = new EnergyDensityComputation();
 		energyDensityComputation.initialize(s.grid, direction);
 		this.poyntingComputation = new PoyntingComputation();
 		poyntingComputation.initialize(s.grid, direction);
-		*/
+
 
 		FileFunctions.clearFile("output/" + path);
 	}
 
 	public void calculate(Grid grid, ArrayList<IParticle> particles, int steps) throws IOException {
 		if(steps % stepInterval == 0) {
-			/*
+
 			energyDensityComputation.reset();
 			grid.getCellIterator().execute(grid, energyDensityComputation);
 			energyDensityComputation.convertToEnergyUnits(grid);
@@ -113,8 +115,9 @@ public class ProjectedEnergyDensity implements Diagnostics {
 			poyntingComputation.reset();
 			grid.getCellIterator().execute(grid, poyntingComputation);
 			poyntingComputation.convertToEnergyUnits(grid);
-			*/
 
+
+			/*
 			// Reset arrays
 			for (int i = 0; i < longitudinalNumberOfCells; i++) {
 				this.energyDensity_T_el[i] = 0.0;
@@ -232,7 +235,7 @@ public class ProjectedEnergyDensity implements Diagnostics {
 				poyntingTimeAveraged[i] *= invga;
 			}
 
-
+			*/
 
 			// Write to file
 			File file = FileFunctions.getFile("output/" + path);
@@ -240,12 +243,20 @@ public class ProjectedEnergyDensity implements Diagnostics {
 				FileWriter pw = new FileWriter(file, true);
 				Double time = steps * grid.getTemporalSpacing();
 				pw.write(time.toString() + "\n");
+				pw.write(FileFunctions.generateTSVString(energyDensityComputation.energyDensity_T_el) + "\n");
+				pw.write(FileFunctions.generateTSVString(energyDensityComputation.energyDensity_T_mag) + "\n");
+				pw.write(FileFunctions.generateTSVString(energyDensityComputation.energyDensity_L_el) + "\n");
+				pw.write(FileFunctions.generateTSVString(energyDensityComputation.energyDensity_L_mag) + "\n");
+				pw.write(FileFunctions.generateTSVString(poyntingComputation.poyntingAveraged) + "\n");
+				pw.write(FileFunctions.generateTSVString(poyntingComputation.poyntingTimeAveraged) + "\n");
+				/*
 				pw.write(FileFunctions.generateTSVString(energyDensity_T_el) + "\n");
 				pw.write(FileFunctions.generateTSVString(energyDensity_T_mag) + "\n");
 				pw.write(FileFunctions.generateTSVString(energyDensity_L_el) + "\n");
 				pw.write(FileFunctions.generateTSVString(energyDensity_L_mag) + "\n");
 				pw.write(FileFunctions.generateTSVString(poyntingAveraged) + "\n");
 				pw.write(FileFunctions.generateTSVString(poyntingTimeAveraged) + "\n");
+				*/
 				pw.close();
 			} catch (IOException ex) {
 				System.out.println("ProjectedEnergyDensity: Error writing to file.");
@@ -255,7 +266,7 @@ public class ProjectedEnergyDensity implements Diagnostics {
 
 	// Multithreaded code which leaks memory. I don't know why.
 
-	/*
+
 	private class EnergyDensityComputation implements CellAction {
 
 		private int direction;
@@ -372,7 +383,7 @@ public class ProjectedEnergyDensity implements Diagnostics {
 
 			int d = direction;
 			for (int i = 0; i < numberOfDimensions; i++) {
-				if(i != direction) {
+				if (i != direction) {
 					// AVERAGED COMPUTATION
 
 					// Average spatial components of field strength tensor in space and time (B-Field).
@@ -429,6 +440,5 @@ public class ProjectedEnergyDensity implements Diagnostics {
 			}
 		}
 	}
-	*/
 
 }
