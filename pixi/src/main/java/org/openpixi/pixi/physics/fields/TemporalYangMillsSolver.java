@@ -28,6 +28,7 @@ public class TemporalYangMillsSolver extends FieldSolver
 		fieldUpdater.at = timeStep;
 		fieldUpdater.as = grid.getLatticeSpacing();
 		fieldUpdater.g = grid.getGaugeCoupling();
+		fieldUpdater.factor = timeStep / (grid.getLatticeSpacing() * grid.getLatticeSpacing());
 		linkUpdater.at = timeStep;
 		linkUpdater.as = grid.getLatticeSpacing();
 		cellIterator.execute(grid, fieldUpdater);
@@ -48,6 +49,7 @@ public class TemporalYangMillsSolver extends FieldSolver
 		private double as;
 		private double at;
 		private double g;
+		private double factor;
 
 		/**
 		 * Updates the electric fields at a given coordinate
@@ -65,7 +67,7 @@ public class TemporalYangMillsSolver extends FieldSolver
 						}
 					}
 
-					AlgebraElement currentE = grid.getE(index, i).add(temp.proj().mult(at / (as * as)));
+					AlgebraElement currentE = grid.getE(index, i).add(temp.proj().mult(factor));
 					currentE.addAssign(grid.getJ(index, i).mult(-at));
 					grid.setE(index, i, currentE);
 				}
@@ -87,8 +89,9 @@ public class TemporalYangMillsSolver extends FieldSolver
 			if(grid.isActive(index)) {
 				GroupElement V;
 				for (int k = 0; k < grid.getNumberOfDimensions(); k++) {
-					V = grid.getE(index, k).mult(-at).getLink();    //minus sign takes take of conjugation
-					grid.setUnext(index, k, V.mult(grid.getU(index, k)));
+					V = grid.getE(index, k).mult(-at).getLink();
+					V.multAssign(grid.getU(index, k));
+					grid.setUnext(index, k, V);
 
 				}
 			}

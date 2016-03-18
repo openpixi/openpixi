@@ -17,7 +17,6 @@ import java.io.IOException;
 public class PerfTest {
 
 	@Test
-	@Ignore
 	public void testFullSimulation() {
 		String configurationString = "simulationType: temporal cgc ngp\n" +
 				"gridStep: 1\n" +
@@ -25,9 +24,9 @@ public class PerfTest {
 				"numberOfDimensions: 3\n" +
 				"numberOfColors: 2\n" +
 				"numberOfThreads: 4\n" +
-				"gridCells: [512, 32, 32]\n" +
+				"gridCells: [512, 16, 16]\n" +
 				"timeStep: 0.5\n" +
-				"duration: 600\n" +
+				"duration: 64\n" +
 				"evaluationRegion:\n" +
 				"  enabled: true\n" +
 				"  point1: [2, 0, 0]\n" +
