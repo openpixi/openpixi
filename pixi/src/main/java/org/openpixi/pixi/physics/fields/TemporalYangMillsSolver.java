@@ -66,10 +66,8 @@ public class TemporalYangMillsSolver extends FieldSolver
 							temp.addAssign(grid.getPlaquette(index, i, j, 1, -1, 0));
 						}
 					}
-
-					AlgebraElement currentE = grid.getE(index, i).add(temp.proj().mult(factor));
-					currentE.addAssign(grid.getJ(index, i).mult(-at));
-					grid.setE(index, i, currentE);
+					grid.addE(index, i, temp.proj().mult(factor));
+					grid.addE(index, i, grid.getJ(index, i).mult(-at));
 				}
 			}
 		}
