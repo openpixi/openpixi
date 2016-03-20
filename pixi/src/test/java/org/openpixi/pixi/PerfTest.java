@@ -17,6 +17,7 @@ import java.io.IOException;
 public class PerfTest {
 
 	@Test
+	@Ignore
 	public void testFullSimulation() {
 		String configurationString = "simulationType: temporal cgc ngp\n" +
 				"gridStep: 1\n" +

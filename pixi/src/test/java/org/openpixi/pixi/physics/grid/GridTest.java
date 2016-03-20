@@ -168,7 +168,7 @@ public class GridTest {
 	@Test
 	public void testShiftSpeed()
 	{
-		int numberOfTests = 50000000;
+		int numberOfTests = 20;
 
 		Settings settings = getStandardSettings();
 		settings.addFieldGenerator(new SU2RandomFields());
