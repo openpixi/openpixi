@@ -614,6 +614,35 @@ public class Grid {
 		//return U1.mult(U2.mult(U3.mult(U4)));
 	}
 
+
+	/**
+	 * Computes the sum of staples surrounding a particular gauge link given by a lattice index and a direction.
+	 * This is used for the field equations of motion.
+	 * @param index Lattice index
+	 * @param d     Direction
+	 * @return      Sum of all surrounding staples
+	 */
+	public GroupElement getStapleSum(int index, int d) {
+		GroupElement S = factory.groupZero();
+		int ci1 = shift2(index, d, 1);
+		int ci2, ci3, ci4;
+		for (int i = 0; i < numDim; i++) {
+			if(i != d) {
+				ci2 = shift2(index, i, 1);
+				ci3 = shift2(ci1, i, -1);
+				ci4 = shift2(index, i, -1);
+				GroupElement U1 = getU(ci1, i).mult(getU(ci2, d).adj());
+				U1.multAssign(getU(index, i).adj());
+				GroupElement U2 = getU(ci4, d).mult(getU(ci3, i));
+				U2.adjAssign();
+				U2.multAssign(getU(ci4, i));
+				S.addAssign(U1);
+				S.addAssign(U2);
+			}
+		}
+		return S;
+	}
+
 	/**
 	 * Getter for gauge links. Returns a link starting from a certain lattice index with the right direction and
 	 * orientation.
