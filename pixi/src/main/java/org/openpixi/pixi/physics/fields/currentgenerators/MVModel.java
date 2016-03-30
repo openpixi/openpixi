@@ -41,9 +41,18 @@ public class MVModel implements ICurrentGenerator {
 	private int seed;
 
 	/**
-	 *
+	 * Coefficient used for the UV regulator, which is implemented as a hard cutoff. This parameter is given in units of
+	 * the maximum lattice momentum. A value of 1.0 corresponds to no UV cutoff. A value of 0.0 cuts off all modes in
+	 * momentum space.
 	 */
-	private double lowPassCoefficient = 1.0;
+	private double lowPassCoefficient ;
+
+	/**
+	 * Coefficient used for the IR regulator, which is implemented as a mass-term in the Poisson solver. As with the
+	 * UV regulator this coefficient is given in units of the lattice momentum. A value of 0.0 removes the IR regulator,
+	 * any other value leads to a finite mass term in the Poisson equation.
+	 */
+	private double infraredCoefficient;
 
 	/**
 	 * Option whether to use the \mu^2 (true) or the g^2 \mu^2 (false) normalization for the Gaussian
@@ -53,21 +62,18 @@ public class MVModel implements ICurrentGenerator {
 
 	protected ParticleLCCurrent particleLCCurrent;
 
-
-	public MVModel(int direction, int orientation, double location, double longitudinalWidth, double mu, double lowPassCoefficient, boolean useAlternativeNormalization) {
-		this(direction, orientation, location, longitudinalWidth, mu, 0, lowPassCoefficient, useAlternativeNormalization);
-		this.useSeed = false;
-	}
-
-	public MVModel(int direction, int orientation, double location, double longitudinalWidth, double mu, int seed, double lowPassCoefficient, boolean useAlternativeNormalization){
+	public MVModel(int direction, int orientation, double location, double longitudinalWidth, double mu,
+				   boolean useSeed, int seed,
+				   double lowPassCoefficient, double infraredCoefficient, boolean useAlternativeNormalization){
 		this.direction = direction;
 		this.orientation = orientation;
 		this.location = location;
 		this.longitudinalWidth = longitudinalWidth;
 		this.mu = mu;
+		this.useSeed = useSeed;
 		this.seed = seed;
-		this.useSeed = true;
 		this.lowPassCoefficient = lowPassCoefficient;
+		this.infraredCoefficient = infraredCoefficient;
 		this.useAlternativeNormalization = useAlternativeNormalization;
 	}
 
@@ -124,6 +130,7 @@ public class MVModel implements ICurrentGenerator {
 			this.particleLCCurrent = new ParticleLCCurrentNGP(direction, orientation, location, longitudinalWidth);
 		}
 		particleLCCurrent.lowPassCoefficient = lowPassCoefficient;
+		particleLCCurrent.infraredCoefficient = infraredCoefficient;
 		particleLCCurrent.setTransversalChargeDensity(transversalChargeDensity);
 		particleLCCurrent.initializeCurrent(s, totalInstances);
 

@@ -46,6 +46,7 @@ public class PoyntingTheoremInTime implements Diagnostics {
 		this.s = s;
 		this.stepInterval = (int) (timeInterval / this.s.getTimeStep());
 		poyntingTheorem = PoyntingTheoremBuffer.getOrAppendInstance(s);
+		//poyntingTheorem.initialize(s);
 
 		if(!supressOutput) {
 			// Create/delete file.
@@ -84,21 +85,24 @@ public class PoyntingTheoremInTime implements Diagnostics {
 	 * @throws IOException
 	 */
 	public void calculate(Grid grid, ArrayList<IParticle> particles, int steps) throws IOException {
-		if(steps % stepInterval == 0) {
 
-			double energyDensity = poyntingTheorem.getTotalEnergyDensity();
-			double energyDensityDerivative = poyntingTheorem.getTotalEnergyDensityDerivative();
-			double divS = poyntingTheorem.getTotalDivS();
-			double brotEminusErotB = poyntingTheorem.getTotalBrotEminusErotB();
-			double jS = poyntingTheorem.getTotalJE();
-			double poyntingTheoremSum = energyDensityDerivative + divS + jS;
-			double integratedDivS = poyntingTheorem.getIntegratedTotalDivS();
-			double integratedBrotEminusErotB = poyntingTheorem.getIntegratedTotalBrotEminusErotB();
-			double integratedJS = poyntingTheorem.getIntegratedTotalJE();
-			double integratedPoyntingTheorem1 = poyntingTheorem.getTotalEnergyDensity()
-					+ integratedDivS + integratedJS;
-			double integratedPoyntingTheorem2 = poyntingTheorem.getTotalEnergyDensity()
-					+ integratedBrotEminusErotB + integratedJS;
+		// Calculate quantities at each time step
+		double energyDensity = poyntingTheorem.getTotalEnergyDensity();
+		double energyDensityDerivative = poyntingTheorem.getTotalEnergyDensityDerivative();
+		double divS = poyntingTheorem.getTotalDivS();
+		double brotEminusErotB = poyntingTheorem.getTotalBrotEminusErotB();
+		double jS = poyntingTheorem.getTotalJE();
+		double poyntingTheoremSum = energyDensityDerivative + divS + jS;
+		double integratedDivS = poyntingTheorem.getIntegratedTotalDivS();
+		double integratedBrotEminusErotB = poyntingTheorem.getIntegratedTotalBrotEminusErotB();
+		double integratedJS = poyntingTheorem.getIntegratedTotalJE();
+		double integratedPoyntingTheorem1 = poyntingTheorem.getTotalEnergyDensity()
+				+ integratedDivS + integratedJS;
+		double integratedPoyntingTheorem2 = poyntingTheorem.getTotalEnergyDensity()
+				+ integratedBrotEminusErotB + integratedJS;
+
+		// Output only at desired interval
+		if(steps % stepInterval == 0) {
 
 			if(!supressOutput) {
 				File file = FileFunctions.getFile("output/" + path);

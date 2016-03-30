@@ -1,6 +1,7 @@
 package org.openpixi.pixi.diagnostics;
 
 import java.io.File;
+import java.text.DecimalFormat;
 
 public class FileFunctions {
 
@@ -37,4 +38,21 @@ public class FileFunctions {
 		}
 	}
 
+
+	/**
+	 * Converts a 1D double array to a tab-separated values (TSV) string.
+	 * @param array	1D double array
+	 * @return	String with the values of the array as TSV.
+	 */
+	public static String generateTSVString(double[] array) {
+		StringBuilder outputStringBuilder = new StringBuilder();
+		DecimalFormat formatter = new DecimalFormat("0.################E0");
+		for (int i = 0; i < array.length; i++) {
+			outputStringBuilder.append(formatter.format(array[i]));
+			if(i < array.length - 1) {
+				outputStringBuilder.append("\t");
+			}
+		}
+		return outputStringBuilder.toString();
+	}
 }
