@@ -209,25 +209,25 @@ public class Chart2DPanel extends AnimationChart2DPanel {
 			poyntingTheorem = PoyntingTheoremBuffer.getOrAppendInstance(s);
 
 			double energyDensityDerivative = poyntingTheorem.getTotalEnergyDensityDerivative();
-			double divS1 = poyntingTheorem.getTotalDivS1();
-			double divS2 = poyntingTheorem.getTotalDivS2();
+			double divS = poyntingTheorem.getTotalDivS();
+			double brotEminusErotB = poyntingTheorem.getTotalBrotEminusErotB();
 			double jS = poyntingTheorem.getTotalJE();
-			double poyntingTheoremSum = energyDensityDerivative + divS1 + jS;
-			double integratedDivS1 = poyntingTheorem.getIntegratedTotalDivS1();
-			double integratedDivS2 = poyntingTheorem.getIntegratedTotalDivS2();
+			double poyntingTheoremSum = energyDensityDerivative + divS + jS;
+			double integratedDivS = poyntingTheorem.getIntegratedTotalDivS();
+			double integratedBrotEminusErotB = poyntingTheorem.getIntegratedTotalBrotEminusErotB();
 			double integratedJS = poyntingTheorem.getIntegratedTotalJE();
 			double integratedPoyntingTheorem1 = poyntingTheorem.getTotalEnergyDensity()
-					+ integratedDivS1 + integratedJS;
+					+ integratedDivS + integratedJS;
 			double integratedPoyntingTheorem2 = poyntingTheorem.getTotalEnergyDensity()
-					+ integratedDivS2 + integratedJS;
+					+ integratedBrotEminusErotB + integratedJS;
 
 			traces[INDEX_ENERGY_DENSITY_DERIVATIVE].addPoint(time, energyDensityDerivative);
-			traces[INDEX_DIV_S].addPoint(time, divS1);
-			traces[INDEX_B_ROT_E_MINUS_E_ROT_B].addPoint(time, divS2);
+			traces[INDEX_DIV_S].addPoint(time, divS);
+			traces[INDEX_B_ROT_E_MINUS_E_ROT_B].addPoint(time, brotEminusErotB);
 			traces[INDEX_JE].addPoint(time, jS);
 			traces[INDEX_POYNTING_THEOREM].addPoint(time, poyntingTheoremSum);
-			traces[INDEX_INTEGRATED_DIV_S].addPoint(time, integratedDivS1);
-			traces[INDEX_INTEGRATED_B_ROT_E_MINUS_E_ROT_B].addPoint(time, integratedDivS2);
+			traces[INDEX_INTEGRATED_DIV_S].addPoint(time, integratedDivS);
+			traces[INDEX_INTEGRATED_B_ROT_E_MINUS_E_ROT_B].addPoint(time, integratedBrotEminusErotB);
 			traces[INDEX_INTEGRATED_JE].addPoint(time, integratedJS);
 			traces[INDEX_INTEGRATED_POYNTING_THEOREM_1].addPoint(time, integratedPoyntingTheorem1);
 			traces[INDEX_INTEGRATED_POYNTING_THEOREM_2].addPoint(time, integratedPoyntingTheorem2);
