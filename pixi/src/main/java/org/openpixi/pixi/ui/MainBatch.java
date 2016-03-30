@@ -37,6 +37,9 @@ public class MainBatch {
 	public static int iterations;
 	private static Simulation simulation;
 
+	private static final long GIGABYTE = 1024L * 1024L * 1024L;
+
+
 	/**
 	 * This class takes an input parameter which specifies the YAML file.
 	 *
@@ -95,7 +98,22 @@ public class MainBatch {
 
 		// Simulation run and time measurement
 		long t0 = System.nanoTime();
+		Runtime runtime = Runtime.getRuntime();
 		try {
+			while(simulation.continues()) {
+				long stept0 = System.nanoTime();
+				simulation.step();
+
+				// Some diagnostic stuff
+				int stepdt = (int) ((System.nanoTime() - stept0) / 1000 / 1000);
+				double currentTime = simulation.totalSimulationTime;
+				double totalTime = simulation.getIterations() * simulation.getTimeStep();
+				double memory = ((int) (100 * runtime.totalMemory() / GIGABYTE)) / 100.0;
+				int mempercent = (int) (100 * runtime.totalMemory() / runtime.maxMemory());
+
+				System.out.println("MainBatch: step " + currentTime + "/" + totalTime + " (" + stepdt + "ms)");
+				System.out.println("MainBatch: memory: " + memory + "gb (" + mempercent + "%)");
+			}
 			simulation.run();
 		} catch (IOException e) {
 			System.out.println("MainBatch: something went wrong.");
@@ -104,7 +122,8 @@ public class MainBatch {
 		// dt in seconds
 		long t1 = System.nanoTime();
 		int dt = (int) ((t1 - t0) / 1000 / 1000 / 1000);
-		System.out.println("MainBatch: Simulation time: " + dt + " s.");
+		int avg = (int) ((t1 - t0) / 1000 / 1000) / simulation.getIterations();
+		System.out.println("MainBatch: Simulation time: " + dt + " s (average " + avg + "ms)");
 	}
 
 	public static void initializeSimulationFromString(String configurationString) {

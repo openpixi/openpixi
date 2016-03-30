@@ -54,7 +54,8 @@ public class ParallelParticleIterator implements ParticleIterator {
 		}
 
 		public Object call() throws Exception {
-			for (int particleIdx = threadIdx; particleIdx < particles.size(); particleIdx += numOfThreads) {
+			int size = particles.size();
+			for (int particleIdx = threadIdx; particleIdx < size; particleIdx += numOfThreads) {
 				action.execute(particles.get(particleIdx));
 			}
 			return null;

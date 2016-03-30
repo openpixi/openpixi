@@ -36,6 +36,7 @@ import org.openpixi.pixi.physics.movement.boundary.IParticleBoundaryConditions;
 import org.openpixi.pixi.physics.movement.boundary.PeriodicParticleBoundaryConditions;
 import org.openpixi.pixi.physics.particles.IParticle;
 import org.openpixi.pixi.diagnostics.Diagnostics;
+import org.openpixi.pixi.physics.util.PerformanceTimer;
 
 import java.util.ArrayList;
 
@@ -116,6 +117,8 @@ public class Simulation {
 	 * List of external current generators which are applied during the whole runtime of the simulation.
 	 */
 	private ArrayList<ICurrentGenerator>  currentGenerators;
+
+	private PerformanceTimer timer;
 
 
 	public SimulationType getSimulationType() {
@@ -260,6 +263,8 @@ public class Simulation {
 		}
 
 		initialize();
+
+		timer = new PerformanceTimer();
 	}
 
 	public void turnGridForceOn() {
@@ -370,29 +375,36 @@ public class Simulation {
 		mover.reassign(particles);
 		grid.storeFields();
 
+		timer.reset();
 		// 4) Compute electric fields from links and currents
 		// 5) Update links
 		grid.updateGrid(tstep);
+		timer.lap("EOM");
 
 		// 6) Interpolate charge density
 		grid.resetCharge();
 		interpolation.interpolateChargedensity(particles, grid);
+		timer.lap("CIN");
 
 		// 7) Update particle velocities
 		//updateVelocities();
 
 		// 8) Update particle positions
 		mover.updatePositions(particles, f, grid, tstep);
+		timer.lap("PUP");
 
 		// 9) Interpolate fields to particles
 		interpolation.interpolateToParticle(particles, grid);
+		timer.lap("PIN");
 
 		// 10) Update particle charges
 		mover.updateCharges(particles, f, grid, tstep);
+		timer.lap("CUP");
 
 		// 11) Interpolate currents
 		grid.resetCurrent();
 		interpolation.interpolateToGrid(particles, grid);
+		timer.lap("JIN");
 
 		// 12) Generate external currents on the grid
 		for (ICurrentGenerator c: currentGenerators)
@@ -401,7 +413,11 @@ public class Simulation {
 		}
 
 		// 13) Run diagnostics.
+
+		timer.reset();
 		runDiagnostics();
+		timer.lap("DIA");
+
 	}
 
 	/**

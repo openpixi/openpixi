@@ -48,25 +48,13 @@ public class ProjectedEnergyDensity implements Diagnostics {
 	private double timeInterval;
 	private int stepInterval;
 
-	/*
 	private EnergyDensityComputation energyDensityComputation;
 	private PoyntingComputation poyntingComputation;
-	*/
-
-	private int totalNumberOfCells;
-	private int numberOfDimensions;
-	private int longitudinalNumberOfCells;
-
-	private double[] energyDensity_T_el;
-	private double[] energyDensity_T_mag;
-	private double[] energyDensity_L_el;
-	private double[] energyDensity_L_mag;
-
-	private double[] poyntingAveraged;
-	private double[] poyntingTimeAveraged;
 
 	private double as;
 	private ElementFactory factory;
+
+	protected double areaFactor;
 
 
 	public ProjectedEnergyDensity(String path, double timeInterval, int direction) {
@@ -77,35 +65,30 @@ public class ProjectedEnergyDensity implements Diagnostics {
 
 	public void initialize(Simulation s) {
 		this.stepInterval = (int) (timeInterval / s.getTimeStep());
-		this.totalNumberOfCells = s.grid.getTotalNumberOfCells();
-		this.numberOfDimensions = s.grid.getNumberOfDimensions();
-		this.longitudinalNumberOfCells = s.grid.getNumCells(direction);
-
-
-		this.energyDensity_T_el = new double[longitudinalNumberOfCells];
-		this.energyDensity_T_mag = new double[longitudinalNumberOfCells];
-		this.energyDensity_L_el = new double[longitudinalNumberOfCells];
-		this.energyDensity_L_mag = new double[longitudinalNumberOfCells];
-
-		this.poyntingAveraged = new double[longitudinalNumberOfCells];
-		this.poyntingTimeAveraged = new double[longitudinalNumberOfCells];
 
 		this.as = s.grid.getLatticeSpacing();
 		this.factory = s.grid.getElementFactory();
 
-		/*
+
 		this.energyDensityComputation = new EnergyDensityComputation();
 		energyDensityComputation.initialize(s.grid, direction);
 		this.poyntingComputation = new PoyntingComputation();
 		poyntingComputation.initialize(s.grid, direction);
-		*/
 
 		FileFunctions.clearFile("output/" + path);
+
+		// Compute area factor
+		areaFactor = 1.0;
+		for (int i = 0; i < s.getNumberOfDimensions(); i++) {
+			if(i != direction) {
+				areaFactor *= s.grid.getNumCells(i);
+			}
+		}
 	}
 
 	public void calculate(Grid grid, ArrayList<IParticle> particles, int steps) throws IOException {
 		if(steps % stepInterval == 0) {
-			/*
+
 			energyDensityComputation.reset();
 			grid.getCellIterator().execute(grid, energyDensityComputation);
 			energyDensityComputation.convertToEnergyUnits(grid);
@@ -113,125 +96,6 @@ public class ProjectedEnergyDensity implements Diagnostics {
 			poyntingComputation.reset();
 			grid.getCellIterator().execute(grid, poyntingComputation);
 			poyntingComputation.convertToEnergyUnits(grid);
-			*/
-
-			// Reset arrays
-			for (int i = 0; i < longitudinalNumberOfCells; i++) {
-				this.energyDensity_T_el[i] = 0.0;
-				this.energyDensity_T_mag[i] = 0.0;
-				this.energyDensity_L_el[i] = 0.0;
-				this.energyDensity_L_mag[i] = 0.0;
-
-				this.poyntingAveraged[i] = 0.0;
-				this.poyntingTimeAveraged[i] = 0.0;
-			}
-
-			for (int index = 0; index < totalNumberOfCells; index++) {
-
-				if(grid.isEvaluatable(index)) {
-					int projIndex = grid.getCellPos(index)[direction];
-					// Compute energy densities
-					// transversal & longitudinal electric energy density
-					double e_T_el = 0.0;
-					double e_L_el = 0.0;
-					// transversal & longitudinal magnetic energy density
-					double e_T_mag = 0.0;
-					double e_L_mag = 0.0;
-
-					for (int j = 0; j < grid.getNumberOfDimensions(); j++) {
-						double electric = 0.5 * grid.getE(index, j).square();
-						double magnetic = 0.25 * (grid.getBsquaredFromLinks(index, j, 0) + grid.getBsquaredFromLinks(index, j, 1));
-						if(j == direction) {
-							e_L_el += electric;
-							e_L_mag += magnetic;
-						} else {
-							e_T_el += electric;
-							e_T_mag += magnetic;
-						}
-					}
-
-					// Compute poynting vector component
-					double localPoyntingAveraged = 0.0;
-					double localPoyntingTimeAveraged = 0.0;
-
-					int d = direction;
-					for (int i = 0; i < numberOfDimensions; i++) {
-						if(i != direction) {
-							// AVERAGED COMPUTATION
-
-							// Average spatial components of field strength tensor in space and time (B-Field).
-							GroupElement FG = factory.groupZero();
-
-							// Spatial average at t-at/2
-							FG.addAssign(grid.getPlaquette(index, d, i, 1, 1, 0));
-
-							FG.addAssign(grid.getPlaquette(index, i, d, -1, 1, 0));
-							FG.addAssign(grid.getPlaquette(index, i, d, 1, -1, 0));
-							FG.addAssign(grid.getPlaquette(index, d, i, -1, -1, 0));
-
-							// Spatial average at t+at/2
-							FG.addAssign(grid.getPlaquette(index, d, i, 1, 1, 1));
-							FG.addAssign(grid.getPlaquette(index, i, d, -1, 1, 1));
-							FG.addAssign(grid.getPlaquette(index, i, d, 1, -1, 1));
-							FG.addAssign(grid.getPlaquette(index, d, i, -1, -1, 1));
-
-							// Divide by factors and convert to AlgebraElement.
-							AlgebraElement F = FG.proj().mult(1.0 / (8.0 * as));
-
-							// Average E field in space.
-							int shiftedIndex = grid.shift(index, i, -1);
-							AlgebraElement E1 = grid.getE(index, i);
-							AlgebraElement E2 = grid.getE(shiftedIndex, i).act(grid.getLink(index, i, -1, 0));
-							AlgebraElement E = E1.add(E2).mult(0.5);
-
-							// Multiply E and F;
-							localPoyntingAveraged += E.mult(F);
-						}
-					}
-
-					// TIME-AVERAGED COMPUTATION:
-
-					// Indices for cross product:
-					int dir1 = (direction + 1) % 3;
-					int dir2 = (direction + 2) % 3;
-
-					// fields at same time:
-					AlgebraElement E1 = grid.getE(index, dir1);
-					AlgebraElement E2 = grid.getE(index, dir2);
-					// time averaged B-field:
-					AlgebraElement B1 = grid.getB(index, dir1, 0).add(grid.getB(index, dir1, 1)).mult(0.5);
-					AlgebraElement B2 = grid.getB(index, dir2, 0).add(grid.getB(index, dir2, 1)).mult(0.5);
-
-					localPoyntingTimeAveraged = E1.mult(B2) - E2.mult(B1);
-
-					synchronized (this) {
-						energyDensity_T_el[projIndex] += e_T_el;
-						energyDensity_T_mag[projIndex] += e_T_mag;
-						energyDensity_L_el[projIndex] += e_L_el;
-						energyDensity_L_mag[projIndex] += e_L_mag;
-
-
-						poyntingAveraged[projIndex] += localPoyntingAveraged;
-						poyntingTimeAveraged[projIndex] += localPoyntingTimeAveraged;
-
-					}
-
-				}
-			}
-
-			// Divide by g*a factor
-			double invga = 1.0 / Math.pow(grid.getLatticeSpacing() * grid.getGaugeCoupling(), 2);
-
-			for (int i = 0; i < longitudinalNumberOfCells; i++) {
-				energyDensity_T_el[i] *= invga;
-				energyDensity_T_mag[i] *= invga;
-				energyDensity_L_el[i] *= invga;
-				energyDensity_L_mag[i] *= invga;
-
-				poyntingAveraged[i] *= invga;
-				poyntingTimeAveraged[i] *= invga;
-			}
-
 
 
 			// Write to file
@@ -240,12 +104,12 @@ public class ProjectedEnergyDensity implements Diagnostics {
 				FileWriter pw = new FileWriter(file, true);
 				Double time = steps * grid.getTemporalSpacing();
 				pw.write(time.toString() + "\n");
-				pw.write(FileFunctions.generateTSVString(energyDensity_T_el) + "\n");
-				pw.write(FileFunctions.generateTSVString(energyDensity_T_mag) + "\n");
-				pw.write(FileFunctions.generateTSVString(energyDensity_L_el) + "\n");
-				pw.write(FileFunctions.generateTSVString(energyDensity_L_mag) + "\n");
-				pw.write(FileFunctions.generateTSVString(poyntingAveraged) + "\n");
-				pw.write(FileFunctions.generateTSVString(poyntingTimeAveraged) + "\n");
+				pw.write(FileFunctions.generateTSVString(energyDensityComputation.energyDensity_T_el) + "\n");
+				pw.write(FileFunctions.generateTSVString(energyDensityComputation.energyDensity_T_mag) + "\n");
+				pw.write(FileFunctions.generateTSVString(energyDensityComputation.energyDensity_L_el) + "\n");
+				pw.write(FileFunctions.generateTSVString(energyDensityComputation.energyDensity_L_mag) + "\n");
+				pw.write(FileFunctions.generateTSVString(poyntingComputation.poyntingAveraged) + "\n");
+				pw.write(FileFunctions.generateTSVString(poyntingComputation.poyntingTimeAveraged) + "\n");
 				pw.close();
 			} catch (IOException ex) {
 				System.out.println("ProjectedEnergyDensity: Error writing to file.");
@@ -254,8 +118,6 @@ public class ProjectedEnergyDensity implements Diagnostics {
 	}
 
 	// Multithreaded code which leaks memory. I don't know why.
-
-	/*
 	private class EnergyDensityComputation implements CellAction {
 
 		private int direction;
@@ -285,14 +147,14 @@ public class ProjectedEnergyDensity implements Diagnostics {
 		}
 
 		public void convertToEnergyUnits(Grid grid) {
-			// Divide by g*a factor
-			double invga = 1.0 / Math.pow(grid.getLatticeSpacing() * grid.getGaugeCoupling(), 2);
+			// Divide by (g*a*NT)^2 factor
+			double unitFactor = 1.0 / (areaFactor * Math.pow(grid.getLatticeSpacing() * grid.getGaugeCoupling(), 2));
 
 			for (int i = 0; i < numberOfCells; i++) {
-				energyDensity_T_el[i] *= invga;
-				energyDensity_T_mag[i] *= invga;
-				energyDensity_L_el[i] *= invga;
-				energyDensity_L_mag[i] *= invga;
+				energyDensity_T_el[i] *= unitFactor;
+				energyDensity_T_mag[i] *= unitFactor;
+				energyDensity_L_el[i] *= unitFactor;
+				energyDensity_L_mag[i] *= unitFactor;
 			}
 		}
 
@@ -357,12 +219,12 @@ public class ProjectedEnergyDensity implements Diagnostics {
 		}
 
 		public void convertToEnergyUnits(Grid grid) {
-			// Divide by g*a factor
-			double invga = 1.0 / Math.pow(grid.getLatticeSpacing() * grid.getGaugeCoupling(), 2);
+			// Divide by (g*a*NT)^2 factor
+			double unitFactor = 1.0 / (areaFactor * Math.pow(grid.getLatticeSpacing() * grid.getGaugeCoupling(), 2));
 
 			for (int i = 0; i < numberOfCells; i++) {
-				poyntingAveraged[i] *= invga;
-				poyntingTimeAveraged[i] *= invga;
+				poyntingAveraged[i] *= unitFactor;
+				poyntingTimeAveraged[i] *= unitFactor;
 			}
 		}
 
@@ -372,7 +234,7 @@ public class ProjectedEnergyDensity implements Diagnostics {
 
 			int d = direction;
 			for (int i = 0; i < numberOfDimensions; i++) {
-				if(i != direction) {
+				if (i != direction) {
 					// AVERAGED COMPUTATION
 
 					// Average spatial components of field strength tensor in space and time (B-Field).
@@ -429,6 +291,5 @@ public class ProjectedEnergyDensity implements Diagnostics {
 			}
 		}
 	}
-	*/
 
 }

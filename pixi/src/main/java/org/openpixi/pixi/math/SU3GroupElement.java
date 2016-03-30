@@ -201,6 +201,11 @@ public class SU3GroupElement implements GroupElement {
 		return b;
 	}
 
+	public void multAssign(GroupElement arg) {
+		GroupElement U = this.mult(arg);
+		this.set(U);
+	}
+
 	public double[] det() {
 		// computed in Mathematica
 		double[] out = new double[2];
