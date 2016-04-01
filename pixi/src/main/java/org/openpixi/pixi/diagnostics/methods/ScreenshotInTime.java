@@ -14,6 +14,7 @@ import javax.media.opengl.GLDrawableFactory;
 import javax.media.opengl.GLProfile;
 
 import org.openpixi.pixi.diagnostics.Diagnostics;
+import org.openpixi.pixi.diagnostics.FileFunctions;
 import org.openpixi.pixi.physics.Simulation;
 import org.openpixi.pixi.physics.grid.Grid;
 import org.openpixi.pixi.physics.particles.IParticle;
@@ -114,7 +115,7 @@ public class ScreenshotInTime implements Diagnostics {
 				int counter = steps / stepInterval;
 				String counterString = String.format("%05d", counter);
 				String pathWithNumber = path.replace("{counter}", counterString);
-				File file = getOutputFile(pathWithNumber);
+				File file = FileFunctions.getFile("output/" + pathWithNumber);
 				ImageIO.write(im, "png", file);
 			}
 		}
@@ -125,16 +126,6 @@ public class ScreenshotInTime implements Diagnostics {
 			// Create movie using e.g.
 			// ffmpeg -r 25 -sameq -i img-%05d.png test_1.mov
 		}
-	}
-
-	/** Creates a file with a given name in the output folder*/
-	private File getOutputFile(String filename) {
-		// Default output path is
-		// 'output/' + filename
-		File fullpath = new File("output");
-		if(!fullpath.exists()) fullpath.mkdir();
-
-		return new File(fullpath, filename);
 	}
 
 	class SimulationAnimationDummy extends SimulationAnimation {

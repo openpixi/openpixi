@@ -67,7 +67,7 @@ public class SU2GroupElement implements GroupElement {
 	public void addAssign(GroupElement arg) {
 		SU2GroupElement a = (SU2GroupElement) arg;
 		for (int i = 0; i < 4; i++) {
-			e[i] += a.get(i);
+			e[i] += a.e[i];
 		}
 	}
 
@@ -80,7 +80,7 @@ public class SU2GroupElement implements GroupElement {
 	public void subAssign(GroupElement arg) {
 		SU2GroupElement a = (SU2GroupElement) arg;
 		for (int i = 0; i < 4; i++) {
-			e[i] -= a.get(i);
+			e[i] -= a.e[i];
 		}
 	}
 
@@ -94,7 +94,7 @@ public class SU2GroupElement implements GroupElement {
 		SU2GroupElement a = (SU2GroupElement) arg;
 
 		for (int i = 0; i < 4; i++) {
-			e[i] = a.get(i);
+			e[i] = a.e[i];
 		}
 	}
 
@@ -128,7 +128,7 @@ public class SU2GroupElement implements GroupElement {
 		SU2GroupElement b = new SU2GroupElement(this);
 		for (int i = 1; i < 4; i++)
 		{
-			b.set(i, -b.get(i));
+			b.e[i] = - this.e[i];
 		}
 		return b;
 	}
@@ -136,7 +136,7 @@ public class SU2GroupElement implements GroupElement {
 	public void adjAssign() {
 		for (int i = 1; i < 4; i++)
 		{
-			this.set(i, -this.get(i));
+			this.e[i] = -this.e[i];
 		}
 	}
 
@@ -171,7 +171,7 @@ public class SU2GroupElement implements GroupElement {
 
 		SU2GroupElement b = new SU2GroupElement();
 		for (int i = 0; i < 4; i++) {
-			b.set(i, e[i] * number);
+			b.e[i] = e[i] * number;
 		}
 		return b;
 
@@ -182,12 +182,24 @@ public class SU2GroupElement implements GroupElement {
 		SU2GroupElement a = (SU2GroupElement) arg;
 
 		SU2GroupElement b = new SU2GroupElement();
-		b.e[0] = e[0] * a.get(0) - e[1] * a.get(1) - e[2] * a.get(2) - e[3] * a.get(3);
-		b.e[1] = e[0] * a.get(1) + e[1] * a.get(0) - e[2] * a.get(3) + e[3] * a.get(2);
-		b.e[2] = e[0] * a.get(2) + e[2] * a.get(0) - e[3] * a.get(1) + e[1] * a.get(3);
-		b.e[3] = e[0] * a.get(3) + e[3] * a.get(0) - e[1] * a.get(2) + e[2] * a.get(1);
+		b.e[0] = e[0] * a.e[0] - e[1] * a.e[1] - e[2] * a.e[2] - e[3] * a.e[3];
+		b.e[1] = e[0] * a.e[1] + e[1] * a.e[0] - e[2] * a.e[3] + e[3] * a.e[2];
+		b.e[2] = e[0] * a.e[2] + e[2] * a.e[0] - e[3] * a.e[1] + e[1] * a.e[3];
+		b.e[3] = e[0] * a.e[3] + e[3] * a.e[0] - e[1] * a.e[2] + e[2] * a.e[1];
 		return b;
 
+	}
+
+	public void multAssign(GroupElement arg) {
+		double e0, e1, e2;
+		double[] ae = ((SU2GroupElement) arg).e;
+		e0 = e[0];
+		e1 = e[1];
+		e2 = e[2];
+		e[0] = e[0] * ae[0] - e[1] * ae[1] - e[2] * ae[2] - e[3] * ae[3];
+		e[1] = e0 * ae[1] + e[1] * ae[0] - e[2] * ae[3] + e[3] * ae[2];
+		e[2] = e0 * ae[2] + e[2] * ae[0] - e[3] * ae[1] + e1 * ae[3];
+		e[3] = e0 * ae[3] + e[3] * ae[0] - e1 * ae[2] + e2 * ae[1];
 	}
 
 	public AlgebraElement getAlgebraElement()
@@ -235,5 +247,16 @@ public class SU2GroupElement implements GroupElement {
 
 	public GroupElement copy() {
 		return new SU2GroupElement(e[0], e[1], e[2], e[3]);
+	}
+
+	/**
+	 * Computes the inverse matrix.
+	 * @return inverse matrix
+	 */
+	public SU2GroupElement inv() {
+		double n = computeParameterNorm();
+		SU2GroupElement v = (SU2GroupElement) this.adj();
+
+		return (SU2GroupElement) v.mult(1.0/n);
 	}
 }

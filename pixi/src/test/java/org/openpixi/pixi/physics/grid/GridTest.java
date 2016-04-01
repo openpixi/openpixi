@@ -168,7 +168,7 @@ public class GridTest {
 	@Test
 	public void testShiftSpeed()
 	{
-		int numberOfTests = 10;
+		int numberOfTests = 20;
 
 		Settings settings = getStandardSettings();
 		settings.addFieldGenerator(new SU2RandomFields());
@@ -179,12 +179,14 @@ public class GridTest {
 		// Create random lattice position
 		int[] pos = getRandomLatticePosition(s);
 		int index = g.getCellIndex(pos);
+		int index3 = g.getCellIndex(pos);
 
 		// Start random generators with exactly the same seed (for comparability)
 		long seed = System.currentTimeMillis();
 		Random generator1 = new Random(seed);
 		Random generator2 = new Random(seed);
 		Random generator3 = new Random(seed);
+		Random generator4 = new Random(seed);
 
 		// Test shift() using position vectors
 		long time1 = -System.currentTimeMillis();
@@ -210,27 +212,40 @@ public class GridTest {
 		}
 		time2 += System.currentTimeMillis();
 
-		// Test duration of random seed creation:
+		// Test shift2() using indices
 		long time3 = -System.currentTimeMillis();
 		for (int t = 0; t < numberOfTests; t++) {
 
-			// Choose random direction and orientation
+			// Choose random direction
 			int d = generator3.nextInt(s.getNumberOfDimensions());
 			int o = generator3.nextInt(2) * 2 - 1;
+
+			index3 = g.shift2(index3, d, o);
 		}
 		time3 += System.currentTimeMillis();
+
+		// Test duration of random seed creation:
+		long time4 = -System.currentTimeMillis();
+		for (int t = 0; t < numberOfTests; t++) {
+
+			// Choose random direction and orientation
+			int d = generator4.nextInt(s.getNumberOfDimensions());
+			int o = generator4.nextInt(2) * 2 - 1;
+		}
+		time4 += System.currentTimeMillis();
 
 		// Test the same using indices:
 		int index2 = g.getCellIndex(pos);
 
 		// Tests
 		Assert.assertEquals(index, index2);
+		Assert.assertEquals(index3, index2);
 
 		if (numberOfTests > 1000) {
 			// Compare times
-			System.out.println("Shift test: Time1: " + time1 + " vs. Time2: " + time2);
-			System.out.println("Generation of random numbers: " + time3);
-			System.out.println("Shift test without random number generation: Time1: " + (time1 - time3) + " vs. Time2: " + (time2 - time3));
+			System.out.println("Shift test: Time1: " + time1 + " vs. Time2: " + time2 + " vs. Time3: " + time3);
+			System.out.println("Generation of random numbers: " + time4);
+			System.out.println("Shift test without random number generation: Time1: " + (time1 - time4) + " vs. Time2: " + (time2 - time4) + " vs. Time3: " + (time3 - time4));
 		}
 	}
 

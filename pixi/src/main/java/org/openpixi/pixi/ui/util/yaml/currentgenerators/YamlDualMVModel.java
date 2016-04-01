@@ -1,17 +1,12 @@
 package org.openpixi.pixi.ui.util.yaml.currentgenerators;
 
-import org.openpixi.pixi.physics.fields.currentgenerators.MVModel;
+import org.openpixi.pixi.physics.fields.currentgenerators.DualMVModel;
 
-public class YamlMVModel {
+public class YamlDualMVModel {
 	/**
 	 * Direction of the current pulse (0 to d)
 	 */
 	public Integer direction;
-
-	/**
-	 * Orientation of the current pulse (-1 or 1)
-	 */
-	public Integer orientation;
 
 	/**
 	 * Starting location of the pulse on the longitudinal line
@@ -39,9 +34,20 @@ public class YamlMVModel {
 	public Double infraredCoefficient = 0.0;
 
 	/**
-	 * Seed to use for the random number generator
+	 * Seeds to use for the random number generator
 	 */
-	public Integer randomSeed;
+	public Integer randomSeed1 = null;
+	public Integer randomSeed2 = null;
+
+	/**
+	 * Option for writing boost-invariant collision initial conditions to file.
+	 */
+	public Boolean createInitialConditionsOutput =  false;
+
+	/**
+	 * Path to the output file.
+	 */
+	public String outputFile = null;
 
 	/**
 	 * Option whether to use the \mu^2 (true) or the g^2 \mu^2 (false, default) normalization for the Gaussian
@@ -50,13 +56,18 @@ public class YamlMVModel {
 	public Boolean useAlternativeNormalization = false;
 
 
-	public MVModel getCurrentGenerator() {
-		boolean useSeed = (randomSeed != null);
+	public DualMVModel getCurrentGenerator() {
+		boolean useSeed = (randomSeed1 != null && randomSeed2 != null);
 		if(!useSeed) {
-			randomSeed = 0;
+			randomSeed1 = 0;
+			randomSeed2 = 0;
 		}
-		return new MVModel(direction, orientation, longitudinalLocation, longitudinalWidth, mu, useSeed, randomSeed,
-				lowPassCoefficient, infraredCoefficient, useAlternativeNormalization);
+
+		return new DualMVModel(direction, longitudinalLocation, longitudinalWidth, mu,
+				lowPassCoefficient,  infraredCoefficient,
+				useSeed, randomSeed1, randomSeed2,
+				createInitialConditionsOutput, outputFile,
+				useAlternativeNormalization);
 	}
 
 }

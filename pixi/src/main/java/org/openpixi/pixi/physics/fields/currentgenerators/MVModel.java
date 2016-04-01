@@ -40,23 +40,41 @@ public class MVModel implements ICurrentGenerator {
 	private boolean useSeed = false;
 	private int seed;
 
-	private ParticleLCCurrent particleLCCurrent;
+	/**
+	 * Coefficient used for the UV regulator, which is implemented as a hard cutoff. This parameter is given in units of
+	 * the maximum lattice momentum. A value of 1.0 corresponds to no UV cutoff. A value of 0.0 cuts off all modes in
+	 * momentum space.
+	 */
+	private double lowPassCoefficient ;
 
+	/**
+	 * Coefficient used for the IR regulator, which is implemented as a mass-term in the Poisson solver. As with the
+	 * UV regulator this coefficient is given in units of the lattice momentum. A value of 0.0 removes the IR regulator,
+	 * any other value leads to a finite mass term in the Poisson equation.
+	 */
+	private double infraredCoefficient;
 
-	public MVModel(int direction, int orientation, double location, double longitudinalWidth, double mu) {
-		this(direction, orientation, location, longitudinalWidth, mu, 0);
-		this.useSeed = false;
-	}
+	/**
+	 * Option whether to use the \mu^2 (true) or the g^2 \mu^2 (false) normalization for the Gaussian
+	 * probability distribution of the color charge densities.
+	 */
+	private boolean useAlternativeNormalization;
 
-	public MVModel(int direction, int orientation, double location, double longitudinalWidth, double mu, int seed){
+	protected ParticleLCCurrent particleLCCurrent;
+
+	public MVModel(int direction, int orientation, double location, double longitudinalWidth, double mu,
+				   boolean useSeed, int seed,
+				   double lowPassCoefficient, double infraredCoefficient, boolean useAlternativeNormalization){
 		this.direction = direction;
 		this.orientation = orientation;
 		this.location = location;
 		this.longitudinalWidth = longitudinalWidth;
 		this.mu = mu;
+		this.useSeed = useSeed;
 		this.seed = seed;
-		this.useSeed = true;
-
+		this.lowPassCoefficient = lowPassCoefficient;
+		this.infraredCoefficient = infraredCoefficient;
+		this.useAlternativeNormalization = useAlternativeNormalization;
 	}
 
 	public void initializeCurrent(Simulation s, int totalInstances) {
@@ -72,7 +90,14 @@ public class MVModel implements ICurrentGenerator {
 		// Initialize transversal charge density with random charges from a Gaussian distribution with zero mean and width \mu.
 		AlgebraElement[] transversalChargeDensity = new AlgebraElement[totalTransversalCells];
 		AlgebraElement totalCharge = s.grid.getElementFactory().algebraZero();
-		double gaussianWidth = mu * s.getCouplingConstant() / s.grid.getLatticeSpacing();
+
+		double gaussianWidth;
+		if(useAlternativeNormalization) {
+			gaussianWidth = mu / s.grid.getLatticeSpacing();
+		} else {
+			gaussianWidth = mu * s.getCouplingConstant() / s.grid.getLatticeSpacing();
+		}
+
 		for (int i = 0; i < totalTransversalCells; i++) {
 			AlgebraElement charge = s.grid.getElementFactory().algebraZero();
 			for (int c = 0; c < numberOfComponents; c++) {
@@ -108,6 +133,8 @@ public class MVModel implements ICurrentGenerator {
 		} else if(s.getSimulationType() == SimulationType.NewCGC_CIC) {
 			this.particleLCCurrent = new ParticleLCCurrent(direction, orientation, location, longitudinalWidth);
 		}
+		particleLCCurrent.lowPassCoefficient = lowPassCoefficient;
+		particleLCCurrent.infraredCoefficient = infraredCoefficient;
 		particleLCCurrent.setTransversalChargeDensity(transversalChargeDensity);
 		particleLCCurrent.initializeCurrent(s, totalInstances);
 

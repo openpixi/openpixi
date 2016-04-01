@@ -497,19 +497,19 @@ public class Settings {
 		switch(simulationType) {
 			case TemporalYangMills:
 				setBoundary(GeneralBoundaryType.Periodic);
-				setFieldSolver(new TemporalYangMillsSolver());
+				setFieldSolver(new FastTYMSolver());
 				setParticleSolver(new EmptyParticleSolver());
 				setInterpolator(new EmptyInterpolator());
 				break;
 			case TemporalCGC:
 				setBoundary(GeneralBoundaryType.Absorbing);
-				setFieldSolver(new TemporalYangMillsSolver());
+				setFieldSolver(new FastTYMSolver());
 				setParticleSolver(new CGCParticleSolver());
 				setInterpolator(new CGCParticleInterpolation());
 				break;
 			case TemporalCGCNGP:
 				setBoundary(GeneralBoundaryType.Absorbing);
-				setFieldSolver(new TemporalYangMillsSolver());
+				setFieldSolver(new FastTYMSolver());
 				setParticleSolver(new CGCParticleSolver());
 				setInterpolator(new CGCParticleInterpolationNGP());
 				break;

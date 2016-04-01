@@ -1,81 +1,66 @@
 package org.openpixi.pixi.physics.fields;
 
+import org.openpixi.pixi.math.GroupElement;
 import org.openpixi.pixi.parallel.cellaccess.CellAction;
 import org.openpixi.pixi.physics.grid.Grid;
-import org.openpixi.pixi.math.AlgebraElement;
-import org.openpixi.pixi.math.GroupElement;
 
-public class TemporalYangMillsSolver extends FieldSolver
+public class FastTYMSolver extends FieldSolver
 {
 
 	private double timeStep;
-	private UpdateFields fieldUpdater = new UpdateFields();
 	private UpdateLinks linkUpdater = new UpdateLinks();
+	private CombinedUpdate combinedUpdate = new CombinedUpdate();
 
 	@Override
 	public FieldSolver clone() {
-		TemporalYangMillsSolver clone = new TemporalYangMillsSolver();
+		FastTYMSolver clone = new FastTYMSolver();
 		clone.copyBaseClassFields(this);
 		clone.timeStep = timeStep;
-		clone.fieldUpdater = fieldUpdater;
 		clone.linkUpdater = linkUpdater;
+		clone.combinedUpdate = combinedUpdate;
 		return clone;
 	}
 
 	@Override
 	public void step(Grid grid, double timeStep) {
-		this.timeStep = timeStep;
-		fieldUpdater.at = timeStep;
-		fieldUpdater.as = grid.getLatticeSpacing();
-		fieldUpdater.g = grid.getGaugeCoupling();
-		fieldUpdater.factor = timeStep / (grid.getLatticeSpacing() * grid.getLatticeSpacing());
-		linkUpdater.at = timeStep;
-		linkUpdater.as = grid.getLatticeSpacing();
-		cellIterator.execute(grid, fieldUpdater);
-		cellIterator.execute(grid, linkUpdater);
+		combinedUpdate.at = timeStep;
+		combinedUpdate.factor = timeStep / (grid.getLatticeSpacing() * grid.getLatticeSpacing());
+
+		cellIterator.execute(grid, combinedUpdate);
 	}
 
 	@Override
 	public void stepLinks(Grid grid, double timeStep) {
-		this.timeStep = timeStep;
 		linkUpdater.at = timeStep;
-		linkUpdater.as = grid.getLatticeSpacing();
 		cellIterator.execute(grid, linkUpdater);
 	}
 
+	private class CombinedUpdate implements CellAction {
 
-	private class UpdateFields implements CellAction
-	{
-		private double as;
 		private double at;
-		private double g;
 		private double factor;
 
 		/**
-		 * Updates the electric fields at a given coordinate
-		 *
-		 * @param index  Lattice index
+		 * Combined update of fields and links using the sum of staples.
+		 * @param grid
+		 * @param index
 		 */
 		public void execute(Grid grid, int index) {
 			if(grid.isActive(index)) {
+				GroupElement V;
 				for (int i = 0; i < grid.getNumberOfDimensions(); i++) {
-					GroupElement temp = grid.getElementFactory().groupZero();
-					for (int j = 0; j < grid.getNumberOfDimensions(); j++) {
-						if (j != i) {
-							temp.addAssign(grid.getPlaquette(index, i, j, 1, 1, 0));
-							temp.addAssign(grid.getPlaquette(index, i, j, 1, -1, 0));
-						}
-					}
+					GroupElement temp = grid.getU(index, i).mult(grid.getStapleSum(index, i));
 					grid.addE(index, i, temp.proj().mult(factor));
 					grid.addE(index, i, grid.getJ(index, i).mult(-at));
+					V = grid.getE(index, i).mult(-at).getLink();
+					V.multAssign(grid.getU(index, i));
+					grid.setUnext(index, i, V);
 				}
 			}
 		}
 	}
 
 	private class UpdateLinks implements CellAction {
-
-		private double as;
 		private double at;
 
 		/**

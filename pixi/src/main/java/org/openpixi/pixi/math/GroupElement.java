@@ -63,6 +63,8 @@ public interface GroupElement {
 	 */
 	GroupElement mult(GroupElement a);
 
+	void multAssign(GroupElement a);
+
 	/**
 	 * Returns the exact algebra element of the group element. The algebra element generates the group element
 	 * via the exponential map.

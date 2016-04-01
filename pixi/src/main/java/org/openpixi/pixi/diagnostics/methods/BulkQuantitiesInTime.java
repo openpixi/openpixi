@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.util.Locale;
 
 import org.openpixi.pixi.diagnostics.Diagnostics;
+import org.openpixi.pixi.diagnostics.FileFunctions;
 import org.openpixi.pixi.physics.Simulation;
 import org.openpixi.pixi.physics.grid.Grid;
 import org.openpixi.pixi.physics.particles.IParticle;
@@ -55,10 +56,10 @@ public class BulkQuantitiesInTime implements Diagnostics {
 
 		if(!supressOutput) {
 			// Create/delete file.
-			clear();
+			FileFunctions.clearFile("output/" + path);
 
 			// Write first line.
-			File file = getOutputFile(path);
+			File file = FileFunctions.getFile("output/" + path);
 			try {
 				FileWriter pw = new FileWriter(file, true);
 				pw.write("#time \t E^2 \t B^2 \t P_x \t P_y \t P_z \t G");
@@ -97,7 +98,7 @@ public class BulkQuantitiesInTime implements Diagnostics {
 			gaussViolation = fieldMeasurements.calculateGaussConstraint(grid);
 
 			if(!supressOutput) {
-				File file = getOutputFile(path);
+				File file = FileFunctions.getFile("output/" + path);
 				FileWriter pw = new FileWriter(file, true);
 				DecimalFormat formatter = new DecimalFormat("0.################E0");
 
@@ -114,30 +115,5 @@ public class BulkQuantitiesInTime implements Diagnostics {
 			}
 			
 		}
-	}
-
-	/**
-	 * 	Checks if the files are already existent and deletes them
-	 */
-	public void clear() {
-		File particlesfile = getOutputFile(path);
-		boolean fileExists1 = particlesfile.exists();
-		if(fileExists1 == true) {
-			particlesfile.delete();
-		}
-	}
-
-	/**
-	 * Creates a file with a given name in the output folder.
-	 * @param filename	Filename of the output file.
-	 * @return			File object of the opened file.
-	 */
-	private File getOutputFile(String filename) {
-		// Default output path is
-		// 'output/' + filename
-		File fullpath = new File("output");
-		if(!fullpath.exists()) fullpath.mkdir();
-
-		return new File(fullpath, filename);
 	}
 }

@@ -3,6 +3,7 @@ package org.openpixi.pixi.physics.fields.currentgenerators;
 import org.openpixi.pixi.math.AlgebraElement;
 import org.openpixi.pixi.physics.Simulation;
 import org.openpixi.pixi.physics.particles.CGCParticle;
+import org.openpixi.pixi.physics.particles.IParticle;
 import org.openpixi.pixi.physics.util.GridFunctions;
 
 import java.util.ArrayList;
@@ -25,12 +26,7 @@ public class ParticleLCCurrentNGP extends ParticleLCCurrent {
 
 	@Override
 	public void initializeParticles(Simulation s, int particlesPerLink) {
-
-		int longitudinalCells = s.grid.getNumCells(direction);
-		CGCParticle[][] longitudinalParticleArray = new CGCParticle[totalTransversalCells][longitudinalCells * particlesPerLink];
-
-
-		double cutoffCharge = 10E-20 * Math.pow( g * as, 2) / (Math.pow(as, 3) * particlesPerLink);
+		double cutoffCharge = 10E-22 * Math.pow( g * as, 2) / (Math.pow(as, 3) * particlesPerLink);
 
 		ArrayList<ArrayList<CGCParticle>> longitudinalParticleList = new ArrayList<ArrayList<CGCParticle>>(totalTransversalCells);
 		for (int i = 0; i < totalTransversalCells; i++) {
@@ -88,7 +84,7 @@ public class ParticleLCCurrentNGP extends ParticleLCCurrent {
 		}
 
 		// Charge refinement
-		int numberOfIterations = 50;
+		int numberOfIterations = 100;
 		for (int i = 0; i < totalTransversalCells; i++) {
 			ArrayList<CGCParticle> particleList = longitudinalParticleList.get(i);
 			// 2nd order refinement
@@ -105,6 +101,13 @@ public class ParticleLCCurrentNGP extends ParticleLCCurrent {
 				}
 			}
 		}
+
+		// Make sure particle charges Q0 and Q1 are the same.
+		for(IParticle p : s.particles) {
+			CGCParticle P = (CGCParticle) p;
+			P.Q1 = P.Q0.copy();
+		}
+
 	}
 
 	private void refine2(int i, ArrayList<CGCParticle> list, int particlesPerLink) {

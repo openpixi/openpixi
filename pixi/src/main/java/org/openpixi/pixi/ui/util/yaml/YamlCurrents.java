@@ -1,6 +1,7 @@
 package org.openpixi.pixi.ui.util.yaml;
 
 import org.openpixi.pixi.physics.Settings;
+import org.openpixi.pixi.physics.fields.currentgenerators.ICurrentGenerator;
 import org.openpixi.pixi.ui.util.yaml.currentgenerators.*;
 
 import java.util.ArrayList;
@@ -41,6 +42,8 @@ public class YamlCurrents {
     public ArrayList<YamlRandomTemporalParticleColorCurrentNucleus> randomTemporalParticleColorCurrentsNucleus = new ArrayList<YamlRandomTemporalParticleColorCurrentNucleus>();
 
 	public ArrayList<YamlMVModel> MVModels = new ArrayList<YamlMVModel>();
+
+	public ArrayList<YamlDualMVModel> dualMVModels = new ArrayList<YamlDualMVModel>();
 
 
 
@@ -126,6 +129,10 @@ public class YamlCurrents {
         }
 
 		for(YamlMVModel current : MVModels) {
+			s.addCurrentGenerator(current.getCurrentGenerator());
+		}
+
+		for(YamlDualMVModel current : dualMVModels) {
 			s.addCurrentGenerator(current.getCurrentGenerator());
 		}
 	}

@@ -1,5 +1,6 @@
 package org.openpixi.pixi.physics.movement.solver;
 
+import org.openpixi.pixi.math.AlgebraElement;
 import org.openpixi.pixi.physics.force.Force;
 import org.openpixi.pixi.physics.particles.CGCParticle;
 import org.openpixi.pixi.physics.particles.IParticle;
@@ -22,8 +23,16 @@ public class CGCParticleSolver implements ParticleSolver {
 
 	public void updateCharge(IParticle p, Force f, double dt) {
 		CGCParticle P = (CGCParticle) p;
-
-		P.Q1 = P.Q0.act(P.U.adj());
+		if(P.updateCharge) {
+			// Charge has to be parallel transported.
+			P.Q1 = P.Q0.act(P.U.adj());
+			P.updateCharge = false;
+		} else {
+			// No update needed, just switch Q1 and Q0.
+			AlgebraElement Q = P.Q1;
+			P.Q1 = P.Q0;
+			P.Q0 = Q;
+		}
 	}
 
 	public void prepare(IParticle p, Force f, double step) {

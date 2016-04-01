@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.io.IOException;
 
 import org.openpixi.pixi.diagnostics.Diagnostics;
+import org.openpixi.pixi.diagnostics.FileFunctions;
 import org.openpixi.pixi.physics.Simulation;
 import org.openpixi.pixi.physics.grid.Grid;
 import org.openpixi.pixi.physics.particles.IParticle;
@@ -35,11 +36,11 @@ public class ParticlesInTime implements Diagnostics {
 		stepInterval =  (int) (this.timeInterval / s.getTimeStep());
 
 		// Create/delete file.
-		clear();
+		FileFunctions.clearFile("output/" + path);
 
 		// Write first line.
 		String[] directionNames = new String[] {"x", "y", "z"};
-		File file = getOutputFile(path);
+		File file = FileFunctions.getFile("output/" + path);
 		try {
 			FileWriter pw = new FileWriter(file, true);
 			pw.write("#time\t");
@@ -76,7 +77,7 @@ public class ParticlesInTime implements Diagnostics {
 	public void calculate(Grid grid, ArrayList<IParticle> particles, int steps) throws IOException {
 		if(steps % stepInterval == 0) {
 
-			File file = getOutputFile(path);
+			File file = FileFunctions.getFile("output/" + path);;
 			FileWriter pw = new FileWriter(file, true);
 			pw.write(steps * s.getTimeStep() + "\t");
 
@@ -98,24 +99,5 @@ public class ParticlesInTime implements Diagnostics {
 			pw.write("\n");
 			pw.close();
 		}
-	}
-	
-	/** Checks if the files are already existent and deletes them*/
-	public void clear() {
-		File particlesfile = getOutputFile(path);
-		boolean fileExists1 = particlesfile.exists();
-		if(fileExists1 == true) {
-			particlesfile.delete();
-		}
-	}
-	
-	/** Creates a file with a given name in the output folder*/
-	private File getOutputFile(String filename) {
-		// Default output path is
-		// 'output/' + filename
-		File fullpath = new File("output");
-		if(!fullpath.exists()) fullpath.mkdir();
-
-		return new File(fullpath, filename);
 	}
 }

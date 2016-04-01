@@ -262,6 +262,43 @@ public class SU2MatrixTest {
 
 	}
 
+
+	@Test
+	public void testMultiplicationAssign() {
+		SU2GroupElement a = createRandomSU2Matrix();
+		SU2GroupElement b = createRandomSU2Matrix();
+
+		Array2DRowFieldMatrix<Complex> aMatrix = convertToMatrix(a);
+		Array2DRowFieldMatrix<Complex> bMatrix = convertToMatrix(b);
+
+		/*
+			Do the multiplication.
+		 */
+		a.multAssign(b);
+		GroupElement c = a;
+		Array2DRowFieldMatrix<Complex> cMatrix = (Array2DRowFieldMatrix<Complex>) aMatrix.multiply(bMatrix).copy();
+
+		/*
+			Compare results.
+		 */
+		Array2DRowFieldMatrix<Complex> cMatrix2 = convertToMatrix(c);
+
+		for (int i = 0; i < 2; i++) {
+			for (int j = 0; j < 2; j++) {
+				Assert.assertEquals(cMatrix.getEntry(i, j).getReal(),
+						cMatrix2.getEntry(i, j).getReal(),
+						accuracy);
+
+				Assert.assertEquals(cMatrix.getEntry(i, j).getImaginary(),
+						cMatrix2.getEntry(i, j).getImaginary(),
+						accuracy);
+			}
+
+		}
+
+
+	}
+
 	@Test
 	public void testScalarMultiplication() {
 		int numberOfTests = 10;
@@ -388,6 +425,25 @@ public class SU2MatrixTest {
 			SU2GroupElement m3 = (SU2GroupElement) m1.pow(x);
 			SU2GroupElement m4 = (SU2GroupElement) m3.pow(1.0 / x);
 			compareMatrices(convertToMatrix(m1), convertToMatrix(m4), acc);
+		}
+	}
+
+	@Test
+	public void testInv() {
+		// Create random matrix which is not SU2 in general.
+		SU2GroupElement m = new SU2GroupElement();
+		for (int i = 0; i < 3; i++) {
+			double r = Math.random() - 0.5;
+			m.set(i, r);
+		}
+
+		SU2GroupElement m2 = m.inv();
+
+		SU2GroupElement m3 = (SU2GroupElement) m.mult(m2);
+
+		Assert.assertEquals(1.0, m3.get(0), accuracy);
+		for (int i = 1; i < 3; i++) {
+			Assert.assertEquals(0.0, m3.get(i), accuracy);
 		}
 	}
 
@@ -569,6 +625,7 @@ public class SU2MatrixTest {
 
 		return output;
 	}
+
 
 
 }
