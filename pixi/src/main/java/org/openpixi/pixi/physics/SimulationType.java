@@ -6,6 +6,5 @@ public enum SimulationType {
 	TemporalCGC,
 	TemporalCGCNGP,
 	BoostInvariantCGC,
-	NewCGC_NGP,
 	NewCGC_CIC
 }

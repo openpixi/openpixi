@@ -128,8 +128,6 @@ public class MVModel implements ICurrentGenerator {
 			this.particleLCCurrent = new ParticleLCCurrent(direction, orientation, location, longitudinalWidth);
 		} else if(s.getSimulationType() == SimulationType.TemporalCGCNGP) {
 			this.particleLCCurrent = new ParticleLCCurrentNGP(direction, orientation, location, longitudinalWidth);
-		} else if(s.getSimulationType() == SimulationType.NewCGC_NGP) {
-			this.particleLCCurrent = new ParticleLCCurrentNGP(direction, orientation, location, longitudinalWidth);
 		} else if(s.getSimulationType() == SimulationType.NewCGC_CIC) {
 			this.particleLCCurrent = new ParticleLCCurrent(direction, orientation, location, longitudinalWidth);
 		}
