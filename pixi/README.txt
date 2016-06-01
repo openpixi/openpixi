@@ -22,8 +22,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 INTRODUCTION
 ============
 
-OpenPixi is an open Colored Particle-In-Cell (CPIC) simulator for the simulation of heavy-ion 
-collisions based on the Color Glass Condensate framework. 
+OpenPixi is an open Colored Particle-In-Cell (CPIC) simulator for the 
+simulation of heavy-ion  collisions based on the Color Glass Condensate framework. 
 
   http://www.openpixi.org
 
@@ -67,14 +67,20 @@ VERSION HISTORY
 Version 1.0 - June 1, 2016
 
 * OpenPixi is now a Colored Particle-In-Cell simulator.
-* Switched from Abelian fields to Yang-Mills (YM) fields based on real-time lattice gauge theory.
-* Color glass condensate (CGC) simulations possible with non-Abelian currents based on colored particles and NGP interpolation.
-* CGC initial conditions: McLerran-Venugopalan model, protons and finite nuclei (work-in-progress)
+* Switched from Abelian fields to Yang-Mills (YM) fields based on real-time
+  lattice gauge theory.
+* Color glass condensate (CGC) simulations possible with non-Abelian currents
+  based on colored particles and NGP interpolation.
+* CGC initial conditions: McLerran-Venugopalan model, protons and finite
+  nuclei (work-in-progress)
 * Pure YM initial conditions: plane wave, Gaussian pluses, focused pulses
-* Various observables calculateable using diagnostics: energy density, pressure components, occupation numbers (work-in-progress)
+* Various observables calculateable using diagnostics: energy density, 
+  pressure components, occupation numbers (work-in-progress)
 * Use YAML files for configuring simulation initial conditions and diagnostics.
-* GUI available with various different Panels displaying energy density, fields, etc.
-* Python script to run a number of simulations on a cluster distributed across nodes (see pixi/scripts/vsc batch/).
+* GUI available with various different Panels displaying energy density,
+  fields, etc.
+* Python script to run a number of simulations on a cluster distributed
+  across nodes (see pixi/scripts/vsc batch/).
 * Threaded version still available, distributed version not yet implemented.
 
 ---
