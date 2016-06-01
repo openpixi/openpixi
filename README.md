@@ -4,6 +4,8 @@ Copyright (C) 2012-2016  OpenPixi.org
 Introduction
 ============
 
+![](cpic_overview_small.png?raw=true)
+
 OpenPixi is an open Colored Particle-In-Cell (CPIC) simulator based on real-time lattice
 gauge theory and CPIC. It can simulate Yang-Mills fields coupled to moving colored particles.
 The simulation can be used to simulate the dynamics of pure Yang-Mills fields and the early stages
