@@ -1,0 +1,71 @@
+%range 1 32%
+%jar pixi-new6.jar%
+%jobmanager SLURM%
+
+%yaml begin%
+#
+# Configuration file for investigation of IR regulator dependency of longitudinal magnetic to electric field ratio.
+#
+# Au+Au, 12.5% area at 256^2
+# UV at 10GeV
+# IR at 0.5GeV
+# mu at 0.505 GeV (MV parameter for SU(3) and Au 197)
+# Gamma of 51.06 corresponds to width of 4.0
+#
+
+simulationType: temporal cgc ngp
+gridStep: 1
+couplingConstant: 2
+numberOfDimensions: 3
+numberOfColors: 2
+numberOfThreads: 16
+gridCells: [256, 256, 256]
+timeStep: 0.5
+duration: 192.0
+evaluationRegion:
+  enabled: true
+  point1: [2, 0, 0]
+  point2: [-3, -1, -1]
+activeRegion:
+  enabled: true
+  point1: [1, 0, 0]
+  point2: [-2, -1, -1]
+
+currents:
+  dualMVModels:
+    - direction: 0
+      longitudinalLocation: 63
+      longitudinalWidth: 4
+      mu: 0.0363079
+      lowPassCoefficient: 0.715764
+      infraredCoefficient: 0.0357882
+
+output:
+  projectedEnergyDensity:
+    - path: 'magnetic_sup_0.5GeV/pe%i%.dat'
+      interval: 0.5
+      direction: 0
+
+%yaml end%
+
+%job begin%
+#!/bin/bash
+
+
+#SBATCH --partition=mem_0256   # select 256GB nodes
+#SBATCH --qos=p70623_0256  # select institute queue
+#SBATCH --account=p70623  # charge hours to institute queue
+
+
+#SBATCH -J mag_sup_0.5GeV
+#SBATCH --time=24:00:00
+#SBATCH --ntasks-per-node=1
+#SBATCH --ntasks-per-core=1
+#SBATCH --mail-type=END,FAIL
+#SBATCH --mail-user=<david.mueller@tuwien.ac.at>
+#SBATCH --output=job_output/slurm_%A_%a.out
+
+#SBATCH --array=%i0%-%i1%:1%2
+
+srun java -Xmx230g -Xms230g -cp %jar_path% org.openpixi.pixi.ui.MainBatch %input_path%
+%job end%

@@ -1,0 +1,73 @@
+%range 1 64%
+%jar pixi-new6.jar%
+%jobmanager SLURM%
+
+%yaml begin%
+# Correlations with boost-invariant initial condtions - m scan with UV = 10GeV.
+# Au+Au, 12.5 percent area at 128^2
+# mu at 0.505 GeV (MV parameter for SU(3) and Au 197)
+# sigma at 4a
+# m scan from 0GeV to 2GeV 
+
+simulationType: temporal cgc ngp
+gridStep: 1
+couplingConstant: 2
+numberOfDimensions: 3
+numberOfColors: 2
+numberOfThreads: 16
+gridCells: [256, 128, 128]
+timeStep: 0.5
+duration: 80.0
+evaluationRegion:
+  enabled: true
+  point1: [2, 0, 0]
+  point2: [-3, -1, -1]
+activeRegion:
+  enabled: true
+  point1: [1, 0, 0]
+  point2: [-2, -1, -1]
+
+currents:
+  dualMVModels:
+    - direction: 0
+      longitudinalLocation: 63
+      longitudinalWidth: 4.0
+      randomSeed1: 1
+      randomSeed2: 2
+      mu: 0.0726158
+      lowPassCoefficient: 1.43153
+      infraredCoefficient: %f 0.0 0.429459%
+      createInitialConditionsOutput: true
+      outputFile: 'correlation_new_ir_10GeV/initial%i%.dat'
+
+output:
+  planarFields:
+    - interval: 1.0
+      startingTime: 16.0
+      path: 'correlation_new_ir_10GeV/planar%i%.dat'
+      direction: 0
+      planarIndex: 127
+
+%yaml end%
+
+%job begin%
+#!/bin/bash
+
+
+#SBATCH --partition=mem_0256   # select 256GB nodes
+#SBATCH --qos=p70623_0256  # select institute queue
+#SBATCH --account=p70623  # charge hours to institute queue
+
+
+#SBATCH -J c_ir_10GeV
+#SBATCH --time=24:00:00
+#SBATCH --ntasks-per-node=1
+#SBATCH --ntasks-per-core=1
+#SBATCH --mail-type=END,FAIL
+#SBATCH --mail-user=<david.mueller@tuwien.ac.at>
+#SBATCH --output=job_output/slurm_%A_%a.out
+
+#SBATCH --array=%i0%-%i1%:1%4
+
+srun java -Xmx230g -Xms230g -cp %jar_path% org.openpixi.pixi.ui.MainBatch %input_path%
+%job end%
