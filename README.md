@@ -13,7 +13,7 @@ in particular the early stages of heavy-ion collisions within Color Glass Conden
 A publication using this simulation is available at [arXiv.org](https://arxiv.org/abs/1605.07184),
 where you also find details about the numerical methods implemented in OpenPixi.
 
-The old Abelian PIC is still available at XXX.
+The old Abelian PIC is still available at https://github.com/openpixi/openpixi_pic.
 
 OpenPixi is being developed in Java, with an educational aspect in mind.
 
