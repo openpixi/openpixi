@@ -1,0 +1,6 @@
+The files in this folder were used to study the pressure anisotropy in the Glasma.
+Averaging over the ensemble of random events needs to be done manually afterwards.
+
+Files pr256_1 - pr256_5 are collisions of "thick" nuclei. The transverse area corresponds to the area of a Au nucleus.
+Files pr256_6_* - pr256_8_* are collisions of "thin" nuclei. The transverse area corresponds to fractions of the full
+Au nucleus area.
