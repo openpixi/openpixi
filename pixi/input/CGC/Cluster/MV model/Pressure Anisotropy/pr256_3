@@ -46,8 +46,7 @@ output:
 #!/bin/bash
 
 #SBATCH --partition=mem_0256   # select 256GB nodes
-#SBATCH --qos=p70623_0256  # select institute queue
-#SBATCH --account=p70623  # charge hours to institute queue
+#SBATCH --qos=normal_0256
 
 #SBATCH -J pr_3
 #SBATCH --time=24:00:00
