@@ -1,0 +1,2 @@
+The script files in this folder are intended to be run on a cluster.
+Use the batch script (found in /scripts/vsc batch/openpixi_batch.py).
