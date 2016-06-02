@@ -1,5 +1,0 @@
-#!/bin/bash
-
-PROFILES="distributed,aspectj-profile"
-
-mvn -P $PROFILES compile
