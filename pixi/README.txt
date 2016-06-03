@@ -2,7 +2,7 @@ LICENSE
 =======
 
 OpenPixi - Open Particle-in-Cell (PIC) simulator.
-Copyright (C) 2012-2013  OpenPixi.org
+Copyright (C) 2012-2016  OpenPixi.org
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -22,9 +22,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 INTRODUCTION
 ============
 
-OpenPixi is an open Particle-In-Cell (PIC) simulator. 
-
-Please try out the live version at
+OpenPixi is an open Colored Particle-In-Cell (CPIC) simulator for the 
+simulation of heavy-ion  collisions based on the Color Glass Condensate framework. 
 
   http://www.openpixi.org
 
@@ -61,18 +60,28 @@ To launch Pixi in Eclipse ( http://www.eclipse.org/ ) do the following:
 6) Select the local folder that you have chosen previously
 
 
-DISTRIBUTED VERSION
-===================
-
-To get started with the distributed version see our wiki
-https://github.com/openpixi/openpixi/wiki/Getting-Started-with-Distributed-Version
-
-
 VERSION HISTORY
 ===============
 
 ---
-Version 0.6 - ?
+Version 1.0 - June 1, 2016
+
+* OpenPixi is now a Colored Particle-In-Cell simulator.
+* Switched from Abelian fields to Yang-Mills (YM) fields based on real-time
+  lattice gauge theory.
+* Color glass condensate (CGC) simulations possible with non-Abelian currents
+  based on colored particles and NGP interpolation.
+* CGC initial conditions: McLerran-Venugopalan model, protons and finite
+  nuclei (work-in-progress)
+* Pure YM initial conditions: plane wave, Gaussian pulses, focused pulses
+* Various observables calculateable using diagnostics: energy density, 
+  pressure components, occupation numbers (work-in-progress)
+* Use YAML files for configuring simulation initial conditions and diagnostics.
+* GUI available with various different Panels displaying energy density,
+  fields, etc.
+* Python script to run a number of simulations on a cluster distributed
+  across nodes (see pixi/scripts/vsc batch/).
+* Threaded version still available, distributed version not yet implemented.
 
 ---
 Version 0.5 - May 29, 2013
@@ -119,4 +128,3 @@ Version 0.1 - March 5, 2012
 * Quick settings with particles of two different charges.
 * Set frame rate and time step.
 * Show frame rate and memory information.
-
