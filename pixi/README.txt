@@ -73,7 +73,7 @@ Version 1.0 - June 1, 2016
   based on colored particles and NGP interpolation.
 * CGC initial conditions: McLerran-Venugopalan model, protons and finite
   nuclei (work-in-progress)
-* Pure YM initial conditions: plane wave, Gaussian pluses, focused pulses
+* Pure YM initial conditions: plane wave, Gaussian pulses, focused pulses
 * Various observables calculateable using diagnostics: energy density, 
   pressure components, occupation numbers (work-in-progress)
 * Use YAML files for configuring simulation initial conditions and diagnostics.
