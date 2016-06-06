@@ -83,7 +83,7 @@ public class LightConePoissonSolver implements ICGCPoissonSolver {
 		}
 
 		// Is the multiplication with orientation correct?
-		double gaugeFactor = s.getCouplingConstant() * s.grid.getLatticeSpacing() * orientation;
+		double gaugeFactor = orientation * s.getCouplingConstant() * s.grid.getLatticeSpacing();
 		for (int k = 0; k < longitudinalNumCells; k++) {
 			int z = (orientation > 1) ? k : (longitudinalNumCells - k - 1);
 			for (int i = 0; i < totalTransverseCells; i++) {
@@ -108,16 +108,18 @@ public class LightConePoissonSolver implements ICGCPoissonSolver {
 
 		// Set gauge links at t = - at/2
 		for (int i = 0; i < s.grid.getTotalNumberOfCells(); i++) {
-			int is = s.grid.shift(i, direction, 1);
 			for (int d = 0; d < s.getNumberOfDimensions(); d++) {
-				GroupElement V1 = V[i];
-				GroupElement V2 = V[is];
+				if(d != direction) {
+					int is = s.grid.shift(i, d, 1);
+					GroupElement V1 = V[i];
+					GroupElement V2 = V[is];
 
-				GroupElement U = s.grid.getU(i, d);
-				// U_x,i = V_x V_{x+i}^t
-				s.grid.setU(i, d, V1.mult(U).mult(V2.adj()));
-				// Also write to copy of the grid.
-				gridCopy.setU(i, d, V1.mult(V2.adj()));
+					GroupElement U = s.grid.getU(i, d);
+					// U_x,i = V_x V_{x+i}^t
+					s.grid.setU(i, d, V1.mult(U).mult(V2.adj()));
+					// Also write to copy of the grid.
+					gridCopy.setU(i, d, V1.mult(V2.adj()));
+				}
 			}
 		}
 
@@ -130,7 +132,7 @@ public class LightConePoissonSolver implements ICGCPoissonSolver {
 			int is = s.grid.shift(i, direction, -orientation);
 			double transportRatio = s.getTimeStep() / s.grid.getLatticeSpacing();
 			// phi(x) -> phi(x) * (1 - at/as) + phi(x+d) * at/as
-			phi1[i] = phi0[is].mult(1 - transportRatio).add(phi0[i].mult(-transportRatio));
+			phi1[i] = phi0[i].mult(1.0 - transportRatio).add(phi0[is].mult(transportRatio));
 		}
 
 		// Compute V at t = at / 2
@@ -159,16 +161,18 @@ public class LightConePoissonSolver implements ICGCPoissonSolver {
 
 		// Set gauge links at t = at/2
 		for (int i = 0; i < s.grid.getTotalNumberOfCells(); i++) {
-			int is = s.grid.shift(i, direction, 1);
 			for (int d = 0; d < s.getNumberOfDimensions(); d++) {
-				GroupElement V1 = V[i];
-				GroupElement V2 = V[is];
+				if(d != direction) {
+					int is = s.grid.shift(i, d, 1);
+					GroupElement V1 = V[i];
+					GroupElement V2 = V[is];
 
-				GroupElement U = s.grid.getUnext(i, d);
-				// U_x,i = V_x V_{x+i}^t
-				s.grid.setUnext(i, d, V1.mult(U).mult(V2.adj()));
-				// Also write to copy of the grid.
-				gridCopy.setUnext(i, d, V1.mult(V2.adj()));
+					GroupElement U = s.grid.getUnext(i, d);
+					// U_x,i = V_x V_{x+i}^t
+					s.grid.setUnext(i, d, V1.mult(U).mult(V2.adj()));
+					// Also write to copy of the grid.
+					gridCopy.setUnext(i, d, V1.mult(V2.adj()));
+				}
 			}
 		}
 
