@@ -30,6 +30,7 @@ import org.openpixi.pixi.physics.force.relativistic.SimpleGridForceRelativistic;
 import org.openpixi.pixi.physics.grid.Grid;
 import org.openpixi.pixi.physics.grid.Interpolation;
 import org.openpixi.pixi.physics.grid.LocalInterpolation;
+import org.openpixi.pixi.physics.initial.IInitialCondition;
 import org.openpixi.pixi.physics.movement.ParticleMover;
 import org.openpixi.pixi.physics.movement.boundary.AbsorbingParticleBoundaryConditions;
 import org.openpixi.pixi.physics.movement.boundary.IParticleBoundaryConditions;
@@ -260,6 +261,10 @@ public class Simulation {
 		// Initialize external currents on the grid
 		for (ICurrentGenerator c: currentGenerators) {
 			c.initializeCurrent(this, currentGenerators.size());
+		}
+
+		for(IInitialCondition ic : settings.getInitialConditions()) {
+			ic.applyInitialCondition(this);
 		}
 
 		initialize();

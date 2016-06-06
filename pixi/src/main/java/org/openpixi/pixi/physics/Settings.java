@@ -8,6 +8,7 @@ import org.openpixi.pixi.physics.fields.fieldgenerators.IFieldGenerator;
 import org.openpixi.pixi.physics.fields.currentgenerators.ICurrentGenerator;
 import org.openpixi.pixi.physics.force.*;
 import org.openpixi.pixi.physics.grid.*;
+import org.openpixi.pixi.physics.initial.IInitialCondition;
 import org.openpixi.pixi.physics.particles.*;
 import org.openpixi.pixi.physics.movement.solver.*;
 import org.openpixi.pixi.ui.util.yaml.YamlPanels;
@@ -78,6 +79,9 @@ public class Settings {
 
 	// CurrentGenerator related settings
 	private ArrayList<ICurrentGenerator> currentGenerators = new ArrayList<ICurrentGenerator>();
+
+	// Initial conditions (new, replaces field and current generators)
+	private ArrayList<IInitialCondition> initialConditions = new ArrayList<IInitialCondition>();
 
 	// Diagnostics related settings
 	/**
@@ -193,6 +197,11 @@ public class Settings {
 	public ArrayList<ICurrentGenerator> getCurrentGenerators()
 	{
 		return this.currentGenerators;
+	}
+
+	public ArrayList<IInitialCondition> getInitialConditions()
+	{
+		return this.initialConditions;
 	}
 
 	public YamlPanels getYamlPanels() {
@@ -441,6 +450,10 @@ public class Settings {
 	public void setCurrentGenerators(ArrayList<ICurrentGenerator> currentGenerators)
 	{
 		this.currentGenerators = currentGenerators;
+	}
+
+	public void addInitialConditions(IInitialCondition initialCondition) {
+		this.initialConditions.add(initialCondition);
 	}
 
 	public void setYamlPanels(YamlPanels yamlPanels) {

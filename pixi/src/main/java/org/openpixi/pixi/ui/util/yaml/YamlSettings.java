@@ -1,21 +1,11 @@
 package org.openpixi.pixi.ui.util.yaml;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import org.openpixi.pixi.physics.GeneralBoundaryType;
 import org.openpixi.pixi.physics.Settings;
 import org.openpixi.pixi.physics.SimulationType;
-import org.openpixi.pixi.physics.fields.EmptyPoissonSolver;
-import org.openpixi.pixi.physics.fields.LorenzYangMillsSolver;
-import org.openpixi.pixi.physics.fields.currentgenerators.ParticleLCCurrent;
-import org.openpixi.pixi.physics.fields.fieldgenerators.IFieldGenerator;
-import org.openpixi.pixi.physics.fields.currentgenerators.ICurrentGenerator;
-import org.openpixi.pixi.physics.fields.TemporalYangMillsSolver;
-import org.openpixi.pixi.physics.grid.EmptyInterpolator;
 import org.openpixi.pixi.physics.movement.solver.LeapFrogRelativisticParticleSolver;
-import org.openpixi.pixi.diagnostics.Diagnostics;
 
 /**
  * Generic settings class into which the YAML parser parses
@@ -39,6 +29,7 @@ public class YamlSettings {
 	public List<YamlYangMillsParticleStream> streams;
     public YamlFields fields;
 	public YamlCurrents currents;
+	public YamlInitialConditions initialConditions;
 	public YamlOutput output;
 	public YamlPanels panels;
 
@@ -136,6 +127,11 @@ public class YamlSettings {
 		if(currents != null)
 		{
 			currents.applyTo(settings);
+		}
+
+		if(initialConditions != null)
+		{
+			initialConditions.applyTo(settings);
 		}
 
 		if (output != null) {
