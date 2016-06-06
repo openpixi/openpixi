@@ -33,8 +33,8 @@ public class FourierFunctions {
 		fft.complexForward(rhoReg);
 
 		// Remove global charge
-		//rhoReg[0] = 0.0;
-		//rhoReg[1] = 0.0;
+		rhoReg[0] = 0.0;
+		rhoReg[1] = 0.0;
 
 		// Apply momentum regulation
 		for (int i = 0; i < totalCells; i++) {
