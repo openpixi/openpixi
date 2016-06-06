@@ -66,6 +66,23 @@ public class MVModelCoherent implements IInitialChargeDensity {
 	 */
 	private double infraredCoefficient;
 
+	/**
+	 * This class implements the color charge density of the MV model with coherent longitudinal structure. The fields
+	 * are regulated in Fourier space with a hard UV cutoff in the transverse and longitudinal directions, but the
+	 * longitudinal cutoff should not have any effect. The IR modes are regulated in the transverse plane with a
+	 * 'gluon mass' term.
+	 *
+	 * @param direction                         index of the longitudinal direction
+	 * @param orientation                       orientation of movement in the longitudinal direction
+	 * @param location                          longitudinal position
+	 * @param longitudinalWidth                 longitudinal width of the MV model
+	 * @param mu                                MV model parameter
+	 * @param useSeed                           use a fixed seed for random number generation
+	 * @param seed                              seed of the random number generator
+	 * @param ultravioletCutoffTransverse       UV cutoff in transverse plane (in inverse lattice spacings)
+	 * @param ultravioletCutoffLongitudinal     UV cutoff in the longitudinal direction (in inverse lattice spacings)
+	 * @param infraredCoefficient               IR regulator coefficient in the transverse plane
+	 */
 	public MVModelCoherent(int direction, int orientation, double location, double longitudinalWidth, double mu,
 						   boolean useSeed, int seed,
 						   double ultravioletCutoffTransverse, double ultravioletCutoffLongitudinal,
