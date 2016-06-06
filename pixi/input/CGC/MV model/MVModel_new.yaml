@@ -4,7 +4,7 @@ couplingConstant: 2
 numberOfDimensions: 3
 numberOfColors: 2
 numberOfThreads: 8
-gridCells: [64, 32, 32]
+gridCells: [64, 16, 16]
 timeStep: 0.5
 duration: 96
 evaluationRegion:
@@ -29,11 +29,13 @@ initialConditions:
         infraredCoefficient: 0.2
 
 
+
+
 # Generated panel code:
 panels:
-  dividerLocation: 1015
+  dividerLocation: 1022
   leftPanel:
-    dividerLocation: 483
+    dividerLocation: 484
     leftPanel:
       chartPanel:
         logarithmicScale: false
@@ -44,7 +46,7 @@ panels:
         - Energy density
     orientation: 0
     rightPanel:
-      dividerLocation: 501
+      dividerLocation: 504
       leftPanel:
         electricFieldPanel:
           automaticScaling: false
@@ -65,12 +67,14 @@ panels:
           showCoordinates: x, i, 4
           showFields:
           - E
+          - U
   orientation: 1
   rightPanel:
-    dividerLocation: 415
+    dividerLocation: 416
     leftPanel:
       energyDensity2DGLPanel:
         automaticScaling: false
+        data: Energy density
         scaleFactor: 10000.0
         showCoordinates: x, y, 16
     orientation: 0
@@ -79,5 +83,5 @@ panels:
         automaticScaling: true
         scaleFactor: 1.0
         showCoordinates: x, y, 0
-  windowHeight: 1054
-  windowWidth: 1922
+  windowHeight: 1056
+  windowWidth: 1936

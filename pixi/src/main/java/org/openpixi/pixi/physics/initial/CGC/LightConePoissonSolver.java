@@ -85,7 +85,7 @@ public class LightConePoissonSolver implements ICGCPoissonSolver {
 		// Is the multiplication with orientation correct?
 		double gaugeFactor = orientation * s.getCouplingConstant() * s.grid.getLatticeSpacing();
 		for (int k = 0; k < longitudinalNumCells; k++) {
-			int z = (orientation > 1) ? k : (longitudinalNumCells - k - 1);
+			int z = (orientation < 0) ? k : (longitudinalNumCells - k - 1);
 			for (int i = 0; i < totalTransverseCells; i++) {
 				// Current position
 				int[] transGridPos = GridFunctions.getCellPos(i, transverseNumCells);
@@ -93,7 +93,7 @@ public class LightConePoissonSolver implements ICGCPoissonSolver {
 				int index = s.grid.getCellIndex(gridPos);
 
 				// Last position in longitudinal direction at same transverse position
-				int indexL = s.grid.shift(index, direction, -orientation);
+				int indexL = s.grid.shift(index, direction, orientation);
 
 				// Compute V from V directly behind it in the longitudinal direction.
 				GroupElement gaugeLink = V[indexL].copy();
@@ -142,7 +142,7 @@ public class LightConePoissonSolver implements ICGCPoissonSolver {
 			V[i] = s.grid.getElementFactory().groupIdentity();
 		}
 		for (int k = 0; k < longitudinalNumCells; k++) {
-			int z = (orientation > 1) ? k : (longitudinalNumCells - k - 1);
+			int z = (orientation < 0) ? k : (longitudinalNumCells - k - 1);
 			for (int i = 0; i < totalTransverseCells; i++) {
 				// Current position
 				int[] transGridPos = GridFunctions.getCellPos(i, transverseNumCells);
@@ -150,7 +150,7 @@ public class LightConePoissonSolver implements ICGCPoissonSolver {
 				int index = s.grid.getCellIndex(gridPos);
 
 				// Last position in longitudinal direction at same transverse position
-				int indexL = s.grid.shift(index, direction, -orientation);
+				int indexL = s.grid.shift(index, direction, orientation);
 
 				// Compute V from V directly behind it in the longitudinal direction.
 				GroupElement gaugeLink = V[indexL].copy();
