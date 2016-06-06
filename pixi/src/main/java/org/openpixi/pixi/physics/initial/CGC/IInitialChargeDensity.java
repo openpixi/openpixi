@@ -14,4 +14,6 @@ public interface IInitialChargeDensity {
 	int getDirection();
 
 	int getOrientation();
+
+	void clear();
 }

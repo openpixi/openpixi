@@ -33,11 +33,11 @@ public class FourierFunctions {
 		fft.complexForward(rhoReg);
 
 		// Remove global charge
-		rhoReg[0] = 0.0;
-		rhoReg[1] = 0.0;
+		//rhoReg[0] = 0.0;
+		//rhoReg[1] = 0.0;
 
 		// Apply momentum regulation
-		for (int i = 1; i < totalCells; i++) {
+		for (int i = 0; i < totalCells; i++) {
 			int[] gridPos = GridFunctions.getCellPos(i, numCells);
 			int longPos = gridPos[direction];
 			int[] transPos = GridFunctions.reduceGridPos(gridPos, direction);
@@ -45,24 +45,17 @@ public class FourierFunctions {
 
 			double kTeff2 = computeEffectiveTransverseMomentumSquared(transIndex, transverseNumCells, as);
 			double kT2 = computeTransverseMomentumSquared(transIndex, transverseNumCells, as);
-			double kL = computeLatticeMomentum1D(longPos, longitudinalNumCells, as);
+			double kL = Math.abs(computeLatticeMomentum1D(longPos, longitudinalNumCells, as));
 
-			// Check for zero mode in transverse momentum space.
-			if(longPos != 0) {
-				// Apply hard UV regulation
-				if(kT2 <=  UVT * UVT && kL <= UVL) {
-					// Apply 'soft' IR regulation
-					double regulator = kTeff2 / (kTeff2 + IR * IR);
-					rhoReg[fft.getFFTArrayIndex(i)] *= regulator;
-					rhoReg[fft.getFFTArrayIndex(i)] *= regulator;
-				} else {
-					rhoReg[fft.getFFTArrayIndex(i)] = 0.0;
-					rhoReg[fft.getFFTArrayIndex(i)] = 0.0;
-				}
+			// Apply hard UV regulation
+			if(kT2 <=  UVT * UVT && kL <= UVL && kT2 > 0) {
+				// Apply 'soft' IR regulation
+				double regulator = kTeff2 / (kTeff2 + IR * IR);
+				rhoReg[fft.getFFTArrayIndex(i)] *= regulator;
+				rhoReg[fft.getFFTArrayIndex(i)+1] *= regulator;
 			} else {
-				// Charge density is color neutral for every longitudinal position.
 				rhoReg[fft.getFFTArrayIndex(i)] = 0.0;
-				rhoReg[fft.getFFTArrayIndex(i)] = 0.0;
+				rhoReg[fft.getFFTArrayIndex(i)+1] = 0.0;
 			}
 		}
 

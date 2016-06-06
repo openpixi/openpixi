@@ -154,6 +154,10 @@ public class MVModel implements IInitialChargeDensity {
 	public int getOrientation() {
 		return orientation;
 	}
+
+	public void clear() {
+		this.rho = null;
+	}
 }
 
 

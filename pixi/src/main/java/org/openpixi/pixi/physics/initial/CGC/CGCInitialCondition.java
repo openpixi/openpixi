@@ -9,7 +9,7 @@ import org.openpixi.pixi.physics.initial.IInitialCondition;
  *      2) Solve the Poisson equation and initialize the fields in temporal gauge.
  *      3) Spawn particles based on the Gauss constraint and refine charge distribution.
  */
-public abstract class CGCInitialCondition implements IInitialCondition {
+public class CGCInitialCondition implements IInitialCondition {
 
 	/**
 	 * Model for initial charge density.
@@ -23,10 +23,16 @@ public abstract class CGCInitialCondition implements IInitialCondition {
 	public void applyInitialCondition(Simulation s) {
 		// Initialize charge density.
 		initialChargeDensity.initialize(s);
+		int direction = initialChargeDensity.getDirection();
+		int orientation = initialChargeDensity.getOrientation();
 
 		// Solve Poisson equation and set fields on the grid. Also computes Gauss constraint and saves it.
-		LightConePoissonSolver solver = new LightConePoissonSolver(s);
+		ICGCPoissonSolver solver = new LightConePoissonSolver();
+		solver.initialize(s);
 		solver.solve(initialChargeDensity);
+
+		// Clear some memory.
+		initialChargeDensity.clear();
 
 		// Spawn particles.
 	}

@@ -166,6 +166,10 @@ public class MVModelCoherent implements IInitialChargeDensity {
 	public int getOrientation() {
 		return orientation;
 	}
+
+	public void clear() {
+		this.rho = null;
+	}
 }
 
 
