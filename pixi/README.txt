@@ -45,6 +45,15 @@ To launch Pixi:
     java -jar target/pixi-x.x-SNAPSHOT.jar
 )
 
+To launch Pixi with a certain YAML file without GUI:
+    java -cp target/pixi-x.x-SNAPSHOT.jar org.openpixi.pixi.ui.MainBatch path/to/input.yaml
+    
+To launch Pixi in batch mode with a folder full of YAML files:
+    java -cp target/pixi-x.x-SNAPSHOT.jar org.openpixi.pixi.ui.MainBatch /path/to/input/
+
+If you need to allocate more memory (e.g. 32gb) for the JVM, add the -Xmx flag.
+    java -Xmx32g -cp target/pixi-x.x-SNAPSHOT.jar org.openpixi.pixi.ui.MainBatch /path/to/input/
+
 DEVELOP IN ECLIPSE
 ==================
 
