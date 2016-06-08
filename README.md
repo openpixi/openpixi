@@ -21,7 +21,7 @@ OpenPixi is being developed in Java, with an educational aspect in mind.
 Instructions
 ============
 
-Please refer to pixi/README.txt
+Please refer to [pixi/README.txt](./pixi/README.txt)
 
 
 License
