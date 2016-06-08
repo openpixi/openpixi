@@ -40,7 +40,7 @@ To build Pixi:
 To launch Pixi:
     java -jar target/pixi-x.x.jar
     
-Note: x-x should be replaced by the appropriate version number, e.g. 1.0.
+Note: x.x should be replaced by the appropriate version number, e.g. 1.0.
 
 (In case there is a problem with an OpenGL panel, execute
     scripts/jogl-bug-workaround
