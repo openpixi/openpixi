@@ -27,7 +27,8 @@ public class CGCInitialCondition implements IInitialCondition {
 		int orientation = initialChargeDensity.getOrientation();
 
 		// Solve Poisson equation and set fields on the grid. Also computes Gauss constraint and saves it.
-		ICGCPoissonSolver solver = new LightConePoissonSolver();
+		//ICGCPoissonSolver solver = new LightConePoissonSolver();
+		ICGCPoissonSolver solver = new LightConePoissonSolverTadpole();
 		solver.initialize(s);
 		solver.solve(initialChargeDensity);
 
