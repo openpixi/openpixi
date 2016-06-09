@@ -15,5 +15,7 @@ public interface IInitialChargeDensity {
 
 	int getOrientation();
 
+	double getRegulator();
+
 	void clear();
 }

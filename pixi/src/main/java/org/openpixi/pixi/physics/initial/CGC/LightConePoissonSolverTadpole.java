@@ -136,6 +136,7 @@ public class LightConePoissonSolverTadpole implements ICGCPoissonSolver {
 		try {
 			computeTadpole.setDirection(direction);
 			computeTadpole.setOrientation(orientation);
+			computeTadpole.setRegulator(chargeDensity.getRegulator());
 			computeTadpole.calculate(s.grid, s.particles, 0);
 		} catch (IOException ex) {
 			System.out.println("TadpoleInitialAveraged Error: Could not write to file tadpole.");

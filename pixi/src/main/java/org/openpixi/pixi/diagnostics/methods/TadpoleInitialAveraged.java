@@ -18,7 +18,7 @@ import java.util.ArrayList;
 public class TadpoleInitialAveraged implements Diagnostics {
 
 	private String path;
-	private double timeInterval;
+	private double timeInterval, regulator;
 	private int stepInterval, direction, orientation;
 	private boolean supressOutput;
 	private Simulation s;
@@ -49,13 +49,13 @@ public class TadpoleInitialAveraged implements Diagnostics {
 
 		if(!supressOutput) {
 			// Create/delete file.
-			FileFunctions.clearFile("output/" + path);
+			//FileFunctions.clearFile("output/" + path);
 
 			// Write first line.
 			File file = FileFunctions.getFile("output/" + path);
 			try {
 				FileWriter pw = new FileWriter(file, true);
-				pw.write("\t tr[V]");
+				pw.write("#mass \t tr[V]");
 				pw.write("\n");
 				pw.close();
 			} catch (IOException ex) {
@@ -70,6 +70,10 @@ public class TadpoleInitialAveraged implements Diagnostics {
 
 	public void setOrientation(int orientation) {
 		this.orientation = orientation;
+	}
+
+	public void setRegulator(double regulator) {
+		this.regulator = regulator;
 	}
 
 	/**
@@ -106,6 +110,7 @@ public class TadpoleInitialAveraged implements Diagnostics {
 			FileWriter pw = new FileWriter(file, true);
 			DecimalFormat formatter = new DecimalFormat("0.################E0");
 
+			pw.write(formatter.format(regulator)+ "\t");
 			pw.write(formatter.format(tadTrace));
 			pw.write("\n");
 

@@ -155,6 +155,10 @@ public class MVModel implements IInitialChargeDensity {
 		return orientation;
 	}
 
+	public double getRegulator() {
+		return infraredCoefficient;
+	}
+
 	public void clear() {
 		this.rho = null;
 	}
