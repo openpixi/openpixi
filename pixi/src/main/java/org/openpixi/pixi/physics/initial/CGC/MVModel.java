@@ -121,8 +121,11 @@ public class MVModel implements IInitialChargeDensity {
 			}
 
 			// Apply hard momentum regulation in Fourier space.
-			tempRho = FourierFunctions.regulateChargeDensityHard(tempRho, s.grid.getNumCells(),
+			/*tempRho = FourierFunctions.regulateChargeDensityHard(tempRho, s.grid.getNumCells(),
 					ultravioletCutoffTransverse, ultravioletCutoffLongitudinal, infraredCoefficient, direction,
+					s.grid.getLatticeSpacing());*/
+			tempRho = FourierFunctions.regulateChargeDensityGaussian(tempRho, s.grid.getNumCells(),
+					ultravioletCutoffTransverse, longitudinalWidth/4, infraredCoefficient, direction,
 					s.grid.getLatticeSpacing());
 
 			// Apply longitudinal profile.
