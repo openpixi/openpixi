@@ -12,7 +12,7 @@ import java.io.IOException;
 
 /**
  * This class solves the transverse Poisson equation for a three-dimensional (Lorenz gauge) charge density
- * 'sheet by sheet' in the longitudinal direction and then initializes the fields and particles in the temporal gauge.
+ * 'sheet by sheet' in the longitudinal direction and then initializes the fields in the temporal gauge.
  */
 public class LightConePoissonSolverTadpole implements ICGCPoissonSolver {
 
@@ -140,6 +140,10 @@ public class LightConePoissonSolverTadpole implements ICGCPoissonSolver {
 			computeTadpole.calculate(s.grid, s.particles, 0);
 		} catch (IOException ex) {
 			System.out.println("TadpoleInitialAveraged Error: Could not write to file tadpole.");
+		}
+
+		for (int i = 0; i < s.grid.getTotalNumberOfCells(); i++) {
+			s.grid.setUnext(i,0,s.grid.getElementFactory().groupIdentity());			//Resetting all Unext matrices!!!
 		}
 
 		// Compute phi at t = at/2 from faked charge density movement
