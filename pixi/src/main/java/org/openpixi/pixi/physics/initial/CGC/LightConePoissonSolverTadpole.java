@@ -129,7 +129,7 @@ public class LightConePoissonSolverTadpole implements ICGCPoissonSolver {
 					gridCopy.setU(i, d, V1.mult(V2.adj()));
 				}
 			}
-			s.grid.setUnext(i,0,V[i]);						//Attention, the Unext matrices are overwritten later!!!
+			gridCopy.setUnext(i,0,V[i]);						//Attention, the Unext matrices are overwritten later!!!
 		}
 
 		// Calculate the trace of the tadpole and write it to a file.
@@ -137,14 +137,14 @@ public class LightConePoissonSolverTadpole implements ICGCPoissonSolver {
 			computeTadpole.setDirection(direction);
 			computeTadpole.setOrientation(orientation);
 			computeTadpole.setRegulator(chargeDensity.getRegulator());
-			computeTadpole.calculate(s.grid, s.particles, 0);
+			computeTadpole.calculate(gridCopy, s.particles, 0);
 		} catch (IOException ex) {
 			System.out.println("TadpoleInitialAveraged Error: Could not write to file tadpole.");
 		}
 
-		for (int i = 0; i < s.grid.getTotalNumberOfCells(); i++) {
-			s.grid.setUnext(i,0,s.grid.getElementFactory().groupIdentity());			//Resetting all Unext matrices!!!
-		}
+		/*for (int i = 0; i < s.grid.getTotalNumberOfCells(); i++) {
+			gridCopy.setUnext(i,0,s.grid.getElementFactory().groupIdentity());			//Resetting all Unext matrices!!!
+		}*/
 
 		// Compute phi at t = at/2 from faked charge density movement
 		phi1 = new AlgebraElement[s.grid.getTotalNumberOfCells()];
@@ -219,5 +219,9 @@ public class LightConePoissonSolverTadpole implements ICGCPoissonSolver {
 
 	public AlgebraElement getGaussViolation(int index) {
 		return this.gaussViolation[index];
+	}
+
+	public AlgebraElement[] getGaussViolation() {
+		return this.gaussViolation;
 	}
 }
