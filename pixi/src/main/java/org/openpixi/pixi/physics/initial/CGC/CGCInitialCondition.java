@@ -17,6 +17,11 @@ public class CGCInitialCondition implements IInitialCondition {
 	protected IInitialChargeDensity initialChargeDensity;
 
 	/**
+	 * Particle creation algorithm.
+	 */
+	protected IParticleCreator initialParticleCreator;
+
+	/**
 	 * Applies CGC initial conditions.
 	 * @param s Reference to the Simulation object
 	 */
@@ -36,6 +41,9 @@ public class CGCInitialCondition implements IInitialCondition {
 		initialChargeDensity.clear();
 
 		// Spawn particles.
+		initialParticleCreator = new LightConeParticles(direction, orientation);
+		initialParticleCreator.setGaussConstraint(solver.getGaussViolation());
+		initialParticleCreator.initialize(s);
 	}
 
 	public void setInitialChargeDensity(IInitialChargeDensity rho) {

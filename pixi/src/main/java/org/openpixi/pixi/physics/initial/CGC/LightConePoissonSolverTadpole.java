@@ -112,7 +112,7 @@ public class LightConePoissonSolverTadpole implements ICGCPoissonSolver {
 
 		// Make a copy of the grid. Ugly, but needed for Gauss constraint calculation.
 		Grid gridCopy = new Grid(s.grid);
-		gridCopy.createGrid();
+		//gridCopy.createGrid();
 
 		// Set gauge links at t = - at/2
 		for (int i = 0; i < s.grid.getTotalNumberOfCells(); i++) {
@@ -203,6 +203,7 @@ public class LightConePoissonSolverTadpole implements ICGCPoissonSolver {
 		for (int i = 0; i < s.grid.getTotalNumberOfCells(); i++) {
 			for (int j = 0; j < s.getNumberOfDimensions(); j++) {
 				s.grid.setE(i, j, s.grid.getEFromLinks(i, j));
+				gridCopy.setE(i, j, gridCopy.getEFromLinks(i, j));
 			}
 		}
 

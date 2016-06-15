@@ -105,7 +105,7 @@ public class LightConePoissonSolver implements ICGCPoissonSolver {
 
 		// Make a copy of the grid. Ugly, but needed for Gauss constraint calculation.
 		Grid gridCopy = new Grid(s.grid);
-		gridCopy.createGrid();
+		//gridCopy.createGrid();
 
 		// Set gauge links at t = - at/2
 		for (int i = 0; i < s.grid.getTotalNumberOfCells(); i++) {
@@ -231,5 +231,9 @@ public class LightConePoissonSolver implements ICGCPoissonSolver {
 
 	public AlgebraElement getGaussViolation(int index) {
 		return this.gaussViolation[index];
+	}
+
+	public AlgebraElement[] getGaussViolation() {
+		return this.gaussViolation;
 	}
 }
