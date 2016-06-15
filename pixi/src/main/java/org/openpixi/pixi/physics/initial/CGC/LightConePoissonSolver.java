@@ -31,7 +31,8 @@ public class LightConePoissonSolver implements ICGCPoissonSolver {
 	 */
 	public void solve(IInitialChargeDensity chargeDensity) {
 		AlgebraElement[] phi0;
-		AlgebraElement[] phi1;
+/*		AlgebraElement[] phi1;*/
+		AlgebraElement[] deltaphi;
 		GroupElement[] V;
 
 		int direction = chargeDensity.getDirection();
@@ -123,6 +124,7 @@ public class LightConePoissonSolver implements ICGCPoissonSolver {
 			}
 		}
 
+/*
 		// Compute phi at t = at/2 from faked charge density movement
 		phi1 = new AlgebraElement[s.grid.getTotalNumberOfCells()];
 		for (int i = 0; i < s.grid.getTotalNumberOfCells(); i++) {
@@ -156,6 +158,39 @@ public class LightConePoissonSolver implements ICGCPoissonSolver {
 				GroupElement gaugeLink = V[indexL].copy();
 				gaugeLink.multAssign(phi1[index].mult(gaugeFactor).getLink());
 				V[index] = gaugeLink;
+			}
+		}
+*/
+
+		// Compute deltaphi to switch from t = -at / 2 to t = at / 2.
+		// (Here we assume that the charge within a cell is uniformly distributed.
+		// A more sophisticated method to determine deltaphi would correspond
+		// to a charge distribution as assumed after charge refinement.)
+		deltaphi = new AlgebraElement[s.grid.getTotalNumberOfCells()];
+		for (int i = 0; i < s.grid.getTotalNumberOfCells(); i++) {
+
+			double transportRatio = s.getTimeStep() / s.grid.getLatticeSpacing();
+
+			// deltaphi(x) -> phi(x) * at/as
+			deltaphi[i] = phi0[i].mult(transportRatio);
+		}
+
+		// Compute V at t = at / 2 by adjusting V at t = - at / 2 slightly
+		for (int k = 0; k < longitudinalNumCells; k++) {
+			int z = (orientation < 0) ? k : (longitudinalNumCells - k - 1);
+			for (int i = 0; i < totalTransverseCells; i++) {
+				// Current position
+				int[] transGridPos = GridFunctions.getCellPos(i, transverseNumCells);
+				int[] gridPos = GridFunctions.insertGridPos(transGridPos, direction, z);
+				int index = s.grid.getCellIndex(gridPos);
+
+				// Last position in longitudinal direction at same transverse position
+				int indexL = s.grid.shift(index, direction, orientation);
+
+				GroupElement deltaV = deltaphi[index].mult(gaugeFactor).getLink();
+
+				// Adjust V by slightly adding a contribution from the next longitudinal position
+				V[indexL] = deltaV.mult(V[indexL]);
 			}
 		}
 
