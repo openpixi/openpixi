@@ -173,6 +173,7 @@ public class LightConeParticles implements IParticleCreator {
 
 				AlgebraElement charge = this.interpolateChargeFromGrid(s, particlePosition0).mult(1.0 / particlesPerLink);
 
+
 				// Particle velocity
 				double[] particleVelocity = new double[gridPos.length];
 				for (int k = 0; k < gridPos.length; k++) {
@@ -295,6 +296,7 @@ public class LightConeParticles implements IParticleCreator {
 	protected AlgebraElement interpolateChargeFromGrid(Simulation s, double[] particlePosition) {
 		int[] ngp = GridFunctions.nearestGridPoint(particlePosition, as);
 		return gaussConstraint[s.grid.getCellIndex(ngp)].copy();
+		//return gaussConstraint[s.grid.getCellIndex(ngp)].copy().mult(-2);
 	}
 
 	public void clear() {

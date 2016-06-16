@@ -107,6 +107,11 @@ public class LightConePoissonSolver implements ICGCPoissonSolver {
 		Grid gridCopy = new Grid(s.grid);
 		//gridCopy.createGrid();
 
+		for (int i = 0; i < s.grid.getTotalNumberOfCells(); i++) {
+			gridCopy.setUnext(i,0,s.grid.getElementFactory().groupIdentity());			//Resetting all Unext matrices!!!
+			gridCopy.setU(i,0,s.grid.getElementFactory().groupIdentity());			//Resetting all U matrices!!!
+		}
+
 		// Set gauge links at t = - at/2
 		for (int i = 0; i < s.grid.getTotalNumberOfCells(); i++) {
 			for (int d = 0; d < s.getNumberOfDimensions(); d++) {

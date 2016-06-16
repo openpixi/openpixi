@@ -37,13 +37,14 @@ public class CGCInitialCondition implements IInitialCondition {
 		solver.initialize(s);
 		solver.solve(initialChargeDensity);
 
-		// Clear some memory.
-		initialChargeDensity.clear();
-
 		// Spawn particles.
 		initialParticleCreator = new LightConeParticles(direction, orientation);
 		initialParticleCreator.setGaussConstraint(solver.getGaussViolation());
+		//initialParticleCreator.setGaussConstraint(initialChargeDensity.getChargeDensity());
 		initialParticleCreator.initialize(s);
+
+		// Clear some memory.
+		initialChargeDensity.clear();
 	}
 
 	public void setInitialChargeDensity(IInitialChargeDensity rho) {

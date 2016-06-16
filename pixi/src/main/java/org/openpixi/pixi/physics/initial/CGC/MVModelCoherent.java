@@ -159,6 +159,10 @@ public class MVModelCoherent implements IInitialChargeDensity {
 		return rho[index];
 	}
 
+	public AlgebraElement[] getChargeDensity() {
+		return rho;
+	}
+
 	public int getDirection() {
 		return direction;
 	}

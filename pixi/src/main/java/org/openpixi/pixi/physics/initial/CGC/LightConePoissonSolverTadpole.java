@@ -143,9 +143,10 @@ public class LightConePoissonSolverTadpole implements ICGCPoissonSolver {
 			System.out.println("TadpoleInitialAveraged Error: Could not write to file tadpole.");
 		}
 
-		/*for (int i = 0; i < s.grid.getTotalNumberOfCells(); i++) {
+		for (int i = 0; i < s.grid.getTotalNumberOfCells(); i++) {
 			gridCopy.setUnext(i,0,s.grid.getElementFactory().groupIdentity());			//Resetting all Unext matrices!!!
-		}*/
+			gridCopy.setU(i,0,s.grid.getElementFactory().groupIdentity());			//Resetting all U matrices!!!
+		}
 
 		/*
 		// Compute phi at t = at/2 from faked charge density movement
@@ -247,6 +248,7 @@ public class LightConePoissonSolverTadpole implements ICGCPoissonSolver {
 		for (int i = 0; i < s.grid.getTotalNumberOfCells(); i++) {
 			if(gridCopy.isActive(i)) {
 				this.gaussViolation[i] = gridCopy.getGaussConstraint(i);
+				//this.gaussViolation[i] = s.grid.getGaussConstraint(i);
 			} else {
 				this.gaussViolation[i] = gridCopy.getElementFactory().algebraZero();
 			}

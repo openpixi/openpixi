@@ -11,6 +11,8 @@ public interface IInitialChargeDensity {
 
 	AlgebraElement getChargeDensity(int index);
 
+	AlgebraElement[] getChargeDensity();
+
 	int getDirection();
 
 	int getOrientation();
