@@ -101,7 +101,7 @@ public class TadpoleInitialAveraged implements Diagnostics {
 				int index = grid.getCellIndex(gridPos);
 				tadLink.multAssign(grid.getUnext(index,0));
 			}
-			tadTrace += tadLink.getRealTrace()/totalTransverseCells;
+			tadTrace += tadLink.getRealTrace()/totalTransverseCells/2;				///The factor of /2 turns out after analyzing the results!! Matter of convention!!
 			tadLink.set(grid.getElementFactory().groupIdentity());
 		}
 
