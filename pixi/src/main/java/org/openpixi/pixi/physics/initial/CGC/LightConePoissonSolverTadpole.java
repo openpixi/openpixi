@@ -1,6 +1,7 @@
 package org.openpixi.pixi.physics.initial.CGC;
 
 import org.openpixi.pixi.diagnostics.Diagnostics;
+import org.openpixi.pixi.diagnostics.methods.DipoleInitialBinned;
 import org.openpixi.pixi.diagnostics.methods.TadpoleInitialAveraged;
 import org.openpixi.pixi.math.AlgebraElement;
 import org.openpixi.pixi.math.GroupElement;
@@ -19,6 +20,7 @@ public class LightConePoissonSolverTadpole implements ICGCPoissonSolver {
 	Simulation s;
 	AlgebraElement[] gaussViolation;
 	TadpoleInitialAveraged computeTadpole;
+	DipoleInitialBinned computeDipole;
 
 	/**
 	 * Initializes the LightConePoissonSolver. Used to solve the transverse Poisson equation 'sheer by sheet'.
@@ -29,6 +31,8 @@ public class LightConePoissonSolverTadpole implements ICGCPoissonSolver {
 		this.s = s;
 		computeTadpole = new TadpoleInitialAveraged("tadpole",0);
 		computeTadpole.initialize(s);
+		computeDipole = new DipoleInitialBinned("dipole",0);
+		computeDipole.initialize(s);
 	}
 
 	/**
@@ -143,9 +147,17 @@ public class LightConePoissonSolverTadpole implements ICGCPoissonSolver {
 			System.out.println("TadpoleInitialAveraged Error: Could not write to file tadpole.");
 		}
 
+		try {
+			computeDipole.setDirection(direction);
+			computeDipole.setOrientation(orientation);
+			computeDipole.calculate(gridCopy, s.particles, 0);
+		} catch (IOException ex) {
+			System.out.println("DipoleInitialBinned Error: Could not write to file dipole.");
+		}
+
 		for (int i = 0; i < s.grid.getTotalNumberOfCells(); i++) {
 			gridCopy.setUnext(i,0,s.grid.getElementFactory().groupIdentity());			//Resetting all Unext matrices!!!
-			gridCopy.setU(i,0,s.grid.getElementFactory().groupIdentity());			//Resetting all U matrices!!!
+			gridCopy.setU(i, 0, s.grid.getElementFactory().groupIdentity());			//Resetting all U matrices!!!
 		}
 
 		/*
