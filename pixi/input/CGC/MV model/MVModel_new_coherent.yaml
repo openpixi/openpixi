@@ -1,4 +1,4 @@
-simulationType: temporal cgc
+simulationType: temporal cgc ngp
 gridStep: 1
 couplingConstant: 2
 numberOfDimensions: 3
