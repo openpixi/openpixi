@@ -8,7 +8,7 @@ import org.openpixi.pixi.physics.util.GridFunctions;
 
 /**
  * This class solves the transverse Poisson equation for a three-dimensional (Lorenz gauge) charge density
- * 'sheet by sheet' in the longitudinal direction and then initializes the fields and particles in the temporal gauge.
+ * 'sheet by sheet' in the longitudinal direction and then initializes the fields in the temporal gauge.
  */
 public class LightConePoissonSolver implements ICGCPoissonSolver {
 
@@ -20,6 +20,7 @@ public class LightConePoissonSolver implements ICGCPoissonSolver {
 	 * @param s Reference to the Simulation object
 	 */
 	public void initialize(Simulation s) {
+
 		this.s = s;
 	}
 
@@ -107,11 +108,6 @@ public class LightConePoissonSolver implements ICGCPoissonSolver {
 		Grid gridCopy = new Grid(s.grid);
 		//gridCopy.createGrid();
 
-		for (int i = 0; i < s.grid.getTotalNumberOfCells(); i++) {
-			gridCopy.setUnext(i,0,s.grid.getElementFactory().groupIdentity());			//Resetting all Unext matrices!!!
-			gridCopy.setU(i,0,s.grid.getElementFactory().groupIdentity());			//Resetting all U matrices!!!
-		}
-
 		// Set gauge links at t = - at/2
 		for (int i = 0; i < s.grid.getTotalNumberOfCells(); i++) {
 			for (int d = 0; d < s.getNumberOfDimensions(); d++) {
@@ -128,44 +124,6 @@ public class LightConePoissonSolver implements ICGCPoissonSolver {
 				}
 			}
 		}
-
-/*
-		// Compute phi at t = at/2 from faked charge density movement
-		phi1 = new AlgebraElement[s.grid.getTotalNumberOfCells()];
-		for (int i = 0; i < s.grid.getTotalNumberOfCells(); i++) {
-			phi1[i] = s.grid.getElementFactory().algebraZero();
-		}
-		for (int i = 0; i < s.grid.getTotalNumberOfCells(); i++) {
-			int is = s.grid.shift(i, direction, -orientation);
-			double transportRatio = s.getTimeStep() / s.grid.getLatticeSpacing();
-			// phi(x) -> phi(x) * (1 - at/as) + phi(x+d) * at/as
-			phi1[i] = phi0[i].mult(1.0 - transportRatio).add(phi0[is].mult(transportRatio));
-		}
-
-		// Compute V at t = at / 2
-		// Reset V
-		V = new GroupElement[s.grid.getTotalNumberOfCells()];
-		for (int i = 0; i < s.grid.getTotalNumberOfCells(); i++) {
-			V[i] = s.grid.getElementFactory().groupIdentity();
-		}
-		for (int k = 0; k < longitudinalNumCells; k++) {
-			int z = (orientation < 0) ? k : (longitudinalNumCells - k - 1);
-			for (int i = 0; i < totalTransverseCells; i++) {
-				// Current position
-				int[] transGridPos = GridFunctions.getCellPos(i, transverseNumCells);
-				int[] gridPos = GridFunctions.insertGridPos(transGridPos, direction, z);
-				int index = s.grid.getCellIndex(gridPos);
-
-				// Last position in longitudinal direction at same transverse position
-				int indexL = s.grid.shift(index, direction, orientation);
-
-				// Compute V from V directly behind it in the longitudinal direction.
-				GroupElement gaugeLink = V[indexL].copy();
-				gaugeLink.multAssign(phi1[index].mult(gaugeFactor).getLink());
-				V[index] = gaugeLink;
-			}
-		}
-*/
 
 		// Compute deltaphi to switch from t = -at / 2 to t = at / 2.
 		// (Here we assume that the charge within a cell is uniformly distributed.
@@ -220,6 +178,7 @@ public class LightConePoissonSolver implements ICGCPoissonSolver {
 		for (int i = 0; i < s.grid.getTotalNumberOfCells(); i++) {
 			for (int j = 0; j < s.getNumberOfDimensions(); j++) {
 				s.grid.setE(i, j, s.grid.getEFromLinks(i, j));
+				gridCopy.setE(i, j, gridCopy.getEFromLinks(i, j));
 			}
 		}
 
