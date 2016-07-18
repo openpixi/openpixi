@@ -67,7 +67,8 @@ public class FourierFunctions {
 	}
 
 	/**
-	 * Applies a Gaussian UV regulation in the longitudinal direction as well as hard UV and IR regulation in the transversal plane to (one color component of) a 3D charge density.
+	 * Applies a Gaussian UV regulation in the longitudinal direction as well as hard UV and IR regulation in the
+	 * transverse plane to (one color component of) a 3D charge density.
 	 *
 	 * @param rho			Original charge density
 	 * @param numCells		Grid size

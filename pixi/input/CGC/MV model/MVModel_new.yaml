@@ -25,7 +25,7 @@ initialConditions:
         longitudinalWidth: 8
         mu: .3
         ultravioletCutoffTransverse: 2
-        ultravioletCutoffLongitudinal: .4
+        longitudinalCoherenceLength: 3
         infraredCoefficient: 0.2
 
 

@@ -55,7 +55,7 @@ public class MVModel implements IInitialChargeDensity {
 	 * given in units of inverse lattice spacings. A value of sqrt(2)*PI corresponds to no UV cutoff. A value of 0.0
 	 * cuts off all modes in momentum space.
 	 */
-	private double ultravioletCutoffLongitudinal;
+	private double longitudinalCoherenceLength;
 
 	/**
 	 * Coefficient used for the IR regulator, which is implemented as a mass-term in the Poisson solver. As with the
@@ -77,12 +77,12 @@ public class MVModel implements IInitialChargeDensity {
 	 * @param useSeed                           use a fixed seed for random number generation
 	 * @param seed                              seed of the random number generator
 	 * @param ultravioletCutoffTransverse       UV cutoff in transverse plane (in inverse lattice spacings)
-	 * @param ultravioletCutoffLongitudinal     UV cutoff in the longitudinal direction (in inverse lattice spacings)
+	 * @param longitudinalCoherenceLength       Longitudinal coherence length inside nucleus (in physical units)
 	 * @param infraredCoefficient               IR regulator coefficient in the transverse plane
 	 */
 	public MVModel(int direction, int orientation, double location, double longitudinalWidth, double mu,
 				   boolean useSeed, int seed,
-				   double ultravioletCutoffTransverse, double ultravioletCutoffLongitudinal,
+				   double ultravioletCutoffTransverse, double longitudinalCoherenceLength,
 				   double infraredCoefficient){
 
 		this.direction = direction;
@@ -93,7 +93,7 @@ public class MVModel implements IInitialChargeDensity {
 		this.useSeed = useSeed;
 		this.seed = seed;
 		this.ultravioletCutoffTransverse = ultravioletCutoffTransverse;
-		this.ultravioletCutoffLongitudinal = ultravioletCutoffLongitudinal;
+		this.longitudinalCoherenceLength = longitudinalCoherenceLength;
 		this.infraredCoefficient = infraredCoefficient;
 	}
 
@@ -120,12 +120,9 @@ public class MVModel implements IInitialChargeDensity {
 				tempRho[i] =  rand.nextGaussian() * mu * s.getCouplingConstant() / s.grid.getLatticeSpacing();
 			}
 
-			// Apply hard momentum regulation in Fourier space.
-			/*tempRho = FourierFunctions.regulateChargeDensityHard(tempRho, s.grid.getNumCells(),
-					ultravioletCutoffTransverse, ultravioletCutoffLongitudinal, infraredCoefficient, direction,
-					s.grid.getLatticeSpacing());*/
+			// Apply soft momentum regulation in Fourier space.
 			tempRho = FourierFunctions.regulateChargeDensityGaussian(tempRho, s.grid.getNumCells(),
-					ultravioletCutoffTransverse, longitudinalWidth/4, infraredCoefficient, direction,
+					ultravioletCutoffTransverse, longitudinalCoherenceLength, infraredCoefficient, direction,
 					s.grid.getLatticeSpacing());
 
 			// Apply longitudinal profile.
