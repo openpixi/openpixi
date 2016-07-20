@@ -7,6 +7,9 @@ import org.openpixi.pixi.ui.panel.gl.EnergyDensityVoxelGLPanel;
 
 public class YamlEnergyDensityVoxelGLPanel {
 
+	// ComboBox properties
+	public String data;
+
 	// Scale properties
 	public Double scaleFactor;
 	public Boolean automaticScaling;
@@ -32,6 +35,7 @@ public class YamlEnergyDensityVoxelGLPanel {
 	public YamlEnergyDensityVoxelGLPanel(Component component) {
 		if (component instanceof EnergyDensityVoxelGLPanel) {
 			EnergyDensityVoxelGLPanel panel = (EnergyDensityVoxelGLPanel) component;
+			data = panel.dataProperties.getStringFromEntry();
 			scaleFactor = panel.scaleProperties.getScaleFactor();
 			automaticScaling = panel.scaleProperties.getAutomaticScaling();
 			visibilityThreshold = panel.visibilityThresholdProperties.getValue();
@@ -48,6 +52,10 @@ public class YamlEnergyDensityVoxelGLPanel {
 	public Component inflate(PanelManager panelManager) {
 
 		EnergyDensityVoxelGLPanel panel = new EnergyDensityVoxelGLPanel(panelManager.getSimulationAnimation());
+
+		if (data != null) {
+			panel.dataProperties.setEntryFromString(data);
+		}
 
 		if (scaleFactor != null) {
 			panel.scaleProperties.setScaleFactor(scaleFactor);
