@@ -51,9 +51,6 @@ public class EnergyDensityVoxelGLPanel extends AnimationGLPanel {
 	/** Distance of viewer */
 	public double distanceFactor;
 
-	/** Maximum height of values */
-	public double heightFactor;
-
 	/** Constructor */
 	public EnergyDensityVoxelGLPanel(SimulationAnimation simulationAnimation) {
 		super(simulationAnimation);
@@ -67,7 +64,6 @@ public class EnergyDensityVoxelGLPanel extends AnimationGLPanel {
 		phi = - 0.5 * Math.PI;
 		theta = Math.PI * 0.25;
 		distanceFactor = 1;
-		heightFactor = .25;
 
 		scaleProperties.setAutomaticScaling(true);
 	}
@@ -103,9 +99,6 @@ public class EnergyDensityVoxelGLPanel extends AnimationGLPanel {
 		float size = Math.max(Math.max(sizex, sizey), sizez);
 		float distance = (float) distanceFactor * size;
 		float widthHeightRatio = (float) width / (float) height;
-
-		// Scaling for height:
-		float heightScale = (float) heightFactor * size;
 
 		gl2.glMatrixMode( GL2.GL_PROJECTION );
 		gl2.glLoadIdentity();

@@ -11,15 +11,18 @@ public class YamlEnergyDensityVoxelGLPanel {
 	public Double scaleFactor;
 	public Boolean automaticScaling;
 
+	// Visibility threshold property
+	public Double visibilityThreshold;
+
 	// Projection properties
 	public Double phi;
 	public Double theta;
+	public Double centerx;
+	public Double centery;
+	public Double centerz;
 
 	/** Distance of viewer */
 	public Double distanceFactor;
-
-	/** Maximum height of values */
-	public Double heightFactor;
 
 	/** Empty constructor called by SnakeYaml */
 	public YamlEnergyDensityVoxelGLPanel() {
@@ -30,10 +33,13 @@ public class YamlEnergyDensityVoxelGLPanel {
 			EnergyDensityVoxelGLPanel panel = (EnergyDensityVoxelGLPanel) component;
 			scaleFactor = panel.scaleProperties.getScaleFactor();
 			automaticScaling = panel.scaleProperties.getAutomaticScaling();
+			visibilityThreshold = panel.visibilityThresholdProperties.getValue();
 			phi = panel.phi;
 			theta = panel.theta;
+			centerx = panel.centerx;
+			centery = panel.centery;
+			centerz = panel.centerz;
 			distanceFactor = panel.distanceFactor;
-			heightFactor = panel.heightFactor;
 		}
 	}
 
@@ -49,6 +55,10 @@ public class YamlEnergyDensityVoxelGLPanel {
 			panel.scaleProperties.setAutomaticScaling(automaticScaling);
 		}
 
+		if (visibilityThreshold != null) {
+			panel.visibilityThresholdProperties.setValue(visibilityThreshold);
+		}
+
 		if (phi != null) {
 			panel.phi = phi;
 		}
@@ -57,12 +67,20 @@ public class YamlEnergyDensityVoxelGLPanel {
 			panel.theta = theta;
 		}
 
-		if (distanceFactor != null) {
-			panel.distanceFactor = distanceFactor;
+		if (centerx != null) {
+			panel.centerx = centerx;
 		}
 
-		if (heightFactor != null) {
-			panel.heightFactor = heightFactor;
+		if (centery != null) {
+			panel.centery = centery;
+		}
+
+		if (centerz != null) {
+			panel.centerz = centerz;
+		}
+
+		if (distanceFactor != null) {
+			panel.distanceFactor = distanceFactor;
 		}
 
 		return panel;
