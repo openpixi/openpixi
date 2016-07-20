@@ -107,10 +107,13 @@ public class EnergyDensityVoxelGLPanel extends AnimationGLPanel {
 				widthHeightRatio, // aspect ratio of field of view
 				1, // distance to near clipping plane
 				2.5 * size); // distance to far clipping plane
+		double viewx = Math.cos(phi) * Math.sin(theta);
+		double viewy = Math.sin(phi) * Math.sin(theta);
+		double viewz = Math.cos(theta);
 		glu.gluLookAt(
-				centerx + sizex / 2 + distance * Math.cos(phi) * Math.sin(theta), // where we stand
-				centery + sizey / 2 + distance * Math.sin(phi) * Math.sin(theta),
-				centerz + sizez / 2 + distance * Math.cos(theta),
+				centerx + sizex / 2 + distance * viewx, // where we stand
+				centery + sizey / 2 + distance * viewy,
+				centerz + sizez / 2 + distance * viewz,
 				centerx + sizex / 2, // where we are viewing at
 				centery + sizey / 2,
 				centerz + sizez / 2,
@@ -131,17 +134,75 @@ public class EnergyDensityVoxelGLPanel extends AnimationGLPanel {
 
 		double colors = s.grid.getNumberOfColors();
 
-		for (int i = 0; i < s.grid.getNumCells(0); i++) {
-			for (int k = 0; k < s.grid.getNumCells(1); k++) {
-				for (int l = 0; l < s.grid.getNumCells(2); l++) {
-					float x = (float)(as * i);
-					float y = (float) (as * k);
-					float z = (float) (as * l);
+		// Determine order of drawing which is important for transparent drawing
+		int loop1 = 0; // outermost loop
+		int loop2 = 1;
+		int loop3 = 2; // innermost loop
 
-					pos[0] = i;
-					pos[1] = k;
-					pos[2] = l;
+		double ax = Math.abs(viewx);
+		double ay = Math.abs(viewy);
+		double az = Math.abs(viewz);
+
+		if (ax < ay) {
+			if (ay < az) {
+				// ax < ay < az
+				loop1 = 2;
+				loop2 = 1;
+				loop3 = 0;
+			} else {
+				if (ax < az) {
+					// ax < az <= ay
+					loop1 = 1;
+					loop2 = 2;
+					loop3 = 0;
+				} else {
+					// az <= ax < ay
+					loop1 = 1;
+					loop2 = 0;
+					loop3 = 2;
+				}
+			}
+		} else {
+			if (ax < az) {
+				// ay <= ax < az
+				loop1 = 2;
+				loop2 = 0;
+				loop3 = 1;
+			} else {
+				if (ay < az) {
+					// ay < az <= ax
+					loop1 = 0;
+					loop2 = 2;
+					loop3 = 1;
+				} else {
+					// az <= ay <= ax
+					loop1 = 0;
+					loop2 = 1;
+					loop3 = 2;
+				}
+			}
+		}
+
+		boolean[] increasing = new boolean[3];
+		increasing[0] = true;
+		increasing[1] = true;
+		increasing[2] = true;
+
+		if (viewx < 0) increasing[0] = false;
+		if (viewy < 0) increasing[1] = false;
+		if (viewz < 0) increasing[2] = false;
+
+		for (int i = 0; i < s.grid.getNumCells(loop1); i++) {
+			for (int k = 0; k < s.grid.getNumCells(loop2); k++) {
+				for (int l = 0; l < s.grid.getNumCells(loop3); l++) {
+					pos[loop1] = increasing[loop1] ? i : s.grid.getNumCells(loop1) - i - 1;
+					pos[loop2] = increasing[loop2] ? k : s.grid.getNumCells(loop2) - k - 1;
+					pos[loop3] = increasing[loop3] ? l : s.grid.getNumCells(loop3) - l - 1;
 					int index = s.grid.getCellIndex(pos);
+
+					float x = (float)(as * pos[0]);
+					float y = (float) (as * pos[1]);
+					float z = (float) (as * pos[2]);
 
 					double EfieldSquared = 0.0;
 					double BfieldSquared = 0.0;
