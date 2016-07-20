@@ -129,7 +129,7 @@ public class EnergyDensityVoxelGLPanel extends AnimationGLPanel {
 		float[] previousBlue = new float[s.grid.getNumCells(1)];
 
 		for(int i = 0; i < s.grid.getNumCells(0); i++) {
-			gl2.glBegin( GL2.GL_QUAD_STRIP );
+//			gl2.glBegin( GL2.GL_QUAD_STRIP );
 			for(int k = 0; k < s.grid.getNumCells(1); k++)
 			{
 				//float xstart = (float) (s.grid.getLatticeSpacing() * (i + 0.5) * sx);
@@ -185,17 +185,18 @@ public class EnergyDensityVoxelGLPanel extends AnimationGLPanel {
 				scaleProperties.putValue(EfieldSquared + BfieldSquared);
 
 				if (k > 0) {
-					gl2.glColor3f( previousRed[k], previousGreen[k], previousBlue[k]);
-					gl2.glVertex3f( xstart2, ystart2, heightScale * previousValue[k]);
+//					gl2.glColor3f( previousRed[k], previousGreen[k], previousBlue[k]);
+//					gl2.glVertex3f( xstart2, ystart2, heightScale * previousValue[k]);
 					gl2.glColor3f( red, green, blue);
-					gl2.glVertex3f( xstart3, ystart2, heightScale * (float) value);
+//					gl2.glVertex3f( xstart3, ystart2, heightScale * (float) value);
+					drawCube(gl2, xstart3, ystart2, heightScale * (float) value);
 				}
 				previousValue[k] = (float) value;
 				previousRed[k] = (float) red;
 				previousGreen[k] = (float) green;
 				previousBlue[k] = (float) blue;
 			}
-			gl2.glEnd();
+//			gl2.glEnd();
 		}
 		scaleProperties.calculateAutomaticScale(1.0);
 	}
@@ -227,6 +228,66 @@ public class EnergyDensityVoxelGLPanel extends AnimationGLPanel {
 			super.mouseReleased(e);
 			simulationAnimation.repaint();
 		}
+	}
+
+	/**
+	 * See http://www.tutorialspoint.com/jogl/jogl_3d_cube.htm
+	 * @param gl2
+	 * @param x
+	 * @param y
+	 * @param z
+	 */
+	private void drawCube(GL2 gl2, float x, float y, float z) {
+
+		gl2.glPushMatrix();
+
+		gl2.glTranslatef(x, y, z);
+
+		// Rotate The Cube On X, Y & Z
+		//gl2.glRotatef(rquad, 1.0f, 1.0f, 1.0f);
+
+		// giving different colors to different sides
+		gl2.glBegin(GL2.GL_QUADS); // Start Drawing The Cube
+		gl2.glColor3f(1f, 0f, 0f); // red color
+		gl2.glVertex3f(1.0f, 1.0f, -1.0f); // Top Right Of The Quad (Top)
+		gl2.glVertex3f(-1.0f, 1.0f, -1.0f); // Top Left Of The Quad (Top)
+		gl2.glVertex3f(-1.0f, 1.0f, 1.0f); // Bottom Left Of The Quad (Top)
+		gl2.glVertex3f(1.0f, 1.0f, 1.0f); // Bottom Right Of The Quad (Top)
+
+		gl2.glColor3f(0f, 1f, 0f); // green color
+		gl2.glVertex3f(1.0f, -1.0f, 1.0f); // Top Right Of The Quad
+		gl2.glVertex3f(-1.0f, -1.0f, 1.0f); // Top Left Of The Quad
+		gl2.glVertex3f(-1.0f, -1.0f, -1.0f); // Bottom Left Of The Quad
+		gl2.glVertex3f(1.0f, -1.0f, -1.0f); // Bottom Right Of The Quad
+
+		gl2.glColor3f(0f, 0f, 1f); // blue color
+		gl2.glVertex3f(1.0f, 1.0f, 1.0f); // Top Right Of The Quad (Front)
+		gl2.glVertex3f(-1.0f, 1.0f, 1.0f); // Top Left Of The Quad (Front)
+		gl2.glVertex3f(-1.0f, -1.0f, 1.0f); // Bottom Left Of The Quad
+		gl2.glVertex3f(1.0f, -1.0f, 1.0f); // Bottom Right Of The Quad
+
+		gl2.glColor3f(1f, 1f, 0f); // yellow (red + green)
+		gl2.glVertex3f(1.0f, -1.0f, -1.0f); // Bottom Left Of The Quad
+		gl2.glVertex3f(-1.0f, -1.0f, -1.0f); // Bottom Right Of The Quad
+		gl2.glVertex3f(-1.0f, 1.0f, -1.0f); // Top Right Of The Quad (Back)
+		gl2.glVertex3f(1.0f, 1.0f, -1.0f); // Top Left Of The Quad (Back)
+
+		gl2.glColor3f(1f, 0f, 1f); // purple (red + green)
+		gl2.glVertex3f(-1.0f, 1.0f, 1.0f); // Top Right Of The Quad (Left)
+		gl2.glVertex3f(-1.0f, 1.0f, -1.0f); // Top Left Of The Quad (Left)
+		gl2.glVertex3f(-1.0f, -1.0f, -1.0f); // Bottom Left Of The Quad
+		gl2.glVertex3f(-1.0f, -1.0f, 1.0f); // Bottom Right Of The Quad
+
+		gl2.glColor3f(0f, 1f, 1f); // sky blue (blue +green)
+		gl2.glVertex3f(1.0f, 1.0f, -1.0f); // Top Right Of The Quad (Right)
+		gl2.glVertex3f(1.0f, 1.0f, 1.0f); // Top Left Of The Quad
+		gl2.glVertex3f(1.0f, -1.0f, 1.0f); // Bottom Left Of The Quad
+		gl2.glVertex3f(1.0f, -1.0f, -1.0f); // Bottom Right Of The Quad
+		gl2.glEnd(); // Done Drawing The Quad
+
+		gl2.glPopMatrix();
+
+//		gl2.glFlush();
 	}
 
 	public void addPropertyComponents(Box box) {
