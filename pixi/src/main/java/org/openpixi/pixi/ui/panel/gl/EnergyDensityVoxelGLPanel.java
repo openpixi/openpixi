@@ -27,6 +27,7 @@ import javax.media.opengl.GLAutoDrawable;
 import javax.media.opengl.glu.GLU;
 import javax.swing.Box;
 
+import org.openpixi.pixi.math.AlgebraElement;
 import org.openpixi.pixi.physics.Simulation;
 import org.openpixi.pixi.ui.SimulationAnimation;
 import org.openpixi.pixi.ui.panel.properties.ComboBoxProperties;
@@ -44,13 +45,15 @@ public class EnergyDensityVoxelGLPanel extends AnimationGLPanel {
 	public static final int INDEX_ENERGY_DENSITY_LONGITUDINAL_MAGNETIC = 2;
 	public static final int INDEX_ENERGY_DENSITY_TRANSVERSE_ELECTRIC = 3;
 	public static final int INDEX_ENERGY_DENSITY_TRANSVERSE_MAGNETIC = 4;
+	public static final int INDEX_GAUSS_VIOLATION = 5;
 
 	String[] dataLabel = new String[] {
 			"Energy density",
 			"Energy density longitudinal electric",
 			"Energy density longitudinal magnetic",
 			"Energy density transverse electric",
-			"Energy density transverse magnetic"
+			"Energy density transverse magnetic",
+			"Gauss violation"
 	};
 
 	public static final int RED = 0;
@@ -251,6 +254,8 @@ public class EnergyDensityVoxelGLPanel extends AnimationGLPanel {
 						case INDEX_ENERGY_DENSITY_TRANSVERSE_MAGNETIC:
 							value = getEnergyDensity(s, index, color, 0, false, true, false, true);
 							break;
+						case INDEX_GAUSS_VIOLATION:
+							value = getGaussViolation(s, index, color);
 						}
 					}
 					// Normalize
@@ -340,6 +345,17 @@ public class EnergyDensityVoxelGLPanel extends AnimationGLPanel {
 		color[GREEN] = green;
 		color[BLUE] = blue;
 		return EfieldSquared + BfieldSquared;
+	}
+
+	private double getGaussViolation(Simulation s, int index, double[] color) {
+		AlgebraElement gaussAlg = s.grid.getGaussConstraint(index);
+
+		double value = gaussAlg.square();
+
+		color[RED] = Math.pow(gaussAlg.get(0), 2);
+		color[GREEN] = Math.pow(gaussAlg.get(1), 2);
+		color[BLUE] = Math.pow(gaussAlg.get(2), 2);
+		return value;
 	}
 
 	private int mouseOldX, mouseOldY;
