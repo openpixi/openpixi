@@ -250,7 +250,7 @@ public class EnergyDensityVoxelGLPanel extends AnimationGLPanel {
 
 					gl2.glColor4f( red, green, blue, alpha);
 					if (value >= visibilityThreshold) {
-						drawCube(gl2, x, y, z, (float) as * .5f);
+						drawCube(gl2, x, y, z, (float) as * .5f, (float) viewx, (float) viewy, (float) viewz);
 					}
 				}
 			}
@@ -311,12 +311,10 @@ public class EnergyDensityVoxelGLPanel extends AnimationGLPanel {
 
 	/**
 	 * See http://www.tutorialspoint.com/jogl/jogl_3d_cube.htm
-	 * @param gl2
-	 * @param x
-	 * @param y
-	 * @param z
+	 *
+	 * Only draw visible sides (approximately)
 	 */
-	private void drawCube(GL2 gl2, float x, float y, float z, float size) {
+	private void drawCube(GL2 gl2, float x, float y, float z, float size, float viewx, float viewy, float viewz) {
 
 		gl2.glPushMatrix();
 
@@ -324,35 +322,43 @@ public class EnergyDensityVoxelGLPanel extends AnimationGLPanel {
 		gl2.glScalef(size,  size, size);
 
 		gl2.glBegin(GL2.GL_QUADS); // Start Drawing The Cube
-		gl2.glVertex3f(1.0f, 1.0f, -1.0f); // Top Right Of The Quad (Top)
-		gl2.glVertex3f(-1.0f, 1.0f, -1.0f); // Top Left Of The Quad (Top)
-		gl2.glVertex3f(-1.0f, 1.0f, 1.0f); // Bottom Left Of The Quad (Top)
-		gl2.glVertex3f(1.0f, 1.0f, 1.0f); // Bottom Right Of The Quad (Top)
 
-		gl2.glVertex3f(1.0f, -1.0f, 1.0f); // Top Right Of The Quad
-		gl2.glVertex3f(-1.0f, -1.0f, 1.0f); // Top Left Of The Quad
-		gl2.glVertex3f(-1.0f, -1.0f, -1.0f); // Bottom Left Of The Quad
-		gl2.glVertex3f(1.0f, -1.0f, -1.0f); // Bottom Right Of The Quad
+		if (viewx > 0) {
+			gl2.glVertex3f(1.0f, 1.0f, -1.0f); // Top Right Of The Quad (Right)
+			gl2.glVertex3f(1.0f, 1.0f, 1.0f); // Top Left Of The Quad
+			gl2.glVertex3f(1.0f, -1.0f, 1.0f); // Bottom Left Of The Quad
+			gl2.glVertex3f(1.0f, -1.0f, -1.0f); // Bottom Right Of The Quad
+		} else {
+			gl2.glVertex3f(-1.0f, 1.0f, 1.0f); // Top Right Of The Quad (Left)
+			gl2.glVertex3f(-1.0f, 1.0f, -1.0f); // Top Left Of The Quad (Left)
+			gl2.glVertex3f(-1.0f, -1.0f, -1.0f); // Bottom Left Of The Quad
+			gl2.glVertex3f(-1.0f, -1.0f, 1.0f); // Bottom Right Of The Quad
+		}
 
-		gl2.glVertex3f(1.0f, 1.0f, 1.0f); // Top Right Of The Quad (Front)
-		gl2.glVertex3f(-1.0f, 1.0f, 1.0f); // Top Left Of The Quad (Front)
-		gl2.glVertex3f(-1.0f, -1.0f, 1.0f); // Bottom Left Of The Quad
-		gl2.glVertex3f(1.0f, -1.0f, 1.0f); // Bottom Right Of The Quad
+		if (viewy > 0) {
+			gl2.glVertex3f(1.0f, 1.0f, -1.0f); // Top Right Of The Quad (Top)
+			gl2.glVertex3f(-1.0f, 1.0f, -1.0f); // Top Left Of The Quad (Top)
+			gl2.glVertex3f(-1.0f, 1.0f, 1.0f); // Bottom Left Of The Quad (Top)
+			gl2.glVertex3f(1.0f, 1.0f, 1.0f); // Bottom Right Of The Quad (Top)
+		} else {
+			gl2.glVertex3f(1.0f, -1.0f, 1.0f); // Top Right Of The Quad
+			gl2.glVertex3f(-1.0f, -1.0f, 1.0f); // Top Left Of The Quad
+			gl2.glVertex3f(-1.0f, -1.0f, -1.0f); // Bottom Left Of The Quad
+			gl2.glVertex3f(1.0f, -1.0f, -1.0f); // Bottom Right Of The Quad
+		}
 
-		gl2.glVertex3f(1.0f, -1.0f, -1.0f); // Bottom Left Of The Quad
-		gl2.glVertex3f(-1.0f, -1.0f, -1.0f); // Bottom Right Of The Quad
-		gl2.glVertex3f(-1.0f, 1.0f, -1.0f); // Top Right Of The Quad (Back)
-		gl2.glVertex3f(1.0f, 1.0f, -1.0f); // Top Left Of The Quad (Back)
+		if (viewz > 0) {
+			gl2.glVertex3f(1.0f, 1.0f, 1.0f); // Top Right Of The Quad (Front)
+			gl2.glVertex3f(-1.0f, 1.0f, 1.0f); // Top Left Of The Quad (Front)
+			gl2.glVertex3f(-1.0f, -1.0f, 1.0f); // Bottom Left Of The Quad
+			gl2.glVertex3f(1.0f, -1.0f, 1.0f); // Bottom Right Of The Quad
+		} else {
+			gl2.glVertex3f(1.0f, -1.0f, -1.0f); // Bottom Left Of The Quad
+			gl2.glVertex3f(-1.0f, -1.0f, -1.0f); // Bottom Right Of The Quad
+			gl2.glVertex3f(-1.0f, 1.0f, -1.0f); // Top Right Of The Quad (Back)
+			gl2.glVertex3f(1.0f, 1.0f, -1.0f); // Top Left Of The Quad (Back)
+		}
 
-		gl2.glVertex3f(-1.0f, 1.0f, 1.0f); // Top Right Of The Quad (Left)
-		gl2.glVertex3f(-1.0f, 1.0f, -1.0f); // Top Left Of The Quad (Left)
-		gl2.glVertex3f(-1.0f, -1.0f, -1.0f); // Bottom Left Of The Quad
-		gl2.glVertex3f(-1.0f, -1.0f, 1.0f); // Bottom Right Of The Quad
-
-		gl2.glVertex3f(1.0f, 1.0f, -1.0f); // Top Right Of The Quad (Right)
-		gl2.glVertex3f(1.0f, 1.0f, 1.0f); // Top Left Of The Quad
-		gl2.glVertex3f(1.0f, -1.0f, 1.0f); // Bottom Left Of The Quad
-		gl2.glVertex3f(1.0f, -1.0f, -1.0f); // Bottom Right Of The Quad
 		gl2.glEnd(); // Done Drawing The Quad
 
 		gl2.glPopMatrix();
