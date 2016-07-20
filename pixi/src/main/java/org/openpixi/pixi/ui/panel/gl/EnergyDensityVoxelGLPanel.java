@@ -29,6 +29,7 @@ import javax.swing.Box;
 
 import org.openpixi.pixi.physics.Simulation;
 import org.openpixi.pixi.ui.SimulationAnimation;
+import org.openpixi.pixi.ui.panel.properties.ComboBoxProperties;
 import org.openpixi.pixi.ui.panel.properties.DoubleProperties;
 import org.openpixi.pixi.ui.panel.properties.ScaleProperties;
 
@@ -38,6 +39,19 @@ import org.openpixi.pixi.ui.panel.properties.ScaleProperties;
  */
 public class EnergyDensityVoxelGLPanel extends AnimationGLPanel {
 
+	public static final int INDEX_ENERGY_DENSITY = 0;
+	public static final int INDEX_ENERGY_DENSITY_LONGITUDINAL_ELECTRIC = 1;
+
+	String[] dataLabel = new String[] {
+			"Energy density",
+			"Energy density longitudinal electric"
+	};
+
+	public static final int RED = 0;
+	public static final int GREEN = 1;
+	public static final int BLUE = 2;
+
+	public ComboBoxProperties dataProperties;
 	public ScaleProperties scaleProperties;
 	public DoubleProperties visibilityThresholdProperties;
 	public DoubleProperties opacityProperties;
@@ -55,6 +69,7 @@ public class EnergyDensityVoxelGLPanel extends AnimationGLPanel {
 	/** Constructor */
 	public EnergyDensityVoxelGLPanel(SimulationAnimation simulationAnimation) {
 		super(simulationAnimation);
+		dataProperties = new ComboBoxProperties(simulationAnimation, "Data", dataLabel, 0);
 		scaleProperties = new ScaleProperties(simulationAnimation);
 		visibilityThresholdProperties = new DoubleProperties(simulationAnimation, "Visibility threshold", 0.0);
 		opacityProperties = new DoubleProperties(simulationAnimation, "Opacity", 1);
@@ -87,6 +102,8 @@ public class EnergyDensityVoxelGLPanel extends AnimationGLPanel {
 
 		// coordinate system origin at lower left with width and height same as the window
 		GLU glu = new GLU();
+
+		int dataIndex = dataProperties.getIndex();
 
 		double scale = scaleProperties.getScale();
 		scaleProperties.resetAutomaticScale();
@@ -134,8 +151,6 @@ public class EnergyDensityVoxelGLPanel extends AnimationGLPanel {
 		for(int w = 2; w < s.getNumberOfDimensions(); w++) {
 			pos[w] = s.grid.getNumCells(w)/2;
 		}
-
-		double colors = s.grid.getNumberOfColors();
 
 		// Determine order of drawing which is important for transparent drawing
 		int loop1 = 0; // outermost loop
@@ -195,6 +210,8 @@ public class EnergyDensityVoxelGLPanel extends AnimationGLPanel {
 		if (viewy < 0) increasing[1] = false;
 		if (viewz < 0) increasing[2] = false;
 
+		double[] color = new double[3];
+
 		for (int i = 0; i < s.grid.getNumCells(loop1); i++) {
 			for (int k = 0; k < s.grid.getNumCells(loop2); k++) {
 				for (int l = 0; l < s.grid.getNumCells(loop3); l++) {
@@ -207,51 +224,35 @@ public class EnergyDensityVoxelGLPanel extends AnimationGLPanel {
 					float y = (float) (as * pos[1]);
 					float z = (float) (as * pos[2]);
 
-					double EfieldSquared = 0.0;
-					double BfieldSquared = 0.0;
-					float red = 0;
-					float green = 0;
-					float blue = 0;
-					float alpha = 0;
+					double value = 0;
+					color[RED] = 0;
+					color[GREEN] = 0;
+					color[BLUE] = 0;
+					double alpha = 0;
 					if(s.grid.isEvaluatable(index)) {
-						for (int w = 0; w < s.getNumberOfDimensions(); w++) {
-							EfieldSquared += s.grid.getEsquaredFromLinks(index, w) / (as * g * as * g) / 2;
-							// Time averaging for B field.
-							BfieldSquared += s.grid.getBsquaredFromLinks(index, w, 0) / (as * g * as * g) / 4.0;
-							BfieldSquared += s.grid.getBsquaredFromLinks(index, w, 1) / (as * g * as * g) / 4.0;
-							// get color:
-							double color;
-							for (int n = 0; n < colors * colors - 1; n++) {
-								color = s.grid.getE(index, w).get(n);
-								// cycle through colors if there are more than three
-								switch (n % 3) {
-									case 0:
-										red += color * color;
-										break;
-									case 1:
-										green += color * color;
-										break;
-									case 2:
-										blue += color * color;
-										break;
-								}
-							}
+						switch(dataIndex) {
+						case INDEX_ENERGY_DENSITY:
+							value = getEnergyDensity(s, index, color);
+							break;
+						case INDEX_ENERGY_DENSITY_LONGITUDINAL_ELECTRIC:
+							value = getEnergyDensityLongitudinalElectric(s, index, color, 0);
+							break;
 						}
 					}
 					// Normalize
-					double norm = Math.max(red + green + blue, 10E-20);
-					float value = (float) Math.min(1, scale * (EfieldSquared + BfieldSquared));
+					double norm = Math.max(color[RED] + color[GREEN] + color[BLUE], 10E-20);
+					double limitedValue = Math.min(1, scale * Math.abs(value));
 
 					// Set color according to E-field, and transparency according
 					// to total energy density:
-					red = (float) Math.sqrt(red / norm);
-					green = (float) Math.sqrt(green / norm);
-					blue = (float) Math.sqrt(blue / norm);
-					alpha = value * (float) opacity;
+					color[RED] = Math.sqrt(color[RED] / norm);
+					color[GREEN] = Math.sqrt(color[GREEN] / norm);
+					color[BLUE] = Math.sqrt(color[BLUE] / norm);
+					alpha = limitedValue * opacity;
 
-					scaleProperties.putValue(EfieldSquared + BfieldSquared);
+					scaleProperties.putValue(value);
 
-					gl2.glColor4f( red, green, blue, alpha);
+					gl2.glColor4d( color[RED], color[GREEN], color[BLUE], alpha);
 					if (value >= visibilityThreshold) {
 						drawCube(gl2, x, y, z, (float) as * .5f, (float) viewx, (float) viewy, (float) viewz);
 					}
@@ -259,6 +260,87 @@ public class EnergyDensityVoxelGLPanel extends AnimationGLPanel {
 			}
 		}
 		scaleProperties.calculateAutomaticScale(1.0);
+	}
+
+	private double getEnergyDensity(Simulation s, int index, double[] color) {
+		float red = 0;
+		float green = 0;
+		float blue = 0;
+
+		double EfieldSquared = 0.0;
+		double BfieldSquared = 0.0;
+
+		// Lattice spacing and coupling constant
+		double as = s.grid.getLatticeSpacing();
+		double g = s.getCouplingConstant();
+
+		double colors = s.grid.getNumberOfColors();
+
+		for (int w = 0; w < s.getNumberOfDimensions(); w++) {
+			EfieldSquared += s.grid.getEsquaredFromLinks(index, w) / (as * g * as * g) / 2;
+			// Time averaging for B field.
+			BfieldSquared += s.grid.getBsquaredFromLinks(index, w, 0) / (as * g * as * g) / 4.0;
+			BfieldSquared += s.grid.getBsquaredFromLinks(index, w, 1) / (as * g * as * g) / 4.0;
+			// get color:
+			double c;
+			for (int n = 0; n < colors * colors - 1; n++) {
+				c = s.grid.getE(index, w).get(n);
+				// cycle through colors if there are more than three
+				switch (n % 3) {
+					case 0:
+						red += c * c;
+						break;
+					case 1:
+						green += c * c;
+						break;
+					case 2:
+						blue += c * c;
+						break;
+				}
+			}
+		}
+		color[RED] = red;
+		color[GREEN] = green;
+		color[BLUE] = blue;
+		return EfieldSquared + BfieldSquared;
+	}
+
+	private double getEnergyDensityLongitudinalElectric(Simulation s, int index, double[] color, int direction) {
+		float red = 0;
+		float green = 0;
+		float blue = 0;
+
+		double EfieldSquared = 0.0;
+		double BfieldSquared = 0.0;
+
+		// Lattice spacing and coupling constant
+		double as = s.grid.getLatticeSpacing();
+		double g = s.getCouplingConstant();
+
+		double colors = s.grid.getNumberOfColors();
+
+		EfieldSquared += s.grid.getEsquaredFromLinks(index, direction) / (as * g * as * g) / 2;
+		// get color:
+		double c;
+		for (int n = 0; n < colors * colors - 1; n++) {
+			c = s.grid.getE(index, direction).get(n);
+			// cycle through colors if there are more than three
+			switch (n % 3) {
+				case 0:
+					red += c * c;
+					break;
+				case 1:
+					green += c * c;
+					break;
+				case 2:
+					blue += c * c;
+					break;
+			}
+		}
+		color[RED] = red;
+		color[GREEN] = green;
+		color[BLUE] = blue;
+		return EfieldSquared + BfieldSquared;
 	}
 
 	private int mouseOldX, mouseOldY;
@@ -369,6 +451,7 @@ public class EnergyDensityVoxelGLPanel extends AnimationGLPanel {
 
 	public void addPropertyComponents(Box box) {
 		addLabel(box, "Energy density 2D (OpenGL) panel");
+		dataProperties.addComponents(box);
 		scaleProperties.addComponents(box);
 		visibilityThresholdProperties.addComponents(box);
 		opacityProperties.addComponents(box);
