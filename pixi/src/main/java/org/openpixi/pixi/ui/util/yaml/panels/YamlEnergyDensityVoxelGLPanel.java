@@ -11,8 +11,9 @@ public class YamlEnergyDensityVoxelGLPanel {
 	public Double scaleFactor;
 	public Boolean automaticScaling;
 
-	// Visibility threshold property
+	// Double properties
 	public Double visibilityThreshold;
+	public Double opacity;
 
 	// Projection properties
 	public Double phi;
@@ -34,6 +35,7 @@ public class YamlEnergyDensityVoxelGLPanel {
 			scaleFactor = panel.scaleProperties.getScaleFactor();
 			automaticScaling = panel.scaleProperties.getAutomaticScaling();
 			visibilityThreshold = panel.visibilityThresholdProperties.getValue();
+			opacity = panel.opacityProperties.getValue();
 			phi = panel.phi;
 			theta = panel.theta;
 			centerx = panel.centerx;
@@ -57,6 +59,10 @@ public class YamlEnergyDensityVoxelGLPanel {
 
 		if (visibilityThreshold != null) {
 			panel.visibilityThresholdProperties.setValue(visibilityThreshold);
+		}
+
+		if (opacity != null) {
+			panel.opacityProperties.setValue(opacity);
 		}
 
 		if (phi != null) {

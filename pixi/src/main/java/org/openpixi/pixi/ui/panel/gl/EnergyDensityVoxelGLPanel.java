@@ -40,6 +40,7 @@ public class EnergyDensityVoxelGLPanel extends AnimationGLPanel {
 
 	public ScaleProperties scaleProperties;
 	public DoubleProperties visibilityThresholdProperties;
+	public DoubleProperties opacityProperties;
 
 	public double phi;
 	public double theta;
@@ -55,7 +56,8 @@ public class EnergyDensityVoxelGLPanel extends AnimationGLPanel {
 	public EnergyDensityVoxelGLPanel(SimulationAnimation simulationAnimation) {
 		super(simulationAnimation);
 		scaleProperties = new ScaleProperties(simulationAnimation);
-		visibilityThresholdProperties = new DoubleProperties(simulationAnimation, "Visibility threshold", 0.5);
+		visibilityThresholdProperties = new DoubleProperties(simulationAnimation, "Visibility threshold", 0.0);
+		opacityProperties = new DoubleProperties(simulationAnimation, "Opacity", 1);
 
 		MouseListener l = new MouseListener();
 		addMouseListener(l);
@@ -91,6 +93,7 @@ public class EnergyDensityVoxelGLPanel extends AnimationGLPanel {
 		Simulation s = getSimulationAnimation().getSimulation();
 
 		double visibilityThreshold = visibilityThresholdProperties.getValue();
+		double opacity = opacityProperties.getValue();
 
 		// Perspective.
 		float sizex = (float) s.getSimulationBoxSize(0);
@@ -244,7 +247,7 @@ public class EnergyDensityVoxelGLPanel extends AnimationGLPanel {
 					red = (float) Math.sqrt(red / norm);
 					green = (float) Math.sqrt(green / norm);
 					blue = (float) Math.sqrt(blue / norm);
-					alpha = value;
+					alpha = value * (float) opacity;
 
 					scaleProperties.putValue(EfieldSquared + BfieldSquared);
 
@@ -368,5 +371,6 @@ public class EnergyDensityVoxelGLPanel extends AnimationGLPanel {
 		addLabel(box, "Energy density 2D (OpenGL) panel");
 		scaleProperties.addComponents(box);
 		visibilityThresholdProperties.addComponents(box);
+		opacityProperties.addComponents(box);
 	}
 }
