@@ -375,7 +375,11 @@ public class EnergyDensityVoxelGLPanel extends AnimationGLPanel {
 			if (e.isControlDown()) {
 				// Change distance (Ctrl key)
 				double factor = 0.01;
+				double prevDistanceFactor = distanceFactor;
 				distanceFactor -= factor * deltaY;
+				if (distanceFactor <= 0) {
+					distanceFactor = prevDistanceFactor;
+				}
 			} else if (e.isShiftDown()) {
 				// Translate scene (Shift key)
 				double factor = 0.1;
@@ -395,7 +399,11 @@ public class EnergyDensityVoxelGLPanel extends AnimationGLPanel {
 				// Rotate scene
 				double factor = 0.01;
 				phi -= factor * deltaX;
+				double oldTheta = theta;
 				theta -= factor * deltaY;
+				if ((theta <= 0) || (theta > Math.PI)) {
+					theta = oldTheta;
+				}
 			}
 			mouseOldX = e.getX();
 			mouseOldY = e.getY();
