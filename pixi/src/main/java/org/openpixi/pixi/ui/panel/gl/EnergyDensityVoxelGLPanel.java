@@ -29,6 +29,7 @@ import javax.swing.Box;
 
 import org.openpixi.pixi.physics.Simulation;
 import org.openpixi.pixi.ui.SimulationAnimation;
+import org.openpixi.pixi.ui.panel.properties.DoubleProperties;
 import org.openpixi.pixi.ui.panel.properties.ScaleProperties;
 
 
@@ -38,6 +39,7 @@ import org.openpixi.pixi.ui.panel.properties.ScaleProperties;
 public class EnergyDensityVoxelGLPanel extends AnimationGLPanel {
 
 	public ScaleProperties scaleProperties;
+	public DoubleProperties visibilityThresholdProperties;
 
 	public double phi;
 	public double theta;
@@ -52,6 +54,7 @@ public class EnergyDensityVoxelGLPanel extends AnimationGLPanel {
 	public EnergyDensityVoxelGLPanel(SimulationAnimation simulationAnimation) {
 		super(simulationAnimation);
 		scaleProperties = new ScaleProperties(simulationAnimation);
+		visibilityThresholdProperties = new DoubleProperties(simulationAnimation, "Visibility threshold", 0.5);
 
 		MouseListener l = new MouseListener();
 		addMouseListener(l);
@@ -86,6 +89,8 @@ public class EnergyDensityVoxelGLPanel extends AnimationGLPanel {
 		double scale = scaleProperties.getScale();
 		scaleProperties.resetAutomaticScale();
 		Simulation s = getSimulationAnimation().getSimulation();
+
+		double visibilityThreshold = visibilityThresholdProperties.getValue();
 
 		// Perspective.
 		float sizex = (float) s.getSimulationBoxSize(0);
@@ -180,8 +185,8 @@ public class EnergyDensityVoxelGLPanel extends AnimationGLPanel {
 					scaleProperties.putValue(EfieldSquared + BfieldSquared);
 
 					gl2.glColor3f( red, green, blue);
-					if (value > 0.4) {
-						drawCube(gl2, x, y, z, (float) as*.5f);
+					if (value >= visibilityThreshold) {
+						drawCube(gl2, x, y, z, (float) as * .5f);
 					}
 				}
 			}
@@ -270,5 +275,6 @@ public class EnergyDensityVoxelGLPanel extends AnimationGLPanel {
 	public void addPropertyComponents(Box box) {
 		addLabel(box, "Energy density 2D (OpenGL) panel");
 		scaleProperties.addComponents(box);
+		visibilityThresholdProperties.addComponents(box);
 	}
 }
