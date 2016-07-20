@@ -44,6 +44,10 @@ public class EnergyDensityVoxelGLPanel extends AnimationGLPanel {
 	public double phi;
 	public double theta;
 
+	public double centerx;
+	public double centery;
+	public double centerz;
+
 	/** Distance of viewer */
 	public double distanceFactor;
 
@@ -111,12 +115,12 @@ public class EnergyDensityVoxelGLPanel extends AnimationGLPanel {
 				1, // distance to near clipping plane
 				2.5 * size); // distance to far clipping plane
 		glu.gluLookAt(
-				sizex / 2 + distance * Math.cos(phi) * Math.sin(theta), // where we stand
-				sizey / 2 + distance * Math.sin(phi) * Math.sin(theta),
-				sizez / 2 + distance * Math.cos(theta),
-				sizex / 2, // where we are viewing at
-				sizey / 2,
-				sizez / 2,
+				centerx + sizex / 2 + distance * Math.cos(phi) * Math.sin(theta), // where we stand
+				centery + sizey / 2 + distance * Math.sin(phi) * Math.sin(theta),
+				centerz + sizez / 2 + distance * Math.cos(theta),
+				centerx + sizex / 2, // where we are viewing at
+				centery + sizey / 2,
+				centerz + sizez / 2,
 				0, 0, 1); // "up" direction
 
 		// Lattice spacing and coupling constant
@@ -209,10 +213,26 @@ public class EnergyDensityVoxelGLPanel extends AnimationGLPanel {
 			double deltaX = e.getX() - mouseOldX;
 			double deltaY = e.getY() - mouseOldY;
 			if (e.isControlDown()) {
+				// Change distance (Ctrl key)
 				double factor = 0.01;
 				distanceFactor -= factor * deltaY;
+			} else if (e.isShiftDown()) {
+				// Translate scene (Shift key)
+				double factor = 0.1;
+				double shiftphi = factor * deltaX;
+				double shifttheta = factor * deltaY;
+				double vectorphix = shiftphi * Math.sin(phi);
+				double vectorphiy = -shiftphi * Math.cos(phi);
+				double vectorphiz = 0;
+				double vectorthetax = -shifttheta * Math.cos(phi) * Math.cos(theta);
+				double vectorthetay = -shifttheta * Math.sin(phi) * Math.cos(theta);
+				double vectorthetaz = shifttheta * Math.sin(theta);
+				centerx += vectorphix + vectorthetax;
+				centery += vectorphiy + vectorthetay;
+				centerz += vectorphiz + vectorthetaz;
 			} else {
-				// No modifiers used
+				// No modifiers used:
+				// Rotate scene
 				double factor = 0.01;
 				phi -= factor * deltaX;
 				theta -= factor * deltaY;
