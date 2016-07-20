@@ -88,7 +88,10 @@ public class EnergyDensityVoxelGLPanel extends AnimationGLPanel {
 		Simulation s = getSimulationAnimation().getSimulation();
 
 		// Perspective.
-		float size = (float) Math.max(s.getWidth(), s.getHeight());
+		float sizex = (float) s.getSimulationBoxSize(0);
+		float sizey = (float) s.getSimulationBoxSize(1);
+		float sizez = (float) s.getSimulationBoxSize(2);
+		float size = Math.max(Math.max(sizex, sizey), sizez);
 		float distance = (float) distanceFactor * size;
 		float widthHeightRatio = (float) width / (float) height;
 
@@ -103,14 +106,13 @@ public class EnergyDensityVoxelGLPanel extends AnimationGLPanel {
 				1, // distance to near clipping plane
 				2.5 * size); // distance to far clipping plane
 		glu.gluLookAt(
-				s.getWidth() / 2 + distance * Math.cos(phi) * Math.sin(theta), s.getHeight() / 2 + distance * Math.sin(phi) * Math.sin(theta), distance * Math.cos(theta), // where we stand
-				s.getWidth() / 2, s.getHeight() / 2, 0, // where we are viewing at
+				sizex / 2 + distance * Math.cos(phi) * Math.sin(theta), // where we stand
+				sizey / 2 + distance * Math.sin(phi) * Math.sin(theta),
+				sizez / 2 + distance * Math.cos(theta),
+				sizex / 2, // where we are viewing at
+				sizey / 2,
+				sizez / 2,
 				0, 0, 1); // "up" direction
-
-		/** Scaling factor for the displayed panel in x-direction*/
-		double sx = 1; //getWidth() / s.getWidth();
-		/** Scaling factor for the displayed panel in y-direction*/
-		double sy = 1; //getHeight() / s.getHeight();
 
 		// Lattice spacing and coupling constant
 		double as = s.grid.getLatticeSpacing();
@@ -123,80 +125,66 @@ public class EnergyDensityVoxelGLPanel extends AnimationGLPanel {
 
 		double colors = s.grid.getNumberOfColors();
 
-		float[] previousValue = new float[s.grid.getNumCells(1)];
-		float[] previousRed = new float[s.grid.getNumCells(1)];
-		float[] previousGreen = new float[s.grid.getNumCells(1)];
-		float[] previousBlue = new float[s.grid.getNumCells(1)];
+		for (int i = 0; i < s.grid.getNumCells(0); i++) {
+			for (int k = 0; k < s.grid.getNumCells(1); k++) {
+				for (int l = 0; l < s.grid.getNumCells(2); l++) {
+					float x = (float)(as * i);
+					float y = (float) (as * k);
+					float z = (float) (as * l);
 
-		for(int i = 0; i < s.grid.getNumCells(0); i++) {
-//			gl2.glBegin( GL2.GL_QUAD_STRIP );
-			for(int k = 0; k < s.grid.getNumCells(1); k++)
-			{
-				//float xstart = (float) (s.grid.getLatticeSpacing() * (i + 0.5) * sx);
-				float xstart2 = (float)(s.grid.getLatticeSpacing() * i * sx);
-				float xstart3 = (float)(s.grid.getLatticeSpacing() * (i + 1) * sx);
-				//float ystart = (float) (s.grid.getLatticeSpacing() * (k + 0.5) * sy);
-				float ystart2 = (float) (s.grid.getLatticeSpacing() * k * sy);
+					pos[0] = i;
+					pos[1] = k;
+					pos[2] = l;
+					int index = s.grid.getCellIndex(pos);
 
-				pos[0] = i;
-				pos[1] = k;
-				int index = s.grid.getCellIndex(pos);
-
-				double EfieldSquared = 0.0;
-				double BfieldSquared = 0.0;
-				float red = 0;
-				float green = 0;
-				float blue = 0;
-				if(s.grid.isEvaluatable(index)) {
-					for (int w = 0; w < s.getNumberOfDimensions(); w++) {
-						EfieldSquared += s.grid.getEsquaredFromLinks(index, w) / (as * g * as * g) / 2;
-						// Time averaging for B field.
-						BfieldSquared += s.grid.getBsquaredFromLinks(index, w, 0) / (as * g * as * g) / 4.0;
-						BfieldSquared += s.grid.getBsquaredFromLinks(index, w, 1) / (as * g * as * g) / 4.0;
-						// get color:
-						double color;
-						for (int n = 0; n < colors * colors - 1; n++) {
-							color = s.grid.getE(index, w).get(n);
-							// cycle through colors if there are more than three
-							switch (n % 3) {
-								case 0:
-									red += color * color;
-									break;
-								case 1:
-									green += color * color;
-									break;
-								case 2:
-									blue += color * color;
-									break;
+					double EfieldSquared = 0.0;
+					double BfieldSquared = 0.0;
+					float red = 0;
+					float green = 0;
+					float blue = 0;
+					if(s.grid.isEvaluatable(index)) {
+						for (int w = 0; w < s.getNumberOfDimensions(); w++) {
+							EfieldSquared += s.grid.getEsquaredFromLinks(index, w) / (as * g * as * g) / 2;
+							// Time averaging for B field.
+							BfieldSquared += s.grid.getBsquaredFromLinks(index, w, 0) / (as * g * as * g) / 4.0;
+							BfieldSquared += s.grid.getBsquaredFromLinks(index, w, 1) / (as * g * as * g) / 4.0;
+							// get color:
+							double color;
+							for (int n = 0; n < colors * colors - 1; n++) {
+								color = s.grid.getE(index, w).get(n);
+								// cycle through colors if there are more than three
+								switch (n % 3) {
+									case 0:
+										red += color * color;
+										break;
+									case 1:
+										green += color * color;
+										break;
+									case 2:
+										blue += color * color;
+										break;
+								}
 							}
 						}
 					}
-				}
-				// Normalize
-				double norm = Math.max(red + green + blue, 10E-20);
-				float value = (float) Math.min(1, scale * (EfieldSquared + BfieldSquared));
+					// Normalize
+					double norm = Math.max(red + green + blue, 10E-20);
+					float value = (float) Math.min(1, scale * (EfieldSquared + BfieldSquared));
 
-				// Set color according to E-field, and brightness according
-				// to total energy density:
-				red = (float) Math.sqrt(red / norm) * value;
-				green = (float) Math.sqrt(green / norm) * value;
-				blue = (float) Math.sqrt(blue / norm) * value;
+					// Set color according to E-field, and brightness according
+					// to total energy density:
+					red = (float) Math.sqrt(red / norm) * value;
+					green = (float) Math.sqrt(green / norm) * value;
+					blue = (float) Math.sqrt(blue / norm) * value;
 
-				scaleProperties.putValue(EfieldSquared + BfieldSquared);
+					scaleProperties.putValue(EfieldSquared + BfieldSquared);
 
-				if (k > 0) {
-//					gl2.glColor3f( previousRed[k], previousGreen[k], previousBlue[k]);
-//					gl2.glVertex3f( xstart2, ystart2, heightScale * previousValue[k]);
 					gl2.glColor3f( red, green, blue);
-//					gl2.glVertex3f( xstart3, ystart2, heightScale * (float) value);
-					drawCube(gl2, xstart3, ystart2, heightScale * (float) value);
+					if (value > 0.4) {
+						drawCube(gl2, x, y, z, (float) as*.5f);
+					}
 				}
-				previousValue[k] = (float) value;
-				previousRed[k] = (float) red;
-				previousGreen[k] = (float) green;
-				previousBlue[k] = (float) blue;
 			}
-//			gl2.glEnd();
 		}
 		scaleProperties.calculateAutomaticScale(1.0);
 	}
@@ -237,48 +225,39 @@ public class EnergyDensityVoxelGLPanel extends AnimationGLPanel {
 	 * @param y
 	 * @param z
 	 */
-	private void drawCube(GL2 gl2, float x, float y, float z) {
+	private void drawCube(GL2 gl2, float x, float y, float z, float size) {
 
 		gl2.glPushMatrix();
 
 		gl2.glTranslatef(x, y, z);
+		gl2.glScalef(size,  size, size);
 
-		// Rotate The Cube On X, Y & Z
-		//gl2.glRotatef(rquad, 1.0f, 1.0f, 1.0f);
-
-		// giving different colors to different sides
 		gl2.glBegin(GL2.GL_QUADS); // Start Drawing The Cube
-		gl2.glColor3f(1f, 0f, 0f); // red color
 		gl2.glVertex3f(1.0f, 1.0f, -1.0f); // Top Right Of The Quad (Top)
 		gl2.glVertex3f(-1.0f, 1.0f, -1.0f); // Top Left Of The Quad (Top)
 		gl2.glVertex3f(-1.0f, 1.0f, 1.0f); // Bottom Left Of The Quad (Top)
 		gl2.glVertex3f(1.0f, 1.0f, 1.0f); // Bottom Right Of The Quad (Top)
 
-		gl2.glColor3f(0f, 1f, 0f); // green color
 		gl2.glVertex3f(1.0f, -1.0f, 1.0f); // Top Right Of The Quad
 		gl2.glVertex3f(-1.0f, -1.0f, 1.0f); // Top Left Of The Quad
 		gl2.glVertex3f(-1.0f, -1.0f, -1.0f); // Bottom Left Of The Quad
 		gl2.glVertex3f(1.0f, -1.0f, -1.0f); // Bottom Right Of The Quad
 
-		gl2.glColor3f(0f, 0f, 1f); // blue color
 		gl2.glVertex3f(1.0f, 1.0f, 1.0f); // Top Right Of The Quad (Front)
 		gl2.glVertex3f(-1.0f, 1.0f, 1.0f); // Top Left Of The Quad (Front)
 		gl2.glVertex3f(-1.0f, -1.0f, 1.0f); // Bottom Left Of The Quad
 		gl2.glVertex3f(1.0f, -1.0f, 1.0f); // Bottom Right Of The Quad
 
-		gl2.glColor3f(1f, 1f, 0f); // yellow (red + green)
 		gl2.glVertex3f(1.0f, -1.0f, -1.0f); // Bottom Left Of The Quad
 		gl2.glVertex3f(-1.0f, -1.0f, -1.0f); // Bottom Right Of The Quad
 		gl2.glVertex3f(-1.0f, 1.0f, -1.0f); // Top Right Of The Quad (Back)
 		gl2.glVertex3f(1.0f, 1.0f, -1.0f); // Top Left Of The Quad (Back)
 
-		gl2.glColor3f(1f, 0f, 1f); // purple (red + green)
 		gl2.glVertex3f(-1.0f, 1.0f, 1.0f); // Top Right Of The Quad (Left)
 		gl2.glVertex3f(-1.0f, 1.0f, -1.0f); // Top Left Of The Quad (Left)
 		gl2.glVertex3f(-1.0f, -1.0f, -1.0f); // Bottom Left Of The Quad
 		gl2.glVertex3f(-1.0f, -1.0f, 1.0f); // Bottom Right Of The Quad
 
-		gl2.glColor3f(0f, 1f, 1f); // sky blue (blue +green)
 		gl2.glVertex3f(1.0f, 1.0f, -1.0f); // Top Right Of The Quad (Right)
 		gl2.glVertex3f(1.0f, 1.0f, 1.0f); // Top Left Of The Quad
 		gl2.glVertex3f(1.0f, -1.0f, 1.0f); // Bottom Left Of The Quad
@@ -286,8 +265,6 @@ public class EnergyDensityVoxelGLPanel extends AnimationGLPanel {
 		gl2.glEnd(); // Done Drawing The Quad
 
 		gl2.glPopMatrix();
-
-//		gl2.glFlush();
 	}
 
 	public void addPropertyComponents(Box box) {
