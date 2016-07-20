@@ -66,7 +66,8 @@ To launch Pixi in Eclipse ( http://www.eclipse.org/ ) do the following:
 	git clone git://github.com/openpixi/openpixi.git
 2) Open Eclipse and go to Help > Install New Software
 3) Choose "All Available Sites" from the dropdown menu
-4) Search for "m2e", choose the desired result (Maven integration) and press finish
+4) Search for "m2e", choose the desired result
+   ("m2e - Extensions Development Support") and press finish
 5) File > Import > Maven > Existing Maven Projects
 6) Select the local folder that you have chosen previously
 
@@ -97,8 +98,8 @@ Version 1.0 - June 1, 2016
 ---
 Version 0.5 - May 29, 2013
 
-* Ditributed version of OpenPixi which uses IBIS framework for communication
-* Framework for throurough testing of the distributed version
+* Distributed version of OpenPixi which uses IBIS framework for communication
+* Framework for thorough testing of the distributed version
 * Parallel version of OpenPixi which uses threads
 * Support for debugging and profiling through AspectJ
 * Introduced Settings class to hold all the simulation settings
@@ -108,7 +109,7 @@ Version 0.4 - June 28, 2012
 
 * Relativistic versions of particle solvers
 * Field interpolator with charge conserving area weighting
-* Poissonsolver
+* Poisson solver
 * Decoupling of display size and simulation size
 * Labels for slider values (issue 25)
 
