@@ -116,6 +116,10 @@ public class EnergyDensityVoxelGLPanel extends AnimationGLPanel {
 				centerz + sizez / 2,
 				0, 0, 1); // "up" direction
 
+		// Turn on transparent drawing
+		gl2.glEnable(GL.GL_BLEND);
+		gl2.glBlendFunc(GL.GL_SRC_ALPHA, GL.GL_ONE_MINUS_SRC_ALPHA);
+
 		// Lattice spacing and coupling constant
 		double as = s.grid.getLatticeSpacing();
 		double g = s.getCouplingConstant();
@@ -144,6 +148,7 @@ public class EnergyDensityVoxelGLPanel extends AnimationGLPanel {
 					float red = 0;
 					float green = 0;
 					float blue = 0;
+					float alpha = 0;
 					if(s.grid.isEvaluatable(index)) {
 						for (int w = 0; w < s.getNumberOfDimensions(); w++) {
 							EfieldSquared += s.grid.getEsquaredFromLinks(index, w) / (as * g * as * g) / 2;
@@ -173,15 +178,16 @@ public class EnergyDensityVoxelGLPanel extends AnimationGLPanel {
 					double norm = Math.max(red + green + blue, 10E-20);
 					float value = (float) Math.min(1, scale * (EfieldSquared + BfieldSquared));
 
-					// Set color according to E-field, and brightness according
+					// Set color according to E-field, and transparency according
 					// to total energy density:
-					red = (float) Math.sqrt(red / norm) * value;
-					green = (float) Math.sqrt(green / norm) * value;
-					blue = (float) Math.sqrt(blue / norm) * value;
+					red = (float) Math.sqrt(red / norm);
+					green = (float) Math.sqrt(green / norm);
+					blue = (float) Math.sqrt(blue / norm);
+					alpha = value;
 
 					scaleProperties.putValue(EfieldSquared + BfieldSquared);
 
-					gl2.glColor3f( red, green, blue);
+					gl2.glColor4f( red, green, blue, alpha);
 					if (value >= visibilityThreshold) {
 						drawCube(gl2, x, y, z, (float) as * .5f);
 					}
