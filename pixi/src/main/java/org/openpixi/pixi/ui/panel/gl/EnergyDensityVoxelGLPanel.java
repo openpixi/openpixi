@@ -41,10 +41,16 @@ public class EnergyDensityVoxelGLPanel extends AnimationGLPanel {
 
 	public static final int INDEX_ENERGY_DENSITY = 0;
 	public static final int INDEX_ENERGY_DENSITY_LONGITUDINAL_ELECTRIC = 1;
+	public static final int INDEX_ENERGY_DENSITY_LONGITUDINAL_MAGNETIC = 2;
+	public static final int INDEX_ENERGY_DENSITY_TRANSVERSE_ELECTRIC = 3;
+	public static final int INDEX_ENERGY_DENSITY_TRANSVERSE_MAGNETIC = 4;
 
 	String[] dataLabel = new String[] {
 			"Energy density",
-			"Energy density longitudinal electric"
+			"Energy density longitudinal electric",
+			"Energy density longitudinal magnetic",
+			"Energy density transverse electric",
+			"Energy density transverse magnetic"
 	};
 
 	public static final int RED = 0;
@@ -143,9 +149,8 @@ public class EnergyDensityVoxelGLPanel extends AnimationGLPanel {
 		gl2.glEnable(GL.GL_BLEND);
 		gl2.glBlendFunc(GL.GL_SRC_ALPHA, GL.GL_ONE_MINUS_SRC_ALPHA);
 
-		// Lattice spacing and coupling constant
+		// Lattice spacing
 		double as = s.grid.getLatticeSpacing();
-		double g = s.getCouplingConstant();
 
 		int[] pos = new int[s.getNumberOfDimensions()];
 		for(int w = 2; w < s.getNumberOfDimensions(); w++) {
@@ -232,10 +237,19 @@ public class EnergyDensityVoxelGLPanel extends AnimationGLPanel {
 					if(s.grid.isEvaluatable(index)) {
 						switch(dataIndex) {
 						case INDEX_ENERGY_DENSITY:
-							value = getEnergyDensity(s, index, color);
+							value = getEnergyDensity(s, index, color, 0, true, true, true, true);
 							break;
 						case INDEX_ENERGY_DENSITY_LONGITUDINAL_ELECTRIC:
-							value = getEnergyDensityLongitudinalElectric(s, index, color, 0);
+							value = getEnergyDensity(s, index, color, 0, true, false, true, false);
+							break;
+						case INDEX_ENERGY_DENSITY_LONGITUDINAL_MAGNETIC:
+							value = getEnergyDensity(s, index, color, 0, true, false, false, true);
+							break;
+						case INDEX_ENERGY_DENSITY_TRANSVERSE_ELECTRIC:
+							value = getEnergyDensity(s, index, color, 0, false, true, true, false);
+							break;
+						case INDEX_ENERGY_DENSITY_TRANSVERSE_MAGNETIC:
+							value = getEnergyDensity(s, index, color, 0, false, true, false, true);
 							break;
 						}
 					}
@@ -262,7 +276,20 @@ public class EnergyDensityVoxelGLPanel extends AnimationGLPanel {
 		scaleProperties.calculateAutomaticScale(1.0);
 	}
 
-	private double getEnergyDensity(Simulation s, int index, double[] color) {
+	/**
+	 * Obtain energy density and corresponding color.
+	 * Longitudinal / transverse, electric / magnetic components can be specified.
+	 * @param s
+	 * @param index
+	 * @param color Returns color in a vector
+	 * @param direction Longitudinal direction
+	 * @param longitudinal Along 'direction'
+	 * @param transverse Sum of all directions except 'direction'
+	 * @param electric
+	 * @param magnetic
+	 * @return
+	 */
+	private double getEnergyDensity(Simulation s, int index, double[] color, int direction, boolean longitudinal, boolean transverse, boolean electric, boolean magnetic) {
 		float red = 0;
 		float green = 0;
 		float blue = 0;
@@ -277,64 +304,36 @@ public class EnergyDensityVoxelGLPanel extends AnimationGLPanel {
 		double colors = s.grid.getNumberOfColors();
 
 		for (int w = 0; w < s.getNumberOfDimensions(); w++) {
-			EfieldSquared += s.grid.getEsquaredFromLinks(index, w) / (as * g * as * g) / 2;
-			// Time averaging for B field.
-			BfieldSquared += s.grid.getBsquaredFromLinks(index, w, 0) / (as * g * as * g) / 4.0;
-			BfieldSquared += s.grid.getBsquaredFromLinks(index, w, 1) / (as * g * as * g) / 4.0;
-			// get color:
-			double c;
-			for (int n = 0; n < colors * colors - 1; n++) {
-				c = s.grid.getE(index, w).get(n);
-				// cycle through colors if there are more than three
-				switch (n % 3) {
-					case 0:
-						red += c * c;
-						break;
-					case 1:
-						green += c * c;
-						break;
-					case 2:
-						blue += c * c;
-						break;
+			if ((longitudinal && w == direction) || (transverse && w != direction)) {
+				if (electric) {
+					EfieldSquared += s.grid.getEsquaredFromLinks(index, w) / (as * g * as * g) / 2;
 				}
-			}
-		}
-		color[RED] = red;
-		color[GREEN] = green;
-		color[BLUE] = blue;
-		return EfieldSquared + BfieldSquared;
-	}
-
-	private double getEnergyDensityLongitudinalElectric(Simulation s, int index, double[] color, int direction) {
-		float red = 0;
-		float green = 0;
-		float blue = 0;
-
-		double EfieldSquared = 0.0;
-		double BfieldSquared = 0.0;
-
-		// Lattice spacing and coupling constant
-		double as = s.grid.getLatticeSpacing();
-		double g = s.getCouplingConstant();
-
-		double colors = s.grid.getNumberOfColors();
-
-		EfieldSquared += s.grid.getEsquaredFromLinks(index, direction) / (as * g * as * g) / 2;
-		// get color:
-		double c;
-		for (int n = 0; n < colors * colors - 1; n++) {
-			c = s.grid.getE(index, direction).get(n);
-			// cycle through colors if there are more than three
-			switch (n % 3) {
-				case 0:
-					red += c * c;
-					break;
-				case 1:
-					green += c * c;
-					break;
-				case 2:
-					blue += c * c;
-					break;
+				if (magnetic) {
+					// Time averaging for B field.
+					BfieldSquared += s.grid.getBsquaredFromLinks(index, w, 0) / (as * g * as * g) / 4.0;
+					BfieldSquared += s.grid.getBsquaredFromLinks(index, w, 1) / (as * g * as * g) / 4.0;
+				}
+				// get color:
+				double c = 0;
+				for (int n = 0; n < colors * colors - 1; n++) {
+					if (electric) {
+						c = s.grid.getE(index, w).get(n);
+					} else if (magnetic) {
+						c = s.grid.getB(index, w, 0).get(n);
+					}
+					// cycle through colors if there are more than three
+					switch (n % 3) {
+						case 0:
+							red += c * c;
+							break;
+						case 1:
+							green += c * c;
+							break;
+						case 2:
+							blue += c * c;
+							break;
+					}
+				}
 			}
 		}
 		color[RED] = red;
@@ -450,7 +449,7 @@ public class EnergyDensityVoxelGLPanel extends AnimationGLPanel {
 	}
 
 	public void addPropertyComponents(Box box) {
-		addLabel(box, "Energy density 2D (OpenGL) panel");
+		addLabel(box, "Energy density Voxel (OpenGL) panel");
 		dataProperties.addComponents(box);
 		scaleProperties.addComponents(box);
 		visibilityThresholdProperties.addComponents(box);
