@@ -208,9 +208,15 @@ public class EnergyDensityVoxelGLPanel extends AnimationGLPanel {
 			//System.out.println("D "+e.getX() + " : " + e.getY());
 			double deltaX = e.getX() - mouseOldX;
 			double deltaY = e.getY() - mouseOldY;
-			double factor = 0.01;
-			phi -= factor * deltaX;
-			theta -= factor * deltaY;
+			if (e.isControlDown()) {
+				double factor = 0.01;
+				distanceFactor -= factor * deltaY;
+			} else {
+				// No modifiers used
+				double factor = 0.01;
+				phi -= factor * deltaX;
+				theta -= factor * deltaY;
+			}
 			mouseOldX = e.getX();
 			mouseOldY = e.getY();
 			super.mouseDragged(e);
