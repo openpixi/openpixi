@@ -28,6 +28,7 @@ import javax.media.opengl.glu.GLU;
 import javax.swing.Box;
 
 import org.openpixi.pixi.math.AlgebraElement;
+import org.openpixi.pixi.math.GroupElement;
 import org.openpixi.pixi.physics.Simulation;
 import org.openpixi.pixi.ui.SimulationAnimation;
 import org.openpixi.pixi.ui.panel.properties.ComboBoxProperties;
@@ -46,6 +47,7 @@ public class EnergyDensityVoxelGLPanel extends AnimationGLPanel {
 	public static final int INDEX_ENERGY_DENSITY_TRANSVERSE_ELECTRIC = 3;
 	public static final int INDEX_ENERGY_DENSITY_TRANSVERSE_MAGNETIC = 4;
 	public static final int INDEX_GAUSS_VIOLATION = 5;
+	public static final int INDEX_U_LONGITUDINAL = 6;
 
 	String[] dataLabel = new String[] {
 			"Energy density",
@@ -53,14 +55,21 @@ public class EnergyDensityVoxelGLPanel extends AnimationGLPanel {
 			"Energy density longitudinal magnetic",
 			"Energy density transverse electric",
 			"Energy density transverse magnetic",
-			"Gauss violation"
+			"Gauss violation",
+			"U longitudinal"
 	};
+
+	String[] directionLabel = {
+			"x",
+			"y",
+			"z"};
 
 	public static final int RED = 0;
 	public static final int GREEN = 1;
 	public static final int BLUE = 2;
 
 	public ComboBoxProperties dataProperties;
+	public ComboBoxProperties directionProperties;
 	public ScaleProperties scaleProperties;
 	public DoubleProperties visibilityThresholdProperties;
 	public DoubleProperties opacityProperties;
@@ -79,6 +88,7 @@ public class EnergyDensityVoxelGLPanel extends AnimationGLPanel {
 	public EnergyDensityVoxelGLPanel(SimulationAnimation simulationAnimation) {
 		super(simulationAnimation);
 		dataProperties = new ComboBoxProperties(simulationAnimation, "Data", dataLabel, 0);
+		directionProperties = new ComboBoxProperties(simulationAnimation, "Field direction", directionLabel, 0);
 		scaleProperties = new ScaleProperties(simulationAnimation);
 		visibilityThresholdProperties = new DoubleProperties(simulationAnimation, "Visibility threshold", 0.0);
 		opacityProperties = new DoubleProperties(simulationAnimation, "Opacity", 1);
@@ -113,6 +123,7 @@ public class EnergyDensityVoxelGLPanel extends AnimationGLPanel {
 		GLU glu = new GLU();
 
 		int dataIndex = dataProperties.getIndex();
+		int direction = directionProperties.getIndex();
 
 		double scale = scaleProperties.getScale();
 		scaleProperties.resetAutomaticScale();
@@ -240,22 +251,26 @@ public class EnergyDensityVoxelGLPanel extends AnimationGLPanel {
 					if(s.grid.isEvaluatable(index)) {
 						switch(dataIndex) {
 						case INDEX_ENERGY_DENSITY:
-							value = getEnergyDensity(s, index, color, 0, true, true, true, true);
+							value = getEnergyDensity(s, index, color, direction, true, true, true, true);
 							break;
 						case INDEX_ENERGY_DENSITY_LONGITUDINAL_ELECTRIC:
-							value = getEnergyDensity(s, index, color, 0, true, false, true, false);
+							value = getEnergyDensity(s, index, color, direction, true, false, true, false);
 							break;
 						case INDEX_ENERGY_DENSITY_LONGITUDINAL_MAGNETIC:
-							value = getEnergyDensity(s, index, color, 0, true, false, false, true);
+							value = getEnergyDensity(s, index, color, direction, true, false, false, true);
 							break;
 						case INDEX_ENERGY_DENSITY_TRANSVERSE_ELECTRIC:
-							value = getEnergyDensity(s, index, color, 0, false, true, true, false);
+							value = getEnergyDensity(s, index, color, direction, false, true, true, false);
 							break;
 						case INDEX_ENERGY_DENSITY_TRANSVERSE_MAGNETIC:
-							value = getEnergyDensity(s, index, color, 0, false, true, false, true);
+							value = getEnergyDensity(s, index, color, direction, false, true, false, true);
 							break;
 						case INDEX_GAUSS_VIOLATION:
 							value = getGaussViolation(s, index, color);
+							break;
+						case INDEX_U_LONGITUDINAL:
+							value = getU(s, index, color, direction);
+							break;
 						}
 					}
 					// Normalize
@@ -272,7 +287,7 @@ public class EnergyDensityVoxelGLPanel extends AnimationGLPanel {
 					scaleProperties.putValue(value);
 
 					gl2.glColor4d( color[RED], color[GREEN], color[BLUE], alpha);
-					if (value >= visibilityThreshold) {
+					if (limitedValue >= visibilityThreshold) {
 						drawCube(gl2, x, y, z, (float) as * .5f, (float) viewx, (float) viewy, (float) viewz);
 					}
 				}
@@ -355,6 +370,17 @@ public class EnergyDensityVoxelGLPanel extends AnimationGLPanel {
 		color[RED] = Math.pow(gaussAlg.get(0), 2);
 		color[GREEN] = Math.pow(gaussAlg.get(1), 2);
 		color[BLUE] = Math.pow(gaussAlg.get(2), 2);
+		return value;
+	}
+
+	private double getU(Simulation s, int index, double[] color, int direction) {
+		AlgebraElement U = s.grid.getU(index, direction).proj();
+
+		double value = U.square();
+
+		color[RED] = Math.pow(U.get(0), 2);
+		color[GREEN] = Math.pow(U.get(1), 2);
+		color[BLUE] = Math.pow(U.get(2), 2);
 		return value;
 	}
 
@@ -475,6 +501,7 @@ public class EnergyDensityVoxelGLPanel extends AnimationGLPanel {
 	public void addPropertyComponents(Box box) {
 		addLabel(box, "Energy density Voxel (OpenGL) panel");
 		dataProperties.addComponents(box);
+		directionProperties.addComponents(box);
 		scaleProperties.addComponents(box);
 		visibilityThresholdProperties.addComponents(box);
 		opacityProperties.addComponents(box);

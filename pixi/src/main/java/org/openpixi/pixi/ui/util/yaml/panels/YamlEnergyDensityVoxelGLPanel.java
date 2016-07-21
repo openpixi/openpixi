@@ -9,6 +9,7 @@ public class YamlEnergyDensityVoxelGLPanel {
 
 	// ComboBox properties
 	public String data;
+	public String direction;
 
 	// Scale properties
 	public Double scaleFactor;
@@ -36,6 +37,7 @@ public class YamlEnergyDensityVoxelGLPanel {
 		if (component instanceof EnergyDensityVoxelGLPanel) {
 			EnergyDensityVoxelGLPanel panel = (EnergyDensityVoxelGLPanel) component;
 			data = panel.dataProperties.getStringFromEntry();
+			direction = panel.directionProperties.getStringFromEntry();
 			scaleFactor = panel.scaleProperties.getScaleFactor();
 			automaticScaling = panel.scaleProperties.getAutomaticScaling();
 			visibilityThreshold = panel.visibilityThresholdProperties.getValue();
@@ -55,6 +57,10 @@ public class YamlEnergyDensityVoxelGLPanel {
 
 		if (data != null) {
 			panel.dataProperties.setEntryFromString(data);
+		}
+
+		if (direction != null) {
+			panel.directionProperties.setEntryFromString(direction);
 		}
 
 		if (scaleFactor != null) {
