@@ -74,6 +74,7 @@ public class EnergyDensityVoxelGLPanel extends AnimationGLPanel {
 	public DoubleProperties visibilityThresholdProperties;
 	public DoubleProperties opacityProperties;
 	public BooleanProperties showSimulationBoxProperties;
+	public BooleanProperties whiteBackgroundProperties;
 
 	public double phi;
 	public double theta;
@@ -96,6 +97,7 @@ public class EnergyDensityVoxelGLPanel extends AnimationGLPanel {
 		visibilityThresholdProperties = new DoubleProperties(simulationAnimation, "Visibility threshold", 0.0);
 		opacityProperties = new DoubleProperties(simulationAnimation, "Opacity", 1);
 		showSimulationBoxProperties = new BooleanProperties(simulationAnimation, "Show simulation box", false);
+		whiteBackgroundProperties = new BooleanProperties(simulationAnimation, "White background", false);
 
 		MouseListener l = new MouseListener();
 		addMouseListener(l);
@@ -136,6 +138,7 @@ public class EnergyDensityVoxelGLPanel extends AnimationGLPanel {
 		double visibilityThreshold = visibilityThresholdProperties.getValue();
 		double opacity = opacityProperties.getValue();
 		boolean showSimulationBox = showSimulationBoxProperties.getValue();
+		boolean whiteBackground = whiteBackgroundProperties.getValue();
 
 		// Perspective.
 		float sizex = (float) s.getSimulationBoxSize(0);
@@ -144,6 +147,12 @@ public class EnergyDensityVoxelGLPanel extends AnimationGLPanel {
 		float size = (float) Math.sqrt(sizex * sizex + sizey * sizey + sizez * sizez);
 		float distance = (float) distanceFactor * size;
 		float widthHeightRatio = (float) width / (float) height;
+
+		if (whiteBackground) {
+			gl2.glClearColor(1, 1, 1, 1);
+		} else {
+			gl2.glClearColor(0, 0, 0, 1);
+		}
 
 		gl2.glMatrixMode( GL2.GL_PROJECTION );
 		gl2.glLoadIdentity();
@@ -641,5 +650,6 @@ public class EnergyDensityVoxelGLPanel extends AnimationGLPanel {
 		visibilityThresholdProperties.addComponents(box);
 		opacityProperties.addComponents(box);
 		showSimulationBoxProperties.addComponents(box);
+		whiteBackgroundProperties.addComponents(box);
 	}
 }
