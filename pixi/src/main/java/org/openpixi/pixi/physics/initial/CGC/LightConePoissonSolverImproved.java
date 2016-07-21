@@ -198,30 +198,6 @@ public class LightConePoissonSolverImproved implements ICGCPoissonSolver {
 		}
 	}
 
-	/**
-	 * Computes a part of the time evolution operator at time step m for a total of M steps up to spatial order N.
-	 *
-	 * @param m     fractional time step
-	 * @param M     total fractional time steps
-	 * @param N     order of spatial approximation
-	 * @param at    time step
-	 * @param P     array of algebra elements containing finite differences of phi to order N.
-	 * @return      algebra element of the time evolution operator
-	 */
-	private AlgebraElement w(int m, int M, int N, double at, double gaugeFactor, AlgebraElement[] P) {
-		AlgebraElement w = P[0].copy();
-		double dt = at / (1.0 * M);
-		double fact = 1.0;
-		for (int n = 1; n < N; n++) {
-			int sign = (n % 2 == 0) ? 1 : -1;
-			fact *= n;
-			double tau = m * dt;
-			w.addAssign(P[n].mult(sign * Math.pow(tau, n) / fact));
-		}
-		w.multAssign(dt * gaugeFactor);
-		return w;
-	}
-
 	public AlgebraElement getGaussViolation(int index) {
 		return this.gaussViolation[index];
 	}

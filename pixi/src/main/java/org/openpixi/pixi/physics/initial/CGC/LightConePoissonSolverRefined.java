@@ -33,8 +33,6 @@ public class LightConePoissonSolverRefined implements ICGCPoissonSolver {
 	 */
 	public void solve(IInitialChargeDensity chargeDensity) {
 		AlgebraElement[] phi0;
-/*		AlgebraElement[] phi1;*/
-		AlgebraElement[] deltaphi;
 		GroupElement[] V;
 		GroupElement[] Vn;
 
@@ -100,7 +98,7 @@ public class LightConePoissonSolverRefined implements ICGCPoissonSolver {
 			// Initialize the array to be refined.
 			AlgebraElement[] phiR = new AlgebraElement[n];
 			for (int j = 0; j < n; j++) {
-				int ngpIndex = (int) Math.round((j+0.5) / ((double) pointsPerCell));
+				int ngpIndex = (int) Math.round((j) / ((double) pointsPerCell));
 				int[] transGridPos = GridFunctions.getCellPos(i, transverseNumCells);
 				int[] gridPos = GridFunctions.insertGridPos(transGridPos, direction, ngpIndex);
 				int index = s.grid.getCellIndex(gridPos);
@@ -264,30 +262,6 @@ public class LightConePoissonSolverRefined implements ICGCPoissonSolver {
 				this.gaussViolation[i] = gridCopy.getElementFactory().algebraZero();
 			}
 		}
-	}
-
-	/**
-	 * Computes a part of the time evolution operator at time step m for a total of M steps up to spatial order N.
-	 *
-	 * @param m     fractional time step
-	 * @param M     total fractional time steps
-	 * @param N     order of spatial approximation
-	 * @param at    time step
-	 * @param P     array of algebra elements containing finite differences of phi to order N.
-	 * @return      algebra element of the time evolution operator
-	 */
-	private AlgebraElement w(int m, int M, int N, double at, double gaugeFactor, AlgebraElement[] P) {
-		AlgebraElement w = P[0].copy();
-		double dt = at / (1.0 * M);
-		double fact = 1.0;
-		for (int n = 1; n < N; n++) {
-			int sign = (n % 2 == 0) ? 1 : -1;
-			fact *= n;
-			double tau = m * dt;
-			w.addAssign(P[n].mult(sign * Math.pow(tau, n) / fact));
-		}
-		w.multAssign(dt * gaugeFactor);
-		return w;
 	}
 
 	private int p(int i, int n) {
