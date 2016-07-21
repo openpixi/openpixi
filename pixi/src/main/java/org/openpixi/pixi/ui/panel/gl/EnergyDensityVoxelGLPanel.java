@@ -122,7 +122,6 @@ public class EnergyDensityVoxelGLPanel extends AnimationGLPanel {
 		int width = glautodrawable.getWidth();
 		int height = glautodrawable.getHeight();
 		gl2.glEnable(GL.GL_DEPTH_TEST);
-		gl2.glClear( GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT );
 		gl2.glLoadIdentity();
 
 		// coordinate system origin at lower left with width and height same as the window
@@ -153,6 +152,7 @@ public class EnergyDensityVoxelGLPanel extends AnimationGLPanel {
 		} else {
 			gl2.glClearColor(0, 0, 0, 1);
 		}
+		gl2.glClear( GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT );
 
 		gl2.glMatrixMode( GL2.GL_PROJECTION );
 		gl2.glLoadIdentity();
