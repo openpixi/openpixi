@@ -163,6 +163,37 @@ public class EnergyDensityVoxelGLPanel extends AnimationGLPanel {
 		gl2.glEnable(GL.GL_BLEND);
 		gl2.glBlendFunc(GL.GL_SRC_ALPHA, GL.GL_ONE_MINUS_SRC_ALPHA);
 
+		// Enable lighting
+		gl2.glEnable(GL2.GL_LIGHTING);
+
+		// Enable color material
+		gl2.glEnable(GL2.GL_COLOR_MATERIAL);
+		gl2.glColorMaterial(GL2.GL_FRONT_AND_BACK, GL2.GL_DIFFUSE);
+
+		// Light source 0
+		float light0_ambient[] = { 0f, 0f, 0f, 1f };
+		float light0_diffuse[] = { 1f, 1f, 1f, 1.0f };
+		float light0_specular[] = { 1f, 1f, 1f, 1.0f };
+		float light0_position[] = { 10 * size, 20 * size, 40 * size, 0.0f };
+
+		gl2.glEnable(GL2.GL_LIGHT0);
+		gl2.glLightfv(GL2.GL_LIGHT0, GL2.GL_AMBIENT, light0_ambient, 0);
+		gl2.glLightfv(GL2.GL_LIGHT0, GL2.GL_DIFFUSE, light0_diffuse, 0);
+		gl2.glLightfv(GL2.GL_LIGHT0, GL2.GL_SPECULAR, light0_specular, 0);
+		gl2.glLightfv(GL2.GL_LIGHT0, GL2.GL_POSITION, light0_position, 0);
+
+		// Light source 1
+		float light1_ambient[] = { 0f, 0f, 0f, 1f };
+		float light1_diffuse[] = { .5f, .5f, .5f, 1.0f };
+		float light1_specular[] = { .5f, .5f, .5f, 1.0f };
+		float light1_position[] = { -20 * size, -40 * size, -10 * size, 0.0f };
+
+		gl2.glEnable(GL2.GL_LIGHT1);
+		gl2.glLightfv(GL2.GL_LIGHT1, GL2.GL_AMBIENT, light1_ambient, 0);
+		gl2.glLightfv(GL2.GL_LIGHT1, GL2.GL_DIFFUSE, light1_diffuse, 0);
+		gl2.glLightfv(GL2.GL_LIGHT1, GL2.GL_SPECULAR, light1_specular, 0);
+		gl2.glLightfv(GL2.GL_LIGHT1, GL2.GL_POSITION, light1_position, 0);
+
 		// Lattice spacing
 		double as = s.grid.getLatticeSpacing();
 
@@ -458,11 +489,13 @@ public class EnergyDensityVoxelGLPanel extends AnimationGLPanel {
 		gl2.glBegin(GL2.GL_QUADS); // Start Drawing The Cube
 
 		if (viewx > 0) {
+			gl2.glNormal3f(1f, 0, 0);
 			gl2.glVertex3f(1.0f, 1.0f, -1.0f); // Top Right Of The Quad (Right)
 			gl2.glVertex3f(1.0f, 1.0f, 1.0f); // Top Left Of The Quad
 			gl2.glVertex3f(1.0f, -1.0f, 1.0f); // Bottom Left Of The Quad
 			gl2.glVertex3f(1.0f, -1.0f, -1.0f); // Bottom Right Of The Quad
 		} else {
+			gl2.glNormal3f(-1f, 0, 0);
 			gl2.glVertex3f(-1.0f, 1.0f, 1.0f); // Top Right Of The Quad (Left)
 			gl2.glVertex3f(-1.0f, 1.0f, -1.0f); // Top Left Of The Quad (Left)
 			gl2.glVertex3f(-1.0f, -1.0f, -1.0f); // Bottom Left Of The Quad
@@ -470,11 +503,13 @@ public class EnergyDensityVoxelGLPanel extends AnimationGLPanel {
 		}
 
 		if (viewy > 0) {
+			gl2.glNormal3f(0, 1f, 0);
 			gl2.glVertex3f(1.0f, 1.0f, -1.0f); // Top Right Of The Quad (Top)
 			gl2.glVertex3f(-1.0f, 1.0f, -1.0f); // Top Left Of The Quad (Top)
 			gl2.glVertex3f(-1.0f, 1.0f, 1.0f); // Bottom Left Of The Quad (Top)
 			gl2.glVertex3f(1.0f, 1.0f, 1.0f); // Bottom Right Of The Quad (Top)
 		} else {
+			gl2.glNormal3f(0, -1f, 0);
 			gl2.glVertex3f(1.0f, -1.0f, 1.0f); // Top Right Of The Quad
 			gl2.glVertex3f(-1.0f, -1.0f, 1.0f); // Top Left Of The Quad
 			gl2.glVertex3f(-1.0f, -1.0f, -1.0f); // Bottom Left Of The Quad
@@ -482,11 +517,13 @@ public class EnergyDensityVoxelGLPanel extends AnimationGLPanel {
 		}
 
 		if (viewz > 0) {
+			gl2.glNormal3f(0, 0, 1f);
 			gl2.glVertex3f(1.0f, 1.0f, 1.0f); // Top Right Of The Quad (Front)
 			gl2.glVertex3f(-1.0f, 1.0f, 1.0f); // Top Left Of The Quad (Front)
 			gl2.glVertex3f(-1.0f, -1.0f, 1.0f); // Bottom Left Of The Quad
 			gl2.glVertex3f(1.0f, -1.0f, 1.0f); // Bottom Right Of The Quad
 		} else {
+			gl2.glNormal3f(0, 0, -1f);
 			gl2.glVertex3f(1.0f, -1.0f, -1.0f); // Bottom Left Of The Quad
 			gl2.glVertex3f(-1.0f, -1.0f, -1.0f); // Bottom Right Of The Quad
 			gl2.glVertex3f(-1.0f, 1.0f, -1.0f); // Top Right Of The Quad (Back)
