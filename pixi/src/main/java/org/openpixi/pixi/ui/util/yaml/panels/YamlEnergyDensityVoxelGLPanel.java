@@ -19,6 +19,9 @@ public class YamlEnergyDensityVoxelGLPanel {
 	public Double visibilityThreshold;
 	public Double opacity;
 
+	// Boolean properties
+	public Boolean showSimulationBox;
+
 	// Projection properties
 	public Double phi;
 	public Double theta;
@@ -42,6 +45,7 @@ public class YamlEnergyDensityVoxelGLPanel {
 			automaticScaling = panel.scaleProperties.getAutomaticScaling();
 			visibilityThreshold = panel.visibilityThresholdProperties.getValue();
 			opacity = panel.opacityProperties.getValue();
+			showSimulationBox = panel.showSimulationBoxProperties.getValue();
 			phi = panel.phi;
 			theta = panel.theta;
 			centerx = panel.centerx;
@@ -77,6 +81,10 @@ public class YamlEnergyDensityVoxelGLPanel {
 
 		if (opacity != null) {
 			panel.opacityProperties.setValue(opacity);
+		}
+
+		if (showSimulationBox != null) {
+			panel.showSimulationBoxProperties.setValue(showSimulationBox);
 		}
 
 		if (phi != null) {

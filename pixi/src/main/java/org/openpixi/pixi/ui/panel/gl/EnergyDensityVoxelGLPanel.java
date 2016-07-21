@@ -28,9 +28,9 @@ import javax.media.opengl.glu.GLU;
 import javax.swing.Box;
 
 import org.openpixi.pixi.math.AlgebraElement;
-import org.openpixi.pixi.math.GroupElement;
 import org.openpixi.pixi.physics.Simulation;
 import org.openpixi.pixi.ui.SimulationAnimation;
+import org.openpixi.pixi.ui.panel.properties.BooleanProperties;
 import org.openpixi.pixi.ui.panel.properties.ComboBoxProperties;
 import org.openpixi.pixi.ui.panel.properties.DoubleProperties;
 import org.openpixi.pixi.ui.panel.properties.ScaleProperties;
@@ -73,6 +73,7 @@ public class EnergyDensityVoxelGLPanel extends AnimationGLPanel {
 	public ScaleProperties scaleProperties;
 	public DoubleProperties visibilityThresholdProperties;
 	public DoubleProperties opacityProperties;
+	public BooleanProperties showSimulationBoxProperties;
 
 	public double phi;
 	public double theta;
@@ -84,6 +85,8 @@ public class EnergyDensityVoxelGLPanel extends AnimationGLPanel {
 	/** Distance of viewer */
 	public double distanceFactor;
 
+	public boolean shiftKeyPressed = false;
+
 	/** Constructor */
 	public EnergyDensityVoxelGLPanel(SimulationAnimation simulationAnimation) {
 		super(simulationAnimation);
@@ -92,6 +95,7 @@ public class EnergyDensityVoxelGLPanel extends AnimationGLPanel {
 		scaleProperties = new ScaleProperties(simulationAnimation);
 		visibilityThresholdProperties = new DoubleProperties(simulationAnimation, "Visibility threshold", 0.0);
 		opacityProperties = new DoubleProperties(simulationAnimation, "Opacity", 1);
+		showSimulationBoxProperties = new BooleanProperties(simulationAnimation, "Show simulation box", false);
 
 		MouseListener l = new MouseListener();
 		addMouseListener(l);
@@ -131,6 +135,7 @@ public class EnergyDensityVoxelGLPanel extends AnimationGLPanel {
 
 		double visibilityThreshold = visibilityThresholdProperties.getValue();
 		double opacity = opacityProperties.getValue();
+		boolean showSimulationBox = showSimulationBoxProperties.getValue();
 
 		// Perspective.
 		float sizex = (float) s.getSimulationBoxSize(0);
@@ -206,9 +211,21 @@ public class EnergyDensityVoxelGLPanel extends AnimationGLPanel {
 			pos[w] = s.grid.getNumCells(w)/2;
 		}
 
-		gl2.glColor3f( .5f, .5f, .5f);
-		drawCubeWireframe(gl2, -(float) as * 0.5f, -(float) as * 0.5f, -(float) as * 0.5f,
-				sizex, sizey, sizez);
+		if (showSimulationBox) {
+			double thickness = as * 0.05;
+
+			// Translation wireframe
+			if (shiftKeyPressed) {
+				gl2.glColor3f( .5f, 0, 0);
+				drawCubeWireframe(gl2, centerx - as * 0.5, centery - as * 0.5, centerz - as * 0.5,
+						sizex, sizey, sizez, thickness);
+			}
+
+			// Wireframe of simulation box
+			gl2.glColor3f( .5f, .5f, .5f);
+			drawCubeWireframe(gl2, -as * 0.5, -as * 0.5, -as * 0.5,
+					sizex, sizey, sizez, thickness);
+		}
 
 		// Determine order of drawing which is important for transparent drawing
 		int loop1 = 0; // outermost loop
@@ -335,13 +352,11 @@ public class EnergyDensityVoxelGLPanel extends AnimationGLPanel {
 		scaleProperties.calculateAutomaticScale(1.0);
 	}
 
-	private void drawCubeWireframe(GL2 gl2, float x, float y, float z, float sizex, float sizey, float sizez) {
+	private void drawCubeWireframe(GL2 gl2, double x, double y, double z, double sizex, double sizey, double sizez, double thickness) {
 		gl2.glPushMatrix();
-		gl2.glTranslatef(x, y, z);
+		gl2.glTranslated(x, y, z);
 
 		gl2.glBegin(GL2.GL_QUADS);
-
-		double thickness = .1;
 
 		gl2.glVertex3d(0, 0, 0);
 		gl2.glVertex3d(sizex, 0, 0);
@@ -509,6 +524,7 @@ public class EnergyDensityVoxelGLPanel extends AnimationGLPanel {
 			//System.out.println("D "+e.getX() + " : " + e.getY());
 			double deltaX = e.getX() - mouseOldX;
 			double deltaY = e.getY() - mouseOldY;
+			shiftKeyPressed = false;
 			if (e.isControlDown()) {
 				// Change distance (Ctrl key)
 				double factor = 0.01;
@@ -519,6 +535,7 @@ public class EnergyDensityVoxelGLPanel extends AnimationGLPanel {
 				}
 			} else if (e.isShiftDown()) {
 				// Translate scene (Shift key)
+				shiftKeyPressed = true;
 				double factor = 0.1;
 				double shiftphi = factor * deltaX;
 				double shifttheta = factor * deltaY;
@@ -550,6 +567,7 @@ public class EnergyDensityVoxelGLPanel extends AnimationGLPanel {
 
 		public void mouseReleased(MouseEvent e) {
 			super.mouseReleased(e);
+			shiftKeyPressed = false;
 			simulationAnimation.repaint();
 		}
 	}
@@ -622,5 +640,6 @@ public class EnergyDensityVoxelGLPanel extends AnimationGLPanel {
 		scaleProperties.addComponents(box);
 		visibilityThresholdProperties.addComponents(box);
 		opacityProperties.addComponents(box);
+		showSimulationBoxProperties.addComponents(box);
 	}
 }
