@@ -56,7 +56,7 @@ public class EnergyDensityVoxelGLPanel extends AnimationGLPanel {
 			"Energy density transverse electric",
 			"Energy density transverse magnetic",
 			"Gauss violation",
-			"U longitudinal"
+			"U (along direction)"
 	};
 
 	String[] directionLabel = {
