@@ -6,6 +6,8 @@ import org.openpixi.pixi.physics.Simulation;
 import org.openpixi.pixi.physics.grid.Grid;
 import org.openpixi.pixi.physics.util.GridFunctions;
 
+import java.security.acl.Group;
+
 /**
  * This class solves the transverse Poisson equation for a three-dimensional (Lorenz gauge) charge density
  * 'sheet by sheet' in the longitudinal direction and then initializes the fields in the temporal gauge.
@@ -33,8 +35,6 @@ public class LightConePoissonSolverImproved implements ICGCPoissonSolver {
 	 */
 	public void solve(IInitialChargeDensity chargeDensity) {
 		AlgebraElement[] phi0;
-/*		AlgebraElement[] phi1;*/
-		AlgebraElement[] deltaphi;
 		GroupElement[] V;
 
 		int direction = chargeDensity.getDirection();
@@ -80,13 +80,14 @@ public class LightConePoissonSolverImproved implements ICGCPoissonSolver {
 		}
 
 		// Compute V at t = - at/2 by constructing the Wilson line from gauge links.
+		// New interpretation of the field phi: It sits in between two lattice points (staggered grid).
+		// Convention: phi[n + 0.5] is stored at grid point n.
 		V = new GroupElement[s.grid.getTotalNumberOfCells()];
 		for (int i = 0; i < s.grid.getTotalNumberOfCells(); i++) {
 			V[i] = s.grid.getElementFactory().groupIdentity();
 		}
 
-		// Is the multiplication with orientation correct?
-		double gaugeFactor = orientation * s.getCouplingConstant() * s.grid.getLatticeSpacing();
+		double gaugeFactor = - s.getCouplingConstant() * s.grid.getLatticeSpacing();
 		for (int k = 0; k < longitudinalNumCells; k++) {
 			int z = (orientation < 0) ? k : (longitudinalNumCells - k - 1);
 			for (int i = 0; i < totalTransverseCells; i++) {
@@ -95,12 +96,19 @@ public class LightConePoissonSolverImproved implements ICGCPoissonSolver {
 				int[] gridPos = GridFunctions.insertGridPos(transGridPos, direction, z);
 				int index = s.grid.getCellIndex(gridPos);
 
-				// Last position in longitudinal direction at same transverse position
+				// Last position in longitudinal direction at same transverse position.
 				int indexL = s.grid.shift(index, direction, orientation);
 
-				// Compute V from V directly behind it in the longitudinal direction.
+				// Compute V from V directly behind it in the longitudinal direction using phi between two grid points.
+				// Staggered grid: for orientation +1, do not shift. For orientation -1, shift in 'backwards'.
 				GroupElement gaugeLink = V[indexL].copy();
-				gaugeLink.multAssign(phi0[index].mult(gaugeFactor).getLink());
+				GroupElement W;
+				if(orientation == -1 ) {
+					W = phi0[indexL].mult(gaugeFactor).getLink();
+				} else {
+					W = phi0[index].mult(gaugeFactor).getLink();
+				}
+				gaugeLink.multAssign(W);
 				V[index] = gaugeLink;
 			}
 		}
@@ -126,30 +134,32 @@ public class LightConePoissonSolverImproved implements ICGCPoissonSolver {
 			}
 		}
 
-		// Compute V at at/2 from V at -at/2 using an approximation of the time evolution operator and the fact that
-		// V(z,t) only depends on the single argument z - t.
-		int M = 100;
-		int N = 3;
-
+		// Compute V at at/2 from V at -at/2 (improved using linear interpolation and path ordering).
+		int M = 20;
 		for (int i = 0; i < s.grid.getTotalNumberOfCells(); i++) {
-			int j = s.grid.shift(i, direction, -orientation);
-			int iL = s.grid.shift(j, direction, orientation);
-			int iR = s.grid.shift(j, direction, -orientation);
-			GroupElement W = s.grid.getElementFactory().groupIdentity();
-			AlgebraElement[] P = new AlgebraElement[3];
-			P[0] = phi0[j];
-			P[1] = phi0[iR].sub(phi0[iL]);
-			P[1].multAssign(1.0 / (2 * s.grid.getLatticeSpacing()));
-			P[2] = phi0[iL].add(phi0[iR]).sub(phi0[j].mult(2.0));
-			P[2].multAssign(1.0 / Math.pow(s.grid.getLatticeSpacing(), 2));
-
+			// Compute time evolution operator using linear interpolation of the phi's and path ordering.
+			GroupElement ImprovedW = s.grid.getElementFactory().groupIdentity();
 			for (int m = 0; m < M; m++) {
-				AlgebraElement w = w(m, M, N, s.grid.getTemporalSpacing(), s.getCouplingConstant(), P);
-				W.multAssign(w.getLink());
+				GroupElement W;
+				AlgebraElement phi;
+				if(orientation == 1) {
+					int is = s.grid.shift(i, direction, -1);
+					double z = (m + 0.5) / ((double) 2 * M);
+					double FL = + z + 0.5;
+					double FR = - z + 0.5;
+					phi = (phi0[is].mult(FL)).add(phi0[i].mult(FR));
+				} else {
+					int is = s.grid.shift(i, direction, -1);
+					double z = (m + 0.5) / ((double) 2 * M);
+					double FL = - z + 0.5;
+					double FR = + z + 0.5;
+					phi = (phi0[is].mult(FL)).add(phi0[i].mult(FR));
+				}
+				W = phi.mult(-s.getCouplingConstant() * s.getTimeStep() / ((double) M)).getLink();
+				ImprovedW.multAssign(W);
 			}
 
-			V[i] = W.mult(V[i]);
-			//V[i].multAssign(W);
+			V[i].multAssign(ImprovedW);
 		}
 
 		// Set gauge links at t = at/2
