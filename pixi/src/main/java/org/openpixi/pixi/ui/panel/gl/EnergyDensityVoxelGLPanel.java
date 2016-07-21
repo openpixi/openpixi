@@ -136,7 +136,7 @@ public class EnergyDensityVoxelGLPanel extends AnimationGLPanel {
 		float sizex = (float) s.getSimulationBoxSize(0);
 		float sizey = (float) s.getSimulationBoxSize(1);
 		float sizez = (float) s.getSimulationBoxSize(2);
-		float size = Math.max(Math.max(sizex, sizey), sizez);
+		float size = (float) Math.sqrt(sizex * sizex + sizey * sizey + sizez * sizez);
 		float distance = (float) distanceFactor * size;
 		float widthHeightRatio = (float) width / (float) height;
 
@@ -146,7 +146,7 @@ public class EnergyDensityVoxelGLPanel extends AnimationGLPanel {
 				45, // field of view angle, in degrees
 				widthHeightRatio, // aspect ratio of field of view
 				1, // distance to near clipping plane
-				2.5 * size); // distance to far clipping plane
+				2.5 * distance); // distance to far clipping plane
 		double viewx = Math.cos(phi) * Math.sin(theta);
 		double viewy = Math.sin(phi) * Math.sin(theta);
 		double viewz = Math.cos(theta);
