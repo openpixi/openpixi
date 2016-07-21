@@ -168,12 +168,16 @@ public class EnergyDensityVoxelGLPanel extends AnimationGLPanel {
 
 		// Enable color material
 		gl2.glEnable(GL2.GL_COLOR_MATERIAL);
-		gl2.glColorMaterial(GL2.GL_FRONT_AND_BACK, GL2.GL_DIFFUSE);
+		gl2.glColorMaterial(GL2.GL_FRONT_AND_BACK, GL2.GL_AMBIENT_AND_DIFFUSE);
+
+		float specReflection[] = { .8f, .8f, .8f, 1.0f };
+		gl2.glMaterialfv(GL2.GL_FRONT_AND_BACK, GL2.GL_SPECULAR, specReflection, 0);
+		gl2.glMateriali(GL2.GL_FRONT_AND_BACK, GL2.GL_SHININESS, 64);
 
 		// Light source 0
-		float light0_ambient[] = { 0f, 0f, 0f, 1f };
-		float light0_diffuse[] = { 1f, 1f, 1f, 1.0f };
-		float light0_specular[] = { 1f, 1f, 1f, 1.0f };
+		float light0_ambient[] = { .3f, .3f, .3f, 1f };
+		float light0_diffuse[] = { .7f, .7f, .7f, 1f };
+		float light0_specular[] = { .8f, .8f, .8f, 1.0f };
 		float light0_position[] = { 10 * size, 20 * size, 40 * size, 0.0f };
 
 		gl2.glEnable(GL2.GL_LIGHT0);
