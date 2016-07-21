@@ -206,6 +206,10 @@ public class EnergyDensityVoxelGLPanel extends AnimationGLPanel {
 			pos[w] = s.grid.getNumCells(w)/2;
 		}
 
+		gl2.glColor3f( .5f, .5f, .5f);
+		drawCubeWireframe(gl2, -(float) as * 0.5f, -(float) as * 0.5f, -(float) as * 0.5f,
+				sizex, sizey, sizez);
+
 		// Determine order of drawing which is important for transparent drawing
 		int loop1 = 0; // outermost loop
 		int loop2 = 1;
@@ -329,6 +333,78 @@ public class EnergyDensityVoxelGLPanel extends AnimationGLPanel {
 			}
 		}
 		scaleProperties.calculateAutomaticScale(1.0);
+	}
+
+	private void drawCubeWireframe(GL2 gl2, float x, float y, float z, float sizex, float sizey, float sizez) {
+		gl2.glPushMatrix();
+		gl2.glTranslatef(x, y, z);
+
+		gl2.glBegin(GL2.GL_QUADS);
+
+		double thickness = .1;
+
+		gl2.glVertex3d(0, 0, 0);
+		gl2.glVertex3d(sizex, 0, 0);
+		gl2.glVertex3d(sizex, 0, thickness);
+		gl2.glVertex3d(0, 0, thickness);
+
+		gl2.glVertex3d(0, 0, 0);
+		gl2.glVertex3d(0, sizey, 0);
+		gl2.glVertex3d(0, sizey, thickness);
+		gl2.glVertex3d(0, 0, thickness);
+
+		gl2.glVertex3d(0, sizey, 0);
+		gl2.glVertex3d(sizex, sizey, 0);
+		gl2.glVertex3d(sizex, sizey, thickness);
+		gl2.glVertex3d(0, sizey, thickness);
+
+		gl2.glVertex3d(sizex, 0, 0);
+		gl2.glVertex3d(sizex, sizey, 0);
+		gl2.glVertex3d(sizex, sizey, thickness);
+		gl2.glVertex3d(sizex, 0, thickness);
+
+		gl2.glVertex3d(0, 0, 0);
+		gl2.glVertex3d(0, 0, sizez);
+		gl2.glVertex3d(0, thickness, sizez);
+		gl2.glVertex3d(0, thickness, 0);
+
+		gl2.glVertex3d(sizex, 0, 0);
+		gl2.glVertex3d(sizex, 0, sizez);
+		gl2.glVertex3d(sizex, thickness, sizez);
+		gl2.glVertex3d(sizex, thickness, 0);
+
+		gl2.glVertex3d(0, sizey, 0);
+		gl2.glVertex3d(0, sizey, sizez);
+		gl2.glVertex3d(0, sizey + thickness, sizez);
+		gl2.glVertex3d(0, sizey + thickness, 0);
+
+		gl2.glVertex3d(sizex, sizey, 0);
+		gl2.glVertex3d(sizex, sizey, sizez);
+		gl2.glVertex3d(sizex, sizey + thickness, sizez);
+		gl2.glVertex3d(sizex, sizey + thickness, 0);
+
+		gl2.glVertex3d(0, 0, sizez);
+		gl2.glVertex3d(sizex, 0, sizez);
+		gl2.glVertex3d(sizex, 0, sizez + thickness);
+		gl2.glVertex3d(0, 0, sizez + thickness);
+
+		gl2.glVertex3d(0, 0, sizez);
+		gl2.glVertex3d(0, sizey, sizez);
+		gl2.glVertex3d(0, sizey, sizez + thickness);
+		gl2.glVertex3d(0, 0, sizez + thickness);
+
+		gl2.glVertex3d(0, sizey, sizez);
+		gl2.glVertex3d(sizex, sizey, sizez);
+		gl2.glVertex3d(sizex, sizey, sizez + thickness);
+		gl2.glVertex3d(0, sizey, sizez + thickness);
+
+		gl2.glVertex3d(sizex, 0, sizez);
+		gl2.glVertex3d(sizex, sizey, sizez);
+		gl2.glVertex3d(sizex, sizey, sizez + thickness);
+		gl2.glVertex3d(sizex, 0, sizez + thickness);
+
+		gl2.glEnd();
+		gl2.glPopMatrix();
 	}
 
 	/**
