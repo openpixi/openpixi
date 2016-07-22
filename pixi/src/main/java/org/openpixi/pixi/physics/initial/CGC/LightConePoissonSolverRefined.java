@@ -264,6 +264,12 @@ public class LightConePoissonSolverRefined implements ICGCPoissonSolver {
 		}
 	}
 
+	/**
+	 * Applies periodic boundary conditions to the index i.
+	 * @param i index
+	 * @param n total lattice points
+	 * @return  index wrapped around the periodic boundary
+	 */
 	private int p(int i, int n) {
 		return (i % n + n) % n;
 	}
