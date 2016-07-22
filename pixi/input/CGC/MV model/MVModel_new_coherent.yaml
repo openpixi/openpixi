@@ -4,9 +4,9 @@ couplingConstant: 2
 numberOfDimensions: 3
 numberOfColors: 2
 numberOfThreads: 8
-gridCells: [64, 4, 4]
+gridCells: [64, 16, 16]
 timeStep: 0.5
-duration: 96
+duration: 5
 evaluationRegion:
   enabled: true
   point1: [2, 0, 0]
@@ -20,9 +20,9 @@ initialConditions:
   CGC:
     MVModelCoherent:
       - direction: 0
-        orientation: 1
+        orientation: -1
         longitudinalLocation: 32
-        longitudinalWidth: 8
+        longitudinalWidth: 4
         mu: .3
         randomSeed: 1
         ultravioletCutoffTransverse: 2
@@ -30,11 +30,12 @@ initialConditions:
         infraredCoefficient: 0.2
 
 
+
 # Generated panel code:
 panels:
   dividerLocation: 1015
   leftPanel:
-    dividerLocation: 483
+    dividerLocation: 496
     leftPanel:
       chartPanel:
         logarithmicScale: false
@@ -51,7 +52,7 @@ panels:
           automaticScaling: false
           colorIndex: 0
           directionIndex: 0
-          scaleFactor: 25.0
+          scaleFactor: 100.0
           showCoordinates: x, i, 0
           showFields:
           - E
@@ -68,10 +69,11 @@ panels:
           - E
   orientation: 1
   rightPanel:
-    dividerLocation: 415
+    dividerLocation: 428
     leftPanel:
       energyDensity2DGLPanel:
         automaticScaling: false
+        data: Energy density
         scaleFactor: 10000.0
         showCoordinates: x, y, 16
     orientation: 0
@@ -80,5 +82,95 @@ panels:
         automaticScaling: true
         scaleFactor: 1.0
         showCoordinates: x, y, 0
-  windowHeight: 1054
+  windowHeight: 1081
   windowWidth: 1922
+
+
+simulationType: temporal cgc ngp
+gridStep: 1
+couplingConstant: 2
+numberOfDimensions: 3
+numberOfColors: 2
+numberOfThreads: 8
+gridCells: [128, 32, 32]
+timeStep: 0.5
+duration: 64
+evaluationRegion:
+  enabled: true
+  point1: [2, 0, 0]
+  point2: [-3, -1, -1]
+activeRegion:
+  enabled: true
+  point1: [1, 0, 0]
+  point2: [-2, -1, -1]
+
+initialConditions:
+  CGC:
+
+    MVModelCoherent:
+      - direction: 0
+        orientation: 1
+        longitudinalLocation: 32
+        longitudinalWidth: 8
+        randomSeed: 5
+        mu: .2
+        ultravioletCutoffTransverse: 2
+        infraredCoefficient: 0.2
+      - direction: 0
+        orientation: -1
+        longitudinalLocation: 96
+        longitudinalWidth: 8
+        randomSeed: 6
+        mu: .2
+        ultravioletCutoffTransverse: 2
+        infraredCoefficient: 0.2
+
+
+
+# Generated panel code:
+panels:
+  dividerLocation: 785
+  leftPanel:
+    dividerLocation: 484
+    leftPanel:
+      chartPanel:
+        logarithmicScale: false
+        showCharts:
+        - Gauss law violation
+        - E squared
+        - B squared
+        - Energy density
+    orientation: 0
+    rightPanel:
+      dividerLocation: 386
+      leftPanel:
+        electricFieldPanel:
+          automaticScaling: true
+          colorIndex: 0
+          directionIndex: 0
+          scaleFactor: 2500.0
+          showCoordinates: x, i, 0
+          showFields:
+          - E
+          - B
+          - Gauss
+      orientation: 1
+      rightPanel:
+        electricFieldPanel:
+          automaticScaling: false
+          colorIndex: 0
+          directionIndex: 1
+          scaleFactor: 25.0
+          showCoordinates: x, i, 4
+          showFields:
+          - E
+          - U
+  orientation: 1
+  rightPanel:
+    energyDensity2DGLPanel:
+      automaticScaling: false
+      data: Energy density
+      scaleFactor: 10000.0
+      showCoordinates: x, y, 16
+  windowHeight: 1053
+  windowWidth: 1920
