@@ -85,8 +85,9 @@ public class LightConePoissonSolverImprovedFull implements ICGCPoissonSolver {
 			V[i] = s.grid.getElementFactory().groupIdentity();
 		}
 
-		int M = 16;
-		for (int k = 0; k < longitudinalNumCells; k++) {
+		// Number of sub lattice sites. Should be at least 4.
+		int M = 32;
+		for (int k = 1; k < longitudinalNumCells; k++) {
 			int z = (orientation < 0) ? k : (longitudinalNumCells - k - 1);
 			for (int i = 0; i < totalTransverseCells; i++) {
 				// Current position
@@ -115,12 +116,14 @@ public class LightConePoissonSolverImprovedFull implements ICGCPoissonSolver {
 					double z2 = z - 0.5;
 					double z3 = z;
 
-					W = W2(z1, z2, M / 2, P1, P2);
-					W.multAssign(W2(z2, z3, M / 2, P2, P3));
+					// Since the Wilson line from (n) to (n+1) crosses an NGP boundary, the Wilson line has to be split
+					// up into two parts.
+					W = W(z1, z2, M / 2, P1, P2);
+					W.multAssign(W(z2, z3, M / 2, P2, P3));
 				} else {
 					int i2 = index;
-					int i3 = s.grid.shift(i2, direction, -1);
-					int i1 = s.grid.shift(i2, direction, +1);
+					int i1 = s.grid.shift(i2, direction, -1);
+					int i3 = s.grid.shift(i2, direction, +1);
 
 					AlgebraElement P1 = phi0[i1];
 					AlgebraElement P2 = phi0[i2];
@@ -130,8 +133,10 @@ public class LightConePoissonSolverImprovedFull implements ICGCPoissonSolver {
 					double z2 = z + 0.5;
 					double z3 = z;
 
-					W = W2(z1, z2, M / 2, P1, P2);
-					W.multAssign(W2(z2, z3, M / 2, P2, P3));
+					// Since the Wilson line from (n) to (n+1) crosses an NGP boundary, the Wilson line has to be split
+					// up into two parts.
+					W = W(z1, z2, M / 2, P2, P3);
+					W.multAssign(W(z2, z3, M / 2, P1, P2));
 				}
 
 				gaugeLink.multAssign(W);
@@ -188,8 +193,10 @@ public class LightConePoissonSolverImprovedFull implements ICGCPoissonSolver {
 			AlgebraElement P1 = phi0[i1];
 			AlgebraElement P2 = phi0[i2];
 
-			W = W2(z1, z2, Mfrac, P1, P2);
+			// Compute "extra path" of the Wilson at t = +at/2 using the same method as before.
+			W = W(z1, z2, Mfrac, P1, P2);
 
+			// Evolve the Wilson line along the "extra path".
 			V[i].multAssign(W);
 		}
 
@@ -229,7 +236,18 @@ public class LightConePoissonSolverImprovedFull implements ICGCPoissonSolver {
 		}
 	}
 
-	private GroupElement W2(double z1, double z2, int M, AlgebraElement P1, AlgebraElement P2) {
+	/**
+	 * Computes the path ordered Wilson line using linear interpolation from z1 to z2 and field values of P1 and P2.
+	 * z1 and z2 are assumed to be within one NGP cell. P1 and P2 are the field values at the boundary of the NGP cell.
+	 *
+	 * @param z1    Start point of the Wilson line
+	 * @param z2    End point of the Wilson line
+	 * @param M     Number of sampling points with the path
+	 * @param P1    Boundary value of the field at the "left" side of the NGP cell
+	 * @param P2    Boundary value of the field at the "right" side of the NGP cell
+	 * @return      Path ordered Wilson line from z1 to z2
+	 */
+	private GroupElement W(double z1, double z2, int M, AlgebraElement P1, AlgebraElement P2) {
 		GroupElement W = s.grid.getElementFactory().groupIdentity();
 
 		double dz = Math.abs(z2 - z1) / ((double) M) * s.grid.getLatticeSpacing();
@@ -239,7 +257,7 @@ public class LightConePoissonSolverImprovedFull implements ICGCPoissonSolver {
 		double u2 = z2 - ui;
 
 		AlgebraElement PM = P1.add(P2).mult(0.5);
-		AlgebraElement PD = P1.sub(P2);
+		AlgebraElement PD = P2.sub(P1);
 
 		for (int m = 0; m < M; m++) {
 			double u = u1 + (u2 - u1) * (m + 0.5) / ((double) M);
