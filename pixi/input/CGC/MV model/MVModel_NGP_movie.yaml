@@ -1,0 +1,85 @@
+# MVmodel_NGP_movie
+#
+# This file demonstrates how to create a movie.
+#
+# You can create a movie from the sequence of images
+# by the following command:
+#
+# ffmpeg -r 25 -sameq -i img-%05d.png MVmodel_NGP_movie.mov
+
+simulationType: temporal cgc ngp
+gridStep: 1
+couplingConstant: 2
+numberOfDimensions: 3
+numberOfColors: 2
+numberOfThreads: 8
+gridCells: [128, 8, 8]
+timeStep: 0.25
+duration: 96
+evaluationRegion:
+  enabled: true
+  point1: [2, 0, 0]
+  point2: [-3, -1, -1]
+activeRegion:
+  enabled: true
+  point1: [1, 0, 0]
+  point2: [-2, -1, -1]
+
+currents:
+  MVModels:
+    - direction: 0
+      orientation: 1
+      longitudinalLocation: 32
+      longitudinalWidth: 3.0
+      mu: 0.05
+      randomSeed: 1
+    - direction: 0
+      orientation: -1
+      longitudinalLocation: -32
+      longitudinalWidth: 3.0
+      mu: 0.05
+      randomSeed: 2
+
+output:
+  screenshotInTime:
+    - path: "MVModel_NGP_movie/img-{counter}.png"
+      interval: 0.25
+      offset : 0
+      width: 1280
+      height: 720
+      panel:
+        energyDensityVoxelGLPanel:
+          automaticScaling: false
+          centerx: -6
+          centery: 4
+          centerz: 0
+          data: Energy density
+          direction: x
+          distanceFactor: 0.6
+          opacity: 1.0
+          phi: -2.1
+          scaleFactor: 100000.0
+          showSimulationBox: false
+          theta: 1.3
+          visibilityThreshold: 0.0
+          whiteBackground: false
+
+# Generated panel code:
+panels:
+  energyDensityVoxelGLPanel:
+    automaticScaling: false
+    centerx: -6
+    centery: 4
+    centerz: 0
+    data: Energy density
+    direction: x
+    distanceFactor: 0.6
+    opacity: 1.0
+    phi: -2.1
+    scaleFactor: 100000.0
+    showSimulationBox: false
+    theta: 1.3
+    visibilityThreshold: 0.0
+    whiteBackground: false
+  windowHeight: 700
+  windowWidth: 1200
