@@ -15,7 +15,7 @@ import java.util.ArrayList;
  * This particle generator creates particles to correctly interpolate the charge density
  * on the grid according to CGC initial conditions.
  */
-public class LightConeParticles implements IParticleCreator {
+public class LightConeNGPParticleCreator implements IParticleCreator {
 
 	/**
 	 * Direction of movement of the charge density. Values range from 0 to numberOfDimensions-1.

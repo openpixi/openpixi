@@ -1,6 +1,7 @@
 package org.openpixi.pixi.physics.initial.CGC;
 
 import org.openpixi.pixi.physics.Simulation;
+import org.openpixi.pixi.physics.SimulationType;
 import org.openpixi.pixi.physics.initial.IInitialCondition;
 
 /**
@@ -32,16 +33,18 @@ public class CGCInitialCondition implements IInitialCondition {
 		int orientation = initialChargeDensity.getOrientation();
 
 		// Solve Poisson equation and set fields on the grid. Also computes Gauss constraint and saves it.
-		//ICGCPoissonSolver solver = new LightConePoissonSolver();
-		ICGCPoissonSolver solver = new LightConePoissonSolverImproved();
+		ICGCPoissonSolver solver = new LightConePoissonSolverImprovedFull();
 		solver.initialize(s);
 		solver.solve(initialChargeDensity);
 
 		// Spawn particles.
-		initialParticleCreator = new LightConeParticles(direction, orientation);
+		if(s.getSimulationType() == SimulationType.TemporalCGCNGP) {
+			initialParticleCreator = new LightConeNGPParticleCreator();
+		} else {
+			System.out.println("CGCInitialCondition: simulation type not supported!");
+		}
 		initialParticleCreator.setGaussConstraint(solver.getGaussViolation());
-		//initialParticleCreator.setGaussConstraint(initialChargeDensity.getChargeDensity());
-		initialParticleCreator.initialize(s);
+		initialParticleCreator.initialize(s, direction, orientation);
 
 		// Clear some memory.
 		initialChargeDensity.clear();
