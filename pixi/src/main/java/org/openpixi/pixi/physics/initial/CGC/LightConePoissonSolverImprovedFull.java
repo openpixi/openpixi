@@ -17,6 +17,12 @@ public class LightConePoissonSolverImprovedFull implements ICGCPoissonSolver {
 	AlgebraElement[] gaussViolation;
 
 	/**
+	 * This array stores the values of the Wilson line V at the longitudinal boundary behind the nucleus.
+	 * It is used to computed the tadpole and dipole expectation value.
+	 */
+	GroupElement[] VT;
+
+	/**
 	 * Initializes the LightConePoissonSolver. Used to solve the transverse Poisson equation 'sheer by sheet'.
 	 * @param s Reference to the Simulation object
 	 */
@@ -142,6 +148,18 @@ public class LightConePoissonSolverImprovedFull implements ICGCPoissonSolver {
 				gaugeLink.multAssign(W);
 				V[index] = gaugeLink;
 			}
+		}
+
+		// Store V at longitudinal boundary behind nucleus.
+		VT = new GroupElement[totalTransverseCells];
+		for (int i = 0; i < totalTransverseCells; i++) {
+			// Longitudinal coordinate of transverse plane "far behind" nucleus.
+			int z = (orientation > 0) ? 0 : (longitudinalNumCells - 1);
+			int[] transPos = GridFunctions.getCellPos(i, transverseNumCells);
+			int[] gridPos = GridFunctions.insertGridPos(transPos, direction, z);
+			int index = s.grid.getCellIndex(gridPos);
+
+			VT[i] = V[index].copy();
 		}
 
 		// Make a copy of the grid. Ugly, but needed for Gauss constraint calculation.
@@ -275,4 +293,6 @@ public class LightConePoissonSolverImprovedFull implements ICGCPoissonSolver {
 	public AlgebraElement[] getGaussViolation() {
 		return this.gaussViolation;
 	}
+
+	public GroupElement[] getV() {return  this.VT; }
 }
