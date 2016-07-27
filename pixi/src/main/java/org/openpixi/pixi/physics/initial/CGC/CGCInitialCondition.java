@@ -42,6 +42,9 @@ public class CGCInitialCondition implements IInitialCondition {
 		solver.solve(initialChargeDensity);
 
 		// Compute tadpole, dipole, ...
+		WilsonLineObservables wilson = new WilsonLineObservables(s, solver, initialChargeDensity);
+		wilson.computeTadpole("tadpole.txt");
+		wilson.computeDipole("dipole.txt");
 
 		// Spawn particles.
 		if(s.getSimulationType() == SimulationType.TemporalCGCNGP) {
