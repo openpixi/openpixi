@@ -18,6 +18,7 @@ activeRegion:
 
 initialConditions:
   CGC:
+    poissonSolver: improved full
     MVModel:
       - direction: 0
         orientation: 1

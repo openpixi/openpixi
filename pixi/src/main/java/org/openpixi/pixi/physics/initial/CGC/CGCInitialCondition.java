@@ -18,6 +18,11 @@ public class CGCInitialCondition implements IInitialCondition {
 	protected IInitialChargeDensity initialChargeDensity;
 
 	/**
+	 *
+	 */
+	protected ICGCPoissonSolver solver;
+
+	/**
 	 * Particle creation algorithm.
 	 */
 	protected IParticleCreator initialParticleCreator;
@@ -33,7 +38,6 @@ public class CGCInitialCondition implements IInitialCondition {
 		int orientation = initialChargeDensity.getOrientation();
 
 		// Solve Poisson equation and set fields on the grid. Also computes Gauss constraint and saves it.
-		ICGCPoissonSolver solver = new LightConePoissonSolverImprovedFull();
 		solver.initialize(s);
 		solver.solve(initialChargeDensity);
 
@@ -53,4 +57,6 @@ public class CGCInitialCondition implements IInitialCondition {
 	public void setInitialChargeDensity(IInitialChargeDensity rho) {
 		this.initialChargeDensity = rho;
 	}
+
+	public void setPoissonSolver(ICGCPoissonSolver solver) { this.solver = solver; }
 }
