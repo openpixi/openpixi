@@ -19,5 +19,7 @@ public interface IInitialChargeDensity {
 
 	double getRegulator();
 
+	String getInfo();
+
 	void clear();
 }

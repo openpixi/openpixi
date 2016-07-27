@@ -41,6 +41,8 @@ public class CGCInitialCondition implements IInitialCondition {
 		solver.initialize(s);
 		solver.solve(initialChargeDensity);
 
+		// Compute tadpole, dipole, ...
+
 		// Spawn particles.
 		if(s.getSimulationType() == SimulationType.TemporalCGCNGP) {
 			initialParticleCreator = new LightConeNGPParticleCreator();

@@ -163,6 +163,18 @@ public class MVModel implements IInitialChargeDensity {
 		return infraredCoefficient;
 	}
 
+	public String getInfo(){
+		/*
+			mu   ... MV model parameter
+			w    ... longitudinal width
+			UVT  ... transverse UV cutoff
+			c    ... longitudinal correlation length
+			m    ... IR regulator
+		 */
+		return String.format("MV, mu: %f, w: %f, UVT: %f, c: %f, m: %f",
+				mu, longitudinalWidth, ultravioletCutoffTransverse, longitudinalCoherenceLength, infraredCoefficient);
+	}
+
 	public void clear() {
 		this.rho = null;
 	}
