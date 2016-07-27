@@ -91,7 +91,7 @@ public class LightConePoissonSolver implements ICGCPoissonSolver {
 		}
 
 		// Is the multiplication with orientation correct?
-		double gaugeFactor = orientation * s.getCouplingConstant() * s.grid.getLatticeSpacing();
+		double gaugeFactor = - s.getCouplingConstant() * s.grid.getLatticeSpacing();
 		for (int k = 0; k < longitudinalNumCells; k++) {
 			int z = (orientation < 0) ? k : (longitudinalNumCells - k - 1);
 			for (int i = 0; i < totalTransverseCells; i++) {
@@ -171,7 +171,7 @@ public class LightConePoissonSolver implements ICGCPoissonSolver {
 				GroupElement deltaV = deltaphi[index].mult(gaugeFactor).getLink();
 
 				// Adjust V by slightly adding a contribution from the next longitudinal position
-				V[indexL] = deltaV.mult(V[indexL]);
+				V[indexL] = V[indexL].mult(deltaV);
 			}
 		}
 
