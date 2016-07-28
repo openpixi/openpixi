@@ -45,7 +45,7 @@ public class WilsonLineObservables {
 			Vtrace += V[i].getRealTrace();
 		}
 
-		String output = density.getInfo() + ", V: " + Vtrace / totalCells + "\n";
+		String output = density.getInfo() + ", V: " + FileFunctions.format(Vtrace / totalCells) + "\n";
 
 		// Write to file
 		try {
@@ -120,17 +120,13 @@ public class WilsonLineObservables {
 			pw.write(density.getInfo()+"\n");
 			pw.write("d\ttr(V V^t)\n");
 			for (int bin = 0; bin < numBins; bin++) {
-				pw.write(bin * ds + "\t");
-				pw.write(trVVbinned[bin] + "\n");
+				pw.write(FileFunctions.format(bin * ds * s.grid.getLatticeSpacing()) + "\t");
+				pw.write(FileFunctions.format(trVVbinned[bin]) + "\n");
 			}
 			pw.close();
 		} catch (IOException ex) {
 			System.out.println("WilsonLineObservables: Cannot write to file " +  filename);
 		}
-
-
-		System.out.println("Done!");
-
 	}
 
 }
