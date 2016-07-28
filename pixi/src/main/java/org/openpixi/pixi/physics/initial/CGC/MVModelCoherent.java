@@ -171,10 +171,6 @@ public class MVModelCoherent implements IInitialChargeDensity {
 		return orientation;
 	}
 
-	public double getRegulator() {
-		return infraredCoefficient;
-	}
-
 	public String getInfo(){
 		/*
 			mu   ... MV model parameter
