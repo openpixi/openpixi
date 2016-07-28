@@ -31,7 +31,7 @@ public class Nucleus implements IInitialChargeDensity {
 	private double location;
 
 	/**
-	 * Transversal location of the initial charge density in the simulation box.
+	 * Transverse location of the initial charge density in the simulation box.
 	 */
 	private double[] locationTransverse;
 
@@ -71,10 +71,25 @@ public class Nucleus implements IInitialChargeDensity {
 	public double surfaceThickness;
 
 	/**
+	 * Width of the Gaussian distribution of the valence quark charge
+	 */
+	private double partonWidth;
+
+	/**
+	 * Width of the Gaussian distribution of the nucleons
+	 */
+	private double nucleonWidth;
+
+	/**
 	 * Seed for the random variables.
 	 */
 	private boolean useSeed = false;
 	private int seed;
+
+	/**
+	 * Number of nucleons in the simulated nucleus.
+	 */
+	private int numberOfNucleons;
 
 	/**
 	 * Coefficient used for the transverse UV regulator, which is implemented as a hard cutoff. This parameter is given
@@ -115,26 +130,30 @@ public class Nucleus implements IInitialChargeDensity {
 	 * @param infraredCoefficient               IR regulator coefficient in the transverse plane
 	 */
 	public Nucleus(int direction, int orientation, double location, double[] locationTransverse, double longitudinalWidth, double mu,
-				   boolean useSeed, int seed, boolean useConstituentQuarks, double transversalRadius, double surfaceThickness,
-				   double ultravioletCutoffTransverse, double ultravioletCutoffLongitudinal,
+				   boolean useSeed, int seed, int numberOfNucleons, boolean useConstituentQuarks, double transversalRadius, double surfaceThickness,
+				   double nucleonWidth, double partonWidth, double ultravioletCutoffTransverse, double ultravioletCutoffLongitudinal,
 				   double infraredCoefficient){
 
 		this.direction = direction;
 		this.orientation = orientation;
 		this.location = location;
-		this.locationTransverse = locationTransverse;
 		this.longitudinalWidth = longitudinalWidth;
+		this.locationTransverse = locationTransverse;
 		this.transversalRadius = transversalRadius;
 		this.surfaceThickness = surfaceThickness;
+		this.nucleonWidth = nucleonWidth;
+		this.partonWidth = partonWidth;
 		this.mu = mu;
 		this.useSeed = useSeed;
 		this.useConstituentQuarks = useConstituentQuarks;
 		this.seed = seed;
+		this.numberOfNucleons = numberOfNucleons;
 		this.ultravioletCutoffTransverse = ultravioletCutoffTransverse;
 		this.ultravioletCutoffLongitudinal = ultravioletCutoffLongitudinal;
 		this.infraredCoefficient = infraredCoefficient;
 
 		this.nucleons = new ArrayList<NucleonCharge>();
+		this.quarks = new ArrayList<GaussianQuarkCharge>();
 	}
 
 	public void initialize(Simulation s) {
@@ -158,6 +177,33 @@ public class Nucleus implements IInitialChargeDensity {
 			rand.setSeed(seed);
 		}
 
+		// Iterate over nucleons and place them according to a Woods-Saxon profile.
+		int start = 0, range;
+		if(transNumCells[start] > 1) {
+			range = transNumCells[start];
+		} else {
+			range = transNumCells[start+1];
+		}
+		for (int j = 0; j < transNumCells.length; j++) {
+			if( (transNumCells[j] > 1) && (transNumCells[j] < range) ) {
+				range = transNumCells[j];
+			}
+		}
+
+		ArrayList<double[]> listOfNucleonLocations = new ArrayList<double[]>();
+		for(int i = 0; i < numberOfNucleons; i++) {
+			double[] chargeLocation = new double[locationTransverse.length];
+			for (int j = 0; j < locationTransverse.length; j++) {
+				chargeLocation[j] = locationTransverse[j] + getWoodsSaxonMonteCarlo(rand, range*as);
+			}
+			listOfNucleonLocations.add(chargeLocation);
+		}
+
+		for(int i = 0; i < numberOfNucleons; i++) {
+			addNucleon(listOfNucleonLocations.get(i), nucleonWidth, partonWidth);
+		}
+
+
 		int numOverlappingQuarks = 1;
 		if(!useConstituentQuarks) {
 			numOverlappingQuarks = 3;
@@ -176,7 +222,6 @@ public class Nucleus implements IInitialChargeDensity {
 						protonLocation[k] = nc.location[k] + rand.nextGaussian() * nc.width;
 					}
 					addQuark(protonLocation, nc.partonWidth);
-
 
 				} else {
 
@@ -273,6 +318,23 @@ public class Nucleus implements IInitialChargeDensity {
 		return gauss.value(z);
 	}
 
+	private double getWoodsSaxonMonteCarlo(Random rand, double range) {
+		double random1, random2, y;
+		do {
+			random1 = rand.nextDouble();
+			random2 = rand.nextDouble();
+			double norm = 2.0*Math.pow(Math.PI, locationTransverse.length - 1)/surfaceThickness*Math.log(1.0 + Math.exp(transversalRadius/surfaceThickness));
+			//double range = transversalRadius + surfaceThickness*Math.log(1.0/(10e-10*norm) - 1.0);
+			random1 *= range;
+			random2 /= norm;
+			y = 1.0/(norm*(Math.exp((random1 - transversalRadius)/surfaceThickness) + 1));
+		} while (random2 > y);
+
+		double randSign = Math.signum(rand.nextDouble() - 0.5);//TODO: Make this method spherical!!
+
+		return random1*randSign;
+	}
+
 	/**
 	 * Utility class to deal with nucleon charges. Only used to specify the initial conditions.
 	 */
@@ -306,7 +368,7 @@ public class Nucleus implements IInitialChargeDensity {
 	 * @param location
 	 * @param width
 	 */
-	public void addNucleon(double[] location, double width, double partonWidth) {
+	private void addNucleon(double[] location, double width, double partonWidth) {
 		// This method should be called from the YAML object to add the nucleons for the current generator.
 		this.nucleons.add(new NucleonCharge(location, width, partonWidth));
 	}
