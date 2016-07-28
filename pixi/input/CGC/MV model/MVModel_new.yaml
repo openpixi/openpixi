@@ -21,6 +21,8 @@ initialConditions:
     poissonSolver: improved full
     computeTadpole: true
     tadpoleFilename: tadpole_test.dat
+    computeDipole: true
+    dipoleFilename: dipole_test.dat
     MVModel:
       - direction: 0
         orientation: 1

@@ -70,5 +70,67 @@ public class WilsonLineObservables {
 
 		int[] numCells = GridFunctions.reduceGridPos(s.grid.getNumCells(), density.getDirection());
 		int totalCells = GridFunctions.getTotalNumberOfCells(numCells);
+
+		// Bin the results to get the correlator as a function of distance.
+		int numBins = (int) Math.sqrt(totalCells) / 2;
+		double[] trVVbinned = new double[numBins];
+		int[] counter = new int[numBins];
+		double maximumDistance = Math.min(numCells[0], numCells[1]) * 0.5;
+		double ds = maximumDistance / ((double) numBins);
+
+		for (int i = 0; i < numBins; i++) {
+			trVVbinned[i] = 0.0;
+			counter[i] = 0;
+		}
+
+		for (int i = 0; i < totalCells; i++) {
+			GroupElement V1 = V[i];
+			int[] x = GridFunctions.getCellPos(i, numCells);
+			for (int j = 0; j < totalCells; j++) {
+				int[] y = GridFunctions.getCellPos(j, numCells);
+				double[] dxy = new double[2];
+				double dist = 0.0;
+				for (int k = 0; k < 2; k++) {
+					dxy[k] = Math.abs(x[k] - y[k]);
+					// Wrap distance around periodic boundary.
+					if(dxy[k] > numCells[k] / 2) {
+						dxy[k] -= numCells[k];
+					}
+					dist += dxy[k] * dxy[k];
+				}
+				dist = Math.sqrt(dist);
+				int bin = (int) (dist / ds);
+				if(bin < numBins) {
+					GroupElement V2 = V[j].adj();
+					trVVbinned[bin] += V1.mult(V2).getRealTrace();
+					counter[bin]++;
+				}
+
+			}
+		}
+
+		for (int i = 0; i < numBins; i++) {
+			trVVbinned[i] /= (double) counter[i];
+		}
+
+		// Write data to file.
+		try {
+			File file = FileFunctions.getFile("output/" + filename);
+			FileWriter pw = new FileWriter(file, true);
+			pw.write(density.getInfo()+"\n");
+			pw.write("d\ttr(V V^t)\n");
+			for (int bin = 0; bin < numBins; bin++) {
+				pw.write(bin * ds + "\t");
+				pw.write(trVVbinned[bin] + "\n");
+			}
+			pw.close();
+		} catch (IOException ex) {
+			System.out.println("WilsonLineObservables: Cannot write to file " +  filename);
+		}
+
+
+		System.out.println("Done!");
+
 	}
+
 }
