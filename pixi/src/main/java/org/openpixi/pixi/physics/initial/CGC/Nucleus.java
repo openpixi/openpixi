@@ -247,12 +247,15 @@ public class Nucleus implements IInitialChargeDensity {
 		for (int j = 0; j < numberOfComponents; j++) {
 			double[] tempRho = new double[s.grid.getTotalNumberOfCells()];
 
-			// Place random charges on the grid (with longitudinal randomness).
+			// Place random charges on the grid (with longitudinal randomness). Takes care of the overall longitudinal profile!!!
+			Gaussian gauss = new Gaussian(location, longitudinalWidth);
 			for (int i = 0; i < totalTransCells; i++) {
 				int[] transPos = GridFunctions.getCellPos(i, transNumCells);
 				for (int k = 0; k < longitudinalNumCells; k++) {
-					double charge = rand.nextGaussian() * transversalWidths[i] * mu * s.getCouplingConstant() / as;
 					int[] gridPos = GridFunctions.insertGridPos(transPos, direction, k);
+					double longPos = gridPos[direction] * as;
+					double profile = Math.sqrt(gauss.value(longPos));
+					double charge = rand.nextGaussian() * transversalWidths[i] * profile * mu * s.getCouplingConstant() / Math.pow(as, 3/2);
 					int index = s.grid.getCellIndex(gridPos);
 					tempRho[index] = charge;
 				}
@@ -262,15 +265,6 @@ public class Nucleus implements IInitialChargeDensity {
 			tempRho = FourierFunctions.regulateChargeDensityHard(tempRho, s.grid.getNumCells(),
 					ultravioletCutoffTransverse, ultravioletCutoffLongitudinal, infraredCoefficient, direction,
 					s.grid.getLatticeSpacing());
-
-			// Apply longitudinal profile.
-			Gaussian gauss = new Gaussian(location, longitudinalWidth);
-			for (int i = 0; i < s.grid.getTotalNumberOfCells(); i++) {
-				int[] pos = s.grid.getCellPos(i);
-				double longPos = pos[direction] * s.grid.getLatticeSpacing();
-				double profile = gauss.value(longPos);
-				tempRho[i] *= profile;
-			}
 
 			// Put everything into rho array.
 			for (int i = 0; i < s.grid.getTotalNumberOfCells(); i++) {
