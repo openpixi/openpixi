@@ -19,6 +19,8 @@ activeRegion:
 initialConditions:
   CGC:
     poissonSolver: improved full
+    computeTadpole: true
+    tadpoleFilename: tadpole_test_coherent.dat
     MVModelCoherent:
       - direction: 0
         orientation: 1

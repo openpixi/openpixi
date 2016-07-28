@@ -18,7 +18,7 @@ public class CGCInitialCondition implements IInitialCondition {
 	protected IInitialChargeDensity initialChargeDensity;
 
 	/**
-	 *
+	 * CGC Poisson solver
 	 */
 	protected ICGCPoissonSolver solver;
 
@@ -26,6 +26,27 @@ public class CGCInitialCondition implements IInitialCondition {
 	 * Particle creation algorithm.
 	 */
 	protected IParticleCreator initialParticleCreator;
+
+	/**
+	 * Option whether to compute the tadpole expectation value of the Wilson line.
+	 */
+	public boolean computeTadpole = false;
+
+	/**
+	 * File name or path for saving the tadpole output.
+	 */
+	public String tadpoleFilename = "tadpole.txt";
+
+	/**
+	 * Option whether to compute the dipole correlation function of the Wilson line.
+	 */
+	public boolean computeDipole = false;
+
+	/**
+	 * File name or path for saving the dipole output.
+	 */
+	public String dipoleFilename = "dipole.txt";
+
 
 	/**
 	 * Applies CGC initial conditions.
@@ -43,8 +64,12 @@ public class CGCInitialCondition implements IInitialCondition {
 
 		// Compute tadpole, dipole, ...
 		WilsonLineObservables wilson = new WilsonLineObservables(s, solver, initialChargeDensity);
-		wilson.computeTadpole("tadpole.txt");
-		wilson.computeDipole("dipole.txt");
+		if(computeTadpole) {
+			wilson.computeTadpole(tadpoleFilename);
+		}
+		if(computeDipole) {
+			wilson.computeDipole(dipoleFilename);
+		}
 
 		// Spawn particles.
 		if(s.getSimulationType() == SimulationType.TemporalCGCNGP) {

@@ -10,6 +10,11 @@ import java.util.ArrayList;
 public class YamlCGC {
 
 	public String poissonSolver;
+	public Boolean computeTadpole = false;
+	public Boolean computeDipole = false;
+	public String tadpoleFilename = "tadpole.txt";
+	public String dipoleFilename = "dipole.txt";
+
 	public ArrayList<YamlMVModel> MVModel = new ArrayList<YamlMVModel>();
 	public ArrayList<YamlMVModelCoherent> MVModelCoherent = new ArrayList<YamlMVModelCoherent>();
 
@@ -20,16 +25,24 @@ public class YamlCGC {
 	 */
 	public void applyTo(Settings s) {
 		for (YamlMVModel init : MVModel) {
-			IInitialCondition ic = init.getInitialCondition();
-			((CGCInitialCondition) ic).setPoissonSolver(getPoissonSolver(poissonSolver));
+			CGCInitialCondition ic = init.getInitialCondition();
+			applyOptions(ic);
 			s.addInitialConditions(ic);
 		}
 
 		for (YamlMVModelCoherent init : MVModelCoherent) {
-			IInitialCondition ic = init.getInitialCondition();
-			((CGCInitialCondition) ic).setPoissonSolver(getPoissonSolver(poissonSolver));
+			CGCInitialCondition ic = init.getInitialCondition();
+			applyOptions(ic);
 			s.addInitialConditions(ic);
 		}
+	}
+
+	private void applyOptions(CGCInitialCondition ic) {
+		ic.setPoissonSolver(getPoissonSolver(poissonSolver));
+		ic.computeTadpole = computeTadpole;
+		ic.computeDipole = computeDipole;
+		ic.tadpoleFilename = tadpoleFilename;
+		ic.dipoleFilename = dipoleFilename;
 	}
 
 	private ICGCPoissonSolver getPoissonSolver(String name) {
