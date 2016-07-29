@@ -193,9 +193,12 @@ public class NucleusCoherent implements IInitialChargeDensity {
 		ArrayList<double[]> listOfNucleonLocations = new ArrayList<double[]>();
 		for(int i = 0; i < numberOfNucleons; i++) {
 			double[] chargeLocation = new double[locationTransverse.length];
-			for (int j = 0; j < locationTransverse.length; j++) {
+			double phase = rand.nextDouble()*2*Math.PI;
+			chargeLocation[0] = locationTransverse[0] + getWoodsSaxonMonteCarlo(rand, range*as)*Math.cos(phase);//Attention: This only works in 3D!!!
+			chargeLocation[1] = locationTransverse[1] + getWoodsSaxonMonteCarlo(rand, range*as)*Math.sin(phase);//Attention: This only works in 3D!!!
+			/*for (int j = 0; j < locationTransverse.length; j++) {
 				chargeLocation[j] = locationTransverse[j] + getWoodsSaxonMonteCarlo(rand, range*as);
-			}
+			}*/
 			listOfNucleonLocations.add(chargeLocation);
 		}
 
@@ -330,9 +333,7 @@ public class NucleusCoherent implements IInitialChargeDensity {
 			y = 1.0/(norm*(Math.exp((random1 - transversalRadius)/surfaceThickness) + 1));
 		} while (random2 > y);
 
-		double randSign = Math.signum(rand.nextDouble() - 0.5);//TODO: Make this method spherical!!
-
-		return random1*randSign;
+		return random1;
 	}
 
 	/**
