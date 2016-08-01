@@ -170,7 +170,7 @@ public class Nucleus implements IInitialChargeDensity {
 			this.rho[i] = s.grid.getElementFactory().algebraZero();
 		}
 
-		double[] transversalWidths = new double[totalTransCells];
+		double[] colorChargeWidths = new double[totalCells];
 
 		Random rand = new Random();
 		if(useSeed) {
@@ -190,17 +190,22 @@ public class Nucleus implements IInitialChargeDensity {
 			}
 		}
 
-		ArrayList<double[]> listOfNucleonLocations = new ArrayList<double[]>();
+		ArrayList<double[]> listOfTransverseNucleonLocations = new ArrayList<double[]>();
+		double[] listOfLongitudinalNucleonLocations = new double[numberOfNucleons];
 		for(int i = 0; i < numberOfNucleons; i++) {
 			double[] chargeLocation = new double[locationTransverse.length];
-			for (int j = 0; j < locationTransverse.length; j++) {
+			double phase = rand.nextDouble()*2*Math.PI;
+			chargeLocation[0] = locationTransverse[0] + getWoodsSaxonMonteCarlo(rand, range*as)*Math.cos(phase);//Attention: This only works in 3D!!!
+			chargeLocation[1] = locationTransverse[1] + getWoodsSaxonMonteCarlo(rand, range*as)*Math.sin(phase);//Attention: This only works in 3D!!!
+			listOfLongitudinalNucleonLocations[i] = location + rand.nextGaussian() * longitudinalWidth;
+			/*for (int j = 0; j < locationTransverse.length; j++) {
 				chargeLocation[j] = locationTransverse[j] + getWoodsSaxonMonteCarlo(rand, range*as);
-			}
-			listOfNucleonLocations.add(chargeLocation);
+			}*/
+			listOfTransverseNucleonLocations.add(chargeLocation);
 		}
 
 		for(int i = 0; i < numberOfNucleons; i++) {
-			addNucleon(listOfNucleonLocations.get(i), nucleonWidth, partonWidth);
+			addNucleon(listOfTransverseNucleonLocations.get(i), listOfLongitudinalNucleonLocations[i], nucleonWidth, partonWidth);
 		}
 
 
@@ -210,6 +215,7 @@ public class Nucleus implements IInitialChargeDensity {
 		}
 
 		// Iterate over nucleons, create a quark distribution inside of them and add them to the quark array.
+		double ratio = Math.sqrt(2*Math.log(10))*longitudinalWidth/transversalRadius; //Ratio of the longitudinal width to the transverse radius.
 		for (int i = 0; i < nucleons.size(); i++) {
 			NucleonCharge nc = nucleons.get(i);
 
@@ -221,11 +227,12 @@ public class Nucleus implements IInitialChargeDensity {
 					for (int k = 0; k < nc.location.length; k++) {
 						protonLocation[k] = nc.location[k] + rand.nextGaussian() * nc.width;
 					}
-					addQuark(protonLocation, nc.partonWidth);
+					double protonLongLocation = nc.longLocation + rand.nextGaussian() * nc.width * ratio;
+					addQuark(protonLocation, protonLongLocation, nc.partonWidth);
 
 				} else {
 
-					addQuark(nc.location, nc.width);
+					addQuark(nc.location, nc.longLocation, nc.width);
 
 				}
 			}
@@ -234,29 +241,30 @@ public class Nucleus implements IInitialChargeDensity {
 		double norm = 0.0;
 		for (int i = 0; i < quarks.size(); i++) {
 			GaussianQuarkCharge qc = quarks.get(i);
-			for (int k = 0; k < totalTransCells; k++) {
-				double distance = getDistance(qc.location, GridFunctions.getCellPos(k, transNumCells), as);
-				transversalWidths[k] += Math.abs(shapeFunction(distance, qc.width) / Math.pow(qc.width * Math.sqrt(2 * Math.PI), transNumCells.length)/numOverlappingQuarks);
-				norm += Math.abs(shapeFunction(distance, qc.width) / Math.pow(qc.width * Math.sqrt(2 * Math.PI), transNumCells.length)/numOverlappingQuarks);
+			for (int k = 0; k < totalCells; k++) {
+				double distance = getDistance(qc.location, qc.longLocation, GridFunctions.getCellPos(k, s.grid.getNumCells()), as);
+				colorChargeWidths[k] += Math.abs(shapeFunction(distance, qc.width) / Math.pow(qc.width * Math.sqrt(2 * Math.PI), s.getNumberOfDimensions())/numOverlappingQuarks);
+				norm += Math.abs(shapeFunction(distance, qc.width) / Math.pow(qc.width * Math.sqrt(2 * Math.PI), s.getNumberOfDimensions())/numOverlappingQuarks);
 			}
 		}
-		for (int k = 0; k < totalTransCells; k++) {
-			transversalWidths[k] /= norm;
+		for (int k = 0; k < totalCells; k++) {
+			colorChargeWidths[k] /= norm;
 		}
 
 		for (int j = 0; j < numberOfComponents; j++) {
 			double[] tempRho = new double[s.grid.getTotalNumberOfCells()];
 
 			// Place random charges on the grid (with longitudinal randomness). Takes care of the overall longitudinal profile!!!
-			Gaussian gauss = new Gaussian(location, longitudinalWidth);
+			//Gaussian gauss = new Gaussian(location, longitudinalWidth);
 			for (int i = 0; i < totalTransCells; i++) {
 				int[] transPos = GridFunctions.getCellPos(i, transNumCells);
 				for (int k = 0; k < longitudinalNumCells; k++) {
 					int[] gridPos = GridFunctions.insertGridPos(transPos, direction, k);
 					double longPos = gridPos[direction] * as;
-					double profile = Math.sqrt(gauss.value(longPos));
-					double charge = rand.nextGaussian() * transversalWidths[i] * profile * mu * s.getCouplingConstant() / Math.pow(as, 3/2);
 					int index = s.grid.getCellIndex(gridPos);
+					//double profile = Math.sqrt(gauss.value(longPos));
+					double charge = rand.nextGaussian() * colorChargeWidths[index] * mu * s.getCouplingConstant() / Math.pow(as, 3/2);
+
 					tempRho[index] = charge;
 				}
 			}
@@ -299,11 +307,23 @@ public class Nucleus implements IInitialChargeDensity {
 		this.rho = null;
 	}
 
-	private double getDistance(double[] center, int[] position, double spacing) {
+	private double getDistance(double[] center2D, double centerLong, int[] position, double spacing) {
 		double distance = 0.0;
-		for (int j = 0; j < position.length; j++) {
-			distance += Math.pow(center[j] - spacing*position[j], 2);
+		double[] center3D = new double[position.length];
+		int count = 0;
+		for (int i = 0; i < position.length; i++) {
+			if (i != direction) {
+				center3D[i] = center2D[count];
+				count++;
+			} else {
+				center3D[i] = centerLong;
+			}
 		}
+
+		for (int j = 0; j < position.length; j++) {
+			distance += Math.pow(center3D[j] - spacing*position[j], 2);
+		}
+
 		return Math.sqrt(distance);
 	}
 
@@ -324,9 +344,7 @@ public class Nucleus implements IInitialChargeDensity {
 			y = 1.0/(norm*(Math.exp((random1 - transversalRadius)/surfaceThickness) + 1));
 		} while (random2 > y);
 
-		double randSign = Math.signum(rand.nextDouble() - 0.5);//TODO: Make this method spherical!!
-
-		return random1*randSign;
+		return random1;
 	}
 
 	/**
@@ -334,10 +352,12 @@ public class Nucleus implements IInitialChargeDensity {
 	 */
 	class NucleonCharge {
 		public double[] location;
+		public double longLocation;
 		double width, partonWidth;
 
-		public NucleonCharge(double[] location, double width, double partonWidth) {
+		public NucleonCharge(double[] location, double longLocation, double width, double partonWidth) {
 			this.location = location;
+			this.longLocation = longLocation;
 			this.width = width;
 			this.partonWidth = partonWidth;
 		}
@@ -348,10 +368,12 @@ public class Nucleus implements IInitialChargeDensity {
 	 */
 	class GaussianQuarkCharge {
 		public double[] location;
+		public double longLocation;
 		double width;
 
-		public GaussianQuarkCharge(double[] location, double width) {
+		public GaussianQuarkCharge(double[] location, double longLocation, double width) {
 			this.location = location;
+			this.longLocation = longLocation;
 			this.width = width;
 		}
 	}
@@ -362,9 +384,9 @@ public class Nucleus implements IInitialChargeDensity {
 	 * @param location
 	 * @param width
 	 */
-	private void addNucleon(double[] location, double width, double partonWidth) {
-		// This method should be called from the YAML object to add the nucleons for the current generator.
-		this.nucleons.add(new NucleonCharge(location, width, partonWidth));
+	private void addNucleon(double[] location, double longLocation, double width, double partonWidth) {
+
+		this.nucleons.add(new NucleonCharge(location, longLocation, width, partonWidth));
 	}
 
 	/**
@@ -373,9 +395,9 @@ public class Nucleus implements IInitialChargeDensity {
 	 * @param location
 	 * @param width
 	 */
-	private void addQuark(double[] location, double width) {
-		// This method should be called from the YAML object to add the charges for the current generator.
-		this.quarks.add(new GaussianQuarkCharge(location, width));
+	private void addQuark(double[] location, double longLocation, double width) {
+
+		this.quarks.add(new GaussianQuarkCharge(location, longLocation, width));
 	}
 }
 
