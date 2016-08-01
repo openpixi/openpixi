@@ -1,6 +1,7 @@
 package org.openpixi.pixi.physics.initial.CGC;
 
 import org.openpixi.pixi.physics.Simulation;
+import org.openpixi.pixi.physics.SimulationType;
 import org.openpixi.pixi.physics.initial.IInitialCondition;
 
 /**
@@ -17,9 +18,35 @@ public class CGCInitialCondition implements IInitialCondition {
 	protected IInitialChargeDensity initialChargeDensity;
 
 	/**
+	 * CGC Poisson solver
+	 */
+	protected ICGCPoissonSolver solver;
+
+	/**
 	 * Particle creation algorithm.
 	 */
 	protected IParticleCreator initialParticleCreator;
+
+	/**
+	 * Option whether to compute the tadpole expectation value of the Wilson line.
+	 */
+	public boolean computeTadpole = false;
+
+	/**
+	 * File name or path for saving the tadpole output.
+	 */
+	public String tadpoleFilename = "tadpole.txt";
+
+	/**
+	 * Option whether to compute the dipole correlation function of the Wilson line.
+	 */
+	public boolean computeDipole = false;
+
+	/**
+	 * File name or path for saving the dipole output.
+	 */
+	public String dipoleFilename = "dipole.txt";
+
 
 	/**
 	 * Applies CGC initial conditions.
@@ -32,16 +59,26 @@ public class CGCInitialCondition implements IInitialCondition {
 		int orientation = initialChargeDensity.getOrientation();
 
 		// Solve Poisson equation and set fields on the grid. Also computes Gauss constraint and saves it.
-		//ICGCPoissonSolver solver = new LightConePoissonSolver();
-		ICGCPoissonSolver solver = new LightConePoissonSolverTadpole();
 		solver.initialize(s);
 		solver.solve(initialChargeDensity);
 
+		// Compute tadpole, dipole, ...
+		WilsonLineObservables wilson = new WilsonLineObservables(s, solver, initialChargeDensity);
+		if(computeTadpole) {
+			wilson.computeTadpole(tadpoleFilename);
+		}
+		if(computeDipole) {
+			wilson.computeDipole(dipoleFilename);
+		}
+
 		// Spawn particles.
-		initialParticleCreator = new LightConeParticles(direction, orientation);
+		if(s.getSimulationType() == SimulationType.TemporalCGCNGP) {
+			initialParticleCreator = new LightConeNGPParticleCreator();
+		} else {
+			System.out.println("CGCInitialCondition: simulation type not supported!");
+		}
 		initialParticleCreator.setGaussConstraint(solver.getGaussViolation());
-		//initialParticleCreator.setGaussConstraint(initialChargeDensity.getChargeDensity());
-		initialParticleCreator.initialize(s);
+		initialParticleCreator.initialize(s, direction, orientation);
 
 		// Clear some memory.
 		initialChargeDensity.clear();
@@ -50,4 +87,6 @@ public class CGCInitialCondition implements IInitialCondition {
 	public void setInitialChargeDensity(IInitialChargeDensity rho) {
 		this.initialChargeDensity = rho;
 	}
+
+	public void setPoissonSolver(ICGCPoissonSolver solver) { this.solver = solver; }
 }

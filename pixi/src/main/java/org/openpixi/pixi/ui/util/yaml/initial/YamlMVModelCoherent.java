@@ -56,7 +56,7 @@ public class YamlMVModelCoherent {
 	 */
 	public Integer randomSeed;
 
-	public IInitialCondition getInitialCondition() {
+	public CGCInitialCondition getInitialCondition() {
 		boolean useSeed = (randomSeed != null);
 		if(!useSeed) {
 			randomSeed = 0;

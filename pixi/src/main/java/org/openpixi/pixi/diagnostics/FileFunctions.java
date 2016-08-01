@@ -5,6 +5,8 @@ import java.text.DecimalFormat;
 
 public class FileFunctions {
 
+	private static DecimalFormat decimalFormat = new DecimalFormat("0.################E0");
+
 	/**
 	 * Returns a File instance for a given path. Directories are created if they do not exist yet.
 	 *
@@ -54,5 +56,23 @@ public class FileFunctions {
 			}
 		}
 		return outputStringBuilder.toString();
+	}
+
+	/**
+	 * Convert a double to a String in scientific notation.
+	 * @param v input double
+	 * @return  formatted string
+	 */
+	public static String format(double v) {
+		return decimalFormat.format(v);
+	}
+
+	/**
+	 * Convert a float to a String in scientific notation.
+	 * @param v input float
+	 * @return  formatted string
+	 */
+	public static String format(float v) {
+		return decimalFormat.format(v);
 	}
 }

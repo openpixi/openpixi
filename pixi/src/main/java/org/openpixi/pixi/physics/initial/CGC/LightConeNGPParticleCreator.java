@@ -15,7 +15,7 @@ import java.util.ArrayList;
  * This particle generator creates particles to correctly interpolate the charge density
  * on the grid according to CGC initial conditions.
  */
-public class LightConeParticles implements IParticleCreator {
+public class LightConeNGPParticleCreator implements IParticleCreator {
 
 	/**
 	 * Direction of movement of the charge density. Values range from 0 to numberOfDimensions-1.
@@ -28,11 +28,6 @@ public class LightConeParticles implements IParticleCreator {
 	protected int orientation;
 
 	/**
-	 * Longitudinal location of the initial charge density in the simulation box.
-	 */
-	protected double location;
-
-	/**
 	 * Longitudinal width of the charge density.
 	 */
 	protected double longitudinalWidth;
@@ -41,11 +36,6 @@ public class LightConeParticles implements IParticleCreator {
 	 * Array containing the size of the transversal grid.
 	 */
 	protected int[] transversalNumCells;
-
-	/**
-	 * Charge density.
-	 */
-	protected AlgebraElement[] chargeDensity;
 
 	/**
 	 * Gauss constraint..
@@ -78,37 +68,6 @@ public class LightConeParticles implements IParticleCreator {
 	protected int particlesPerCell = 1;
 
 	/**
-	 * Low pass filter for the Poisson solver
-	 */
-	public double lowPassCoefficient = 1.0;
-
-
-	/**
-	 * Infrared regulator for the Poisson solver
-	 */
-	public double infraredCoefficient = 0.0;
-
-	/**
-	 * Standard constructor for the ParticleLCCurrent class.
-	 *
-	 * @param direction Direction of the transversal charge density movement.
-	 * @param orientation Orientation fo the transversal charge density movement.
-	 */
-	public LightConeParticles(int direction, int orientation){
-		this.direction = direction;
-		this.orientation = orientation;
-	}
-
-	/**
-	 * Sets the initial charge density.
-	 *
-	 * @param chargeDensity
-	 */
-	public void setChargeDensity(AlgebraElement[] chargeDensity) {
-		this.chargeDensity = chargeDensity;
-	}
-
-	/**
 	 * Sets the initial Gauss constraint.
 	 *
 	 * @param gaussConstraint
@@ -122,7 +81,10 @@ public class LightConeParticles implements IParticleCreator {
 	 *
 	 * @param s
 	 */
-	public void initialize(Simulation s) {
+	public void initialize(Simulation s, int direction, int orientation) {
+		this.direction = direction;
+		this.orientation = orientation;
+
 		// Define some variables.
 		particlesPerCell = (int) (s.grid.getLatticeSpacing() / s.getTimeStep());
 		as = s.grid.getLatticeSpacing();
@@ -296,10 +258,5 @@ public class LightConeParticles implements IParticleCreator {
 	protected AlgebraElement interpolateChargeFromGrid(Simulation s, double[] particlePosition) {
 		int[] ngp = GridFunctions.nearestGridPoint(particlePosition, as);
 		return gaussConstraint[s.grid.getCellIndex(ngp)].copy();
-		//return gaussConstraint[s.grid.getCellIndex(ngp)].copy().mult(-2);
-	}
-
-	public void clear() {
-		this.chargeDensity = null;
 	}
 }
