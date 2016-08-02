@@ -95,7 +95,7 @@ public class YamlNucleusCoherent {
 	public Double infraredCoefficient = 0.0;
 
 
-	public IInitialCondition getInitialCondition() {
+	public CGCInitialCondition getInitialCondition() {
 		boolean useSeed = (randomSeed != null);
 		if(!useSeed) {
 			randomSeed = 0;

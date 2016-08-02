@@ -38,11 +38,15 @@ public class YamlCGC {
 		}
 
 		for (YamlNucleusCoherent init : NucleusCoherent) {
-			s.addInitialConditions(init.getInitialCondition());
+			CGCInitialCondition ic = init.getInitialCondition();
+			applyOptions(ic);
+			s.addInitialConditions(ic);
 		}
 
 		for (YamlNucleus init : Nucleus) {
-			s.addInitialConditions(init.getInitialCondition());
+			CGCInitialCondition ic = init.getInitialCondition();
+			applyOptions(ic);
+			s.addInitialConditions(ic);
 		}
 	}
 
