@@ -18,11 +18,16 @@ activeRegion:
 
 initialConditions:
   CGC:
-    NucleusCoherent:
+    poissonSolver: improved full
+    computeTadpole: true
+    tadpoleFilename: tadpole_test.dat
+    computeDipole: true
+    dipoleFilename: dipole_test.dat
+    Nucleus:
       - direction: 0
         orientation: 1
         longitudinalLocation: 32
-        longitudinalWidth: 8
+        longitudinalWidth: 4
         mu: .3
         transversalLocation: [16, 16]
         transversalRadius: 8
@@ -39,7 +44,7 @@ initialConditions:
 
 # Generated panel code:
 panels:
-  dividerLocation: 1015
+  dividerLocation: 1024
   leftPanel:
     dividerLocation: 483
     leftPanel:
@@ -52,10 +57,10 @@ panels:
         - Energy density
     orientation: 0
     rightPanel:
-      dividerLocation: 501
+      dividerLocation: 506
       leftPanel:
         electricFieldPanel:
-          automaticScaling: false
+          automaticScaling: true
           colorIndex: 0
           directionIndex: 0
           scaleFactor: 25.0
@@ -66,7 +71,7 @@ panels:
       orientation: 1
       rightPanel:
         electricFieldPanel:
-          automaticScaling: false
+          automaticScaling: true
           colorIndex: 0
           directionIndex: 1
           scaleFactor: 25.0
@@ -79,13 +84,14 @@ panels:
     leftPanel:
       energyDensity2DGLPanel:
         automaticScaling: false
-        scaleFactor: 10000.0
+        data: Energy density
+        scaleFactor: 3.0E8
         showCoordinates: x, y, 16
     orientation: 0
     rightPanel:
       gaussViolation2DGLPanel:
-        automaticScaling: true
-        scaleFactor: 1.0
+        automaticScaling: false
+        scaleFactor: 1.0E40
         showCoordinates: x, y, 0
-  windowHeight: 1054
-  windowWidth: 1922
+  windowHeight: 1053
+  windowWidth: 1920
