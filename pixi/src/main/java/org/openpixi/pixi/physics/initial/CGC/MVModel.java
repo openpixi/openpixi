@@ -115,24 +115,20 @@ public class MVModel implements IInitialChargeDensity {
 		for (int j = 0; j < numberOfComponents; j++) {
 			double[] tempRho = new double[s.grid.getTotalNumberOfCells()];
 
-			// Place random charges on the grid (with longitudinal randomness).
+			// Place random charges on the grid (with longitudinal randomness and profile).
+			Gaussian gauss = new Gaussian(location, longitudinalWidth);
+			double randomColorWidth =  mu * s.getCouplingConstant() / Math.pow(s.grid.getLatticeSpacing(), 1.5);
 			for (int i = 0; i < s.grid.getTotalNumberOfCells(); i++) {
-				tempRho[i] =  rand.nextGaussian() * mu * s.getCouplingConstant() / s.grid.getLatticeSpacing();
+				int[] pos = s.grid.getCellPos(i);
+				double longPos = pos[direction] * s.grid.getLatticeSpacing();
+				double profile = Math.sqrt(gauss.value(longPos));
+				tempRho[i] =  rand.nextGaussian() * randomColorWidth * profile;
 			}
 
 			// Apply soft momentum regulation in Fourier space.
 			tempRho = FourierFunctions.regulateChargeDensityGaussian(tempRho, s.grid.getNumCells(),
 					ultravioletCutoffTransverse, longitudinalCoherenceLength, infraredCoefficient, direction,
 					s.grid.getLatticeSpacing());
-
-			// Apply longitudinal profile.
-			Gaussian gauss = new Gaussian(location, longitudinalWidth);
-			for (int i = 0; i < s.grid.getTotalNumberOfCells(); i++) {
-				int[] pos = s.grid.getCellPos(i);
-				double longPos = pos[direction] * s.grid.getLatticeSpacing();
-				double profile = gauss.value(longPos);
-				tempRho[i] *= profile;
-			}
 
 			// Put everything into rho array.
 			for (int i = 0; i < s.grid.getTotalNumberOfCells(); i++) {

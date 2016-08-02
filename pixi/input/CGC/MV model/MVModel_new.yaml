@@ -27,7 +27,7 @@ initialConditions:
       - direction: 0
         orientation: 1
         longitudinalLocation: 32
-        longitudinalWidth: 8
+        longitudinalWidth: 2
         randomSeed: 5
         mu: .2
         ultravioletCutoffTransverse: 2
@@ -36,7 +36,7 @@ initialConditions:
       - direction: 0
         orientation: -1
         longitudinalLocation: 96
-        longitudinalWidth: 8
+        longitudinalWidth: 2
         randomSeed: 6
         mu: .2
         ultravioletCutoffTransverse: 2
