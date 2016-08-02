@@ -1,26 +1,28 @@
 package org.openpixi.pixi.physics.initial.CGC;
 
-import org.openpixi.pixi.diagnostics.Diagnostics;
-import org.openpixi.pixi.diagnostics.methods.DipoleInitialBinned;
-import org.openpixi.pixi.diagnostics.methods.TadpoleInitialAveraged;
 import org.openpixi.pixi.math.AlgebraElement;
 import org.openpixi.pixi.math.GroupElement;
 import org.openpixi.pixi.physics.Simulation;
 import org.openpixi.pixi.physics.grid.Grid;
 import org.openpixi.pixi.physics.util.GridFunctions;
 
-import java.io.IOException;
+import java.security.acl.Group;
 
 /**
  * This class solves the transverse Poisson equation for a three-dimensional (Lorenz gauge) charge density
  * 'sheet by sheet' in the longitudinal direction and then initializes the fields in the temporal gauge.
+ * It implements an improved method of computing the Wilson lines which reduces spurious longitudinal fields.
  */
-public class LightConePoissonSolverTadpole implements ICGCPoissonSolver {
+public class LightConePoissonSolverImproved implements ICGCPoissonSolver {
 
 	Simulation s;
 	AlgebraElement[] gaussViolation;
-	TadpoleInitialAveraged computeTadpole;
-	DipoleInitialBinned computeDipole;
+
+	/**
+	 * This array stores the values of the Wilson line V at the longitudinal boundary behind the nucleus.
+	 * It is used to computed the tadpole and dipole expectation value.
+	 */
+	GroupElement[] VT;
 
 	/**
 	 * Initializes the LightConePoissonSolver. Used to solve the transverse Poisson equation 'sheer by sheet'.
@@ -29,10 +31,6 @@ public class LightConePoissonSolverTadpole implements ICGCPoissonSolver {
 	public void initialize(Simulation s) {
 
 		this.s = s;
-		computeTadpole = new TadpoleInitialAveraged("tadpole",0);
-		computeTadpole.initialize(s);
-		computeDipole = new DipoleInitialBinned("dipole",0);
-		computeDipole.initialize(s);
 	}
 
 	/**
@@ -43,8 +41,6 @@ public class LightConePoissonSolverTadpole implements ICGCPoissonSolver {
 	 */
 	public void solve(IInitialChargeDensity chargeDensity) {
 		AlgebraElement[] phi0;
-/*		AlgebraElement[] phi1;*/
-		AlgebraElement[] deltaphi;
 		GroupElement[] V;
 
 		int direction = chargeDensity.getDirection();
@@ -90,13 +86,14 @@ public class LightConePoissonSolverTadpole implements ICGCPoissonSolver {
 		}
 
 		// Compute V at t = - at/2 by constructing the Wilson line from gauge links.
+		// New interpretation of the field phi: It sits in between two lattice points (staggered grid).
+		// Convention: phi[n + 0.5] is stored at grid point n.
 		V = new GroupElement[s.grid.getTotalNumberOfCells()];
 		for (int i = 0; i < s.grid.getTotalNumberOfCells(); i++) {
 			V[i] = s.grid.getElementFactory().groupIdentity();
 		}
 
-		// Is the multiplication with orientation correct?
-		double gaugeFactor = orientation * s.getCouplingConstant() * s.grid.getLatticeSpacing();
+		double gaugeFactor = - s.getCouplingConstant() * s.grid.getLatticeSpacing();
 		for (int k = 0; k < longitudinalNumCells; k++) {
 			int z = (orientation < 0) ? k : (longitudinalNumCells - k - 1);
 			for (int i = 0; i < totalTransverseCells; i++) {
@@ -105,14 +102,33 @@ public class LightConePoissonSolverTadpole implements ICGCPoissonSolver {
 				int[] gridPos = GridFunctions.insertGridPos(transGridPos, direction, z);
 				int index = s.grid.getCellIndex(gridPos);
 
-				// Last position in longitudinal direction at same transverse position
+				// Last position in longitudinal direction at same transverse position.
 				int indexL = s.grid.shift(index, direction, orientation);
 
-				// Compute V from V directly behind it in the longitudinal direction.
+				// Compute V from V directly behind it in the longitudinal direction using phi between two grid points.
+				// Staggered grid: for orientation +1, do not shift. For orientation -1, shift in 'backwards'.
 				GroupElement gaugeLink = V[indexL].copy();
-				gaugeLink.multAssign(phi0[index].mult(gaugeFactor).getLink());
+				GroupElement W;
+				if(orientation == -1 ) {
+					W = phi0[indexL].mult(gaugeFactor).getLink();
+				} else {
+					W = phi0[index].mult(gaugeFactor).getLink();
+				}
+				gaugeLink.multAssign(W);
 				V[index] = gaugeLink;
 			}
+		}
+
+		// Store V at longitudinal boundary behind nucleus.
+		VT = new GroupElement[totalTransverseCells];
+		for (int i = 0; i < totalTransverseCells; i++) {
+			// Longitudinal coordinate of transverse plane "far behind" nucleus.
+			int z = (orientation > 0) ? 0 : (longitudinalNumCells - 1);
+			int[] transPos = GridFunctions.getCellPos(i, transverseNumCells);
+			int[] gridPos = GridFunctions.insertGridPos(transPos, direction, z);
+			int index = s.grid.getCellIndex(gridPos);
+
+			VT[i] = V[index].copy();
 		}
 
 		// Make a copy of the grid. Ugly, but needed for Gauss constraint calculation.
@@ -134,100 +150,34 @@ public class LightConePoissonSolverTadpole implements ICGCPoissonSolver {
 					gridCopy.setU(i, d, V1.mult(V2.adj()));
 				}
 			}
-			gridCopy.setUnext(i,0,V[i]);						//Attention, the Unext matrices are overwritten later!!!
 		}
 
-		// Calculate the trace of the tadpole and write it to a file.
-		try {
-			computeTadpole.setDirection(direction);
-			computeTadpole.setOrientation(orientation);
-			computeTadpole.setRegulator(chargeDensity.getRegulator());
-			computeTadpole.calculate(gridCopy, s.particles, 0);
-		} catch (IOException ex) {
-			System.out.println("TadpoleInitialAveraged Error: Could not write to file tadpole.");
-		}
-
-		try {
-			computeDipole.setDirection(direction);
-			computeDipole.setOrientation(orientation);
-			computeDipole.calculate(gridCopy, s.particles, 0);
-		} catch (IOException ex) {
-			System.out.println("DipoleInitialBinned Error: Could not write to file dipole.");
-		}
-
+		// Compute V at at/2 from V at -at/2 (improved using linear interpolation and path ordering).
+		int M = 20;
 		for (int i = 0; i < s.grid.getTotalNumberOfCells(); i++) {
-			gridCopy.setUnext(i,0,s.grid.getElementFactory().groupIdentity());			//Resetting all Unext matrices!!!
-			gridCopy.setU(i, 0, s.grid.getElementFactory().groupIdentity());			//Resetting all U matrices!!!
-		}
-
-		/*
-		// Compute phi at t = at/2 from faked charge density movement
-		phi1 = new AlgebraElement[s.grid.getTotalNumberOfCells()];
-		for (int i = 0; i < s.grid.getTotalNumberOfCells(); i++) {
-			phi1[i] = s.grid.getElementFactory().algebraZero();
-		}
-		for (int i = 0; i < s.grid.getTotalNumberOfCells(); i++) {
-			int is = s.grid.shift(i, direction, -orientation);
-			double transportRatio = s.getTimeStep() / s.grid.getLatticeSpacing();
-			// phi(x) -> phi(x) * (1 - at/as) + phi(x+d) * at/as
-			phi1[i] = phi0[i].mult(1.0 - transportRatio).add(phi0[is].mult(transportRatio));
-		}
-
-		// Compute V at t = at / 2
-		// Reset V
-		V = new GroupElement[s.grid.getTotalNumberOfCells()];
-		for (int i = 0; i < s.grid.getTotalNumberOfCells(); i++) {
-			V[i] = s.grid.getElementFactory().groupIdentity();
-		}
-		for (int k = 0; k < longitudinalNumCells; k++) {
-			int z = (orientation < 0) ? k : (longitudinalNumCells - k - 1);
-			for (int i = 0; i < totalTransverseCells; i++) {
-				// Current position
-				int[] transGridPos = GridFunctions.getCellPos(i, transverseNumCells);
-				int[] gridPos = GridFunctions.insertGridPos(transGridPos, direction, z);
-				int index = s.grid.getCellIndex(gridPos);
-
-				// Last position in longitudinal direction at same transverse position
-				int indexL = s.grid.shift(index, direction, orientation);
-
-				// Compute V from V directly behind it in the longitudinal direction.
-				GroupElement gaugeLink = V[indexL].copy();
-				gaugeLink.multAssign(phi1[index].mult(gaugeFactor).getLink());
-				V[index] = gaugeLink;
+			// Compute time evolution operator using linear interpolation of the phi's and path ordering.
+			GroupElement ImprovedW = s.grid.getElementFactory().groupIdentity();
+			for (int m = 0; m < M; m++) {
+				GroupElement W;
+				AlgebraElement phi;
+				if(orientation == 1) {
+					int is = s.grid.shift(i, direction, -1);
+					double z = (m + 0.5) / ((double) 2 * M);
+					double FL = + z + 0.5;
+					double FR = - z + 0.5;
+					phi = (phi0[is].mult(FL)).add(phi0[i].mult(FR));
+				} else {
+					int is = s.grid.shift(i, direction, -1);
+					double z = (m + 0.5) / ((double) 2 * M);
+					double FL = - z + 0.5;
+					double FR = + z + 0.5;
+					phi = (phi0[is].mult(FL)).add(phi0[i].mult(FR));
+				}
+				W = phi.mult(-s.getCouplingConstant() * s.getTimeStep() / ((double) M)).getLink();
+				ImprovedW.multAssign(W);
 			}
-		}
-*/
 
-		// Compute deltaphi to switch from t = -at / 2 to t = at / 2.
-		// (Here we assume that the charge within a cell is uniformly distributed.
-		// A more sophisticated method to determine deltaphi would correspond
-		// to a charge distribution as assumed after charge refinement.)
-		deltaphi = new AlgebraElement[s.grid.getTotalNumberOfCells()];
-		for (int i = 0; i < s.grid.getTotalNumberOfCells(); i++) {
-
-			double transportRatio = s.getTimeStep() / s.grid.getLatticeSpacing();
-
-			// deltaphi(x) -> phi(x) * at/as
-			deltaphi[i] = phi0[i].mult(transportRatio);
-		}
-
-		// Compute V at t = at / 2 by adjusting V at t = - at / 2 slightly
-		for (int k = 0; k < longitudinalNumCells; k++) {
-			int z = (orientation < 0) ? k : (longitudinalNumCells - k - 1);
-			for (int i = 0; i < totalTransverseCells; i++) {
-				// Current position
-				int[] transGridPos = GridFunctions.getCellPos(i, transverseNumCells);
-				int[] gridPos = GridFunctions.insertGridPos(transGridPos, direction, z);
-				int index = s.grid.getCellIndex(gridPos);
-
-				// Last position in longitudinal direction at same transverse position
-				int indexL = s.grid.shift(index, direction, orientation);
-
-				GroupElement deltaV = deltaphi[index].mult(gaugeFactor).getLink();
-
-				// Adjust V by slightly adding a contribution from the next longitudinal position
-				V[indexL] = deltaV.mult(V[indexL]);
-			}
+			V[i].multAssign(ImprovedW);
 		}
 
 		// Set gauge links at t = at/2
@@ -260,7 +210,6 @@ public class LightConePoissonSolverTadpole implements ICGCPoissonSolver {
 		for (int i = 0; i < s.grid.getTotalNumberOfCells(); i++) {
 			if(gridCopy.isActive(i)) {
 				this.gaussViolation[i] = gridCopy.getGaussConstraint(i);
-				//this.gaussViolation[i] = s.grid.getGaussConstraint(i);
 			} else {
 				this.gaussViolation[i] = gridCopy.getElementFactory().algebraZero();
 			}
@@ -274,4 +223,6 @@ public class LightConePoissonSolverTadpole implements ICGCPoissonSolver {
 	public AlgebraElement[] getGaussViolation() {
 		return this.gaussViolation;
 	}
+
+	public GroupElement[] getV() {return  this.VT; }
 }

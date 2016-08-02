@@ -171,8 +171,15 @@ public class MVModelCoherent implements IInitialChargeDensity {
 		return orientation;
 	}
 
-	public double getRegulator() {
-		return infraredCoefficient;
+	public String getInfo(){
+		/*
+			mu   ... MV model parameter
+			w    ... longitudinal width
+			UVT  ... transverse UV cutoff
+			m    ... IR regulator
+		 */
+		return String.format("MV coherent, mu: %f, w: %f, UVT: %f, m: %f",
+				mu, longitudinalWidth, ultravioletCutoffTransverse, infraredCoefficient);
 	}
 
 	public void clear() {

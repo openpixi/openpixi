@@ -16,6 +16,7 @@ import org.openpixi.pixi.ui.panel.EnergyDensity2DPanel;
 import org.openpixi.pixi.ui.panel.chart.Chart2DPanel;
 import org.openpixi.pixi.ui.panel.gl.EnergyDensity2DGLPanel;
 import org.openpixi.pixi.ui.panel.gl.EnergyDensity3DGLPanel;
+import org.openpixi.pixi.ui.panel.gl.EnergyDensityVoxelGLPanel;
 import org.openpixi.pixi.ui.panel.gl.GaussViolation2DGLPanel;
 import org.openpixi.pixi.ui.panel.gl.OccupationNumbers2DGLPanel;
 import org.openpixi.pixi.ui.util.yaml.panels.*;
@@ -37,6 +38,7 @@ public class YamlPanels {
 	public YamlEnergyDensity2DPanel energyDensity2DPanel;
 	public YamlEnergyDensity2DGLPanel energyDensity2DGLPanel;
 	public YamlEnergyDensity3DGLPanel energyDensity3DGLPanel;
+	public YamlEnergyDensityVoxelGLPanel energyDensityVoxelGLPanel;
 	public YamlOccupationNumbers2DGLPanel occupationNumbers2DGLPanel;
 	public YamlGaussViolation2DGLPanel gaussViolation2DGLPanel;
 	public YamlChart2DPanel chartPanel;
@@ -89,6 +91,8 @@ public class YamlPanels {
 			energyDensity2DGLPanel = new YamlEnergyDensity2DGLPanel(component);
 		} else if (component instanceof EnergyDensity3DGLPanel) {
 			energyDensity3DGLPanel = new YamlEnergyDensity3DGLPanel(component);
+		} else if (component instanceof EnergyDensityVoxelGLPanel) {
+			energyDensityVoxelGLPanel = new YamlEnergyDensityVoxelGLPanel(component);
 		} else if (component instanceof OccupationNumbers2DGLPanel) {
 			occupationNumbers2DGLPanel = new YamlOccupationNumbers2DGLPanel(component);
 		} else if (component instanceof Chart2DPanel) {
@@ -129,6 +133,8 @@ public class YamlPanels {
 			component = energyDensity2DGLPanel.inflate(panelManager);
 		} else if (energyDensity3DGLPanel != null) {
 			component = energyDensity3DGLPanel.inflate(panelManager);
+		} else if (energyDensityVoxelGLPanel != null) {
+			component = energyDensityVoxelGLPanel.inflate(panelManager);
 		} else if (occupationNumbers2DGLPanel != null) {
 			component = occupationNumbers2DGLPanel.inflate(panelManager);
 		} else if (chartPanel != null) {

@@ -55,7 +55,7 @@ public class MVModel implements IInitialChargeDensity {
 	 * given in units of inverse lattice spacings. A value of sqrt(2)*PI corresponds to no UV cutoff. A value of 0.0
 	 * cuts off all modes in momentum space.
 	 */
-	private double ultravioletCutoffLongitudinal;
+	private double longitudinalCoherenceLength;
 
 	/**
 	 * Coefficient used for the IR regulator, which is implemented as a mass-term in the Poisson solver. As with the
@@ -77,12 +77,12 @@ public class MVModel implements IInitialChargeDensity {
 	 * @param useSeed                           use a fixed seed for random number generation
 	 * @param seed                              seed of the random number generator
 	 * @param ultravioletCutoffTransverse       UV cutoff in transverse plane (in inverse lattice spacings)
-	 * @param ultravioletCutoffLongitudinal     UV cutoff in the longitudinal direction (in inverse lattice spacings)
+	 * @param longitudinalCoherenceLength       Longitudinal coherence length inside nucleus (in physical units)
 	 * @param infraredCoefficient               IR regulator coefficient in the transverse plane
 	 */
 	public MVModel(int direction, int orientation, double location, double longitudinalWidth, double mu,
 				   boolean useSeed, int seed,
-				   double ultravioletCutoffTransverse, double ultravioletCutoffLongitudinal,
+				   double ultravioletCutoffTransverse, double longitudinalCoherenceLength,
 				   double infraredCoefficient){
 
 		this.direction = direction;
@@ -93,7 +93,7 @@ public class MVModel implements IInitialChargeDensity {
 		this.useSeed = useSeed;
 		this.seed = seed;
 		this.ultravioletCutoffTransverse = ultravioletCutoffTransverse;
-		this.ultravioletCutoffLongitudinal = ultravioletCutoffLongitudinal;
+		this.longitudinalCoherenceLength = longitudinalCoherenceLength;
 		this.infraredCoefficient = infraredCoefficient;
 	}
 
@@ -115,27 +115,20 @@ public class MVModel implements IInitialChargeDensity {
 		for (int j = 0; j < numberOfComponents; j++) {
 			double[] tempRho = new double[s.grid.getTotalNumberOfCells()];
 
-			// Place random charges on the grid (with longitudinal randomness).
-			for (int i = 0; i < s.grid.getTotalNumberOfCells(); i++) {
-				tempRho[i] =  rand.nextGaussian() * mu * s.getCouplingConstant() / s.grid.getLatticeSpacing();
-			}
-
-			// Apply hard momentum regulation in Fourier space.
-			/*tempRho = FourierFunctions.regulateChargeDensityHard(tempRho, s.grid.getNumCells(),
-					ultravioletCutoffTransverse, ultravioletCutoffLongitudinal, infraredCoefficient, direction,
-					s.grid.getLatticeSpacing());*/
-			tempRho = FourierFunctions.regulateChargeDensityGaussian(tempRho, s.grid.getNumCells(),
-					ultravioletCutoffTransverse, longitudinalWidth/4, infraredCoefficient, direction,
-					s.grid.getLatticeSpacing());
-
-			// Apply longitudinal profile.
+			// Place random charges on the grid (with longitudinal randomness and profile).
 			Gaussian gauss = new Gaussian(location, longitudinalWidth);
+			double randomColorWidth =  mu * s.getCouplingConstant() / Math.pow(s.grid.getLatticeSpacing(), 1.5);
 			for (int i = 0; i < s.grid.getTotalNumberOfCells(); i++) {
 				int[] pos = s.grid.getCellPos(i);
 				double longPos = pos[direction] * s.grid.getLatticeSpacing();
-				double profile = gauss.value(longPos);
-				tempRho[i] *= profile;
+				double profile = Math.sqrt(gauss.value(longPos));
+				tempRho[i] =  rand.nextGaussian() * randomColorWidth * profile;
 			}
+
+			// Apply soft momentum regulation in Fourier space.
+			tempRho = FourierFunctions.regulateChargeDensityGaussian(tempRho, s.grid.getNumCells(),
+					ultravioletCutoffTransverse, longitudinalCoherenceLength, infraredCoefficient, direction,
+					s.grid.getLatticeSpacing());
 
 			// Put everything into rho array.
 			for (int i = 0; i < s.grid.getTotalNumberOfCells(); i++) {
@@ -162,8 +155,16 @@ public class MVModel implements IInitialChargeDensity {
 		return orientation;
 	}
 
-	public double getRegulator() {
-		return infraredCoefficient;
+	public String getInfo(){
+		/*
+			mu   ... MV model parameter
+			w    ... longitudinal width
+			UVT  ... transverse UV cutoff
+			c    ... longitudinal correlation length
+			m    ... IR regulator
+		 */
+		return String.format("MV, mu: %f, w: %f, UVT: %f, c: %f, m: %f",
+				mu, longitudinalWidth, ultravioletCutoffTransverse, longitudinalCoherenceLength, infraredCoefficient);
 	}
 
 	public void clear() {

@@ -9,8 +9,9 @@ import org.openpixi.pixi.physics.util.GridFunctions;
 /**
  * This class solves the transverse Poisson equation for a three-dimensional (Lorenz gauge) charge density
  * 'sheet by sheet' in the longitudinal direction and then initializes the fields in the temporal gauge.
+ * It implements an method of computing the Wilson lines using the charge refinement algorithm.
  */
-public class LightConePoissonSolver implements ICGCPoissonSolver {
+public class LightConePoissonSolverRefined implements ICGCPoissonSolver {
 
 	Simulation s;
 	AlgebraElement[] gaussViolation;
@@ -38,9 +39,8 @@ public class LightConePoissonSolver implements ICGCPoissonSolver {
 	 */
 	public void solve(IInitialChargeDensity chargeDensity) {
 		AlgebraElement[] phi0;
-/*		AlgebraElement[] phi1;*/
-		AlgebraElement[] deltaphi;
 		GroupElement[] V;
+		GroupElement[] Vn;
 
 		int direction = chargeDensity.getDirection();
 		int orientation = chargeDensity.getOrientation();
@@ -86,27 +86,136 @@ public class LightConePoissonSolver implements ICGCPoissonSolver {
 
 		// Compute V at t = - at/2 by constructing the Wilson line from gauge links.
 		V = new GroupElement[s.grid.getTotalNumberOfCells()];
+		Vn = new GroupElement[s.grid.getTotalNumberOfCells()];
 		for (int i = 0; i < s.grid.getTotalNumberOfCells(); i++) {
 			V[i] = s.grid.getElementFactory().groupIdentity();
+			Vn[i] = s.grid.getElementFactory().groupIdentity();
 		}
 
-		// Is the multiplication with orientation correct?
 		double gaugeFactor = - s.getCouplingConstant() * s.grid.getLatticeSpacing();
-		for (int k = 0; k < longitudinalNumCells; k++) {
-			int z = (orientation < 0) ? k : (longitudinalNumCells - k - 1);
-			for (int i = 0; i < totalTransverseCells; i++) {
-				// Current position
+		int pointsPerCell = 8;
+		int refinementSteps = 100;
+		int n = pointsPerCell * longitudinalNumCells;
+		for (int i = 0; i < totalTransverseCells; i++) {
+			// Refinement code for phi. Phi is now assumed to be defined at the lattice sites.
+			// Similar to the charge refinement procedure, we refine phi in order to more accurately compute the Wilson
+			// line and the time evolution operator.
+
+			// Initialize the array to be refined.
+			AlgebraElement[] phiR = new AlgebraElement[n];
+			for (int j = 0; j < n; j++) {
+				int ngpIndex = (int) Math.round((j) / ((double) pointsPerCell));
+				int[] transGridPos = GridFunctions.getCellPos(i, transverseNumCells);
+				int[] gridPos = GridFunctions.insertGridPos(transGridPos, direction, ngpIndex);
+				int index = s.grid.getCellIndex(gridPos);
+
+				phiR[j] = phi0[index].mult(1.0 / ((double) pointsPerCell));
+			}
+
+			// Refinement to second order
+			for (int l = 0; l < refinementSteps; l++) {
+				for (int j = 0; j < n; j++) {
+					// Refinement function
+					int jmod = j % pointsPerCell;
+					// Refinement can not be applied to the last charge in an NGP cell.
+					if(jmod >= 0 && jmod < pointsPerCell-1)
+					{
+						int i0 = p(j - 1, n);
+						int i1 = p(j + 0, n);
+						int i2 = p(j + 1, n);
+						int i3 = p(j + 2, n);
+
+						AlgebraElement Q0 = phiR[i0];
+						AlgebraElement Q1 = phiR[i1];
+						AlgebraElement Q2 = phiR[i2];
+						AlgebraElement Q3 = phiR[i3];
+
+						AlgebraElement DQ = Q0.mult(-1);
+						DQ.addAssign(Q1.mult(3));
+						DQ.addAssign(Q2.mult(-3));
+						DQ.addAssign(Q3.mult(1));
+						DQ.multAssign(1.0 / 4.0);
+
+						Q1.addAssign(DQ.mult(-1.0));
+						Q2.addAssign(DQ.mult(1.0));
+					}
+				}
+			}
+
+			// Refinement to quartic order
+			for (int l = 0; l < refinementSteps; l++) {
+				for (int j = 0; j < n; j++) {
+					// Refinement function
+					int jmod = j % pointsPerCell;
+					// Refinement can not be applied to the last charge in an NGP cell.
+					if (jmod >= 0 && jmod < pointsPerCell - 1) {
+						int i0 = p(j - 2, n);
+						int i1 = p(j - 1, n);
+						int i2 = p(j + 0, n);
+						int i3 = p(j + 1, n);
+						int i4 = p(j + 2, n);
+						int i5 = p(j + 3, n);
+
+						AlgebraElement Q0 = phiR[i0];
+						AlgebraElement Q1 = phiR[i1];
+						AlgebraElement Q2 = phiR[i2];
+						AlgebraElement Q3 = phiR[i3];
+						AlgebraElement Q4 = phiR[i4];
+						AlgebraElement Q5 = phiR[i5];
+
+						AlgebraElement DQ = Q0.mult(+1);
+						DQ.addAssign(Q1.mult(-5));
+						DQ.addAssign(Q2.mult(+10));
+						DQ.addAssign(Q3.mult(-10));
+						DQ.addAssign(Q4.mult(+5));
+						DQ.addAssign(Q5.mult(-1));
+						DQ.multAssign(1.0 / 12.0);
+
+						Q2.addAssign(DQ.mult(-1.0));
+						Q3.addAssign(DQ.mult(1.0));
+					}
+				}
+			}
+
+			// Compute V (at t=-at/2) and Vn (at t=at/2) from refined phiR and sublattice gauge links.
+			for (int j = 0; j < longitudinalNumCells; j++) {
+				// Wilson line calculation depends on orientation of the nucleus movment: it always starts in front of
+				// the nucleus.
+				int z = (orientation < 0) ? j : (longitudinalNumCells - j - 1);
 				int[] transGridPos = GridFunctions.getCellPos(i, transverseNumCells);
 				int[] gridPos = GridFunctions.insertGridPos(transGridPos, direction, z);
 				int index = s.grid.getCellIndex(gridPos);
 
-				// Last position in longitudinal direction at same transverse position
+				// Last position in longitudinal direction at same transverse position.
 				int indexL = s.grid.shift(index, direction, orientation);
 
-				// Compute V from V directly behind it in the longitudinal direction.
+				// Wilson line from one lattice site to the next. Built from sub-lattice gauge links.
+				GroupElement W = s.grid.getElementFactory().groupIdentity();
+				for (int k = 0; k < pointsPerCell; k++) {
+					int rIndex = p(pointsPerCell * (z + orientation) - orientation * k, n);
+					W.multAssign(phiR[rIndex].mult(gaugeFactor).getLink());
+				}
+
+				// Full Wilson line at t = - at/2.
 				GroupElement gaugeLink = V[indexL].copy();
-				gaugeLink.multAssign(phi0[index].mult(gaugeFactor).getLink());
+				gaugeLink.multAssign(W);
 				V[index] = gaugeLink;
+
+				// Wilson line for next step. Built from sub-lattice gauge links as well, but for a shorter path.
+				// This is equivalent to the computing the time evolution operator for the Wilson line.
+				W = s.grid.getElementFactory().groupIdentity();
+				int extraSteps = (int) (pointsPerCell * s.grid.getTemporalSpacing() / s.grid.getLatticeSpacing());
+				for (int k = 0; k < extraSteps; k++) {
+					int rIndex = p(pointsPerCell * z - orientation * k, n);
+					W.multAssign(phiR[rIndex].mult(gaugeFactor).getLink());
+				}
+
+				// Full Wilson line at t = at/2.
+				gaugeLink = V[index].copy();
+				gaugeLink.multAssign(W);
+				Vn[index] = gaugeLink;
+
+
 			}
 		}
 
@@ -131,6 +240,7 @@ public class LightConePoissonSolver implements ICGCPoissonSolver {
 			for (int d = 0; d < s.getNumberOfDimensions(); d++) {
 				if(d != direction) {
 					int is = s.grid.shift(i, d, 1);
+					// Gauge links at t = -at/2
 					GroupElement V1 = V[i];
 					GroupElement V2 = V[is];
 
@@ -139,51 +249,12 @@ public class LightConePoissonSolver implements ICGCPoissonSolver {
 					s.grid.setU(i, d, V1.mult(U).mult(V2.adj()));
 					// Also write to copy of the grid.
 					gridCopy.setU(i, d, V1.mult(V2.adj()));
-				}
-			}
-		}
 
-		// Compute deltaphi to switch from t = -at / 2 to t = at / 2.
-		// (Here we assume that the charge within a cell is uniformly distributed.
-		// A more sophisticated method to determine deltaphi would correspond
-		// to a charge distribution as assumed after charge refinement.)
-		deltaphi = new AlgebraElement[s.grid.getTotalNumberOfCells()];
-		for (int i = 0; i < s.grid.getTotalNumberOfCells(); i++) {
+					// Gauge links at t = +at/2
+					V1 = Vn[i];
+					V2 = Vn[is];
 
-			double transportRatio = s.getTimeStep() / s.grid.getLatticeSpacing();
-
-			// deltaphi(x) -> phi(x) * at/as
-			deltaphi[i] = phi0[i].mult(transportRatio);
-		}
-
-		// Compute V at t = at / 2 by adjusting V at t = - at / 2 slightly
-		for (int k = 0; k < longitudinalNumCells; k++) {
-			int z = (orientation < 0) ? k : (longitudinalNumCells - k - 1);
-			for (int i = 0; i < totalTransverseCells; i++) {
-				// Current position
-				int[] transGridPos = GridFunctions.getCellPos(i, transverseNumCells);
-				int[] gridPos = GridFunctions.insertGridPos(transGridPos, direction, z);
-				int index = s.grid.getCellIndex(gridPos);
-
-				// Last position in longitudinal direction at same transverse position
-				int indexL = s.grid.shift(index, direction, orientation);
-
-				GroupElement deltaV = deltaphi[index].mult(gaugeFactor).getLink();
-
-				// Adjust V by slightly adding a contribution from the next longitudinal position
-				V[indexL] = V[indexL].mult(deltaV);
-			}
-		}
-
-		// Set gauge links at t = at/2
-		for (int i = 0; i < s.grid.getTotalNumberOfCells(); i++) {
-			for (int d = 0; d < s.getNumberOfDimensions(); d++) {
-				if(d != direction) {
-					int is = s.grid.shift(i, d, 1);
-					GroupElement V1 = V[i];
-					GroupElement V2 = V[is];
-
-					GroupElement U = s.grid.getUnext(i, d);
+					U = s.grid.getUnext(i, d);
 					// U_x,i = V_x V_{x+i}^t
 					s.grid.setUnext(i, d, V1.mult(U).mult(V2.adj()));
 					// Also write to copy of the grid.
@@ -209,6 +280,16 @@ public class LightConePoissonSolver implements ICGCPoissonSolver {
 				this.gaussViolation[i] = gridCopy.getElementFactory().algebraZero();
 			}
 		}
+	}
+
+	/**
+	 * Applies periodic boundary conditions to the index i.
+	 * @param i index
+	 * @param n total lattice points
+	 * @return  index wrapped around the periodic boundary
+	 */
+	private int p(int i, int n) {
+		return (i % n + n) % n;
 	}
 
 	public AlgebraElement getGaussViolation(int index) {

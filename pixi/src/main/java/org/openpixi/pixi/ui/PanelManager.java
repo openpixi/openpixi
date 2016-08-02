@@ -24,6 +24,7 @@ import org.openpixi.pixi.ui.panel.PhaseSpacePanel;
 import org.openpixi.pixi.ui.panel.chart.Chart2DPanel;
 import org.openpixi.pixi.ui.panel.gl.EnergyDensity2DGLPanel;
 import org.openpixi.pixi.ui.panel.gl.EnergyDensity3DGLPanel;
+import org.openpixi.pixi.ui.panel.gl.EnergyDensityVoxelGLPanel;
 import org.openpixi.pixi.ui.panel.gl.GaussViolation2DGLPanel;
 import org.openpixi.pixi.ui.panel.gl.OccupationNumbers2DGLPanel;
 import org.openpixi.pixi.ui.tab.PropertiesTab;
@@ -54,6 +55,7 @@ public class PanelManager {
 	JMenuItem itemEnergyDensity2DPanel;
 	JMenuItem itemEnergyDensity2DGLPanel;
 	JMenuItem itemEnergyDensity3DGLPanel;
+	JMenuItem itemEnergyDensityVoxelGLPanel;
 	JMenuItem itemOccupationNumbers2DGLPanel;
 	JMenuItem itemChart2DPanel;
 	JMenuItem itemGaussViolation2DGLPanel;
@@ -210,6 +212,10 @@ public class PanelManager {
 			itemEnergyDensity3DGLPanel.addActionListener(new MenuSelected());
 			add(itemEnergyDensity3DGLPanel);
 
+			itemEnergyDensityVoxelGLPanel = new JMenuItem("Energy density Voxel (Open GL)");
+			itemEnergyDensityVoxelGLPanel.addActionListener(new MenuSelected());
+			add(itemEnergyDensityVoxelGLPanel);
+
 			itemOccupationNumbers2DGLPanel = new JMenuItem("Occupation numbers 2D (Open GL)");
 			itemOccupationNumbers2DGLPanel.addActionListener(new MenuSelected());
 			add(itemOccupationNumbers2DGLPanel);
@@ -289,6 +295,8 @@ public class PanelManager {
 				component = new EnergyDensity2DGLPanel(mainControlApplet.simulationAnimation);
 			} else if (event.getSource() == itemEnergyDensity3DGLPanel) {
 				component = new EnergyDensity3DGLPanel(mainControlApplet.simulationAnimation);
+			} else if (event.getSource() == itemEnergyDensityVoxelGLPanel) {
+				component = new EnergyDensityVoxelGLPanel(mainControlApplet.simulationAnimation);
 			} else if (event.getSource() == itemOccupationNumbers2DGLPanel) {
 				component = new OccupationNumbers2DGLPanel(mainControlApplet.simulationAnimation);
 			} else if (event.getSource() == itemChart2DPanel) {
