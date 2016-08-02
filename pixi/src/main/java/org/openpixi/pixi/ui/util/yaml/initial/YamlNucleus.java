@@ -85,7 +85,15 @@ public class YamlNucleus {
 	 * given in units of inverse lattice spacings. A value of sqrt(2)*PI corresponds to no UV cutoff. A value of 0.0
 	 * cuts off all modes in momentum space.
 	 */
-	public Double ultravioletCutoffLongitudinal = 4.44;
+	//public Double ultravioletCutoffLongitudinal = 4.44;
+
+	/**
+	 * Coefficient used for the longitudinal UV regulator, which is implemented as a soft cutoff. This parameter
+	 * describes the longitudinal coherence length inside the nucleus and is given in physical units (E^-1). A value of
+	 * 0.0 would theoretically correspond to a delta function, but this will not work obviously. It definitely makes
+	 * sense to set this value lower than the longitudinalWidth of the nucleus.
+	 */
+	public Double longitudinalCoherenceLength = 0.0;
 
 	/**
 	 * Coefficient infrared regulator in the Poisson solver
@@ -106,7 +114,7 @@ public class YamlNucleus {
 
 		IInitialChargeDensity chargeDensity = new Nucleus(direction, orientation, longitudinalLocation, locationTransverse, longitudinalWidth,
 				mu, useSeed, randomSeed, numberOfNucleons, useConstituentQuarks, transversalRadius, surfaceThickness,
-				nucleonWidth, partonWidth, ultravioletCutoffTransverse, ultravioletCutoffLongitudinal, infraredCoefficient);
+				nucleonWidth, partonWidth, ultravioletCutoffTransverse, longitudinalCoherenceLength, infraredCoefficient);
 
 		CGCInitialCondition initialCondition = new CGCInitialCondition();
 		initialCondition.setInitialChargeDensity(chargeDensity);

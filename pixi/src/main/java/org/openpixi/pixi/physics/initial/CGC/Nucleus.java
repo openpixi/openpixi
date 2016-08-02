@@ -106,6 +106,14 @@ public class Nucleus implements IInitialChargeDensity {
 	private double ultravioletCutoffLongitudinal;
 
 	/**
+	 * Coefficient used for the longitudinal UV regulator, which is implemented as a soft cutoff. This parameter
+	 * describes the longitudinal coherence length inside the nucleus and is given in physical units (E^-1). A value of
+	 * 0.0 would theoretically correspond to a delta function, but this will not work obviously. It definitely makes
+	 * sense to set this value lower than the longitudinalWidth of the nucleus.
+	 */
+	private double longitudinalCoherenceLength = 0.0;
+
+	/**
 	 * Coefficient used for the IR regulator, which is implemented as a mass-term in the Poisson solver. As with the
 	 * UV regulator this coefficient is given in units of inverse lattice spacings. A value of 0.0 removes the IR
 	 * regulator, any other value leads to a finite mass term in the Poisson equation.
@@ -131,7 +139,7 @@ public class Nucleus implements IInitialChargeDensity {
 	 */
 	public Nucleus(int direction, int orientation, double location, double[] locationTransverse, double longitudinalWidth, double mu,
 				   boolean useSeed, int seed, int numberOfNucleons, boolean useConstituentQuarks, double transversalRadius, double surfaceThickness,
-				   double nucleonWidth, double partonWidth, double ultravioletCutoffTransverse, double ultravioletCutoffLongitudinal,
+				   double nucleonWidth, double partonWidth, double ultravioletCutoffTransverse, double longitudinalCoherenceLength,
 				   double infraredCoefficient){
 
 		this.direction = direction;
@@ -149,7 +157,7 @@ public class Nucleus implements IInitialChargeDensity {
 		this.seed = seed;
 		this.numberOfNucleons = numberOfNucleons;
 		this.ultravioletCutoffTransverse = ultravioletCutoffTransverse;
-		this.ultravioletCutoffLongitudinal = ultravioletCutoffLongitudinal;
+		this.longitudinalCoherenceLength = longitudinalCoherenceLength;
 		this.infraredCoefficient = infraredCoefficient;
 
 		this.nucleons = new ArrayList<NucleonCharge>();
@@ -269,10 +277,15 @@ public class Nucleus implements IInitialChargeDensity {
 				}
 			}
 
-			// Apply hard momentum regulation in Fourier space.
-			tempRho = FourierFunctions.regulateChargeDensityHard(tempRho, s.grid.getNumCells(),
-					ultravioletCutoffTransverse, ultravioletCutoffLongitudinal, infraredCoefficient, direction,
+			// Apply soft momentum regulation in Fourier space.
+			tempRho = FourierFunctions.regulateChargeDensityGaussian(tempRho, s.grid.getNumCells(),
+					ultravioletCutoffTransverse, longitudinalCoherenceLength, infraredCoefficient, direction,
 					s.grid.getLatticeSpacing());
+
+			// Apply hard momentum regulation in Fourier space.
+			/*tempRho = FourierFunctions.regulateChargeDensityHard(tempRho, s.grid.getNumCells(),
+					ultravioletCutoffTransverse, ultravioletCutoffLongitudinal, infraredCoefficient, direction,
+					s.grid.getLatticeSpacing());*/
 
 			// Put everything into rho array.
 			for (int i = 0; i < s.grid.getTotalNumberOfCells(); i++) {

@@ -38,7 +38,7 @@ initialConditions:
         useConstituentQuarks: true
         randomSeed: null
         ultravioletCutoffTransverse: 2
-        ultravioletCutoffLongitudinal: .4
+        longitudinalCoherenceLength: .4
         infraredCoefficient: 0.2
 
 
