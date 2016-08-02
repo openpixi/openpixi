@@ -4,9 +4,9 @@ couplingConstant: 2
 numberOfDimensions: 3
 numberOfColors: 2
 numberOfThreads: 8
-gridCells: [64, 16, 16]
+gridCells: [128, 32, 32]
 timeStep: 0.5
-duration: 96
+duration: 64
 evaluationRegion:
   enabled: true
   point1: [2, 0, 0]
@@ -18,22 +18,36 @@ activeRegion:
 
 initialConditions:
   CGC:
+    poissonSolver: improved full
+    computeTadpole: true
+    tadpoleFilename: tadpole_test.dat
+    computeDipole: true
+    dipoleFilename: dipole_test.dat
     MVModel:
       - direction: 0
         orientation: 1
         longitudinalLocation: 32
-        longitudinalWidth: 8
-        mu: .3
+        longitudinalWidth: 2
+        randomSeed: 5
+        mu: .2
         ultravioletCutoffTransverse: 2
-        ultravioletCutoffLongitudinal: .4
+        longitudinalCoherenceLength: 4
         infraredCoefficient: 0.2
-
+      - direction: 0
+        orientation: -1
+        longitudinalLocation: 96
+        longitudinalWidth: 2
+        randomSeed: 6
+        mu: .2
+        ultravioletCutoffTransverse: 2
+        longitudinalCoherenceLength: 4
+        infraredCoefficient: 0.2
 
 
 
 # Generated panel code:
 panels:
-  dividerLocation: 1022
+  dividerLocation: 785
   leftPanel:
     dividerLocation: 484
     leftPanel:
@@ -46,16 +60,17 @@ panels:
         - Energy density
     orientation: 0
     rightPanel:
-      dividerLocation: 504
+      dividerLocation: 386
       leftPanel:
         electricFieldPanel:
-          automaticScaling: false
+          automaticScaling: true
           colorIndex: 0
           directionIndex: 0
-          scaleFactor: 25.0
+          scaleFactor: 2500.0
           showCoordinates: x, i, 0
           showFields:
           - E
+          - B
           - Gauss
       orientation: 1
       rightPanel:
@@ -70,18 +85,10 @@ panels:
           - U
   orientation: 1
   rightPanel:
-    dividerLocation: 416
-    leftPanel:
-      energyDensity2DGLPanel:
-        automaticScaling: false
-        data: Energy density
-        scaleFactor: 10000.0
-        showCoordinates: x, y, 16
-    orientation: 0
-    rightPanel:
-      gaussViolation2DGLPanel:
-        automaticScaling: true
-        scaleFactor: 1.0
-        showCoordinates: x, y, 0
-  windowHeight: 1056
-  windowWidth: 1936
+    energyDensity2DGLPanel:
+      automaticScaling: false
+      data: Energy density
+      scaleFactor: 10000.0
+      showCoordinates: x, y, 16
+  windowHeight: 1053
+  windowWidth: 1920

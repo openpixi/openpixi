@@ -12,7 +12,7 @@
 # scripts/jogl-bug-workaround
 # java -jar target/pixi-0.6-SNAPSHOT.jar
 
-PIXIVERSION=0.6-SNAPSHOT
+PIXIVERSION=1.0
 JOGLVERSION=2.0.2
 PLATFORM=linux-amd64
 

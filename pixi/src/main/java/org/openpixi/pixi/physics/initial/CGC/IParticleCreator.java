@@ -7,11 +7,7 @@ import org.openpixi.pixi.physics.Simulation;
  * Common interface for all CGC initial particles.
  */
 public interface IParticleCreator {
-	void initialize(Simulation s);
-
-	void setChargeDensity(AlgebraElement[] chargeDensity);
+	void initialize(Simulation s, int direction, int orientation);
 
 	void setGaussConstraint(AlgebraElement[] gaussConstraint);
-
-	void clear();
 }

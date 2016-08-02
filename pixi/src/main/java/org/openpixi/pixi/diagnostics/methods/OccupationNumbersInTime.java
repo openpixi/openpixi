@@ -62,7 +62,10 @@ public class OccupationNumbersInTime implements Diagnostics {
 		this.outputFileName = filename;
 		this.colorful = colorful;
 
-		FileFunctions.clearFile("output/" + outputFileName);
+
+		if(!outputType.equals(OUTPUT_NONE)) {
+			FileFunctions.clearFile("output/" + outputFileName);
+		}
 
 		if (!Arrays.asList(supportedOutputTypes).contains(outputType)) {
 			System.out.print("OccupationNumbersInTime: unsupported output type. Allowed types are ");
