@@ -307,6 +307,18 @@ public class Nucleus implements IInitialChargeDensity {
 		this.rho = null;
 	}
 
+	public String getInfo() {
+		/*
+			mu   ... MV model parameter
+			w    ... longitudinal width
+			UVT  ... transverse UV cutoff
+			R    ... nuclear radius
+			m    ... IR regulator
+		 */
+		return String.format("MV, mu: %f, w: %f, UVT: %f, R: %f, m: %f",
+				mu, longitudinalWidth, ultravioletCutoffTransverse, transversalRadius, infraredCoefficient);
+	}
+
 	private double getDistance(double[] center2D, double centerLong, int[] position, double spacing) {
 		double distance = 0.0;
 		double[] center3D = new double[position.length];

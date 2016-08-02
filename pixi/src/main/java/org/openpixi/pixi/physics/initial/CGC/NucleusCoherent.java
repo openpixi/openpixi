@@ -308,6 +308,18 @@ public class NucleusCoherent implements IInitialChargeDensity {
 		this.rho = null;
 	}
 
+	public String getInfo() {
+		/*
+			mu   ... MV model parameter
+			w    ... longitudinal width
+			UVT  ... transverse UV cutoff
+			R    ... nuclear radius
+			m    ... IR regulator
+		 */
+		return String.format("MV, mu: %f, w: %f, UVT: %f, R: %f, m: %f",
+				mu, longitudinalWidth, ultravioletCutoffTransverse, transversalRadius, infraredCoefficient);
+	}
+
 	private double getDistance(double[] center, int[] position, double spacing) {
 		double distance = 0.0;
 		for (int j = 0; j < position.length; j++) {
