@@ -202,9 +202,8 @@ public class Nucleus implements IInitialChargeDensity {
 		double[] listOfLongitudinalNucleonLocations = new double[numberOfNucleons];
 		for(int i = 0; i < numberOfNucleons; i++) {
 			double[] chargeLocation = new double[locationTransverse.length];
-			double phase = rand.nextDouble()*2*Math.PI;
-			chargeLocation[0] = locationTransverse[0] + getWoodsSaxonMonteCarlo(rand, range*as)*Math.cos(phase);//Attention: This only works in 3D!!!
-			chargeLocation[1] = locationTransverse[1] + getWoodsSaxonMonteCarlo(rand, range*as)*Math.sin(phase);//Attention: This only works in 3D!!!
+			chargeLocation[0] = locationTransverse[0] + getWoodsSaxonMonteCarlo(rand, range*as)[0];//Attention: This only works in 3D!!!
+			chargeLocation[1] = locationTransverse[1] + getWoodsSaxonMonteCarlo(rand, range*as)[1];//Attention: This only works in 3D!!!
 			listOfLongitudinalNucleonLocations[i] = location + rand.nextGaussian() * longitudinalWidth;
 			/*for (int j = 0; j < locationTransverse.length; j++) {
 				chargeLocation[j] = locationTransverse[j] + getWoodsSaxonMonteCarlo(rand, range*as);
@@ -357,19 +356,23 @@ public class Nucleus implements IInitialChargeDensity {
 		return gauss.value(z);
 	}
 
-	private double getWoodsSaxonMonteCarlo(Random rand, double range) {
-		double random1, random2, y;
+	private double[] getWoodsSaxonMonteCarlo(Random rand, double range) {
+		double[] random = new double[2];
+		double random3, radius, y;
 		do {
-			random1 = rand.nextDouble();
-			random2 = rand.nextDouble();
-			double norm = 2.0*Math.pow(Math.PI, locationTransverse.length - 1)/surfaceThickness*Math.log(1.0 + Math.exp(transversalRadius/surfaceThickness));
+			random[0] = rand.nextDouble();
+			random[1] = rand.nextDouble();
+			random3 = rand.nextDouble();
+			double norm = 2.0*Math.PI/surfaceThickness*Math.log(1.0 + Math.exp(transversalRadius/surfaceThickness));
 			//double range = transversalRadius + surfaceThickness*Math.log(1.0/(10e-10*norm) - 1.0);
-			random1 *= range;
-			random2 /= norm;
-			y = 1.0/(norm*(Math.exp((random1 - transversalRadius)/surfaceThickness) + 1));
-		} while (random2 > y);
+			random[0] *= range;
+			random[1] *= range;
+			radius = Math.sqrt(random[0]*random[0] + random[1]*random[1]);
+			random3 /= norm;
+			y = 1.0/(norm*(Math.exp((radius - transversalRadius)/surfaceThickness) + 1));
+		} while (random3 > y);
 
-		return random1;
+		return random;
 	}
 
 	/**
