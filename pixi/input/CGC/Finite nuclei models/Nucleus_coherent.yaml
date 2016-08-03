@@ -1,0 +1,97 @@
+simulationType: temporal cgc ngp
+gridStep: 1
+couplingConstant: 2
+numberOfDimensions: 3
+numberOfColors: 2
+numberOfThreads: 8
+gridCells: [64, 32, 32]
+timeStep: 0.5
+duration: 96
+evaluationRegion:
+  enabled: true
+  point1: [2, 0, 0]
+  point2: [-3, -1, -1]
+activeRegion:
+  enabled: true
+  point1: [1, 0, 0]
+  point2: [-2, -1, -1]
+
+initialConditions:
+  CGC:
+    poissonSolver: improved full
+    computeTadpole: true
+    tadpoleFilename: tadpole_test.dat
+    computeDipole: true
+    dipoleFilename: dipole_test.dat
+    NucleusCoherent:
+      - direction: 0
+        orientation: 1
+        longitudinalLocation: 32
+        longitudinalWidth: 8
+        mu: .3
+        transversalLocation: [16, 16]
+        transversalRadius: 8
+        surfaceThickness: 1
+        numberOfNucleons: 197
+        partonWidth: 2
+        nucleonWidth: 4
+        useConstituentQuarks: true
+        randomSeed: null
+        ultravioletCutoffTransverse: 2
+        ultravioletCutoffLongitudinal: .4
+        infraredCoefficient: 0.2
+
+
+# Generated panel code:
+panels:
+  dividerLocation: 1014
+  leftPanel:
+    dividerLocation: 483
+    leftPanel:
+      chartPanel:
+        logarithmicScale: false
+        showCharts:
+        - Gauss law violation
+        - E squared
+        - B squared
+        - Energy density
+    orientation: 0
+    rightPanel:
+      dividerLocation: 501
+      leftPanel:
+        electricFieldPanel:
+          automaticScaling: true
+          colorIndex: 0
+          directionIndex: 0
+          scaleFactor: 25.0
+          showCoordinates: x, i, 0
+          showFields:
+          - E
+          - Gauss
+      orientation: 1
+      rightPanel:
+        electricFieldPanel:
+          automaticScaling: true
+          colorIndex: 0
+          directionIndex: 1
+          scaleFactor: 25.0
+          showCoordinates: x, i, 4
+          showFields:
+          - E
+  orientation: 1
+  rightPanel:
+    dividerLocation: 415
+    leftPanel:
+      energyDensity2DGLPanel:
+        automaticScaling: false
+        data: Energy density
+        scaleFactor: 3.0E7
+        showCoordinates: x, y, 16
+    orientation: 0
+    rightPanel:
+      gaussViolation2DGLPanel:
+        automaticScaling: false
+        scaleFactor: 1.0E40
+        showCoordinates: x, y, 0
+  windowHeight: 1053
+  windowWidth: 1920

@@ -3,7 +3,6 @@ package org.openpixi.pixi.ui.util.yaml.initial;
 import org.openpixi.pixi.physics.Settings;
 import org.openpixi.pixi.physics.initial.CGC.*;
 import org.openpixi.pixi.physics.initial.IInitialCondition;
-import org.openpixi.pixi.ui.util.yaml.fieldgenerators.YamlSU2PlaneWave;
 
 import java.util.ArrayList;
 
@@ -17,6 +16,8 @@ public class YamlCGC {
 
 	public ArrayList<YamlMVModel> MVModel = new ArrayList<YamlMVModel>();
 	public ArrayList<YamlMVModelCoherent> MVModelCoherent = new ArrayList<YamlMVModelCoherent>();
+	public ArrayList<YamlNucleusCoherent> NucleusCoherent = new ArrayList<YamlNucleusCoherent>();
+	public ArrayList<YamlNucleus> Nucleus = new ArrayList<YamlNucleus>();
 
 
 	/**
@@ -31,6 +32,18 @@ public class YamlCGC {
 		}
 
 		for (YamlMVModelCoherent init : MVModelCoherent) {
+			CGCInitialCondition ic = init.getInitialCondition();
+			applyOptions(ic);
+			s.addInitialConditions(ic);
+		}
+
+		for (YamlNucleusCoherent init : NucleusCoherent) {
+			CGCInitialCondition ic = init.getInitialCondition();
+			applyOptions(ic);
+			s.addInitialConditions(ic);
+		}
+
+		for (YamlNucleus init : Nucleus) {
 			CGCInitialCondition ic = init.getInitialCondition();
 			applyOptions(ic);
 			s.addInitialConditions(ic);
@@ -64,6 +77,5 @@ public class YamlCGC {
 			System.out.println("YamlCGC: Please specify Poisson solver. Using improved as default.");
 			return new LightConePoissonSolverImproved();
 		}
-
 	}
 }
