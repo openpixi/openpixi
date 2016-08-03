@@ -193,8 +193,9 @@ public class NucleusCoherent implements IInitialChargeDensity {
 		ArrayList<double[]> listOfNucleonLocations = new ArrayList<double[]>();
 		for(int i = 0; i < numberOfNucleons; i++) {
 			double[] chargeLocation = new double[locationTransverse.length];
-			chargeLocation[0] = locationTransverse[0] + getWoodsSaxonMonteCarlo(rand, range*as)[0];//Attention: This only works in 3D!!!
-			chargeLocation[1] = locationTransverse[1] + getWoodsSaxonMonteCarlo(rand, range*as)[1];//Attention: This only works in 3D!!!
+			double[] woodsSaxon = getWoodsSaxonMonteCarlo(rand, range*as);
+			chargeLocation[0] = locationTransverse[0] + woodsSaxon[0];//Attention: This only works in 3D!!!
+			chargeLocation[1] = locationTransverse[1] + woodsSaxon[1];//Attention: This only works in 3D!!!
 			/*for (int j = 0; j < locationTransverse.length; j++) {
 				chargeLocation[j] = locationTransverse[j] + getWoodsSaxonMonteCarlo(rand, range*as);
 			}*/
