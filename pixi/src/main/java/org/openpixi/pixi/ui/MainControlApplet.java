@@ -22,6 +22,7 @@ import java.awt.*;
 import javax.swing.*;
 
 import java.awt.event.*;
+import java.util.Locale;
 
 import javax.swing.event.*;
 
@@ -125,6 +126,9 @@ public class MainControlApplet extends JApplet
 	 */
 	public MainControlApplet() {
 		Debug.checkAssertsEnabled();
+
+		// Set US locale for numeric output ("1.23"[US] instead of "1,23"[DE])
+		Locale.setDefault(Locale.US);
 
 		simulationAnimation = new SimulationAnimation();
 		panelManager = new PanelManager(this);
