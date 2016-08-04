@@ -8,7 +8,7 @@ import org.openpixi.pixi.physics.util.GridFunctions;
 import java.util.ArrayList;
 import java.util.Random;
 
-public class Nucleus implements IInitialChargeDensity {
+public class NucleusThick implements IInitialChargeDensity {
 
 	/**
 	 * Charge density as an array of AlgebraElements.
@@ -36,9 +36,9 @@ public class Nucleus implements IInitialChargeDensity {
 	private double[] locationTransverse;
 
 	/**
-	 * Longitudinal width of the charge density.
+	 * Gamma factor determining the length contraction of the charge density.
 	 */
-	private double longitudinalWidth;
+	private double gammaFactor;
 
 	/**
 	 * Option whether to use the constituent quark model or not. In the latter case spherical proton model is used!!
@@ -129,7 +129,7 @@ public class Nucleus implements IInitialChargeDensity {
 	 * @param direction                         index of the longitudinal direction
 	 * @param orientation                       orientation of movement in the longitudinal direction
 	 * @param location                          longitudinal position
-	 * @param longitudinalWidth                 longitudinal width of the MV model
+	 * @param gammaFactor                 		Gamma factor, determines the length contraction
 	 * @param mu                                MV model parameter
 	 * @param useSeed                           use a fixed seed for random number generation
 	 * @param seed                              seed of the random number generator
@@ -137,7 +137,7 @@ public class Nucleus implements IInitialChargeDensity {
 	 * @param longitudinalCoherenceLength     	Coherence length in the longitudinal direction (in inverse lattice spacings)
 	 * @param infraredCoefficient               IR regulator coefficient in the transverse plane
 	 */
-	public Nucleus(int direction, int orientation, double location, double[] locationTransverse, double longitudinalWidth, double mu,
+	public NucleusThick(int direction, int orientation, double location, double[] locationTransverse, double gammaFactor, double mu,
 				   boolean useSeed, int seed, int numberOfNucleons, boolean useConstituentQuarks, double transversalRadius, double surfaceThickness,
 				   double nucleonWidth, double partonWidth, double ultravioletCutoffTransverse, double longitudinalCoherenceLength,
 				   double infraredCoefficient){
@@ -145,7 +145,7 @@ public class Nucleus implements IInitialChargeDensity {
 		this.direction = direction;
 		this.orientation = orientation;
 		this.location = location;
-		this.longitudinalWidth = longitudinalWidth;
+		this.gammaFactor = gammaFactor;
 		this.locationTransverse = locationTransverse;
 		this.transversalRadius = transversalRadius;
 		this.surfaceThickness = surfaceThickness;
@@ -205,7 +205,7 @@ public class Nucleus implements IInitialChargeDensity {
 			double[] woodsSaxon = getWoodsSaxonMonteCarlo(rand, range*as);
 			chargeLocation[0] = locationTransverse[0] + woodsSaxon[0];//Attention: This only works in 3D!!!
 			chargeLocation[1] = locationTransverse[1] + woodsSaxon[1];//Attention: This only works in 3D!!!
-			listOfLongitudinalNucleonLocations[i] = location + rand.nextGaussian() * longitudinalWidth;
+			listOfLongitudinalNucleonLocations[i] = location + getWoodsSaxonMonteCarlo1D(rand, range*as);
 			/*for (int j = 0; j < locationTransverse.length; j++) {
 				chargeLocation[j] = locationTransverse[j] + getWoodsSaxonMonteCarlo(rand, range*as);
 			}*/
@@ -223,7 +223,7 @@ public class Nucleus implements IInitialChargeDensity {
 		}
 
 		// Iterate over nucleons, create a quark distribution inside of them and add them to the quark array.
-		double ratio = Math.sqrt(2*Math.log(10))*longitudinalWidth/transversalRadius; //Ratio of the longitudinal width to the transverse radius.
+		double ratio = 1.0/gammaFactor; //Ratio of the longitudinal width to the transverse radius.
 		for (int i = 0; i < nucleons.size(); i++) {
 			NucleonCharge nc = nucleons.get(i);
 
@@ -323,13 +323,13 @@ public class Nucleus implements IInitialChargeDensity {
 	public String getInfo() {
 		/*
 			mu   ... MV model parameter
-			w    ... longitudinal width
+			ga    ... Gamma factor
 			UVT  ... transverse UV cutoff
 			R    ... nuclear radius
 			m    ... IR regulator
 		 */
 		return String.format("MV, mu: %f, w: %f, UVT: %f, R: %f, m: %f",
-				mu, longitudinalWidth, ultravioletCutoffTransverse, transversalRadius, infraredCoefficient);
+				mu, gammaFactor, ultravioletCutoffTransverse, transversalRadius, infraredCoefficient);
 	}
 
 	private double getDistance(double[] center2D, double centerLong, int[] position, double spacing) {
@@ -374,6 +374,23 @@ public class Nucleus implements IInitialChargeDensity {
 		} while (random3 > y);
 
 		return random;
+	}
+
+	private double getWoodsSaxonMonteCarlo1D(Random rand, double range) {
+		double random1, random2, y;
+		do {
+			random1 = rand.nextDouble();
+			random2 = rand.nextDouble();
+			double norm = 2.0/(surfaceThickness/gammaFactor)*Math.log(1.0 + Math.exp(transversalRadius/surfaceThickness));
+			//double range = transversalRadius + surfaceThickness*Math.log(1.0/(10e-10*norm) - 1.0);
+			random1 *= range/gammaFactor;
+			random2 /= norm;
+			y = 1.0/(norm*(Math.exp((random1*gammaFactor - transversalRadius)/surfaceThickness) + 1));
+		} while (random2 > y);
+
+		double randSign = Math.signum(rand.nextDouble() - 0.5);
+
+		return random1*randSign;
 	}
 
 	/**

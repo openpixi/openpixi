@@ -18,7 +18,7 @@ public class YamlCGC {
 	public ArrayList<YamlMVModelCoherent> MVModelCoherent = new ArrayList<YamlMVModelCoherent>();
 	public ArrayList<YamlNucleusCoherent> NucleusCoherent = new ArrayList<YamlNucleusCoherent>();
 	public ArrayList<YamlNucleus> Nucleus = new ArrayList<YamlNucleus>();
-
+	public ArrayList<YamlNucleusThick> NucleusThick = new ArrayList<YamlNucleusThick>();
 
 	/**
 	 * Creates IInitialCondition instances and applies them to the Settings instance.
@@ -44,6 +44,12 @@ public class YamlCGC {
 		}
 
 		for (YamlNucleus init : Nucleus) {
+			CGCInitialCondition ic = init.getInitialCondition();
+			applyOptions(ic);
+			s.addInitialConditions(ic);
+		}
+
+		for (YamlNucleusThick init : NucleusThick) {
 			CGCInitialCondition ic = init.getInitialCondition();
 			applyOptions(ic);
 			s.addInitialConditions(ic);
