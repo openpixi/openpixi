@@ -92,6 +92,7 @@ public class FileTab extends Box {
 				try {
 					String content = FileIO.readFile(file);
 					fileTextArea.setText(content);
+					fileTextArea.setCaretPosition(0); // Jump to top position
 					applyTextAreaSettings();
 					applyTextAreaPanelSettings();
 				} catch (IOException e) {
