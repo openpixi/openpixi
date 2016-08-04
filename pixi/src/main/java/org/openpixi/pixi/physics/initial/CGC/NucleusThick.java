@@ -205,7 +205,7 @@ public class NucleusThick implements IInitialChargeDensity {
 			double[] woodsSaxon = getWoodsSaxonMonteCarlo(rand, range*as);
 			chargeLocation[0] = locationTransverse[0] + woodsSaxon[0];//Attention: This only works in 3D!!!
 			chargeLocation[1] = locationTransverse[1] + woodsSaxon[1];//Attention: This only works in 3D!!!
-			listOfLongitudinalNucleonLocations[i] = location + getWoodsSaxonMonteCarlo1D(rand, range*as);
+			listOfLongitudinalNucleonLocations[i] = location + woodsSaxon[2]/gammaFactor;//Attention: This only works in 3D!!!
 			/*for (int j = 0; j < locationTransverse.length; j++) {
 				chargeLocation[j] = locationTransverse[j] + getWoodsSaxonMonteCarlo(rand, range*as);
 			}*/
@@ -358,39 +358,24 @@ public class NucleusThick implements IInitialChargeDensity {
 	}
 
 	private double[] getWoodsSaxonMonteCarlo(Random rand, double range) {
-		double[] random = new double[2];
-		double random3, radius, y;
+		double[] random = new double[3];
+		double random4, radius, y;
 		do {
 			random[0] = rand.nextDouble();
 			random[1] = rand.nextDouble();
-			random3 = rand.nextDouble();
-			double norm = 2.0*Math.PI/surfaceThickness*Math.log(1.0 + Math.exp(transversalRadius/surfaceThickness));
-			//double range = transversalRadius + surfaceThickness*Math.log(1.0/(10e-10*norm) - 1.0);
+			random[2] = rand.nextDouble();
+			random4 = rand.nextDouble();
+			double norm = 2.0*Math.PI*Math.PI/surfaceThickness*Math.log(1.0 + Math.exp(transversalRadius/surfaceThickness));
+
 			random[0] *= range;
 			random[1] *= range;
-			radius = Math.sqrt(random[0]*random[0] + random[1]*random[1]);
-			random3 /= norm;
+			random[2] *= range;
+			radius = Math.sqrt(random[0]*random[0] + random[1]*random[1] + random[2]*random[2]);
+			random4 /= norm;
 			y = 1.0/(norm*(Math.exp((radius - transversalRadius)/surfaceThickness) + 1));
-		} while (random3 > y);
+		} while (random4 > y);
 
 		return random;
-	}
-
-	private double getWoodsSaxonMonteCarlo1D(Random rand, double range) {
-		double random1, random2, y;
-		do {
-			random1 = rand.nextDouble();
-			random2 = rand.nextDouble();
-			double norm = 2.0/(surfaceThickness/gammaFactor)*Math.log(1.0 + Math.exp(transversalRadius/surfaceThickness));
-			//double range = transversalRadius + surfaceThickness*Math.log(1.0/(10e-10*norm) - 1.0);
-			random1 *= range/gammaFactor;
-			random2 /= norm;
-			y = 1.0/(norm*(Math.exp((random1*gammaFactor - transversalRadius)/surfaceThickness) + 1));
-		} while (random2 > y);
-
-		double randSign = Math.signum(rand.nextDouble() - 0.5);
-
-		return random1*randSign;
 	}
 
 	/**
