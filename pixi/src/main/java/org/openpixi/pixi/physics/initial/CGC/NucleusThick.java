@@ -361,9 +361,9 @@ public class NucleusThick implements IInitialChargeDensity {
 		double[] random = new double[3];
 		double random4, radius, y;
 		do {
-			random[0] = rand.nextDouble();
-			random[1] = rand.nextDouble();
-			random[2] = rand.nextDouble();
+			random[0] = (rand.nextDouble() - 0.5);
+			random[1] = (rand.nextDouble() - 0.5);
+			random[2] = (rand.nextDouble() - 0.5);
 			random4 = rand.nextDouble();
 			double norm = 2.0*Math.PI*Math.PI/surfaceThickness*Math.log(1.0 + Math.exp(transversalRadius/surfaceThickness));
 
