@@ -323,13 +323,15 @@ public class NucleusThick implements IInitialChargeDensity {
 	public String getInfo() {
 		/*
 			mu   ... MV model parameter
-			ga    ... Gamma factor
+			ga   ... Gamma factor
 			UVT  ... transverse UV cutoff
 			R    ... nuclear radius
 			m    ... IR regulator
+			surf ... Surface thickness
+			N    ... Number of nucleons
 		 */
-		return String.format("MV, mu: %f, w: %f, UVT: %f, R: %f, m: %f",
-				mu, gammaFactor, ultravioletCutoffTransverse, transversalRadius, infraredCoefficient);
+		return String.format("NucleusThick, mu: %f, w: %f, UVT: %f, R: %f, surf: %f, N: %f, m: %f",
+				mu, gammaFactor, ultravioletCutoffTransverse, transversalRadius, surfaceThickness, (double) numberOfNucleons, infraredCoefficient);
 	}
 
 	private double getDistance(double[] center2D, double centerLong, int[] position, double spacing) {

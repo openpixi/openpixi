@@ -315,9 +315,11 @@ public class NucleusCoherent implements IInitialChargeDensity {
 			UVT  ... transverse UV cutoff
 			R    ... nuclear radius
 			m    ... IR regulator
+			surf ... Surface thickness
+			N    ... Number of nucleons
 		 */
-		return String.format("MV, mu: %f, w: %f, UVT: %f, R: %f, m: %f",
-				mu, longitudinalWidth, ultravioletCutoffTransverse, transversalRadius, infraredCoefficient);
+		return String.format("NucleusCoherent, mu: %f, w: %f, UVT: %f, R: %f, surf: %f, N: %f, m: %f",
+				mu, longitudinalWidth, ultravioletCutoffTransverse, transversalRadius, surfaceThickness, (double) numberOfNucleons, infraredCoefficient);
 	}
 
 	private double getDistance(double[] center, int[] position, double spacing) {
