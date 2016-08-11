@@ -28,7 +28,7 @@ initialConditions:
         orientation: 1
         longitudinalLocation: 32
         longitudinalWidth: 8
-        mu: .3
+        mu: .05
         transversalLocation: [16, 16]
         transversalRadius: 8
         surfaceThickness: 1
@@ -85,13 +85,13 @@ panels:
       energyDensity2DGLPanel:
         automaticScaling: false
         data: Energy density
-        scaleFactor: 3.0E7
+        scaleFactor: 300.0
         showCoordinates: x, y, 16
     orientation: 0
     rightPanel:
       gaussViolation2DGLPanel:
         automaticScaling: false
-        scaleFactor: 1.0E40
+        scaleFactor: 1.0E34
         showCoordinates: x, y, 0
   windowHeight: 1053
   windowWidth: 1920

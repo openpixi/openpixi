@@ -239,13 +239,13 @@ public class NucleusCoherent implements IInitialChargeDensity {
 			GaussianQuarkCharge qc = quarks.get(i);
 			for (int k = 0; k < totalTransCells; k++) {
 				double distance = getDistance(qc.location, GridFunctions.getCellPos(k, transNumCells), as);
-				transversalWidths[k] += Math.abs(shapeFunction(distance, qc.width) / Math.pow(qc.width * Math.sqrt(2 * Math.PI), transNumCells.length)/numOverlappingQuarks);
-				norm += Math.abs(shapeFunction(distance, qc.width) / Math.pow(qc.width * Math.sqrt(2 * Math.PI), transNumCells.length)/numOverlappingQuarks);
+				transversalWidths[k] += Math.abs(shapeFunction(distance, qc.width)/numOverlappingQuarks);
+				//norm += Math.abs(shapeFunction(distance, qc.width) / Math.pow(qc.width * Math.sqrt(2 * Math.PI), transNumCells.length)/numOverlappingQuarks);
 			}
 		}
-		for (int k = 0; k < totalTransCells; k++) {
+		/*for (int k = 0; k < totalTransCells; k++) {
 			transversalWidths[k] /= norm;
-		}
+		}*/
 
 		for (int j = 0; j < numberOfComponents; j++) {
 			double[] tempRho = new double[s.grid.getTotalNumberOfCells()];

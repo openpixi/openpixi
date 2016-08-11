@@ -251,13 +251,13 @@ public class NucleusThick implements IInitialChargeDensity {
 			GaussianQuarkCharge qc = quarks.get(i);
 			for (int k = 0; k < totalCells; k++) {
 				double distance = getDistance(qc.location, qc.longLocation, GridFunctions.getCellPos(k, s.grid.getNumCells()), as);
-				colorChargeWidths[k] += Math.abs(shapeFunction(distance, qc.width) / Math.pow(qc.width * Math.sqrt(2 * Math.PI), s.getNumberOfDimensions())/numOverlappingQuarks);
-				norm += Math.abs(shapeFunction(distance, qc.width) / Math.pow(qc.width * Math.sqrt(2 * Math.PI), s.getNumberOfDimensions())/numOverlappingQuarks);
+				colorChargeWidths[k] += Math.abs(shapeFunction(distance, qc.width)/numOverlappingQuarks);
+				//norm += Math.abs(shapeFunction(distance, qc.width) / Math.pow(qc.width * Math.sqrt(2 * Math.PI), s.getNumberOfDimensions())/numOverlappingQuarks);
 			}
 		}
-		for (int k = 0; k < totalCells; k++) {
+		/*for (int k = 0; k < totalCells; k++) {
 			colorChargeWidths[k] /= norm;
-		}
+		}*/
 
 		for (int j = 0; j < numberOfComponents; j++) {
 			double[] tempRho = new double[s.grid.getTotalNumberOfCells()];
