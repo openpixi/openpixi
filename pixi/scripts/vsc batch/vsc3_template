@@ -1,6 +1,9 @@
 %range 1 4%
 %jar pixi-0.6-SNAPSHOT.jar%
 %jobmanager SLURM%
+%output begin%
+%job_name%_input
+%output end%
 
 %yaml begin%
 simulationType: temporal cgc ngp

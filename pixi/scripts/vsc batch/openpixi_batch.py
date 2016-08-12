@@ -100,14 +100,14 @@ def main():
 
     if options.create:
         if input_path is not None:
-            if output_path is not None:
-                conf_object = parse_template(input_path, output_path)
+            conf_object = parse_template(input_path, output_path)
+            if conf_object.o_path is not None:
                 create_yaml_files(conf_object)
                 create_jobfile(conf_object)
 
                 # also submit job (job manager is specified in configuration object)
                 if options.submit:
-                    submit_jobs(output_path, conf_object.job_manager)
+                    submit_jobs(conf_object.o_path, conf_object.job_manager)
 
             else:
                 print("Error: Output path not defined.")
@@ -181,6 +181,15 @@ def parse_template(i_path, o_path):
     yaml_template_string = r1.search(script_string).group(1)
     job_template_string = r2.search(script_string).group(1)
 
+    # parse output file
+    if o_path is not None:
+        # Command line option overrides option in file
+        parse_o_path = o_path
+    else:
+        r3 = re.compile("%output begin%\n([\S\s]*)\n%output end%")
+        if r3.search(script_string):
+            parse_o_path = r3.search(script_string).group(1)
+
     # find float ranges
     i = 0
     float_ranges_limits = []
@@ -198,8 +207,10 @@ def parse_template(i_path, o_path):
         float_ranges.append(frange(b, e, int_range_len))
 
     conf_object = Object()
+    conf_object.job_name = os.path.basename(i_path)
     conf_object.i_path = i_path
-    conf_object.o_path = o_path
+    parse_o_path = parse_o_path.replace("%job_name%", conf_object.job_name)
+    conf_object.o_path = parse_o_path
     conf_object.job_manager = job_manager
     conf_object.jar_path = jar_path
     conf_object.yaml_template_string = yaml_template_string
@@ -208,7 +219,6 @@ def parse_template(i_path, o_path):
     conf_object.i0 = range_begin
     conf_object.i1 = range_end
     conf_object.float_ranges = float_ranges
-    conf_object.job_name = os.path.basename(i_path)
 
     return conf_object
 
