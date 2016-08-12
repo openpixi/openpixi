@@ -6,8 +6,11 @@
     qsub or sbatch.
 
     Example usage:
-    Parse the input file 'pancakewidths', create yaml and qjob files in 'pancake_widths/' and submit them.
-        python openpixi_batch.py -cs -i pancakewidths -o pancakewidths_files/
+    Parse the input file 'pancakewidths', create yaml and qjob files as specified and submit them.
+        python openpixi_batch.py -cs -i pancakewidths
+
+    Override the output directory.
+        python openpixi_batch.py -cs -i pancakewidths -o pancakewidths_files_alternative_location/
 
     Parse the input file 'coupling' and create yaml and qjob files in 'pancake_widths/' (without submitting them).
         python openpixi_batch.py -c -i coupling -o coupling_files/
@@ -47,19 +50,23 @@
     3) Define job manager type
     Use %jobmanager SGE% for SGE (on the VSC2) or %jobmanager SLURM% for SLURM (on the VSC3).
 
-    4) Using integer from range
+    4) Define output path for temporary files
+    Use %output begin%...pathname...%output end% to define the location of output files.
+    Use %job_name% to refer to the input file name.
+
+    5) Using integer from range
     Use %i% to insert the integer from the given range.
 
     Example:
     Use "output%i%.dat" to get output files "output0.dat", "output1.dat", ..., "output9.dat" given the range above.
 
-    5) Float intervals
+    6) Float intervals
     Use %f BEGIN END% to define a linear range of floating point numbers.
 
     Example:
     %f 0.0 0.9% to get the values 0.0, 0.1, ... 0.9 using the integer range above.
 
-    6) Begin and end of the integer range
+    7) Begin and end of the integer range
     Use %i0% for the first integer in the range and %i1% for the last. This is used in the job template to specify
     the correct range for the array job.
 
