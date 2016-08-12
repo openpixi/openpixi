@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 """
         OPENPIXI SGE/SLURM BATCH SCRIPT
 
