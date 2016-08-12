@@ -41,6 +41,9 @@ output:
       path: "test_%job_name%/planar%i%.dat"
       direction: 0
       planarIndex: 63
+  timeMeasurement:
+    - path: "test_%job_name%/timeMeasurement%i%.txt"
+      interval: 0.5
 %yaml end%
 
 %job begin%
