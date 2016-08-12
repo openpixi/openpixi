@@ -208,6 +208,7 @@ def parse_template(i_path, o_path):
     conf_object.i0 = range_begin
     conf_object.i1 = range_end
     conf_object.float_ranges = float_ranges
+    conf_object.job_name = os.path.basename(i_path)
 
     return conf_object
 
@@ -300,6 +301,9 @@ def create_yaml_files(conf_object):
             float_index += 1
         c += 1
 
+        # replace job name
+        current_yaml_string = current_yaml_string.replace("%job_name%", conf_object.job_name)
+
         # write finished yaml string to file.
         file_object.write(current_yaml_string)
         file_object.close()
@@ -322,11 +326,9 @@ def create_jobfile(conf_object):
         input_file_name = ""
         job_file_name = ""
 
-    job_name = "openpixi"
-
     path = os.path.join(conf_object.o_path, job_file_name)
     job_string = str(conf_object.job_template_string)
-    job_string = job_string.replace("%job_name%", job_name)
+    job_string = job_string.replace("%job_name%", conf_object.job_name)
     job_string = job_string.replace("%jar_path%", conf_object.jar_path)
     input_path = os.path.join(conf_object.o_path, input_file_name)
     job_string = job_string.replace("%input_path%", input_path)

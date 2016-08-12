@@ -29,13 +29,13 @@ currents:
       mu: 0.04
       lowPassCoefficient: 0.15
       createInitialConditionsOutput: true
-      outputFile: "test/initial%i%.dat"
+      outputFile: "test_%job_name%/initial%i%.dat"
 
 output:
   planarFields:
     - interval: 1.0
       startingTime: 0.0
-      path: "test/planar%i%.dat"
+      path: "test_%job_name%/planar%i%.dat"
       direction: 0
       planarIndex: 63
 %yaml end%
