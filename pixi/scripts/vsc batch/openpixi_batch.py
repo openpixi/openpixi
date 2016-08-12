@@ -157,6 +157,9 @@ def parse_template(i_path, o_path):
     """
     script_string = open(i_path, "r").read()
 
+    # Create job name from input file name
+    job_name = os.path.basename(i_path)
+
     # find and read integer range line (should be first line, but doesnt really matter.)
     (b, e) = re.search("%range.*%", script_string).span()
     (range_begin, range_end) = re.sub("%", "", re.sub("%range\s", "", script_string[b:e])).split(" ")
@@ -193,9 +196,13 @@ def parse_template(i_path, o_path):
         # Command line option overrides option in file
         parse_o_path = o_path
     else:
-        r3 = re.compile("%output begin%\n([\S\s]*)\n%output end%")
+        r3 = re.compile("%output begin%([\S\s]*)%output end%")
         if r3.search(script_string):
             parse_o_path = r3.search(script_string).group(1)
+            parse_o_path = parse_o_path.strip()
+            parse_o_path = parse_o_path.replace("%job_name%", job_name)
+        else:
+            parse_o_path = None
 
     # find float ranges
     i = 0
@@ -214,9 +221,8 @@ def parse_template(i_path, o_path):
         float_ranges.append(frange(b, e, int_range_len))
 
     conf_object = Object()
-    conf_object.job_name = os.path.basename(i_path)
+    conf_object.job_name = job_name
     conf_object.i_path = i_path
-    parse_o_path = parse_o_path.replace("%job_name%", conf_object.job_name)
     conf_object.o_path = parse_o_path
     conf_object.job_manager = job_manager
     conf_object.jar_path = jar_path
