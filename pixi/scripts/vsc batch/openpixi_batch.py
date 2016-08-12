@@ -9,6 +9,9 @@
     Parse the input file 'pancakewidths', create yaml and qjob files as specified and submit them.
         python openpixi_batch.py -cs -i pancakewidths
 
+    Under linux one can call the python script directly:
+        ./openpixi_batch.py -cs -i pancakewidth
+
     Override the output directory.
         python openpixi_batch.py -cs -i pancakewidths -o pancakewidths_files_alternative_location/
 
