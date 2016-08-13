@@ -6,10 +6,12 @@
 %output end%
 
 %exec begin%
-nt = 2 ** i
+factor = i+3
+nl = 40 * factor
+nt = 32 * factor
 
 def myduration(x):
-    return 100 + x
+    return 28 * x
 %exec end%
 
 %yaml begin%
@@ -19,9 +21,9 @@ couplingConstant: 2
 numberOfDimensions: 3
 numberOfColors: 2
 numberOfThreads: 16
-gridCells: [%eval 16*(i+3)%, %eval nt%, %eval nt%]
+gridCells: [%eval nl%, %eval nt%, %eval nt%]
 timeStep: 0.5
-duration: %eval myduration(i)%
+duration: %eval myduration(factor)%
 evaluationRegion:
   enabled: true
   point1: [2, 0, 0]
@@ -34,8 +36,8 @@ activeRegion:
 currents:
   dualMVModels:
     - direction: 0
-      longitudinalLocation: 32
-      longitudinalWidth: %f 2.0 12.0%
+      longitudinalLocation: %eval 4*factor%
+      longitudinalWidth: %f 2.0 11.0%
       mu: 0.04
       lowPassCoefficient: 0.15
       createInitialConditionsOutput: true
@@ -47,7 +49,7 @@ output:
       startingTime: 0.0
       path: "test_%job_name%/planar%i%.dat"
       direction: 0
-      planarIndex: 63
+      planarIndex: %eval nl/2 - 1%
   timeMeasurement:
     - path: "test_%job_name%/timeMeasurement%i%.txt"
       interval: 0.5

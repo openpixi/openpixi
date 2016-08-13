@@ -347,15 +347,17 @@ def create_yaml_files(conf_object):
         c += 1
 
         # execute expression string
-        # (TODO: define private namespace and pass only variable "i".
-        #  Currently the active namespace, including variable "i", is used
-        #  which might be dangerous.)
-        exec(conf_object.exec_string)
+        myglobals = {}
+        mylocals = {}
+        mylocals['i'] = i
+        mylocals['i0'] = conf_object.i0
+        mylocals['i1'] = conf_object.i1
+        exec(conf_object.exec_string, myglobals, mylocals)
 
         # replace all eval objects
         eval_index = 0
         for eo in conf_object.eval_objects:
-            result = eval(eo)
+            result = eval(eo, myglobals, mylocals)
             current_yaml_string = current_yaml_string.replace("%eval" + str(eval_index) + "%", str(result))
             eval_index += 1
 
