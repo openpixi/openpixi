@@ -223,6 +223,13 @@ def parse_template(i_path, o_path):
         e = fl[1]
         float_ranges.append(frange(b, e, int_range_len))
 
+    # parse exec object
+    r1 = re.compile("%exec begin%\n([\S\s]*)%exec end%")
+    if r1.search(script_string):
+        exec_string = r1.search(script_string).group(1)
+    else:
+        exec_string = ""
+
     # find eval objects
     i = 0
     eval_objects = []
@@ -245,6 +252,7 @@ def parse_template(i_path, o_path):
     conf_object.i0 = range_begin
     conf_object.i1 = range_end
     conf_object.float_ranges = float_ranges
+    conf_object.exec_string = exec_string
     conf_object.eval_objects = eval_objects
 
     return conf_object
@@ -337,6 +345,12 @@ def create_yaml_files(conf_object):
             current_yaml_string = current_yaml_string.replace("%f" + str(float_index) + "%", str(value))
             float_index += 1
         c += 1
+
+        # execute expression string
+        # (TODO: define private namespace and pass only variable "i".
+        #  Currently the active namespace, including variable "i", is used
+        #  which might be dangerous.)
+        exec(conf_object.exec_string)
 
         # replace all eval objects
         eval_index = 0

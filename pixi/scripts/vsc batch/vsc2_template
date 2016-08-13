@@ -5,6 +5,13 @@
 %job_name%_input
 %output end%
 
+%exec begin%
+nt = 2 ** i
+
+def myduration(x):
+    return 100 + x
+%exec end%
+
 %yaml begin%
 simulationType: temporal cgc ngp
 gridStep: 1
@@ -12,9 +19,9 @@ couplingConstant: 2
 numberOfDimensions: 3
 numberOfColors: 2
 numberOfThreads: 16
-gridCells: [%eval 16*(i+3)%, %eval 2 ** i%, 16]
+gridCells: [%eval 16*(i+3)%, %eval nt%, %eval nt%]
 timeStep: 0.5
-duration: 64.0
+duration: %eval myduration(i)%
 evaluationRegion:
   enabled: true
   point1: [2, 0, 0]
