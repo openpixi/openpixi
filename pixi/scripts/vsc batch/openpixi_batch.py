@@ -210,7 +210,7 @@ def parse_template(i_path, o_path):
     # find float ranges
     i = 0
     float_ranges_limits = []
-    for float_line in re.finditer("%f\s.*%", yaml_template_string):
+    for float_line in re.finditer("%f\s[^%]*%", yaml_template_string):
         current_string = float_line.group()
         yaml_template_string = yaml_template_string.replace(current_string, "%f" + str(i) + "%")
         (float_begin, float_end) = re.sub("%", "", re.sub("%f\s", "", current_string)).split(" ")
@@ -222,6 +222,16 @@ def parse_template(i_path, o_path):
         b = fl[0]
         e = fl[1]
         float_ranges.append(frange(b, e, int_range_len))
+
+    # find eval objects
+    i = 0
+    eval_objects = []
+    for eval_line in re.finditer("%eval\s[^%]*%", yaml_template_string):
+        current_string = eval_line.group()
+        yaml_template_string = yaml_template_string.replace(current_string, "%eval" + str(i) + "%")
+        eval_command = re.sub("%", "", re.sub("%eval\s", "", current_string))
+        eval_objects.append(eval_command)
+        i += 1
 
     conf_object = Object()
     conf_object.job_name = job_name
@@ -235,6 +245,7 @@ def parse_template(i_path, o_path):
     conf_object.i0 = range_begin
     conf_object.i1 = range_end
     conf_object.float_ranges = float_ranges
+    conf_object.eval_objects = eval_objects
 
     return conf_object
 
@@ -326,6 +337,13 @@ def create_yaml_files(conf_object):
             current_yaml_string = current_yaml_string.replace("%f" + str(float_index) + "%", str(value))
             float_index += 1
         c += 1
+
+        # replace all eval objects
+        eval_index = 0
+        for eo in conf_object.eval_objects:
+            result = eval(eo)
+            current_yaml_string = current_yaml_string.replace("%eval" + str(eval_index) + "%", str(result))
+            eval_index += 1
 
         # replace job name
         current_yaml_string = current_yaml_string.replace("%job_name%", conf_object.job_name)

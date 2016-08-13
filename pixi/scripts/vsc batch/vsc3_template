@@ -12,7 +12,7 @@ couplingConstant: 2
 numberOfDimensions: 3
 numberOfColors: 2
 numberOfThreads: 16
-gridCells: [128, 16, 16]
+gridCells: [%eval 16*(i+3)%, %eval 2 ** i%, 16]
 timeStep: 0.5
 duration: 64.0
 evaluationRegion:
