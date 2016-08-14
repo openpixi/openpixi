@@ -230,16 +230,6 @@ def parse_template(i_path, o_path):
     else:
         exec_string = ""
 
-    # find eval objects
-    i = 0
-    eval_objects = []
-    for eval_line in re.finditer("%eval\s[^%]*%", yaml_template_string):
-        current_string = eval_line.group()
-        yaml_template_string = yaml_template_string.replace(current_string, "%eval" + str(i) + "%")
-        eval_command = re.sub("%", "", re.sub("%eval\s", "", current_string))
-        eval_objects.append(eval_command)
-        i += 1
-
     conf_object = Object()
     conf_object.job_name = job_name
     conf_object.i_path = i_path
@@ -253,7 +243,6 @@ def parse_template(i_path, o_path):
     conf_object.i1 = range_end
     conf_object.float_ranges = float_ranges
     conf_object.exec_string = exec_string
-    conf_object.eval_objects = eval_objects
 
     return conf_object
 
@@ -346,20 +335,8 @@ def create_yaml_files(conf_object):
             float_index += 1
         c += 1
 
-        # execute expression string
-        myglobals = {}
-        mylocals = {}
-        mylocals['i'] = i
-        mylocals['i0'] = conf_object.i0
-        mylocals['i1'] = conf_object.i1
-        exec(conf_object.exec_string, myglobals, mylocals)
-
         # replace all eval objects
-        eval_index = 0
-        for eo in conf_object.eval_objects:
-            result = eval(eo, myglobals, mylocals)
-            current_yaml_string = current_yaml_string.replace("%eval" + str(eval_index) + "%", str(result))
-            eval_index += 1
+        current_yaml_string = replace_eval(current_yaml_string, conf_object, i)
 
         # replace job name
         current_yaml_string = current_yaml_string.replace("%job_name%", conf_object.job_name)
@@ -395,6 +372,9 @@ def create_jobfile(conf_object):
     job_string = job_string.replace("%i0%", conf_object.i0)
     job_string = job_string.replace("%i1%", conf_object.i1)
 
+    # replace all eval objects
+    job_string = replace_eval(job_string, conf_object, int(conf_object.i0))
+
     file_object = open(path, "w")
     file_object.write(job_string)
 
@@ -426,6 +406,32 @@ def make_sure_path_exists(path):
     except OSError as exception:
         if exception.errno != errno.EEXIST:
             raise
+
+
+def replace_eval(string, conf_object, i):
+    """
+    Replaces %eval ...% expressions in string by the evaluated version.
+    :param string: string to replace objects
+    :param conf_object:
+    :param i: value of index i
+    :return: string with %eval ...$ expressions evaluated
+    """
+    # execute expression string
+    myglobals = {}
+    mylocals = {}
+    mylocals['i'] = i
+    mylocals['i0'] = conf_object.i0
+    mylocals['i1'] = conf_object.i1
+    exec(conf_object.exec_string, myglobals, mylocals)
+
+    # find, evaluate and replace all eval objects
+    for eval_line in re.finditer("%eval\s([^%]*)%", string):
+        current_string = eval_line.group()
+        eval_command = eval_line.group(1)
+        result = eval(eval_command, myglobals, mylocals)
+        string = string.replace(current_string, str(result), 1)
+
+    return string
 
 
 class Object(object):

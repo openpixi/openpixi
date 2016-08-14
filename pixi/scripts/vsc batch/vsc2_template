@@ -12,6 +12,8 @@ nt = 32 * factor
 
 def myduration(x):
     return 28 * x
+
+h_rt = "1:00:00"
 %exec end%
 
 %yaml begin%
@@ -62,7 +64,7 @@ output:
 #$ -V
 #$ -M your.email@address.com
 #$ -m e
-#$ -l h_rt=1:00:00
+#$ -l h_rt=%eval h_rt%
 #$ -o ./job_output/tmp$JOB_ID.out
 #$ -e ./job_output/tmp$JOB_ID.err
 #$ -t %i0%-%i1%

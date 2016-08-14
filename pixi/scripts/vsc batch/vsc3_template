@@ -12,6 +12,8 @@ nt = 32 * factor
 
 def myduration(x):
     return 28 * x
+
+h_rt = "1:00:00"
 %exec end%
 
 %yaml begin%
@@ -58,7 +60,7 @@ output:
 %job begin%
 #!/bin/bash
 #SBATCH -J %job_name%
-#SBATCH --time=01:00:00
+#SBATCH --time=%eval h_rt%
 #SBATCH --ntasks-per-node=1
 #SBATCH --ntasks-per-core=1
 #SBATCH --mail-type=END,FAIL
