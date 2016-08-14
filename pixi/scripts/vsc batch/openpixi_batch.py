@@ -6,11 +6,14 @@
     qsub or sbatch.
 
     Example usage:
-    Parse the input file 'pancakewidths', create yaml and qjob files as specified and submit them.
+    Parse the input file 'pancakewidths', create yaml and qjob/slrm files as specified and submit them.
         python openpixi_batch.py -cs -i pancakewidths
 
     Under linux one can call the python script directly:
         ./openpixi_batch.py -cs -i pancakewidth
+
+    Override the job manager.
+        python openpixi_batch.py -cs -i pancakewidth -j SGE
 
     Override the output directory.
         python openpixi_batch.py -cs -i pancakewidths -o pancakewidths_files_alternative_location/
@@ -52,6 +55,7 @@
 
     3) Define job manager type
     Use %jobmanager SGE% for SGE (on the VSC2) or %jobmanager SLURM% for SLURM (on the VSC3).
+    (This option can be overridden by the command line option '--jobmanager' or '-j')
 
     4) Define output path for temporary files
     Use %output begin%...pathname...%output end% to define the location of output files.
@@ -72,6 +76,11 @@
     7) Begin and end of the integer range
     Use %i0% for the first integer in the range and %i1% for the last. This is used in the job template to specify
     the correct range for the array job.
+
+    8) Evaluate arbitrary python expressions
+    Use %eval ...% to evaluate arbitrary python expressions that can use the variables 'i', 'i0' and 'i1'.
+    Use an %exec begin%...%exec end% python code block that is executed every time just before %eval ...%.
+    %eval ...% can be used in the yaml template as well as in the job template.
 
 """
 
