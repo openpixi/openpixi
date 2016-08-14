@@ -1,7 +1,7 @@
 # Template for Vienna Scientific Cluster
 
 %range 1 4%
-%jar pixi-0.6-SNAPSHOT.jar%
+%jar pixi-1.1.jar%
 %jobmanager SLURM%   # choose 'SGE' for vsc2 or 'SLURM' for vsc3+
 %output begin%
 %job_name%_input
