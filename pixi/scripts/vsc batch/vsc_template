@@ -1,19 +1,22 @@
 %range 1 4%
 %jar pixi-0.6-SNAPSHOT.jar%
-%jobmanager SGE%
+%jobmanager SLURM%   # choose 'SGE' or 'SLURM'
 %output begin%
 %job_name%_input
 %output end%
 
 %exec begin%
+# Job template variables
+h_rt = "1:00:00"
+email_address = "your.email@address.com"
+
+# yaml template variables
 factor = i+3
 nl = 40 * factor
 nt = 32 * factor
 
 def myduration(x):
     return 28 * x
-
-h_rt = "1:00:00"
 %exec end%
 
 %yaml begin%
@@ -58,11 +61,11 @@ output:
 %yaml end%
 
 
-%job begin%
+%SGE job begin%
 #$ -N %job_name%
 #$ -pe mpich 16
 #$ -V
-#$ -M your.email@address.com
+#$ -M %eval email_address%
 #$ -m e
 #$ -l h_rt=%eval h_rt%
 #$ -o ./job_output/tmp$JOB_ID.out
@@ -70,4 +73,21 @@ output:
 #$ -t %i0%-%i1%
 
 java -Xmx16g -cp %jar_path% org.openpixi.pixi.ui.MainBatch %input_path%
-%job end%
+%SGE job end%
+
+
+%SLURM job begin%
+#!/bin/bash
+#SBATCH -J %job_name%
+#SBATCH --time=%eval h_rt%
+#SBATCH --ntasks-per-node=1
+#SBATCH --ntasks-per-core=1
+#SBATCH --mail-type=END,FAIL
+#SBATCH --mail-user=<%eval email_address%>
+#SBATCH --output=job_ouput/slurm_%A_%a.out
+
+#SBATCH --array=%i0%-%i1%:1
+
+srun java -Xmx32g -cp %jar_path% org.openpixi.pixi.ui.MainBatch %input_path%
+%SLURM job end%
+

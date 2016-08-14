@@ -107,10 +107,11 @@ def main():
 
     input_path = options.input
     output_path = options.output
+    jobmanager = options.jobmanager
 
     if options.create:
         if input_path is not None:
-            conf_object = parse_template(input_path, output_path)
+            conf_object = parse_template(input_path, output_path, jobmanager)
             if conf_object.o_path is not None:
                 create_yaml_files(conf_object)
                 create_jobfile(conf_object)
@@ -151,7 +152,7 @@ def empty_path(path):
             os.remove(p)
 
 
-def parse_template(i_path, o_path):
+def parse_template(i_path, o_path, j_manager):
     """
     Parses template file and returns configuration object.
     :param i_path: path to template file
@@ -174,9 +175,15 @@ def parse_template(i_path, o_path):
     (b, e) = re.search("%jar\s.*%", script_string).span()
     jar_path = re.sub("%", "", re.sub("%jar\s", "", script_string[b:e]))
 
-    # find an read job manager type
-    (b, e) = re.search("%jobmanager\s.*%", script_string).span()
-    job_manager = re.sub("%", "", re.sub("%jobmanager\s", "", script_string[b:e]))
+    # use jobmanager from command line or from file
+    if j_manager:
+        # if it exists, command line argument overrides setting in file
+        job_manager = j_manager
+    else:
+        # find and read job manager type
+        (b, e) = re.search("%jobmanager\s.*%", script_string).span()
+        job_manager = re.sub("%", "", re.sub("%jobmanager\s", "", script_string[b:e]))
+
     if job_manager not in job_managers:
         print("Unknown job manager type '" + job_manager + "'. Use one of these: " + str(job_managers))
         exit(-1)
@@ -184,15 +191,43 @@ def parse_template(i_path, o_path):
     # parse yaml and job template
     r1 = re.compile("%yaml begin%\n([\S\s]*)%yaml end%")
     r2 = re.compile("%job begin%\n([\S\s]*)%job end%")
+    r3 = re.compile("%SGE job begin%\n([\S\s]*)%SGE job end%")
+    r4 = re.compile("%SLURM job begin%\n([\S\s]*)%SLURM job end%")
     if not r1.search(script_string):
         print("Found no proper YAML template in " + i_path)
         exit(-1)
-    if not r2.search(script_string):
+    if r2.search(script_string):
+        job_template_string = r2.search(script_string).group(1)
+    else:
+        job_template_string = ""
+    if r3.search(script_string):
+        sge_job_template_string = r3.search(script_string).group(1)
+    else:
+        sge_job_template_string = ""
+    if r4.search(script_string):
+        slurm_job_template_string = r4.search(script_string).group(1)
+    else:
+        slurm_job_template_string = ""
+
+    yaml_template_string = r1.search(script_string).group(1)
+
+    if (        (not job_template_string)
+            and (not sge_job_template_string)
+            and (not slurm_job_template_string)):
         print("Found no proper job template in " + i_path)
         exit(-1)
 
-    yaml_template_string = r1.search(script_string).group(1)
-    job_template_string = r2.search(script_string).group(1)
+    if (        (job_manager == "SGE")
+            and (not job_template_string)
+            and (not sge_job_template_string)):
+        print("Found no proper job template for SGE in " + i_path)
+        exit(-1)
+
+    if (        (job_manager == "SLURM")
+            and (not job_template_string)
+            and (not slurm_job_template_string)):
+        print("Found no proper job template for SLURM in " + i_path)
+        exit(-1)
 
     # parse output file
     if o_path is not None:
@@ -238,6 +273,8 @@ def parse_template(i_path, o_path):
     conf_object.jar_path = jar_path
     conf_object.yaml_template_string = yaml_template_string
     conf_object.job_template_string = job_template_string
+    conf_object.sge_job_template_string = sge_job_template_string
+    conf_object.slurm_job_template_string = slurm_job_template_string
     conf_object.int_range = int_range
     conf_object.i0 = range_begin
     conf_object.i1 = range_end
@@ -356,15 +393,21 @@ def create_jobfile(conf_object):
     if conf_object.job_manager == "SLURM":
         input_file_name = "tmp$SLURM_ARRAY_TASK_ID.yaml"
         job_file_name = "openpixi_batch.slrm"
+        job_string = str(conf_object.slurm_job_template_string)
     elif conf_object.job_manager == "SGE":
         input_file_name = "tmp$SGE_TASK_ID.yaml"
         job_file_name = "openpixi_batch.qjob"
+        job_string = str(conf_object.sge_job_template_string)
     else:
         input_file_name = ""
         job_file_name = ""
+        job_string = str(conf_object.job_template_string)
+
+    # if no specific [sge/slurm]_job_template has been specified, use default one:
+    if not job_string:
+        job_string = str(conf_object.job_template_string)
 
     path = os.path.join(conf_object.o_path, job_file_name)
-    job_string = str(conf_object.job_template_string)
     job_string = job_string.replace("%job_name%", conf_object.job_name)
     job_string = job_string.replace("%jar_path%", conf_object.jar_path)
     input_path = os.path.join(conf_object.o_path, input_file_name)
