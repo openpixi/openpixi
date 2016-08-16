@@ -1,0 +1,95 @@
+# Template for Vienna Scientific Cluster
+
+%range 1 4%
+%jar pixi-1.1.jar%
+%jobmanager SLURM%   # choose 'SGE' for vsc2 or 'SLURM' for vsc3+
+%output begin%
+%job_name%_input
+%output end%
+
+%exec begin%
+# Job template variables
+h_rt = "1:00:00"
+email_address = "your.email@address.com"
+
+# yaml template variables
+factor = i+3
+nl = 40 * factor
+nt = 32 * factor
+
+def myduration(x):
+    return 28 * x
+%exec end%
+
+%yaml begin%
+simulationType: temporal cgc ngp
+gridStep: 1
+couplingConstant: 2
+numberOfDimensions: 3
+numberOfColors: 2
+numberOfThreads: 16
+gridCells: [%eval nl%, %eval nt%, %eval nt%]
+timeStep: 0.5
+duration: %eval myduration(factor)%
+evaluationRegion:
+  enabled: true
+  point1: [2, 0, 0]
+  point2: [-3, -1, -1]
+activeRegion:
+  enabled: true
+  point1: [1, 0, 0]
+  point2: [-2, -1, -1]
+
+currents:
+  dualMVModels:
+    - direction: 0
+      longitudinalLocation: %eval 4*factor%
+      longitudinalWidth: %f 2.0 11.0%
+      mu: 0.04
+      lowPassCoefficient: 0.15
+      createInitialConditionsOutput: true
+      outputFile: "test_%job_name%/initial%i%.dat"
+
+output:
+  planarFields:
+    - interval: 1.0
+      startingTime: 0.0
+      path: "test_%job_name%/planar%i%.dat"
+      direction: 0
+      planarIndex: %eval nl/2 - 1%
+  timeMeasurement:
+    - path: "test_%job_name%/timeMeasurement%i%.txt"
+      interval: 0.5
+%yaml end%
+
+
+%SGE job begin%
+#$ -N %job_name%
+#$ -pe mpich 16
+#$ -V
+#$ -M %eval email_address%
+#$ -m e
+#$ -l h_rt=%eval h_rt%
+#$ -o ./job_output/tmp$JOB_ID.out
+#$ -e ./job_output/tmp$JOB_ID.err
+#$ -t %i0%-%i1%
+
+java -Xmx16g -cp %jar_path% org.openpixi.pixi.ui.MainBatch %input_path%
+%SGE job end%
+
+
+%SLURM job begin%
+#!/bin/bash
+#SBATCH -J %job_name%
+#SBATCH --time=%eval h_rt%
+#SBATCH --ntasks-per-node=1
+#SBATCH --ntasks-per-core=1
+#SBATCH --mail-type=END,FAIL
+#SBATCH --mail-user=<%eval email_address%>
+#SBATCH --output=job_ouput/slurm_%A_%a.out
+
+#SBATCH --array=%i0%-%i1%:1
+
+srun java -Xmx32g -cp %jar_path% org.openpixi.pixi.ui.MainBatch %input_path%
+%SLURM job end%
+
