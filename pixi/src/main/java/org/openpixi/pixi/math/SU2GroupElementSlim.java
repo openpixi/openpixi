@@ -146,7 +146,6 @@ public class SU2GroupElementSlim implements GroupElement {
 
 	public GroupElement adj() {
 		SU2GroupElementSlim b = new SU2GroupElementSlim(this);
-		b.e0 = - this.e0;
 		b.e1 = - this.e1;
 		b.e2 = - this.e2;
 		b.e3 = - this.e3;
@@ -154,7 +153,6 @@ public class SU2GroupElementSlim implements GroupElement {
 	}
 
 	public void adjAssign() {
-		this.e0 = - this.e0;
 		this.e1 = - this.e1;
 		this.e2 = - this.e2;
 		this.e3 = - this.e3;
@@ -229,7 +227,7 @@ public class SU2GroupElementSlim implements GroupElement {
 	public AlgebraElement getAlgebraElement()
 	{
 		double norm = 0.0;
-		norm = this.e0 * this.e0 + this.e1 * this.e1 + this.e2 * this.e2 + this.e3 * this.e3;
+		norm = this.e1 * this.e1 + this.e2 * this.e2 + this.e3 * this.e3;
 		norm = Math.sqrt(norm);
 
 		SU2AlgebraElementSlim field = new SU2AlgebraElementSlim();
