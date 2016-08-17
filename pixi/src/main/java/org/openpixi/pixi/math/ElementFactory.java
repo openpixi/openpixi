@@ -26,33 +26,33 @@ public class ElementFactory {
     public GroupElement groupZero(int colors) {
         switch (colors) {
             case 2:
-                return new SU2GroupElement(0, 0, 0, 0);
+                return new SU2GroupElementSlim(0, 0, 0, 0);
             case 3:
                 return new SU3GroupElement(SU3GroupZero);
             default: System.out.println("Constructor for SU(" + colors + ") not defined.\n");
-                return new SU2GroupElement(0, 0, 0, 0);
+                return new SU2GroupElementSlim(0, 0, 0, 0);
         }
     }
 
     public GroupElement groupIdentity(int colors) {
         switch (colors) {
             case 2:
-                return new SU2GroupElement(1, 0, 0, 0);
+                return new SU2GroupElementSlim(1, 0, 0, 0);
             case 3:
                 return new SU3GroupElement(SU3GroupIdentity);
             default: System.out.println("Constructor for SU(" + colors + ") not defined.\n");
-                return new SU2GroupElement(1, 0, 0, 0);
+                return new SU2GroupElementSlim(1, 0, 0, 0);
         }
     }
 
     public AlgebraElement algebraZero(int colors) {
         switch (colors) {
             case 2:
-                return new SU2AlgebraElement(0, 0, 0);
+                return new SU2AlgebraElementSlim(0, 0, 0);
             case 3:
                 return new SU3AlgebraElement(SU3AlgebraZero);
             default: System.out.println("Constructor for SU(" + colors + ") not defined.\n");
-                return new SU2AlgebraElement(0, 0, 0);
+                return new SU2AlgebraElementSlim(0, 0, 0);
         }
     }
 
