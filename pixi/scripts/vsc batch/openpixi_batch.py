@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 """
         OPENPIXI SGE/SLURM BATCH SCRIPT
 
@@ -5,8 +6,17 @@
     qsub or sbatch.
 
     Example usage:
-    Parse the input file 'pancakewidths', create yaml and qjob files in 'pancake_widths/' and submit them.
-        python openpixi_batch.py -cs -i pancakewidths -o pancakewidths_files/
+    Parse the input file 'pancakewidths', create yaml and qjob/slrm files as specified and submit them.
+        python openpixi_batch.py -cs -i pancakewidths
+
+    Under linux one can call the python script directly:
+        ./openpixi_batch.py -cs -i pancakewidth
+
+    Override the job manager.
+        python openpixi_batch.py -cs -i pancakewidth -j SGE
+
+    Override the output directory.
+        python openpixi_batch.py -cs -i pancakewidths -o pancakewidths_files_alternative_location/
 
     Parse the input file 'coupling' and create yaml and qjob files in 'pancake_widths/' (without submitting them).
         python openpixi_batch.py -c -i coupling -o coupling_files/
@@ -45,22 +55,32 @@
 
     3) Define job manager type
     Use %jobmanager SGE% for SGE (on the VSC2) or %jobmanager SLURM% for SLURM (on the VSC3).
+    (This option can be overridden by the command line option '--jobmanager' or '-j')
 
-    4) Using integer from range
+    4) Define output path for temporary files
+    Use %output begin%...pathname...%output end% to define the location of output files.
+    Use %job_name% to refer to the input file name.
+
+    5) Using integer from range
     Use %i% to insert the integer from the given range.
 
     Example:
     Use "output%i%.dat" to get output files "output0.dat", "output1.dat", ..., "output9.dat" given the range above.
 
-    5) Float intervals
+    6) Float intervals
     Use %f BEGIN END% to define a linear range of floating point numbers.
 
     Example:
     %f 0.0 0.9% to get the values 0.0, 0.1, ... 0.9 using the integer range above.
 
-    6) Begin and end of the integer range
+    7) Begin and end of the integer range
     Use %i0% for the first integer in the range and %i1% for the last. This is used in the job template to specify
     the correct range for the array job.
+
+    8) Evaluate arbitrary python expressions
+    Use %eval ...% to evaluate arbitrary python expressions that can use the variables 'i', 'i0' and 'i1'.
+    Use an %exec begin%...%exec end% python code block that is executed every time just before %eval ...%.
+    %eval ...% can be used in the yaml template as well as in the job template.
 
 """
 
@@ -96,17 +116,18 @@ def main():
 
     input_path = options.input
     output_path = options.output
+    jobmanager = options.jobmanager
 
     if options.create:
         if input_path is not None:
-            if output_path is not None:
-                conf_object = parse_template(input_path, output_path)
+            conf_object = parse_template(input_path, output_path, jobmanager)
+            if conf_object.o_path is not None:
                 create_yaml_files(conf_object)
                 create_jobfile(conf_object)
 
                 # also submit job (job manager is specified in configuration object)
                 if options.submit:
-                    submit_jobs(output_path, conf_object.job_manager)
+                    submit_jobs(conf_object.o_path, conf_object.job_manager)
 
             else:
                 print("Error: Output path not defined.")
@@ -140,7 +161,7 @@ def empty_path(path):
             os.remove(p)
 
 
-def parse_template(i_path, o_path):
+def parse_template(i_path, o_path, j_manager):
     """
     Parses template file and returns configuration object.
     :param i_path: path to template file
@@ -148,6 +169,9 @@ def parse_template(i_path, o_path):
     :return: configuration object
     """
     script_string = open(i_path, "r").read()
+
+    # Create job name from input file name
+    job_name = os.path.basename(i_path)
 
     # find and read integer range line (should be first line, but doesnt really matter.)
     (b, e) = re.search("%range.*%", script_string).span()
@@ -160,9 +184,15 @@ def parse_template(i_path, o_path):
     (b, e) = re.search("%jar\s.*%", script_string).span()
     jar_path = re.sub("%", "", re.sub("%jar\s", "", script_string[b:e]))
 
-    # find an read job manager type
-    (b, e) = re.search("%jobmanager\s.*%", script_string).span()
-    job_manager = re.sub("%", "", re.sub("%jobmanager\s", "", script_string[b:e]))
+    # use jobmanager from command line or from file
+    if j_manager:
+        # if it exists, command line argument overrides setting in file
+        job_manager = j_manager
+    else:
+        # find and read job manager type
+        (b, e) = re.search("%jobmanager\s.*%", script_string).span()
+        job_manager = re.sub("%", "", re.sub("%jobmanager\s", "", script_string[b:e]))
+
     if job_manager not in job_managers:
         print("Unknown job manager type '" + job_manager + "'. Use one of these: " + str(job_managers))
         exit(-1)
@@ -170,20 +200,61 @@ def parse_template(i_path, o_path):
     # parse yaml and job template
     r1 = re.compile("%yaml begin%\n([\S\s]*)%yaml end%")
     r2 = re.compile("%job begin%\n([\S\s]*)%job end%")
+    r3 = re.compile("%SGE job begin%\n([\S\s]*)%SGE job end%")
+    r4 = re.compile("%SLURM job begin%\n([\S\s]*)%SLURM job end%")
     if not r1.search(script_string):
         print("Found no proper YAML template in " + i_path)
         exit(-1)
-    if not r2.search(script_string):
+    if r2.search(script_string):
+        job_template_string = r2.search(script_string).group(1)
+    else:
+        job_template_string = ""
+    if r3.search(script_string):
+        sge_job_template_string = r3.search(script_string).group(1)
+    else:
+        sge_job_template_string = ""
+    if r4.search(script_string):
+        slurm_job_template_string = r4.search(script_string).group(1)
+    else:
+        slurm_job_template_string = ""
+
+    yaml_template_string = r1.search(script_string).group(1)
+
+    if (        (not job_template_string)
+            and (not sge_job_template_string)
+            and (not slurm_job_template_string)):
         print("Found no proper job template in " + i_path)
         exit(-1)
 
-    yaml_template_string = r1.search(script_string).group(1)
-    job_template_string = r2.search(script_string).group(1)
+    if (        (job_manager == "SGE")
+            and (not job_template_string)
+            and (not sge_job_template_string)):
+        print("Found no proper job template for SGE in " + i_path)
+        exit(-1)
+
+    if (        (job_manager == "SLURM")
+            and (not job_template_string)
+            and (not slurm_job_template_string)):
+        print("Found no proper job template for SLURM in " + i_path)
+        exit(-1)
+
+    # parse output file
+    if o_path is not None:
+        # Command line option overrides option in file
+        parse_o_path = o_path
+    else:
+        r3 = re.compile("%output begin%([\S\s]*)%output end%")
+        if r3.search(script_string):
+            parse_o_path = r3.search(script_string).group(1)
+            parse_o_path = parse_o_path.strip()
+            parse_o_path = parse_o_path.replace("%job_name%", job_name)
+        else:
+            parse_o_path = None
 
     # find float ranges
     i = 0
     float_ranges_limits = []
-    for float_line in re.finditer("%f\s.*%", yaml_template_string):
+    for float_line in re.finditer("%f\s[^%]*%", yaml_template_string):
         current_string = float_line.group()
         yaml_template_string = yaml_template_string.replace(current_string, "%f" + str(i) + "%")
         (float_begin, float_end) = re.sub("%", "", re.sub("%f\s", "", current_string)).split(" ")
@@ -196,17 +267,28 @@ def parse_template(i_path, o_path):
         e = fl[1]
         float_ranges.append(frange(b, e, int_range_len))
 
+    # parse exec object
+    r1 = re.compile("%exec begin%\n([\S\s]*)%exec end%")
+    if r1.search(script_string):
+        exec_string = r1.search(script_string).group(1)
+    else:
+        exec_string = ""
+
     conf_object = Object()
+    conf_object.job_name = job_name
     conf_object.i_path = i_path
-    conf_object.o_path = o_path
+    conf_object.o_path = parse_o_path
     conf_object.job_manager = job_manager
     conf_object.jar_path = jar_path
     conf_object.yaml_template_string = yaml_template_string
     conf_object.job_template_string = job_template_string
+    conf_object.sge_job_template_string = sge_job_template_string
+    conf_object.slurm_job_template_string = slurm_job_template_string
     conf_object.int_range = int_range
     conf_object.i0 = range_begin
     conf_object.i1 = range_end
     conf_object.float_ranges = float_ranges
+    conf_object.exec_string = exec_string
 
     return conf_object
 
@@ -299,6 +381,12 @@ def create_yaml_files(conf_object):
             float_index += 1
         c += 1
 
+        # replace all eval objects
+        current_yaml_string = replace_eval(current_yaml_string, conf_object, i)
+
+        # replace job name
+        current_yaml_string = current_yaml_string.replace("%job_name%", conf_object.job_name)
+
         # write finished yaml string to file.
         file_object.write(current_yaml_string)
         file_object.close()
@@ -314,23 +402,30 @@ def create_jobfile(conf_object):
     if conf_object.job_manager == "SLURM":
         input_file_name = "tmp$SLURM_ARRAY_TASK_ID.yaml"
         job_file_name = "openpixi_batch.slrm"
+        job_string = str(conf_object.slurm_job_template_string)
     elif conf_object.job_manager == "SGE":
         input_file_name = "tmp$SGE_TASK_ID.yaml"
         job_file_name = "openpixi_batch.qjob"
+        job_string = str(conf_object.sge_job_template_string)
     else:
         input_file_name = ""
         job_file_name = ""
+        job_string = str(conf_object.job_template_string)
 
-    job_name = "openpixi"
+    # if no specific [sge/slurm]_job_template has been specified, use default one:
+    if not job_string:
+        job_string = str(conf_object.job_template_string)
 
     path = os.path.join(conf_object.o_path, job_file_name)
-    job_string = str(conf_object.job_template_string)
-    job_string = job_string.replace("%job_name%", job_name)
+    job_string = job_string.replace("%job_name%", conf_object.job_name)
     job_string = job_string.replace("%jar_path%", conf_object.jar_path)
     input_path = os.path.join(conf_object.o_path, input_file_name)
     job_string = job_string.replace("%input_path%", input_path)
     job_string = job_string.replace("%i0%", conf_object.i0)
     job_string = job_string.replace("%i1%", conf_object.i1)
+
+    # replace all eval objects
+    job_string = replace_eval(job_string, conf_object, int(conf_object.i0))
 
     file_object = open(path, "w")
     file_object.write(job_string)
@@ -363,6 +458,32 @@ def make_sure_path_exists(path):
     except OSError as exception:
         if exception.errno != errno.EEXIST:
             raise
+
+
+def replace_eval(string, conf_object, i):
+    """
+    Replaces %eval ...% expressions in string by the evaluated version.
+    :param string: string to replace objects
+    :param conf_object:
+    :param i: value of index i
+    :return: string with %eval ...$ expressions evaluated
+    """
+    # execute expression string
+    myglobals = {}
+    mylocals = {}
+    mylocals['i'] = i
+    mylocals['i0'] = conf_object.i0
+    mylocals['i1'] = conf_object.i1
+    exec(conf_object.exec_string, myglobals, mylocals)
+
+    # find, evaluate and replace all eval objects
+    for eval_line in re.finditer("%eval\s([^%]*)%", string):
+        current_string = eval_line.group()
+        eval_command = eval_line.group(1)
+        result = eval(eval_command, myglobals, mylocals)
+        string = string.replace(current_string, str(result), 1)
+
+    return string
 
 
 class Object(object):

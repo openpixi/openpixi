@@ -28,6 +28,7 @@ import org.openpixi.pixi.ui.util.yaml.YamlParser;
 
 import java.io.FilenameFilter;
 import java.io.IOException;
+import java.util.Locale;
 
 public class MainBatch {
 
@@ -53,6 +54,10 @@ public class MainBatch {
 	 * </pre>
 	 */
 	public static void main(String[] args) throws FileNotFoundException, IOException, InterruptedException {
+
+		// Set US locale for numeric output ("1.23"[US] instead of "1,23"[DE])
+		Locale.setDefault(Locale.US);
+
 		//Debug.checkAssertsEnabled();
 		// Checks if the user has specified at least one parameter.
 		// If so creates a parser and uses the parameter as the

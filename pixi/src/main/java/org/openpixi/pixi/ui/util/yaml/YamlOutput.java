@@ -33,6 +33,8 @@ public class YamlOutput {
 
 	public ArrayList<YamlPoyntingTheoremInTime> poyntingTheoremInTime = new ArrayList<YamlPoyntingTheoremInTime>();
 
+	public ArrayList<YamlTimeMeasurement> timeMeasurement = new ArrayList<YamlTimeMeasurement>();
+
 	/**
 	 * Creates FileGenerator instances and applies them to the Settings instance.
 	 * @param s
@@ -83,6 +85,10 @@ public class YamlOutput {
 		}
 
 		for(YamlPoyntingTheoremInTime output : poyntingTheoremInTime) {
+			s.addDiagnostics(output.getFileGenerator());
+		}
+
+		for(YamlTimeMeasurement output : timeMeasurement) {
 			s.addDiagnostics(output.getFileGenerator());
 		}
 	}
