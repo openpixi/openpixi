@@ -133,7 +133,7 @@ public class SU2AlgebraElementSlim implements AlgebraElement {
 	public GroupElement getLinearizedLink() {
 		
 		double sum = (v0*v0+v1*v1+v2*v2)/4;
-		SU2GroupElement b = new SU2GroupElement(Math.sqrt(1.0 - sum), v0/2, v1/2, v2/2);
+		SU2GroupElementSlim b = new SU2GroupElementSlim(Math.sqrt(1.0 - sum), v0/2, v1/2, v2/2);
 		return b;
 	}
 	
@@ -147,7 +147,7 @@ public class SU2AlgebraElementSlim implements AlgebraElement {
 		} else {
 			sinfakt = 0.5/mod*Math.sin(mod);
 		}
-		SU2GroupElement b = new SU2GroupElement(Math.cos(mod), v0*sinfakt, v1*sinfakt, v2*sinfakt);
+		SU2GroupElementSlim b = new SU2GroupElementSlim(Math.cos(mod), v0*sinfakt, v1*sinfakt, v2*sinfakt);
 		return b;
 	}
 
@@ -158,15 +158,15 @@ public class SU2AlgebraElementSlim implements AlgebraElement {
 
 	public AlgebraElement act(GroupElement g) {
 
-		SU2GroupElement u = (SU2GroupElement) g;
-		SU2GroupElement Xm = new SU2GroupElement();
+		SU2GroupElementSlim u = (SU2GroupElementSlim) g;
+		SU2GroupElementSlim Xm = new SU2GroupElementSlim();
 
 		Xm.set(0, 0.0);
 		Xm.set(1, v0 / 2);
 		Xm.set(2, v1 / 2);
 		Xm.set(3, v2 / 2);
 
-		Xm = (SU2GroupElement) u.mult(Xm.mult(u.adj()));
+		Xm = (SU2GroupElementSlim) u.mult(Xm.mult(u.adj()));
 		return Xm.proj();
 
 	}
