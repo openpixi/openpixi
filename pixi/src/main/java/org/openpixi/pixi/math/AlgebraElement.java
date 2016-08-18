@@ -119,4 +119,8 @@ public interface AlgebraElement {
 	void actAssign(GroupElement g);
 
 	AlgebraElement copy();
+
+	int getNumberOfColors();
+
+	int getNumberOfComponents();
 }

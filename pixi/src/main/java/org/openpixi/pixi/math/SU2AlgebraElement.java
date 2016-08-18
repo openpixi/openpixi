@@ -166,4 +166,8 @@ public class SU2AlgebraElement implements AlgebraElement {
 	public AlgebraElement copy() {
 		return new SU2AlgebraElement(v[0], v[1], v[2]);
 	}
+
+	public int getNumberOfColors() {return 2;}
+
+	public int getNumberOfComponents() {return 3;}
 }

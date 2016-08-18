@@ -259,4 +259,8 @@ public class SU2GroupElement implements GroupElement {
 
 		return (SU2GroupElement) v.mult(1.0/n);
 	}
+
+	public int getNumberOfColors() {return 2;}
+
+	public int getNumberOfComponents() {return 4;}
 }

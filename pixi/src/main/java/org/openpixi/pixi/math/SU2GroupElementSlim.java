@@ -277,4 +277,8 @@ public class SU2GroupElementSlim implements GroupElement {
 
 		return (SU2GroupElementSlim) v.mult(1.0/n);
 	}
+
+	public int getNumberOfColors() {return 2;}
+
+	public int getNumberOfComponents() {return 4;}
 }

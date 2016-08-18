@@ -178,4 +178,8 @@ public class SU2AlgebraElementSlim implements AlgebraElement {
 	public AlgebraElement copy() {
 		return new SU2AlgebraElementSlim(v0, v1, v2);
 	}
+
+	public int getNumberOfColors() {return 2;}
+
+	public int getNumberOfComponents() {return 3;}
 }
