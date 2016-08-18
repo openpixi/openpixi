@@ -433,4 +433,8 @@ public class SU3AlgebraElement implements AlgebraElement {
 	public AlgebraElement copy() {
 		return new SU3AlgebraElement(get());
 	}
+
+	public int getNumberOfColors() {return 3;}
+
+	public int getNumberOfComponents() {return 8;}
 }
