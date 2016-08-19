@@ -153,30 +153,42 @@ public class LightConeNGPSuperParticleCreator implements IParticleCreator {
 				}
 			}
 		}
+		int blockWidth = zEnd - zStart;
 
 		// Spawn super particles.
-		int numberOfParticlesPerSuperParticle = totalTransversalCells * (zEnd - zStart);
-		int indexOffset = zStart * totalTransversalCells;
-		CGCSuperParticle[] superParticles = new CGCSuperParticle[particlesPerLink];
-		for (int j = 0; j < particlesPerCell; j++) {
-			superParticles[j] = new CGCSuperParticle(orientation,
-					numberOfParticlesPerSuperParticle,
-					indexOffset,
-					totalTransversalCells,
-					j,
-					particlesPerCell);
-			s.particles.add(superParticles[j]);
-		}
-		for (int i = 0; i < numberOfParticlesPerSuperParticle; i++) {
-			int index = indexOffset + i;
-			for (int j = 0; j < particlesPerCell; j++) {
-				int ngp = (j < particlesPerCell/2) ? index : s.grid.shift(index, direction, 1);
-				AlgebraElement charge = gaussConstraint[ngp].copy();
-				charge.multAssign(1.0 / particlesPerCell);
-				superParticles[j].Q[i] = charge;
-			}
-		}
+        int numberOfSubdivisions = 4;   // still need to make this dependent on number of threads.
+        int numberOfSuperParticles = numberOfSubdivisions * particlesPerCell;
+        int totalNumberOfParticles = totalTransversalCells * blockWidth * particlesPerCell;
+		CGCSuperParticle[] superParticles = new CGCSuperParticle[numberOfSuperParticles];
 
+        int indexOffset = zStart * totalTransversalCells;
+        int widthPerSubdivision = (int) Math.ceil(blockWidth / (1.0 * numberOfSubdivisions));
+        int numberOfParticlesPerSuperParticle = widthPerSubdivision * totalTransversalCells;
+        for (int j = 0; j < numberOfSubdivisions; j++) {
+            // Initialize super particles for subdivision of the particle block.
+            for (int k = 0; k < particlesPerCell; k++) {
+                superParticles[particlesPerCell * j + k] = new CGCSuperParticle(orientation,
+                        numberOfParticlesPerSuperParticle,
+                        indexOffset,
+                        totalTransversalCells,
+                        k,
+                        particlesPerCell);
+                s.particles.add(superParticles[particlesPerCell * j + k]);
+            }
+
+            // Set super particle charges for subdivision.
+            for (int i = 0; i < numberOfParticlesPerSuperParticle; i++) {
+                int index = indexOffset + i;
+                for (int k = 0; k < particlesPerCell; k++) {
+                    int ngp = (k < particlesPerCell/2) ? index : s.grid.shift(index, direction, 1);
+                    AlgebraElement charge = gaussConstraint[ngp].copy();
+                    charge.multAssign(1.0 / particlesPerCell);
+                    superParticles[j *particlesPerCell + k].Q[i] = charge;
+                }
+            }
+
+            indexOffset += numberOfParticlesPerSuperParticle;
+        }
 
 		ArrayList<ArrayList<AlgebraElement>> longitudinalParticleList = new ArrayList<>(totalTransversalCells);
 		for (int i = 0; i < totalTransversalCells; i++) {
