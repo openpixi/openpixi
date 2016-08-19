@@ -125,15 +125,15 @@ public class LightConeNGPSuperParticleCreator implements IParticleCreator {
 
 		// Iterate through longitudinal sheets and find dimensions of the particle block.
 		int zStart = 0;
-		int zEnd =  s.grid.getNumCells(direction);
+		int zEnd =  s.grid.getNumCells(0);
 		boolean foundStartOfBlock = false;
-		int longitudinalCells = s.grid.getNumCells(direction);
+		int longitudinalCells = s.grid.getNumCells(0);
 		for (int z = 0; z < longitudinalCells; z++) {
 			// Find max charge in transverse plane
 			maxCharge = 0;
 			for (int k = 0; k < totalTransversalCells; k++) {
 				int[] transPos = GridFunctions.getCellPos(k, transversalNumCells);
-				int[] gridPos = GridFunctions.insertGridPos(transPos, direction, z);
+				int[] gridPos = GridFunctions.insertGridPos(transPos, 0, z);
 				int i = s.grid.getCellIndex(gridPos);
 
 				double charge = Math.sqrt(gaussConstraint[i].square());
@@ -210,7 +210,7 @@ public class LightConeNGPSuperParticleCreator implements IParticleCreator {
             for (int i = 0; i < maxParticleNum; i++) {
                 int index = indexOffset + i;
                 for (int k = 0; k < particlesPerCell; k++) {
-                    int ngp = (k < particlesPerCell/2) ? index : s.grid.shift(index, direction, 1);
+                    int ngp = (k < particlesPerCell/2) ? index : s.grid.shift(index, 0, 1);
                     AlgebraElement charge = gaussConstraint[ngp].copy();
                     charge.multAssign(1.0 / particlesPerCell);
                     superParticles[j * particlesPerCell + k].Q[i] = charge;
