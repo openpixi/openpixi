@@ -102,6 +102,58 @@ public class LightConeNGPSuperParticleCreator implements IParticleCreator {
 	 * @param particlesPerLink
 	 */
 	public void initializeParticles(Simulation s, int particlesPerLink) {
+		/*
+		Detect particle 'block': Find region where Gauss constraint is strongly violated (i.e. where charges are to be
+		placed) and ignore the rest. This reduces the total number of particle charges we need to describe the initial
+		condition, because most of space will be empty anyways. Note: this introduces very small violations of the Gauss
+		law at the boundaries of the regions, but these errors are (supposed to be) negligible.
+		 */
+
+		// Iterate through grid and find maximum charge in the grid.
+		double maxCharge = 0.0;
+		for (int i = 0; i < s.grid.getTotalNumberOfCells(); i++) {
+			double charge = Math.sqrt(gaussConstraint[i].square());
+			if(maxCharge < charge) {
+				maxCharge = charge;
+			}
+		}
+
+		// Set cutoff charge to small fraction of maximum charge.
+		//double cutoffCharge = 10E-12 * Math.pow( g * as, 1) / (Math.pow(as, 3) * particlesPerLink);
+		double cutoffCharge = maxCharge * 10E-12;
+
+		// Iterate through longitudinal sheets and find dimensions of the particle block.
+		int zStart = 0;
+		int zEnd =  s.grid.getNumCells(direction);
+		boolean foundStartOfBlock = false;
+		int longitudinalCells = s.grid.getNumCells(direction);
+		for (int z = 0; z < longitudinalCells; z++) {
+			// Find max charge in transverse plane
+			maxCharge = 0;
+			for (int k = 0; k < totalTransversalCells; k++) {
+				int[] transPos = GridFunctions.getCellPos(k, transversalNumCells);
+				int[] gridPos = GridFunctions.insertGridPos(transPos, direction, z);
+				int i = s.grid.getCellIndex(gridPos);
+
+				double charge = Math.sqrt(gaussConstraint[i].square());
+				if(charge > maxCharge) {
+					maxCharge = charge;
+				}
+			}
+			if(!foundStartOfBlock) {
+				if(maxCharge > cutoffCharge) {
+					zStart = z;
+					foundStartOfBlock = true;
+				}
+			} else {
+				if(maxCharge < cutoffCharge) {
+					zEnd = z;
+					break;
+				}
+			}
+		}
+
+
 		ArrayList<ArrayList<AlgebraElement>> longitudinalParticleList = new ArrayList<>(totalTransversalCells);
 		for (int i = 0; i < totalTransversalCells; i++) {
 			longitudinalParticleList.add(new ArrayList<AlgebraElement>());
