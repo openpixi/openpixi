@@ -40,20 +40,32 @@ public class CGCSuperParticle implements IParticle{
 	 */
 	public int subLatticeShift;
 
+	/**
+	 * Number of particles per cell. Needed for relative position of super particles.
+	 */
+	public int particlePerCell;
+
 	public CGCSuperParticle(int orientation,
 							int numberOfParticles,
 							int indexOffset,
 	                        int particlesPerPlane,
-	                        int subLatticeShift) {
+	                        int subLatticeShift,
+	                        int particlePerCell) {
 		this.orientation = orientation;
 		this.numberOfParticles = numberOfParticles;
 		this.indexOffset = indexOffset;
 		this.particlesPerPlane = particlesPerPlane;
 		this.subLatticeShift = subLatticeShift;
+		this.particlePerCell = particlePerCell;
 
 		this.Q = new AlgebraElement[numberOfParticles];
 
 	}
+
+	public boolean needsUpdate(int t) {
+		return subLatticeShift == (t + subLatticeShift + 1) % particlePerCell;
+	}
+
 
 	// GETTERS
 

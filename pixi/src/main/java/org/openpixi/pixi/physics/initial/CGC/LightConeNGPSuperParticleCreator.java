@@ -2,6 +2,7 @@ package org.openpixi.pixi.physics.initial.CGC;
 
 import org.openpixi.pixi.math.AlgebraElement;
 import org.openpixi.pixi.physics.Simulation;
+import org.openpixi.pixi.physics.particles.CGCSuperParticle;
 import org.openpixi.pixi.physics.util.GridFunctions;
 
 import java.util.ArrayList;
@@ -150,6 +151,29 @@ public class LightConeNGPSuperParticleCreator implements IParticleCreator {
 					zEnd = z;
 					break;
 				}
+			}
+		}
+
+		// Spawn super particles.
+		int numberOfParticlesPerSuperParticle = totalTransversalCells * (zEnd - zStart);
+		int indexOffset = zStart * totalTransversalCells;
+		CGCSuperParticle[] superParticles = new CGCSuperParticle[particlesPerLink];
+		for (int j = 0; j < particlesPerCell; j++) {
+			superParticles[j] = new CGCSuperParticle(orientation,
+					numberOfParticlesPerSuperParticle,
+					indexOffset,
+					totalTransversalCells,
+					j,
+					particlesPerCell);
+			s.particles.add(superParticles[j]);
+		}
+		for (int i = 0; i < numberOfParticlesPerSuperParticle; i++) {
+			int index = indexOffset + i;
+			for (int j = 0; j < particlesPerCell; j++) {
+				int ngp = (j < particlesPerCell/2) ? index : s.grid.shift(index, direction, 1);
+				AlgebraElement charge = gaussConstraint[ngp].copy();
+				charge.multAssign(1.0 / particlesPerCell);
+				superParticles[j].Q[i] = charge;
 			}
 		}
 

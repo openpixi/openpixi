@@ -1,5 +1,6 @@
 package org.openpixi.pixi.physics.grid;
 
+import org.openpixi.pixi.physics.particles.CGCSuperParticle;
 import org.openpixi.pixi.physics.particles.IParticle;
 
 /**
@@ -16,6 +17,13 @@ public class CGCSuperParticleInterpolationNGP implements  InterpolatorAlgorithm 
 
 	public void interpolateChargedensity(IParticle p, Grid g) {
 		// Not implemented yet.
+		CGCSuperParticle P = (CGCSuperParticle) p;
+		int indexOffset = P.indexOffset;
+		int ngpShift = (P.subLatticeShift < P.particlePerCell/2) ? 0 : P.particlesPerPlane;
+		for (int i = 0; i < P.numberOfParticles; i++) {
+			int index = i + indexOffset + ngpShift;
+			g.addRho(index, P.Q[i]);
+		}
 	}
 
 	public void interpolateToParticle(IParticle p, Grid g) {
