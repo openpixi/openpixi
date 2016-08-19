@@ -230,6 +230,7 @@ public class Simulation {
 		} else {
 			turnGridForceOff();
 		}
+		grid.setSimulationSteps(totalSimulationSteps);
 
 		// Regions
 		if(settings.isEvaluationRegionEnabled()) {
@@ -375,6 +376,7 @@ public class Simulation {
 		// 2) Step counter
 		totalSimulationSteps++;
 		totalSimulationTime =  totalSimulationSteps * tstep;
+		grid.setSimulationSteps(totalSimulationSteps);
 
 		// 3) Reassign particle charges, positions and gauge links
 		mover.reassign(particles);
