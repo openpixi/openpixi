@@ -68,8 +68,11 @@ public class CGCSuperParticle implements IParticle{
 	 * @return      index offset since beginning of simulation.
 	 */
 	public int getCurrentOffset(int t) {
-		int movementShift = ((t + subLatticeShift) / particlePerCell) * particlesPerPlane;
-		return indexOffset + movementShift;
+		if(orientation > 0) {
+			return indexOffset + ((t + subLatticeShift) / particlePerCell) * particlesPerPlane;
+		}
+		int shift = ((int) Math.floor((- t + subLatticeShift) / (1.0 * particlePerCell))) * particlesPerPlane;
+		return indexOffset + shift;
 	}
 
 	/**
@@ -78,8 +81,12 @@ public class CGCSuperParticle implements IParticle{
 	 * @return      ngp index offset since beginning of simulation.
 	 */
 	public int getCurrentNGPOffset(int t) {
-		int ngpShift = (((t+subLatticeShift) % particlePerCell) < particlePerCell/2) ? 0 : particlesPerPlane;
-		return getCurrentOffset(t) + ngpShift;
+		int currentOffset = getCurrentOffset(t);
+		if(orientation > 0) {
+			return currentOffset + ((((t+subLatticeShift) % particlePerCell) < particlePerCell/2) ? 0 : particlesPerPlane);
+		}
+		int shift = ((((t - subLatticeShift + particlePerCell + particlePerCell/2 - 1) % particlePerCell) < particlePerCell/2) ? 0 : particlesPerPlane);
+		return currentOffset + shift;
 	}
 
 	/**
@@ -88,7 +95,10 @@ public class CGCSuperParticle implements IParticle{
 	 * @return      true/false if particle needs an update or needs to be interpolated to the grid.
 	 */
 	public boolean needsUpdate(int t) {
-		return 0 == (t + subLatticeShift + particlePerCell/2 + 1) % particlePerCell;
+		if(orientation > 0) {
+			return 0 == (t + subLatticeShift + particlePerCell / 2 + 1) % particlePerCell;
+		}
+		return 0 == (t - subLatticeShift + particlePerCell / 2 ) % particlePerCell;
 	}
 
 	// GETTERS

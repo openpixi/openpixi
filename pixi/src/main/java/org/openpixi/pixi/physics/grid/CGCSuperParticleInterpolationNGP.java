@@ -29,7 +29,13 @@ public class CGCSuperParticleInterpolationNGP implements  InterpolatorAlgorithm 
 					P.Q[i].actAssign(U.adj());
 				}
 			} else {
-				// Other orientation not yet implemented.
+				for (int i = 0; i < P.numberOfParticles; i++) {
+					int index = Math.max(i + indexOffset, 0);
+					GroupElement U = g.getUnext(index, 0);
+					P.Q[i].actAssign(U);
+					AlgebraElement J = P.Q[i].mult(- as / at);
+					g.addJ(index, 0, J); // Optimizations only work for x-direction!
+				}
 			}
 		}
 	}
@@ -37,10 +43,22 @@ public class CGCSuperParticleInterpolationNGP implements  InterpolatorAlgorithm 
 	public void interpolateChargedensity(IParticle p, Grid g) {
 		CGCSuperParticle P = (CGCSuperParticle) p;
 		int indexOffset = P.getCurrentNGPOffset(g.getSimulationSteps());
-		for (int i = 0; i < P.numberOfParticles; i++) {
-			int index = i + indexOffset;
-			g.addRho(index, P.Q[i]);
-		}
+        /*
+        Note: the orientation of super particles has no effect on the interpolation of single charges. Traversing the
+        charges alternately however decreases interference of the parallel particle iterators and therefore improves
+        multithreading performance.
+         */
+        if(P.orientation > 0) {
+            for (int i = 0; i < P.numberOfParticles; i++) {
+                int index = Math.max(i + indexOffset, 0);
+                g.addRho(index, P.Q[i]);
+            }
+        } else {
+            for (int i = P.numberOfParticles - 1; i >= 0; i--) {
+                int index = Math.max(i + indexOffset, 0);
+                g.addRho(index, P.Q[i]);
+            }
+        }
 	}
 
 	public void interpolateToParticle(IParticle p, Grid g) {
