@@ -121,7 +121,7 @@ public class LightConeNGPSuperParticleCreator implements IParticleCreator {
 
 		// Set cutoff charge to small fraction of maximum charge.
 		//double cutoffCharge = 10E-12 * Math.pow( g * as, 1) / (Math.pow(as, 3) * particlesPerLink);
-		double cutoffCharge = maxCharge * 10E-12;
+		double cutoffCharge = maxCharge * 10E-10;
 
 		// Iterate through longitudinal sheets and find dimensions of the particle block.
 		int zStart = 0;
@@ -156,7 +156,7 @@ public class LightConeNGPSuperParticleCreator implements IParticleCreator {
 		int blockWidth = zEnd - zStart;
 
 		// Spawn super particles.
-        int numberOfSubdivisions = 4;   // still need to make this dependent on number of threads.
+        int numberOfSubdivisions = 1;   // still need to make this dependent on number of threads.
         int numberOfSuperParticles = numberOfSubdivisions * particlesPerCell;
         int totalNumberOfParticles = totalTransversalCells * blockWidth * particlesPerCell;
         int indexOffset = zStart * totalTransversalCells;
@@ -164,8 +164,14 @@ public class LightConeNGPSuperParticleCreator implements IParticleCreator {
         int longitudinalParticlesPerSubdivision = numberOfSubdivisions * widthPerSubdivision * particlesPerCell;
         int totalNumberOfCells = s.grid.getTotalNumberOfCells();
 
-        int widthForLastSubdivision = blockWidth % widthPerSubdivision;
-        int particlesInLastSubdivision = widthForLastSubdivision * totalTransversalCells;
+        int widthForLastSubdivision, particlesInLastSubdivision;
+        if(numberOfSubdivisions > 1) {
+            widthForLastSubdivision = blockWidth % widthPerSubdivision;
+            particlesInLastSubdivision = widthForLastSubdivision * totalTransversalCells;
+        } else {
+            widthForLastSubdivision = blockWidth;
+            particlesInLastSubdivision = blockWidth * totalTransversalCells;
+        }
 
         // Create lists for particle refinement.
         AlgebraElement[][] longitudinalParticleArray = new AlgebraElement[totalTransversalCells][longitudinalParticlesPerSubdivision];
