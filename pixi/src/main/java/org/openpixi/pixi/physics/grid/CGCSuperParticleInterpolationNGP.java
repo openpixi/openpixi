@@ -12,43 +12,43 @@ import org.openpixi.pixi.physics.particles.IParticle;
  * particles. The super particle classes encapsulate larger collections of particles whose relative positions are fixed
  * during the simulation and whose charges are updated at the same time when they cross into other cells.
  */
-public class CGCSuperParticleInterpolationNGP implements  InterpolatorAlgorithm {
-	public void interpolateToGrid(IParticle p, Grid g) {
-		double at = g.getTemporalSpacing();
-		double as = g.getLatticeSpacing();
+public class CGCSuperParticleInterpolationNGP implements InterpolatorAlgorithm {
+    public void interpolateToGrid(IParticle p, Grid g) {
+        double at = g.getTemporalSpacing();
+        double as = g.getLatticeSpacing();
 
-		CGCSuperParticle P = (CGCSuperParticle) p;
-		if(P.needsUpdate(g.getSimulationSteps())) {
-			int indexOffset = P.getCurrentOffset(g.getSimulationSteps());
-			if(P.orientation > 0) {
-				for (int i = 0; i < P.numberOfParticles; i++) {
-					int index = i + indexOffset;
-					AlgebraElement J = P.Q[i].mult(as / at);
-					g.addJ(index, 0, J); // Optimizations only work for x-direction!
-					GroupElement U = g.getUnext(index, 0);
-					P.Q[i].actAssign(U.adj());
-				}
-			} else {
-				for (int i = 0; i < P.numberOfParticles; i++) {
-					int index = Math.max(i + indexOffset, 0);
-					GroupElement U = g.getUnext(index, 0);
-					P.Q[i].actAssign(U);
-					AlgebraElement J = P.Q[i].mult(- as / at);
-					g.addJ(index, 0, J); // Optimizations only work for x-direction!
-				}
-			}
-		}
-	}
+        CGCSuperParticle P = (CGCSuperParticle) p;
+        if (P.needsUpdate(g.getSimulationSteps())) {
+            int indexOffset = P.getCurrentOffset(g.getSimulationSteps());
+            if (P.orientation > 0) {
+                for (int i = 0; i < P.numberOfParticles; i++) {
+                    int index = i + indexOffset;
+                    AlgebraElement J = P.Q[i].mult(as / at);
+                    g.addJ(index, 0, J); // Optimizations only work for x-direction!
+                    GroupElement U = g.getUnext(index, 0);
+                    P.Q[i].actAssign(U.adj());
+                }
+            } else {
+                for (int i = 0; i < P.numberOfParticles; i++) {
+                    int index = Math.max(i + indexOffset, 0);
+                    GroupElement U = g.getUnext(index, 0);
+                    P.Q[i].actAssign(U);
+                    AlgebraElement J = P.Q[i].mult(-as / at);
+                    g.addJ(index, 0, J); // Optimizations only work for x-direction!
+                }
+            }
+        }
+    }
 
-	public void interpolateChargedensity(IParticle p, Grid g) {
-		CGCSuperParticle P = (CGCSuperParticle) p;
-		int indexOffset = P.getCurrentNGPOffset(g.getSimulationSteps());
+    public void interpolateChargedensity(IParticle p, Grid g) {
+        CGCSuperParticle P = (CGCSuperParticle) p;
+        int indexOffset = P.getCurrentNGPOffset(g.getSimulationSteps());
         /*
         Note: the orientation of super particles has no effect on the interpolation of single charges. Traversing the
         charges alternately however decreases interference of the parallel particle iterators and therefore improves
         multithreading performance.
          */
-        if(P.orientation > 0) {
+        if (P.orientation > 0) {
             for (int i = 0; i < P.numberOfParticles; i++) {
                 int index = Math.max(i + indexOffset, 0);
                 g.addRho(index, P.Q[i]);
@@ -59,12 +59,12 @@ public class CGCSuperParticleInterpolationNGP implements  InterpolatorAlgorithm 
                 g.addRho(index, P.Q[i]);
             }
         }
-	}
+    }
 
-	public void interpolateToParticle(IParticle p, Grid g) {
-		/*
+    public void interpolateToParticle(IParticle p, Grid g) {
+        /*
 		Usually this method would tell the particles what gauge links are currently acting on them. In the case of
 		the optimized super particle classes, parallel transport is taken care of by interpolateToGrid().
 		 */
-	}
+    }
 }

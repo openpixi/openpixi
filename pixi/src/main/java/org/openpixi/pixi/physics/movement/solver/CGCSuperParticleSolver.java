@@ -8,20 +8,20 @@ import org.openpixi.pixi.physics.particles.IParticle;
  */
 public class CGCSuperParticleSolver implements ParticleSolver {
 
-	public void updatePosition(IParticle p, Force f, double dt) {
-		// Nothing to update here. Look into CGCSuperParticleInterpolationNGP.
-	}
+    public void updatePosition(IParticle p, Force f, double dt) {
+        // Nothing to update here. Look into CGCSuperParticleInterpolationNGP.
+    }
 
 
-	public void updateCharge(IParticle p, Force f, double dt) {
-		// Nothing to update here. Look into CGCSuperParticleInterpolationNGP.
-	}
+    public void updateCharge(IParticle p, Force f, double dt) {
+        // Nothing to update here. Look into CGCSuperParticleInterpolationNGP.
+    }
 
-	public void prepare(IParticle p, Force f, double step) {
-		// Not implemented.
-	}
+    public void prepare(IParticle p, Force f, double step) {
+        // Not implemented.
+    }
 
-	public void complete(IParticle p, Force f, double step) {
-		// Not implemented.
-	}
+    public void complete(IParticle p, Force f, double step) {
+        // Not implemented.
+    }
 }
