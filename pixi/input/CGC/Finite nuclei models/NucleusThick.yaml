@@ -23,12 +23,12 @@ initialConditions:
     tadpoleFilename: tadpole_test.dat
     computeDipole: true
     dipoleFilename: dipole_test.dat
-    NucleusCoherent:
+    NucleusThick:
       - direction: 0
         orientation: 1
         longitudinalLocation: 32
-        longitudinalWidth: 8
-        mu: .05
+        gammaFactor: 4
+        mu: .01
         transversalLocation: [16, 16]
         transversalRadius: 8
         surfaceThickness: 1
@@ -38,13 +38,13 @@ initialConditions:
         useConstituentQuarks: true
         randomSeed: null
         ultravioletCutoffTransverse: 2
-        ultravioletCutoffLongitudinal: .4
+        longitudinalCoherenceLength: 2
         infraredCoefficient: 0.2
 
 
 # Generated panel code:
 panels:
-  dividerLocation: 1014
+  dividerLocation: 1039
   leftPanel:
     dividerLocation: 483
     leftPanel:
@@ -57,7 +57,7 @@ panels:
         - Energy density
     orientation: 0
     rightPanel:
-      dividerLocation: 501
+      dividerLocation: 513
       leftPanel:
         electricFieldPanel:
           automaticScaling: true

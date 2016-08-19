@@ -134,7 +134,7 @@ public class Nucleus implements IInitialChargeDensity {
 	 * @param useSeed                           use a fixed seed for random number generation
 	 * @param seed                              seed of the random number generator
 	 * @param ultravioletCutoffTransverse       UV cutoff in transverse plane (in inverse lattice spacings)
-	 * @param ultravioletCutoffLongitudinal     UV cutoff in the longitudinal direction (in inverse lattice spacings)
+	 * @param longitudinalCoherenceLength     	Coherence length in the longitudinal direction (in inverse lattice spacings)
 	 * @param infraredCoefficient               IR regulator coefficient in the transverse plane
 	 */
 	public Nucleus(int direction, int orientation, double location, double[] locationTransverse, double longitudinalWidth, double mu,
@@ -251,13 +251,13 @@ public class Nucleus implements IInitialChargeDensity {
 			GaussianQuarkCharge qc = quarks.get(i);
 			for (int k = 0; k < totalCells; k++) {
 				double distance = getDistance(qc.location, qc.longLocation, GridFunctions.getCellPos(k, s.grid.getNumCells()), as);
-				colorChargeWidths[k] += Math.abs(shapeFunction(distance, qc.width) / Math.pow(qc.width * Math.sqrt(2 * Math.PI), s.getNumberOfDimensions())/numOverlappingQuarks);
-				norm += Math.abs(shapeFunction(distance, qc.width) / Math.pow(qc.width * Math.sqrt(2 * Math.PI), s.getNumberOfDimensions())/numOverlappingQuarks);
+				colorChargeWidths[k] += Math.abs(shapeFunction(distance, qc.width)/numOverlappingQuarks);
+				//norm += Math.abs(shapeFunction(distance, qc.width) / Math.pow(qc.width * Math.sqrt(2 * Math.PI), s.getNumberOfDimensions())/numOverlappingQuarks);
 			}
 		}
-		for (int k = 0; k < totalCells; k++) {
+		/*for (int k = 0; k < totalCells; k++) {
 			colorChargeWidths[k] /= norm;
-		}
+		}*/
 
 		for (int j = 0; j < numberOfComponents; j++) {
 			double[] tempRho = new double[s.grid.getTotalNumberOfCells()];
@@ -327,9 +327,11 @@ public class Nucleus implements IInitialChargeDensity {
 			UVT  ... transverse UV cutoff
 			R    ... nuclear radius
 			m    ... IR regulator
+			surf ... Surface thickness
+			N    ... Number of nucleons
 		 */
-		return String.format("MV, mu: %f, w: %f, UVT: %f, R: %f, m: %f",
-				mu, longitudinalWidth, ultravioletCutoffTransverse, transversalRadius, infraredCoefficient);
+		return String.format("Nucleus, mu: %f, w: %f, UVT: %f, R: %f, surf: %f, N: %f, m: %f",
+				mu, longitudinalWidth, ultravioletCutoffTransverse, transversalRadius, surfaceThickness, (double) numberOfNucleons, infraredCoefficient);
 	}
 
 	private double getDistance(double[] center2D, double centerLong, int[] position, double spacing) {
@@ -361,8 +363,8 @@ public class Nucleus implements IInitialChargeDensity {
 		double[] random = new double[2];
 		double random3, radius, y;
 		do {
-			random[0] = rand.nextDouble();
-			random[1] = rand.nextDouble();
+			random[0] = (rand.nextDouble() - 0.5);
+			random[1] = (rand.nextDouble() - 0.5);
 			random3 = rand.nextDouble();
 			double norm = 2.0*Math.PI/surfaceThickness*Math.log(1.0 + Math.exp(transversalRadius/surfaceThickness));
 			//double range = transversalRadius + surfaceThickness*Math.log(1.0/(10e-10*norm) - 1.0);

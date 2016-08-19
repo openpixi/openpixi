@@ -8,7 +8,7 @@ import org.openpixi.pixi.physics.util.GridFunctions;
 import java.util.ArrayList;
 import java.util.Random;
 
-public class NucleusCoherent implements IInitialChargeDensity {
+public class NucleusThick implements IInitialChargeDensity {
 
 	/**
 	 * Charge density as an array of AlgebraElements.
@@ -36,9 +36,9 @@ public class NucleusCoherent implements IInitialChargeDensity {
 	private double[] locationTransverse;
 
 	/**
-	 * Longitudinal width of the charge density.
+	 * Gamma factor determining the length contraction of the charge density.
 	 */
-	private double longitudinalWidth;
+	private double gammaFactor;
 
 	/**
 	 * Option whether to use the constituent quark model or not. In the latter case spherical proton model is used!!
@@ -63,12 +63,12 @@ public class NucleusCoherent implements IInitialChargeDensity {
 	/**
 	 * Transversal radius of the Woods-Saxon (Fermi-Dirac) distribution
 	 */
-	private double transversalRadius;
+	public double transversalRadius;
 
 	/**
 	 * Transversal surface thickness of the Woods-Saxon (Fermi-Dirac) distribution
 	 */
-	private double surfaceThickness;
+	public double surfaceThickness;
 
 	/**
 	 * Width of the Gaussian distribution of the valence quark charge
@@ -106,6 +106,14 @@ public class NucleusCoherent implements IInitialChargeDensity {
 	private double ultravioletCutoffLongitudinal;
 
 	/**
+	 * Coefficient used for the longitudinal UV regulator, which is implemented as a soft cutoff. This parameter
+	 * describes the longitudinal coherence length inside the nucleus and is given in physical units (E^-1). A value of
+	 * 0.0 would theoretically correspond to a delta function, but this will not work obviously. It definitely makes
+	 * sense to set this value lower than the longitudinalWidth of the nucleus.
+	 */
+	private double longitudinalCoherenceLength = 0.0;
+
+	/**
 	 * Coefficient used for the IR regulator, which is implemented as a mass-term in the Poisson solver. As with the
 	 * UV regulator this coefficient is given in units of inverse lattice spacings. A value of 0.0 removes the IR
 	 * regulator, any other value leads to a finite mass term in the Poisson equation.
@@ -121,23 +129,23 @@ public class NucleusCoherent implements IInitialChargeDensity {
 	 * @param direction                         index of the longitudinal direction
 	 * @param orientation                       orientation of movement in the longitudinal direction
 	 * @param location                          longitudinal position
-	 * @param longitudinalWidth                 longitudinal width of the MV model
+	 * @param gammaFactor                 		Gamma factor, determines the length contraction
 	 * @param mu                                MV model parameter
 	 * @param useSeed                           use a fixed seed for random number generation
 	 * @param seed                              seed of the random number generator
 	 * @param ultravioletCutoffTransverse       UV cutoff in transverse plane (in inverse lattice spacings)
-	 * @param ultravioletCutoffLongitudinal     UV cutoff in the longitudinal direction (in inverse lattice spacings)
+	 * @param longitudinalCoherenceLength     	Coherence length in the longitudinal direction (in inverse lattice spacings)
 	 * @param infraredCoefficient               IR regulator coefficient in the transverse plane
 	 */
-	public NucleusCoherent(int direction, int orientation, double location, double[] locationTransverse, double longitudinalWidth, double mu,
-						   boolean useSeed, int seed, int numberOfNucleons, boolean useConstituentQuarks, double transversalRadius, double surfaceThickness,
-						   double nucleonWidth, double partonWidth, double ultravioletCutoffTransverse, double ultravioletCutoffLongitudinal,
-						   double infraredCoefficient){
+	public NucleusThick(int direction, int orientation, double location, double[] locationTransverse, double gammaFactor, double mu,
+				   boolean useSeed, int seed, int numberOfNucleons, boolean useConstituentQuarks, double transversalRadius, double surfaceThickness,
+				   double nucleonWidth, double partonWidth, double ultravioletCutoffTransverse, double longitudinalCoherenceLength,
+				   double infraredCoefficient){
 
 		this.direction = direction;
 		this.orientation = orientation;
 		this.location = location;
-		this.longitudinalWidth = longitudinalWidth;
+		this.gammaFactor = gammaFactor;
 		this.locationTransverse = locationTransverse;
 		this.transversalRadius = transversalRadius;
 		this.surfaceThickness = surfaceThickness;
@@ -149,7 +157,7 @@ public class NucleusCoherent implements IInitialChargeDensity {
 		this.seed = seed;
 		this.numberOfNucleons = numberOfNucleons;
 		this.ultravioletCutoffTransverse = ultravioletCutoffTransverse;
-		this.ultravioletCutoffLongitudinal = ultravioletCutoffLongitudinal;
+		this.longitudinalCoherenceLength = longitudinalCoherenceLength;
 		this.infraredCoefficient = infraredCoefficient;
 
 		this.nucleons = new ArrayList<NucleonCharge>();
@@ -170,7 +178,7 @@ public class NucleusCoherent implements IInitialChargeDensity {
 			this.rho[i] = s.grid.getElementFactory().algebraZero();
 		}
 
-		double[] transversalWidths = new double[totalTransCells];
+		double[] colorChargeWidths = new double[totalCells];
 
 		Random rand = new Random();
 		if(useSeed) {
@@ -190,20 +198,22 @@ public class NucleusCoherent implements IInitialChargeDensity {
 			}
 		}
 
-		ArrayList<double[]> listOfNucleonLocations = new ArrayList<double[]>();
+		ArrayList<double[]> listOfTransverseNucleonLocations = new ArrayList<double[]>();
+		double[] listOfLongitudinalNucleonLocations = new double[numberOfNucleons];
 		for(int i = 0; i < numberOfNucleons; i++) {
 			double[] chargeLocation = new double[locationTransverse.length];
 			double[] woodsSaxon = getWoodsSaxonMonteCarlo(rand, range*as);
 			chargeLocation[0] = locationTransverse[0] + woodsSaxon[0];//Attention: This only works in 3D!!!
 			chargeLocation[1] = locationTransverse[1] + woodsSaxon[1];//Attention: This only works in 3D!!!
+			listOfLongitudinalNucleonLocations[i] = location + woodsSaxon[2]/gammaFactor;//Attention: This only works in 3D!!!
 			/*for (int j = 0; j < locationTransverse.length; j++) {
 				chargeLocation[j] = locationTransverse[j] + getWoodsSaxonMonteCarlo(rand, range*as);
 			}*/
-			listOfNucleonLocations.add(chargeLocation);
+			listOfTransverseNucleonLocations.add(chargeLocation);
 		}
 
 		for(int i = 0; i < numberOfNucleons; i++) {
-			addNucleon(listOfNucleonLocations.get(i), nucleonWidth, partonWidth);
+			addNucleon(listOfTransverseNucleonLocations.get(i), listOfLongitudinalNucleonLocations[i], nucleonWidth, partonWidth);
 		}
 
 
@@ -213,6 +223,7 @@ public class NucleusCoherent implements IInitialChargeDensity {
 		}
 
 		// Iterate over nucleons, create a quark distribution inside of them and add them to the quark array.
+		double ratio = 1.0/gammaFactor; //Ratio of the longitudinal width to the transverse radius.
 		for (int i = 0; i < nucleons.size(); i++) {
 			NucleonCharge nc = nucleons.get(i);
 
@@ -224,11 +235,12 @@ public class NucleusCoherent implements IInitialChargeDensity {
 					for (int k = 0; k < nc.location.length; k++) {
 						protonLocation[k] = nc.location[k] + rand.nextGaussian() * nc.width;
 					}
-					addQuark(protonLocation, nc.partonWidth);
+					double protonLongLocation = nc.longLocation + rand.nextGaussian() * nc.width * ratio;
+					addQuark(protonLocation, protonLongLocation, nc.partonWidth);
 
 				} else {
 
-					addQuark(nc.location, nc.width);
+					addQuark(nc.location, nc.longLocation, nc.width);
 
 				}
 			}
@@ -237,43 +249,43 @@ public class NucleusCoherent implements IInitialChargeDensity {
 		double norm = 0.0;
 		for (int i = 0; i < quarks.size(); i++) {
 			GaussianQuarkCharge qc = quarks.get(i);
-			for (int k = 0; k < totalTransCells; k++) {
-				double distance = getDistance(qc.location, GridFunctions.getCellPos(k, transNumCells), as);
-				transversalWidths[k] += Math.abs(shapeFunction(distance, qc.width)/numOverlappingQuarks);
-				//norm += Math.abs(shapeFunction(distance, qc.width) / Math.pow(qc.width * Math.sqrt(2 * Math.PI), transNumCells.length)/numOverlappingQuarks);
+			for (int k = 0; k < totalCells; k++) {
+				double distance = getDistance(qc.location, qc.longLocation, GridFunctions.getCellPos(k, s.grid.getNumCells()), as);
+				colorChargeWidths[k] += Math.abs(shapeFunction(distance, qc.width)/numOverlappingQuarks);
+				//norm += Math.abs(shapeFunction(distance, qc.width) / Math.pow(qc.width * Math.sqrt(2 * Math.PI), s.getNumberOfDimensions())/numOverlappingQuarks);
 			}
 		}
-		/*for (int k = 0; k < totalTransCells; k++) {
-			transversalWidths[k] /= norm;
+		/*for (int k = 0; k < totalCells; k++) {
+			colorChargeWidths[k] /= norm;
 		}*/
 
 		for (int j = 0; j < numberOfComponents; j++) {
 			double[] tempRho = new double[s.grid.getTotalNumberOfCells()];
 
-			// Place random charges on the grid (with coherent longitudinal structure).
+			// Place random charges on the grid (with longitudinal randomness). Takes care of the overall longitudinal profile!!!
+			//Gaussian gauss = new Gaussian(location, longitudinalWidth);
 			for (int i = 0; i < totalTransCells; i++) {
-				double charge = rand.nextGaussian() * transversalWidths[i] * mu * s.getCouplingConstant() / as;
 				int[] transPos = GridFunctions.getCellPos(i, transNumCells);
 				for (int k = 0; k < longitudinalNumCells; k++) {
 					int[] gridPos = GridFunctions.insertGridPos(transPos, direction, k);
+					double longPos = gridPos[direction] * as;
 					int index = s.grid.getCellIndex(gridPos);
+					//double profile = Math.sqrt(gauss.value(longPos));
+					double charge = rand.nextGaussian() * colorChargeWidths[index] * mu * s.getCouplingConstant() / Math.pow(as, 3/2);
+
 					tempRho[index] = charge;
 				}
 			}
 
-			// Apply hard momentum regulation in Fourier space.
-			tempRho = FourierFunctions.regulateChargeDensityHard(tempRho, s.grid.getNumCells(),
-					ultravioletCutoffTransverse, ultravioletCutoffLongitudinal, infraredCoefficient, direction,
+			// Apply soft momentum regulation in Fourier space.
+			tempRho = FourierFunctions.regulateChargeDensityGaussian(tempRho, s.grid.getNumCells(),
+					ultravioletCutoffTransverse, longitudinalCoherenceLength, infraredCoefficient, direction,
 					s.grid.getLatticeSpacing());
 
-			// Apply longitudinal profile.
-			Gaussian gauss = new Gaussian(location, longitudinalWidth);
-			for (int i = 0; i < s.grid.getTotalNumberOfCells(); i++) {
-				int[] pos = s.grid.getCellPos(i);
-				double longPos = pos[direction] * s.grid.getLatticeSpacing();
-				double profile = gauss.value(longPos);
-				tempRho[i] *= profile;
-			}
+			// Apply hard momentum regulation in Fourier space.
+			/*tempRho = FourierFunctions.regulateChargeDensityHard(tempRho, s.grid.getNumCells(),
+					ultravioletCutoffTransverse, ultravioletCutoffLongitudinal, infraredCoefficient, direction,
+					s.grid.getLatticeSpacing());*/
 
 			// Put everything into rho array.
 			for (int i = 0; i < s.grid.getTotalNumberOfCells(); i++) {
@@ -311,22 +323,34 @@ public class NucleusCoherent implements IInitialChargeDensity {
 	public String getInfo() {
 		/*
 			mu   ... MV model parameter
-			w    ... longitudinal width
+			ga   ... Gamma factor
 			UVT  ... transverse UV cutoff
 			R    ... nuclear radius
 			m    ... IR regulator
 			surf ... Surface thickness
 			N    ... Number of nucleons
 		 */
-		return String.format("NucleusCoherent, mu: %f, w: %f, UVT: %f, R: %f, surf: %f, N: %f, m: %f",
-				mu, longitudinalWidth, ultravioletCutoffTransverse, transversalRadius, surfaceThickness, (double) numberOfNucleons, infraredCoefficient);
+		return String.format("NucleusThick, mu: %f, w: %f, UVT: %f, R: %f, surf: %f, N: %f, m: %f",
+				mu, gammaFactor, ultravioletCutoffTransverse, transversalRadius, surfaceThickness, (double) numberOfNucleons, infraredCoefficient);
 	}
 
-	private double getDistance(double[] center, int[] position, double spacing) {
+	private double getDistance(double[] center2D, double centerLong, int[] position, double spacing) {
 		double distance = 0.0;
-		for (int j = 0; j < position.length; j++) {
-			distance += Math.pow(center[j] - spacing*position[j], 2);
+		double[] center3D = new double[position.length];
+		int count = 0;
+		for (int i = 0; i < position.length; i++) {
+			if (i != direction) {
+				center3D[i] = center2D[count];
+				count++;
+			} else {
+				center3D[i] = centerLong;
+			}
 		}
+
+		for (int j = 0; j < position.length; j++) {
+			distance += Math.pow(center3D[j] - spacing*position[j], 2);
+		}
+
 		return Math.sqrt(distance);
 	}
 
@@ -336,20 +360,22 @@ public class NucleusCoherent implements IInitialChargeDensity {
 	}
 
 	private double[] getWoodsSaxonMonteCarlo(Random rand, double range) {
-		double[] random = new double[2];
-		double random3, radius, y;
+		double[] random = new double[3];
+		double random4, radius, y;
 		do {
 			random[0] = (rand.nextDouble() - 0.5);
 			random[1] = (rand.nextDouble() - 0.5);
-			random3 = rand.nextDouble();
-			double norm = 2.0*Math.PI/surfaceThickness*Math.log(1.0 + Math.exp(transversalRadius/surfaceThickness));
-			//double range = transversalRadius + surfaceThickness*Math.log(1.0/(10e-10*norm) - 1.0);
+			random[2] = (rand.nextDouble() - 0.5);
+			random4 = rand.nextDouble();
+			double norm = 2.0*Math.PI*Math.PI/surfaceThickness*Math.log(1.0 + Math.exp(transversalRadius/surfaceThickness));
+
 			random[0] *= range;
 			random[1] *= range;
-			radius = Math.sqrt(random[0]*random[0] + random[1]*random[1]);
-			random3 /= norm;
+			random[2] *= range;
+			radius = Math.sqrt(random[0]*random[0] + random[1]*random[1] + random[2]*random[2]);
+			random4 /= norm;
 			y = 1.0/(norm*(Math.exp((radius - transversalRadius)/surfaceThickness) + 1));
-		} while (random3 > y);
+		} while (random4 > y);
 
 		return random;
 	}
@@ -359,10 +385,12 @@ public class NucleusCoherent implements IInitialChargeDensity {
 	 */
 	class NucleonCharge {
 		public double[] location;
+		public double longLocation;
 		double width, partonWidth;
 
-		public NucleonCharge(double[] location, double width, double partonWidth) {
+		public NucleonCharge(double[] location, double longLocation, double width, double partonWidth) {
 			this.location = location;
+			this.longLocation = longLocation;
 			this.width = width;
 			this.partonWidth = partonWidth;
 		}
@@ -373,10 +401,12 @@ public class NucleusCoherent implements IInitialChargeDensity {
 	 */
 	class GaussianQuarkCharge {
 		public double[] location;
+		public double longLocation;
 		double width;
 
-		public GaussianQuarkCharge(double[] location, double width) {
+		public GaussianQuarkCharge(double[] location, double longLocation, double width) {
 			this.location = location;
+			this.longLocation = longLocation;
 			this.width = width;
 		}
 	}
@@ -387,8 +417,9 @@ public class NucleusCoherent implements IInitialChargeDensity {
 	 * @param location
 	 * @param width
 	 */
-	private void addNucleon(double[] location, double width, double partonWidth) {
-		this.nucleons.add(new NucleonCharge(location, width, partonWidth));
+	private void addNucleon(double[] location, double longLocation, double width, double partonWidth) {
+
+		this.nucleons.add(new NucleonCharge(location, longLocation, width, partonWidth));
 	}
 
 	/**
@@ -397,8 +428,9 @@ public class NucleusCoherent implements IInitialChargeDensity {
 	 * @param location
 	 * @param width
 	 */
-	private void addQuark(double[] location, double width) {
-		this.quarks.add(new GaussianQuarkCharge(location, width));
+	private void addQuark(double[] location, double longLocation, double width) {
+
+		this.quarks.add(new GaussianQuarkCharge(location, longLocation, width));
 	}
 }
 

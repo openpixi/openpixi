@@ -28,7 +28,7 @@ initialConditions:
         orientation: 1
         longitudinalLocation: 32
         longitudinalWidth: 4
-        mu: .3
+        mu: .01
         transversalLocation: [16, 16]
         transversalRadius: 8
         surfaceThickness: 1
@@ -44,7 +44,7 @@ initialConditions:
 
 # Generated panel code:
 panels:
-  dividerLocation: 1024
+  dividerLocation: 1009
   leftPanel:
     dividerLocation: 483
     leftPanel:
@@ -57,7 +57,7 @@ panels:
         - Energy density
     orientation: 0
     rightPanel:
-      dividerLocation: 506
+      dividerLocation: 499
       leftPanel:
         electricFieldPanel:
           automaticScaling: true
@@ -85,13 +85,13 @@ panels:
       energyDensity2DGLPanel:
         automaticScaling: false
         data: Energy density
-        scaleFactor: 3.0E8
+        scaleFactor: 300.0
         showCoordinates: x, y, 16
     orientation: 0
     rightPanel:
       gaussViolation2DGLPanel:
         automaticScaling: false
-        scaleFactor: 1.0E40
+        scaleFactor: 1.0E31
         showCoordinates: x, y, 0
   windowHeight: 1053
   windowWidth: 1920
