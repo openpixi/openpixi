@@ -156,7 +156,7 @@ public class LightConeNGPSuperParticleCreator implements IParticleCreator {
 		int blockWidth = zEnd - zStart;
 
 		// Spawn super particles.
-        int numberOfSubdivisions = 1;   // still need to make this dependent on number of threads.
+        int numberOfSubdivisions = s.numberOfThreads;   // still need to make this dependent on number of threads.
         int numberOfSuperParticles = numberOfSubdivisions * particlesPerCell;
         int totalNumberOfParticles = totalTransversalCells * blockWidth * particlesPerCell;
         int indexOffset = zStart * totalTransversalCells;

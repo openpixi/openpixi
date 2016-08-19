@@ -190,6 +190,10 @@ public class Settings {
 		return useGrid;
 	}
 
+	public int getNumOfThreads() {
+		return numOfThreads;
+	}
+
 	public ArrayList<IFieldGenerator> getFieldGenerators() {
 		return this.fieldGenerators;
 	}

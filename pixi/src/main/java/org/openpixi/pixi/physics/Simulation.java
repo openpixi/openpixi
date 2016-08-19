@@ -80,6 +80,11 @@ public class Simulation {
 	public double totalSimulationTime;
 
 	/**
+	 * Number of threads.
+     */
+	public int numberOfThreads;
+
+	/**
 	 * Contains all Particle2D objects
 	 */
 	public ArrayList<IParticle> particles;
@@ -223,6 +228,8 @@ public class Simulation {
 				settings.getParticleSolver(),
 				particleBoundaryConditions,
 				settings.getParticleIterator());
+
+		numberOfThreads = settings.getNumOfThreads();
 
 		grid = new Grid(settings);
 		if (settings.useGrid()) {
