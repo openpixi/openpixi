@@ -159,65 +159,92 @@ public class LightConeNGPSuperParticleCreator implements IParticleCreator {
         int numberOfSubdivisions = 4;   // still need to make this dependent on number of threads.
         int numberOfSuperParticles = numberOfSubdivisions * particlesPerCell;
         int totalNumberOfParticles = totalTransversalCells * blockWidth * particlesPerCell;
-		CGCSuperParticle[] superParticles = new CGCSuperParticle[numberOfSuperParticles];
-
         int indexOffset = zStart * totalTransversalCells;
         int widthPerSubdivision = (int) Math.ceil(blockWidth / (1.0 * numberOfSubdivisions));
+        int longitudinalParticlesPerSubdivision = numberOfSubdivisions * widthPerSubdivision * particlesPerCell;
+        int totalNumberOfCells = s.grid.getTotalNumberOfCells();
+
+        int widthForLastSubdivision = blockWidth % widthPerSubdivision;
+        int particlesInLastSubdivision = widthForLastSubdivision * totalTransversalCells;
+
+        // Create lists for particle refinement.
+        AlgebraElement[][] longitudinalParticleArray = new AlgebraElement[totalTransversalCells][longitudinalParticlesPerSubdivision];
+        for (int i = 0; i < totalTransversalCells; i++) {
+            for (int j = 0; j < longitudinalParticlesPerSubdivision; j++) {
+                longitudinalParticleArray[i][j] = s.grid.getElementFactory().algebraZero();
+            }
+        }
+
+        // Spawn super particles.
+        CGCSuperParticle[] superParticles = new CGCSuperParticle[numberOfSuperParticles];
         int numberOfParticlesPerSuperParticle = widthPerSubdivision * totalTransversalCells;
         for (int j = 0; j < numberOfSubdivisions; j++) {
             // Initialize super particles for subdivision of the particle block.
             for (int k = 0; k < particlesPerCell; k++) {
-                superParticles[particlesPerCell * j + k] = new CGCSuperParticle(orientation,
-                        numberOfParticlesPerSuperParticle,
-                        indexOffset,
-                        totalTransversalCells,
-                        k,
-                        particlesPerCell);
+                if(j < numberOfSubdivisions - 1) {
+                    superParticles[particlesPerCell * j + k] = new CGCSuperParticle(orientation,
+                            numberOfParticlesPerSuperParticle,
+                            indexOffset,
+                            totalTransversalCells,
+                            k,
+                            particlesPerCell);
+                } else {
+                    superParticles[particlesPerCell * j + k] = new CGCSuperParticle(orientation,
+                            particlesInLastSubdivision,
+                            indexOffset,
+                            totalTransversalCells,
+                            k,
+                            particlesPerCell);
+                }
                 s.particles.add(superParticles[particlesPerCell * j + k]);
             }
 
             // Set super particle charges for subdivision.
-            for (int i = 0; i < numberOfParticlesPerSuperParticle; i++) {
+            int maxParticleNum = (j < numberOfSubdivisions - 1) ? numberOfParticlesPerSuperParticle : particlesInLastSubdivision;
+            for (int i = 0; i < maxParticleNum; i++) {
                 int index = indexOffset + i;
                 for (int k = 0; k < particlesPerCell; k++) {
                     int ngp = (k < particlesPerCell/2) ? index : s.grid.shift(index, direction, 1);
                     AlgebraElement charge = gaussConstraint[ngp].copy();
                     charge.multAssign(1.0 / particlesPerCell);
-                    superParticles[j *particlesPerCell + k].Q[i] = charge;
+                    superParticles[j * particlesPerCell + k].Q[i] = charge;
+
+                    int transverseIndex = index % totalTransversalCells;
+                    int shiftedIndex = index - zStart * totalTransversalCells;
+                    int longitudinalIndex = (int) Math.floor(shiftedIndex / totalTransversalCells) * particlesPerCell + k;
+                    longitudinalParticleArray[transverseIndex][longitudinalIndex] = superParticles[j * particlesPerCell + k].Q[i];
                 }
             }
 
             indexOffset += numberOfParticlesPerSuperParticle;
         }
 
-		ArrayList<ArrayList<AlgebraElement>> longitudinalParticleList = new ArrayList<>(totalTransversalCells);
-		for (int i = 0; i < totalTransversalCells; i++) {
-			longitudinalParticleList.add(new ArrayList<AlgebraElement>());
-		}
-
 		// Charge refinement
 		int numberOfIterations = 100;
+
 		for (int i = 0; i < totalTransversalCells; i++) {
-			ArrayList<AlgebraElement> particleList = longitudinalParticleList.get(i);
+			AlgebraElement[] particleList = longitudinalParticleArray[i];
 			// 2nd order refinement
+            int jmin = 0;
+            int jmax = particleList.length ;
 			for (int iteration = 0; iteration < numberOfIterations; iteration++) {
-				for (int j = 0; j < particleList.size(); j++) {
-					refine2(j, particleList, particlesPerLink);
+				for (int j = jmin; j < jmax; j++) {
+					refine2(j, particleList, particlesPerCell);
 				}
 			}
 
 			// 4th order refinement
 			for (int iteration = 0; iteration < numberOfIterations; iteration++) {
-				for (int j = 0; j < particleList.size(); j++) {
-					refine4(j, particleList, particlesPerLink);
+                for (int j = jmin; j < jmax; j++) {
+					refine4(j, particleList, particlesPerCell);
 				}
 			}
 		}
 	}
 
-	private void refine2(int i, ArrayList<AlgebraElement> list, int particlesPerLink) {
-		int jmod = i % particlesPerLink;
-		int n = list.size();
+	private void refine2(int i, AlgebraElement[] list, int particlesPerLink) {
+		int jmod = (i + particlesPerCell/2) % particlesPerLink;
+		int n = list.length;
 		// Refinement can not be applied to the last charge in an NGP cell.
 		if(jmod >= 0 && jmod < particlesPerLink-1)
 		{
@@ -226,10 +253,10 @@ public class LightConeNGPSuperParticleCreator implements IParticleCreator {
 			int i2 = p(i+1, n);
 			int i3 = p(i+2, n);
 
-			AlgebraElement Q0 = list.get(i0);
-			AlgebraElement Q1 = list.get(i1);
-			AlgebraElement Q2 = list.get(i2);
-			AlgebraElement Q3 = list.get(i3);
+			AlgebraElement Q0 = list[i0];
+			AlgebraElement Q1 = list[i1];
+			AlgebraElement Q2 = list[i2];
+			AlgebraElement Q3 = list[i3];
 
 			AlgebraElement DQ = Q0.mult(-1);
 			DQ.addAssign(Q1.mult(3));
@@ -243,9 +270,9 @@ public class LightConeNGPSuperParticleCreator implements IParticleCreator {
 	}
 
 
-	private void refine4(int i, ArrayList<AlgebraElement> list, int particlesPerLink) {
-		int jmod = i % particlesPerLink;
-		int n = list.size();
+	private void refine4(int i, AlgebraElement[] list, int particlesPerLink) {
+		int jmod = (i + particlesPerCell/2) % particlesPerLink;
+		int n = list.length;
 		// Refinement can not be applied to the last charge in an NGP cell.
 		if(jmod >= 0 && jmod < particlesPerLink-1)
 		{
@@ -256,12 +283,12 @@ public class LightConeNGPSuperParticleCreator implements IParticleCreator {
 			int i4 = p(i+2, n);
 			int i5 = p(i+3, n);
 
-			AlgebraElement Q0 = list.get(i0);
-			AlgebraElement Q1 = list.get(i1);
-			AlgebraElement Q2 = list.get(i2);
-			AlgebraElement Q3 = list.get(i3);
-			AlgebraElement Q4 = list.get(i4);
-			AlgebraElement Q5 = list.get(i5);
+            AlgebraElement Q0 = list[i0];
+            AlgebraElement Q1 = list[i1];
+            AlgebraElement Q2 = list[i2];
+            AlgebraElement Q3 = list[i3];
+			AlgebraElement Q4 = list[i4];
+			AlgebraElement Q5 = list[i5];
 
 			AlgebraElement DQ = Q0.mult(+1);
 			DQ.addAssign(Q1.mult(-5));
