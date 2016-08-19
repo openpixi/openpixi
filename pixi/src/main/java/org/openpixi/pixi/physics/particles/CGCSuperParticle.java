@@ -88,7 +88,7 @@ public class CGCSuperParticle implements IParticle{
 	 * @return      true/false if particle needs an update or needs to be interpolated to the grid.
 	 */
 	public boolean needsUpdate(int t) {
-		return 0 == (t + subLatticeShift) % particlePerCell;
+		return 0 == (t + subLatticeShift + particlePerCell/2 + 1) % particlePerCell;
 	}
 
 	// GETTERS
