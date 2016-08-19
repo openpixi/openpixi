@@ -62,10 +62,34 @@ public class CGCSuperParticle implements IParticle{
 
 	}
 
-	public boolean needsUpdate(int t) {
-		return subLatticeShift == (t + subLatticeShift + 1) % particlePerCell;
+	/**
+	 * Returns index offset at simulation time t. Add the particle index to get the cell index.
+	 * @param t     current simulation step
+	 * @return      index offset since beginning of simulation.
+	 */
+	public int getCurrentOffset(int t) {
+		int movementShift = ((t + subLatticeShift) / particlePerCell) * particlesPerPlane;
+		return indexOffset + movementShift;
 	}
 
+	/**
+	 * Returns the ngp index offset at simulation time t. Add the particle index to get the current ngp index.
+	 * @param t     current simulation step
+	 * @return      ngp index offset since beginning of simulation.
+	 */
+	public int getCurrentNGPOffset(int t) {
+		int ngpShift = (((t+subLatticeShift) % particlePerCell) < particlePerCell/2) ? 0 : particlesPerPlane;
+		return getCurrentOffset(t) + ngpShift;
+	}
+
+	/**
+	 * Checks if particle will cross an ngp boundary in the *next* simulation step.
+	 * @param t     current simulation step
+	 * @return      true/false if particle needs an update or needs to be interpolated to the grid.
+	 */
+	public boolean needsUpdate(int t) {
+		return 0 == (t + subLatticeShift) % particlePerCell;
+	}
 
 	// GETTERS
 
