@@ -59,6 +59,7 @@ public class YamlSettings {
 			map.put("temporal cgc ngp", SimulationType.TemporalCGCNGP);
 			map.put("lorenz yang-mills", SimulationType.LorenzYangMills);
 			map.put("boost-invariant cgc", SimulationType.BoostInvariantCGC);
+			map.put("new cgc cic", SimulationType.NewCGC_CIC);
 
 			if(map.containsKey(simulationType)) {
 				settings.setSimulationType(map.get(simulationType));
