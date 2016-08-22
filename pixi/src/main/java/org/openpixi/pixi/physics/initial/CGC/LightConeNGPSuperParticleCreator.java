@@ -110,53 +110,49 @@ public class LightConeNGPSuperParticleCreator implements IParticleCreator {
 		law at the boundaries of the regions, but these errors are (supposed to be) negligible.
 		 */
 
-        // Iterate through grid and find maximum charge in the grid.
-        double maxCharge = 0.0;
-        for (int i = 0; i < s.grid.getTotalNumberOfCells(); i++) {
-            double charge = Math.sqrt(gaussConstraint[i].square());
-            if (maxCharge < charge) {
-                maxCharge = charge;
-            }
-        }
+	    // Find max charges in transverse planes for each longitudinal coordinate and global charge maximum.
+	    int lnum = s.grid.getNumCells(0);
+	    double[] maxCharges = new double[lnum];
+	    double globalMax = 0.0;
+	    for (int z = 0; z < lnum; z++) {
+		    double max = 0.0;
+		    for (int j = 0; j < totalTransversalCells; j++) {
+			    int index = z * totalTransversalCells + j;
+			    double charge = Math.sqrt(gaussConstraint[index].square());
+			    if(max < charge) {
+				    max = charge;
+			    }
+		    }
+		    maxCharges[z] = max;
+		    if(globalMax < max) {
+			    globalMax = max;
+		    }
+	    }
+	    double cutoffCharge = globalMax * 10E-10;
 
-        // Set cutoff charge to small fraction of maximum charge.
-        //double cutoffCharge = 10E-12 * Math.pow( g * as, 1) / (Math.pow(as, 3) * particlesPerLink);
-        double cutoffCharge = maxCharge * 10E-10;
+	    // Find start of block starting from the left boundary.
+	    int zStart = 0;
+	    for (int z = 0; z < lnum; z++) {
+		    if(maxCharges[z] > cutoffCharge) {
+			    zStart = z;
+			    break;
+		    }
+	    }
 
-        // Iterate through longitudinal sheets and find dimensions of the particle block.
-        int zStart = 0;
-        int zEnd = s.grid.getNumCells(0);
-        boolean foundStartOfBlock = false;
-        int longitudinalCells = s.grid.getNumCells(0);
-        for (int z = 0; z < longitudinalCells; z++) {
-            // Find max charge in transverse plane
-            maxCharge = 0;
-            for (int k = 0; k < totalTransversalCells; k++) {
-                int[] transPos = GridFunctions.getCellPos(k, transversalNumCells);
-                int[] gridPos = GridFunctions.insertGridPos(transPos, 0, z);
-                int i = s.grid.getCellIndex(gridPos);
+	    // Find end of block starting from the right boundary.
+	    int zEnd = lnum - 1;
+	    for (int z = zEnd-1; z >= 0; z--) {
+		    if(maxCharges[z] > cutoffCharge) {
+			    zEnd = z;
+			    break;
+		    }
+	    }
 
-                double charge = Math.sqrt(gaussConstraint[i].square());
-                if (charge > maxCharge) {
-                    maxCharge = charge;
-                }
-            }
-            if (!foundStartOfBlock) {
-                if (maxCharge > cutoffCharge) {
-                    zStart = z;
-                    foundStartOfBlock = true;
-                }
-            } else {
-                if (maxCharge < cutoffCharge) {
-                    zEnd = z;
-                    break;
-                }
-            }
-        }
-        int blockWidth = zEnd - zStart;
+	    // Set width of particle block.
+	    int blockWidth = zEnd - zStart;
 
         // Spawn super particles.
-        int numberOfSubdivisions = s.numberOfThreads;   // still need to make this dependent on number of threads.
+        int numberOfSubdivisions = Math.min(s.numberOfThreads, blockWidth);   // still need to make this dependent on number of threads.
         int numberOfSuperParticles = numberOfSubdivisions * particlesPerCell;
         int totalNumberOfParticles = totalTransversalCells * blockWidth * particlesPerCell;
         int indexOffset = zStart * totalTransversalCells;
