@@ -146,9 +146,20 @@ public class MVModelCoherent implements IInitialChargeDensity {
 				tempRho[i] *= profile;
 			}
 
-			// Put everything into rho array.
+			/*
+			 Put everything into rho array, but exclude charges that lie outside of a simulation box centered around the
+			 longitudinal location of the MV model.
+			  */
+			double simulationBoxWidth = s.grid.getNumCells(direction) * s.grid.getLatticeSpacing();
+			double zmin = Math.max(this.location - simulationBoxWidth/2.0, 0.0);
+			double zmax = Math.min(this.location + simulationBoxWidth/2.0, simulationBoxWidth);
+			int lmin = (int) Math.floor(zmin / s.grid.getLatticeSpacing());
+			int lmax = (int) Math.ceil(zmax / s.grid.getLatticeSpacing());
 			for (int i = 0; i < s.grid.getTotalNumberOfCells(); i++) {
-				this.rho[i].set(j, tempRho[i]);
+				int longPos = s.grid.getCellPos(i)[direction];
+				if(lmin < longPos && longPos < lmax && s.grid.isActive(i)) {
+					this.rho[i].set(j, tempRho[i]);
+				}
 			}
 		}
 
