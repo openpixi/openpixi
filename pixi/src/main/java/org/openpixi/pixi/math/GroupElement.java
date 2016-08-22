@@ -107,4 +107,8 @@ public interface GroupElement {
 	void set(GroupElement a);
 
 	GroupElement copy();
+
+	int getNumberOfColors();
+
+	int getNumberOfComponents();
 }

@@ -3,6 +3,7 @@ package org.openpixi.pixi.physics.grid;
 import org.junit.Assert;
 import org.junit.Test;
 import org.openpixi.pixi.diagnostics.methods.BulkQuantitiesInTime;
+import org.openpixi.pixi.math.AlgebraElement;
 import org.openpixi.pixi.math.SU2AlgebraElement;
 import org.openpixi.pixi.physics.GeneralBoundaryType;
 import org.openpixi.pixi.physics.Settings;
@@ -58,9 +59,9 @@ public class GaussConstraintTest {
 		double[] colorAmplitude = new double[]{0.2345245, 0.02343, -1.234};
 		double[] n = new double[]{1.567, 0.534, 0.0};
 
-		SU2AlgebraElement[] amplitude = new SU2AlgebraElement[simulation.getNumberOfDimensions()];
+		AlgebraElement[] amplitude = new AlgebraElement[simulation.getNumberOfDimensions()];
 		for(int j = 0; j < simulation.getNumberOfDimensions(); j++) {
-			amplitude[j] =  new SU2AlgebraElement();
+			amplitude[j] =  simulation.grid.getElementFactory().algebraZero();
 			for(int k = 0; k < numberOfComponents; k++) {
 				amplitude[j].set(k, spatialAmplitude[j] * colorAmplitude[k] * simulation.getCouplingConstant() * gridStep);
 			}

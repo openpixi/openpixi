@@ -11,7 +11,7 @@ package org.openpixi.pixi.math;
  */
 public class SU2GroupElement implements GroupElement {
 
-	private double[] e;
+	private double e0, e1, e2, e3;
 
 	/**
 	 * Constructs a new SU2GroupElement instance with all parameters set to zero.
@@ -19,12 +19,10 @@ public class SU2GroupElement implements GroupElement {
 	 */
 	public SU2GroupElement() {
 
-		e = new double[4];
-
-		e[0] = 1.0;
-		for (int i = 1; i < 4; i++) {
-			e[i] = 0.0;
-		}
+		e0 = 1.0;
+		e1 = 0.0;
+		e2 = 0.0;
+		e3 = 0.0;
 	}
 
 	/**
@@ -38,12 +36,10 @@ public class SU2GroupElement implements GroupElement {
 	 */
 	public SU2GroupElement(double a, double b, double c, double d) {
 
-		e = new double[4];
-
-		e[0] = a;
-		e[1] = b;
-		e[2] = c;
-		e[3] = d;
+		e0 = a;
+		e1 = b;
+		e2 = c;
+		e3 = d;
 
 	}
 
@@ -66,9 +62,10 @@ public class SU2GroupElement implements GroupElement {
 
 	public void addAssign(GroupElement arg) {
 		SU2GroupElement a = (SU2GroupElement) arg;
-		for (int i = 0; i < 4; i++) {
-			e[i] += a.e[i];
-		}
+		e0 += a.e0;
+		e1 += a.e1;
+		e2 += a.e2;
+		e3 += a.e3;
 	}
 
 	public GroupElement sub(GroupElement arg) {
@@ -79,9 +76,10 @@ public class SU2GroupElement implements GroupElement {
 
 	public void subAssign(GroupElement arg) {
 		SU2GroupElement a = (SU2GroupElement) arg;
-		for (int i = 0; i < 4; i++) {
-			e[i] -= a.e[i];
-		}
+		e0 -= a.e0;
+		e1 -= a.e1;
+		e2 -= a.e2;
+		e3 -= a.e3;
 	}
 
 	/**
@@ -93,9 +91,10 @@ public class SU2GroupElement implements GroupElement {
 
 		SU2GroupElement a = (SU2GroupElement) arg;
 
-		for (int i = 0; i < 4; i++) {
-			e[i] = a.e[i];
-		}
+		e0 = a.e0;
+		e1 = a.e1;
+		e2 = a.e2;
+		e3 = a.e3;
 	}
 
 	/**
@@ -107,7 +106,16 @@ public class SU2GroupElement implements GroupElement {
 	 */
 	public void set(int j, double value) {
 
-		e[j] = value;
+		switch (j) {
+			case 0:  e0 = value;
+				break;
+			case 1:  e1 = value;
+				break;
+			case 2:  e2 = value;
+				break;
+			case 3:  e3 = value;
+				break;
+		}
 
 	}
 
@@ -120,24 +128,34 @@ public class SU2GroupElement implements GroupElement {
 	 */
 	public double get(int j) {
 
-		return e[j];
+		double b=0;
+		switch (j) {
+			case 0:  b = e0;
+				break;
+			case 1:  b = e1;
+				break;
+			case 2:  b = e2;
+				break;
+			case 3:  b = e3;
+				break;
+		}
+
+		return b;
 
 	}
 
 	public GroupElement adj() {
 		SU2GroupElement b = new SU2GroupElement(this);
-		for (int i = 1; i < 4; i++)
-		{
-			b.e[i] = - this.e[i];
-		}
+		b.e1 = - this.e1;
+		b.e2 = - this.e2;
+		b.e3 = - this.e3;
 		return b;
 	}
 
 	public void adjAssign() {
-		for (int i = 1; i < 4; i++)
-		{
-			this.e[i] = -this.e[i];
-		}
+		this.e1 = - this.e1;
+		this.e2 = - this.e2;
+		this.e3 = - this.e3;
 	}
 
 	/**
@@ -147,11 +165,11 @@ public class SU2GroupElement implements GroupElement {
 	 */
 	public void computeFirstParameter() {
 
-		double sum = e[1] * e[1] + e[2] * e[2] + e[3] * e[3];
+		double sum = e1 * e1 + e2 * e2 + e3 * e3;
 		if (sum > 1) {
 			System.out.println("Parameters too large!\n");
 		} else {
-			e[0] = Math.sqrt(1.0 - sum);
+			e0 = Math.sqrt(1.0 - sum);
 		}
 	}
 
@@ -163,16 +181,17 @@ public class SU2GroupElement implements GroupElement {
 	 */
 	public double computeParameterNorm() {
 
-		return e[0] * e[0] + e[1] * e[1] + e[2] * e[2] + e[3] * e[3];
+		return e0 * e0 + e1 * e1 + e2 * e2 + e3 * e3;
 
 	}
 
 	public GroupElement mult(double number) {
 
 		SU2GroupElement b = new SU2GroupElement();
-		for (int i = 0; i < 4; i++) {
-			b.e[i] = e[i] * number;
-		}
+		b.e0 = e0 * number;
+		b.e1 = e1 * number;
+		b.e2 = e2 * number;
+		b.e3 = e3 * number;
 		return b;
 
 	}
@@ -182,33 +201,33 @@ public class SU2GroupElement implements GroupElement {
 		SU2GroupElement a = (SU2GroupElement) arg;
 
 		SU2GroupElement b = new SU2GroupElement();
-		b.e[0] = e[0] * a.e[0] - e[1] * a.e[1] - e[2] * a.e[2] - e[3] * a.e[3];
-		b.e[1] = e[0] * a.e[1] + e[1] * a.e[0] - e[2] * a.e[3] + e[3] * a.e[2];
-		b.e[2] = e[0] * a.e[2] + e[2] * a.e[0] - e[3] * a.e[1] + e[1] * a.e[3];
-		b.e[3] = e[0] * a.e[3] + e[3] * a.e[0] - e[1] * a.e[2] + e[2] * a.e[1];
+		b.e0 = e0 * a.e0 - e1 * a.e1 - e2 * a.e2 - e3 * a.e3;
+		b.e1 = e0 * a.e1 + e1 * a.e0 - e2 * a.e3 + e3 * a.e2;
+		b.e2 = e0 * a.e2 + e2 * a.e0 - e3 * a.e1 + e1 * a.e3;
+		b.e3 = e0 * a.e3 + e3 * a.e0 - e1 * a.e2 + e2 * a.e1;
 		return b;
 
 	}
 
 	public void multAssign(GroupElement arg) {
-		double e0, e1, e2;
-		double[] ae = ((SU2GroupElement) arg).e;
-		e0 = e[0];
-		e1 = e[1];
-		e2 = e[2];
-		e[0] = e[0] * ae[0] - e[1] * ae[1] - e[2] * ae[2] - e[3] * ae[3];
-		e[1] = e0 * ae[1] + e[1] * ae[0] - e[2] * ae[3] + e[3] * ae[2];
-		e[2] = e0 * ae[2] + e[2] * ae[0] - e[3] * ae[1] + e1 * ae[3];
-		e[3] = e0 * ae[3] + e[3] * ae[0] - e1 * ae[2] + e2 * ae[1];
+		double f0, f1, f2;
+		double ae0 = ((SU2GroupElement) arg).e0;
+		double ae1 = ((SU2GroupElement) arg).e1;
+		double ae2 = ((SU2GroupElement) arg).e2;
+		double ae3 = ((SU2GroupElement) arg).e3;
+		f0 = e0;
+		f1 = e1;
+		f2 = e2;
+		e0 = e0 * ae0 - e1 * ae1 - e2 * ae2 - e3 * ae3;
+		e1 = f0 * ae1 + e1 * ae0 - e2 * ae3 + e3 * ae2;
+		e2 = f0 * ae2 + e2 * ae0 - e3 * ae1 + f1 * ae3;
+		e3 = f0 * ae3 + e3 * ae0 - f1 * ae2 + f2 * ae1;
 	}
 
 	public AlgebraElement getAlgebraElement()
 	{
 		double norm = 0.0;
-		for(int i = 1; i < 4; i++)
-		{
-			norm += this.e[i] * this.e[i];
-		}
+		norm = this.e1 * this.e1 + this.e2 * this.e2 + this.e3 * this.e3;
 		norm = Math.sqrt(norm);
 
 		SU2AlgebraElement field = new SU2AlgebraElement();
@@ -217,10 +236,9 @@ public class SU2GroupElement implements GroupElement {
 			//return new SU2AlgebraElement();
 			return this.proj();
 		} else {
-			for(int i = 0; i < 3; i++)
-			{
-				field.set(i, 2.0 * Math.asin(norm) / norm * this.e[i+1]);
-			}
+			field.set(0, 2.0 * Math.asin(norm) / norm * this.e1);
+			field.set(1, 2.0 * Math.asin(norm) / norm * this.e2);
+			field.set(2, 2.0 * Math.asin(norm) / norm * this.e3);
 		}
 
 		return field;
@@ -230,15 +248,15 @@ public class SU2GroupElement implements GroupElement {
 	{
 		SU2AlgebraElement field = new SU2AlgebraElement();
 
-		field.set(0, 2 * this.e[1]);
-		field.set(1, 2 * this.e[2]);
-		field.set(2, 2 * this.e[3]);
+		field.set(0, 2 * this.e1);
+		field.set(1, 2 * this.e2);
+		field.set(2, 2 * this.e3);
 
 		return field;
 	}
 
 	public double getRealTrace() {
-		return 2*e[0];
+		return 2*e0;
 	}
 
 	public GroupElement pow(double x) {
@@ -246,7 +264,7 @@ public class SU2GroupElement implements GroupElement {
 	}
 
 	public GroupElement copy() {
-		return new SU2GroupElement(e[0], e[1], e[2], e[3]);
+		return new SU2GroupElement(e0, e1, e2, e3);
 	}
 
 	/**
@@ -259,4 +277,8 @@ public class SU2GroupElement implements GroupElement {
 
 		return (SU2GroupElement) v.mult(1.0/n);
 	}
+
+	public int getNumberOfColors() {return 2;}
+
+	public int getNumberOfComponents() {return 4;}
 }
