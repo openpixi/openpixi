@@ -152,47 +152,45 @@ public class LightConeNGPSuperParticleCreator implements IParticleCreator {
 	    int blockWidth = zEnd - zStart;
 
         // Spawn super particles.
-        int numberOfSubdivisions = Math.min(s.numberOfThreads, blockWidth);   // still need to make this dependent on number of threads.
-        int numberOfSuperParticles = numberOfSubdivisions * particlesPerCell;
-        int totalNumberOfParticles = totalTransversalCells * blockWidth * particlesPerCell;
-        int indexOffset = zStart * totalTransversalCells;
-        int widthPerSubdivision = (int) Math.ceil(blockWidth / (1.0 * numberOfSubdivisions));
-        int longitudinalParticlesPerSubdivision = numberOfSubdivisions * widthPerSubdivision * particlesPerCell;
-        int totalNumberOfCells = s.grid.getTotalNumberOfCells();
 
-        int widthForLastSubdivision, particlesInLastSubdivision;
-        if (numberOfSubdivisions > 1) {
-            widthForLastSubdivision = blockWidth % widthPerSubdivision;
-            particlesInLastSubdivision = widthForLastSubdivision * totalTransversalCells;
-        } else {
-            widthForLastSubdivision = blockWidth;
-            particlesInLastSubdivision = blockWidth * totalTransversalCells;
-        }
+        // Number of subdivisions of the particle block
+        int numberOfSubdivisions = Math.min(s.numberOfThreads, blockWidth);
+
+        // Compute efficient partitioning of the block width
+	    int ws = blockWidth / numberOfSubdivisions;         // width of small subdivision
+	    int wl = blockWidth / numberOfSubdivisions + 1;     // width of large subdivision
+	    int ps = ws * totalTransversalCells;                // particle number per small subdivision
+	    int pl = wl * totalTransversalCells;                // particle number oer large subdivision
+	    int ns = numberOfSubdivisions * wl - blockWidth;    // number of small subdivisions
+	    int nl = blockWidth - numberOfSubdivisions * ws;    // number of large subdivisions
+
+        int numberOfSuperParticles = numberOfSubdivisions * particlesPerCell;
+        int indexOffset = zStart * totalTransversalCells;
+        int numberOfLongitudinalParticles = blockWidth * particlesPerCell;
 
         // Create lists for particle refinement.
-        AlgebraElement[][] longitudinalParticleArray = new AlgebraElement[totalTransversalCells][longitudinalParticlesPerSubdivision];
+        AlgebraElement[][] longitudinalParticleArray = new AlgebraElement[totalTransversalCells][numberOfLongitudinalParticles];
         for (int i = 0; i < totalTransversalCells; i++) {
-            for (int j = 0; j < longitudinalParticlesPerSubdivision; j++) {
+            for (int j = 0; j < numberOfLongitudinalParticles; j++) {
                 longitudinalParticleArray[i][j] = s.grid.getElementFactory().algebraZero();
             }
         }
 
         // Spawn super particles.
         CGCSuperParticle[] superParticles = new CGCSuperParticle[numberOfSuperParticles];
-        int numberOfParticlesPerSuperParticle = widthPerSubdivision * totalTransversalCells;
         for (int j = 0; j < numberOfSubdivisions; j++) {
             // Initialize super particles for subdivision of the particle block.
             for (int k = 0; k < particlesPerCell; k++) {
-                if (j < numberOfSubdivisions - 1) {
+                if (j < nl) {
                     superParticles[particlesPerCell * j + k] = new CGCSuperParticle(orientation,
-                            numberOfParticlesPerSuperParticle,
+                            pl,
                             indexOffset,
                             totalTransversalCells,
                             k,
                             particlesPerCell);
                 } else {
                     superParticles[particlesPerCell * j + k] = new CGCSuperParticle(orientation,
-                            particlesInLastSubdivision,
+                            ps,
                             indexOffset,
                             totalTransversalCells,
                             k,
@@ -202,7 +200,7 @@ public class LightConeNGPSuperParticleCreator implements IParticleCreator {
             }
 
             // Set super particle charges for subdivision.
-            int maxParticleNum = (j < numberOfSubdivisions - 1) ? numberOfParticlesPerSuperParticle : particlesInLastSubdivision;
+            int maxParticleNum = (j < nl) ? pl : ps;
             for (int i = 0; i < maxParticleNum; i++) {
                 int index = indexOffset + i;
                 for (int k = 0; k < particlesPerCell; k++) {
@@ -217,8 +215,11 @@ public class LightConeNGPSuperParticleCreator implements IParticleCreator {
                     longitudinalParticleArray[transverseIndex][longitudinalIndex] = superParticles[j * particlesPerCell + k].Q[i];
                 }
             }
-
-            indexOffset += numberOfParticlesPerSuperParticle;
+            if (j < nl) {
+                indexOffset += pl;
+            } else {
+                indexOffset += ps;
+            }
         }
 
         // Charge refinement
