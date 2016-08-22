@@ -16,13 +16,14 @@ public class CGCSuperParticleInterpolationNGP implements InterpolatorAlgorithm {
     public void interpolateToGrid(IParticle p, Grid g) {
         double at = g.getTemporalSpacing();
         double as = g.getLatticeSpacing();
+        int totalNumberOfCells = g.getTotalNumberOfCells();
 
         CGCSuperParticle P = (CGCSuperParticle) p;
         if (P.needsUpdate(g.getSimulationSteps())) {
             int indexOffset = P.getCurrentOffset(g.getSimulationSteps());
             if (P.orientation > 0) {
                 for (int i = 0; i < P.numberOfParticles; i++) {
-                    int index = i + indexOffset;
+                    int index = Math.min(Math.max(i + indexOffset, 0), totalNumberOfCells - 1);
                     AlgebraElement J = P.Q[i].mult(as / at);
                     g.addJ(index, 0, J); // Optimizations only work for x-direction!
                     GroupElement U = g.getUnext(index, 0);
@@ -30,7 +31,7 @@ public class CGCSuperParticleInterpolationNGP implements InterpolatorAlgorithm {
                 }
             } else {
                 for (int i = 0; i < P.numberOfParticles; i++) {
-                    int index = Math.max(i + indexOffset, 0);
+                    int index = Math.min(Math.max(i + indexOffset, 0), totalNumberOfCells - 1);
                     GroupElement U = g.getUnext(index, 0);
                     P.Q[i].actAssign(U);
                     AlgebraElement J = P.Q[i].mult(-as / at);
@@ -43,6 +44,7 @@ public class CGCSuperParticleInterpolationNGP implements InterpolatorAlgorithm {
     public void interpolateChargedensity(IParticle p, Grid g) {
         CGCSuperParticle P = (CGCSuperParticle) p;
         int indexOffset = P.getCurrentNGPOffset(g.getSimulationSteps());
+        int totalNumberOfCells = g.getTotalNumberOfCells();
         /*
         Note: the orientation of super particles has no effect on the interpolation of single charges. Traversing the
         charges alternately however decreases interference of the parallel particle iterators and therefore improves
@@ -50,12 +52,12 @@ public class CGCSuperParticleInterpolationNGP implements InterpolatorAlgorithm {
          */
         if (P.orientation > 0) {
             for (int i = 0; i < P.numberOfParticles; i++) {
-                int index = Math.max(i + indexOffset, 0);
+                int index = Math.min(Math.max(i + indexOffset, 0), totalNumberOfCells - 1);
                 g.addRho(index, P.Q[i]);
             }
         } else {
             for (int i = P.numberOfParticles - 1; i >= 0; i--) {
-                int index = Math.max(i + indexOffset, 0);
+                int index = Math.min(Math.max(i + indexOffset, 0), totalNumberOfCells - 1);
                 g.addRho(index, P.Q[i]);
             }
         }
