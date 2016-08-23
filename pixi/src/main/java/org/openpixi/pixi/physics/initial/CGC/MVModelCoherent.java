@@ -72,21 +72,21 @@ public class MVModelCoherent implements IInitialChargeDensity {
 	 * longitudinal cutoff should not have any effect. The IR modes are regulated in the transverse plane with a
 	 * 'gluon mass' term.
 	 *
-	 * @param direction                         index of the longitudinal direction
-	 * @param orientation                       orientation of movement in the longitudinal direction
-	 * @param location                          longitudinal position
-	 * @param longitudinalWidth                 longitudinal width of the MV model
-	 * @param mu                                MV model parameter
-	 * @param useSeed                           use a fixed seed for random number generation
-	 * @param seed                              seed of the random number generator
-	 * @param ultravioletCutoffTransverse       UV cutoff in transverse plane (in inverse lattice spacings)
-	 * @param ultravioletCutoffLongitudinal     UV cutoff in the longitudinal direction (in inverse lattice spacings)
-	 * @param infraredCoefficient               IR regulator coefficient in the transverse plane
+	 * @param direction                     index of the longitudinal direction
+	 * @param orientation                   orientation of movement in the longitudinal direction
+	 * @param location                      longitudinal position
+	 * @param longitudinalWidth             longitudinal width of the MV model
+	 * @param mu                            MV model parameter
+	 * @param useSeed                       use a fixed seed for random number generation
+	 * @param seed                          seed of the random number generator
+	 * @param ultravioletCutoffTransverse   UV cutoff in transverse plane (in inverse lattice spacings)
+	 * @param ultravioletCutoffLongitudinal UV cutoff in the longitudinal direction (in inverse lattice spacings)
+	 * @param infraredCoefficient           IR regulator coefficient in the transverse plane
 	 */
 	public MVModelCoherent(int direction, int orientation, double location, double longitudinalWidth, double mu,
-						   boolean useSeed, int seed,
-						   double ultravioletCutoffTransverse, double ultravioletCutoffLongitudinal,
-						   double infraredCoefficient){
+	                       boolean useSeed, int seed,
+	                       double ultravioletCutoffTransverse, double ultravioletCutoffLongitudinal,
+	                       double infraredCoefficient) {
 
 		this.direction = direction;
 		this.orientation = orientation;
@@ -111,7 +111,7 @@ public class MVModelCoherent implements IInitialChargeDensity {
 		}
 
 		Random rand = new Random();
-		if(useSeed) {
+		if (useSeed) {
 			rand.setSeed(seed);
 		}
 
@@ -151,13 +151,13 @@ public class MVModelCoherent implements IInitialChargeDensity {
 			 longitudinal location of the MV model.
 			  */
 			double simulationBoxWidth = s.grid.getNumCells(direction) * s.grid.getLatticeSpacing();
-			double zmin = Math.max(this.location - simulationBoxWidth/2.0, 0.0);
-			double zmax = Math.min(this.location + simulationBoxWidth/2.0, simulationBoxWidth);
+			double zmin = Math.max(this.location - simulationBoxWidth / 2.0, 0.0);
+			double zmax = Math.min(this.location + simulationBoxWidth / 2.0, simulationBoxWidth);
 			int lmin = (int) Math.floor(zmin / s.grid.getLatticeSpacing());
 			int lmax = (int) Math.ceil(zmax / s.grid.getLatticeSpacing());
 			for (int i = 0; i < s.grid.getTotalNumberOfCells(); i++) {
 				int longPos = s.grid.getCellPos(i)[direction];
-				if(lmin < longPos && longPos < lmax && s.grid.isActive(i)) {
+				if (lmin < longPos && longPos < lmax && s.grid.isActive(i)) {
 					this.rho[i].set(j, tempRho[i]);
 				}
 			}
@@ -182,7 +182,7 @@ public class MVModelCoherent implements IInitialChargeDensity {
 		return orientation;
 	}
 
-	public String getInfo(){
+	public String getInfo() {
 		/*
 			mu   ... MV model parameter
 			w    ... longitudinal width
