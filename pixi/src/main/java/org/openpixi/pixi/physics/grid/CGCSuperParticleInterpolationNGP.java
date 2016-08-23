@@ -13,6 +13,9 @@ import org.openpixi.pixi.physics.particles.IParticle;
  * during the simulation and whose charges are updated at the same time when they cross into other cells.
  */
 public class CGCSuperParticleInterpolationNGP implements InterpolatorAlgorithm {
+
+	private boolean useOffset = false;
+
     public void interpolateToGrid(IParticle p, Grid g) {
         double at = g.getTemporalSpacing();
         double as = g.getLatticeSpacing();
@@ -21,20 +24,40 @@ public class CGCSuperParticleInterpolationNGP implements InterpolatorAlgorithm {
         CGCSuperParticle P = (CGCSuperParticle) p;
         if (P.needsUpdate(g.getSimulationSteps())) {
             int indexOffset = P.getCurrentOffset(g.getSimulationSteps());
+
+	        /*
+	         * Set limits for iterating over particle charges inside the super particle:
+	         * As a super particle moves closer to the boundary of the simulation box, some of the particle charges
+	         * associated with that super particle may already lie outside the grid. Setting the start and end of the
+	         * for loop makes sure that the interpolation routines do not create ArrayIndexOutOfBounds exceptions.
+	         *
+	         * Furthermore we can introduce an offset depending on the sub lattice shift of the super particle. This
+	         * shifts the order in which particle charges are interpolated on the grid. As a result different threads
+	         * do not write to the same cell at the same time, which should improve multithreading performance.
+	         */
+	        int imin = (indexOffset < 0) ? -indexOffset : 0;
+	        int imax = Math.max(Math.min(indexOffset + P.numberOfParticles, totalNumberOfCells) - indexOffset, 0);
+	        int ireg = imax - imin;
+	        int offset = 0;
+	        if(useOffset) {
+		        offset = ireg * P.subLatticeShift / P.particlePerCell;
+	        }
             if (P.orientation > 0) {
-                for (int i = 0; i < P.numberOfParticles; i++) {
-                    int index = Math.min(Math.max(i + indexOffset, 0), totalNumberOfCells - 1);
-                    AlgebraElement J = P.Q[i].mult(as / at);
+                for (int i = 0; i < ireg; i++) {
+	                int j = (i + offset) % ireg + imin;
+                    int index = indexOffset + j;
+                    AlgebraElement J = P.Q[j].mult(as / at);
                     g.addJ(index, 0, J); // Optimizations only work for x-direction!
                     GroupElement U = g.getUnext(index, 0);
-                    P.Q[i].actAssign(U.adj());
+                    P.Q[j].actAssign(U.adj());
                 }
             } else {
-                for (int i = 0; i < P.numberOfParticles; i++) {
-                    int index = Math.min(Math.max(i + indexOffset, 0), totalNumberOfCells - 1);
+                for (int i = 0; i < ireg; i++) {
+	                int j = (i + offset) % ireg + imin;
+                    int index = indexOffset + j;
                     GroupElement U = g.getUnext(index, 0);
-                    P.Q[i].actAssign(U);
-                    AlgebraElement J = P.Q[i].mult(-as / at);
+                    P.Q[j].actAssign(U);
+                    AlgebraElement J = P.Q[j].mult(-as / at);
                     g.addJ(index, 0, J); // Optimizations only work for x-direction!
                 }
             }
@@ -45,22 +68,20 @@ public class CGCSuperParticleInterpolationNGP implements InterpolatorAlgorithm {
         CGCSuperParticle P = (CGCSuperParticle) p;
         int indexOffset = P.getCurrentNGPOffset(g.getSimulationSteps());
         int totalNumberOfCells = g.getTotalNumberOfCells();
-        /*
-        Note: the orientation of super particles has no effect on the interpolation of single charges. Traversing the
-        charges alternately however decreases interference of the parallel particle iterators and therefore improves
-        multithreading performance.
-         */
-        if (P.orientation > 0) {
-            for (int i = 0; i < P.numberOfParticles; i++) {
-                int index = Math.min(Math.max(i + indexOffset, 0), totalNumberOfCells - 1);
-                g.addRho(index, P.Q[i]);
-            }
-        } else {
-            for (int i = P.numberOfParticles - 1; i >= 0; i--) {
-                int index = Math.min(Math.max(i + indexOffset, 0), totalNumberOfCells - 1);
-                g.addRho(index, P.Q[i]);
-            }
-        }
+
+	    // Set the limits of the for loop. See comment in interpolateToGrid() for explanation.
+	    int imin = (indexOffset < 0) ? -indexOffset : 0;
+	    int imax = Math.max(Math.min(indexOffset + P.numberOfParticles, totalNumberOfCells) - indexOffset, 0);
+	    int ireg = imax - imin;
+	    int offset = 0;
+	    if(useOffset) {
+		    offset = ireg * P.subLatticeShift / P.particlePerCell;
+	    }
+	    for (int i = 0; i < ireg; i++) {
+		    int j = (i + offset) % ireg + imin;
+		    int index = indexOffset + j;
+            g.addRho(index, P.Q[j]);
+	    }
     }
 
     public void interpolateToParticle(IParticle p, Grid g) {
