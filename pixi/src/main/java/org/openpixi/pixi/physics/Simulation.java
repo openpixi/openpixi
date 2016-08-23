@@ -80,6 +80,11 @@ public class Simulation {
 	public double totalSimulationTime;
 
 	/**
+	 * Number of threads.
+     */
+	public int numberOfThreads;
+
+	/**
 	 * Contains all Particle2D objects
 	 */
 	public ArrayList<IParticle> particles;
@@ -224,12 +229,15 @@ public class Simulation {
 				particleBoundaryConditions,
 				settings.getParticleIterator());
 
+		numberOfThreads = settings.getNumOfThreads();
+
 		grid = new Grid(settings);
 		if (settings.useGrid()) {
 			turnGridForceOn();
 		} else {
 			turnGridForceOff();
 		}
+		grid.setSimulationSteps(totalSimulationSteps);
 
 		// Regions
 		if(settings.isEvaluationRegionEnabled()) {
@@ -375,6 +383,7 @@ public class Simulation {
 		// 2) Step counter
 		totalSimulationSteps++;
 		totalSimulationTime =  totalSimulationSteps * tstep;
+		grid.setSimulationSteps(totalSimulationSteps);
 
 		// 3) Reassign particle charges, positions and gauge links
 		mover.reassign(particles);

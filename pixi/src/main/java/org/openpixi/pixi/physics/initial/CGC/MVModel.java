@@ -3,6 +3,7 @@ package org.openpixi.pixi.physics.initial.CGC;
 import org.apache.commons.math3.analysis.function.Gaussian;
 import org.openpixi.pixi.math.AlgebraElement;
 import org.openpixi.pixi.physics.Simulation;
+
 import java.util.Random;
 
 public class MVModel implements IInitialChargeDensity {
@@ -69,21 +70,21 @@ public class MVModel implements IInitialChargeDensity {
 	 * regulated in Fourier space with a hard UV cutoff in the transverse and longitudinal directions. The IR modes are
 	 * regulated in the transverse plane with a 'gluon mass' term.
 	 *
-	 * @param direction                         index of the longitudinal direction
-	 * @param orientation                       orientation of movement in the longitudinal direction
-	 * @param location                          longitudinal position
-	 * @param longitudinalWidth                 longitudinal width of the MV model
-	 * @param mu                                MV model parameter
-	 * @param useSeed                           use a fixed seed for random number generation
-	 * @param seed                              seed of the random number generator
-	 * @param ultravioletCutoffTransverse       UV cutoff in transverse plane (in inverse lattice spacings)
-	 * @param longitudinalCoherenceLength       Longitudinal coherence length inside nucleus (in physical units)
-	 * @param infraredCoefficient               IR regulator coefficient in the transverse plane
+	 * @param direction                   index of the longitudinal direction
+	 * @param orientation                 orientation of movement in the longitudinal direction
+	 * @param location                    longitudinal position
+	 * @param longitudinalWidth           longitudinal width of the MV model
+	 * @param mu                          MV model parameter
+	 * @param useSeed                     use a fixed seed for random number generation
+	 * @param seed                        seed of the random number generator
+	 * @param ultravioletCutoffTransverse UV cutoff in transverse plane (in inverse lattice spacings)
+	 * @param longitudinalCoherenceLength Longitudinal coherence length inside nucleus (in physical units)
+	 * @param infraredCoefficient         IR regulator coefficient in the transverse plane
 	 */
 	public MVModel(int direction, int orientation, double location, double longitudinalWidth, double mu,
-				   boolean useSeed, int seed,
-				   double ultravioletCutoffTransverse, double longitudinalCoherenceLength,
-				   double infraredCoefficient){
+	               boolean useSeed, int seed,
+	               double ultravioletCutoffTransverse, double longitudinalCoherenceLength,
+	               double infraredCoefficient) {
 
 		this.direction = direction;
 		this.orientation = orientation;
@@ -108,7 +109,7 @@ public class MVModel implements IInitialChargeDensity {
 		}
 
 		Random rand = new Random();
-		if(useSeed) {
+		if (useSeed) {
 			rand.setSeed(seed);
 		}
 
@@ -117,12 +118,12 @@ public class MVModel implements IInitialChargeDensity {
 
 			// Place random charges on the grid (with longitudinal randomness and profile).
 			Gaussian gauss = new Gaussian(location, longitudinalWidth);
-			double randomColorWidth =  mu * s.getCouplingConstant() / Math.pow(s.grid.getLatticeSpacing(), 1.5);
+			double randomColorWidth = mu * s.getCouplingConstant() / Math.pow(s.grid.getLatticeSpacing(), 1.5);
 			for (int i = 0; i < s.grid.getTotalNumberOfCells(); i++) {
 				int[] pos = s.grid.getCellPos(i);
 				double longPos = pos[direction] * s.grid.getLatticeSpacing();
 				double profile = Math.sqrt(gauss.value(longPos));
-				tempRho[i] =  rand.nextGaussian() * randomColorWidth * profile;
+				tempRho[i] = rand.nextGaussian() * randomColorWidth * profile;
 			}
 
 			// Apply soft momentum regulation in Fourier space.
@@ -130,9 +131,20 @@ public class MVModel implements IInitialChargeDensity {
 					ultravioletCutoffTransverse, longitudinalCoherenceLength, infraredCoefficient, direction,
 					s.grid.getLatticeSpacing());
 
-			// Put everything into rho array.
+			/*
+			 Put everything into rho array, but exclude charges that lie outside of a simulation box centered around the
+			 longitudinal location of the MV model.
+			  */
+			double simulationBoxWidth = s.grid.getNumCells(direction) * s.grid.getLatticeSpacing();
+			double zmin = Math.max(this.location - simulationBoxWidth / 2.0, 0.0);
+			double zmax = Math.min(this.location + simulationBoxWidth / 2.0, simulationBoxWidth);
+			int lmin = (int) Math.floor(zmin / s.grid.getLatticeSpacing());
+			int lmax = (int) Math.ceil(zmax / s.grid.getLatticeSpacing());
 			for (int i = 0; i < s.grid.getTotalNumberOfCells(); i++) {
-				this.rho[i].set(j, tempRho[i]);
+				int longPos = s.grid.getCellPos(i)[direction];
+				if (lmin < longPos && longPos < lmax && s.grid.isActive(i)) {
+					this.rho[i].set(j, tempRho[i]);
+				}
 			}
 		}
 
@@ -155,7 +167,7 @@ public class MVModel implements IInitialChargeDensity {
 		return orientation;
 	}
 
-	public String getInfo(){
+	public String getInfo() {
 		/*
 			mu   ... MV model parameter
 			w    ... longitudinal width

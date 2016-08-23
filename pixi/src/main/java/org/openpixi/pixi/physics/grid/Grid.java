@@ -81,6 +81,19 @@ public class Grid {
 	protected ElementFactory factory;
 
 	/**
+	 * Number of passed simulation steps.
+	 */
+	protected int simulationSteps;
+
+	public void setSimulationSteps(int simulationSteps) {
+		this.simulationSteps = simulationSteps;
+	}
+
+	public int getSimulationSteps() {
+		return simulationSteps;
+	}
+
+	/**
 	 * Returns the FieldSolver instance currently used.
 	 * @return  Instance of the FieldSolver
 	 */
