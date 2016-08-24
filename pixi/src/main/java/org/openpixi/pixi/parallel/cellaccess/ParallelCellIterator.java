@@ -6,7 +6,9 @@ import org.openpixi.pixi.physics.util.IntBox;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Future;
 
 /**
  * Executes action upon cells in parallel using threads.
@@ -39,8 +41,13 @@ public class ParallelCellIterator extends CellIterator {
 		this.grid = grid;
 		this.action = action;
 		try {
-			threadExecutor.invokeAll(tasks);
-		} catch (InterruptedException e) {
+			List<Future<Object>> futures = threadExecutor.invokeAll(tasks);
+			for (Future<Object> f : futures) {
+				// Retrieving the result throws possible exceptions
+				f.get();
+			}
+		} catch (InterruptedException | ExecutionException e) {
+			// Throw exceptions that happened in a thread
 			throw new RuntimeException(e);
 		}
 	}
