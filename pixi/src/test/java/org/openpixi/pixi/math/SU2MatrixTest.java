@@ -626,6 +626,10 @@ public class SU2MatrixTest {
 		return output;
 	}
 
-
-
+	@Test
+	public void testDimensions(){
+		SU2GroupElement U = new SU2GroupElement();
+		Assert.assertEquals(U.getNumberOfColors(), 2);
+		Assert.assertEquals(U.getAdjointDimension(), 3);
+	}
 }

@@ -517,5 +517,5 @@ public class SU3GroupElement implements GroupElement {
 
 	public int getNumberOfColors() {return 3;}
 
-	public int getNumberOfComponents() {return 18;}
+	public int getAdjointDimension() {return 8;}
 }

@@ -436,5 +436,5 @@ public class SU3AlgebraElement implements AlgebraElement {
 
 	public int getNumberOfColors() {return 3;}
 
-	public int getNumberOfComponents() {return 8;}
+	public int getAdjointDimension() {return 8;}
 }

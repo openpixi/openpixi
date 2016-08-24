@@ -142,5 +142,12 @@ public class SU2FieldTest {
 		}
 	}
 
+	@Test
+	public void testDimensions(){
+		SU2AlgebraElement A = new SU2AlgebraElement();
+		Assert.assertEquals(A.getNumberOfColors(), 2);
+		Assert.assertEquals(A.getAdjointDimension(), 3);
+	}
+
 
 }
