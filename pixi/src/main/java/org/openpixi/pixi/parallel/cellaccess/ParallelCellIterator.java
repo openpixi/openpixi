@@ -46,9 +46,7 @@ public class ParallelCellIterator extends CellIterator {
 				// Retrieving the result throws possible exceptions
 				f.get();
 			}
-		} catch (InterruptedException e) {
-			throw new RuntimeException(e);
-		} catch (ExecutionException e) {
+		} catch (InterruptedException | ExecutionException e) {
 			// Throw exceptions that happened in a thread
 			throw new RuntimeException(e);
 		}
