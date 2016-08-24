@@ -11,8 +11,6 @@ import java.io.Serializable;
  */
 public class YangMillsParticle implements IParticle, Serializable {
 	protected int numberOfDimensions;
-	protected int numberOfColors;
-	protected int numberOfComponents;
 
 	public AlgebraElement Q0;
 	public AlgebraElement Q1;
@@ -33,9 +31,6 @@ public class YangMillsParticle implements IParticle, Serializable {
 		ElementFactory factory = new ElementFactory(numberOfColors);
 		this.Q0 = factory.algebraZero();
 		this.Q1 = factory.algebraZero();
-
-		this.numberOfColors = numberOfColors;
-		this.numberOfComponents = factory.numberOfComponents;
 	}
 
 	// GETTERS
@@ -130,7 +125,7 @@ public class YangMillsParticle implements IParticle, Serializable {
 	}
 
 	public IParticle copy() {
-		YangMillsParticle p = new YangMillsParticle(this.numberOfDimensions, this.numberOfColors);
+		YangMillsParticle p = new YangMillsParticle(this.numberOfDimensions, this.Q0.getNumberOfColors());
 
 		for (int i = 0; i < this.numberOfDimensions; i++) {
 			p.pos0[i] = this.pos0[i];
