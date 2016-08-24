@@ -58,7 +58,6 @@ public class YamlSettings {
 			map.put("temporal cgc", SimulationType.TemporalCGC);
 			map.put("temporal cgc ngp", SimulationType.TemporalCGCNGP);
 			map.put("temporal optimized cgc ngp", SimulationType.TemporalOptimizedCGCNGP);
-			map.put("lorenz yang-mills", SimulationType.LorenzYangMills);
 			map.put("boost-invariant cgc", SimulationType.BoostInvariantCGC);
 
 			if(map.containsKey(simulationType)) {

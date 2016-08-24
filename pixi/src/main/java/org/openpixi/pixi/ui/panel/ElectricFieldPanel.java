@@ -34,14 +34,12 @@ public class ElectricFieldPanel extends AnimationPanel {
 	public final int INDEX_B_NEXT = 2;
 	public final int INDEX_U = 3;
 	public final int INDEX_U_NEXT = 4;
-	public final int INDEX_U0 = 5;
-	public final int INDEX_U0_NEXT = 6;
-	public final int INDEX_J = 7;
-	public final int INDEX_RHO = 8;
-	public final int INDEX_GAUSS = 9;
-	public final int INDEX_ROT_E = 10;
-	public final int INDEX_ROT_B = 11;
-	public final int INDEX_ROT_B_NEXT = 12;
+	public final int INDEX_J = 5;
+	public final int INDEX_RHO = 6;
+	public final int INDEX_GAUSS = 7;
+	public final int INDEX_ROT_E = 8;
+	public final int INDEX_ROT_B = 9;
+	public final int INDEX_ROT_B_NEXT = 10;
 
 	String[] fieldLabel = new String[] {
 			"E",
@@ -49,8 +47,6 @@ public class ElectricFieldPanel extends AnimationPanel {
 			"B next",
 			"U",
 			"U next",
-			"U0",
-			"U0 next",
 			"j",
 			"rho",
 			"Gauss",
@@ -63,8 +59,6 @@ public class ElectricFieldPanel extends AnimationPanel {
 			Color.black,
 			Color.orange,
 			Color.lightGray,
-			Color.green,
-			Color.gray,
 			Color.green,
 			Color.gray,
 			Color.red,
@@ -80,8 +74,6 @@ public class ElectricFieldPanel extends AnimationPanel {
 			false,
 			false,
 			true,
-			false,
-			false,
 			false,
 			false,
 			false,
@@ -239,12 +231,6 @@ public class ElectricFieldPanel extends AnimationPanel {
 					break;
 				case INDEX_U_NEXT:
 					value = drawGrid.getUnext(index, directionIndex).proj().get(colorIndex) / (as * g);
-					break;
-				case INDEX_U0:
-					value = drawGrid.getU0(index).proj().get(colorIndex) / (at * g);
-					break;
-				case INDEX_U0_NEXT:
-					value = drawGrid.getU0next(index).proj().get(colorIndex) / (at * g);
 					break;
 				case INDEX_J:
 					//newPosition = (int) (s.grid.getLatticeSpacing() * (i + .5) * sx);

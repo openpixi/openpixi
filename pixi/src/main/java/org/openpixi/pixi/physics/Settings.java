@@ -536,12 +536,6 @@ public class Settings {
 				setParticleSolver(new CGCSuperParticleSolver());
 				setInterpolator(new CGCSuperParticleInterpolationNGP());
 				break;
-			case LorenzYangMills:
-				setBoundary(GeneralBoundaryType.Periodic);
-				setFieldSolver(new LorenzYangMillsSolver());
-				setParticleSolver(new EmptyParticleSolver());
-				setInterpolator(new EmptyInterpolator());
-				break;
 			case BoostInvariantCGC:
 				break;
 		}

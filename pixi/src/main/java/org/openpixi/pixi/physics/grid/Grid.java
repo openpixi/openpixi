@@ -253,43 +253,6 @@ public class Grid {
 	}
 
 	/**
-	 * Returns the temporal gauge link at time (t-dt/2) at given lattice index.
-	 * @param index Lattice index of the temporal gauge link
-	 * @return      GroupElement instance
-	 */
-	public GroupElement getU0(int index) {
-		return cells[index].getU0();
-	}
-
-	/**
-	 * Sets the temporal gauge link at time (t-dt/2) at given lattice index to a new value.
-	 * @param index Lattice index
-	 * @param link  GroupElement instance
-	 */
-	public void setU0(int index, GroupElement link) {
-		cells[index].setU0(link);
-	}
-
-	/**
-	 * Returns the temporal gauge link at time (t+dt/2) at given lattice index.
-	 * @param index Lattice index of the temporal gauge link
-	 * @return      GroupElement instance
-	 */
-	public GroupElement getU0next(int index) {
-		return cells[index].getU0next();
-	}
-
-	/**
-	 * Sets the temporal gauge link at time (t+dt/2) at given lattice index to a new value.
-	 * @param index Lattice index
-	 * @param link  GroupElement instance
-	 */
-	public void setU0next(int index, GroupElement link) {
-		cells[index].setU0next(link);
-	}
-
-
-	/**
 	 * Resets charge in a cell at a given lattice index.
 	 * @param index  Lattice index of the cell
 	 */
@@ -610,21 +573,16 @@ public class Grid {
 	 * @return      Temporal plaquette as GroupElement
 	 */
 	public GroupElement getTemporalPlaquette(int index, int d, int o) {
-		GroupElement U1 = getTemporalLink(index, 0);
+		// Note: temporal links U1 and U3 are trivial in temporal gauge.
 		GroupElement U2 = getLink(index, d, o, 1);
-		GroupElement U3 = getTemporalLink(shift2(index, d, o), 0).adj();
 		GroupElement U4 = getLink(index, d, o, 0).adj();
 
 
 		GroupElement U = factory.groupIdentity();
-		U.multAssign(U1);
 		U.multAssign(U2);
-		U.multAssign(U3);
 		U.multAssign(U4);
 
 		return U;
-
-		//return U1.mult(U2.mult(U3.mult(U4)));
 	}
 
 
@@ -685,20 +643,6 @@ public class Grid {
 			}
 			return getCell(index).getUnext(direction);
 		}
-	}
-
-	/**
-	 * Getter for temporal gauge links.
-	 *
-	 * @param index     Lattice index
-	 * @param timeIndex Option to select between U0 (timeIndex = 0) and U0next (timeIndex != 0).
-	 * @return          Temporal gauge link
-	 */
-	public GroupElement getTemporalLink(int index, int timeIndex) {
-		if(timeIndex == 0) {
-			return cells[index].getU0();
-		}
-		return cells[index].getU0next();
 	}
 
 	/**
