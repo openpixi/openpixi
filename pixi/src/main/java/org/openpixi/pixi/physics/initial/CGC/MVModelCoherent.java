@@ -115,6 +115,10 @@ public class MVModelCoherent implements IInitialChargeDensity {
 			rand.setSeed(seed);
 		}
 
+		// Longitudinal and transverse lattice spacing
+		double aL = s.grid.getLatticeSpacing(direction);
+		double aT = s.grid.getLatticeSpacing((direction + 1) % s.getNumberOfDimensions());
+
 		for (int j = 0; j < numberOfComponents; j++) {
 			double[] tempRho = new double[s.grid.getTotalNumberOfCells()];
 
@@ -123,7 +127,7 @@ public class MVModelCoherent implements IInitialChargeDensity {
 			int totalTransCells = GridFunctions.getTotalNumberOfCells(transNumCells);
 			int longitudinalNumCells = s.grid.getNumCells(direction);
 			for (int i = 0; i < totalTransCells; i++) {
-				double charge = rand.nextGaussian() * mu * s.getCouplingConstant() / s.grid.getLatticeSpacing();
+				double charge = rand.nextGaussian() * mu * s.getCouplingConstant() / aT;
 				int[] transPos = GridFunctions.getCellPos(i, transNumCells);
 				for (int k = 0; k < longitudinalNumCells; k++) {
 					int[] gridPos = GridFunctions.insertGridPos(transPos, direction, k);
@@ -135,13 +139,13 @@ public class MVModelCoherent implements IInitialChargeDensity {
 			// Apply hard momentum regulation in Fourier space.
 			tempRho = FourierFunctions.regulateChargeDensityHard(tempRho, s.grid.getNumCells(),
 					ultravioletCutoffTransverse, ultravioletCutoffLongitudinal, infraredCoefficient, direction,
-					s.grid.getLatticeSpacing());
+					aT, aL);
 
 			// Apply longitudinal profile.
 			Gaussian gauss = new Gaussian(location, longitudinalWidth);
 			for (int i = 0; i < s.grid.getTotalNumberOfCells(); i++) {
 				int[] pos = s.grid.getCellPos(i);
-				double longPos = pos[direction] * s.grid.getLatticeSpacing();
+				double longPos = pos[direction] * s.grid.getLatticeSpacing(direction);
 				double profile = gauss.value(longPos);
 				tempRho[i] *= profile;
 			}
@@ -150,11 +154,11 @@ public class MVModelCoherent implements IInitialChargeDensity {
 			 Put everything into rho array, but exclude charges that lie outside of a simulation box centered around the
 			 longitudinal location of the MV model.
 			  */
-			double simulationBoxWidth = s.grid.getNumCells(direction) * s.grid.getLatticeSpacing();
+			double simulationBoxWidth = s.grid.getNumCells(direction) * s.grid.getLatticeSpacing(direction);
 			double zmin = Math.max(this.location - simulationBoxWidth / 2.0, 0.0);
 			double zmax = Math.min(this.location + simulationBoxWidth / 2.0, simulationBoxWidth);
-			int lmin = (int) Math.floor(zmin / s.grid.getLatticeSpacing());
-			int lmax = (int) Math.ceil(zmax / s.grid.getLatticeSpacing());
+			int lmin = (int) Math.floor(zmin / s.grid.getLatticeSpacing(direction));
+			int lmax = (int) Math.ceil(zmax / s.grid.getLatticeSpacing(direction));
 			for (int i = 0; i < s.grid.getTotalNumberOfCells(); i++) {
 				int longPos = s.grid.getCellPos(i)[direction];
 				if (lmin < longPos && longPos < lmax && s.grid.isActive(i)) {
