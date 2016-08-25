@@ -26,11 +26,15 @@ public class TemporalYangMillsSolver extends FieldSolver
 	public void step(Grid grid, double timeStep) {
 		this.timeStep = timeStep;
 		fieldUpdater.at = timeStep;
-		fieldUpdater.as = grid.getLatticeSpacing();
-		fieldUpdater.g = grid.getGaugeCoupling();
-		fieldUpdater.factor = timeStep / (grid.getLatticeSpacing() * grid.getLatticeSpacing());
+
+		// fieldUpdater.factor includes are of a plaquette which depends on two indices.
+		fieldUpdater.factor = new double[grid.getNumberOfDimensions()][grid.getNumberOfDimensions()];
+		for (int i = 0; i < grid.getNumberOfDimensions(); i++) {
+			for (int j = 0; j < grid.getNumberOfDimensions(); j++) {
+				fieldUpdater.factor[i][j] = timeStep / (grid.getCellArea(i, j));
+			}
+		}
 		linkUpdater.at = timeStep;
-		linkUpdater.as = grid.getLatticeSpacing();
 		cellIterator.execute(grid, fieldUpdater);
 		cellIterator.execute(grid, linkUpdater);
 	}
@@ -39,17 +43,14 @@ public class TemporalYangMillsSolver extends FieldSolver
 	public void stepLinks(Grid grid, double timeStep) {
 		this.timeStep = timeStep;
 		linkUpdater.at = timeStep;
-		linkUpdater.as = grid.getLatticeSpacing();
 		cellIterator.execute(grid, linkUpdater);
 	}
 
 
 	private class UpdateFields implements CellAction
 	{
-		private double as;
 		private double at;
-		private double g;
-		private double factor;
+		private double[][] factor;
 
 		/**
 		 * Updates the electric fields at a given coordinate
@@ -62,11 +63,11 @@ public class TemporalYangMillsSolver extends FieldSolver
 					GroupElement temp = grid.getElementFactory().groupZero();
 					for (int j = 0; j < grid.getNumberOfDimensions(); j++) {
 						if (j != i) {
-							temp.addAssign(grid.getPlaquette(index, i, j, 1, 1, 0));
-							temp.addAssign(grid.getPlaquette(index, i, j, 1, -1, 0));
+							temp.addAssign(grid.getPlaquette(index, i, j, 1, 1, 0).mult(factor[i][j]));
+							temp.addAssign(grid.getPlaquette(index, i, j, 1, -1, 0).mult(factor[i][j]));
 						}
 					}
-					grid.addE(index, i, temp.proj().mult(factor));
+					grid.addE(index, i, temp.proj());
 					grid.addE(index, i, grid.getJ(index, i).mult(-at));
 				}
 			}
@@ -74,8 +75,6 @@ public class TemporalYangMillsSolver extends FieldSolver
 	}
 
 	private class UpdateLinks implements CellAction {
-
-		private double as;
 		private double at;
 
 		/**
