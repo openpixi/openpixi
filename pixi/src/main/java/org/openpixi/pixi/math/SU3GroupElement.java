@@ -174,6 +174,12 @@ public class SU3GroupElement implements GroupElement {
 
 	}
 
+	public void multAssign(double number) {
+		for (int i = 0; i < 18; i++) {
+			e[i] *= number;
+		}
+	}
+
 	public GroupElement mult(GroupElement arg) {
 
 		SU3GroupElement a = (SU3GroupElement) arg;

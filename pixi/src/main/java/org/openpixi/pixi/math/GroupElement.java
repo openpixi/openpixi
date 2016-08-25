@@ -51,6 +51,8 @@ public interface GroupElement {
 	 */
 	GroupElement mult(double number);
 
+	void multAssign(double number);
+
 	/**
 	 * Computes the matrix product of the GroupElement instance with another GroupElement instance.
 	 * Let A be the GroupElement instance which the method is applied to and let B the GroupElement instance

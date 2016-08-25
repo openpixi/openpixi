@@ -196,6 +196,13 @@ public class SU2GroupElement implements GroupElement {
 
 	}
 
+	public void multAssign(double number) {
+		e0 *= number;
+		e1 *= number;
+		e2 *= number;
+		e3 *= number;
+	}
+
 	public GroupElement mult(GroupElement arg) {
 
 		SU2GroupElement a = (SU2GroupElement) arg;
