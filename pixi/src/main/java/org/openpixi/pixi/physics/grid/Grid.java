@@ -460,6 +460,7 @@ public class Grid {
 			for (int i = 0; i < numDim; i++) {
 				asUneven[i] = grid.getLatticeSpacing(i);
 			}
+			useUnevenGrid = true;
 		} else {
 			as = grid.as;
 		}
