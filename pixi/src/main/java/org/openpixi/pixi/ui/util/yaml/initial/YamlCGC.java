@@ -66,18 +66,18 @@ public class YamlCGC {
 
 	private ICGCPoissonSolver getPoissonSolver(String name) {
 		if(name != null) {
-			switch (name.toLowerCase().trim()) {
-				case "regular":
-					return new LightConePoissonSolver();
-				case "improved":
-					return new LightConePoissonSolverImproved();
-				case "improved full":
-					return new LightConePoissonSolverImprovedFull();
-				case "refined":
-					return new LightConePoissonSolverRefined();
-				default:
-					System.out.println("YamlCGC: Unknown Poisson solver. Using improved as default.");
-					return new LightConePoissonSolverImproved();
+			String comparisonString = name.toLowerCase().trim();
+			if(comparisonString.equals("regular")) {
+				return new LightConePoissonSolver();
+			} else if(comparisonString.equals("improved")) {
+				return new LightConePoissonSolverImproved();
+			} else if(comparisonString.equals("improved full")) {
+				return new LightConePoissonSolverImprovedFull();
+			} else if(comparisonString.equals("refined")) {
+				return new LightConePoissonSolverRefined();
+			} else {
+				System.out.println("YamlCGC: Unknown Poisson solver. Using improved as default.");
+				return new LightConePoissonSolverImproved();
 			}
 		} else {
 			System.out.println("YamlCGC: Please specify Poisson solver. Using improved as default.");

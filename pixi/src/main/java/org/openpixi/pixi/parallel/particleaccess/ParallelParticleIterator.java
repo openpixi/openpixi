@@ -44,7 +44,9 @@ public class ParallelParticleIterator implements ParticleIterator {
 				// Retrieving the result throws possible exceptions
 				f.get();
 			}
-		} catch (InterruptedException | ExecutionException e) {
+		} catch (InterruptedException e) {
+			throw new RuntimeException(e);
+		} catch (ExecutionException e) {
 			// Throw exceptions that happened in a thread
 			throw new RuntimeException(e);
 		}
