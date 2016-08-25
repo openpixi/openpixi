@@ -40,10 +40,6 @@ public class SU2PlaneWave implements IInitialCondition {
 		this.grid = s.grid;
 		this.timeStep = s.getTimeStep();
 
-
-		double as = grid.getLatticeSpacing();
-		double g = s.getCouplingConstant();
-
 		ElementFactory factory = grid.getElementFactory();
 		int colors = grid.getNumberOfColors();
 
@@ -76,20 +72,21 @@ public class SU2PlaneWave implements IInitialCondition {
 			omega = s.getSpeedOfLight() * Math.sqrt(omega);
 
 			//Factor of the plane wave at t = 0 (for electric fields)
-			double factorForE = -g * as * omega * Math.sin(kx);
+			double factorForE = - omega * Math.sin(kx);
 			//Phase of the plane wave at t = - dt/2 (for links)
-			double factorForU = g * as * Math.cos(- omega * timeStep / 2.0 - kx);
+			double factorForU = Math.cos(- omega * timeStep / 2.0 - kx);
 
 
 			Cell currentCell = grid.getCell(c);
 
 			for (int i = 0; i < this.numberOfDimensions; i++) {
+				double unitFactor = s.grid.getLatticeUnitFactor(i);
 				//Setup the gauge links
-				SU2GroupElement U = (SU2GroupElement) currentCell.getU(i).mult(amplitudeYMField[i].mult(factorForU).getLink());
+				SU2GroupElement U = (SU2GroupElement) currentCell.getU(i).mult(amplitudeYMField[i].mult(factorForU * unitFactor).getLink());
 				currentCell.setU(i, U);
 
 				//Setup the electric fields
-				currentCell.addE(i, amplitudeYMField[i].mult(factorForE));
+				currentCell.addE(i, amplitudeYMField[i].mult(factorForE * unitFactor));
 			}
 		}
 
@@ -111,7 +108,7 @@ public class SU2PlaneWave implements IInitialCondition {
 	private double[] getPosition(int[] cellPosition) {
 		double[] position = new double[this.numberOfDimensions];
 		for (int i = 0; i < this.numberOfDimensions; i++) {
-			position[i] = cellPosition[i] * grid.getLatticeSpacing();
+			position[i] = cellPosition[i] * grid.getLatticeSpacing(i);
 		}
 		return position;
 	}
