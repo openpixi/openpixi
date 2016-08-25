@@ -655,7 +655,7 @@ public class Grid {
 				GroupElement U2 = getU(ci4, d).mult(getU(ci3, i));
 				U2.adjAssign();
 				U2.multAssign(getU(ci4, i));
-				double areaFactor = 1.0 / getCellArea(d, i);
+				double areaFactor = 1.0 / Math.pow(getLatticeSpacing(i), 2);
 				U1.addAssign(U2);
 				U1.multAssign(areaFactor);
 				S.addAssign(U1);

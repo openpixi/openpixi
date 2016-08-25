@@ -31,7 +31,7 @@ public class TemporalYangMillsSolver extends FieldSolver
 		fieldUpdater.factor = new double[grid.getNumberOfDimensions()][grid.getNumberOfDimensions()];
 		for (int i = 0; i < grid.getNumberOfDimensions(); i++) {
 			for (int j = 0; j < grid.getNumberOfDimensions(); j++) {
-				fieldUpdater.factor[i][j] = timeStep / (grid.getCellArea(i, j));
+				fieldUpdater.factor[i][j] = timeStep / Math.pow(grid.getLatticeSpacing(j), 2);
 			}
 		}
 		linkUpdater.at = timeStep;
