@@ -18,7 +18,7 @@ public class CGCSuperParticleInterpolationNGP implements InterpolatorAlgorithm {
 
 	public void interpolateToGrid(IParticle p, Grid g) {
 		double at = g.getTemporalSpacing();
-		double as = g.getLatticeSpacing();
+		double as = g.getLatticeSpacing(0);
 		int totalNumberOfCells = g.getTotalNumberOfCells();
 
 		CGCSuperParticle P = (CGCSuperParticle) p;
