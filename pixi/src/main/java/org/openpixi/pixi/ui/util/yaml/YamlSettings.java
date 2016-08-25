@@ -19,6 +19,7 @@ public class YamlSettings {
     public Integer numberOfThreads;
     public Double couplingConstant;
 	public Double gridStep;
+	public List<Double> gridSteps;
 	public Double duration;
 	public List<Integer> gridCells;
 
@@ -93,7 +94,16 @@ public class YamlSettings {
         if(numberOfThreads != null)
             settings.setNumOfThreads(numberOfThreads);
 
-		if (gridStep != null) {
+		// Setting lattice spacing(s). Prioritize gridSteps over gridStep.
+		if(gridSteps != null) {
+			if(gridSteps.size() != numberOfDimensions) {
+				throw new RuntimeException("Size of gridSteps does not match numberOfDimensions.");
+			} else {
+				for (int i = 0; i < gridCells.size(); i++) {
+					settings.setGridStep(i, gridSteps.get(i));
+				}
+			}
+		} else if (gridStep != null) {
 			settings.setGridStep(gridStep);
 		}
 
