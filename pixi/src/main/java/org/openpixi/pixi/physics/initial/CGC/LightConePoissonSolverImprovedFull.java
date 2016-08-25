@@ -50,6 +50,10 @@ public class LightConePoissonSolverImprovedFull implements ICGCPoissonSolver {
 		int numberOfColors = s.getNumberOfColors();
 		int numberOfComponents = (numberOfColors > 1) ? numberOfColors * numberOfColors - 1 : 1;
 
+		// Longitudinal and transverse lattice spacing
+		double aL = s.grid.getLatticeSpacing(direction);
+		double aT = s.grid.getLatticeSpacing((direction + 1) % s.getNumberOfDimensions());
+
 		// Solve for phi at t = - at/2 'sheet by sheet'
 		phi0 = new AlgebraElement[s.grid.getTotalNumberOfCells()];
 		for (int i = 0; i < s.grid.getTotalNumberOfCells(); i++) {
@@ -69,7 +73,7 @@ public class LightConePoissonSolverImprovedFull implements ICGCPoissonSolver {
 				}
 
 				// Solve Poisson equation
-				double[] phi2D = FourierFunctions.solvePoisson2D(rho2D, transverseNumCells, s.grid.getLatticeSpacing());
+				double[] phi2D = FourierFunctions.solvePoisson2D(rho2D, transverseNumCells, aT);
 
 				// Put result into phi0.
 				for (int i = 0; i < totalTransverseCells; i++) {
@@ -124,8 +128,8 @@ public class LightConePoissonSolverImprovedFull implements ICGCPoissonSolver {
 
 					// Since the Wilson line from (n) to (n+1) crosses an NGP boundary, the Wilson line has to be split
 					// up into two parts.
-					W = W(z1, z2, M / 2, P1, P2);
-					W.multAssign(W(z2, z3, M / 2, P2, P3));
+					W = W(z1, z2, M / 2, P1, P2, aL);
+					W.multAssign(W(z2, z3, M / 2, P2, P3, aL));
 				} else {
 					int i2 = index;
 					int i1 = s.grid.shift(i2, direction, -1);
@@ -141,8 +145,8 @@ public class LightConePoissonSolverImprovedFull implements ICGCPoissonSolver {
 
 					// Since the Wilson line from (n) to (n+1) crosses an NGP boundary, the Wilson line has to be split
 					// up into two parts.
-					W = W(z1, z2, M / 2, P2, P3);
-					W.multAssign(W(z2, z3, M / 2, P1, P2));
+					W = W(z1, z2, M / 2, P2, P3, aL);
+					W.multAssign(W(z2, z3, M / 2, P1, P2, aL));
 				}
 
 				gaugeLink.multAssign(W);
@@ -185,7 +189,7 @@ public class LightConePoissonSolverImprovedFull implements ICGCPoissonSolver {
 
 		// Compute V at at/2 from V at -at/2 (improved using linear interpolation and path ordering).
 
-		int Mfrac = (int) (M * s.grid.getTemporalSpacing() / s.grid.getLatticeSpacing() * 0.5);
+		int Mfrac = (int) (M * s.grid.getTemporalSpacing() / aL * 0.5);
 		for (int i = 0; i < s.grid.getTotalNumberOfCells(); i++) {
 			// Compute time evolution operator using linear interpolation of the phi's and path ordering.
 			int[] pos = s.grid.getCellPos(i);
@@ -199,20 +203,20 @@ public class LightConePoissonSolverImprovedFull implements ICGCPoissonSolver {
 				i2 = i;
 
 				z1 = zi;
-				z2 = z1 + s.getTimeStep() / s.grid.getLatticeSpacing();
+				z2 = z1 + s.getTimeStep() / aL;
 			} else {
 				i1 = s.grid.shift(i, direction, -1);
 				i2 = i;
 
 				z1 = zi;
-				z2 = z1 - s.getTimeStep() / s.grid.getLatticeSpacing();
+				z2 = z1 - s.getTimeStep() / aL;
 			}
 
 			AlgebraElement P1 = phi0[i1];
 			AlgebraElement P2 = phi0[i2];
 
 			// Compute "extra path" of the Wilson at t = +at/2 using the same method as before.
-			W = W(z1, z2, Mfrac, P1, P2);
+			W = W(z1, z2, Mfrac, P1, P2, aL);
 
 			// Evolve the Wilson line along the "extra path".
 			V[i].multAssign(W);
@@ -265,10 +269,10 @@ public class LightConePoissonSolverImprovedFull implements ICGCPoissonSolver {
 	 * @param P2    Boundary value of the field at the "right" side of the NGP cell
 	 * @return      Path ordered Wilson line from z1 to z2
 	 */
-	private GroupElement W(double z1, double z2, int M, AlgebraElement P1, AlgebraElement P2) {
+	private GroupElement W(double z1, double z2, int M, AlgebraElement P1, AlgebraElement P2, double aL) {
 		GroupElement W = s.grid.getElementFactory().groupIdentity();
 
-		double dz = Math.abs(z2 - z1) / ((double) M) * s.grid.getLatticeSpacing();
+		double dz = Math.abs(z2 - z1) / ((double) M) * aL;
 		double gaugeFactor = - s.getCouplingConstant() * dz;
 		double ui = Math.round((z1+z2) * 0.5);
 		double u1 = z1 - ui;
