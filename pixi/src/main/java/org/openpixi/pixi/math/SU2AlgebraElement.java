@@ -181,5 +181,5 @@ public class SU2AlgebraElement implements AlgebraElement {
 
 	public int getNumberOfColors() {return 2;}
 
-	public int getNumberOfComponents() {return 3;}
+	public int getAdjointDimension() {return 3;}
 }

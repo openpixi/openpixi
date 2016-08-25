@@ -280,5 +280,5 @@ public class SU2GroupElement implements GroupElement {
 
 	public int getNumberOfColors() {return 2;}
 
-	public int getNumberOfComponents() {return 4;}
+	public int getAdjointDimension() {return 3;}
 }

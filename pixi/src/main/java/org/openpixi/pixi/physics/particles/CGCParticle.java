@@ -21,7 +21,7 @@ public class CGCParticle extends YangMillsParticle {
 	}
 
 	public IParticle copy() {
-		CGCParticle p = new CGCParticle(this.numberOfDimensions, this.numberOfColors, this.direction);
+		CGCParticle p = new CGCParticle(this.numberOfDimensions, Q0.getNumberOfColors(), this.direction);
 		p.U = this.U.copy();
 
 		for (int i = 0; i < this.numberOfDimensions; i++) {

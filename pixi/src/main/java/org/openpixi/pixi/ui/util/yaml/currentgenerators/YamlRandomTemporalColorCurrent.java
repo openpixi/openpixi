@@ -1,8 +1,6 @@
 package org.openpixi.pixi.ui.util.yaml.currentgenerators;
 
 import org.openpixi.pixi.physics.fields.currentgenerators.NewLCCurrent;
-import org.openpixi.pixi.physics.fields.currentgenerators.NewLorenzLCCurrent;
-import org.openpixi.pixi.physics.fields.currentgenerators.ParticleLCCurrent;
 
 import java.util.ArrayList;
 import java.util.Random;
