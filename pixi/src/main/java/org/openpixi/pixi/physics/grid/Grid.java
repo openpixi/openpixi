@@ -52,7 +52,17 @@ public class Grid {
 	 * Spatial lattice spacing
 	 */
 	protected double as;
-	
+
+	/**
+	 * This is set to true if different lattice spacings for different directions are used.
+	 */
+	protected boolean useUnevenGrid = false;
+
+	/**
+	 * Spatial lattice spacings array
+	 */
+	protected double[] asUneven;
+
 	/**
 	 * Temporal lattice spacing
 	 */
@@ -293,9 +303,43 @@ public class Grid {
 	 * @return  Lattice spacing of the grid.
 	 */
 	public double getLatticeSpacing() {
+		if(useUnevenGrid) {
+			throw new RuntimeException("Use getGridStep(int direction).");
+		}
 		return as;
 	}
-	
+
+	/**
+	 * Returns the lattice spacing of the grid.
+	 * @return  Lattice spacing of the grid.
+	 */
+	public double getLatticeSpacing(int i) {
+		if(useUnevenGrid) {
+			return asUneven[i];
+		} else {
+			return as;
+		}
+	}
+
+	/**
+	 * Returns the area of the (i,j)-face of a cell.
+	 * @param i first index of the area
+	 * @param j second index of the area
+	 * @return  area of the (i,j)-face of a cell
+	 */
+	public double getCellArea(int i, int j) {
+		return getLatticeSpacing(i) * getLatticeSpacing(j);
+	}
+
+	/**
+	 * Returns the g*a lattice unit factor.
+	 * @param i direction
+	 * @return  lattice unit factor g*a_i
+	 */
+	public double getLatticeUnitFactor(int i) {
+		return gaugeCoupling * getLatticeSpacing(i);
+	}
+
 	/**
 	 * Returns the number of colors.
 	 * @return  Number of colors.
@@ -371,11 +415,20 @@ public class Grid {
 	public Grid(Settings settings) {
 
 		gaugeCoupling = settings.getCouplingConstant();
-		as = settings.getGridStep();
-		at = settings.getTimeStep();
 		numCol = settings.getNumberOfColors();
 		numDim = settings.getNumberOfDimensions();
 		numCells = new int[numDim];
+
+		useUnevenGrid = settings.useUnevenGrid();
+		if(useUnevenGrid) {
+			asUneven = new double[numDim];
+			for (int i = 0; i < numDim; i++) {
+				asUneven[i] = settings.getGridStep(i);
+			}
+		} else {
+			as = settings.getGridStep();
+		}
+		at = settings.getTimeStep();
 		
 		for(int i = 0; i < numDim; i++) {
 			numCells[i] = settings.getGridCells(i);
@@ -398,11 +451,19 @@ public class Grid {
 	 */
 	public Grid(Grid grid) {
 		gaugeCoupling = grid.gaugeCoupling;
-		as = grid.as;
-		at = grid.at;
 		numCol = grid.numCol;
 		numDim = grid.numDim;
 		numCells = new int[numDim];
+
+		if(grid.useUnevenGrid) {
+			asUneven = new double[numDim];
+			for (int i = 0; i < numDim; i++) {
+				asUneven[i] = grid.getLatticeSpacing(i);
+			}
+		} else {
+			as = grid.as;
+		}
+		at = grid.at;
 
 		for(int i = 0; i < numDim; i++) {
 			numCells[i] = grid.numCells[i];
@@ -594,8 +655,10 @@ public class Grid {
 				GroupElement U2 = getU(ci4, d).mult(getU(ci3, i));
 				U2.adjAssign();
 				U2.multAssign(getU(ci4, i));
+				double areaFactor = 1.0 / getCellArea(d, i);
+				U1.addAssign(U2);
+				U1.multAssign(areaFactor);
 				S.addAssign(U1);
-				S.addAssign(U2);
 			}
 		}
 		return S;
@@ -822,7 +885,7 @@ public class Grid {
 			k = 1;
 			break;
 		}
-		return getPlaquette(index, j, k, 1, 1, timeIndex).proj().mult(1 / as);
+		return getPlaquette(index, j, k, 1, 1, timeIndex).proj().mult(getLatticeSpacing(direction) / getCellArea(j, k));
 	}
 
 	/**
@@ -853,16 +916,11 @@ public class Grid {
 			int shiftedIndex = shift(index, i, -1);
 			AlgebraElement E = getE(shiftedIndex, i).copy();
 			E.actAssign(getLink(index, i, -1, 0));
-			gauss.addAssign(getE(index, i));
-			gauss.addAssign(E.mult(-1.0));
-			/*
-			AlgebraElement E = getEFromLinks(shiftedIndex, i);
-			E.actAssign(getLink(shiftedIndex, i, 1, 0).adj());
-			gauss.addAssign(getEFromLinks(index, i));
-			gauss.addAssign(E.mult(-1.0));
-			*/
+			E.multAssign(-1.0);
+			E.addAssign(getE(index, i));
+			E.multAssign(1.0 / getLatticeSpacing(i));
+			gauss.addAssign(E);
 		}
-		gauss.multAssign(1.0/as);
 		gauss = gauss.sub(getRho(index));
 		return gauss;
 	}
@@ -930,12 +988,14 @@ public class Grid {
 
 		// dBy/dz = By(y, z+1) - By(y, z)
 		AlgebraElement dBydz = (Byz1.add(By.mult(-1)));
+		dBydz.multAssign(1.0 / getLatticeSpacing(dirZ));
 
 		// dBz/dy = Bz(y+1, z) - Bz(y, z)
 		AlgebraElement dBzdy = (Bzy1.add(Bz.mult(-1)));
+		dBzdy.multAssign(1.0 / getLatticeSpacing(dirY));
 
 		// dBz/dy - dBy/dz
-		return (dBzdy.add(dBydz.mult(-1))).mult(-1 / as);
+		return (dBzdy.add(dBydz.mult(-1))).mult(-1);
 	}
 
 	/**
@@ -964,12 +1024,14 @@ public class Grid {
 
 		// dEy/dz = Ey(y, z+1) - Ey(y, z)
 		AlgebraElement dEydz = (Eyz1.add(Ey.mult(-1)));
+		dEydz.multAssign(1.0 / getLatticeSpacing(dirZ));
 
 		// dEz/dy = Ez(y+1, z) - Ez(y, z)
 		AlgebraElement dEzdy = (Ezy1.add(Ez.mult(-1)));
+		dEzdy.multAssign(1.0 / getLatticeSpacing(dirY));
 
 		// dEz/dy - dEy/dz
-		return (dEzdy.add(dEydz.mult(-1))).mult(1 / as);
+		return (dEzdy.add(dEydz.mult(-1)));
 	}
 
 	/**
@@ -1010,7 +1072,7 @@ public class Grid {
 		FG.addAssign(getPlaquette(index, i, j, -1, -1, 1));
 
 		// Divide by factors and convert to AlgebraElement.
-		return FG.proj().mult(1.0 / (8.0 * as));
+		return FG.proj().mult(1.0 / (8.0 * getLatticeSpacing()));
 	}
 
 	/**
