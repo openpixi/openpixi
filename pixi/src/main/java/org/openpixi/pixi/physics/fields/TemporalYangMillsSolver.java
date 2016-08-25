@@ -2,7 +2,6 @@ package org.openpixi.pixi.physics.fields;
 
 import org.openpixi.pixi.parallel.cellaccess.CellAction;
 import org.openpixi.pixi.physics.grid.Grid;
-import org.openpixi.pixi.math.AlgebraElement;
 import org.openpixi.pixi.math.GroupElement;
 
 public class TemporalYangMillsSolver extends FieldSolver
@@ -25,15 +24,15 @@ public class TemporalYangMillsSolver extends FieldSolver
 	@Override
 	public void step(Grid grid, double timeStep) {
 		this.timeStep = timeStep;
-		fieldUpdater.at = timeStep;
 
-		// fieldUpdater.factor includes are of a plaquette which depends on two indices.
-		fieldUpdater.factor = new double[grid.getNumberOfDimensions()][grid.getNumberOfDimensions()];
-		for (int i = 0; i < grid.getNumberOfDimensions(); i++) {
-			for (int j = 0; j < grid.getNumberOfDimensions(); j++) {
-				fieldUpdater.factor[i][j] = timeStep / Math.pow(grid.getLatticeSpacing(j), 2);
-			}
+		// fieldUpdater.plaquetteFactor includes are of a plaquette which depends on two indices.
+		fieldUpdater.plaquetteFactor = new double[grid.getNumberOfDimensions()];
+		fieldUpdater.unitFactor = new double[grid.getNumberOfDimensions()];
+		for (int j = 0; j < grid.getNumberOfDimensions(); j++) {
+			fieldUpdater.plaquetteFactor[j] = timeStep / Math.pow(grid.getLatticeSpacing(j), 2);
+			fieldUpdater.unitFactor[j] = - grid.getTemporalSpacing() * grid.getLatticeUnitFactor(j);
 		}
+
 		linkUpdater.at = timeStep;
 		cellIterator.execute(grid, fieldUpdater);
 		cellIterator.execute(grid, linkUpdater);
@@ -49,8 +48,8 @@ public class TemporalYangMillsSolver extends FieldSolver
 
 	private class UpdateFields implements CellAction
 	{
-		private double at;
-		private double[][] factor;
+		private double[] plaquetteFactor;
+		private double[] unitFactor;
 
 		/**
 		 * Updates the electric fields at a given coordinate
@@ -63,12 +62,12 @@ public class TemporalYangMillsSolver extends FieldSolver
 					GroupElement temp = grid.getElementFactory().groupZero();
 					for (int j = 0; j < grid.getNumberOfDimensions(); j++) {
 						if (j != i) {
-							temp.addAssign(grid.getPlaquette(index, i, j, 1, 1, 0).mult(factor[i][j]));
-							temp.addAssign(grid.getPlaquette(index, i, j, 1, -1, 0).mult(factor[i][j]));
+							temp.addAssign(grid.getPlaquette(index, i, j, 1, 1, 0).mult(plaquetteFactor[j]));
+							temp.addAssign(grid.getPlaquette(index, i, j, 1, -1, 0).mult(plaquetteFactor[j]));
 						}
 					}
 					grid.addE(index, i, temp.proj());
-					grid.addE(index, i, grid.getJ(index, i).mult(-at));
+					grid.addE(index, i, grid.getJ(index, i).mult(unitFactor[i]));
 				}
 			}
 		}

@@ -912,14 +912,25 @@ public class Grid {
 	}
 
 	public AlgebraElement getGaussConstraint(int index) {
+		/*
+		Note: Since we are computing the divergence, we have to sum over different spatial components
+		of the electric field. This means that we combine field values measured in different lattice units,
+		because the i-th direction of E_i comes with a factor of g * a_i. It does not make sense to sum these
+		different components without removing the factors g * a_i first.
+		Therefore the units of the Gauss constraint/violation as computed here are returned in physical (energy)
+		units, which seems a bit inconsistent with the rest of the simulation. In the case of a cubic grid it
+		is convenient to express everything in units of g*a, but once we go to tetragonal lattices - at least
+		in the case of the Gauss constraint - it is not really clear to me what unit factor to use instead.
+		 */
 		AlgebraElement gauss = factory.algebraZero();
 		for (int i = 0; i < numDim; i++) {
+			double unitFactor = getLatticeUnitFactor(i);
 			int shiftedIndex = shift(index, i, -1);
 			AlgebraElement E = getE(shiftedIndex, i).copy();
 			E.actAssign(getLink(index, i, -1, 0));
 			E.multAssign(-1.0);
 			E.addAssign(getE(index, i));
-			E.multAssign(1.0 / getLatticeSpacing(i));
+			E.multAssign(1.0 / (getLatticeSpacing(i) * unitFactor));
 			gauss.addAssign(E);
 		}
 		gauss = gauss.sub(getRho(index));
