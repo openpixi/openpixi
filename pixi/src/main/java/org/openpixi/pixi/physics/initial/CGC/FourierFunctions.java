@@ -20,7 +20,7 @@ public class FourierFunctions {
 	 * @return			Regulated charge density
 	 */
 	public static double[] regulateChargeDensityHard(double[] rho, int[] numCells, double UVT, double UVL, double IR,
-													 int direction, double as) {
+													 int direction, double aT, double aL) {
 		int totalCells = numCells[0] * numCells[1] * numCells[2];
 		int longitudinalNumCells = numCells[direction];
 		int[] transverseNumCells = GridFunctions.reduceGridPos(numCells, direction);
@@ -43,9 +43,9 @@ public class FourierFunctions {
 			int[] transPos = GridFunctions.reduceGridPos(gridPos, direction);
 			int transIndex = GridFunctions.getCellIndex(transPos, transverseNumCells);
 
-			double kTeff2 = computeEffectiveTransverseMomentumSquared(transIndex, transverseNumCells, as);
-			double kT2 = computeTransverseMomentumSquared(transIndex, transverseNumCells, as);
-			double kL = Math.abs(computeLatticeMomentum1D(longPos, longitudinalNumCells, as));
+			double kTeff2 = computeEffectiveTransverseMomentumSquared(transIndex, transverseNumCells, aT);
+			double kT2 = computeTransverseMomentumSquared(transIndex, transverseNumCells, aT);
+			double kL = Math.abs(computeLatticeMomentum1D(longPos, longitudinalNumCells, aL));
 
 			// Apply hard UV regulation
 			if(kT2 <=  UVT * UVT && kL <= UVL && kT2 > 0) {
@@ -66,20 +66,25 @@ public class FourierFunctions {
 		return rho;
 	}
 
-	/**
-	 * Applies a Gaussian UV regulation in the longitudinal direction as well as hard UV and IR regulation in the
-	 * transverse plane to (one color component of) a 3D charge density.
-	 *
-	 * @param rho			Original charge density
-	 * @param numCells		Grid size
-	 * @param UVT			Transverse UV cutoff
-	 * @param longWidth		Longitudinal Gaussian width in momentum space
-	 * @param IR			IR regulator
-	 * @param direction		Longitudinal direction
-	 * @return				Regulated charge density
-	 */
+	public static double[] regulateChargeDensityHard(double[] rho, int[] numCells, double UVT, double UVL, double IR,
+	                                                 int direction, double a) {
+		return regulateChargeDensityHard(rho, numCells, UVT, UVL, IR, direction, a, a);
+	}
+
+		/**
+         * Applies a Gaussian UV regulation in the longitudinal direction as well as hard UV and IR regulation in the
+         * transverse plane to (one color component of) a 3D charge density.
+         *
+         * @param rho			Original charge density
+         * @param numCells		Grid size
+         * @param UVT			Transverse UV cutoff
+         * @param longWidth		Longitudinal Gaussian width in momentum space
+         * @param IR			IR regulator
+         * @param direction		Longitudinal direction
+         * @return				Regulated charge density
+         */
 	public static double[] regulateChargeDensityGaussian(double[] rho, int[] numCells, double UVT, double longWidth, double IR,
-													 int direction, double as) {
+													 int direction, double aT, double aL) {
 		int totalCells = numCells[0] * numCells[1] * numCells[2];
 		int longitudinalNumCells = numCells[direction];
 		int[] transverseNumCells = GridFunctions.reduceGridPos(numCells, direction);
@@ -102,9 +107,9 @@ public class FourierFunctions {
 			int[] transPos = GridFunctions.reduceGridPos(gridPos, direction);
 			int transIndex = GridFunctions.getCellIndex(transPos, transverseNumCells);
 
-			double kTeff2 = computeEffectiveTransverseMomentumSquared(transIndex, transverseNumCells, as);
-			double kT2 = computeTransverseMomentumSquared(transIndex, transverseNumCells, as);
-			double kL = Math.abs(computeLatticeMomentum1D(longPos, longitudinalNumCells, as));
+			double kTeff2 = computeEffectiveTransverseMomentumSquared(transIndex, transverseNumCells, aT);
+			double kT2 = computeTransverseMomentumSquared(transIndex, transverseNumCells, aT);
+			double kL = Math.abs(computeLatticeMomentum1D(longPos, longitudinalNumCells, aL));
 
 			// Apply hard UV regulation
 			if(kT2 <=  UVT * UVT && kT2 > 0) {
@@ -126,15 +131,20 @@ public class FourierFunctions {
 		return rho;
 	}
 
-	/**
-	 * Solves the 2D transverse Poisson equation on the lattice.
-	 *
-	 * @param rho			2D charge density
-	 * @param transNumCells	grid size
-	 * @param as			transverse lattice spacing
-	 * @return
-	 */
-	public static double[] solvePoisson2D(double[] rho, int[] transNumCells, double as) {
+	public static double[] regulateChargeDensityGaussian(double[] rho, int[] numCells, double UVT, double longWidth, double IR,
+	                                                     int direction, double a) {
+		return regulateChargeDensityGaussian(rho, numCells, UVT, longWidth, IR, direction, a, a);
+	}
+
+		/**
+         * Solves the 2D transverse Poisson equation on the lattice.
+         *
+         * @param rho			2D charge density
+         * @param transNumCells	grid size
+         * @param aT			transverse lattice spacing
+         * @return
+         */
+	public static double[] solvePoisson2D(double[] rho, int[] transNumCells, double aT) {
 		int totalCells = transNumCells[0] * transNumCells[1];
 
 		DoubleFFTWrapper fft = new DoubleFFTWrapper(transNumCells);
@@ -147,7 +157,7 @@ public class FourierFunctions {
 		phiFFT[0] = 0.0;
 		phiFFT[1] = 0.0;
 		for (int i = 1; i < totalCells; i++) {
-			double kTeff2 = computeEffectiveTransverseMomentumSquared(i, transNumCells, as);
+			double kTeff2 = computeEffectiveTransverseMomentumSquared(i, transNumCells, aT);
 			phiFFT[fft.getFFTArrayIndex(i)]   *= 1.0 / kTeff2;
 			phiFFT[fft.getFFTArrayIndex(i)+1] *= 1.0 / kTeff2;
 		}
@@ -166,10 +176,10 @@ public class FourierFunctions {
 	 *
 	 * @param cellIndex		transverse lattice index
 	 * @param transNumCells	transverse grid size
-	 * @param as			transverse lattice spacing
+	 * @param aT			transverse lattice spacing
 	 * @return				effective kT squared
 	 */
-	public static double computeEffectiveTransverseMomentumSquared(int cellIndex, int[] transNumCells, double as) {
+	public static double computeEffectiveTransverseMomentumSquared(int cellIndex, int[] transNumCells, double aT) {
 		int[] transversalGridPos = GridFunctions.getCellPos(cellIndex, transNumCells);
 
 		double momentumSquared = 2.0 * transNumCells.length;
@@ -177,7 +187,7 @@ public class FourierFunctions {
 			momentumSquared -= 2.0 * Math.cos((2.0 * Math.PI * transversalGridPos[i]) / transNumCells[i]);
 		}
 
-		return momentumSquared / (as * as);
+		return momentumSquared / (aT * aT);
 	}
 
 	/**
@@ -185,10 +195,10 @@ public class FourierFunctions {
 	 *
 	 * @param cellIndex		transverse lattice index
 	 * @param transNumCells	transverse grid size
-	 * @param as			transverse lattice spacing
+	 * @param aT			transverse lattice spacing
 	 * @return				'real' kT squared
 	 */
-	public static double computeTransverseMomentumSquared(int cellIndex, int[] transNumCells, double as) {
+	public static double computeTransverseMomentumSquared(int cellIndex, int[] transNumCells, double aT) {
 		int[] transversalGridPos = GridFunctions.getCellPos(cellIndex, transNumCells);
 		double twopi = 2.0 * Math.PI;
 
@@ -197,9 +207,9 @@ public class FourierFunctions {
 			double momentumComponent;
 			int n = transNumCells[i];
 			if(transversalGridPos[i] < n / 2) {
-				momentumComponent = twopi * transversalGridPos[i] / (as * n);
+				momentumComponent = twopi * transversalGridPos[i] / (aT * n);
 			} else {
-				momentumComponent = twopi * (n - transversalGridPos[i]) / (as * n);
+				momentumComponent = twopi * (n - transversalGridPos[i]) / (aT * n);
 			}
 
 			momentumSquared += momentumComponent * momentumComponent;
@@ -213,15 +223,15 @@ public class FourierFunctions {
 	 *
 	 * @param pos		longitudinal lattice position
 	 * @param numCells	number of cells in the longitudinal direction
-	 * @param as		longitudinal lattice spacing
+	 * @param aL		longitudinal lattice spacing
 	 * @return			kL
 	 */
-	public static double computeLatticeMomentum1D(int pos, int numCells, double as) {
+	public static double computeLatticeMomentum1D(int pos, int numCells, double aL) {
 		double delta = pos / ((double) numCells);
 		if(delta < 0.5)
 		{
-			return  2.0 * delta * Math.PI / as;
+			return  2.0 * delta * Math.PI / aL;
 		}
-		return 2.0 * (delta - 1.0) * Math.PI / as;
+		return 2.0 * (delta - 1.0) * Math.PI / aL;
 	}
 }
