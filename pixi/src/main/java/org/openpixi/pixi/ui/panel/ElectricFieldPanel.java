@@ -204,7 +204,7 @@ public class ElectricFieldPanel extends AnimationPanel {
 				}
 
 				// Electric fields are placed at the lattice points.
-				newPosition = (int) (s.grid.getLatticeSpacing(loopIndex) * (i) * sx);
+				newPosition = (int) (s.grid.getLatticeSpacing(abscissaIndex) * (i) * sx);
 
 				/*
 					Expectation: Positive fields should point upwards.
