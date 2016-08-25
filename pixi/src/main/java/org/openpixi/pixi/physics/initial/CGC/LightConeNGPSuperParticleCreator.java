@@ -42,11 +42,6 @@ public class LightConeNGPSuperParticleCreator implements IParticleCreator {
 	protected int totalTransversalCells;
 
 	/**
-	 * Lattice spacing of the grid.
-	 */
-	protected double as;
-
-	/**
 	 * Time step used in the simulation.
 	 */
 	protected double at;
@@ -60,6 +55,9 @@ public class LightConeNGPSuperParticleCreator implements IParticleCreator {
 	 * Number of particles per cell.
 	 */
 	protected int particlesPerCell = 1;
+
+	private double aL;
+	private double aT;
 
 	/**
 	 * Sets the initial Gauss constraint.
@@ -79,13 +77,14 @@ public class LightConeNGPSuperParticleCreator implements IParticleCreator {
 		this.direction = direction;
 		this.orientation = orientation;
 
-		// Define some variables.
-		particlesPerCell = (int) (s.grid.getLatticeSpacing() / s.getTimeStep());
-		as = s.grid.getLatticeSpacing();
+		aL = s.grid.getLatticeSpacing(direction);
+		aT = s.grid.getLatticeSpacing((direction + 1) % s.getNumberOfDimensions());
 		at = s.getTimeStep();
+		particlesPerCell = (int) (aL / at);
 		g = s.getCouplingConstant();
 		transversalNumCells = GridFunctions.reduceGridPos(s.grid.getNumCells(), direction);
 		totalTransversalCells = GridFunctions.getTotalNumberOfCells(transversalNumCells);
+
 
 		// Interpolate grid charge and current density.
 		initializeParticles(s, particlesPerCell);
@@ -244,7 +243,7 @@ public class LightConeNGPSuperParticleCreator implements IParticleCreator {
 	}
 
 	private void refine2(int i, AlgebraElement[] list, int particlesPerLink) {
-		int jmod = (i + particlesPerCell / 2) % particlesPerLink;
+		int jmod = (i + particlesPerLink / 2) % particlesPerLink;
 		int n = list.length;
 		// Refinement can not be applied to the last charge in an NGP cell.
 		if (jmod >= 0 && jmod < particlesPerLink - 1) {
@@ -271,7 +270,7 @@ public class LightConeNGPSuperParticleCreator implements IParticleCreator {
 
 
 	private void refine4(int i, AlgebraElement[] list, int particlesPerLink) {
-		int jmod = (i + particlesPerCell / 2) % particlesPerLink;
+		int jmod = (i + particlesPerLink / 2) % particlesPerLink;
 		int n = list.length;
 		// Refinement can not be applied to the last charge in an NGP cell.
 		if (jmod >= 0 && jmod < particlesPerLink - 1) {
@@ -304,10 +303,5 @@ public class LightConeNGPSuperParticleCreator implements IParticleCreator {
 
 	private int p(int i, int n) {
 		return (i % n + n) % n;
-	}
-
-	protected AlgebraElement interpolateChargeFromGrid(Simulation s, double[] particlePosition) {
-		int[] ngp = GridFunctions.nearestGridPoint(particlePosition, as);
-		return gaussConstraint[s.grid.getCellIndex(ngp)].copy();
 	}
 }
