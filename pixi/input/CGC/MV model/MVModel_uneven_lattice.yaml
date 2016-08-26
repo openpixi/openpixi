@@ -61,7 +61,8 @@ panels:
     scaleFactor: 10000.0
     showSimulationBox: true
     theta: 1.0653981633974485
+    unequalScaling: false
     visibilityThreshold: 0.0
     whiteBackground: false
-  windowHeight: 1081
-  windowWidth: 1922
+  windowHeight: 608
+  windowWidth: 1376

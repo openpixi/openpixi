@@ -22,6 +22,7 @@ public class YamlEnergyDensityVoxelGLPanel {
 	// Boolean properties
 	public Boolean showSimulationBox;
 	public Boolean whiteBackground;
+	public Boolean unequalScaling;
 
 	// Projection properties
 	public Double phi;
@@ -48,6 +49,7 @@ public class YamlEnergyDensityVoxelGLPanel {
 			opacity = panel.opacityProperties.getValue();
 			showSimulationBox = panel.showSimulationBoxProperties.getValue();
 			whiteBackground = panel.whiteBackgroundProperties.getValue();
+			unequalScaling = panel.unequalScalingProperties.getValue();
 			phi = panel.phi;
 			theta = panel.theta;
 			centerx = panel.centerx;
@@ -91,6 +93,10 @@ public class YamlEnergyDensityVoxelGLPanel {
 
 		if (whiteBackground != null) {
 			panel.whiteBackgroundProperties.setValue(whiteBackground);
+		}
+
+		if (unequalScaling != null) {
+			panel.unequalScalingProperties.setValue(unequalScaling);
 		}
 
 		if (phi != null) {
