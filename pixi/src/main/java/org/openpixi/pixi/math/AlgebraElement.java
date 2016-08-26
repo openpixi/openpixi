@@ -120,7 +120,15 @@ public interface AlgebraElement {
 
 	AlgebraElement copy();
 
+	/**
+	 * Returns the number of colors associated with the gauge group, i.e. the N in SU(N).
+	 * @return  number of colors of the gauge group
+	 */
 	int getNumberOfColors();
 
-	int getNumberOfComponents();
+	/**
+	 * Returns the dimension of the adjoint representation of the gauge group, i.e. N^2-1 for SU(N)
+	 * @return dimension of the adjoint representation
+	 */
+	int getAdjointDimension();
 }

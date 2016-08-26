@@ -392,9 +392,20 @@ public class SU3EverythingTest {
 
 			Array2DRowFieldMatrix<Complex> ff4 = mm1.multiply(ff1).multiply(mm2);
 
-			compareMatrices(ff4,ff3);
-			compareMatrices(ff4,ff2);
+			compareMatrices(ff4, ff3);
+			compareMatrices(ff4, ff2);
 		}
+	}
+
+	@Test
+	public void testDimensions(){
+		SU3GroupElement U = new SU3GroupElement();
+		Assert.assertEquals(U.getNumberOfColors(), 3);
+		Assert.assertEquals(U.getAdjointDimension(), 8);
+
+		SU3AlgebraElement A = new SU3AlgebraElement();
+		Assert.assertEquals(A.getNumberOfColors(), 3);
+		Assert.assertEquals(A.getAdjointDimension(), 8);
 	}
 
 	// projection function for use in the Gram-Schmidt process for createRandomSU3Matrix method

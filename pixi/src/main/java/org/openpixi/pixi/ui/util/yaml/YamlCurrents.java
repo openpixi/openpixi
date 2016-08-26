@@ -19,15 +19,9 @@ public class YamlCurrents {
 
     public ArrayList<YamlSU2LightConeGaussPulseCurrent> SU2LightConeGaussPulseCurrent = new ArrayList<YamlSU2LightConeGaussPulseCurrent>();
 
-    public ArrayList<YamlSU2LorenzLightConeGaussPulseCurrent> SU2LorenzLightConeGaussPulseCurrent = new ArrayList<YamlSU2LorenzLightConeGaussPulseCurrent>();
-
     public ArrayList<YamlNewLCCurrent> newLCCurrents = new ArrayList<YamlNewLCCurrent>();
 
 	public ArrayList<YamlPointChargeLCCurrent> pointChargeLCCurrents = new ArrayList<YamlPointChargeLCCurrent>();
-
-    public ArrayList<YamlNewLorenzLCCurrent> newLorenzLCCurrents = new ArrayList<YamlNewLorenzLCCurrent>();
-
-    public ArrayList<YamlRandomLorenzColorCurrent> randomLorenzColorCurrents = new ArrayList<YamlRandomLorenzColorCurrent>();
 
     public ArrayList<YamlRandomTemporalColorCurrent> randomTemporalColorCurrents = new ArrayList<YamlRandomTemporalColorCurrent>();
 
@@ -76,12 +70,6 @@ public class YamlCurrents {
             }
         }
 
-        for (YamlSU2LorenzLightConeGaussPulseCurrent lorenz : SU2LorenzLightConeGaussPulseCurrent) {
-            if (lorenz.checkConsistency(s)) {
-                s.addCurrentGenerator(lorenz.getCurrentGenerator());
-            }
-        }
-
 		for (YamlNewLCCurrent current : newLCCurrents) {
 			if (current.checkConsistency(s)) {
 				s.addCurrentGenerator(current.getCurrentGenerator());
@@ -93,16 +81,6 @@ public class YamlCurrents {
 				s.addCurrentGenerator(current.getCurrentGenerator());
 			}
 		}
-
-		for (YamlNewLorenzLCCurrent current : newLorenzLCCurrents) {
-			if (current.checkConsistency(s)) {
-				s.addCurrentGenerator(current.getCurrentGenerator());
-			}
-		}
-
-        for (YamlRandomLorenzColorCurrent current : randomLorenzColorCurrents) {
-            s.addCurrentGenerator(current.getCurrentGenerator());
-        }
 
 		for (YamlRandomTemporalColorCurrent current : randomTemporalColorCurrents) {
 			s.addCurrentGenerator(current.getCurrentGenerator());
