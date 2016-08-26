@@ -232,34 +232,27 @@ public class ElectricFieldPanel extends AnimationPanel {
 					break;
 				case INDEX_J:
 					//newPosition = (int) (s.grid.getLatticeSpacing() * (i + .5) * sx);
-					value = drawGrid.getJ(index, directionIndex).get(colorIndex) / ga;
+					value = drawGrid.getJ(index, directionIndex).get(colorIndex);
 					break;
 				case INDEX_RHO:
-					value = drawGrid.getRho(index).get(colorIndex) / ga;
+					value = drawGrid.getRho(index).get(colorIndex);
 					break;
 				case INDEX_GAUSS:
 					//newPosition = (int) (s.grid.getLatticeSpacing() * (i + .5) * sx);
 					if(drawGrid.isEvaluatable(index)) {
-						// TODO: The factor g*a_i can't be right. The Gauss constraint does not have a direction i.
-						value = drawGrid.getGaussConstraint(s.grid.getCellIndex(pos)).get(colorIndex) / ga;
+						value = drawGrid.getGaussConstraint(s.grid.getCellIndex(pos)).get(colorIndex);
 					} else {
 						value = 0.0;
 					}
 					break;
 				case INDEX_ROT_E:
-					/*
-					TODO: Same as above. rotE mixes different fields with different directions and lattice unit factors.
-					 */
-					value = drawGrid.getRotE(index, directionIndex).get(colorIndex) / ga;
-					// TODO: Same as above.
+					value = drawGrid.getRotE(index, directionIndex).get(colorIndex);
 					break;
 				case INDEX_ROT_B:
-					// TODO: Same as above.
-					value = drawGrid.getRotB(index, directionIndex, 0).get(colorIndex) / ga;
+					value = drawGrid.getRotB(index, directionIndex, 0).get(colorIndex);
 					break;
 				case INDEX_ROT_B_NEXT:
-					// TODO: Same as above.
-					value = drawGrid.getRotB(index, directionIndex, 1).get(colorIndex) / ga;
+					value = drawGrid.getRotB(index, directionIndex, 1).get(colorIndex);
 					break;
 				}
 				scaleProperties.putValue(value);
