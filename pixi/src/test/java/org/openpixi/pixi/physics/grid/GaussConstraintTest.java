@@ -121,8 +121,7 @@ public class GaussConstraintTest {
 				(\partial_i E_{x,i}^a)^2 = (A_i n_i)^2 (B^a)^2.
 			This result is gauge invariant.
 		*/
-		double ga = s.getCouplingConstant() * s.grid.getLatticeSpacing();
-		double expectedResult = getVectorNormSquared(colorAmplitude) * Math.pow(getScalarProduct(spatialAmplitude, n), 2.0) * Math.pow(ga, 2);
+		double expectedResult = getVectorNormSquared(colorAmplitude) * Math.pow(getScalarProduct(spatialAmplitude, n), 2.0);
 		double actualResult = s.grid.getGaussConstraintSquared(cellIndex);
 		double delta = Math.pow(10.0, -4.0);
 		Assert.assertEquals(expectedResult, actualResult, delta);
