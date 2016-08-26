@@ -1,11 +1,11 @@
 simulationType: temporal optimized cgc ngp
-gridSteps: [1, 1, 1]
+gridSteps: [.1, 1, 1]
 couplingConstant: 2
 numberOfDimensions: 3
 numberOfColors: 2
 numberOfThreads: 8
-gridCells: [128, 32, 32]
-timeStep: 0.5
+gridCells: [128, 16, 16]
+timeStep: 0.05
 duration: 64
 evaluationRegion:
   enabled: true
@@ -22,69 +22,46 @@ initialConditions:
     MVModel:
       - direction: 0
         orientation: 1
-        longitudinalLocation: 32
-        longitudinalWidth: 2
+        longitudinalLocation: 3.2
+        longitudinalWidth: .2
         randomSeed: 5
         mu: .045
         ultravioletCutoffTransverse: 2
-        longitudinalCoherenceLength: 4
+        longitudinalCoherenceLength: .4
         infraredCoefficient: 0.2
       - direction: 0
         orientation: -1
-        longitudinalLocation: 96
-        longitudinalWidth: 2
+        longitudinalLocation: 9.6
+        longitudinalWidth: .2
         randomSeed: 6
         mu: .045
         ultravioletCutoffTransverse: 2
-        longitudinalCoherenceLength: 4
+        longitudinalCoherenceLength: .4
         infraredCoefficient: 0.2
 
+output:
+  projectedEnergyDensity:
+    - path: 'pe.dat'
+      interval: 0.1
+      direction: 0
 
 
 # Generated panel code:
 panels:
-  dividerLocation: 785
-  leftPanel:
-    dividerLocation: 484
-    leftPanel:
-      chartPanel:
-        logarithmicScale: false
-        showCharts:
-        - Gauss law violation
-        - E squared
-        - B squared
-        - Energy density
-    orientation: 0
-    rightPanel:
-      dividerLocation: 386
-      leftPanel:
-        electricFieldPanel:
-          automaticScaling: true
-          colorIndex: 0
-          directionIndex: 0
-          scaleFactor: 2500.0
-          showCoordinates: x, i, 0
-          showFields:
-          - E
-          - B
-          - Gauss
-      orientation: 1
-      rightPanel:
-        electricFieldPanel:
-          automaticScaling: false
-          colorIndex: 0
-          directionIndex: 1
-          scaleFactor: 25.0
-          showCoordinates: x, i, 4
-          showFields:
-          - E
-          - U
-  orientation: 1
-  rightPanel:
-    energyDensity2DGLPanel:
-      automaticScaling: false
-      data: Energy density
-      scaleFactor: 10000.0
-      showCoordinates: x, y, 16
-  windowHeight: 1053
-  windowWidth: 1920
+  energyDensityVoxelGLPanel:
+    automaticScaling: false
+    centerx: 0.0
+    centery: 0.0
+    centerz: 0.0
+    data: Energy density
+    direction: x
+    distanceFactor: 1.0
+    opacity: 0.1
+    phi: -4.670796326794897
+    scaleFactor: 10000.0
+    showSimulationBox: true
+    theta: 1.0653981633974485
+    visibilityThreshold: 0.0
+    whiteBackground: false
+  windowHeight: 1081
+  windowWidth: 1922
