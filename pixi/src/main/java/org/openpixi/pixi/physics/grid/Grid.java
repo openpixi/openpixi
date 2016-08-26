@@ -974,7 +974,7 @@ public class Grid {
 	}
 
 	/**
-	 * Calculate rot B using a backward derivative.
+	 * Calculate rot B using a backward derivative in physical units.
 	 * @param index    	Lattice index
 	 * @param direction	Index of the direction
 	 * @param timeIndex	Option to compute B from U (timeIndex = 0) or Unext (timeIndex != 0)
@@ -985,6 +985,8 @@ public class Grid {
 		// Labels are for direction == 0 (X-direction), and cyclically rotated.
 		int dirY = (direction + 1) % 3;
 		int dirZ = (direction + 2) % 3;
+		double unitFactorY = 1.0 / getLatticeUnitFactor(dirY);
+		double unitFactorZ = 1.0 / getLatticeUnitFactor(dirZ);
 
 		int indexShiftedY = shift(index, dirY, -1);
 		int indexShiftedZ = shift(index, dirZ, -1);
@@ -1000,18 +1002,18 @@ public class Grid {
 
 		// dBy/dz = By(y, z+1) - By(y, z)
 		AlgebraElement dBydz = (Byz1.add(By.mult(-1)));
-		dBydz.multAssign(1.0 / getLatticeSpacing(dirZ));
+		dBydz.multAssign(unitFactorY / getLatticeSpacing(dirZ));
 
 		// dBz/dy = Bz(y+1, z) - Bz(y, z)
 		AlgebraElement dBzdy = (Bzy1.add(Bz.mult(-1)));
-		dBzdy.multAssign(1.0 / getLatticeSpacing(dirY));
+		dBzdy.multAssign(unitFactorZ / getLatticeSpacing(dirY));
 
 		// dBz/dy - dBy/dz
 		return (dBzdy.add(dBydz.mult(-1))).mult(-1);
 	}
 
 	/**
-	 * Calculate rot E using a forward derivative.
+	 * Calculate rot E using a forward derivative in physical units.
 	 * @param index    	Lattice index
 	 * @param direction	Index of the direction
 	 * @return          Result of rot E.
@@ -1021,6 +1023,8 @@ public class Grid {
 		// Labels are for direction == 0 (X-direction), and cyclically rotated.
 		int dirY = (direction + 1) % 3;
 		int dirZ = (direction + 2) % 3;
+		double unitFactorY = 1.0 / getLatticeUnitFactor(dirY);
+		double unitFactorZ = 1.0 / getLatticeUnitFactor(dirZ);
 
 		int indexShiftedY = shift(index, dirY, 1);
 		int indexShiftedZ = shift(index, dirZ, 1);
@@ -1036,11 +1040,11 @@ public class Grid {
 
 		// dEy/dz = Ey(y, z+1) - Ey(y, z)
 		AlgebraElement dEydz = (Eyz1.add(Ey.mult(-1)));
-		dEydz.multAssign(1.0 / getLatticeSpacing(dirZ));
+		dEydz.multAssign(unitFactorY / getLatticeSpacing(dirZ));
 
 		// dEz/dy = Ez(y+1, z) - Ez(y, z)
 		AlgebraElement dEzdy = (Ezy1.add(Ez.mult(-1)));
-		dEzdy.multAssign(1.0 / getLatticeSpacing(dirY));
+		dEzdy.multAssign(unitFactorZ / getLatticeSpacing(dirY));
 
 		// dEz/dy - dEy/dz
 		return (dEzdy.add(dEydz.mult(-1)));
@@ -1060,7 +1064,7 @@ public class Grid {
 	}
 
 	/**
-	 * Returns the spatially and temporally averaged field strength tensor F_ij including parallel transport.
+	 * Returns the spatially and temporally averaged field strength tensor F_ij including parallel transport  in physical units.
 	 * @param index Lattice index
 	 * @param i     First component
 	 * @param j     Second component
@@ -1069,6 +1073,8 @@ public class Grid {
 	public AlgebraElement getAveragedFieldStrength(int index, int i, int j) {
 		// Average spatial components of field strength tensor in space and time (B-Field).
 		GroupElement FG = factory.groupZero();
+
+		double unitFactor = getGaugeCoupling() * getCellArea(i, j);
 
 		// Spatial average at t-at/2
 		FG.addAssign(getPlaquette(index, i, j, 1, 1, 0));
@@ -1084,17 +1090,17 @@ public class Grid {
 		FG.addAssign(getPlaquette(index, i, j, -1, -1, 1));
 
 		// Divide by factors and convert to AlgebraElement.
-		return FG.proj().mult(1.0 / (8.0 * getLatticeSpacing()));
+		return FG.proj().mult(1.0 / (8.0 * unitFactor));
 	}
 
 	/**
-	 * Returns spatially and temporally averaged B-Field including parallel transport in 3D.
+	 * Returns spatially and temporally averaged B-Field including parallel transport in 3D in lattice units.
 	 * @param index Lattice index
 	 * @param d     Index of the direction
 	 * @return      Averaged B-Field
 	 */
 	public AlgebraElement getAveragedB(int index, int d) {
-		return getAveragedFieldStrength(index, (d + 1) % 3, (d + 2) % 3);
+		return getAveragedFieldStrength(index, (d + 1) % 3, (d + 2) % 3).mult(getLatticeUnitFactor(d));
 	}
 
 }
