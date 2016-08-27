@@ -19,9 +19,21 @@ public class YamlProjectedEnergyDensity {
 	 */
 	public int direction;
 
+	/**
+	 * Option whether to compute energy density components.
+     */
+	public Boolean computeEnergyDensity = true;
+
+	/**
+	 * Option whether to compute the longitudinal Poynting vector.
+     */
+	public Boolean computePoyntingVector = true;
+
 
 	public ProjectedEnergyDensity getFileGenerator() {
 		ProjectedEnergyDensity generator = new ProjectedEnergyDensity(path, interval, direction);
+		generator.computeEnergyDensity = computeEnergyDensity;
+		generator.computePoyntingVector = computePoyntingVector;
 		return generator;
 	}
 }

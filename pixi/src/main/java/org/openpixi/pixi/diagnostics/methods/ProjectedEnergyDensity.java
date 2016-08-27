@@ -48,11 +48,11 @@ public class ProjectedEnergyDensity implements Diagnostics {
 	private double timeInterval;
 	private int stepInterval;
 
-	private EnergyDensityComputation energyDensityComputation;
-	private PoyntingComputation poyntingComputation;
+	private EnergyDensityComputation energyDensityComputation = new EnergyDensityComputation();
+	private PoyntingComputation poyntingComputation = new PoyntingComputation();
 
-
-	protected double areaFactor;
+	public boolean computeEnergyDensity;
+	public boolean computePoyntingVector;
 
 
 	public ProjectedEnergyDensity(String path, double timeInterval, int direction) {
@@ -64,31 +64,28 @@ public class ProjectedEnergyDensity implements Diagnostics {
 	public void initialize(Simulation s) {
 		this.stepInterval = (int) (timeInterval / s.getTimeStep());
 
-		this.energyDensityComputation = new EnergyDensityComputation();
-		energyDensityComputation.initialize(s.grid, direction);
-		this.poyntingComputation = new PoyntingComputation();
-		poyntingComputation.initialize(s.grid, direction);
+		if(computeEnergyDensity) {
+			energyDensityComputation.initialize(s.grid, direction);
+		}
+		if(computePoyntingVector) {
+			poyntingComputation.initialize(s.grid, direction);
+		}
 
 		FileFunctions.clearFile("output/" + path);
-
-		// Compute area factor
-		areaFactor = 1.0;
-		for (int i = 0; i < s.getNumberOfDimensions(); i++) {
-			if(i != direction) {
-				areaFactor *= s.grid.getNumCells(i);
-			}
-		}
 	}
 
 	public void calculate(Grid grid, ArrayList<IParticle> particles, int steps) throws IOException {
 		if(steps % stepInterval == 0) {
 
-			energyDensityComputation.reset();
-			grid.getCellIterator().execute(grid, energyDensityComputation);
+			if(computeEnergyDensity) {
+				energyDensityComputation.reset();
+				grid.getCellIterator().execute(grid, energyDensityComputation);
+			}
 
-			poyntingComputation.reset();
-			grid.getCellIterator().execute(grid, poyntingComputation);
-
+			if(computePoyntingVector) {
+				poyntingComputation.reset();
+				grid.getCellIterator().execute(grid, poyntingComputation);
+			}
 
 			// Write to file
 			File file = FileFunctions.getFile("output/" + path);
@@ -96,12 +93,16 @@ public class ProjectedEnergyDensity implements Diagnostics {
 				FileWriter pw = new FileWriter(file, true);
 				Double time = steps * grid.getTemporalSpacing();
 				pw.write(time.toString() + "\n");
-				pw.write(FileFunctions.generateTSVString(energyDensityComputation.energyDensity_T_el) + "\n");
-				pw.write(FileFunctions.generateTSVString(energyDensityComputation.energyDensity_T_mag) + "\n");
-				pw.write(FileFunctions.generateTSVString(energyDensityComputation.energyDensity_L_el) + "\n");
-				pw.write(FileFunctions.generateTSVString(energyDensityComputation.energyDensity_L_mag) + "\n");
-				pw.write(FileFunctions.generateTSVString(poyntingComputation.poyntingAveraged) + "\n");
-				pw.write(FileFunctions.generateTSVString(poyntingComputation.poyntingTimeAveraged) + "\n");
+				if(computeEnergyDensity) {
+					pw.write(FileFunctions.generateTSVString(energyDensityComputation.energyDensity_T_el) + "\n");
+					pw.write(FileFunctions.generateTSVString(energyDensityComputation.energyDensity_T_mag) + "\n");
+					pw.write(FileFunctions.generateTSVString(energyDensityComputation.energyDensity_L_el) + "\n");
+					pw.write(FileFunctions.generateTSVString(energyDensityComputation.energyDensity_L_mag) + "\n");
+				}
+				if(computePoyntingVector) {
+					pw.write(FileFunctions.generateTSVString(poyntingComputation.poyntingAveraged) + "\n");
+					pw.write(FileFunctions.generateTSVString(poyntingComputation.poyntingTimeAveraged) + "\n");
+				}
 				pw.close();
 			} catch (IOException ex) {
 				System.out.println("ProjectedEnergyDensity: Error writing to file.");
@@ -118,6 +119,7 @@ public class ProjectedEnergyDensity implements Diagnostics {
 		private double[] energyDensity_T_mag;
 		private double[] energyDensity_L_el;
 		private double[] energyDensity_L_mag;
+		private double[] unitFactor;
 
 		public void initialize(Grid grid, int direction) {
 			this.direction = direction;
@@ -126,6 +128,11 @@ public class ProjectedEnergyDensity implements Diagnostics {
 			this.energyDensity_T_mag = new double[numberOfCells];
 			this.energyDensity_L_el = new double[numberOfCells];
 			this.energyDensity_L_mag = new double[numberOfCells];
+			this.unitFactor = new double[grid.getNumberOfDimensions()];
+			double areaFactor = grid.getTotalNumberOfCells() / ((double) grid.getNumCells(direction));
+			for (int i = 0; i < grid.getNumberOfDimensions(); i++) {
+				unitFactor[i] = Math.pow(grid.getLatticeUnitFactor(i), -2) / areaFactor;
+			}
 
 		}
 
@@ -149,9 +156,9 @@ public class ProjectedEnergyDensity implements Diagnostics {
 				double e_L_mag = 0.0;
 
 				for (int j = 0; j < grid.getNumberOfDimensions(); j++) {
-					double unitFactor = Math.pow(grid.getLatticeUnitFactor(j), -2);
-					double electric = 0.5 * grid.getE(index, j).square() * unitFactor;
-					double magnetic = 0.25 * (grid.getBsquaredFromLinks(index, j, 0) + grid.getBsquaredFromLinks(index, j, 1)) * unitFactor;
+					double electric = 0.5 * grid.getE(index, j).square() * unitFactor[j];
+					double magnetic = 0.25 * (grid.getBsquaredFromLinks(index, j, 0)
+											+ grid.getBsquaredFromLinks(index, j, 1)) * unitFactor[j];
 					if(j == direction) {
 						e_L_el += electric;
 						e_L_mag += magnetic;
@@ -181,6 +188,9 @@ public class ProjectedEnergyDensity implements Diagnostics {
 		private double[] poyntingTimeAveraged;
 		private ElementFactory factory;
 
+		private double[] unitFactorForF;
+		private double[] unitFactorForE;
+
 		public void initialize(Grid grid, int direction) {
 			this.direction = direction;
 			this.numberOfCells = grid.getNumCells(direction);
@@ -188,6 +198,14 @@ public class ProjectedEnergyDensity implements Diagnostics {
 			this.poyntingTimeAveraged = new double[numberOfCells];
 			this.numberOfDimensions = grid.getNumberOfDimensions();
 			this.factory = grid.getElementFactory();
+
+			double areaFactor = grid.getTotalNumberOfCells() / ((double) grid.getNumCells(direction));
+			this.unitFactorForF = new double[grid.getNumberOfDimensions()];
+			this.unitFactorForE = new double[grid.getNumberOfDimensions()];
+			for (int i = 0; i < grid.getNumberOfDimensions(); i++) {
+				unitFactorForF[i] = 1.0 / (grid.getCellArea(i, direction) * grid.getGaugeCoupling() * Math.sqrt(areaFactor));
+				unitFactorForE[i] = 1.0 / (grid.getLatticeUnitFactor(i) * Math.sqrt(areaFactor));
+			}
 		}
 
 		public void reset() {
@@ -223,15 +241,13 @@ public class ProjectedEnergyDensity implements Diagnostics {
 					FG.addAssign(grid.getPlaquette(index, d, i, -1, -1, 1));
 
 					// Divide by factors and convert to AlgebraElement.
-					double unitFactorF = grid.getCellArea(d, i ) * grid.getGaugeCoupling();
-					AlgebraElement F = FG.proj().mult(1.0 / (8.0 * unitFactorF));
+					AlgebraElement F = FG.proj().mult(unitFactorForF[i] / 8.0);
 
 					// Average E field in space.
-					double unitFactorE = grid.getLatticeUnitFactor(i);
 					int shiftedIndex = grid.shift(index, i, -1);
 					AlgebraElement E1 = grid.getE(index, i);
 					AlgebraElement E2 = grid.getE(shiftedIndex, i).act(grid.getLink(index, i, -1, 0));
-					AlgebraElement E = E1.add(E2).mult(0.5 * unitFactorE);
+					AlgebraElement E = E1.add(E2).mult(0.5 * unitFactorForE[i]);
 
 					// Multiply E and F;
 					localPoyntingAveraged += E.mult(F);
@@ -243,15 +259,13 @@ public class ProjectedEnergyDensity implements Diagnostics {
 			// Indices for cross product:
 			int dir1 = (direction + 1) % 3;
 			int dir2 = (direction + 2) % 3;
-			double unitFactor1 = grid.getLatticeUnitFactor(dir1);
-			double unitFactor2 = grid.getLatticeUnitFactor(dir2);
 
 			// fields at same time:
-			AlgebraElement E1 = grid.getE(index, dir1).mult(unitFactor1);
-			AlgebraElement E2 = grid.getE(index, dir2).mult(unitFactor2);
+			AlgebraElement E1 = grid.getE(index, dir1).mult(unitFactorForE[dir1]);
+			AlgebraElement E2 = grid.getE(index, dir2).mult(unitFactorForE[dir2]);
 			// time averaged B-field:
-			AlgebraElement B1 = grid.getB(index, dir1, 0).add(grid.getB(index, dir1, 1)).mult(unitFactor1);
-			AlgebraElement B2 = grid.getB(index, dir2, 0).add(grid.getB(index, dir2, 1)).mult(unitFactor2);
+			AlgebraElement B1 = grid.getB(index, dir1, 0).add(grid.getB(index, dir1, 1)).mult(unitFactorForE[dir1]);
+			AlgebraElement B2 = grid.getB(index, dir2, 0).add(grid.getB(index, dir2, 1)).mult(unitFactorForE[dir2]);
 
 			localPoyntingTimeAveraged = E1.mult(B2) - E2.mult(B1);
 

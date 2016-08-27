@@ -44,6 +44,8 @@ output:
     - path: 'pe.dat'
       interval: 0.1
       direction: 0
+      computeEnergyDensity: True
+      computePoyntingVector: False
 
 
 # Generated panel code:
