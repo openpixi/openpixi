@@ -611,7 +611,7 @@ public class EnergyDensityVoxelGLPanel extends AnimationGLPanel {
 		gl2.glPushMatrix();
 
 		gl2.glTranslatef(x, y, z);
-		gl2.glScalef((float) size[0], (float) size[1], (float) size[2]);
+		gl2.glScalef((float) size[0]/2.0f, (float) size[1]/2.0f, (float) size[2]/2.0f);
 
 		gl2.glBegin(GL2.GL_QUADS); // Start Drawing The Cube
 
