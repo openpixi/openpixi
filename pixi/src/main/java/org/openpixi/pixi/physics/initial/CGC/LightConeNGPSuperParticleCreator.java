@@ -80,7 +80,7 @@ public class LightConeNGPSuperParticleCreator implements IParticleCreator {
 		aL = s.grid.getLatticeSpacing(direction);
 		aT = s.grid.getLatticeSpacing((direction + 1) % s.getNumberOfDimensions());
 		at = s.getTimeStep();
-		particlesPerCell = (int) (aL / at);
+		particlesPerCell = (int) Math.round(aL / at);
 		g = s.getCouplingConstant();
 		transversalNumCells = GridFunctions.reduceGridPos(s.grid.getNumCells(), direction);
 		totalTransversalCells = GridFunctions.getTotalNumberOfCells(transversalNumCells);
