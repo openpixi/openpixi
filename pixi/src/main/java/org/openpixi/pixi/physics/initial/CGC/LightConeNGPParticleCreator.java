@@ -86,7 +86,7 @@ public class LightConeNGPParticleCreator implements IParticleCreator {
 		this.orientation = orientation;
 
 		// Define some variables.
-		particlesPerCell = (int) (s.grid.getLatticeSpacing(direction) / s.getTimeStep());
+		particlesPerCell = (int) Math.round(s.grid.getLatticeSpacing() / s.getTimeStep());
 		at = s.getTimeStep();
 		g = s.getCouplingConstant();
 		as = new double[s.getNumberOfDimensions()];
