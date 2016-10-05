@@ -26,53 +26,55 @@ public class FieldMeasurements {
 	public double calculateEsquared(Grid grid) {
 		Esquared.reset(grid);
 		grid.getCellIterator().execute(grid, Esquared);
-        return Esquared.getSum(grid);
+        return Esquared.getSum();
 	}
 	
 	public double calculateBsquared(Grid grid) {
 		Bsquared.reset(grid);
 		grid.getCellIterator().execute(grid, Bsquared);
-        return Bsquared.getSum(grid);
+        return Bsquared.getSum();
 	}
 	
 	public double calculateEsquared(Grid grid, int dir) {
 		Esquared.reset(grid);
 		grid.getCellIterator().execute(grid, Esquared);
-        return Esquared.getSum(grid, dir);
+        return Esquared.getSum(dir);
 	}
 	
 	public double calculateBsquared(Grid grid, int dir) {
 		Bsquared.reset(grid);
 		grid.getCellIterator().execute(grid, Bsquared);
-        return Bsquared.getSum(grid, dir);
+        return Bsquared.getSum(dir);
 	}
 	
 	public double calculateGaussConstraint(Grid grid) {
-		GaussConstraint.reset();
+		GaussConstraint.reset(grid);
 		grid.getCellIterator().execute(grid, GaussConstraint);
-        return GaussConstraint.getSum(grid);
+        return GaussConstraint.getSum();
 	}
 
 	public double calculateTotalCharge(Grid grid) {
 		totalCharge.reset(grid);
 		grid.getCellIterator().execute(grid, totalCharge);
-		return totalCharge.getSum(grid);
+		return totalCharge.getSum();
 	}
 
 	public double calculateTotalChargeSquared(Grid grid) {
 		totalChargeSquared.reset(grid);
 		grid.getCellIterator().execute(grid, totalChargeSquared);
-		return totalChargeSquared.getSum(grid);
+		return totalChargeSquared.getSum();
 	}
 
 	private class EFieldSquared implements CellAction {
 		private double[] values;
 		private double[] unitFactors;
+		private int totalNumberOfCells;
 
         public void reset(Grid g)
 		{
         	values = new double[g.getNumberOfDimensions()];
 			unitFactors = new double[g.getNumberOfDimensions()];
+			totalNumberOfCells = g.getTotalNumberOfCells();
 
 			for (int i = 0; i < g.getNumberOfDimensions(); i++) {
 				values[i] = 0.0;
@@ -80,7 +82,7 @@ public class FieldMeasurements {
 			}
 		}
         
-        public double getSum(Grid grid) {
+        public double getSum() {
         	double sum = 0.0;
 			for (int i = 0; i < values.length; i++) {
 				sum += values[i];
@@ -88,8 +90,8 @@ public class FieldMeasurements {
 			return sum;
         }
         
-        public double getSum(Grid grid, int dir) {
-        	return values[dir];
+        public double getSum(int dir) {
+        	return values[dir] / totalNumberOfCells;
         }
 
         public void execute(Grid grid, int index) {
@@ -113,11 +115,13 @@ public class FieldMeasurements {
 	private class BFieldSquared implements CellAction {
 		private double[] values;
 		private double[] unitFactors;
+		private int totalNumberOfCells;
 
 		public void reset(Grid g)
 		{
 			values = new double[g.getNumberOfDimensions()];
 			unitFactors = new double[g.getNumberOfDimensions()];
+			totalNumberOfCells = g.getTotalNumberOfCells();
 
 			for (int i = 0; i < g.getNumberOfDimensions(); i++) {
 				values[i] = 0.0;
@@ -125,7 +129,7 @@ public class FieldMeasurements {
 			}
 		}
 
-		public double getSum(Grid grid) {
+		public double getSum() {
 			double sum = 0.0;
 			for (int i = 0; i < values.length; i++) {
 				sum += values[i];
@@ -133,8 +137,8 @@ public class FieldMeasurements {
 			return sum;
 		}
 
-		public double getSum(Grid grid, int dir) {
-			return values[dir];
+		public double getSum(int dir) {
+			return values[dir] / totalNumberOfCells;
 		}
 
 		public void execute(Grid grid, int index) {
@@ -158,13 +162,16 @@ public class FieldMeasurements {
 	private class GaussLaw implements CellAction {
 
 		private double sum;
+		private int totalNumberOfCells;
 
-        public void reset() {
+        public void reset(Grid g)
+        {
+	        totalNumberOfCells = g.getTotalNumberOfCells();
         	sum = 0.0;
         }
         
-        public double getSum(Grid grid) {
-			return sum;
+        public double getSum() {
+	        return sum / totalNumberOfCells;
         }
         
         public void execute(Grid grid, int index) {
@@ -180,13 +187,15 @@ public class FieldMeasurements {
 	private class TotalCharge implements CellAction  {
 
 		private AlgebraElement charge;
+		private int totalNumberOfCells;
 
-		public void reset(Grid grid) {
-			charge = grid.getElementFactory().algebraZero();
+		public void reset(Grid g) {
+			totalNumberOfCells = g.getTotalNumberOfCells();
+			charge = g.getElementFactory().algebraZero();
 		}
 
-		public double getSum(Grid grid) {
-			return Math.sqrt(charge.square());
+		public double getSum() {
+			return Math.sqrt(charge.square()) / totalNumberOfCells;
 		}
 
 		public void execute(Grid grid, int index) {
@@ -201,13 +210,15 @@ public class FieldMeasurements {
 	private class TotalChargeSquared implements CellAction  {
 
 		private double charge;
+		private int totalNumberOfCells;
 
-		public void reset(Grid grid) {
+		public void reset(Grid g) {
+			totalNumberOfCells = g.getTotalNumberOfCells();
 			charge = 0.0;
 		}
 
-		public double getSum(Grid grid) {
-			return Math.sqrt(charge);
+		public double getSum() {
+			return Math.sqrt(charge) / totalNumberOfCells;
 		}
 
 		public void execute(Grid grid, int index) {
