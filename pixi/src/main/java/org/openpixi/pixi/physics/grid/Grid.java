@@ -322,6 +322,22 @@ public class Grid {
 	}
 
 	/**
+	 * Returns the lattice spacings of the grid as an array.
+	 * @return  Lattice spacings of the grid.
+	 */
+	public double[] getLatticeSpacings() {
+		if(useUnevenGrid) {
+			return asUneven;
+		} else {
+			double[] as = new double[numDim];
+			for (int i = 0; i < numDim; i++) {
+				as[i] = getLatticeSpacing();
+			}
+			return as;
+		}
+	}
+
+	/**
 	 * Returns the area of the (i,j)-face of a cell.
 	 * @param i first index of the area
 	 * @param j second index of the area
@@ -329,6 +345,18 @@ public class Grid {
 	 */
 	public double getCellArea(int i, int j) {
 		return getLatticeSpacing(i) * getLatticeSpacing(j);
+	}
+
+	/**
+	 * Returns the volume of a cell.
+	 * @return volume of a cell
+     */
+	public double getCellVolume() {
+		double volume = 1.0;
+		for (int i = 0; i < numDim; i++) {
+			volume *= getLatticeSpacing(i);
+		}
+		return volume;
 	}
 
 	/**
