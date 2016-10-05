@@ -168,6 +168,26 @@ public class GridFunctions {
 	}
 
 	/**
+	 * Eliminates a coordinate of a position vector.
+	 * Example: reducePos([16.0, 16.0, 8.0], 2) returns the reduced (projected) position [16.0, 16.0]
+	 *
+	 * @param pos position
+	 * @param dir direction which should be eliminated
+	 * @return    reduced position
+	 */
+	public static double[] reducePos(double[] pos, int dir) {
+		double[] projPos = new double[pos.length-1];
+		int count = 0;
+		for (int i = 0; i < pos.length; i++) {
+			if(i != dir) {
+				projPos[count] = pos[i];
+				count++;
+			}
+		}
+		return projPos;
+	}
+
+	/**
 	 * Inserts a coordinate for a given reduced grid position and direction.
 	 * Example: insertGridPos([16, 16], 2, 8) returns [16, 16, 8].
 	 *
