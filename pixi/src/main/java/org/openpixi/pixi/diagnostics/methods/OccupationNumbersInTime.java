@@ -64,7 +64,7 @@ public class OccupationNumbersInTime implements Diagnostics {
 
 
 		if(!outputType.equals(OUTPUT_NONE)) {
-			FileFunctions.clearFile("output/" + outputFileName);
+			FileFunctions.clearFile(outputFileName);
 		}
 
 		if (!Arrays.asList(supportedOutputTypes).contains(outputType)) {
@@ -295,7 +295,7 @@ public class OccupationNumbersInTime implements Diagnostics {
 	 * @param path	Path to output file
 	 */
 	public void writeHeader(String path) {
-		File file = FileFunctions.getFile("output/" + path);
+		File file = FileFunctions.getFile(path);
 
 		try {
 			FileWriter pw = new FileWriter(file, true);
@@ -323,7 +323,7 @@ public class OccupationNumbersInTime implements Diagnostics {
 	 * @param path	Path to the output file
 	 */
 	private void writeMomentumVectors(String path) {
-		File file = FileFunctions.getFile("output/" + path);
+		File file = FileFunctions.getFile(path);
 		try {
 			FileWriter pw = new FileWriter(file, true);
 			for(int i = 0; i < s.grid.getTotalNumberOfCells(); i++) {
@@ -361,7 +361,7 @@ public class OccupationNumbersInTime implements Diagnostics {
 	 */
 	private void writeCSVFile(String path, boolean includeOccupationNumbers)
 	{
-		File file = FileFunctions.getFile("output/" + path);
+		File file = FileFunctions.getFile(path);
 		try {
 			FileWriter pw = new FileWriter(file, true);
 			pw.write(this.generateCSVString(includeOccupationNumbers));

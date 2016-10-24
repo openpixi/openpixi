@@ -71,7 +71,7 @@ public class ProjectedEnergyDensity implements Diagnostics {
 			poyntingComputation.initialize(s.grid, direction);
 		}
 
-		FileFunctions.clearFile("output/" + path);
+		FileFunctions.clearFile(path);
 	}
 
 	public void calculate(Grid grid, ArrayList<IParticle> particles, int steps) throws IOException {
@@ -88,7 +88,7 @@ public class ProjectedEnergyDensity implements Diagnostics {
 			}
 
 			// Write to file
-			File file = FileFunctions.getFile("output/" + path);
+			File file = FileFunctions.getFile(path);
 			try {
 				FileWriter pw = new FileWriter(file, true);
 				Double time = steps * grid.getTemporalSpacing();

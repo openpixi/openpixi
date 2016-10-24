@@ -115,7 +115,7 @@ public class ScreenshotInTime implements Diagnostics {
 				int counter = steps / stepInterval;
 				String counterString = String.format("%05d", counter);
 				String pathWithNumber = path.replace("{counter}", counterString);
-				File file = FileFunctions.getFile("output/" + pathWithNumber);
+				File file = FileFunctions.getFile(pathWithNumber);
 				ImageIO.write(im, "png", file);
 			}
 		}

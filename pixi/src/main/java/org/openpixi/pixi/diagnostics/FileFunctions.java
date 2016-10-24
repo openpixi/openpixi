@@ -14,12 +14,18 @@ public class FileFunctions {
 	 * @return     File instance
 	 */
 	public static File getFile(String path) {
-		File file = new File(path);
+		// Prepend 'output/' if path is relative. This only works for unix paths.
+		String newPath = path;
+		if(path.charAt(0) != '/') {
+			newPath = "output/" + path;
+		}
+
+		File file = new File(newPath);
 		File folder = file.getParentFile();
 		if(!folder.exists()) {
 			boolean result = folder.mkdirs();
 			if(!result) {
-				System.out.println("FileFunctions: Error creating path for file " + path);
+				System.out.println("FileFunctions: Error creating path for file " + newPath);
 			}
 		}
 		return file;
@@ -31,11 +37,17 @@ public class FileFunctions {
 	 * @param path String with path or filename
 	 */
 	public static void clearFile(String path) {
-		File file = new File(path);
+		// Prepend 'output/' if path is relative. This only works for unix paths.
+		String newPath = path;
+		if(path.charAt(0) != '/') {
+			newPath = "output/" + path;
+		}
+
+		File file = new File(newPath);
 		if(file.exists()) {
 			boolean result = file.delete();
 			if(!result) {
-				System.out.println("FileFunctions: Error deleting file " + path);
+				System.out.println("FileFunctions: Error deleting file " + newPath);
 			}
 		}
 	}

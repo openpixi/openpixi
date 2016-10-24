@@ -46,7 +46,7 @@ public class PlanarFields implements Diagnostics {
 	}
 
 	public void initialize(Simulation s) {
-		FileFunctions.clearFile("output/" + outputName);
+		FileFunctions.clearFile(outputName);
 
 		this.s = s;
 		this.transNumCells = GridFunctions.reduceGridPos(s.grid.getNumCells(), direction);
@@ -83,7 +83,7 @@ public class PlanarFields implements Diagnostics {
 					}
 				}
 
-				File file = FileFunctions.getFile("output/" + outputName);
+				File file = FileFunctions.getFile(outputName);
 				try {
 					FileWriter pw = new FileWriter(file, true);
 
