@@ -49,7 +49,7 @@ public class WilsonLineObservables {
 
 		// Write to file
 		try {
-			File file = FileFunctions.getFile("output/" + filename);
+			File file = FileFunctions.getFile(filename);
 			FileWriter pw = new FileWriter(file, true);
 			pw.write(output);
 			pw.close();
@@ -115,7 +115,7 @@ public class WilsonLineObservables {
 
 		// Write data to file.
 		try {
-			File file = FileFunctions.getFile("output/" + filename);
+			File file = FileFunctions.getFile(filename);
 			FileWriter pw = new FileWriter(file, true);
 			pw.write(density.getInfo()+"\n");
 			pw.write("d\ttr(V V^t)\n");

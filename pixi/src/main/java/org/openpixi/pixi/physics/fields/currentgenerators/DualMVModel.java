@@ -169,8 +169,8 @@ public class DualMVModel implements ICurrentGenerator {
 			}
 
 			// File output ((d-1)x3 transversal gauge field components, 1x3 longitudinal electric field component)
-			FileFunctions.clearFile("output/" + outputFile);
-			File file = FileFunctions.getFile("output/" + outputFile);
+			FileFunctions.clearFile(outputFile);
+			File file = FileFunctions.getFile(outputFile);
 			try {
 				FileWriter pw = new FileWriter(file, true);
 

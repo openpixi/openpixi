@@ -75,7 +75,7 @@ public class ProjectedEnergyDensity implements Diagnostics {
 		this.poyntingComputation = new PoyntingComputation();
 		poyntingComputation.initialize(s.grid, direction);
 
-		FileFunctions.clearFile("output/" + path);
+		FileFunctions.clearFile(path);
 
 		// Compute area factor
 		areaFactor = 1.0;
@@ -99,7 +99,7 @@ public class ProjectedEnergyDensity implements Diagnostics {
 
 
 			// Write to file
-			File file = FileFunctions.getFile("output/" + path);
+			File file = FileFunctions.getFile(path);
 			try {
 				FileWriter pw = new FileWriter(file, true);
 				Double time = steps * grid.getTemporalSpacing();

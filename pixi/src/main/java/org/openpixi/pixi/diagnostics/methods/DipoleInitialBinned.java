@@ -47,10 +47,10 @@ public class DipoleInitialBinned implements Diagnostics {
 
 		if(!supressOutput) {
 			// Create/delete file.
-			FileFunctions.clearFile("output/" + path);
+			FileFunctions.clearFile(path);
 
 			// Write first line.
-			File file = FileFunctions.getFile("output/" + path);
+			File file = FileFunctions.getFile(path);
 			try {
 				FileWriter pw = new FileWriter(file, true);
 				pw.write("#|x - y| \t tr[V_x V_y^dagger]");
@@ -158,7 +158,7 @@ public class DipoleInitialBinned implements Diagnostics {
 		}
 
 		if(!supressOutput) {
-			File file = FileFunctions.getFile("output/" + path);
+			File file = FileFunctions.getFile(path);
 			FileWriter pw = new FileWriter(file, true);
 			DecimalFormat formatter = new DecimalFormat("0.################E0");
 
