@@ -37,7 +37,7 @@ public class TimeMeasurement implements Diagnostics {
 	 * Initializes the TimeMeasurement object.
 	 * It sets the step interval and creates/deletes the output file.
 	 *
-	 * @param s    Instance of the simulation object
+	 * @param simulation    Instance of the simulation object
 	 */
 	public void initialize(Simulation simulation)
 	{
@@ -50,10 +50,10 @@ public class TimeMeasurement implements Diagnostics {
 		long jvmUpTime = ManagementFactory.getRuntimeMXBean().getUptime();
 
 		// Create/delete file.
-		FileFunctions.clearFile("output/" + path);
+		FileFunctions.clearFile(path);
 
 		// Write first line.
-		File file = FileFunctions.getFile("output/" + path);
+		File file = FileFunctions.getFile(path);
 		try {
 			FileWriter pw = new FileWriter(file, true);
 			pw.write("Initialization time: " + jvmUpTime + "ms\n");
@@ -83,7 +83,7 @@ public class TimeMeasurement implements Diagnostics {
 			double memory = ((int) (100 * runtime.totalMemory() / GIGABYTE)) / 100.0;
 			int mempercent = (int) (100 * runtime.totalMemory() / runtime.maxMemory());
 
-			File file = FileFunctions.getFile("output/" + path);
+			File file = FileFunctions.getFile(path);
 			FileWriter pw = new FileWriter(file, true);
 
 			pw.write("step " + currentTime + "/" + totalTime + " (" + stepdt + "ms)\n");
