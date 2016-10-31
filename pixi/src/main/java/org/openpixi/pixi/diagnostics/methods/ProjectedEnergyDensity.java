@@ -189,7 +189,7 @@ public class ProjectedEnergyDensity implements Diagnostics {
 		private ElementFactory factory;
 
 		private double[] unitFactorForF;
-		private double[] unitFactorForE;
+		private double[] unitFactorForEAndB;
 
 		public void initialize(Grid grid, int direction) {
 			this.direction = direction;
@@ -201,10 +201,10 @@ public class ProjectedEnergyDensity implements Diagnostics {
 
 			double areaFactor = grid.getTotalNumberOfCells() / ((double) grid.getNumCells(direction));
 			this.unitFactorForF = new double[grid.getNumberOfDimensions()];
-			this.unitFactorForE = new double[grid.getNumberOfDimensions()];
+			this.unitFactorForEAndB = new double[grid.getNumberOfDimensions()];
 			for (int i = 0; i < grid.getNumberOfDimensions(); i++) {
 				unitFactorForF[i] = 1.0 / (grid.getCellArea(i, direction) * grid.getGaugeCoupling() * Math.sqrt(areaFactor));
-				unitFactorForE[i] = 1.0 / (grid.getLatticeUnitFactor(i) * Math.sqrt(areaFactor));
+				unitFactorForEAndB[i] = 1.0 / (grid.getLatticeUnitFactor(i) * Math.sqrt(areaFactor));
 			}
 		}
 
@@ -247,7 +247,7 @@ public class ProjectedEnergyDensity implements Diagnostics {
 					int shiftedIndex = grid.shift(index, i, -1);
 					AlgebraElement E1 = grid.getE(index, i);
 					AlgebraElement E2 = grid.getE(shiftedIndex, i).act(grid.getLink(index, i, -1, 0));
-					AlgebraElement E = E1.add(E2).mult(0.5 * unitFactorForE[i]);
+					AlgebraElement E = E1.add(E2).mult(0.5 * unitFactorForEAndB[i]);
 
 					// Multiply E and F;
 					localPoyntingAveraged += E.mult(F);
@@ -261,11 +261,11 @@ public class ProjectedEnergyDensity implements Diagnostics {
 			int dir2 = (direction + 2) % 3;
 
 			// fields at same time:
-			AlgebraElement E1 = grid.getE(index, dir1).mult(unitFactorForE[dir1]);
-			AlgebraElement E2 = grid.getE(index, dir2).mult(unitFactorForE[dir2]);
+			AlgebraElement E1 = grid.getE(index, dir1).mult(unitFactorForEAndB[dir1]);
+			AlgebraElement E2 = grid.getE(index, dir2).mult(unitFactorForEAndB[dir2]);
 			// time averaged B-field:
-			AlgebraElement B1 = grid.getB(index, dir1, 0).add(grid.getB(index, dir1, 1)).mult(unitFactorForE[dir1]);
-			AlgebraElement B2 = grid.getB(index, dir2, 0).add(grid.getB(index, dir2, 1)).mult(unitFactorForE[dir2]);
+			AlgebraElement B1 = grid.getB(index, dir1, 0).add(grid.getB(index, dir1, 1)).mult(unitFactorForEAndB[dir1] * 0.5);
+			AlgebraElement B2 = grid.getB(index, dir2, 0).add(grid.getB(index, dir2, 1)).mult(unitFactorForEAndB[dir2] * 0.5);
 
 			localPoyntingTimeAveraged = E1.mult(B2) - E2.mult(B1);
 
