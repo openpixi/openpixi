@@ -52,7 +52,7 @@ public class PlanarFields implements Diagnostics {
 		this.transNumCells = GridFunctions.reduceGridPos(s.grid.getNumCells(), direction);
 		this.totalTransCells =  GridFunctions.getTotalNumberOfCells(transNumCells);
 
-		this.stepInterval = (int) Math.max((timeInterval / s.getTimeStep()), 1);
+		this.stepInterval = (int) Math.max(Math.round((timeInterval / s.getTimeStep())), 1);
 		this.startingStep = (int) (startingTime / s.getTimeStep());
 		this.finalStep = (int) (finalTime / s.getTimeStep());
 		this.effDimensions = GridFunctions.getEffectiveNumberOfDimensions(s.grid.getNumCells());

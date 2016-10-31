@@ -42,7 +42,7 @@ public class TimeMeasurement implements Diagnostics {
 	public void initialize(Simulation simulation)
 	{
 		this.simulation = simulation;
-		this.stepInterval = (int) Math.max((timeInterval / simulation.getTimeStep()), 1);
+		this.stepInterval = (int) Math.max(Math.round((timeInterval / simulation.getTimeStep())), 1);
 
 		runtime = Runtime.getRuntime();
 		stept0 = System.nanoTime();

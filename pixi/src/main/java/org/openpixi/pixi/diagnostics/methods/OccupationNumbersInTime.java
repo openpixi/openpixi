@@ -85,7 +85,7 @@ public class OccupationNumbersInTime implements Diagnostics {
 
 	public void initialize(Simulation s) {
 		this.s = s;
-		this.stepInterval = (int) Math.max((timeInterval / s.getTimeStep()), 1);
+		this.stepInterval = (int) Math.max(Math.round((timeInterval / s.getTimeStep())), 1);
 		this.numberOfComponents = s.getNumberOfColors() * s.getNumberOfColors() - 1;
 		effectiveNumberOfDimensions = getEffectiveNumberOfDimensions(s.grid.getNumCells());
 
