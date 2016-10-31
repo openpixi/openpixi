@@ -46,7 +46,7 @@ output:
       direction: 0
   timeMeasurement:
     - path: "/tmp/output/time_writetest.txt"
-      interval: 0.025
+      interval: 0.5
 
 
 
