@@ -69,13 +69,14 @@ public class WilsonLineObservables {
 		GroupElement[] V = solver.getV();
 
 		int[] numCells = GridFunctions.reduceGridPos(s.grid.getNumCells(), density.getDirection());
+		double[] as = GridFunctions.reducePos(s.grid.getLatticeSpacings(), density.getDirection());
 		int totalCells = GridFunctions.getTotalNumberOfCells(numCells);
 
 		// Bin the results to get the correlator as a function of distance.
 		int numBins = (int) Math.sqrt(totalCells) / 2;
 		double[] trVVbinned = new double[numBins];
 		int[] counter = new int[numBins];
-		double maximumDistance = Math.min(numCells[0], numCells[1]) * 0.5;
+		double maximumDistance = Math.min(numCells[0] * as[0], numCells[1] * as[1]) * 0.5;
 		double ds = maximumDistance / ((double) numBins);
 
 		for (int i = 0; i < numBins; i++) {
@@ -96,7 +97,7 @@ public class WilsonLineObservables {
 					if(dxy[k] > numCells[k] / 2) {
 						dxy[k] -= numCells[k];
 					}
-					dist += dxy[k] * dxy[k];
+					dist += dxy[k] * dxy[k] * as[k] * as[k];
 				}
 				dist = Math.sqrt(dist);
 				int bin = (int) (dist / ds);
@@ -120,7 +121,7 @@ public class WilsonLineObservables {
 			pw.write(density.getInfo()+"\n");
 			pw.write("d\ttr(V V^t)\n");
 			for (int bin = 0; bin < numBins; bin++) {
-				pw.write(FileFunctions.format(bin * ds * s.grid.getLatticeSpacing()) + "\t");
+				pw.write(FileFunctions.format(bin * ds) + "\t");
 				pw.write(FileFunctions.format(trVVbinned[bin]) + "\n");
 			}
 			pw.close();

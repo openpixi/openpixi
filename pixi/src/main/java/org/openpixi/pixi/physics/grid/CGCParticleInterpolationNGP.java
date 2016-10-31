@@ -14,10 +14,8 @@ import org.openpixi.pixi.physics.util.GridFunctions;
 public class CGCParticleInterpolationNGP implements  InterpolatorAlgorithm {
 	public void interpolateToGrid(IParticle p, Grid g) {
 		CGCParticle P = (CGCParticle) p;
-		GroupElement identity = g.getElementFactory().groupIdentity();
 
 		double at = g.getTemporalSpacing();
-		double as = g.getLatticeSpacing();
 		int direction = P.direction;
 
 		// Particle positions
@@ -25,8 +23,14 @@ public class CGCParticleInterpolationNGP implements  InterpolatorAlgorithm {
 		double[] newPosition = P.pos1;
 
 		// check if one cell or two cell move
-		int[] ngpOld = GridFunctions.nearestGridPoint(oldPosition, as);
-		int[] ngpNew = GridFunctions.nearestGridPoint(newPosition, as);
+		int[] ngpOld, ngpNew;
+		if(g.useUnevenGrid) {
+			ngpOld = GridFunctions.nearestGridPoint(oldPosition, g.getLatticeSpacings());
+			ngpNew = GridFunctions.nearestGridPoint(newPosition, g.getLatticeSpacings());
+		} else {
+			ngpOld = GridFunctions.nearestGridPoint(oldPosition, g.getLatticeSpacing());
+			ngpNew = GridFunctions.nearestGridPoint(newPosition, g.getLatticeSpacing());
+		}
 
 		if(ngpOld[direction] == ngpNew[direction]) {
 			// one cell move
@@ -36,10 +40,10 @@ public class CGCParticleInterpolationNGP implements  InterpolatorAlgorithm {
 			int cellIndexNew = g.getCellIndex(ngpNew);
 
 			if(P.vel[direction] > 0) {
-				AlgebraElement J = P.Q0.mult(as / at);
+				AlgebraElement J = P.Q0.mult(g.getLatticeSpacing(direction) / at);
 				g.addJ(cellIndexOld, direction, J);
 			} else {
-				AlgebraElement J = P.Q1.mult(- as / at);
+				AlgebraElement J = P.Q1.mult(- g.getLatticeSpacing(direction) / at);
 				g.addJ(cellIndexNew, direction, J);
 			}
 		}
@@ -48,11 +52,13 @@ public class CGCParticleInterpolationNGP implements  InterpolatorAlgorithm {
 	public void interpolateChargedensity(IParticle p, Grid g) {
 		CGCParticle P = (CGCParticle) p;
 
-		double as = g.getLatticeSpacing();
-		int direction = P.direction;
-
-		// "Floored" grid points of the particle
-		int[] gridPosOld = GridFunctions.nearestGridPoint(P.pos0, as);
+		// Nearest grid points of the particle
+		int[] gridPosOld;
+		if(g.useUnevenGrid) {
+			gridPosOld = GridFunctions.nearestGridPoint(P.pos0, g.getLatticeSpacings());
+		} else {
+			gridPosOld = GridFunctions.nearestGridPoint(P.pos0, g.getLatticeSpacing());
+		}
 
 		// Cell indices
 		int cellIndexOld = g.getCellIndex(gridPosOld);
@@ -64,7 +70,6 @@ public class CGCParticleInterpolationNGP implements  InterpolatorAlgorithm {
 	public void interpolateToParticle(IParticle p, Grid g) {
 		// Compute parallel transport for the particle.
 		CGCParticle P = (CGCParticle) p;
-		double as = g.getLatticeSpacing();
 		int direction = P.direction;
 
 		// Particle positions
@@ -72,8 +77,14 @@ public class CGCParticleInterpolationNGP implements  InterpolatorAlgorithm {
 		double[] newPosition = P.pos1;
 
 		// check if one cell or two cell move
-		int[] ngpOld = GridFunctions.nearestGridPoint(oldPosition, as);
-		int[] ngpNew = GridFunctions.nearestGridPoint(newPosition, as);
+		int[] ngpOld, ngpNew;
+		if(g.useUnevenGrid) {
+			ngpOld = GridFunctions.nearestGridPoint(oldPosition, g.getLatticeSpacings());
+			ngpNew = GridFunctions.nearestGridPoint(newPosition, g.getLatticeSpacings());
+		} else {
+			ngpOld = GridFunctions.nearestGridPoint(oldPosition, g.getLatticeSpacing());
+			ngpNew = GridFunctions.nearestGridPoint(newPosition, g.getLatticeSpacing());
+		}
 
 		if(ngpOld[direction] == ngpNew[direction]) {
 			// one cell move: do nothing!

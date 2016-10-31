@@ -1,0 +1,30 @@
+# Wave test
+
+simulationType: temporal yang-mills
+gridSteps: [.5, 1, 1]
+numberOfDimensions: 3
+numberOfColors: 2
+gridCells: [256, 1, 1]
+timeStep: 0.1
+duration: 1000
+
+initialConditions:
+  YM:
+    SU2PlaneWaves:
+        # wave vector of the plane wave
+      - k: [0.490874, 0.0, 0.0]
+
+        # spatial part of the wave amplitude
+        aSpatial: [0.0, 1.0,0.0]
+
+        # color part of the wave amplitude
+        aColor: [1.0, 0.0, 0.0]
+
+        # magnitude of the wave amplitude
+        a: 0.1
+
+panels:
+  electricFieldPanel:
+    colorIndex: 0
+    directionIndex: 1
+    scaleFactor: 2

@@ -75,6 +75,7 @@ public class EnergyDensityVoxelGLPanel extends AnimationGLPanel {
 	public DoubleProperties opacityProperties;
 	public BooleanProperties showSimulationBoxProperties;
 	public BooleanProperties whiteBackgroundProperties;
+	public BooleanProperties unequalScalingProperties;
 
 	public double phi;
 	public double theta;
@@ -98,6 +99,7 @@ public class EnergyDensityVoxelGLPanel extends AnimationGLPanel {
 		opacityProperties = new DoubleProperties(simulationAnimation, "Opacity", 1);
 		showSimulationBoxProperties = new BooleanProperties(simulationAnimation, "Show simulation box", false);
 		whiteBackgroundProperties = new BooleanProperties(simulationAnimation, "White background", false);
+		unequalScalingProperties = new BooleanProperties(simulationAnimation, "Unequal scaling", false);
 
 		MouseListener l = new MouseListener();
 		addMouseListener(l);
@@ -139,10 +141,30 @@ public class EnergyDensityVoxelGLPanel extends AnimationGLPanel {
 		boolean showSimulationBox = showSimulationBoxProperties.getValue();
 		boolean whiteBackground = whiteBackgroundProperties.getValue();
 
-		// Perspective.
-		float sizex = (float) s.getSimulationBoxSize(0);
-		float sizey = (float) s.getSimulationBoxSize(1);
-		float sizez = (float) s.getSimulationBoxSize(2);
+		// Unequal scaling
+		boolean unequalScaling = unequalScalingProperties.getValue();
+		double[] as = new double[s.getNumberOfDimensions()];
+		for (int i = 0; i < s.getNumberOfDimensions(); i++) {
+			if(unequalScaling) {
+				as[i] = 1.0;
+			} else {
+				as[i] = s.grid.getLatticeSpacing(i);
+			}
+		}
+
+
+		// Perspective
+		float sizex, sizey, sizez;
+		if(unequalScaling) {
+			sizex = (float) s.grid.getNumCells(0);
+			sizey = (float) s.grid.getNumCells(1);
+			sizez = (float) s.grid.getNumCells(2);
+		} else {
+			sizex = (float) s.getSimulationBoxSize(0);
+			sizey = (float) s.getSimulationBoxSize(1);
+			sizez = (float) s.getSimulationBoxSize(2);
+		}
+
 		float size = (float) Math.sqrt(sizex * sizex + sizey * sizey + sizez * sizez);
 		float distance = (float) distanceFactor * size;
 		float widthHeightRatio = (float) width / (float) height;
@@ -213,7 +235,6 @@ public class EnergyDensityVoxelGLPanel extends AnimationGLPanel {
 		gl2.glLightfv(GL2.GL_LIGHT1, GL2.GL_POSITION, light1_position, 0);
 
 		// Lattice spacing
-		double as = s.grid.getLatticeSpacing();
 
 		int[] pos = new int[s.getNumberOfDimensions()];
 		for(int w = 2; w < s.getNumberOfDimensions(); w++) {
@@ -221,18 +242,18 @@ public class EnergyDensityVoxelGLPanel extends AnimationGLPanel {
 		}
 
 		if (showSimulationBox) {
-			double thickness = as * 0.05;
+			double thickness = as[0] * 0.05;
 
 			// Translation wireframe
 			if (shiftKeyPressed) {
 				gl2.glColor3f( .5f, 0, 0);
-				drawCubeWireframe(gl2, centerx - as * 0.5, centery - as * 0.5, centerz - as * 0.5,
+				drawCubeWireframe(gl2, centerx - as[0] * 0.5, centery - as[1] * 0.5, centerz - as[2] * 0.5,
 						sizex, sizey, sizez, thickness);
 			}
 
 			// Wireframe of simulation box
 			gl2.glColor3f( .5f, .5f, .5f);
-			drawCubeWireframe(gl2, -as * 0.5, -as * 0.5, -as * 0.5,
+			drawCubeWireframe(gl2, -as[0] * 0.5, -as[1] * 0.5, -as[2] * 0.5,
 					sizex, sizey, sizez, thickness);
 		}
 
@@ -304,9 +325,9 @@ public class EnergyDensityVoxelGLPanel extends AnimationGLPanel {
 					pos[loop3] = increasing[loop3] ? l : s.grid.getNumCells(loop3) - l - 1;
 					int index = s.grid.getCellIndex(pos);
 
-					float x = (float)(as * pos[0]);
-					float y = (float) (as * pos[1]);
-					float z = (float) (as * pos[2]);
+					float x = (float)(as[0] * pos[0]);
+					float y = (float) (as[1] * pos[1]);
+					float z = (float) (as[2] * pos[2]);
 
 					double value = 0;
 					color[RED] = 0;
@@ -334,7 +355,7 @@ public class EnergyDensityVoxelGLPanel extends AnimationGLPanel {
 							value = getGaussViolation(s, index, color);
 							break;
 						case INDEX_U_LONGITUDINAL:
-							value = getU(s, index, color, direction);
+							value = getU(s, index, color, direction) / s.grid.getLatticeUnitFactor(direction);
 							break;
 						}
 					}
@@ -353,7 +374,7 @@ public class EnergyDensityVoxelGLPanel extends AnimationGLPanel {
 
 					gl2.glColor4d( color[RED], color[GREEN], color[BLUE], alpha);
 					if (limitedValue >= visibilityThreshold) {
-						drawCube(gl2, x, y, z, (float) as * .5f, (float) viewx, (float) viewy, (float) viewz);
+						drawCube(gl2, x, y, z, as, (float) viewx, (float) viewy, (float) viewz);
 					}
 				}
 			}
@@ -453,20 +474,19 @@ public class EnergyDensityVoxelGLPanel extends AnimationGLPanel {
 		double BfieldSquared = 0.0;
 
 		// Lattice spacing and coupling constant
-		double as = s.grid.getLatticeSpacing();
-		double g = s.getCouplingConstant();
 
 		double colors = s.grid.getNumberOfColors();
 
 		for (int w = 0; w < s.getNumberOfDimensions(); w++) {
+			double unitFactor = Math.pow(s.grid.getLatticeUnitFactor(w), -2);
 			if ((longitudinal && w == direction) || (transverse && w != direction)) {
 				if (electric) {
-					EfieldSquared += s.grid.getEsquaredFromLinks(index, w) / (as * g * as * g) / 2;
+					EfieldSquared += s.grid.getEsquaredFromLinks(index, w) * unitFactor / 2;
 				}
 				if (magnetic) {
 					// Time averaging for B field.
-					BfieldSquared += s.grid.getBsquaredFromLinks(index, w, 0) / (as * g * as * g) / 4.0;
-					BfieldSquared += s.grid.getBsquaredFromLinks(index, w, 1) / (as * g * as * g) / 4.0;
+					BfieldSquared += s.grid.getBsquaredFromLinks(index, w, 0) * unitFactor / 4.0;
+					BfieldSquared += s.grid.getBsquaredFromLinks(index, w, 1) * unitFactor / 4.0;
 				}
 				// get color:
 				double c = 0;
@@ -586,12 +606,12 @@ public class EnergyDensityVoxelGLPanel extends AnimationGLPanel {
 	 *
 	 * Only draw visible sides (approximately)
 	 */
-	private void drawCube(GL2 gl2, float x, float y, float z, float size, float viewx, float viewy, float viewz) {
+	private void drawCube(GL2 gl2, float x, float y, float z, double[] size, float viewx, float viewy, float viewz) {
 
 		gl2.glPushMatrix();
 
 		gl2.glTranslatef(x, y, z);
-		gl2.glScalef(size,  size, size);
+		gl2.glScalef((float) size[0]/2.0f, (float) size[1]/2.0f, (float) size[2]/2.0f);
 
 		gl2.glBegin(GL2.GL_QUADS); // Start Drawing The Cube
 
@@ -651,5 +671,6 @@ public class EnergyDensityVoxelGLPanel extends AnimationGLPanel {
 		opacityProperties.addComponents(box);
 		showSimulationBoxProperties.addComponents(box);
 		whiteBackgroundProperties.addComponents(box);
+		unequalScalingProperties.addComponents(box);
 	}
 }

@@ -48,9 +48,9 @@ public class LightConeNGPParticleCreator implements IParticleCreator {
 	protected int totalTransversalCells;
 
 	/**
-	 * Lattice spacing of the grid.
+	 * Lattice spacings.
 	 */
-	protected double as;
+	protected double[] as;
 
 	/**
 	 * Time step used in the simulation.
@@ -86,10 +86,13 @@ public class LightConeNGPParticleCreator implements IParticleCreator {
 		this.orientation = orientation;
 
 		// Define some variables.
-		particlesPerCell = (int) (s.grid.getLatticeSpacing() / s.getTimeStep());
-		as = s.grid.getLatticeSpacing();
+		particlesPerCell = (int) Math.round(s.grid.getLatticeSpacing(direction) / s.getTimeStep());
 		at = s.getTimeStep();
 		g = s.getCouplingConstant();
+		as = new double[s.getNumberOfDimensions()];
+		for (int i = 0; i < as.length; i++) {
+			as[i] = s.grid.getLatticeSpacing(i);
+		}
 		transversalNumCells = GridFunctions.reduceGridPos(s.grid.getNumCells(), direction);
 		totalTransversalCells = GridFunctions.getTotalNumberOfCells(transversalNumCells);
 
@@ -105,7 +108,46 @@ public class LightConeNGPParticleCreator implements IParticleCreator {
 	 * @param particlesPerLink
 	 */
 	public void initializeParticles(Simulation s, int particlesPerLink) {
-		double cutoffCharge = 10E-22 * Math.pow( g * as, 2) / (Math.pow(as, 3) * particlesPerLink);
+		// Find max charges in transverse planes for each longitudinal coordinate and global charge maximum.
+		int lnum = s.grid.getNumCells(0);
+		double[] maxCharges = new double[lnum];
+		double globalMax = 0.0;
+		for (int z = 0; z < lnum; z++) {
+			double max = 0.0;
+			for (int j = 0; j < totalTransversalCells; j++) {
+				int index = z * totalTransversalCells + j;
+				double charge = Math.sqrt(gaussConstraint[index].square());
+				if (max < charge) {
+					max = charge;
+				}
+			}
+			maxCharges[z] = max;
+			if (globalMax < max) {
+				globalMax = max;
+			}
+		}
+		double cutoffCharge = globalMax * 10E-10;
+
+		// Find start of block starting from the left boundary.
+		int zStart = 0;
+		for (int z = 0; z < lnum; z++) {
+			if (maxCharges[z] > cutoffCharge) {
+				zStart = z;
+				break;
+			}
+		}
+
+		// Find end of block starting from the right boundary.
+		int zEnd = lnum - 1;
+		for (int z = zEnd - 1; z >= 0; z--) {
+			if (maxCharges[z] > cutoffCharge) {
+				zEnd = z;
+				break;
+			}
+		}
+
+		// Set width of particle block.
+		int blockWidth = zEnd - zStart;
 
 		ArrayList<ArrayList<CGCParticle>> longitudinalParticleList = new ArrayList<ArrayList<CGCParticle>>(totalTransversalCells);
 		for (int i = 0; i < totalTransversalCells; i++) {
@@ -113,52 +155,54 @@ public class LightConeNGPParticleCreator implements IParticleCreator {
 		}
 		// Traverse through charge density and add particles by sampling the charge distribution
 		double t0 = 0.0;	// Particles should be initialized at t = 0 and t = dt.
-		double FIX_ROUND_ERRORS = 10E-12 * as;
-		for (int i = 0; i < s.grid.getTotalNumberOfCells(); i++) {
-			for (int j = 0; j < particlesPerCell; j++) {
-				double x = (1.0 * j - particlesPerLink/2) / (particlesPerLink);
-				int[] gridPos = s.grid.getCellPos(i);
-				double dz = x * as;
+		for (int z = zStart; z <= zEnd; z++) {
+			for (int i = 0; i < totalTransversalCells; i++) {
+				int[] transGridPos = GridFunctions.getCellPos(i, transversalNumCells);
+				int[] gridPos = GridFunctions.insertGridPos(transGridPos, direction, z);
+				int index = s.grid.getCellIndex(gridPos);
+				for (int j = 0; j < particlesPerCell; j++) {
+					// Position within cell
+					double x = (1.0 * j - particlesPerLink/2) / (particlesPerLink);
+					double dz = x * as[direction];
 
-				// Particle position
-				double[] particlePosition0 = new double[gridPos.length];
-				double[] particlePosition1 = new double[gridPos.length];
-				for (int k = 0; k < gridPos.length; k++) {
-					particlePosition0[k] = gridPos[k] * as + FIX_ROUND_ERRORS;
-					particlePosition1[k] = gridPos[k] * as + FIX_ROUND_ERRORS;
-					if(k == direction) {
-						particlePosition0[k] += t0 * orientation + dz;
-						particlePosition1[k] += (t0 + at) * orientation + dz;
+
+					// Particle position
+					double[] particlePosition0 = new double[gridPos.length];
+					double[] particlePosition1 = new double[gridPos.length];
+					for (int k = 0; k < gridPos.length; k++) {
+						double FIX_ROUND_ERRORS = 10E-12 * as[k];
+						particlePosition0[k] = gridPos[k] * as[k] + FIX_ROUND_ERRORS;
+						particlePosition1[k] = gridPos[k] * as[k] + FIX_ROUND_ERRORS;
+						if(k == direction) {
+							particlePosition0[k] += t0 * orientation + dz;
+							particlePosition1[k] += (t0 + at) * orientation + dz;
+						}
 					}
-				}
 
 
-				AlgebraElement charge = this.interpolateChargeFromGrid(s, particlePosition0).mult(1.0 / particlesPerLink);
+					AlgebraElement charge = this.interpolateChargeFromGrid(s, particlePosition0).mult(1.0 / particlesPerLink);
 
 
-				// Particle velocity
-				double[] particleVelocity = new double[gridPos.length];
-				for (int k = 0; k < gridPos.length; k++) {
-					if(k == direction) {
-						particleVelocity[k] = 1.0 * orientation;
-					} else {
-						particleVelocity[k] = 0.0;
+					// Particle velocity
+					double[] particleVelocity = new double[gridPos.length];
+					for (int k = 0; k < gridPos.length; k++) {
+						if(k == direction) {
+							particleVelocity[k] = 1.0 * orientation;
+						} else {
+							particleVelocity[k] = 0.0;
+						}
 					}
-				}
 
-				CGCParticle p = new CGCParticle(s.getNumberOfDimensions(), s.getNumberOfColors(), direction);
-				p.pos0 = particlePosition0; // position at t = 0
-				p.pos1 = particlePosition1; // position at t = dt (optional)
-				p.vel = particleVelocity;   // particle velocity at t = -dt/2.
-				p.Q0 = charge;              // charge at t = 0
-				p.Q1 = charge.copy();       // charge at t = dt, assume that there is no parallel transport initially (also optional).
+					CGCParticle p = new CGCParticle(s.getNumberOfDimensions(), s.getNumberOfColors(), direction);
+					p.pos0 = particlePosition0; // position at t = 0
+					p.pos1 = particlePosition1; // position at t = dt (optional)
+					p.vel = particleVelocity;   // particle velocity at t = -dt/2.
+					p.Q0 = charge;              // charge at t = 0
+					p.Q1 = charge.copy();       // charge at t = dt, assume that there is no parallel transport initially (also optional).
 
-				if(charge.square() > cutoffCharge) {
 					s.particles.add(p);
-
 					// Add to extra particle array for charge refinement.
-					int transversalIndex = GridFunctions.getCellIndex(GridFunctions.reduceGridPos(gridPos, direction), transversalNumCells);
-					longitudinalParticleList.get(transversalIndex).add(p);
+					longitudinalParticleList.get(i).add(p);
 				}
 			}
 		}

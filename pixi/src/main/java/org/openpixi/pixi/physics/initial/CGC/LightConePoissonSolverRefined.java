@@ -57,6 +57,10 @@ public class LightConePoissonSolverRefined implements ICGCPoissonSolver {
 			phi0[i] = s.grid.getElementFactory().algebraZero();
 		}
 
+		// Longitudinal and transverse lattice spacing
+		double aL = s.grid.getLatticeSpacing(direction);
+		double aT = s.grid.getLatticeSpacing((direction + 1) % s.getNumberOfDimensions());
+
 		for (int z = 0; z < longitudinalNumCells; z++) {
 			for (int c = 0; c < numberOfComponents; c++) {
 				// Prepare 2D charge density.
@@ -70,7 +74,7 @@ public class LightConePoissonSolverRefined implements ICGCPoissonSolver {
 				}
 
 				// Solve Poisson equation
-				double[] phi2D = FourierFunctions.solvePoisson2D(rho2D, transverseNumCells, s.grid.getLatticeSpacing());
+				double[] phi2D = FourierFunctions.solvePoisson2D(rho2D, transverseNumCells, aT);
 
 				// Put result into phi0.
 				for (int i = 0; i < totalTransverseCells; i++) {
@@ -92,7 +96,7 @@ public class LightConePoissonSolverRefined implements ICGCPoissonSolver {
 			Vn[i] = s.grid.getElementFactory().groupIdentity();
 		}
 
-		double gaugeFactor = - s.getCouplingConstant() * s.grid.getLatticeSpacing();
+		double gaugeFactor = - s.getCouplingConstant() * aL;
 		int pointsPerCell = 8;
 		int refinementSteps = 100;
 		int n = pointsPerCell * longitudinalNumCells;
@@ -204,7 +208,7 @@ public class LightConePoissonSolverRefined implements ICGCPoissonSolver {
 				// Wilson line for next step. Built from sub-lattice gauge links as well, but for a shorter path.
 				// This is equivalent to the computing the time evolution operator for the Wilson line.
 				W = s.grid.getElementFactory().groupIdentity();
-				int extraSteps = (int) (pointsPerCell * s.grid.getTemporalSpacing() / s.grid.getLatticeSpacing());
+				int extraSteps = (int) (pointsPerCell * s.grid.getTemporalSpacing() / aL);
 				for (int k = 0; k < extraSteps; k++) {
 					int rIndex = p(pointsPerCell * z - orientation * k, n);
 					W.multAssign(phiR[rIndex].mult(gaugeFactor).getLink());

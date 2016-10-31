@@ -189,7 +189,7 @@ public class Simulation {
 
 		this.simulationBoxSize = new double[settings.getNumberOfDimensions()];
 		for(int i = 0; i < settings.getNumberOfDimensions(); i++) {
-			this.simulationBoxSize[i] = settings.getGridStep() * settings.getGridCells(i);
+			this.simulationBoxSize[i] = settings.getGridStep(i) * settings.getGridCells(i);
 		}
 
 		speedOfLight = settings.getSpeedOfLight();

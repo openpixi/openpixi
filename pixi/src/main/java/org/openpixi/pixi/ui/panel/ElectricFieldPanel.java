@@ -171,9 +171,6 @@ public class ElectricFieldPanel extends AnimationPanel {
 			double panelHeight, Grid drawGrid, double scale, int type) {
 
 		// Lattice spacing and coupling constant
-		double as = s.grid.getLatticeSpacing();
-		double at = s.getTimeStep();
-		double g = s.getCouplingConstant();
 
 		int colorIndex = colorProperties.getColorIndex();
 		int directionIndex = colorProperties.getDirectionIndex();
@@ -207,7 +204,7 @@ public class ElectricFieldPanel extends AnimationPanel {
 				}
 
 				// Electric fields are placed at the lattice points.
-				newPosition = (int) (s.grid.getLatticeSpacing() * (i) * sx);
+				newPosition = (int) (s.grid.getLatticeSpacing(abscissaIndex) * (i) * sx);
 
 				/*
 					Expectation: Positive fields should point upwards.
@@ -215,46 +212,47 @@ public class ElectricFieldPanel extends AnimationPanel {
 					center of the panel in order to get the expected result.
 				*/
 				int index = drawGrid.getCellIndex(pos);
+				double ga = drawGrid.getLatticeUnitFactor(directionIndex);
 				double value = 0;
 				switch(type) {
 				case INDEX_E:
-					value = drawGrid.getE(index, directionIndex).get(colorIndex) / (as * g);
+					value = drawGrid.getE(index, directionIndex).get(colorIndex) / ga;
 					break;
 				case INDEX_B:
-					value = drawGrid.getB(index, directionIndex, 0).get(colorIndex) / (as * g);
+					value = drawGrid.getB(index, directionIndex, 0).get(colorIndex) / ga;
 					break;
 				case INDEX_B_NEXT:
-					value = drawGrid.getB(index, directionIndex, 1).get(colorIndex) / (as * g);
+					value = drawGrid.getB(index, directionIndex, 1).get(colorIndex) / ga;
 					break;
 				case INDEX_U:
-					value = drawGrid.getU(index, directionIndex).proj().get(colorIndex) / (as * g);
+					value = drawGrid.getU(index, directionIndex).proj().get(colorIndex) / ga;
 					break;
 				case INDEX_U_NEXT:
-					value = drawGrid.getUnext(index, directionIndex).proj().get(colorIndex) / (as * g);
+					value = drawGrid.getUnext(index, directionIndex).proj().get(colorIndex) / ga;
 					break;
 				case INDEX_J:
 					//newPosition = (int) (s.grid.getLatticeSpacing() * (i + .5) * sx);
-					value = drawGrid.getJ(index, directionIndex).get(colorIndex) / (as * g);
+					value = drawGrid.getJ(index, directionIndex).get(colorIndex);
 					break;
 				case INDEX_RHO:
-					value = drawGrid.getRho(index).get(colorIndex) / (as * g);
+					value = drawGrid.getRho(index).get(colorIndex);
 					break;
 				case INDEX_GAUSS:
 					//newPosition = (int) (s.grid.getLatticeSpacing() * (i + .5) * sx);
 					if(drawGrid.isEvaluatable(index)) {
-						value = drawGrid.getGaussConstraint(s.grid.getCellIndex(pos)).get(colorIndex) / (as * g);
+						value = drawGrid.getGaussConstraint(s.grid.getCellIndex(pos)).get(colorIndex);
 					} else {
 						value = 0.0;
 					}
 					break;
 				case INDEX_ROT_E:
-					value = drawGrid.getRotE(index, directionIndex).get(colorIndex) / (as * g);
+					value = drawGrid.getRotE(index, directionIndex).get(colorIndex);
 					break;
 				case INDEX_ROT_B:
-					value = drawGrid.getRotB(index, directionIndex, 0).get(colorIndex) / (as * g);
+					value = drawGrid.getRotB(index, directionIndex, 0).get(colorIndex);
 					break;
 				case INDEX_ROT_B_NEXT:
-					value = drawGrid.getRotB(index, directionIndex, 1).get(colorIndex) / (as * g);
+					value = drawGrid.getRotB(index, directionIndex, 1).get(colorIndex);
 					break;
 				}
 				scaleProperties.putValue(value);

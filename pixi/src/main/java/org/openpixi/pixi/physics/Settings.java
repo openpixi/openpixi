@@ -46,6 +46,8 @@ public class Settings {
 	private double couplingConstant = 1.0;
 	private double timeStep = 0.1;
 	private double gridStep = 1;
+	private double[] gridSteps;
+	private boolean useUnevenGrid = false;
 	private double tMax = 1000;
 	private GeneralBoundaryType boundaryType = GeneralBoundaryType.Periodic;
 	private InterpolatorAlgorithm interpolator = new EmptyInterpolator();
@@ -58,7 +60,7 @@ public class Settings {
 	private boolean useGrid = true;
 	private boolean relativistic = true;
 	// Regions
-	private boolean evaluationRegionEneabled = false;
+	private boolean evaluationRegionEnabled = false;
 	private int[] evaluationRegionPoint1;
 	private int[] evaluationRegionPoint2;
 	private boolean activeRegionEnabled = false;
@@ -122,7 +124,22 @@ public class Settings {
 	}
 
 	public double getGridStep() {
+		if(useUnevenGrid) {
+			throw new RuntimeException("Use getGridStep(int direction).");
+		}
 		return gridStep;
+	}
+
+	public double getGridStep(int i) {
+		if(useUnevenGrid) {
+			return gridSteps[i];
+		} else {
+			return gridStep;
+		}
+	}
+
+	public boolean useUnevenGrid() {
+		return useUnevenGrid;
 	}
 
 	public boolean getRelativistic() {
@@ -213,7 +230,7 @@ public class Settings {
 	}
 
 	public boolean isEvaluationRegionEnabled() {
-		return evaluationRegionEneabled;
+		return evaluationRegionEnabled;
 	}
 
 	public int[] getEvaluationRegionPoint1() {
@@ -322,19 +339,6 @@ public class Settings {
 		simulationWidth[i] = gridStep * num;
 	}
 
-	public void setGridCellsX(int gridCellsX) 
-	{
-		setGridCells(0, gridCellsX);
-	}
-
-	public void setGridCellsY(int gridCellsY) {
-		setGridCells(1, gridCellsY);
-	}
-
-	public void setGridCellsZ(int gridCellsZ) {
-		setGridCells(2, gridCellsZ);
-	}
-
 	public void setSpeedOfLight(double speedOfLight) {
 		this.speedOfLight = speedOfLight;
 	}
@@ -349,6 +353,7 @@ public class Settings {
 		this.numberOfDimensions = numberOfDimensions;
 		gridCells = new int[numberOfDimensions];
 		simulationWidth = new double[numberOfDimensions];
+		gridSteps = new double[numberOfDimensions];
 	}
 
 	public void setCouplingConstant(double g) {
@@ -367,6 +372,11 @@ public class Settings {
 
 	public void setGridStep(double gridstep) {
 		this.gridStep = gridstep;
+	}
+
+	public void setGridStep(int i, double gridstep) {
+		this.useUnevenGrid = true;
+		this.gridSteps[i] = gridstep;
 	}
 
 	public void setRelativistic(boolean rel) {
@@ -465,7 +475,7 @@ public class Settings {
 	}
 
 	public void setEvaluationRegionEnabled(boolean value) {
-		this.evaluationRegionEneabled = value;
+		this.evaluationRegionEnabled = value;
 	}
 
 	public void setEvaluationRegionPoint1(int[] point) {
@@ -501,6 +511,11 @@ public class Settings {
 		gridCells = new int[numberOfDimensions];
 		for (int i = 0; i < numberOfDimensions; i++) {
 			gridCells[i] = 1;
+		}
+
+		gridSteps = new double[numberOfDimensions];
+		for (int i = 0; i < numberOfDimensions; i++) {
+			gridSteps[i] = 1.0;
 		}
 
 		applySimulationTypeSetting();

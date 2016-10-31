@@ -52,7 +52,17 @@ public class Grid {
 	 * Spatial lattice spacing
 	 */
 	protected double as;
-	
+
+	/**
+	 * This is set to true if different lattice spacings for different directions are used.
+	 */
+	protected boolean useUnevenGrid = false;
+
+	/**
+	 * Spatial lattice spacings array
+	 */
+	protected double[] asUneven;
+
 	/**
 	 * Temporal lattice spacing
 	 */
@@ -293,9 +303,71 @@ public class Grid {
 	 * @return  Lattice spacing of the grid.
 	 */
 	public double getLatticeSpacing() {
+		if(useUnevenGrid) {
+			throw new RuntimeException("Use getGridStep(int direction).");
+		}
 		return as;
 	}
-	
+
+	/**
+	 * Returns the lattice spacing of the grid.
+	 * @return  Lattice spacing of the grid.
+	 */
+	public double getLatticeSpacing(int i) {
+		if(useUnevenGrid) {
+			return asUneven[i];
+		} else {
+			return as;
+		}
+	}
+
+	/**
+	 * Returns the lattice spacings of the grid as an array.
+	 * @return  Lattice spacings of the grid.
+	 */
+	public double[] getLatticeSpacings() {
+		if(useUnevenGrid) {
+			return asUneven;
+		} else {
+			double[] as = new double[numDim];
+			for (int i = 0; i < numDim; i++) {
+				as[i] = getLatticeSpacing();
+			}
+			return as;
+		}
+	}
+
+	/**
+	 * Returns the area of the (i,j)-face of a cell.
+	 * @param i first index of the area
+	 * @param j second index of the area
+	 * @return  area of the (i,j)-face of a cell
+	 */
+	public double getCellArea(int i, int j) {
+		return getLatticeSpacing(i) * getLatticeSpacing(j);
+	}
+
+	/**
+	 * Returns the volume of a cell.
+	 * @return volume of a cell
+     */
+	public double getCellVolume() {
+		double volume = 1.0;
+		for (int i = 0; i < numDim; i++) {
+			volume *= getLatticeSpacing(i);
+		}
+		return volume;
+	}
+
+	/**
+	 * Returns the g*a lattice unit factor.
+	 * @param i direction
+	 * @return  lattice unit factor g*a_i
+	 */
+	public double getLatticeUnitFactor(int i) {
+		return gaugeCoupling * getLatticeSpacing(i);
+	}
+
 	/**
 	 * Returns the number of colors.
 	 * @return  Number of colors.
@@ -371,11 +443,20 @@ public class Grid {
 	public Grid(Settings settings) {
 
 		gaugeCoupling = settings.getCouplingConstant();
-		as = settings.getGridStep();
-		at = settings.getTimeStep();
 		numCol = settings.getNumberOfColors();
 		numDim = settings.getNumberOfDimensions();
 		numCells = new int[numDim];
+
+		useUnevenGrid = settings.useUnevenGrid();
+		if(useUnevenGrid) {
+			asUneven = new double[numDim];
+			for (int i = 0; i < numDim; i++) {
+				asUneven[i] = settings.getGridStep(i);
+			}
+		} else {
+			as = settings.getGridStep();
+		}
+		at = settings.getTimeStep();
 		
 		for(int i = 0; i < numDim; i++) {
 			numCells[i] = settings.getGridCells(i);
@@ -398,11 +479,20 @@ public class Grid {
 	 */
 	public Grid(Grid grid) {
 		gaugeCoupling = grid.gaugeCoupling;
-		as = grid.as;
-		at = grid.at;
 		numCol = grid.numCol;
 		numDim = grid.numDim;
 		numCells = new int[numDim];
+
+		if(grid.useUnevenGrid) {
+			asUneven = new double[numDim];
+			for (int i = 0; i < numDim; i++) {
+				asUneven[i] = grid.getLatticeSpacing(i);
+			}
+			useUnevenGrid = true;
+		} else {
+			as = grid.as;
+		}
+		at = grid.at;
 
 		for(int i = 0; i < numDim; i++) {
 			numCells[i] = grid.numCells[i];
@@ -594,8 +684,10 @@ public class Grid {
 				GroupElement U2 = getU(ci4, d).mult(getU(ci3, i));
 				U2.adjAssign();
 				U2.multAssign(getU(ci4, i));
+				double areaFactor = 1.0 / Math.pow(getLatticeSpacing(i), 2);
+				U1.addAssign(U2);
+				U1.multAssign(areaFactor);
 				S.addAssign(U1);
-				S.addAssign(U2);
 			}
 		}
 		return S;
@@ -822,7 +914,7 @@ public class Grid {
 			k = 1;
 			break;
 		}
-		return getPlaquette(index, j, k, 1, 1, timeIndex).proj().mult(1 / as);
+		return getPlaquette(index, j, k, 1, 1, timeIndex).proj().mult(getLatticeSpacing(direction) / getCellArea(j, k));
 	}
 
 	/**
@@ -848,21 +940,27 @@ public class Grid {
 	}
 
 	public AlgebraElement getGaussConstraint(int index) {
+		/*
+		Note: Since we are computing the divergence, we have to sum over different spatial components
+		of the electric field. This means that we combine field values measured in different lattice units,
+		because the i-th direction of E_i comes with a factor of g * a_i. It does not make sense to sum these
+		different components without removing the factors g * a_i first.
+		Therefore the units of the Gauss constraint/violation as computed here are returned in physical (energy)
+		units, which seems a bit inconsistent with the rest of the simulation. In the case of a cubic grid it
+		is convenient to express everything in units of g*a, but once we go to tetragonal lattices - at least
+		in the case of the Gauss constraint - it is not really clear to me what unit factor to use instead.
+		 */
 		AlgebraElement gauss = factory.algebraZero();
 		for (int i = 0; i < numDim; i++) {
+			double unitFactor = getLatticeUnitFactor(i);
 			int shiftedIndex = shift(index, i, -1);
 			AlgebraElement E = getE(shiftedIndex, i).copy();
 			E.actAssign(getLink(index, i, -1, 0));
-			gauss.addAssign(getE(index, i));
-			gauss.addAssign(E.mult(-1.0));
-			/*
-			AlgebraElement E = getEFromLinks(shiftedIndex, i);
-			E.actAssign(getLink(shiftedIndex, i, 1, 0).adj());
-			gauss.addAssign(getEFromLinks(index, i));
-			gauss.addAssign(E.mult(-1.0));
-			*/
+			E.multAssign(-1.0);
+			E.addAssign(getE(index, i));
+			E.multAssign(1.0 / (getLatticeSpacing(i) * unitFactor));
+			gauss.addAssign(E);
 		}
-		gauss.multAssign(1.0/as);
 		gauss = gauss.sub(getRho(index));
 		return gauss;
 	}
@@ -904,7 +1002,7 @@ public class Grid {
 	}
 
 	/**
-	 * Calculate rot B using a backward derivative.
+	 * Calculate rot B using a backward derivative in physical units.
 	 * @param index    	Lattice index
 	 * @param direction	Index of the direction
 	 * @param timeIndex	Option to compute B from U (timeIndex = 0) or Unext (timeIndex != 0)
@@ -915,6 +1013,8 @@ public class Grid {
 		// Labels are for direction == 0 (X-direction), and cyclically rotated.
 		int dirY = (direction + 1) % 3;
 		int dirZ = (direction + 2) % 3;
+		double unitFactorY = 1.0 / getLatticeUnitFactor(dirY);
+		double unitFactorZ = 1.0 / getLatticeUnitFactor(dirZ);
 
 		int indexShiftedY = shift(index, dirY, -1);
 		int indexShiftedZ = shift(index, dirZ, -1);
@@ -930,16 +1030,18 @@ public class Grid {
 
 		// dBy/dz = By(y, z+1) - By(y, z)
 		AlgebraElement dBydz = (Byz1.add(By.mult(-1)));
+		dBydz.multAssign(unitFactorY / getLatticeSpacing(dirZ));
 
 		// dBz/dy = Bz(y+1, z) - Bz(y, z)
 		AlgebraElement dBzdy = (Bzy1.add(Bz.mult(-1)));
+		dBzdy.multAssign(unitFactorZ / getLatticeSpacing(dirY));
 
 		// dBz/dy - dBy/dz
-		return (dBzdy.add(dBydz.mult(-1))).mult(-1 / as);
+		return (dBzdy.add(dBydz.mult(-1))).mult(-1);
 	}
 
 	/**
-	 * Calculate rot E using a forward derivative.
+	 * Calculate rot E using a forward derivative in physical units.
 	 * @param index    	Lattice index
 	 * @param direction	Index of the direction
 	 * @return          Result of rot E.
@@ -949,6 +1051,8 @@ public class Grid {
 		// Labels are for direction == 0 (X-direction), and cyclically rotated.
 		int dirY = (direction + 1) % 3;
 		int dirZ = (direction + 2) % 3;
+		double unitFactorY = 1.0 / getLatticeUnitFactor(dirY);
+		double unitFactorZ = 1.0 / getLatticeUnitFactor(dirZ);
 
 		int indexShiftedY = shift(index, dirY, 1);
 		int indexShiftedZ = shift(index, dirZ, 1);
@@ -964,12 +1068,14 @@ public class Grid {
 
 		// dEy/dz = Ey(y, z+1) - Ey(y, z)
 		AlgebraElement dEydz = (Eyz1.add(Ey.mult(-1)));
+		dEydz.multAssign(unitFactorY / getLatticeSpacing(dirZ));
 
 		// dEz/dy = Ez(y+1, z) - Ez(y, z)
 		AlgebraElement dEzdy = (Ezy1.add(Ez.mult(-1)));
+		dEzdy.multAssign(unitFactorZ / getLatticeSpacing(dirY));
 
 		// dEz/dy - dEy/dz
-		return (dEzdy.add(dEydz.mult(-1))).mult(1 / as);
+		return (dEzdy.add(dEydz.mult(-1)));
 	}
 
 	/**
@@ -986,7 +1092,7 @@ public class Grid {
 	}
 
 	/**
-	 * Returns the spatially and temporally averaged field strength tensor F_ij including parallel transport.
+	 * Returns the spatially and temporally averaged field strength tensor F_ij including parallel transport  in physical units.
 	 * @param index Lattice index
 	 * @param i     First component
 	 * @param j     Second component
@@ -995,6 +1101,8 @@ public class Grid {
 	public AlgebraElement getAveragedFieldStrength(int index, int i, int j) {
 		// Average spatial components of field strength tensor in space and time (B-Field).
 		GroupElement FG = factory.groupZero();
+
+		double unitFactor = getGaugeCoupling() * getCellArea(i, j);
 
 		// Spatial average at t-at/2
 		FG.addAssign(getPlaquette(index, i, j, 1, 1, 0));
@@ -1010,17 +1118,17 @@ public class Grid {
 		FG.addAssign(getPlaquette(index, i, j, -1, -1, 1));
 
 		// Divide by factors and convert to AlgebraElement.
-		return FG.proj().mult(1.0 / (8.0 * as));
+		return FG.proj().mult(1.0 / (8.0 * unitFactor));
 	}
 
 	/**
-	 * Returns spatially and temporally averaged B-Field including parallel transport in 3D.
+	 * Returns spatially and temporally averaged B-Field including parallel transport in 3D in lattice units.
 	 * @param index Lattice index
 	 * @param d     Index of the direction
 	 * @return      Averaged B-Field
 	 */
 	public AlgebraElement getAveragedB(int index, int d) {
-		return getAveragedFieldStrength(index, (d + 1) % 3, (d + 2) % 3);
+		return getAveragedFieldStrength(index, (d + 1) % 3, (d + 2) % 3).mult(getLatticeUnitFactor(d));
 	}
 
 }

@@ -1,0 +1,70 @@
+simulationType: temporal optimized cgc ngp
+gridSteps: [.1, 1, 1]
+couplingConstant: 2
+numberOfDimensions: 3
+numberOfColors: 2
+numberOfThreads: 8
+gridCells: [128, 16, 16]
+timeStep: 0.05
+duration: 64
+evaluationRegion:
+  enabled: true
+  point1: [2, 0, 0]
+  point2: [-3, -1, -1]
+activeRegion:
+  enabled: true
+  point1: [1, 0, 0]
+  point2: [-2, -1, -1]
+
+initialConditions:
+  CGC:
+    poissonSolver: improved full
+    MVModel:
+      - direction: 0
+        orientation: 1
+        longitudinalLocation: 3.2
+        longitudinalWidth: .2
+        randomSeed: 5
+        mu: .045
+        ultravioletCutoffTransverse: 2
+        longitudinalCoherenceLength: .4
+        infraredCoefficient: 0.2
+      - direction: 0
+        orientation: -1
+        longitudinalLocation: 9.6
+        longitudinalWidth: .2
+        randomSeed: 6
+        mu: .045
+        ultravioletCutoffTransverse: 2
+        longitudinalCoherenceLength: .4
+        infraredCoefficient: 0.2
+
+output:
+  projectedEnergyDensity:
+    - path: 'pe.dat'
+      interval: 0.1
+      direction: 0
+      computeEnergyDensity: True
+      computePoyntingVector: False
+
+
+# Generated panel code:
+panels:
+  energyDensityVoxelGLPanel:
+    automaticScaling: false
+    centerx: 0.0
+    centery: 0.0
+    centerz: 0.0
+    data: Energy density
+    direction: x
+    distanceFactor: 1.0
+    opacity: 0.1
+    phi: -4.670796326794897
+    scaleFactor: 10000.0
+    showSimulationBox: true
+    theta: 1.0653981633974485
+    unequalScaling: false
+    visibilityThreshold: 0.0
+    whiteBackground: false
+  windowHeight: 608
+  windowWidth: 1376

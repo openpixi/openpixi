@@ -73,6 +73,21 @@ public class GridFunctions {
 	}
 
 	/**
+	 * Given a double vector in the simulation box the nearest grid point is returned.
+	 *
+	 * @param pos position in the simulation box
+	 * @param as  lattice spacings of the grid
+	 * @return    grid position of the nearest grid point
+	 */
+	public static int[] nearestGridPoint(double[] pos, double[] as) {
+		int[] roundedGridPosition = new int[pos.length];
+		for (int i = 0; i < pos.length; i++) {
+			roundedGridPosition[i] = (int) Math.rint(pos[i] / as[i]);
+		}
+		return roundedGridPosition;
+	}
+
+	/**
 	 * Given a double vector in the simulation box the "floored" grid point is returned.
 	 *
 	 * @param pos position in the simulation box
@@ -150,6 +165,26 @@ public class GridFunctions {
 			}
 		}
 		return projGridPos;
+	}
+
+	/**
+	 * Eliminates a coordinate of a position vector.
+	 * Example: reducePos([16.0, 16.0, 8.0], 2) returns the reduced (projected) position [16.0, 16.0]
+	 *
+	 * @param pos position
+	 * @param dir direction which should be eliminated
+	 * @return    reduced position
+	 */
+	public static double[] reducePos(double[] pos, int dir) {
+		double[] projPos = new double[pos.length-1];
+		int count = 0;
+		for (int i = 0; i < pos.length; i++) {
+			if(i != dir) {
+				projPos[count] = pos[i];
+				count++;
+			}
+		}
+		return projPos;
 	}
 
 	/**

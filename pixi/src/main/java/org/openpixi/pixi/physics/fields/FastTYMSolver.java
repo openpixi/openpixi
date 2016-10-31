@@ -24,8 +24,10 @@ public class FastTYMSolver extends FieldSolver
 	@Override
 	public void step(Grid grid, double timeStep) {
 		combinedUpdate.at = timeStep;
-		combinedUpdate.factor = timeStep / (grid.getLatticeSpacing() * grid.getLatticeSpacing());
-
+		combinedUpdate.unitFactor = new double[grid.getNumberOfDimensions()];
+		for (int i = 0; i < grid.getNumberOfDimensions(); i++) {
+			combinedUpdate.unitFactor[i] =  - grid.getLatticeUnitFactor(i) * grid.getTemporalSpacing();
+		}
 		cellIterator.execute(grid, combinedUpdate);
 	}
 
@@ -38,7 +40,7 @@ public class FastTYMSolver extends FieldSolver
 	private class CombinedUpdate implements CellAction {
 
 		private double at;
-		private double factor;
+		private double[] unitFactor;
 
 		/**
 		 * Combined update of fields and links using the sum of staples.
@@ -50,8 +52,8 @@ public class FastTYMSolver extends FieldSolver
 				GroupElement V;
 				for (int i = 0; i < grid.getNumberOfDimensions(); i++) {
 					GroupElement temp = grid.getU(index, i).mult(grid.getStapleSum(index, i));
-					grid.addE(index, i, temp.proj().mult(factor));
-					grid.addE(index, i, grid.getJ(index, i).mult(-at));
+					grid.addE(index, i, temp.proj().mult(at)); // area factors already included in getStapleSum()
+					grid.addE(index, i, grid.getJ(index, i).mult(unitFactor[i]));
 					V = grid.getE(index, i).mult(-at).getLink();
 					V.multAssign(grid.getU(index, i));
 					grid.setUnext(index, i, V);

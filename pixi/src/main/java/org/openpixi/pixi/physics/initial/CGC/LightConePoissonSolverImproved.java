@@ -52,6 +52,10 @@ public class LightConePoissonSolverImproved implements ICGCPoissonSolver {
 		int numberOfColors = s.getNumberOfColors();
 		int numberOfComponents = (numberOfColors > 1) ? numberOfColors * numberOfColors - 1 : 1;
 
+		// Longitudinal and transverse lattice spacing
+		double aL = s.grid.getLatticeSpacing(direction);
+		double aT = s.grid.getLatticeSpacing((direction + 1) % s.getNumberOfDimensions());
+
 		// Solve for phi at t = - at/2 'sheet by sheet'
 		phi0 = new AlgebraElement[s.grid.getTotalNumberOfCells()];
 		for (int i = 0; i < s.grid.getTotalNumberOfCells(); i++) {
@@ -71,7 +75,7 @@ public class LightConePoissonSolverImproved implements ICGCPoissonSolver {
 				}
 
 				// Solve Poisson equation
-				double[] phi2D = FourierFunctions.solvePoisson2D(rho2D, transverseNumCells, s.grid.getLatticeSpacing());
+				double[] phi2D = FourierFunctions.solvePoisson2D(rho2D, transverseNumCells, aT);
 
 				// Put result into phi0.
 				for (int i = 0; i < totalTransverseCells; i++) {
@@ -93,7 +97,7 @@ public class LightConePoissonSolverImproved implements ICGCPoissonSolver {
 			V[i] = s.grid.getElementFactory().groupIdentity();
 		}
 
-		double gaugeFactor = - s.getCouplingConstant() * s.grid.getLatticeSpacing();
+		double gaugeFactor = - s.getCouplingConstant() * aL;
 		for (int k = 0; k < longitudinalNumCells; k++) {
 			int z = (orientation < 0) ? k : (longitudinalNumCells - k - 1);
 			for (int i = 0; i < totalTransverseCells; i++) {

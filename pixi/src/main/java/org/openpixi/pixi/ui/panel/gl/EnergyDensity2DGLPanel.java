@@ -107,10 +107,10 @@ public class EnergyDensity2DGLPanel extends AnimationGLPanel {
 			for(int k = 0; k < s.grid.getNumCells(yAxisIndex); k++)
 			{
 				//float xstart = (float) (s.grid.getLatticeSpacing() * (i + 0.5) * sx);
-				float xstart2 = (float)(s.grid.getLatticeSpacing() * i * sx);
-				float xstart3 = (float)(s.grid.getLatticeSpacing() * (i + 1) * sx);
+				float xstart2 = (float)(s.grid.getLatticeSpacing(xAxisIndex) * i * sx);
+				float xstart3 = (float)(s.grid.getLatticeSpacing(xAxisIndex) * (i + 1) * sx);
 				//float ystart = (float) (s.grid.getLatticeSpacing() * (k + 0.5) * sy);
-				float ystart2 = (float) (s.grid.getLatticeSpacing() * k * sy);
+				float ystart2 = (float) (s.grid.getLatticeSpacing(yAxisIndex) * k * sy);
 
 				pos[xAxisIndex] = i;
 				pos[yAxisIndex] = k;

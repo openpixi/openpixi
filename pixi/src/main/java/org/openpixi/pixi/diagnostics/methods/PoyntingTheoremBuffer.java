@@ -232,45 +232,37 @@ public class PoyntingTheoremBuffer implements Diagnostics {
 	@Deprecated
 	private double getEnergyDensity1(int index) {
 		double value = 0;
-
-		// Lattice spacing and coupling constant
-		double as = s.grid.getLatticeSpacing();
-		double g = s.getCouplingConstant();
-
 		for (int w = 0; w < s.getNumberOfDimensions(); w++) {
-			value += s.grid.getEsquaredFromLinks(index, w);
+			double unitFactor = Math.pow(s.grid.getLatticeUnitFactor(w), -2);
+			value += s.grid.getEsquaredFromLinks(index, w) * unitFactor;
 			// Time averaging for B field.
-			value += 0.5 * s.grid.getBsquaredFromLinks(index, w, 0);
-			value += 0.5 * s.grid.getBsquaredFromLinks(index, w, 1);
+			value += 0.5 * s.grid.getBsquaredFromLinks(index, w, 0) * unitFactor;
+			value += 0.5 * s.grid.getBsquaredFromLinks(index, w, 1) * unitFactor;
 		};
-		return value / (as * g * as * g) / 2;
+		return value / 2;
 	}
 
 	/**
-	 * Calculates the energy density at the time of the E-field
+	 * Calculates the energy density at the time of the E-field in physical units.
 	 * correctly through order O(t^2).
 	 * @param index cell index
 	 * @return energy density
 	 */
 	private double getEnergyDensity2(int index) {
 		double value = 0;
-
-		// Lattice spacing and coupling constant
-		double as = s.grid.getLatticeSpacing();
-		double g = s.getCouplingConstant();
-
 		for (int w = 0; w < s.getNumberOfDimensions(); w++) {
-			value += s.grid.getE(index, w).square();
+			double unitFactor = Math.pow(s.grid.getLatticeUnitFactor(w), -2);
+			value += s.grid.getE(index, w).square() * unitFactor;
 			// Time averaging for B field.
 			AlgebraElement B = s.grid.getB(index, w, 0);
 			AlgebraElement Bnext = s.grid.getB(index, w, 1);
-			value += (B.add(Bnext)).mult(0.5).square();
+			value += (B.add(Bnext)).mult(0.5).square() * unitFactor;
 		};
-		return value / (as * g * as * g) / 2;
+		return value / 2;
 	}
 
 	/**
-	 * Calculates the energy density at the time of the E-field
+	 * Calculates the energy density in physical units at the time of the E-field
 	 * correctly through order O(x^2) and O(t^2) at the corner
 	 * of the cell at time t = dt/2.
 	 * @param index cell index
@@ -278,11 +270,6 @@ public class PoyntingTheoremBuffer implements Diagnostics {
 	 */
 	private double getEnergyDensity3(int index) {
 		double value = 0;
-
-		// Lattice spacing and coupling constant
-		double as = s.grid.getLatticeSpacing();
-		double g = s.getCouplingConstant();
-
 		for (int w = 0; w < s.getNumberOfDimensions(); w++) {
 			/*
 			value += s.grid.getE(index, w).square();
@@ -291,15 +278,16 @@ public class PoyntingTheoremBuffer implements Diagnostics {
 			AlgebraElement Bnext = s.grid.getB(index, w, 1);
 			value += (B.add(Bnext)).mult(0.5).square();
 			 */
+			double unitFactor = Math.pow(s.grid.getLatticeUnitFactor(w), -2);
 			AlgebraElement E = getEHalfShifted(index, w, 0, 0, -1);
 			AlgebraElement B = getBHalfShifted(index, w, 0, 0, -1);
-			value += E.square() + B.square();
+			value += (E.square() + B.square()) * unitFactor;
 		};
-		return value / (as * g * as * g) / 2;
+		return value / 2;
 	}
 
 	/**
-	 * Get E at particular location within the lattice cell.
+	 * Get E at particular location within the lattice cell in lattice units.
 	 * @param index Lattice index of the electric field
 	 * @param direction Index of the component
 	 * @param shiftDirection Direction in which the electric field is shifted by half a time step
@@ -342,7 +330,7 @@ public class PoyntingTheoremBuffer implements Diagnostics {
 	}
 
 	/**
-	 * Obtain a shifted and properly parallel transported E-vector component.
+	 * Obtain a shifted and properly parallel transported E-vector component in lattice units.
 	 * @param index
 	 * @param direction
 	 * @param shiftDirection
@@ -357,7 +345,7 @@ public class PoyntingTheoremBuffer implements Diagnostics {
 	}
 
 	/**
-	 * Obtain a shifted parallel transported E-vector along 2 path segments.
+	 * Obtain a shifted parallel transported E-vector along 2 path segments in lattice units.
 	 * @param index
 	 * @param direction
 	 * @param shiftDirection1
@@ -379,7 +367,7 @@ public class PoyntingTheoremBuffer implements Diagnostics {
 		return E;
 	}
 	/**
-	 * Get E at particular location within the lattice cell.
+	 * Get E at particular location within the lattice cell in lattice units.
 	 * @param index Lattice index of the electric field
 	 * @param direction Index of the component
 	 * @param shiftDirection Direction in which the electric field is shifted by half a time step
@@ -422,7 +410,7 @@ public class PoyntingTheoremBuffer implements Diagnostics {
 	}
 
 	/**
-	 * Obtain a shifted and properly parallel transported B-vector component.
+	 * Obtain a shifted and properly parallel transported B-vector component in lattice units.
 	 * @param index
 	 * @param direction
 	 * @param shiftDirection
@@ -438,7 +426,7 @@ public class PoyntingTheoremBuffer implements Diagnostics {
 	}
 
 	/**
-	 * Obtain a shifted parallel transported E-vector along 2 path segments.
+	 * Obtain a shifted parallel transported E-vector along 2 path segments in lattice units.
 	 * @param index
 	 * @param direction
 	 * @param shiftDirection1
@@ -461,7 +449,7 @@ public class PoyntingTheoremBuffer implements Diagnostics {
 	}
 
 	/**
-	 * Calculates the energy density as Yee energy
+	 * Calculates the energy density as Yee energy in physical units
 	 * E^2(t+dt/2) + B(t+dt)*B(t)
 	 * of the cell at time t = dt/2.
 	 * @param index cell index
@@ -469,23 +457,20 @@ public class PoyntingTheoremBuffer implements Diagnostics {
 	 */
 	private double getEnergyDensity4(int index) {
 		double value = 0;
-
 		// Lattice spacing and coupling constant
-		double as = s.grid.getLatticeSpacing();
-		double g = s.getCouplingConstant();
-
 		for (int w = 0; w < s.getNumberOfDimensions(); w++) {
-			value += s.grid.getE(index, w).square();
+			double unitFactor = Math.pow(s.grid.getLatticeUnitFactor(w), -2);
+			value += s.grid.getE(index, w).square() * unitFactor;
 			// Geometric time averaging for B field.
 			AlgebraElement B = s.grid.getB(index, w, 0);
 			AlgebraElement Bnext = s.grid.getB(index, w, 1);
-			value += B.mult(Bnext);
+			value += B.mult(Bnext) * unitFactor;
 		};
-		return value / (as * g * as * g) / 2;
+		return value / 2;
 	}
 
 	/**
-	 * Calculates the derivative of the energy density
+	 * Calculates the derivative of the energy density in physical units
 	 * at the time of the B-field correctly through order O(t^2).
 	 * @param index cell index
 	 * @return derivative of energy density
@@ -532,8 +517,6 @@ public class PoyntingTheoremBuffer implements Diagnostics {
 
 	@Deprecated
 	private double getDivPoyntingVector1(int index) {
-		double as = s.grid.getLatticeSpacing();
-
 		double value = 0;
 		if (s.getNumberOfDimensions() != 3) {
 			throw new RuntimeException("Dimension other than 3 has not been implemented yet.");
@@ -549,33 +532,32 @@ public class PoyntingTheoremBuffer implements Diagnostics {
 			if (!s.grid.isEvaluatable(indexShifted2)) {
 				return 0;
 			}
-			value += getPoyntingVector1(indexShifted1, direction)
-					- getPoyntingVector1(indexShifted2, direction);
+			value += (getPoyntingVector1(indexShifted1, direction)
+					- getPoyntingVector1(indexShifted2, direction)) / s.grid.getLatticeSpacing(direction);
 		}
-		return value / (2*as);
+		return value / 2;
 	}
 
 	@Deprecated
 	private double getPoyntingVector1(int index, int direction) {
-		double as = s.grid.getLatticeSpacing();
-		double g = s.getCouplingConstant();
-
 		// Indices for cross product:
 		int dir1 = (direction + 1) % 3;
 		int dir2 = (direction + 2) % 3;
+		double unitFactor1 = 1.0 / s.grid.getLatticeUnitFactor(dir1);
+		double unitFactor2 = 1.0 / s.grid.getLatticeUnitFactor(dir2);
 
 		// fields at same time:
-		AlgebraElement E1 = s.grid.getE(index, dir1);
-		AlgebraElement E2 = s.grid.getE(index, dir2);
+		AlgebraElement E1 = s.grid.getE(index, dir1).mult(unitFactor1);
+		AlgebraElement E2 = s.grid.getE(index, dir2).mult(unitFactor2);
 		// time averaged B-field:
-		AlgebraElement B1 = s.grid.getB(index, dir1, 0).add(s.grid.getB(index, dir1, 1)).mult(0.5);
-		AlgebraElement B2 = s.grid.getB(index, dir2, 0).add(s.grid.getB(index, dir2, 1)).mult(0.5);
+		AlgebraElement B1 = s.grid.getB(index, dir1, 0).add(s.grid.getB(index, dir1, 1)).mult(0.5).mult(unitFactor1);
+		AlgebraElement B2 = s.grid.getB(index, dir2, 0).add(s.grid.getB(index, dir2, 1)).mult(0.5).mult(unitFactor2);
 		double S = E1.mult(B2) - E2.mult(B1);
-		return S / (as * g * as * g);
+		return S;
 	}
 
 	/**
-	 * Calculates the divergence of the Poynting vector on the lattice.
+	 * Calculates the divergence of the Poynting vector on the lattice in physical units.
 	 * Actually, B rot E - E rot B is calculated.
 	 * @param index cell index
 	 * @return B rot E - E rot B
@@ -583,8 +565,6 @@ public class PoyntingTheoremBuffer implements Diagnostics {
 	@Deprecated
 	private double getBrotEminusErotB1(int index) {
 		storeOldEJ = true;
-		double as = s.grid.getLatticeSpacing();
-		double g = s.getCouplingConstant();
 
 		double value = 0;
 		if (s.getNumberOfDimensions() != 3) {
@@ -593,22 +573,23 @@ public class PoyntingTheoremBuffer implements Diagnostics {
 			// return 0;
 		}
 		for (int direction = 0; direction < s.grid.getNumberOfDimensions(); direction++) {
+			double unitFactor = 1.0 / s.grid.getLatticeUnitFactor(direction);
 			AlgebraElement rotE = s.grid.getRotE(index, direction);
 			AlgebraElement rotB0 = s.grid.getRotB(index, direction, 0);
 			AlgebraElement rotB1 = s.grid.getRotB(index, direction, 1);
 
-			AlgebraElement E = s.grid.getE(index, direction);
+			AlgebraElement E = s.grid.getE(index, direction).mult(unitFactor);
 			// time averaged B-fields:
-			AlgebraElement B = (s.grid.getB(index, direction, 0).add(s.grid.getB(index, direction, 1))).mult(0.5);
+			AlgebraElement B = (s.grid.getB(index, direction, 0).add(s.grid.getB(index, direction, 1))).mult(0.5 * unitFactor);
 			AlgebraElement rotB = (rotB0.add(rotB1)).mult(0.5);
 
 			value += B.mult(rotE) - E.mult(rotB);
 		}
-		return value / (as * g * as * g);
+		return value;
 	}
 
 	/**
-	 * Calculates the divergence of the Poynting vector on the lattice
+	 * Calculates the divergence of the Poynting vector on the lattice in physical units
 	 * at the time of the B-field correctly through order O(t^2).
 	 * Actually, B rot E - E rot B is calculated.
 	 * @param index cell index
@@ -616,8 +597,6 @@ public class PoyntingTheoremBuffer implements Diagnostics {
 	 */
 	private double getBrotEminusErotB2(int index) {
 		storeOldEJ = true;
-		double as = s.grid.getLatticeSpacing();
-		double g = s.getCouplingConstant();
 
 		double value = 0;
 		if (s.getNumberOfDimensions() != 3) {
@@ -626,6 +605,7 @@ public class PoyntingTheoremBuffer implements Diagnostics {
 			// return 0;
 		}
 		for (int direction = 0; direction < s.grid.getNumberOfDimensions(); direction++) {
+			double unitFactor = 1.0 / s.grid.getLatticeUnitFactor(direction);
 			// Time-averaged at time of B-field
 			AlgebraElement rotE = s.grid.getRotE(index, direction);
 			if (RotEcurrent != null) {
@@ -644,24 +624,23 @@ public class PoyntingTheoremBuffer implements Diagnostics {
 					E = (E.add(Eold[index][direction])).mult(0.5);
 				}
 			}
+			E = E.mult(unitFactor);
 
 			AlgebraElement rotB = s.grid.getRotB(index, direction, 0);
-			AlgebraElement B = s.grid.getB(index, direction, 0);
+			AlgebraElement B = s.grid.getB(index, direction, 0).mult(unitFactor);
 
 			value += B.mult(rotE) - E.mult(rotB);
 		}
-		return value / (as * g * as * g);
+		return value;
 	}
 
 	/**
-	 * Calculates the divergence of the Poynting vector on the lattice
+	 * Calculates the divergence of the Poynting vector on the lattice in physical units
 	 * at the time of the B-field correctly through order O(t^2).
 	 * @param index cell index
 	 * @return divergence of Poynting vector
 	 */
 	private double getDivPoyntingVector4(int index) {
-		double as = s.grid.getLatticeSpacing();
-
 		double value = 0;
 		if (s.getNumberOfDimensions() != 3) {
 			throw new RuntimeException("Dimension other than 3 has not been implemented yet.");
@@ -672,54 +651,52 @@ public class PoyntingTheoremBuffer implements Diagnostics {
 			int indexShifted1 = s.grid.shift(index, direction, -1);
 			switch (accuracy) {
 			case NAIVE:
-				value += getPoyntingVector2(index, direction)
-					- getPoyntingVector2(indexShifted1, direction);
+				value += (getPoyntingVector2(index, direction)
+								 - getPoyntingVector2(indexShifted1, direction)) / s.grid.getLatticeSpacing(direction);
 				break;
 
 			default:
 			case SIMPLE:
-				value += getPoyntingVector3(index, direction)
-						- getPoyntingVector3(indexShifted1, direction);
+				value += (getPoyntingVector3(index, direction)
+								 - getPoyntingVector3(indexShifted1, direction)) / s.grid.getLatticeSpacing(direction);
 				break;
 
 			case INTERPOLATED:
-				value += getPoyntingVector4(index, direction)
-					- getPoyntingVector4(indexShifted1, direction);
+				value += (getPoyntingVector4(index, direction)
+								 - getPoyntingVector4(indexShifted1, direction)) / s.grid.getLatticeSpacing(direction);
 				break;
 			}
 		}
-		return value / (as);
+		return value;
 	}
 
 	@Deprecated
 	private double getPoyntingVector2(int index, int direction) {
-		double as = s.grid.getLatticeSpacing();
-		double g = s.getCouplingConstant();
-
 		// Indices for cross product:
 		int dir1 = (direction + 1) % 3;
 		int dir2 = (direction + 2) % 3;
+		double unitFactor1 = 1.0 / s.grid.getLatticeUnitFactor(dir1);
+		double unitFactor2 = 1.0 / s.grid.getLatticeUnitFactor(dir2);
 
 		int indexShifted1 = s.grid.shift(index, dir1, 1);
 		int indexShifted2 = s.grid.shift(index, dir2, 1);
 
 		// fields at same time:
-		AlgebraElement E1 = s.grid.getE(indexShifted2, dir1);
-		AlgebraElement E2 = s.grid.getE(indexShifted1, dir2);
+		AlgebraElement E1 = s.grid.getE(indexShifted2, dir1).mult(unitFactor1);
+		AlgebraElement E2 = s.grid.getE(indexShifted1, dir2).mult(unitFactor2);
 		// time averaged B-field:
-		AlgebraElement B1 = s.grid.getB(index, dir1, 0).add(s.grid.getB(index, dir1, 1)).mult(0.5);
-		AlgebraElement B2 = s.grid.getB(index, dir2, 0).add(s.grid.getB(index, dir2, 1)).mult(0.5);
+		AlgebraElement B1 = s.grid.getB(index, dir1, 0).add(s.grid.getB(index, dir1, 1)).mult(unitFactor1 * 0.5);
+		AlgebraElement B2 = s.grid.getB(index, dir2, 0).add(s.grid.getB(index, dir2, 1)).mult(unitFactor2 * 0.5);
 		double S = E1.mult(B2) - E2.mult(B1);
-		return S / (as * g * as * g);
+		return S;
 	}
 
 	private double getPoyntingVector3(int index, int direction) {
-		double as = s.grid.getLatticeSpacing();
-		double g = s.getCouplingConstant();
-
 		// Indices for cross product:
 		int dir1 = (direction + 1) % 3;
 		int dir2 = (direction + 2) % 3;
+		double unitFactor1 = 1.0 / s.grid.getLatticeUnitFactor(dir1);
+		double unitFactor2 = 1.0 / s.grid.getLatticeUnitFactor(dir2);
 
 		//int indexShifted1 = s.grid.shift(index, dir1, -1);
 		//int indexShifted2 = s.grid.shift(index, dir2, -1);
@@ -744,6 +721,9 @@ public class PoyntingTheoremBuffer implements Diagnostics {
 			}
 		}
 
+		E1 = E1.mult(unitFactor1);
+		E2 = E2.mult(unitFactor2);
+
 		// time averaged B-field:
 //		AlgebraElement B1 = s.grid.getB(index, dir1, 0).add(s.grid.getB(index, dir1, 1)).mult(0.5);
 //		AlgebraElement B2 = s.grid.getB(index, dir2, 0).add(s.grid.getB(index, dir2, 1)).mult(0.5);
@@ -754,30 +734,28 @@ public class PoyntingTheoremBuffer implements Diagnostics {
 		indexShifted2 = index;
 
 		// B-field:
-		AlgebraElement B1 = s.grid.getB(indexShifted2, dir1, 0);
-		AlgebraElement B2 = s.grid.getB(indexShifted1, dir2, 0);
+		AlgebraElement B1 = s.grid.getB(indexShifted2, dir1, 0).mult(unitFactor1);
+		AlgebraElement B2 = s.grid.getB(indexShifted1, dir2, 0).mult(unitFactor2);
 		double S = E1.mult(B2) - E2.mult(B1);
-		return S / (as * g * as * g);
+		return S;
 	}
 
 	private double getPoyntingVector4(int index, int direction) {
-		double as = s.grid.getLatticeSpacing();
-		double g = s.getCouplingConstant();
-
 		// Indices for cross product:
 		// direction -> x
 		int dir1 = (direction + 1) % 3; // dir1 -> y
 		int dir2 = (direction + 2) % 3; // dir2 -> z
+		double unitFactor1 = 1.0 / s.grid.getLatticeUnitFactor(dir1);
+		double unitFactor2 = 1.0 / s.grid.getLatticeUnitFactor(dir2);
 
 		// fields at same time:
-		AlgebraElement E1 = getEHalfShifted(index, dir1, direction, 1, 0);
-		AlgebraElement E2 = getEHalfShifted(index, dir2, direction, 1, 0);
+		AlgebraElement E1 = getEHalfShifted(index, dir1, direction, 1, 0).mult(unitFactor1);
+		AlgebraElement E2 = getEHalfShifted(index, dir2, direction, 1, 0).mult(unitFactor2);
 
 		// B-field:
-		AlgebraElement B1 = getBHalfShifted(index, dir1, direction, 1, 0);
-		AlgebraElement B2 = getBHalfShifted(index, dir2, direction, 1, 0);
+		AlgebraElement B1 = getBHalfShifted(index, dir1, direction, 1, 0).mult(unitFactor1);
+		AlgebraElement B2 = getBHalfShifted(index, dir2, direction, 1, 0).mult(unitFactor2);
 		double S = E1.mult(B2) - E2.mult(B1);
-		S = S / (as * g * as * g);
 
 		// Return the Poynting vector of the previous time step if available:
 		if (Scurrent != null) {
@@ -807,33 +785,30 @@ public class PoyntingTheoremBuffer implements Diagnostics {
 
 	@Deprecated
 	public double getCurrentElectricField1(int index) {
-		double as = s.grid.getLatticeSpacing();
-		double g = s.getCouplingConstant();
-
 		double value = 0;
 
 		for (int direction = 0; direction < s.grid.getNumberOfDimensions(); direction++) {
+			double unitFactor = s.grid.getLatticeUnitFactor(direction);
 			AlgebraElement J = s.grid.getJ(index, direction);
-			AlgebraElement E = s.grid.getE(index, direction);
+			AlgebraElement E = s.grid.getE(index, direction).mult(unitFactor);
 			value += J.mult(E);
 		}
-		return value / (as * g * as * g);
+		return value;
 	}
 
 	/**
 	 * Calculates current times the electric field at the time of the
-	 * B-field through order O(t^2).
+	 * B-field through order O(t^2) in physical units.
 	 * @param index cell index
 	 * @return current times electric field J*E
 	 */
 	private double getCurrentElectricField2(int index) {
 		storeOldEJ = true;
-		double as = s.grid.getLatticeSpacing();
-		double g = s.getCouplingConstant();
 
 		double value = 0;
 
 		for (int direction = 0; direction < s.grid.getNumberOfDimensions(); direction++) {
+			double unitFactor = s.grid.getLatticeUnitFactor(direction);
 			AlgebraElement J = s.grid.getJ(index, direction);
 			if (Jcurrent != null) {
 				Jcurrent[index][direction] = J.copy();
@@ -850,25 +825,25 @@ public class PoyntingTheoremBuffer implements Diagnostics {
 					E = (E.add(Eold[index][direction])).mult(0.5);
 				}
 			}
+			E = E.mult(unitFactor);
 			value += J.mult(E);
 		}
-		return value / (as * g * as * g);
+		return value;
 	}
 
 	/**
 	 * Calculates current times the electric field at the time of the
-	 * E-field at the origin through order O(t^2).
+	 * E-field at the origin through order O(t^2) in physical units.
 	 * @param index cell index
 	 * @return current times electric field J*E
 	 */
 	private double getCurrentElectricField3(int index) {
 		storeOldEJ = true;
-		double as = s.grid.getLatticeSpacing();
-		double g = s.getCouplingConstant();
 
 		double value = 0;
 
 		for (int direction = 0; direction < s.grid.getNumberOfDimensions(); direction++) {
+			double unitFactor = s.grid.getLatticeUnitFactor(direction);
 			AlgebraElement J1 = s.grid.getJ(index, direction);
 			AlgebraElement J2 = getJShifted(index, direction, direction, -1);
 			AlgebraElement J = (J1.add(J2)).mult(0.5);
@@ -888,9 +863,8 @@ public class PoyntingTheoremBuffer implements Diagnostics {
 			AlgebraElement E2 = getEShifted(index, direction, direction, -1);
 			AlgebraElement E = (E1.add(E2)).mult(0.5);
 
-			value += J.mult(E);
+			value += J.mult(E.mult(unitFactor));
 		}
-		value = value / (as * g * as * g);
 
 		// Return the J*E of the previous time step if available:
 		if (JEcurrent != null) {
@@ -906,7 +880,7 @@ public class PoyntingTheoremBuffer implements Diagnostics {
 	}
 
 	/**
-	 * Obtain a shifted and properly parallel transported J-vector component.
+	 * Obtain a shifted and properly parallel transported J-vector component in physical units.
 	 * @param index
 	 * @param direction
 	 * @param shiftDirection
@@ -921,7 +895,7 @@ public class PoyntingTheoremBuffer implements Diagnostics {
 	}
 
 	/**
-	 * Obtain a shifted and properly parallel transported J-vector component.
+	 * Obtain a shifted and properly parallel transported J-vector component in physical units.
 	 * @param index
 	 * @param direction
 	 * @param shiftDirection
@@ -972,7 +946,7 @@ public class PoyntingTheoremBuffer implements Diagnostics {
 	}
 
 	/**
-	 *  Calculate div S
+	 *  Calculate div S in physical units
 	 *  @return div S */
 	public double getTotalDivS() {
 		if (!currentDivSCalculated) {
@@ -994,7 +968,7 @@ public class PoyntingTheoremBuffer implements Diagnostics {
 	}
 
 	/**
-	 * Calculate B rot E - E rot B
+	 * Calculate B rot E - E rot B in physical units
 	 * @return B rot E - E rot B
 	 */
 	public double getTotalBrotEminusErotB() {
