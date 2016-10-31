@@ -59,7 +59,7 @@ public class ScreenshotInTime implements Diagnostics {
 
 	@Override
 	public void initialize(Simulation s) {
-		this.stepInterval = (int) (timeInterval / s.getTimeStep());
+		this.stepInterval = (int) Math.max((timeInterval / s.getTimeStep()), 1);
 		this.stepOffset = (int) (timeOffset / s.getTimeStep());
 		this.stepIterations = s.getIterations();
 		finished = false;

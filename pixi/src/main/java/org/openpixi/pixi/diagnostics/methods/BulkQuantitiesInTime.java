@@ -51,7 +51,7 @@ public class BulkQuantitiesInTime implements Diagnostics {
 	public void initialize(Simulation s)
 	{
 		this.s = s;
-		this.stepInterval = (int) (timeInterval / this.s.getTimeStep());
+		this.stepInterval = (int) Math.max((timeInterval / this.s.getTimeStep()), 1);
 		this.fieldMeasurements = new FieldMeasurements();
 
 		if(!supressOutput) {

@@ -62,7 +62,7 @@ public class ProjectedEnergyDensity implements Diagnostics {
 	}
 
 	public void initialize(Simulation s) {
-		this.stepInterval = (int) Math.round(timeInterval / s.getTimeStep());
+		this.stepInterval = (int) Math.max((timeInterval / s.getTimeStep()), 1);
 
 		if(computeEnergyDensity) {
 			energyDensityComputation.initialize(s.grid, direction);
