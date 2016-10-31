@@ -33,14 +33,14 @@ public class ParticlesInTime implements Diagnostics {
 	public void initialize(Simulation s)
 	{
 		this.s = s;
-		stepInterval =  (int) (this.timeInterval / s.getTimeStep());
+		this.stepInterval = (int) Math.max(Math.round((timeInterval / s.getTimeStep())), 1);
 
 		// Create/delete file.
-		FileFunctions.clearFile("output/" + path);
+		FileFunctions.clearFile(path);
 
 		// Write first line.
 		String[] directionNames = new String[] {"x", "y", "z"};
-		File file = FileFunctions.getFile("output/" + path);
+		File file = FileFunctions.getFile(path);
 		try {
 			FileWriter pw = new FileWriter(file, true);
 			pw.write("#time\t");
@@ -77,7 +77,7 @@ public class ParticlesInTime implements Diagnostics {
 	public void calculate(Grid grid, ArrayList<IParticle> particles, int steps) throws IOException {
 		if(steps % stepInterval == 0) {
 
-			File file = FileFunctions.getFile("output/" + path);;
+			File file = FileFunctions.getFile(path);
 			FileWriter pw = new FileWriter(file, true);
 			pw.write(steps * s.getTimeStep() + "\t");
 

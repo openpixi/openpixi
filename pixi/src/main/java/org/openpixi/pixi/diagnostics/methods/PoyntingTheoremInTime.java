@@ -44,16 +44,16 @@ public class PoyntingTheoremInTime implements Diagnostics {
 	public void initialize(Simulation s)
 	{
 		this.s = s;
-		this.stepInterval = (int) (timeInterval / this.s.getTimeStep());
+		this.stepInterval = (int) Math.max(Math.round((timeInterval / s.getTimeStep())), 1);
 		poyntingTheorem = PoyntingTheoremBuffer.getOrAppendInstance(s);
 		//poyntingTheorem.initialize(s);
 
 		if(!supressOutput) {
 			// Create/delete file.
-			FileFunctions.clearFile("output/" + path);
+			FileFunctions.clearFile(path);
 
 			// Write first line.
-			File file = FileFunctions.getFile("output/" + path);
+			File file = FileFunctions.getFile(path);
 			try {
 				FileWriter pw = new FileWriter(file, true);
 				pw.write("#time");
@@ -105,7 +105,7 @@ public class PoyntingTheoremInTime implements Diagnostics {
 		if(steps % stepInterval == 0) {
 
 			if(!supressOutput) {
-				File file = FileFunctions.getFile("output/" + path);
+				File file = FileFunctions.getFile(path);
 				FileWriter pw = new FileWriter(file, true);
 				DecimalFormat formatter = new DecimalFormat("0.################E0");
 

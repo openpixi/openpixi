@@ -46,13 +46,13 @@ public class PlanarFields implements Diagnostics {
 	}
 
 	public void initialize(Simulation s) {
-		FileFunctions.clearFile("output/" + outputName);
+		FileFunctions.clearFile(outputName);
 
 		this.s = s;
 		this.transNumCells = GridFunctions.reduceGridPos(s.grid.getNumCells(), direction);
 		this.totalTransCells =  GridFunctions.getTotalNumberOfCells(transNumCells);
 
-		this.stepInterval = (int) (timeInterval / s.getTimeStep());
+		this.stepInterval = (int) Math.max(Math.round((timeInterval / s.getTimeStep())), 1);
 		this.startingStep = (int) (startingTime / s.getTimeStep());
 		this.finalStep = (int) (finalTime / s.getTimeStep());
 		this.effDimensions = GridFunctions.getEffectiveNumberOfDimensions(s.grid.getNumCells());
@@ -83,7 +83,7 @@ public class PlanarFields implements Diagnostics {
 					}
 				}
 
-				File file = FileFunctions.getFile("output/" + outputName);
+				File file = FileFunctions.getFile(outputName);
 				try {
 					FileWriter pw = new FileWriter(file, true);
 

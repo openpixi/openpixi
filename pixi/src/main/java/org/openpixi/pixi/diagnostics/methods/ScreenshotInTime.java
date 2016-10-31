@@ -59,7 +59,7 @@ public class ScreenshotInTime implements Diagnostics {
 
 	@Override
 	public void initialize(Simulation s) {
-		this.stepInterval = (int) (timeInterval / s.getTimeStep());
+		this.stepInterval = (int) Math.max(Math.round((timeInterval / s.getTimeStep())), 1);
 		this.stepOffset = (int) (timeOffset / s.getTimeStep());
 		this.stepIterations = s.getIterations();
 		finished = false;
@@ -115,7 +115,7 @@ public class ScreenshotInTime implements Diagnostics {
 				int counter = steps / stepInterval;
 				String counterString = String.format("%05d", counter);
 				String pathWithNumber = path.replace("{counter}", counterString);
-				File file = FileFunctions.getFile("output/" + pathWithNumber);
+				File file = FileFunctions.getFile(pathWithNumber);
 				ImageIO.write(im, "png", file);
 			}
 		}

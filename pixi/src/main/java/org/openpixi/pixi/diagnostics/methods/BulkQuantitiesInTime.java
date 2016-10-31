@@ -51,15 +51,15 @@ public class BulkQuantitiesInTime implements Diagnostics {
 	public void initialize(Simulation s)
 	{
 		this.s = s;
-		this.stepInterval = (int) (timeInterval / this.s.getTimeStep());
+		this.stepInterval = (int) Math.max(Math.round((timeInterval / this.s.getTimeStep())), 1);
 		this.fieldMeasurements = new FieldMeasurements();
 
 		if(!supressOutput) {
 			// Create/delete file.
-			FileFunctions.clearFile("output/" + path);
+			FileFunctions.clearFile(path);
 
 			// Write first line.
-			File file = FileFunctions.getFile("output/" + path);
+			File file = FileFunctions.getFile(path);
 			try {
 				FileWriter pw = new FileWriter(file, true);
 				pw.write("#time \t E^2 \t B^2 \t P_x \t P_y \t P_z \t G");
@@ -98,7 +98,7 @@ public class BulkQuantitiesInTime implements Diagnostics {
 			gaussViolation = fieldMeasurements.calculateGaussConstraint(grid);
 
 			if(!supressOutput) {
-				File file = FileFunctions.getFile("output/" + path);
+				File file = FileFunctions.getFile(path);
 				FileWriter pw = new FileWriter(file, true);
 				DecimalFormat formatter = new DecimalFormat("0.################E0");
 

@@ -26,7 +26,7 @@ public class CoulombGaugeInTime implements Diagnostics {
 
 	@Override
 	public void initialize(Simulation s) {
-		this.stepInterval = (int) (timeInterval / s.getTimeStep());
+		this.stepInterval = (int) Math.max(Math.round((timeInterval / s.getTimeStep())), 1);
 		this.stepOffset = (int) (timeOffset / s.getTimeStep());
 	}
 
