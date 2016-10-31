@@ -64,7 +64,7 @@ public class ProjectedEnergyDensity implements Diagnostics {
 	}
 
 	public void initialize(Simulation s) {
-		this.stepInterval = (int) (timeInterval / s.getTimeStep());
+		this.stepInterval = (int) Math.max((timeInterval / s.getTimeStep()), 1);
 
 		this.as = s.grid.getLatticeSpacing();
 		this.factory = s.grid.getElementFactory();

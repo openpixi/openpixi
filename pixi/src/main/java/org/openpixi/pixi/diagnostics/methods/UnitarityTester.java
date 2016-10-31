@@ -24,7 +24,7 @@ public class UnitarityTester implements Diagnostics {
 
 	public void initialize(Simulation s) {
 		this.s = s;
-		this.stepInterval = (int) (this.timeInterval / s.getTimeStep());
+		this.stepInterval = (int) Math.max((timeInterval / s.getTimeStep()), 1);
 		this.numberOfColors = s.getNumberOfColors();
 	}
 
