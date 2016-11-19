@@ -87,8 +87,6 @@ public class ProjectedEnergyDensity2 implements Diagnostics {
 			// Write to file
 			File file = FileFunctions.getFile(path);
 
-
-
 			try {
 				DataOutputStream stream = null;
 				try {
@@ -145,8 +143,6 @@ public class ProjectedEnergyDensity2 implements Diagnostics {
 		private int numberOfCells;
 		private int longitudinalCells;
 		private int[] numCells;
-
-		private int[] indexArray;
 		private int[] longitudinalIndexArray;
 
 		private double[] ET;
@@ -190,9 +186,8 @@ public class ProjectedEnergyDensity2 implements Diagnostics {
 			shiftFields();
 		}
 
-		public void execute(Grid grid, int oldindex) {
-			// Use index array to change order of cell iteration.
-			int index = indexArray[oldindex];
+		public void execute(Grid grid, int index) {
+			// Use index array to get longitudinal index.
 			int lindex = longitudinalIndexArray[index];
 			if(grid.isEvaluatable(index)) {
 				// Field components
@@ -258,20 +253,11 @@ public class ProjectedEnergyDensity2 implements Diagnostics {
 		}
 
 		private void initializeIndexArray(Grid grid) {
-			indexArray = new int[numberOfCells];
 			longitudinalIndexArray = new int[numberOfCells];
 
-			int index = 0;
-			for (int y = 0; y < numCells[1]; y++) {
-				for (int z = 0; z < numCells[2]; z++) {
-					for (int x = 0; x < numCells[0]; x++) {
-						int[] gridPos = new int[]{x, y, z};
-						int cellIndex = grid.getCellIndex(gridPos);
-						indexArray[index] = cellIndex;
-						longitudinalIndexArray[index] = x;
-						index++;
-					}
-				}
+			for (int i = 0; i < grid.getTotalNumberOfCells(); i++) {
+				int[] gridPos = grid.getCellPos(i);
+				longitudinalIndexArray[i] = gridPos[0];
 			}
 		}
 
