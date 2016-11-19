@@ -3,7 +3,6 @@ package org.openpixi.pixi.diagnostics.methods;
 import org.openpixi.pixi.diagnostics.Diagnostics;
 import org.openpixi.pixi.diagnostics.FileFunctions;
 import org.openpixi.pixi.math.AlgebraElement;
-import org.openpixi.pixi.math.ElementFactory;
 import org.openpixi.pixi.parallel.cellaccess.CellAction;
 import org.openpixi.pixi.physics.Simulation;
 import org.openpixi.pixi.physics.grid.Grid;
@@ -70,7 +69,6 @@ public class ProjectedEnergyDensity2 implements Diagnostics {
 		maxWrites = s.getIterations() / stepInterval;
 		writes = 0;
 
-
 		componentComputation.initialize(s.grid);
 
 		FileFunctions.clearFile(path);
@@ -112,13 +110,12 @@ public class ProjectedEnergyDensity2 implements Diagnostics {
 
 	private void writeBinaryHeader(File file, Simulation s) {
 		int longitudinalCells = s.grid.getNumCells(0);
-		int timesteps = s.getIterations() / stepInterval;
 		try {
 			DataOutputStream stream = null;
 			try {
 				stream = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(file, true)));
 				stream.writeInt(longitudinalCells);
-				stream.writeInt(timesteps);
+				stream.writeInt(maxWrites);
 			} finally {
 				stream.flush();
 				stream.close();
@@ -284,7 +281,7 @@ public class ProjectedEnergyDensity2 implements Diagnostics {
 			ET, BL are unshifted
 
 			After shifting:
-			All quantities are defined at to unshifted lattice points
+			All quantities are defined at unshifted lattice points
 			*/
 			shiftArray(EL);
 			shiftArray(BT);
