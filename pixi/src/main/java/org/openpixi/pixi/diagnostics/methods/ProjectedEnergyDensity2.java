@@ -141,22 +141,6 @@ public class ProjectedEnergyDensity2 implements Diagnostics {
 		}
 	}
 
-	private void writeBinaryDoubleArray(File file, double[] array) {
-		try {
-			DataOutputStream stream = null;
-			try {
-				stream = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(file)));
-				for (int i = 0; i < array.length; i++) {
-					stream.writeDouble(array[i]);
-				}
-			} finally {
-				stream.close();
-			}
-		} catch (IOException ex) {
-			System.out.println("ProjectedEnergyDensity2: Error writing to file.");
-		}
-	}
-
 	private class ComponentComputation implements CellAction {
 		private int numberOfCells;
 		private int longitudinalCells;
@@ -207,48 +191,58 @@ public class ProjectedEnergyDensity2 implements Diagnostics {
 		}
 
 		public void execute(Grid grid, int oldindex) {
+			// Use index array to change order of cell iteration.
 			int index = indexArray[oldindex];
 			int lindex = longitudinalIndexArray[index];
 			if(grid.isEvaluatable(index)) {
 				// Field components
-				double ExSq = grid.getE(index, 0).square();
-				double EySq = grid.getE(index, 1).square();
-				double EzSq = grid.getE(index, 2).square();
-
-				double BxSq0 = grid.getB(index, 0, 0).square();
-				double BySq0 = grid.getB(index, 1, 0).square();
-				double BzSq0 = grid.getB(index, 2, 0).square();
-
-				double BxSq1 = grid.getB(index, 0, 1).square();
-				double BySq1 = grid.getB(index, 1, 1).square();
-				double BzSq1 = grid.getB(index, 2, 1).square();
-
-				// Poynting vector
 				int iShiftX = grid.shift(index, 0, 1);
 
+				AlgebraElement Ex = grid.getE(index, 0);
 				AlgebraElement Ey0 = grid.getE(index, 1);
 				AlgebraElement Ey1 = grid.getE(iShiftX, 1);
 				AlgebraElement Ez0 = grid.getE(index, 2);
 				AlgebraElement Ez1 = grid.getE(iShiftX, 2);
 
-				AlgebraElement Ey = Ey0.add(Ey1);
-				AlgebraElement Ez = Ez0.add(Ez1);
-
+				AlgebraElement Bx0 = grid.getB(index, 0, 0);
+				AlgebraElement Bx1 = grid.getB(index, 0, 1);
 				AlgebraElement By0 = grid.getB(index, 1, 0);
 				AlgebraElement By1 = grid.getB(index, 1, 1);
 				AlgebraElement Bz0 = grid.getB(index, 2, 0);
 				AlgebraElement Bz1 = grid.getB(index, 2, 1);
 
+
+				// Squared field components components
+				double ExSq = Ex.square();
+				double EySq = Ey0.square();
+				double EzSq = Ez0.square();
+
+				double BxSq0 = Bx0.square();
+				double BySq0 = By0.square();
+				double BzSq0 = Bz0.square();
+
+				double BxSq1 = Bx1.square();
+				double BySq1 = By1.square();
+				double BzSq1 = Bz1.square();
+
+				// Poynting vector
+
+				// Spatially averaged electric fields
+				AlgebraElement Ey = Ey0.add(Ey1);
+				AlgebraElement Ez = Ez0.add(Ez1);
+
+				// Temporally averaged magnetic fields
 				AlgebraElement By = By0.add(By1);
 				AlgebraElement Bz = Bz0.add(Bz1);
 
+				// Two parts of the Poynting vector SL1 and SL2.
+				// These are not defined at the same positions in the transverse plane, but since we average over
+				// the transverse coordinates it doesn't matter.
 				double SL1 = - Ez.mult(By);
 				double SL2 = Ey.mult(Bz);
 
-				// Power input (not correctly time-averaged!)
-				AlgebraElement Ex = grid.getE(index, 0);
+				// Power input (not correctly time-averaged, this is problematic. How to fix this without buffering?)
 				AlgebraElement jx = grid.getJ(index, 0);
-
 				double jInE = jx.mult(Ex);
 
 				// Synchronized write to arrays
@@ -257,7 +251,6 @@ public class ProjectedEnergyDensity2 implements Diagnostics {
 					BT[lindex] += BySq0 + BzSq0 + BySq1 + BzSq1;
 					EL[lindex] += ExSq;
 					BL[lindex] += BxSq0 + BxSq1;
-
 					SL[lindex] += SL1 + SL2;
 					JE[lindex] += jInE;
 				}
@@ -269,9 +262,9 @@ public class ProjectedEnergyDensity2 implements Diagnostics {
 			longitudinalIndexArray = new int[numberOfCells];
 
 			int index = 0;
-			for (int x = 0; x < numCells[0]; x++) {
-				for (int y = 0; y < numCells[1]; y++) {
-					for (int z = 0; z < numCells[2]; z++) {
+			for (int y = 0; y < numCells[1]; y++) {
+				for (int z = 0; z < numCells[2]; z++) {
+					for (int x = 0; x < numCells[0]; x++) {
 						int[] gridPos = new int[]{x, y, z};
 						int cellIndex = grid.getCellIndex(gridPos);
 						indexArray[index] = cellIndex;
@@ -307,8 +300,6 @@ public class ProjectedEnergyDensity2 implements Diagnostics {
 			After shifting:
 			All quantities are defined at to unshifted lattice points
 			*/
-
-
 			shiftArray(EL);
 			shiftArray(BT);
 			shiftArray(SL);
