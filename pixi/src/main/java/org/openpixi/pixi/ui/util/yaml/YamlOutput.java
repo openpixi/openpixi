@@ -29,6 +29,8 @@ public class YamlOutput {
 
 	public ArrayList<YamlProjectedEnergyDensity> projectedEnergyDensity = new ArrayList<YamlProjectedEnergyDensity>();
 
+	public ArrayList<YamlProjectedEnergyDensity2> projectedEnergyDensity2 = new ArrayList<YamlProjectedEnergyDensity2>();
+
 	public ArrayList<YamlPlanarFields> planarFields = new ArrayList<YamlPlanarFields>();
 
 	public ArrayList<YamlPoyntingTheoremInTime> poyntingTheoremInTime = new ArrayList<YamlPoyntingTheoremInTime>();
@@ -77,6 +79,10 @@ public class YamlOutput {
 		}
 
 		for(YamlProjectedEnergyDensity output : projectedEnergyDensity) {
+			s.addDiagnostics(output.getFileGenerator());
+		}
+
+		for(YamlProjectedEnergyDensity2 output : projectedEnergyDensity2) {
 			s.addDiagnostics(output.getFileGenerator());
 		}
 
