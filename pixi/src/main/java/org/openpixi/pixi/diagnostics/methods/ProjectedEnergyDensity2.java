@@ -12,7 +12,7 @@ import java.io.*;
 import java.util.ArrayList;
 
 /**
- * This diagnostic averages the energy density over the transversal plane with x being the longitudinal direction
+ * This diagnostic averages the energy density over the transverse plane with x being the longitudinal direction
  * and writes various energy densities and other components to a file:
  *
  * 1) 0.5 ET^2 (transverse electric field squared)
@@ -22,7 +22,7 @@ import java.util.ArrayList;
  * 5) SL       (longitudinal Poynting vector component)
  * 6) jL * EL  (power input)
  *
- * Combining these components one can compute all kinds of relevant energy-momentum tensor components:
+ * Combining these components one can compute all kinds of energy-momentum tensor components and more:
  * pT, pL, eT, eL, ratios of fields, etc..
  *
  * It is also possible to compute longitudinally boosted quantities such as the local rest-frame energy density or
@@ -32,14 +32,15 @@ import java.util.ArrayList;
  * Whats new:
  * Improved Poynting vector calculation
  * Correctly shifted/averaged fields
- * Improved way to traverse the lattice
+ * "j*E" term (power input)
+ * Binary output format
  *
  * Note: this diagnostic relies on some assumptions:
  * the simulation is in 3D
  * x is the longitudinal coordinate
  * transverse lattice spacings are the same in both directions
  *
- * The output of this diagnostic is a binary file to get smaller file sizes. It is arranged as follows:
+ * The output format of this diagnostic is binary to get smaller file sizes. It is arranged as follows:
  *
  * Header:
  * Longitudinal lattice size (Int32), Number of time steps (Int32)
