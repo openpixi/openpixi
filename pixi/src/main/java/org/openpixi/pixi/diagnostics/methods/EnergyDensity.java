@@ -12,30 +12,30 @@ import java.io.*;
 import java.util.ArrayList;
 
 /**
- * This diagnostic computes energy density color components for each cell.
+ * This diagnostic computes the energy density for each cell.
  *
  * The output format of this diagnostic is binary to get smaller file sizes. It is arranged as follows:
  *
  * Header:
- * NComp Number of color components (Int32),
  * D Number of dimensions (Int32),
  * N Lattice size (Int32 * number of dimensions)
  *
- * \epsilon_0 (N^D * Real64), \epsilon_1 (N^D * Real64), ..., \epsilon_NComp (N^D * Real64)
+ * Body:
+ * \epsilon (N^D * Real64)
  *
- * On a 256^3 grid with SU(2) fields the filesize will be roughly 0.4 gb.
+ * On a 256^3 grid the filesize will be roughly 0.13 gb.
  *
  * Java writes binary data with Big Endian encoding.
  *
  */
-public class ColoredEnergyDensity implements Diagnostics {
+public class EnergyDensity implements Diagnostics {
 	private String path;
 	private double timeInstant;
 	private int step;
 	private ComponentComputation componentComputation = new ComponentComputation();
 
 
-	public ColoredEnergyDensity(String path, double timeInstant) {
+	public EnergyDensity(String path, double timeInstant) {
 		this.path = path;
 		this.timeInstant = timeInstant;
 	}
@@ -62,15 +62,13 @@ public class ColoredEnergyDensity implements Diagnostics {
 				DataOutputStream stream = null;
 				try {
 					stream = getStream(file);
-					for (int c = 0; c < grid.getElementFactory().numberOfComponents; c++) {
-						writeBinaryDoubleArray(stream, componentComputation.energy[c]);
-					}
+					writeBinaryDoubleArray(stream, componentComputation.energy);
 				} finally {
 					stream.flush();
 					stream.close();
 				}
 			} catch (IOException ex) {
-				System.out.println("ColoredEnergyDensity: Error writing to file.");
+				System.out.println("EnergyDensity: Error writing to file.");
 			}
 		}
 	}
@@ -80,7 +78,6 @@ public class ColoredEnergyDensity implements Diagnostics {
 			DataOutputStream stream = null;
 			try {
 				stream = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(file, true)));
-				stream.writeInt(s.grid.getElementFactory().numberOfComponents);
 				stream.writeInt(s.getNumberOfDimensions());
 				for (int d = 0; d < s.getNumberOfDimensions(); d++) {
 					stream.writeInt(s.grid.getNumCells(d));
@@ -90,7 +87,7 @@ public class ColoredEnergyDensity implements Diagnostics {
 				stream.close();
 			}
 		} catch (IOException ex) {
-			System.out.println("ColoredEnergyDensity: Error writing to file.");
+			System.out.println("EnergyDensity: Error writing to file.");
 		}
 	}
 
@@ -108,18 +105,16 @@ public class ColoredEnergyDensity implements Diagnostics {
 	private class ComponentComputation implements CellAction {
 
 		private int numberOfCells;
-		private int numberOfComponents;
 		private int numberOfDimensions;
 		private double[] unitFactor;
 
-		private double[][] energy;
+		private double[] energy;
 
 		public void initialize(Grid grid) {
 			numberOfCells = grid.getTotalNumberOfCells();
-			numberOfComponents = grid.getElementFactory().numberOfComponents;
 			numberOfDimensions = grid.getNumberOfDimensions();
 
-			energy = new double[numberOfComponents][numberOfCells];
+			energy = new double[numberOfCells];
 
 			unitFactor = new double[numberOfDimensions];
 			for (int d = 0; d < numberOfDimensions; d++) {
@@ -132,10 +127,8 @@ public class ColoredEnergyDensity implements Diagnostics {
 
 
 		public void reset() {
-			for (int c = 0; c < numberOfComponents; c++) {
-				for (int i = 0; i < numberOfCells; i++) {
-					energy[c][i] = 0.0;
-				}
+			for (int i = 0; i < numberOfCells; i++) {
+				energy[i] = 0.0;
 			}
 		}
 
@@ -147,13 +140,11 @@ public class ColoredEnergyDensity implements Diagnostics {
 					AlgebraElement B = grid.getB(index, d, 0);
 					B.addAssign(grid.getB(index, d, 1));
 
-					for (int c = 0; c < numberOfComponents; c++) {
-						double Esq = 0.5 * Math.pow(E.get(c), 2);
-						double Bsq = 0.25 * Math.pow(B.get(c), 2);
+					double Esq = 0.5 * E.square();
+					double Bsq = 0.25 * B.square();
 
-						synchronized (this) {
-							energy[c][index] += (Esq + Bsq) * unitFactor[d];
-						}
+					synchronized (this) {
+						energy[index] += (Esq + Bsq) * unitFactor[d];
 					}
 				}
 			}

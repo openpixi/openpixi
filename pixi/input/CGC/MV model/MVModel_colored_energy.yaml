@@ -4,9 +4,9 @@ couplingConstant: 2
 numberOfDimensions: 3
 numberOfColors: 2
 numberOfThreads: 8
-gridCells: [128, 96, 96]
+gridCells: [192, 128, 128]
 timeStep: 0.5
-duration: 96.0
+duration: 128.0
 evaluationRegion:
   enabled: true
   point1: [2, 0, 0]
@@ -22,26 +22,26 @@ initialConditions:
     MVModelCoherent:
       - direction: 0
         orientation: 1
-        longitudinalLocation: 32
-        longitudinalWidth: 4
+        longitudinalLocation: 64
+        longitudinalWidth: 5
         randomSeed: 5
         mu: .1
         ultravioletCutoffTransverse: 1.5
         infraredCoefficient: 0.08
       - direction: 0
         orientation: -1
-        longitudinalLocation: 96
-        longitudinalWidth: 4
+        longitudinalLocation: 128
+        longitudinalWidth: 5
         randomSeed: 6
         mu: .1
         ultravioletCutoffTransverse: 1.5
         infraredCoefficient: 0.08
 
 output:
-  coloredEnergyDensity:
+  energyDensity:
     - path: 'test/color1.dat'
-      timeInstant: 48.0
+      timeInstant: 100.0
     - path: 'test/color2.dat'
-      timeInstant: 64.0
+      timeInstant: 110.0
     - path: 'test/color3.dat'
-      timeInstant: 88.0
+      timeInstant: 120.0

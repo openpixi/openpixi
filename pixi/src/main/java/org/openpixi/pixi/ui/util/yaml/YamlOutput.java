@@ -37,7 +37,7 @@ public class YamlOutput {
 
 	public ArrayList<YamlTimeMeasurement> timeMeasurement = new ArrayList<YamlTimeMeasurement>();
 
-	public ArrayList<YamlColoredEnergyDensity> coloredEnergyDensity = new ArrayList<YamlColoredEnergyDensity>();
+	public ArrayList<YamlEnergyDensity> energyDensity = new ArrayList<YamlEnergyDensity>();
 
 	/**
 	 * Creates FileGenerator instances and applies them to the Settings instance.
@@ -100,7 +100,7 @@ public class YamlOutput {
 			s.addDiagnostics(output.getFileGenerator());
 		}
 
-		for(YamlColoredEnergyDensity output : coloredEnergyDensity) {
+		for(YamlEnergyDensity output : energyDensity) {
 			s.addDiagnostics(output.getFileGenerator());
 		}
 	}
