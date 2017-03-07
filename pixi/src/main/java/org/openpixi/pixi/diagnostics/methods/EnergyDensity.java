@@ -1,5 +1,6 @@
 package org.openpixi.pixi.diagnostics.methods;
 
+import org.apache.commons.io.FilenameUtils;
 import org.openpixi.pixi.diagnostics.Diagnostics;
 import org.openpixi.pixi.diagnostics.FileFunctions;
 import org.openpixi.pixi.math.AlgebraElement;
@@ -29,65 +30,78 @@ import java.util.ArrayList;
  *
  */
 public class EnergyDensity implements Diagnostics {
-	private String path;
-	private double timeInstant;
+	private Simulation simulation;
+	private String filename;
+	private double startTime;
+	private double timeInterval;
+	private int firstStep;
 	private int step;
+	private int counter = 0;
 	private ComponentComputation componentComputation = new ComponentComputation();
 
 
-	public EnergyDensity(String path, double timeInstant) {
-		this.path = path;
-		this.timeInstant = timeInstant;
+	public EnergyDensity(String filename, double startTime, double timeInterval) {
+		this.filename = filename;
+		this.startTime = startTime;
+		this.timeInterval = timeInterval;
 	}
 
 	public void initialize(Simulation s) {
-		this.step = (int) Math.max(Math.round((timeInstant / s.getTimeStep())), 1);
+		this.firstStep = (int) Math.max(Math.round((startTime / s.getTimeStep())), 1);
+		this.step = (int) Math.round(timeInterval / s.getTimeStep());
 
 		componentComputation.initialize(s.grid);
-
-		FileFunctions.clearFile(path);
-		File file = FileFunctions.getFile(path);
-		writeBinaryHeader(file, s);
+		this.simulation = s;
 	}
 
 	public void calculate(Grid grid, ArrayList<IParticle> particles, int steps) throws IOException {
-		if(steps == step) {
-			componentComputation.reset();
-			grid.getCellIterator().execute(grid, componentComputation);
+		if(steps % step == 0) {
+			if(steps >= firstStep) {
+				// Generate new file name based on counter
+				counter++;
+				String filename_path = FilenameUtils.getPath(filename);
+				String filename_base = FilenameUtils.getBaseName(filename);
+				String filename_extension = FilenameUtils.getExtension(filename);
+				String new_name = filename_base + "_" + counter + "." + filename_extension;
+				String new_filepath = FilenameUtils.concat(filename_path, new_name);
+				FileFunctions.clearFile(new_filepath);
+				File file = FileFunctions.getFile(new_filepath);
 
-			// Write to file
-			File file = FileFunctions.getFile(path);
-
-			try {
-				DataOutputStream stream = null;
+				// Write header
 				try {
-					stream = getStream(file);
-					writeBinaryDoubleArray(stream, componentComputation.energy);
-				} finally {
-					stream.flush();
-					stream.close();
+					DataOutputStream stream = null;
+					try {
+						stream = getStream(file);
+						stream.writeInt(simulation.getNumberOfDimensions());
+						for (int d = 0; d < simulation.getNumberOfDimensions(); d++) {
+							stream.writeInt(simulation.grid.getNumCells(d));
+						}
+					} finally {
+						stream.flush();
+						stream.close();
+					}
+				} catch (IOException ex) {
+					System.out.println("EnergyDensity: Error writing to file.");
 				}
-			} catch (IOException ex) {
-				System.out.println("EnergyDensity: Error writing to file.");
-			}
-		}
-	}
 
-	private void writeBinaryHeader(File file, Simulation s) {
-		try {
-			DataOutputStream stream = null;
-			try {
-				stream = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(file, true)));
-				stream.writeInt(s.getNumberOfDimensions());
-				for (int d = 0; d < s.getNumberOfDimensions(); d++) {
-					stream.writeInt(s.grid.getNumCells(d));
+				// Calculate
+				componentComputation.reset();
+				grid.getCellIterator().execute(grid, componentComputation);
+
+				// Write body
+				try {
+					DataOutputStream stream = null;
+					try {
+						stream = getStream(file);
+						writeBinaryDoubleArray(stream, componentComputation.energy);
+					} finally {
+						stream.flush();
+						stream.close();
+					}
+				} catch (IOException ex) {
+					System.out.println("EnergyDensity: Error writing to file.");
 				}
-			} finally {
-				stream.flush();
-				stream.close();
 			}
-		} catch (IOException ex) {
-			System.out.println("EnergyDensity: Error writing to file.");
 		}
 	}
 

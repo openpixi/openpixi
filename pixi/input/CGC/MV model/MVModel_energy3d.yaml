@@ -39,9 +39,6 @@ initialConditions:
 
 output:
   energyDensity:
-    - path: 'test/color1.dat'
-      timeInstant: 100.0
-    - path: 'test/color2.dat'
-      timeInstant: 110.0
-    - path: 'test/color3.dat'
-      timeInstant: 120.0
+    - path: 'test/energy.dat'
+      startTime: 10.0
+      timeInterval: 2.0

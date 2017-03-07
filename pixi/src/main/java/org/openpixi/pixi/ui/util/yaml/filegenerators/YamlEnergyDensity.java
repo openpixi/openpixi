@@ -10,13 +10,18 @@ public class YamlEnergyDensity {
 	public String path;
 
 	/**
-	 * Measurement time.
+	 * Simulation time for first output.
 	 */
-	public double timeInstant;
+	public double startTime;
+
+	/**
+	 * Simulation time interval between outputs.
+	 */
+	public double timeInterval;
 
 
 	public EnergyDensity getFileGenerator() {
-		EnergyDensity generator = new EnergyDensity(path, timeInstant);
+		EnergyDensity generator = new EnergyDensity(path, startTime, timeInterval);
 		return generator;
 	}
 }
