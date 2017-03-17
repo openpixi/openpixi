@@ -29,11 +29,15 @@ public class YamlOutput {
 
 	public ArrayList<YamlProjectedEnergyDensity> projectedEnergyDensity = new ArrayList<YamlProjectedEnergyDensity>();
 
+	public ArrayList<YamlProjectedEnergyDensity2> projectedEnergyDensity2 = new ArrayList<YamlProjectedEnergyDensity2>();
+
 	public ArrayList<YamlPlanarFields> planarFields = new ArrayList<YamlPlanarFields>();
 
 	public ArrayList<YamlPoyntingTheoremInTime> poyntingTheoremInTime = new ArrayList<YamlPoyntingTheoremInTime>();
 
 	public ArrayList<YamlTimeMeasurement> timeMeasurement = new ArrayList<YamlTimeMeasurement>();
+
+	public ArrayList<YamlEnergyDensity> energyDensity = new ArrayList<YamlEnergyDensity>();
 
 	/**
 	 * Creates FileGenerator instances and applies them to the Settings instance.
@@ -80,6 +84,10 @@ public class YamlOutput {
 			s.addDiagnostics(output.getFileGenerator());
 		}
 
+		for(YamlProjectedEnergyDensity2 output : projectedEnergyDensity2) {
+			s.addDiagnostics(output.getFileGenerator());
+		}
+
 		for(YamlPlanarFields output : planarFields) {
 			s.addDiagnostics(output.getFileGenerator());
 		}
@@ -89,6 +97,10 @@ public class YamlOutput {
 		}
 
 		for(YamlTimeMeasurement output : timeMeasurement) {
+			s.addDiagnostics(output.getFileGenerator());
+		}
+
+		for(YamlEnergyDensity output : energyDensity) {
 			s.addDiagnostics(output.getFileGenerator());
 		}
 	}

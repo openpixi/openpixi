@@ -1,0 +1,44 @@
+simulationType: temporal optimized cgc ngp
+gridSteps: [0.5, 1.0, 1.0]
+couplingConstant: 2
+numberOfDimensions: 3
+numberOfColors: 2
+numberOfThreads: 12
+gridCells: [384, 128, 128]
+timeStep: 0.25
+duration: 128.0
+evaluationRegion:
+  enabled: true
+  point1: [2, 0, 0]
+  point2: [-3, -1, -1]
+activeRegion:
+  enabled: true
+  point1: [1, 0, 0]
+  point2: [-2, -1, -1]
+
+initialConditions:
+  CGC:
+    poissonSolver: improved
+    MVModelCoherent:
+      - direction: 0
+        orientation: 1
+        longitudinalLocation: 64
+        longitudinalWidth: 5
+        randomSeed: 5
+        mu: .1
+        ultravioletCutoffTransverse: 1.5
+        infraredCoefficient: 0.08
+      - direction: 0
+        orientation: -1
+        longitudinalLocation: 128
+        longitudinalWidth: 5
+        randomSeed: 6
+        mu: .1
+        ultravioletCutoffTransverse: 1.5
+        infraredCoefficient: 0.08
+
+output:
+  energyDensity:
+    - path: 'movie/energy.dat'
+      startTime: 0.0
+      timeInterval: 0.5
