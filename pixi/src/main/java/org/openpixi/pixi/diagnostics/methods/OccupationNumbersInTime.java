@@ -96,16 +96,8 @@ public class OccupationNumbersInTime implements Diagnostics {
 			}
 		}
 
-		if(useMirroredGrid) {
-			int[] numCells = s.grid.getNumCells().clone();
-			numCells[mirroredDirection] *= 2;
-			this.fft = new DoubleFFTWrapper(numCells);
-			occupationNumbers = new double[2 * s.grid.getTotalNumberOfCells()][numberOfComponents];
-			simulationBoxVolume *= 2;
-		} else {
-			this.fft = new DoubleFFTWrapper(s.grid.getNumCells());
-			occupationNumbers = new double[s.grid.getTotalNumberOfCells()][numberOfComponents];
-		}
+		this.fft = new DoubleFFTWrapper(s.grid.getNumCells());
+		occupationNumbers = new double[s.grid.getTotalNumberOfCells()][numberOfComponents];
 
 
 
@@ -141,6 +133,9 @@ public class OccupationNumbersInTime implements Diagnostics {
 			CoulombGauge coulombGauge = new CoulombGauge(grid);
 			coulombGauge.applyGaugeTransformation(grid);
 
+			if(useMirroredGrid) {
+				grid = new UnmirroredGrid(grid, mirroredDirection);
+			}
 
 			// Fill arrays for FFT.
 			double gainv = 1.0 / (grid.getLatticeSpacing() * grid.getGaugeCoupling());
@@ -461,6 +456,23 @@ public class OccupationNumbersInTime implements Diagnostics {
 
 
 
+		}
+	}
+
+	private class UnmirroredGrid extends Grid {
+		public UnmirroredGrid(Grid mirroredGrid, int mirroredDirection) {
+			super(mirroredGrid);
+			this.numCells[mirroredDirection] /= 2;
+			createGrid();
+			this.cellIterator.setNormalMode(numCells);
+
+			// Copy relevant cells.
+			for (int i = 0; i < this.getTotalNumberOfCells(); i++) {
+				int[] cellPos = this.getCellPos(i);
+				int mirroredGridIndex = mirroredGrid.getCellIndex(cellPos);
+
+				cells[i] = mirroredGrid.getCell(mirroredGridIndex).copy();
+			}
 		}
 	}
 }
