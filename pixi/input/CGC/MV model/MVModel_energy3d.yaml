@@ -1,11 +1,11 @@
 simulationType: temporal optimized cgc ngp
-gridStep: 1
+gridSteps: [0.5, 1.0, 1.0]
 couplingConstant: 2
 numberOfDimensions: 3
 numberOfColors: 2
-numberOfThreads: 8
-gridCells: [192, 128, 128]
-timeStep: 0.5
+numberOfThreads: 12
+gridCells: [384, 128, 128]
+timeStep: 0.25
 duration: 128.0
 evaluationRegion:
   enabled: true
@@ -39,6 +39,6 @@ initialConditions:
 
 output:
   energyDensity:
-    - path: 'test/energy.dat'
-      startTime: 10.0
-      timeInterval: 2.0
+    - path: 'movie/energy.dat'
+      startTime: 0.0
+      timeInterval: 0.5
