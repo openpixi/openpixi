@@ -111,18 +111,6 @@ public class OccupationNumbers2DGLPanel extends AnimationGLPanel {
 		/** Scaling factor for the displayed panel in y-direction*/
 		double sy = height / s.getSimulationBoxSize(yAxisIndex);
 
-		if(mirrorProperties.getValue()) {
-			if(mirrorDirection == xAxisIndex) {
-				xAxisNumCells *= 2;
-				sx *= 0.5;
-			}
-			if(mirrorDirection == yAxisIndex) {
-				yAxisNumCells *= 2;
-				sy *= 0.5;
-			}
-		}
-
-
 		for(int i = 0; i < xAxisNumCells; i++) {
 			gl2.glBegin( GL2.GL_QUAD_STRIP );
 			for(int k = 0; k < yAxisNumCells; k++)
@@ -185,9 +173,6 @@ public class OccupationNumbers2DGLPanel extends AnimationGLPanel {
 	private int getMomentumIndex(int[] pos)
 	{
 		int[] numGridCells = simulation.grid.getNumCells().clone();
-		if(mirrorProperties.getValue()) {
-			numGridCells[mirrorDirection] *= 2;
-		}
 		int[] pos2 = new int[pos.length];
 		System.arraycopy(pos, 0, pos2, 0, pos.length);
 
