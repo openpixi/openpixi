@@ -545,6 +545,12 @@ public class Settings {
 				setParticleSolver(new CGCParticleSolver());
 				setInterpolator(new CGCParticleInterpolationNGP());
 				break;
+			case TemporalImplicitCGCNGP:
+				setBoundary(GeneralBoundaryType.Absorbing);
+				setFieldSolver(new ImplicitTYMSolver());
+				setParticleSolver(new CGCParticleSolver());
+				setInterpolator(new CGCParticleInterpolationNGP());
+				break;
 			case TemporalOptimizedCGCNGP:
 				setBoundary(GeneralBoundaryType.Absorbing);
 				setFieldSolver(new FastTYMSolver());

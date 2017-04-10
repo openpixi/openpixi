@@ -126,7 +126,8 @@ public class MVModel implements ICurrentGenerator {
 
 		if(s.getSimulationType() == SimulationType.TemporalCGC) {
 			this.particleLCCurrent = new ParticleLCCurrent(direction, orientation, location, longitudinalWidth);
-		} else if(s.getSimulationType() == SimulationType.TemporalCGCNGP) {
+		} else if((s.getSimulationType() == SimulationType.TemporalCGCNGP)
+				|| (s.getSimulationType() == SimulationType.TemporalImplicitCGCNGP)) {
 			this.particleLCCurrent = new ParticleLCCurrentNGP(direction, orientation, location, longitudinalWidth);
 		}
 		particleLCCurrent.lowPassCoefficient = lowPassCoefficient;
