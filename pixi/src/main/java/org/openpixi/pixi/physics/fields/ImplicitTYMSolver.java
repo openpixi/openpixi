@@ -10,6 +10,7 @@ public class ImplicitTYMSolver extends FieldSolver
 	private double timeStep;
 	private UpdateLinks linkUpdater = new UpdateLinks();
 	private ImplicitBegin implicitBegin = new ImplicitBegin();
+	private ImplicitStep implicitStep = new ImplicitStep();
 	private ImplicitEnd implicitEnd = new ImplicitEnd();
 
 	@Override
@@ -26,7 +27,6 @@ public class ImplicitTYMSolver extends FieldSolver
 	@Override
 	public void step(Grid grid, double timeStep) {
 		Grid implicitGrid = new Grid(grid); // Copy grid.
-		Grid implicitFutureGrid = new Grid(grid);
 
 		implicitBegin.at = timeStep;
 		implicitBegin.unitFactor = new double[grid.getNumberOfDimensions()];
@@ -35,6 +35,13 @@ public class ImplicitTYMSolver extends FieldSolver
 		}
 		implicitBegin.implicitGrid = implicitGrid;
 		cellIterator.execute(grid, implicitBegin);
+
+		implicitStep.implicitGrid = implicitGrid;
+		implicitStep.at = implicitBegin.at;
+		implicitStep.unitFactor = implicitBegin.unitFactor;
+		for (int i = 0; i < 10; i++) {
+			cellIterator.execute(grid, implicitStep);
+		}
 
 		implicitEnd.implicitGrid = implicitGrid;
 		cellIterator.execute(grid, implicitEnd);
@@ -78,6 +85,8 @@ public class ImplicitTYMSolver extends FieldSolver
 		private double[] unitFactor;
 		private int beamdirection = 0;
 
+		private Grid implicitGrid;
+
 		/**
 		 * Combined update of fields and links using the sum of staples.
 		 * @param grid
@@ -87,15 +96,31 @@ public class ImplicitTYMSolver extends FieldSolver
 			if(grid.isActive(index)) {
 				GroupElement V;
 				for (int i = 0; i < grid.getNumberOfDimensions(); i++) {
-					// Calculate average of future and past transverse contributions:
-					
-					// Calculate non-transverse contributions:
+					// Start from previous E
+					implicitGrid.setE(index, i, grid.getE(index,i));
+
+					// add current non-transverse contributions:
 					GroupElement temp = grid.getU(index, i).mult(grid.getTransverseStapleSum(index, i, beamdirection, false));
-					grid.addE(index, i, temp.proj().mult(at)); // area factors already included in getStapleSum()
-					grid.addE(index, i, grid.getJ(index, i).mult(unitFactor[i]));
-					V = grid.getE(index, i).mult(-at).getLink();
-					V.multAssign(grid.getU(index, i));
-					grid.setUnext(index, i, V);
+					implicitGrid.addE(index, i, temp.proj().mult(at)); // area factors already included in getStapleSum()
+
+		//			// add current transverse contributions:
+		//			temp = grid.getU(index, i).mult(grid.getTransverseStapleSum(index, i, beamdirection, true));
+		//			implicitGrid.addE(index, i, temp.proj().mult(at * 0.5)); // area factors already included in getStapleSum()
+
+					// add 1/2 of future transverse contributions:
+					temp = implicitGrid.getU(index, i).mult(implicitGrid.getTransverseStapleSum(index, i, beamdirection, true));
+					implicitGrid.addE(index, i, temp.proj().mult(at * 0.5)); // area factors already included in getStapleSum()
+
+					// add 1/2 of past transverse contributions:
+					// (Note that grid.Unext contains the old U previous to grid.E)
+					temp = grid.getUnext(index, i).mult(grid.getTransverseStapleSumNext(index, i, beamdirection, true));
+					implicitGrid.addE(index, i, temp.proj().mult(at * 0.5)); // area factors already included in getStapleSum()
+
+					// add current:
+					implicitGrid.addE(index, i, grid.getJ(index, i).mult(unitFactor[i]));
+					V = implicitGrid.getE(index, i).mult(-at).getLink();
+					V.multAssign(implicitGrid.getU(index, i));
+					implicitGrid.setUnext(index, i, V);
 				}
 			}
 		}
