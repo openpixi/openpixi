@@ -26,6 +26,8 @@ public class ImplicitTYMSolver extends FieldSolver
 	@Override
 	public void step(Grid grid, double timeStep) {
 		Grid implicitGrid = new Grid(grid); // Copy grid.
+		Grid implicitFutureGrid = new Grid(grid);
+
 		implicitBegin.at = timeStep;
 		implicitBegin.unitFactor = new double[grid.getNumberOfDimensions()];
 		for (int i = 0; i < grid.getNumberOfDimensions(); i++) {
@@ -65,6 +67,35 @@ public class ImplicitTYMSolver extends FieldSolver
 					V = implicitGrid.getE(index, i).mult(-at).getLink();
 					V.multAssign(grid.getU(index, i));
 					implicitGrid.setUnext(index, i, V);
+				}
+			}
+		}
+	}
+
+	private class ImplicitStep implements CellAction {
+
+		private double at;
+		private double[] unitFactor;
+		private int beamdirection = 0;
+
+		/**
+		 * Combined update of fields and links using the sum of staples.
+		 * @param grid
+		 * @param index
+		 */
+		public void execute(Grid grid, int index) {
+			if(grid.isActive(index)) {
+				GroupElement V;
+				for (int i = 0; i < grid.getNumberOfDimensions(); i++) {
+					// Calculate average of future and past transverse contributions:
+					
+					// Calculate non-transverse contributions:
+					GroupElement temp = grid.getU(index, i).mult(grid.getTransverseStapleSum(index, i, beamdirection, false));
+					grid.addE(index, i, temp.proj().mult(at)); // area factors already included in getStapleSum()
+					grid.addE(index, i, grid.getJ(index, i).mult(unitFactor[i]));
+					V = grid.getE(index, i).mult(-at).getLink();
+					V.multAssign(grid.getU(index, i));
+					grid.setUnext(index, i, V);
 				}
 			}
 		}
