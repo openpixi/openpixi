@@ -86,6 +86,7 @@ public class ImplicitTYMSolver extends FieldSolver
 		private int beamdirection = 0;
 
 		private Grid implicitGrid;
+		private Grid explicitGrid;
 
 		/**
 		 * Combined update of fields and links using the sum of staples.
@@ -93,27 +94,36 @@ public class ImplicitTYMSolver extends FieldSolver
 		 * @param index
 		 */
 		public void execute(Grid grid, int index) {
+			explicitGrid = grid;
 			if(grid.isActive(index)) {
 				GroupElement V;
 				for (int i = 0; i < grid.getNumberOfDimensions(); i++) {
 					// Start from previous E
 					implicitGrid.setE(index, i, grid.getE(index,i));
 
-					// add current non-transverse contributions:
-					GroupElement temp = grid.getU(index, i).mult(grid.getTransverseStapleSum(index, i, beamdirection, false));
-					implicitGrid.addE(index, i, temp.proj().mult(at)); // area factors already included in getStapleSum()
+		//			// add current non-transverse contributions:
+		//			GroupElement temp = grid.getU(index, i).mult(grid.getTransverseStapleSum(index, i, beamdirection, false));
+		//			implicitGrid.addE(index, i, temp.proj().mult(at)); // area factors already included in getStapleSum()
 
-		//			// add current transverse contributions:
-		//			temp = grid.getU(index, i).mult(grid.getTransverseStapleSum(index, i, beamdirection, true));
+		////			// add current transverse contributions:
+		////			temp = grid.getU(index, i).mult(grid.getTransverseStapleSum(index, i, beamdirection, true));
+		////			implicitGrid.addE(index, i, temp.proj().mult(at * 0.5)); // area factors already included in getStapleSum()
+
+		//			// add 1/2 of future transverse contributions:
+		//			temp = implicitGrid.getU(index, i).mult(implicitGrid.getTransverseStapleSum(index, i, beamdirection, true));
 		//			implicitGrid.addE(index, i, temp.proj().mult(at * 0.5)); // area factors already included in getStapleSum()
 
-					// add 1/2 of future transverse contributions:
-					temp = implicitGrid.getU(index, i).mult(implicitGrid.getTransverseStapleSum(index, i, beamdirection, true));
+		//			// add 1/2 of past transverse contributions:
+		//			// (Note that grid.Unext contains the old U previous to grid.E)
+		//			temp = grid.getUnext(index, i).mult(grid.getTransverseStapleSumNext(index, i, beamdirection, true));
+		//			implicitGrid.addE(index, i, temp.proj().mult(at * 0.5)); // area factors already included in getStapleSum()
+
+					// add 1/2 of future contributions:
+					GroupElement temp = getStapleSum(index, i, beamdirection, +1);
 					implicitGrid.addE(index, i, temp.proj().mult(at * 0.5)); // area factors already included in getStapleSum()
 
-					// add 1/2 of past transverse contributions:
-					// (Note that grid.Unext contains the old U previous to grid.E)
-					temp = grid.getUnext(index, i).mult(grid.getTransverseStapleSumNext(index, i, beamdirection, true));
+					// add 1/2 of past contributions:
+					temp = getStapleSum(index, i, beamdirection, -1);
 					implicitGrid.addE(index, i, temp.proj().mult(at * 0.5)); // area factors already included in getStapleSum()
 
 					// add current:
@@ -124,6 +134,81 @@ public class ImplicitTYMSolver extends FieldSolver
 				}
 			}
 		}
+
+
+		/**
+		 * Computes the sum of staples surrounding a particular gauge link given by a lattice index and a direction,
+		 * but takes into account only those plaquettes transverse to a certain beam direction.
+		 * This is used for the field equations of motion.
+		 * <b>Note that this routine closes the plaquettes along the central line (different from
+		 * the behavior of the corresponding routine Grid.getStapleSum()).</b>
+		 * @param index Lattice index
+		 * @param d     Direction
+		 * @param beamdirection Beam direction
+		 * @param time -1 or +1
+		 * @return      Sum of all surrounding staples
+		 */
+		public GroupElement getStapleSum(int index, int d, int beamdirection, int time) {
+			GroupElement S = explicitGrid.getElementFactory().groupZero();
+			int ci1 = explicitGrid.shift(index, d, 1);
+			int ci2, ci3, ci4;
+			for (int i = 0; i < explicitGrid.getNumberOfDimensions(); i++) {
+				boolean inTransversePlane = (i != beamdirection) && (d != beamdirection);
+				if ((i != d)) {
+					// explicit time by default
+					int time_d = 0;
+					int time_i = 0;
+					if (inTransversePlane) {
+						// implicit time in all directions
+						time_d = time;
+						time_i = time;
+					} else {
+						// implicit time in beamdirection
+						if (d == beamdirection) {
+							time_d = time;
+						} else if (i == beamdirection) {
+							time_i = time;
+						}
+					}
+					ci2 = explicitGrid.shift(index, i, 1);
+					ci3 = explicitGrid.shift(ci1, i, -1);
+					ci4 = explicitGrid.shift(index, i, -1);
+					GroupElement U1 = getU(ci1, i, time_i).mult(getU(ci2, d, time_d).adj());
+					U1.multAssign(getU(index, i, time_i).adj());
+					GroupElement U2 = getU(ci4, d, time_d).mult(getU(ci3, i, time_i));
+					U2.adjAssign();
+					U2.multAssign(getU(ci4, i, time_i));
+					double areaFactor = 1.0 / Math.pow(explicitGrid.getLatticeSpacing(i), 2);
+					U1.addAssign(U2);
+					U1 = getU(index, d, time_d).mult(U1); // close plaquettes
+					U1.multAssign(areaFactor);
+					S.addAssign(U1);
+				}
+			}
+			return S;
+		}
+
+		/**
+		 * Returns the gauge link at time (t) at a given lattice index in a given direction.
+		 * @param index Lattice index of the gauge link
+		 * @param dir   Direction of the gauge link
+		 * @param time  Time = -1, 0, or 1.
+		 * @return      Instance of the gauge link
+		 */
+		public GroupElement getU(int index, int dir, int time) {
+			switch(time) {
+				case -1:
+					// (Note that grid.getUnext contains the old U previous to grid.E)
+					return explicitGrid.getUnext(index, dir);
+				case 0:
+					return explicitGrid.getU(index, dir);
+				case 1:
+					return implicitGrid.getU(index, dir);
+				default:
+					throw new RuntimeException("Invalid time step " + time);
+			}
+		}
+
 	}
 
 	private class ImplicitEnd implements CellAction {
