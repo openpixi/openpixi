@@ -46,9 +46,6 @@ public class SU2PlanePulse implements IFieldGenerator {
 		this.timeStep = s.getTimeStep();
 		double c = s.getSpeedOfLight();
 
-		double as = grid.getLatticeSpacing();
-		double g = s.getCouplingConstant();
-
 		ElementFactory factory = grid.getElementFactory();
 		int colors = grid.getNumberOfColors();
 
@@ -79,22 +76,23 @@ public class SU2PlanePulse implements IFieldGenerator {
 
 			// Multiplicative factor for the plane pulse at t = 0 (for electric fields)
 			double phaseE = scalarProduct;
-			double electricFieldFactor = -g * as * c * phaseE / Math.pow(sigma, 2.0) *
+			double electricFieldFactor = -c * phaseE / Math.pow(sigma, 2.0) *
 					Math.exp(-Math.pow(phaseE / this.sigma, 2.0) / 2.0);
 			// Multiplicative factor for the plane pulse at t = - dt/2 (for links)
 			double phaseU = scalarProduct + c * timeStep / 2.0;
-			double gaugeFieldFactor = g * as * Math.exp(-Math.pow(phaseU / this.sigma, 2.0) / 2.0);
+			double gaugeFieldFactor = Math.exp(-Math.pow(phaseU / this.sigma, 2.0) / 2.0);
 
 
 			Cell currentCell = grid.getCell(ci);
 
 			for (int i = 0; i < this.numberOfDimensions; i++) {
+				double unitFactor = s.grid.getLatticeUnitFactor(i);
 				//Setup the gauge links
-				GroupElement U = currentCell.getU(i).mult(amplitudeYMField[i].mult(gaugeFieldFactor).getLink());
+				GroupElement U = currentCell.getU(i).mult(amplitudeYMField[i].mult(gaugeFieldFactor * unitFactor).getLink());
 				currentCell.setU(i, U);
 
 				//Setup the electric fields
-				currentCell.addE(i, amplitudeYMField[i].mult(electricFieldFactor));
+				currentCell.addE(i, amplitudeYMField[i].mult(electricFieldFactor * unitFactor));
 			}
 		}
 
@@ -116,7 +114,7 @@ public class SU2PlanePulse implements IFieldGenerator {
 	private double[] getPosition(int[] cellPosition) {
 		double[] position = new double[this.numberOfDimensions];
 		for (int i = 0; i < this.numberOfDimensions; i++) {
-			position[i] = cellPosition[i] * grid.getLatticeSpacing();
+			position[i] = cellPosition[i] * grid.getLatticeSpacing(i);
 		}
 		return position;
 	}
