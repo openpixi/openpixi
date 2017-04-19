@@ -40,6 +40,7 @@ public class ImplicitTYMSolver extends FieldSolver
 		implicitStep.at = implicitBegin.at;
 		implicitStep.unitFactor = implicitBegin.unitFactor;
 		for (int i = 0; i < 10; i++) {
+			implicitGrid.storeFields(); // swap U <-> Unext
 			cellIterator.execute(grid, implicitStep);
 		}
 
@@ -129,7 +130,7 @@ public class ImplicitTYMSolver extends FieldSolver
 					// add current:
 					implicitGrid.addE(index, i, grid.getJ(index, i).mult(unitFactor[i]));
 					V = implicitGrid.getE(index, i).mult(-at).getLink();
-					V.multAssign(implicitGrid.getU(index, i));
+					V.multAssign(explicitGrid.getU(index, i));
 					implicitGrid.setUnext(index, i, V);
 				}
 			}
