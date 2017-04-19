@@ -79,6 +79,9 @@ public class CGCInitialCondition implements IInitialCondition {
 			case TemporalOptimizedCGCNGP:
 				initialParticleCreator = new LightConeNGPSuperParticleCreator();
 				break;
+			case TemporalImplicitCGCNGP:
+				initialParticleCreator = new LightConeNGPParticleCreator();
+				break;
 			default:
 				throw new RuntimeException("CGCInitialCondition: simulation type not supported!");
 		}
