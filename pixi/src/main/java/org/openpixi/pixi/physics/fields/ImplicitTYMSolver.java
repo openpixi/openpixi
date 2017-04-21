@@ -8,9 +8,12 @@ public class ImplicitTYMSolver extends FieldSolver
 {
 
 	private double timeStep;
+	private double implicitIterations = 10;
+	private double implicitDampingFactor = 0.5;
 	private UpdateLinks linkUpdater = new UpdateLinks();
 	private ImplicitBegin implicitBegin = new ImplicitBegin();
 	private ImplicitStep implicitStep = new ImplicitStep();
+	private ImplicitDamping implicitDamping = new ImplicitDamping();
 	private ImplicitEnd implicitEnd = new ImplicitEnd();
 
 	@Override
@@ -18,9 +21,8 @@ public class ImplicitTYMSolver extends FieldSolver
 		ImplicitTYMSolver clone = new ImplicitTYMSolver();
 		clone.copyBaseClassFields(this);
 		clone.timeStep = timeStep;
-		clone.linkUpdater = linkUpdater;
-		clone.implicitBegin = implicitBegin;
-		clone.implicitEnd = implicitEnd;
+		clone.implicitIterations = implicitIterations;
+		clone.implicitDampingFactor = implicitDampingFactor;
 		return clone;
 	}
 
@@ -39,9 +41,10 @@ public class ImplicitTYMSolver extends FieldSolver
 		implicitStep.implicitGrid = implicitGrid;
 		implicitStep.at = implicitBegin.at;
 		implicitStep.unitFactor = implicitBegin.unitFactor;
-		for (int i = 0; i < 10; i++) {
+		for (int i = 0; i < implicitIterations; i++) {
 			implicitGrid.storeFields(); // swap U <-> Unext
 			cellIterator.execute(grid, implicitStep);
+			cellIterator.execute(implicitGrid, implicitDamping);
 		}
 
 		implicitEnd.implicitGrid = implicitGrid;
@@ -210,6 +213,24 @@ public class ImplicitTYMSolver extends FieldSolver
 			}
 		}
 
+	}
+
+	private class ImplicitDamping implements CellAction {
+
+		/**
+		 * Damping of the fields of the implicit grid.
+		 * @param grid
+		 * @param index
+		 */
+		public void execute(Grid grid, int index) {
+			if(grid.isActive(index)) {
+				for (int i = 0; i < grid.getNumberOfDimensions(); i++) {
+					GroupElement U1 = grid.getUnext(index,  i).pow(1 - implicitDampingFactor);
+					GroupElement U2 = grid.getU(index, i).pow(implicitDampingFactor);
+					grid.setUnext(index, i, U2.mult(U1));
+				}
+			}
+		}
 	}
 
 	private class ImplicitEnd implements CellAction {
