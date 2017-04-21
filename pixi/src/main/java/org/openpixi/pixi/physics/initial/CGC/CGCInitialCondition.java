@@ -74,13 +74,12 @@ public class CGCInitialCondition implements IInitialCondition {
 		// Spawn particles.
 		switch (s.getSimulationType()) {
 			case TemporalCGCNGP:
+			case TemporalImplicitCGCNGP:
 				initialParticleCreator = new LightConeNGPParticleCreator();
 				break;
 			case TemporalOptimizedCGCNGP:
+			case TemporalOptimizedImplicitCGCNGP:
 				initialParticleCreator = new LightConeNGPSuperParticleCreator();
-				break;
-			case TemporalImplicitCGCNGP:
-				initialParticleCreator = new LightConeNGPParticleCreator();
 				break;
 			default:
 				throw new RuntimeException("CGCInitialCondition: simulation type not supported!");

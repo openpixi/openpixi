@@ -569,6 +569,12 @@ public class Settings {
 				setParticleSolver(new CGCSuperParticleSolver());
 				setInterpolator(new CGCSuperParticleInterpolationNGP());
 				break;
+			case TemporalOptimizedImplicitCGCNGP:
+				setBoundary(GeneralBoundaryType.Absorbing);
+				setFieldSolver(new ImplicitTYMSolver(implicitSolverIterations, implicitSolverDamping));
+				setParticleSolver(new CGCSuperParticleSolver());
+				setInterpolator(new CGCSuperParticleInterpolationNGP());
+				break;
 			case BoostInvariantCGC:
 				break;
 		}
