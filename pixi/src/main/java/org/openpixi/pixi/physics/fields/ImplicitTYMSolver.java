@@ -110,23 +110,6 @@ public class ImplicitTYMSolver extends FieldSolver
 					// Start from previous E
 					implicitGrid.setE(index, i, grid.getE(index,i));
 
-		//			// add current non-transverse contributions:
-		//			GroupElement temp = grid.getU(index, i).mult(grid.getTransverseStapleSum(index, i, beamdirection, false));
-		//			implicitGrid.addE(index, i, temp.proj().mult(at)); // area factors already included in getStapleSum()
-
-		////			// add current transverse contributions:
-		////			temp = grid.getU(index, i).mult(grid.getTransverseStapleSum(index, i, beamdirection, true));
-		////			implicitGrid.addE(index, i, temp.proj().mult(at * 0.5)); // area factors already included in getStapleSum()
-
-		//			// add 1/2 of future transverse contributions:
-		//			temp = implicitGrid.getU(index, i).mult(implicitGrid.getTransverseStapleSum(index, i, beamdirection, true));
-		//			implicitGrid.addE(index, i, temp.proj().mult(at * 0.5)); // area factors already included in getStapleSum()
-
-		//			// add 1/2 of past transverse contributions:
-		//			// (Note that grid.Unext contains the old U previous to grid.E)
-		//			temp = grid.getUnext(index, i).mult(grid.getTransverseStapleSumNext(index, i, beamdirection, true));
-		//			implicitGrid.addE(index, i, temp.proj().mult(at * 0.5)); // area factors already included in getStapleSum()
-
 					// add 1/2 of future contributions:
 					GroupElement temp = getStapleSum(index, i, beamdirection, +1);
 					implicitGrid.addE(index, i, temp.proj().mult(at * 0.5)); // area factors already included in getStapleSum()
@@ -147,7 +130,7 @@ public class ImplicitTYMSolver extends FieldSolver
 
 		/**
 		 * Computes the sum of staples surrounding a particular gauge link given by a lattice index and a direction,
-		 * but takes into account only those plaquettes transverse to a certain beam direction.
+		 * but uses links at different time steps.
 		 * This is used for the field equations of motion.
 		 * <b>Note that this routine closes the plaquettes along the central line (different from
 		 * the behavior of the corresponding routine Grid.getStapleSum()).</b>
