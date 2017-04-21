@@ -75,6 +75,9 @@ public class Settings {
 	private ParticleSolver particleSolver = new EmptyParticleSolver();
 	private List<Force> forces = new ArrayList<Force>();
 
+	// Solver related parameters for physics.fields.ImplicitTYMSolver
+	private int implicitSolverIterations = 0;
+	private double implicitSolverDamping = 0;
 
 	// FieldGenerator related settings
 	private ArrayList<IFieldGenerator> fieldGenerators = new ArrayList<IFieldGenerator>();
@@ -107,6 +110,8 @@ public class Settings {
 	// SIMPLE GETTERS
 	//----------------------------------------------------------------------------------------------
 	public SimulationType getSimulationType() {
+		// Reapply simulation type settings, as some parameters may have changed in the meantime.
+		applySimulationTypeSetting();
 		return this.simulationType;
 	}
 	
@@ -252,6 +257,10 @@ public class Settings {
 	public int[] getActiveRegionPoint2() {
 		return activeRegionPoint2;
 	}
+
+	public int getImplicitSolverIterations() { return implicitSolverIterations; }
+
+	public double getImplicitSolverDamping() { return implicitSolverDamping; }
 
 	//----------------------------------------------------------------------------------------------
 	// MORE COMPLEX GETTERS / BUILDERS
@@ -498,6 +507,9 @@ public class Settings {
 		this.activeRegionPoint2 = point;
 	}
 
+	public void setImplicitSolverIterations(int implicitSolverIterations) { this.implicitSolverIterations = implicitSolverIterations; }
+
+	public void setImplicitSolverDamping(double implicitSolverDamping) { this.implicitSolverDamping = implicitSolverDamping; }
 
 	//----------------------------------------------------------------------------------------------
 	// VARIOUS
@@ -547,7 +559,7 @@ public class Settings {
 				break;
 			case TemporalImplicitCGCNGP:
 				setBoundary(GeneralBoundaryType.Absorbing);
-				setFieldSolver(new ImplicitTYMSolver());
+				setFieldSolver(new ImplicitTYMSolver(implicitSolverIterations, implicitSolverDamping));
 				setParticleSolver(new CGCParticleSolver());
 				setInterpolator(new CGCParticleInterpolationNGP());
 				break;

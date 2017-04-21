@@ -26,6 +26,9 @@ public class YamlSettings {
 	public YamlRegion evaluationRegion;
 	public YamlRegion activeRegion;
 
+	public Integer implicitSolverIterations;
+	public Double implicitSolverDamping;
+
 	public List<YamlYangMillsParticle> particles;
 	public List<YamlYangMillsParticleStream> streams;
     public YamlFields fields;
@@ -178,5 +181,11 @@ public class YamlSettings {
 				System.out.println("Active region: check region points.");
 			}
 		}
+
+		if(implicitSolverIterations != null)
+			settings.setImplicitSolverIterations(implicitSolverIterations);
+
+		if(implicitSolverDamping != null)
+			settings.setImplicitSolverDamping(implicitSolverDamping);
 	}
 }

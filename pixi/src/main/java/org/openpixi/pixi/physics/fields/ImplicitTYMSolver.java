@@ -8,17 +8,22 @@ public class ImplicitTYMSolver extends FieldSolver
 {
 
 	private double timeStep;
-	private double implicitIterations = 10;
-	private double implicitDampingFactor = 0.5;
+	private double implicitIterations;
+	private double implicitDampingFactor;
 	private UpdateLinks linkUpdater = new UpdateLinks();
 	private ImplicitBegin implicitBegin = new ImplicitBegin();
 	private ImplicitStep implicitStep = new ImplicitStep();
 	private ImplicitDamping implicitDamping = new ImplicitDamping();
 	private ImplicitEnd implicitEnd = new ImplicitEnd();
 
+	public ImplicitTYMSolver(double implicitIterations, double implicitDampingFactor) {
+		this.implicitIterations = implicitIterations;
+		this.implicitDampingFactor = implicitDampingFactor;
+	}
+
 	@Override
 	public FieldSolver clone() {
-		ImplicitTYMSolver clone = new ImplicitTYMSolver();
+		ImplicitTYMSolver clone = new ImplicitTYMSolver(implicitIterations, implicitDampingFactor);
 		clone.copyBaseClassFields(this);
 		clone.timeStep = timeStep;
 		clone.implicitIterations = implicitIterations;
