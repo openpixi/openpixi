@@ -1,0 +1,76 @@
+simulationType: temporal implicit cgc ngp
+gridSteps: [.25, 1, 1]
+couplingConstant: 2
+numberOfDimensions: 3
+numberOfColors: 2
+numberOfThreads: 8
+gridCells: [64, 16, 16]
+timeStep: 0.25
+duration: 64
+evaluationRegion:
+  enabled: true
+  point1: [2, 0, 0]
+  point2: [-3, -1, -1]
+activeRegion:
+  enabled: true
+  point1: [1, 0, 0]
+  point2: [-2, -1, -1]
+implicitSolverIterations: 3
+implicitSolverDamping: 0
+
+initialConditions:
+  CGC:
+    poissonSolver: improved full
+    MVModel:
+      - direction: 0
+        orientation: 1
+        longitudinalLocation: 4
+        longitudinalWidth: .2
+        randomSeed: 5
+        mu: .045
+        ultravioletCutoffTransverse: 2
+        longitudinalCoherenceLength: .4
+        infraredCoefficient: 0.2
+      - direction: 0
+        orientation: -1
+        longitudinalLocation: 12
+        longitudinalWidth: .2
+        randomSeed: 6
+        mu: .045
+        ultravioletCutoffTransverse: 2
+        longitudinalCoherenceLength: .4
+        infraredCoefficient: 0.2
+
+# Generated panel code:
+panels:
+  dividerLocation: 375
+  leftPanel:
+    energyDensityVoxelGLPanel:
+      automaticScaling: false
+      centerx: 0.0
+      centery: 0.0
+      centerz: 0.0
+      data: Energy density
+      direction: x
+      distanceFactor: 1.0
+      opacity: 0.1
+      phi: -1.5607963267948968
+      scaleFactor: 10000.0
+      showSimulationBox: true
+      theta: 1.0753981633974485
+      unequalScaling: false
+      visibilityThreshold: 0.0
+      whiteBackground: false
+  orientation: 0
+  rightPanel:
+    electricFieldPanel:
+      automaticScaling: false
+      colorIndex: 0
+      directionIndex: 1
+      scaleFactor: 5.0
+      showCoordinates: x, i, 8
+      showFields:
+      - E
+      - U
+  windowHeight: 839
+  windowWidth: 1376
