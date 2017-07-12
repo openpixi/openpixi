@@ -20,7 +20,7 @@ implicitSolverDamping: 0
 
 initialConditions:
   CGC:
-    poissonSolver: improved full
+    poissonSolver: regular
     MVModel:
       - direction: 0
         orientation: 1
