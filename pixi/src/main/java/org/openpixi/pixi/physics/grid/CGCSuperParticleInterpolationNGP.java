@@ -35,8 +35,16 @@ public class CGCSuperParticleInterpolationNGP implements InterpolatorAlgorithm {
 	         * shifts the order in which particle charges are interpolated on the grid. As a result different threads
 	         * do not write to the same cell at the same time, which should improve multithreading performance.
 	         */
+			int quickfix = 0;
+			if (P.particlePerCell == 1) {
+				// Quick fix for implicit CGC solver
+				// (For the implicit solver we have dt == dx, and thus particlePerCell == 1)
+				// For some reason, for P.orientation > 0, J was shifted by 1 cell,
+				// so we manually shift in the opposite direction:
+				quickfix = P.particlesPerPlane;
+			}
 			int imin = (indexOffset < 0) ? -indexOffset : 0;
-			int imax = Math.max(Math.min(indexOffset + P.numberOfParticles, totalNumberOfCells) - indexOffset, 0);
+			int imax = Math.max(Math.min(indexOffset + P.numberOfParticles, totalNumberOfCells - quickfix) - indexOffset, 0);
 			int ireg = imax - imin;
 			int offset = 0;
 			if (useOffset) {
@@ -47,7 +55,7 @@ public class CGCSuperParticleInterpolationNGP implements InterpolatorAlgorithm {
 					int j = (i + offset) % ireg + imin;
 					int index = indexOffset + j;
 					AlgebraElement J = P.Q[j].mult(as / at);
-					g.addJ(index, 0, J); // Optimizations only work for x-direction!
+					g.addJ(index + quickfix, 0, J); // Optimizations only work for x-direction!
 					GroupElement U = g.getUnext(index, 0);
 					P.Q[j].actAssign(U.adj());
 				}
