@@ -43,6 +43,15 @@ initialConditions:
         longitudinalCoherenceLength: .4
         infraredCoefficient: 0.2
 
+#output:
+#  bulkQuantitiesInTime:
+#    - path: "bulk.dat"
+#      interval: 1.0
+#  projectedEnergyDensity:
+#    - path: 'pe.dat'
+#      interval: 1.0
+#      direction: 0
+
 # Generated panel code:
 panels:
   dividerLocation: 375
