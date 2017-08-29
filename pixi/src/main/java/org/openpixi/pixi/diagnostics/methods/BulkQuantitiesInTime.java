@@ -29,6 +29,7 @@ public class BulkQuantitiesInTime implements Diagnostics {
 	public double py;
 	public double pz;
 	public double gaussViolation;
+	public double totalChargeSquared;
 
 	public BulkQuantitiesInTime(String path, double timeInterval)
 	{
@@ -62,7 +63,7 @@ public class BulkQuantitiesInTime implements Diagnostics {
 			File file = FileFunctions.getFile(path);
 			try {
 				FileWriter pw = new FileWriter(file, true);
-				pw.write("#time \t E^2 \t B^2 \t P_x \t P_y \t P_z \t G");
+				pw.write("#time \t E^2 \t B^2 \t P_x \t P_y \t P_z \t G \t rho^2");
 				pw.write("\n");
 				pw.close();
 			} catch (IOException ex) {
@@ -96,6 +97,7 @@ public class BulkQuantitiesInTime implements Diagnostics {
 			pz = +esquares[0] + esquares[1] - esquares[2] + bsquares[0] + bsquares[1] - bsquares[2];
 
 			gaussViolation = fieldMeasurements.calculateGaussConstraint(grid);
+			totalChargeSquared = fieldMeasurements.calculateTotalChargeSquared(grid);
 
 			if(!supressOutput) {
 				File file = FileFunctions.getFile(path);
@@ -108,7 +110,8 @@ public class BulkQuantitiesInTime implements Diagnostics {
 				pw.write(formatter.format(px) + "\t");
 				pw.write(formatter.format(py) + "\t");
 				pw.write(formatter.format(pz) + "\t");
-				pw.write(formatter.format(gaussViolation));
+				pw.write(formatter.format(gaussViolation) + "\t");
+				pw.write(formatter.format(totalChargeSquared));
 				pw.write("\n");
 
 				pw.close();
