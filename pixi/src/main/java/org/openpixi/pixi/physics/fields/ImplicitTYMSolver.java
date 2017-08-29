@@ -111,11 +111,11 @@ public class ImplicitTYMSolver extends FieldSolver
 					implicitGrid.setE(index, i, grid.getE(index,i));
 
 					// add 1/2 of future contributions:
-					GroupElement temp = getStapleSum(index, i, beamdirection, +1);
+					GroupElement temp = getPlaquetteSum(index, i, beamdirection, +1);
 					implicitGrid.addE(index, i, temp.proj().mult(at * 0.5)); // area factors already included in getStapleSum()
 
 					// add 1/2 of past contributions:
-					temp = getStapleSum(index, i, beamdirection, -1);
+					temp = getPlaquetteSum(index, i, beamdirection, -1);
 					implicitGrid.addE(index, i, temp.proj().mult(at * 0.5)); // area factors already included in getStapleSum()
 
 					// add current:
@@ -129,7 +129,7 @@ public class ImplicitTYMSolver extends FieldSolver
 
 
 		/**
-		 * Computes the sum of staples surrounding a particular gauge link given by a lattice index and a direction,
+		 * Computes the sum of plaquettes including a particular gauge link given by a lattice index and a direction,
 		 * but uses links at different time steps.
 		 * This is used for the field equations of motion.
 		 * <b>Note that this routine closes the plaquettes along the central line (different from
@@ -140,7 +140,7 @@ public class ImplicitTYMSolver extends FieldSolver
 		 * @param time -1 or +1
 		 * @return      Sum of all surrounding staples
 		 */
-		public GroupElement getStapleSum(int index, int d, int beamdirection, int time) {
+		public GroupElement getPlaquetteSum(int index, int d, int beamdirection, int time) {
 			GroupElement S = explicitGrid.getElementFactory().groupZero();
 			int ci1 = explicitGrid.shift(index, d, 1);
 			int ci2, ci3, ci4;
