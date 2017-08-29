@@ -46,9 +46,6 @@ public class SU2GaussianPulse implements IFieldGenerator {
 		this.timeStep = s.getTimeStep();
 		double c = s.getSpeedOfLight();
 
-		double as = grid.getLatticeSpacing();
-		double g = s.getCouplingConstant();
-
 		ElementFactory factory = grid.getElementFactory();
 		int colors = grid.getNumberOfColors();
 
@@ -80,25 +77,27 @@ public class SU2GaussianPulse implements IFieldGenerator {
 			for (int i = 0; i < numberOfDimensions; i++) {
 				tmp *= gaussian(currentPosition[i], this.position[i], this.sigma[i]);
 			}
-			double electricFieldFactor = -g * as * tmp;
+			double electricFieldFactor = -tmp;
 
 			// Multiplicative factor for the gaussian pulse at t = -dt/2 (for links)
 			tmp = 1.0;
 			for (int i = 0; i < numberOfDimensions; i++) {
 				tmp *= gaussian(currentPosition[i], this.position[i] - c * timeStep / 2.0 * this.direction[i], this.sigma[i]);
 			}
-			double gaugeFieldFactor = g * as * tmp;
+			double gaugeFieldFactor = tmp;
 
 
 			Cell currentCell = grid.getCell(ci);
 
 			for (int i = 0; i < this.numberOfDimensions; i++) {
+				double unitFactor = s.grid.getLatticeUnitFactor(i);
+
 				//Setup the gauge links
-				GroupElement U = currentCell.getU(i).mult(amplitudeYMField[i].mult(gaugeFieldFactor).getLink());
+				GroupElement U = currentCell.getU(i).mult(amplitudeYMField[i].mult(gaugeFieldFactor * unitFactor).getLink());
 				currentCell.setU(i, U);
 
 				//Setup the electric fields
-				currentCell.addE(i, amplitudeYMField[i].mult(electricFieldFactor));
+				currentCell.addE(i, amplitudeYMField[i].mult(electricFieldFactor * unitFactor));
 			}
 		}
 	}
@@ -123,7 +122,7 @@ public class SU2GaussianPulse implements IFieldGenerator {
 	private double[] getPosition(int[] cellPosition) {
 		double[] position = new double[this.numberOfDimensions];
 		for (int i = 0; i < this.numberOfDimensions; i++) {
-			position[i] = cellPosition[i] * grid.getLatticeSpacing();
+			position[i] = cellPosition[i] * grid.getLatticeSpacing(i);
 		}
 		return position;
 	}

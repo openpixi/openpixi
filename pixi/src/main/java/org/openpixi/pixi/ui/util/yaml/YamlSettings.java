@@ -26,6 +26,9 @@ public class YamlSettings {
 	public YamlRegion evaluationRegion;
 	public YamlRegion activeRegion;
 
+	public Integer implicitSolverIterations;
+	public Double implicitSolverDamping;
+
 	public List<YamlYangMillsParticle> particles;
 	public List<YamlYangMillsParticleStream> streams;
     public YamlFields fields;
@@ -58,7 +61,9 @@ public class YamlSettings {
 			map.put("temporal yang-mills", SimulationType.TemporalYangMills);
 			map.put("temporal cgc", SimulationType.TemporalCGC);
 			map.put("temporal cgc ngp", SimulationType.TemporalCGCNGP);
+			map.put("temporal implicit cgc ngp", SimulationType.TemporalImplicitCGCNGP);
 			map.put("temporal optimized cgc ngp", SimulationType.TemporalOptimizedCGCNGP);
+			map.put("temporal optimized implicit cgc ngp", SimulationType.TemporalOptimizedImplicitCGCNGP);
 			map.put("boost-invariant cgc", SimulationType.BoostInvariantCGC);
 
 			if(map.containsKey(simulationType)) {
@@ -177,5 +182,11 @@ public class YamlSettings {
 				System.out.println("Active region: check region points.");
 			}
 		}
+
+		if(implicitSolverIterations != null)
+			settings.setImplicitSolverIterations(implicitSolverIterations);
+
+		if(implicitSolverDamping != null)
+			settings.setImplicitSolverDamping(implicitSolverDamping);
 	}
 }
