@@ -118,6 +118,7 @@ public class OccupationNumbers2DGLPanel extends AnimationGLPanel {
 				int xstart2 = (int)(s.grid.getLatticeSpacing() * i * sx);
 				int xstart3 = (int)(s.grid.getLatticeSpacing() * (i + 1) * sx);
 				int ystart2 = (int) (s.grid.getLatticeSpacing() * k * sy);
+				int ystart3 = (int) (s.grid.getLatticeSpacing() * (k + 1) * sy);
 
 				pos[xAxisIndex] = i;
 				pos[yAxisIndex] = k;
@@ -140,6 +141,8 @@ public class OccupationNumbers2DGLPanel extends AnimationGLPanel {
 					gl2.glColor3d( red, green, blue );
 					gl2.glVertex2f( xstart2, ystart2 );
 					gl2.glVertex2f( xstart3, ystart2 );
+					gl2.glVertex2f( xstart2, ystart3 );
+					gl2.glVertex2f( xstart3, ystart3 );
 				} else {
 					double occ = diagnostic.occupationNumbers[index][0]
 							+ diagnostic.occupationNumbers[index][1]
@@ -151,6 +154,8 @@ public class OccupationNumbers2DGLPanel extends AnimationGLPanel {
 					gl2.glColor3d( value, value, value );
 					gl2.glVertex2f( xstart2, ystart2 );
 					gl2.glVertex2f( xstart3, ystart2 );
+					gl2.glVertex2f( xstart2, ystart3 );
+					gl2.glVertex2f( xstart3, ystart3 );
 				}
 
 			}
