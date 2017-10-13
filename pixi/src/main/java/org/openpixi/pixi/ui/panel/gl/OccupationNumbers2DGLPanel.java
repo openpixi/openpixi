@@ -38,14 +38,14 @@ public class OccupationNumbers2DGLPanel extends AnimationGLPanel {
 
 	public ScaleProperties scaleProperties;
 	public BooleanProperties colorfulProperties;
-	BooleanProperties mirrorProperties;
+	public BooleanProperties mirrorProperties;
 	public IntegerProperties frameSkipProperties;
-	CoordinateProperties showCoordinateProperties;
+	public CoordinateProperties showCoordinateProperties;
 
-	BooleanProperties useConeProperties;
-	DoubleProperties collisionTimeDoubleProperties;
-	CoordinateProperties collisionCoordinateProperties;
-	CoordinateProperties velocityCoordinateProperties;
+	public BooleanProperties useConeProperties;
+	public DoubleProperties collisionTimeDoubleProperties;
+	public CoordinateProperties collisionCoordinateProperties;
+	public CoordinateProperties velocityCoordinateProperties;
 
 	OccupationNumbersInTime diagnostic;
 	Simulation simulation;

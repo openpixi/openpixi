@@ -19,6 +19,13 @@ public class YamlOccupationNumbers2DGLPanel {
 	// Frame skip properties
 	public Integer frameSkip;
 
+	public String showCoordinates;
+	public Boolean mirrorX;
+	public Boolean coneRestriction;
+	public Double collisionTime;
+	public String collisionPosition;
+	public String cutConeVelocity;
+
 	/** Empty constructor called by SnakeYaml */
 	public YamlOccupationNumbers2DGLPanel() {
 	}
@@ -30,6 +37,12 @@ public class YamlOccupationNumbers2DGLPanel {
 			automaticScaling = panel.scaleProperties.getAutomaticScaling();
 			colorful = panel.colorfulProperties.getValue();
 			frameSkip = panel.frameSkipProperties.getValue();
+			showCoordinates = panel.showCoordinateProperties.getValue();
+			mirrorX = panel.mirrorProperties.getValue();
+			coneRestriction = panel.useConeProperties.getValue();
+			collisionTime = panel.collisionTimeDoubleProperties.getValue();
+			collisionPosition = panel.collisionCoordinateProperties.getValue();
+			cutConeVelocity = panel.velocityCoordinateProperties.getValue();
 		}
 	}
 
@@ -53,6 +66,29 @@ public class YamlOccupationNumbers2DGLPanel {
 			panel.frameSkipProperties.setValue(frameSkip);
 		}
 
+		if (showCoordinates != null) {
+			panel.showCoordinateProperties.setValue(showCoordinates);
+		}
+
+		if (mirrorX != null) {
+			panel.mirrorProperties.setValue(mirrorX);
+		}
+
+		if (coneRestriction != null) {
+			panel.useConeProperties.setValue(coneRestriction);
+		}
+
+		if (collisionTime != null) {
+			panel.collisionTimeDoubleProperties.setValue(collisionTime);
+		}
+
+		if (collisionPosition != null) {
+			panel.collisionCoordinateProperties.setValue(collisionPosition);
+		}
+
+		if (cutConeVelocity != null) {
+			panel.velocityCoordinateProperties.setValue(cutConeVelocity);
+		}
 
 		return panel;
 	}
