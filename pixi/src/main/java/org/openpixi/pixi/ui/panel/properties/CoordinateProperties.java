@@ -19,19 +19,29 @@ public class CoordinateProperties extends StringProperties {
 
 	public enum Mode {
 		MODE_1D_LOOP,
-		MODE_2D
+		MODE_2D,
+		MODE_COORDINATES
 	}
 
 	Mode mode;
 	int[] positions;
+	double[] double_positions;
 	int xAxisIndex;
 	int yAxisIndex;
 	int loopIndex;
 
 	public CoordinateProperties(SimulationAnimation simulationAnimation,
-			Mode mode) {
-		super(simulationAnimation, "Show coordinate", "");
+								String name, String initialValue) {
+		super(simulationAnimation, name, initialValue);
+		commonConstructor(Mode.MODE_COORDINATES);
+	}
 
+	public CoordinateProperties(SimulationAnimation simulationAnimation, Mode mode) {
+		super(simulationAnimation, "Show coordinate", "");
+		commonConstructor(mode);
+	}
+
+	private void commonConstructor(Mode mode) {
 		this.mode = mode;
 
 		// Construct default string:
@@ -50,6 +60,9 @@ public class CoordinateProperties extends StringProperties {
 			coordinates = "x, y, ";
 			wstart = 2;
 			break;
+		case MODE_COORDINATES:
+			// No special coordinates
+			break;
 		default:
 			break;
 		}
@@ -59,7 +72,9 @@ public class CoordinateProperties extends StringProperties {
 		}
 		coordinates = coordinates.substring(0, coordinates.length() - 2);
 
-		setValue(coordinates);
+		if (this.getValue().equals("")) {
+			setValue(coordinates);
+		}
 	}
 
 	@Override
@@ -89,8 +104,10 @@ public class CoordinateProperties extends StringProperties {
 		}
 
 		positions = new int[dimensions];
+		double_positions = new double[dimensions];
 		for(int i = 0; i < dimensions; i++) {
 			positions[i] = s.grid.getNumCells(i)/2;
+			double_positions[i] = 0;
 		}
 
 		// No loop index set
@@ -106,6 +123,11 @@ public class CoordinateProperties extends StringProperties {
 			} else {
 				try{
 					positions[i] = Integer.parseInt(indices[i].trim());
+				} catch (NumberFormatException e) {
+					// No error message - use default instead.
+				}
+				try{
+					double_positions[i] = Double.parseDouble(indices[i].trim());
 				} catch (NumberFormatException e) {
 					// No error message - use default instead.
 				}
@@ -128,4 +150,6 @@ public class CoordinateProperties extends StringProperties {
 	public int[] getPositions() {
 		return positions;
 	}
+
+	public double[] getDoublePositions() { return double_positions; }
 }

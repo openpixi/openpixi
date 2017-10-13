@@ -44,6 +44,11 @@ public class OccupationNumbersInTime implements Diagnostics {
 	private boolean useMirroredGrid;
 	private int mirroredDirection;
 
+	private boolean useCone;
+	private double collisionTime;
+	private double[] collisionPosition;
+	private double[] coneVelocity;
+
 	private String separator = ", ";
 	private String linebreak = "\n";
 
@@ -81,6 +86,20 @@ public class OccupationNumbersInTime implements Diagnostics {
 
 		this.useMirroredGrid = true;
 		this.mirroredDirection = mirroredDirection;
+	}
+
+	public OccupationNumbersInTime(double timeInterval, String outputType, String filename, boolean colorful,
+								   boolean useMirroredGrid, int mirroredDirection,
+								   boolean useCone, double collisionTime, double[] collisionPosition, double[] coneVelocity) {
+		this(timeInterval, outputType, filename, colorful);
+
+		this.useMirroredGrid = useMirroredGrid;
+		this.mirroredDirection = mirroredDirection;
+
+		this.useCone = useCone;
+		this.collisionTime = collisionTime;
+		this.collisionPosition = collisionPosition;
+		this.coneVelocity = coneVelocity;
 	}
 
 	public void initialize(Simulation s) {
@@ -123,12 +142,17 @@ public class OccupationNumbersInTime implements Diagnostics {
 	 */
 	public void calculate(Grid grid_reference, ArrayList<IParticle> particles, int steps) {
 		if (steps % stepInterval == 0) {
+			Grid grid = grid_reference;
+			// Create copy and cut cone into grid
+			if (useCone) {
+				grid = new ConeRestrictedGrid(grid, collisionTime, collisionPosition, coneVelocity);
+			}
+
 			// Apply Coulomb gauge.
-			Grid grid;
 			if(useMirroredGrid) {
-				grid = new MirroredGrid(grid_reference, mirroredDirection);
+				grid = new MirroredGrid(grid, mirroredDirection);
 			} else {
-				grid = new Grid(grid_reference);	// Copy grid.
+				grid = new Grid(grid);	// Copy grid.
 			}
 			CoulombGauge coulombGauge = new CoulombGauge(grid);
 			coulombGauge.applyGaugeTransformation(grid);
@@ -424,6 +448,53 @@ public class OccupationNumbersInTime implements Diagnostics {
 			}
 		}
 		return effectiveNumberOfDimensions;
+	}
+
+	/**
+	 * Check whether a grid index is within the cone defined by the collision center and the cone velocity.
+	 * Cone velocity = 0 means no restriction on that coordinate.
+	 * @param index
+	 * @return
+	 */
+	private boolean isInCone(int index) {
+
+		return true;
+	}
+
+	private class ConeRestrictedGrid extends Grid {
+		public ConeRestrictedGrid(Grid grid, double collisionTime, double[] collisionPosition, double[] coneVelocity) {
+			super(grid);
+			createGrid();
+			this.cellIterator.setNormalMode(numCells);
+
+			// Copy and mirror cells.
+			for (int i = 0; i < grid.getTotalNumberOfCells(); i++) {
+
+				int[] cellPos = grid.getCellPos(i);
+
+				// Check whether cellPos is within the cone
+				boolean isWithinCone = true;
+				for (int d = 0; d < coneVelocity.length; d++) {
+					if (coneVelocity[d] != 0) {
+						// Restriction on this axis!
+						double time = grid.getSimulationSteps() * grid.getTemporalSpacing();
+						double pos = cellPos[d] * grid.getLatticeSpacing(d);
+						double minTime = - Math.abs(time - collisionTime);
+						double maxTime = + Math.abs(time - collisionTime);
+						double minPos = minTime * coneVelocity[d] + collisionPosition[d];
+						double maxPos = maxTime * coneVelocity[d] + collisionPosition[d];
+
+						if ((pos < minPos) || (pos > maxPos)) {
+							isWithinCone = false;
+						}
+					}
+				}
+
+				if (isWithinCone) {
+					cells[i] = grid.getCell(i).copy();
+				}
+			}
+		}
 	}
 
 	private class MirroredGrid extends Grid {
