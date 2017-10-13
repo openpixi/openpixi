@@ -48,6 +48,7 @@ public class OccupationNumbersInTime implements Diagnostics {
 	private double collisionTime;
 	private double[] collisionPosition;
 	private double[] coneVelocity;
+	private boolean useGaussianWindow;
 
 	private String separator = ", ";
 	private String linebreak = "\n";
@@ -90,7 +91,8 @@ public class OccupationNumbersInTime implements Diagnostics {
 
 	public OccupationNumbersInTime(double timeInterval, String outputType, String filename, boolean colorful,
 								   boolean useMirroredGrid, int mirroredDirection,
-								   boolean useCone, double collisionTime, double[] collisionPosition, double[] coneVelocity) {
+								   boolean useCone, double collisionTime, double[] collisionPosition, double[] coneVelocity,
+								   boolean useGaussianWindow) {
 		this(timeInterval, outputType, filename, colorful);
 
 		this.useMirroredGrid = useMirroredGrid;
@@ -100,6 +102,7 @@ public class OccupationNumbersInTime implements Diagnostics {
 		this.collisionTime = collisionTime;
 		this.collisionPosition = collisionPosition;
 		this.coneVelocity = coneVelocity;
+		this.useGaussianWindow = useGaussianWindow;
 	}
 
 	public void initialize(Simulation s) {
@@ -145,7 +148,11 @@ public class OccupationNumbersInTime implements Diagnostics {
 			Grid grid = grid_reference;
 			// Create copy and cut cone into grid
 			if (useCone) {
-				grid = new ConeRestrictedGrid(grid, collisionTime, collisionPosition, coneVelocity);
+				if (useGaussianWindow) {
+					grid = new GaussianConeRestrictedGrid(grid, collisionTime, collisionPosition, coneVelocity);
+				} else {
+					grid = new ConeRestrictedGrid(grid, collisionTime, collisionPosition, coneVelocity);
+				}
 			}
 
 			// Apply Coulomb gauge.
@@ -493,6 +500,52 @@ public class OccupationNumbersInTime implements Diagnostics {
 				if (isWithinCone) {
 					cells[i] = grid.getCell(i).copy();
 				}
+			}
+		}
+	}
+
+	private class GaussianConeRestrictedGrid extends Grid {
+		public GaussianConeRestrictedGrid(Grid grid, double collisionTime, double[] collisionPosition, double[] coneVelocity) {
+			super(grid);
+			createGrid();
+			this.cellIterator.setNormalMode(numCells);
+
+			double two_sqrt_log_two = 2 * Math.sqrt(Math.log(2));
+
+			// Copy and mirror cells.
+			for (int i = 0; i < grid.getTotalNumberOfCells(); i++) {
+
+				int[] cellPos = grid.getCellPos(i);
+
+				// Check whether cellPos is within the cone
+				double suppressionFactor = 1;
+				for (int d = 0; d < coneVelocity.length; d++) {
+					if (coneVelocity[d] != 0) {
+						// Restriction on this axis!
+						double time = grid.getSimulationSteps() * grid.getTemporalSpacing();
+						double pos = cellPos[d] * grid.getLatticeSpacing(d);
+						double minTime = - Math.abs(time - collisionTime);
+						double maxTime = + Math.abs(time - collisionTime);
+						double minPos = minTime * coneVelocity[d] + collisionPosition[d];
+						double maxPos = maxTime * coneVelocity[d] + collisionPosition[d];
+
+						// Construct Gaussian with full width at half maximum:
+						double sigma = (maxPos - minPos) / two_sqrt_log_two;
+
+						suppressionFactor *= Math.exp(- Math.pow((pos - collisionPosition[d]) / sigma, 2));
+					}
+				}
+
+				cells[i] = grid.getCell(i).copy();
+
+				// Adjust all values by suppression factor
+				for(int j = 0; j < grid.getNumberOfDimensions(); j++) {
+					cells[i].getE(j).multAssign(suppressionFactor);
+					cells[i].getJ(j).multAssign(suppressionFactor);
+					cells[i].getU(j).multAssign(suppressionFactor);
+					cells[i].getUnext(j).multAssign(suppressionFactor);
+				}
+				cells[i].getRho().multAssign(suppressionFactor);
 			}
 		}
 	}

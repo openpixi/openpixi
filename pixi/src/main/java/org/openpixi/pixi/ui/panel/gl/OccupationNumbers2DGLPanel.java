@@ -46,6 +46,7 @@ public class OccupationNumbers2DGLPanel extends AnimationGLPanel {
 	public DoubleProperties collisionTimeDoubleProperties;
 	public CoordinateProperties collisionCoordinateProperties;
 	public CoordinateProperties velocityCoordinateProperties;
+	public BooleanProperties useGaussianWindowProperties;
 
 	OccupationNumbersInTime diagnostic;
 	Simulation simulation;
@@ -58,6 +59,7 @@ public class OccupationNumbers2DGLPanel extends AnimationGLPanel {
 	private double oldCollisionTime;
 	private double[] oldCollisionPosition;
 	private double[] oldConeVelocity;
+	private boolean oldUseGaussianWindow;
 
 	/** Constructor */
 	public OccupationNumbers2DGLPanel(SimulationAnimation simulationAnimation) {
@@ -73,6 +75,7 @@ public class OccupationNumbers2DGLPanel extends AnimationGLPanel {
 		collisionTimeDoubleProperties = new DoubleProperties(simulationAnimation, "Collision time:", 0.);
 		collisionCoordinateProperties = new CoordinateProperties(simulationAnimation, "Collision center:", "0, 0, 0");
 		velocityCoordinateProperties = new CoordinateProperties(simulationAnimation, "Cut cone velocity:", "0., 0., 0.");
+		useGaussianWindowProperties = new BooleanProperties(simulationAnimation, "Gaussian window", false);
 		frameCounter = 0;
 
 		simulation = this.simulationAnimation.getSimulation();
@@ -88,19 +91,22 @@ public class OccupationNumbers2DGLPanel extends AnimationGLPanel {
 		double collisionTime = collisionTimeDoubleProperties.getValue();
 		double[] collisionPosition = collisionCoordinateProperties.getDoublePositions();
 		double[] coneVelocity = velocityCoordinateProperties.getDoublePositions();
+		boolean useGaussianWindow = useGaussianWindowProperties.getValue();
 
 		// Compute occupation numbers
 		if(mirrorProperties.getValue() != oldUseMirror || simulation != simulationAnimation.getSimulation()
 				|| useCone != oldUseCone
 				|| collisionTime != oldCollisionTime
 				|| ! collisionPosition.equals(oldCollisionPosition)
-				|| ! coneVelocity.equals(oldConeVelocity) ) {
+				|| ! coneVelocity.equals(oldConeVelocity)
+				|| useGaussianWindow != oldUseGaussianWindow) {
 			oldUseMirror = mirrorProperties.getValue();
 			simulation = simulationAnimation.getSimulation();
 			oldUseCone = useCone;
 			oldCollisionTime = collisionTime;
 			oldCollisionPosition = collisionPosition;
 			oldConeVelocity = coneVelocity;
+			oldUseGaussianWindow = useGaussianWindow;
 			updateDiagnostic();
 		}
 		frameSkip = (frameSkipProperties.getValue() > 1) ? frameSkipProperties.getValue() : 1;
@@ -193,12 +199,13 @@ public class OccupationNumbers2DGLPanel extends AnimationGLPanel {
 		double collisionTime = collisionTimeDoubleProperties.getValue();
 		double[] collisionPosition = collisionCoordinateProperties.getDoublePositions();
 		double[] coneVelocity = velocityCoordinateProperties.getDoublePositions();
+		boolean useGaussianWindow = useGaussianWindowProperties.getValue();
 
 		boolean useMirroredGrid = mirrorProperties.getValue();
 
 		diagnostic = new OccupationNumbersInTime(1.0, "none", "", true,
 				useMirroredGrid, mirrorDirection,
-				useCone, collisionTime, collisionPosition, coneVelocity);
+				useCone, collisionTime, collisionPosition, coneVelocity, useGaussianWindow);
 		diagnostic.initialize(simulation);
 	}
 
@@ -229,5 +236,6 @@ public class OccupationNumbers2DGLPanel extends AnimationGLPanel {
 		collisionTimeDoubleProperties.addComponents(box);
 		collisionCoordinateProperties.addComponents(box);
 		velocityCoordinateProperties.addComponents(box);
+		useGaussianWindowProperties.addComponents(box);
 	}
 }
