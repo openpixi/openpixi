@@ -26,6 +26,8 @@ public class YamlOccupationNumbers2DGLPanel {
 	public String collisionPosition;
 	public String cutConeVelocity;
 	public Boolean gaussianWindow;
+	public Boolean tukeyWindow;
+	public Double tukeyWidth;
 
 	/** Empty constructor called by SnakeYaml */
 	public YamlOccupationNumbers2DGLPanel() {
@@ -45,6 +47,8 @@ public class YamlOccupationNumbers2DGLPanel {
 			collisionPosition = panel.collisionCoordinateProperties.getValue();
 			cutConeVelocity = panel.velocityCoordinateProperties.getValue();
 			gaussianWindow = panel.useGaussianWindowProperties.getValue();
+			tukeyWindow = panel.useTukeyWindowProperties.getValue();
+			tukeyWidth = panel.tukeyWidthProperties.getValue();
 		}
 	}
 
@@ -94,6 +98,14 @@ public class YamlOccupationNumbers2DGLPanel {
 
 		if (gaussianWindow != null) {
 			panel.useGaussianWindowProperties.setValue(gaussianWindow);
+		}
+
+		if (tukeyWindow != null) {
+			panel.useTukeyWindowProperties.setValue(tukeyWindow);
+		}
+
+		if (tukeyWidth != null) {
+			panel.tukeyWidthProperties.setValue(tukeyWidth);
 		}
 
 		return panel;

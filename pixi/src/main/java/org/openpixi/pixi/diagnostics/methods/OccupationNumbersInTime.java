@@ -35,7 +35,7 @@ public class OccupationNumbersInTime implements Diagnostics {
 
 	private DoubleFFTWrapper fft;
 	public double[][] occupationNumbers;
-	public double	energyDensity;
+	public double energyDensity;
 
 	private int computationCounter;
 	private int numberOfComponents;
@@ -49,6 +49,8 @@ public class OccupationNumbersInTime implements Diagnostics {
 	private double[] collisionPosition;
 	private double[] coneVelocity;
 	private boolean useGaussianWindow;
+	private boolean useTukeyWindow;
+	private double tukeyWidth;
 
 	private String separator = ", ";
 	private String linebreak = "\n";
@@ -92,7 +94,8 @@ public class OccupationNumbersInTime implements Diagnostics {
 	public OccupationNumbersInTime(double timeInterval, String outputType, String filename, boolean colorful,
 								   boolean useMirroredGrid, int mirroredDirection,
 								   boolean useCone, double collisionTime, double[] collisionPosition, double[] coneVelocity,
-								   boolean useGaussianWindow) {
+								   boolean useGaussianWindow,
+								   boolean useTukeyWindow, double tukeyWidth) {
 		this(timeInterval, outputType, filename, colorful);
 
 		this.useMirroredGrid = useMirroredGrid;
@@ -103,6 +106,8 @@ public class OccupationNumbersInTime implements Diagnostics {
 		this.collisionPosition = collisionPosition;
 		this.coneVelocity = coneVelocity;
 		this.useGaussianWindow = useGaussianWindow;
+		this.useTukeyWindow = useTukeyWindow;
+		this.tukeyWidth = tukeyWidth;
 	}
 
 	public void initialize(Simulation s) {
@@ -150,6 +155,8 @@ public class OccupationNumbersInTime implements Diagnostics {
 			if (useCone) {
 				if (useGaussianWindow) {
 					grid = new GaussianConeRestrictedGrid(grid, collisionTime, collisionPosition, coneVelocity);
+				} else if (useTukeyWindow) {
+					grid = new TukeyConeRestrictedGrid(grid, collisionTime, collisionPosition, coneVelocity, tukeyWidth);
 				} else {
 					grid = new ConeRestrictedGrid(grid, collisionTime, collisionPosition, coneVelocity);
 				}
@@ -533,6 +540,60 @@ public class OccupationNumbersInTime implements Diagnostics {
 						double sigma = (maxPos - minPos) / two_sqrt_log_two;
 
 						suppressionFactor *= Math.exp(- Math.pow((pos - collisionPosition[d]) / sigma, 2));
+					}
+				}
+
+				cells[i] = grid.getCell(i).copy();
+
+				// Adjust all values by suppression factor
+				for(int j = 0; j < grid.getNumberOfDimensions(); j++) {
+					cells[i].getE(j).multAssign(suppressionFactor);
+					cells[i].getJ(j).multAssign(suppressionFactor);
+					cells[i].getU(j).multAssign(suppressionFactor);
+					cells[i].getUnext(j).multAssign(suppressionFactor);
+				}
+				cells[i].getRho().multAssign(suppressionFactor);
+			}
+		}
+	}
+
+	private class TukeyConeRestrictedGrid extends Grid {
+		public TukeyConeRestrictedGrid(Grid grid, double collisionTime, double[] collisionPosition, double[] coneVelocity, double tukeyWidth) {
+			super(grid);
+			createGrid();
+			this.cellIterator.setNormalMode(numCells);
+
+			// Copy and mirror cells.
+			for (int i = 0; i < grid.getTotalNumberOfCells(); i++) {
+
+				int[] cellPos = grid.getCellPos(i);
+
+				// Check whether cellPos is within the cone
+				double suppressionFactor = 1;
+				for (int d = 0; d < coneVelocity.length; d++) {
+					if (coneVelocity[d] != 0) {
+						// Restriction on this axis!
+						double time = grid.getSimulationSteps() * grid.getTemporalSpacing();
+						double pos = cellPos[d] * grid.getLatticeSpacing(d);
+						double minTime = - Math.abs(time - collisionTime);
+						double maxTime = + Math.abs(time - collisionTime);
+						double minPos = minTime * coneVelocity[d] + collisionPosition[d];
+						double maxPos = maxTime * coneVelocity[d] + collisionPosition[d];
+
+						// Construct Gaussian with full width at half maximum:
+						double x = (pos - collisionPosition[d]) / (maxPos - minPos);
+						double suppression = 0;
+						if ((x > -.5 - .5 * tukeyWidth) && (x <= -.5 + .5 * tukeyWidth)) {
+							suppression = 0.5 * (1 + Math.sin(Math.PI * (x + 0.5) / tukeyWidth));
+						} else if ((x > -.5 + .5 * tukeyWidth) && (x <= .5 - 0.5 * tukeyWidth)) {
+							suppression = 1;
+						} else if ((x > 0.5 - 0.5 * tukeyWidth) && (x < 0.5 + 0.5 * tukeyWidth)) {
+							suppression = 0.5 * (1 - Math.sin(Math.PI * (x - 0.5) / tukeyWidth));
+						} else {
+							suppression = 0;
+						}
+
+						suppressionFactor *= suppression;
 					}
 				}
 

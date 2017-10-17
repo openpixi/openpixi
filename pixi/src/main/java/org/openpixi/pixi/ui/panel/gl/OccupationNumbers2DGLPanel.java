@@ -47,6 +47,8 @@ public class OccupationNumbers2DGLPanel extends AnimationGLPanel {
 	public CoordinateProperties collisionCoordinateProperties;
 	public CoordinateProperties velocityCoordinateProperties;
 	public BooleanProperties useGaussianWindowProperties;
+	public BooleanProperties useTukeyWindowProperties;
+	public DoubleProperties tukeyWidthProperties;
 
 	OccupationNumbersInTime diagnostic;
 	Simulation simulation;
@@ -60,6 +62,8 @@ public class OccupationNumbers2DGLPanel extends AnimationGLPanel {
 	private double[] oldCollisionPosition;
 	private double[] oldConeVelocity;
 	private boolean oldUseGaussianWindow;
+	private boolean oldUseTukeyWindow;
+	private double oldTukeyWidth;
 
 	/** Constructor */
 	public OccupationNumbers2DGLPanel(SimulationAnimation simulationAnimation) {
@@ -76,6 +80,8 @@ public class OccupationNumbers2DGLPanel extends AnimationGLPanel {
 		collisionCoordinateProperties = new CoordinateProperties(simulationAnimation, "Collision center:", "0, 0, 0");
 		velocityCoordinateProperties = new CoordinateProperties(simulationAnimation, "Cut cone velocity:", "0., 0., 0.");
 		useGaussianWindowProperties = new BooleanProperties(simulationAnimation, "Gaussian window", false);
+		useTukeyWindowProperties = new BooleanProperties(simulationAnimation, "Tukey window", false);
+		tukeyWidthProperties = new DoubleProperties(simulationAnimation, "Tukey width", 0.);
 		frameCounter = 0;
 
 		simulation = this.simulationAnimation.getSimulation();
@@ -92,6 +98,8 @@ public class OccupationNumbers2DGLPanel extends AnimationGLPanel {
 		double[] collisionPosition = collisionCoordinateProperties.getDoublePositions();
 		double[] coneVelocity = velocityCoordinateProperties.getDoublePositions();
 		boolean useGaussianWindow = useGaussianWindowProperties.getValue();
+		boolean useTukeyWindow = useTukeyWindowProperties.getValue();
+		double tukeyWidth = tukeyWidthProperties.getValue();
 
 		// Compute occupation numbers
 		if(mirrorProperties.getValue() != oldUseMirror || simulation != simulationAnimation.getSimulation()
@@ -99,7 +107,9 @@ public class OccupationNumbers2DGLPanel extends AnimationGLPanel {
 				|| collisionTime != oldCollisionTime
 				|| ! collisionPosition.equals(oldCollisionPosition)
 				|| ! coneVelocity.equals(oldConeVelocity)
-				|| useGaussianWindow != oldUseGaussianWindow) {
+				|| useGaussianWindow != oldUseGaussianWindow
+				|| useTukeyWindow != oldUseTukeyWindow
+				|| tukeyWidth != oldTukeyWidth) {
 			oldUseMirror = mirrorProperties.getValue();
 			simulation = simulationAnimation.getSimulation();
 			oldUseCone = useCone;
@@ -107,6 +117,8 @@ public class OccupationNumbers2DGLPanel extends AnimationGLPanel {
 			oldCollisionPosition = collisionPosition;
 			oldConeVelocity = coneVelocity;
 			oldUseGaussianWindow = useGaussianWindow;
+			oldUseTukeyWindow = useTukeyWindow;
+			oldTukeyWidth = tukeyWidth;
 			updateDiagnostic();
 		}
 		frameSkip = (frameSkipProperties.getValue() > 1) ? frameSkipProperties.getValue() : 1;
@@ -200,12 +212,14 @@ public class OccupationNumbers2DGLPanel extends AnimationGLPanel {
 		double[] collisionPosition = collisionCoordinateProperties.getDoublePositions();
 		double[] coneVelocity = velocityCoordinateProperties.getDoublePositions();
 		boolean useGaussianWindow = useGaussianWindowProperties.getValue();
+		boolean useTukeyWindow = useTukeyWindowProperties.getValue();
+		double tukeyWidth = tukeyWidthProperties.getValue();
 
 		boolean useMirroredGrid = mirrorProperties.getValue();
 
 		diagnostic = new OccupationNumbersInTime(1.0, "none", "", true,
 				useMirroredGrid, mirrorDirection,
-				useCone, collisionTime, collisionPosition, coneVelocity, useGaussianWindow);
+				useCone, collisionTime, collisionPosition, coneVelocity, useGaussianWindow, useTukeyWindow, tukeyWidth);
 		diagnostic.initialize(simulation);
 	}
 
@@ -237,5 +251,7 @@ public class OccupationNumbers2DGLPanel extends AnimationGLPanel {
 		collisionCoordinateProperties.addComponents(box);
 		velocityCoordinateProperties.addComponents(box);
 		useGaussianWindowProperties.addComponents(box);
+		useTukeyWindowProperties.addComponents(box);
+		tukeyWidthProperties.addComponents(box);
 	}
 }
