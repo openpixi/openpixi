@@ -29,6 +29,7 @@ import javax.swing.Box;
 
 import org.openpixi.pixi.math.AlgebraElement;
 import org.openpixi.pixi.physics.Simulation;
+import org.openpixi.pixi.physics.grid.Grid;
 import org.openpixi.pixi.ui.SimulationAnimation;
 import org.openpixi.pixi.ui.panel.properties.BooleanProperties;
 import org.openpixi.pixi.ui.panel.properties.ComboBoxProperties;
@@ -49,6 +50,8 @@ public class EnergyDensityVoxelGLPanel extends AnimationGLPanel {
 	public static final int INDEX_GAUSS_VIOLATION = 5;
 	public static final int INDEX_U_LONGITUDINAL = 6;
 
+	String[] sourceLabel = new String[] {"Simulation"};
+
 	String[] dataLabel = new String[] {
 			"Energy density",
 			"Energy density longitudinal electric",
@@ -68,6 +71,7 @@ public class EnergyDensityVoxelGLPanel extends AnimationGLPanel {
 	public static final int GREEN = 1;
 	public static final int BLUE = 2;
 
+	public ComboBoxProperties sourceProperties;
 	public ComboBoxProperties dataProperties;
 	public ComboBoxProperties directionProperties;
 	public ScaleProperties scaleProperties;
@@ -92,6 +96,7 @@ public class EnergyDensityVoxelGLPanel extends AnimationGLPanel {
 	/** Constructor */
 	public EnergyDensityVoxelGLPanel(SimulationAnimation simulationAnimation) {
 		super(simulationAnimation);
+		sourceProperties = new ComboBoxProperties(simulationAnimation, "Source", sourceLabel, 0);
 		dataProperties = new ComboBoxProperties(simulationAnimation, "Data", dataLabel, 0);
 		directionProperties = new ComboBoxProperties(simulationAnimation, "Field direction", directionLabel, 0);
 		scaleProperties = new ScaleProperties(simulationAnimation);
@@ -317,13 +322,25 @@ public class EnergyDensityVoxelGLPanel extends AnimationGLPanel {
 
 		double[] color = new double[3];
 
-		for (int i = 0; i < s.grid.getNumCells(loop1); i++) {
-			for (int k = 0; k < s.grid.getNumCells(loop2); k++) {
-				for (int l = 0; l < s.grid.getNumCells(loop3); l++) {
-					pos[loop1] = increasing[loop1] ? i : s.grid.getNumCells(loop1) - i - 1;
-					pos[loop2] = increasing[loop2] ? k : s.grid.getNumCells(loop2) - k - 1;
-					pos[loop3] = increasing[loop3] ? l : s.grid.getNumCells(loop3) - l - 1;
-					int index = s.grid.getCellIndex(pos);
+		///
+		Grid drawGrid = s.grid;
+		double collisionTime = 32;
+		double[] collisionPosition = {64., 0, 0};
+		double[] coneVelocity = {.7, 0, 0};
+		double tukeyWidth = 0;
+		//s.grid = new ConeRestrictedGrid(s.grid, collisionTime, collisionPosition, coneVelocity);
+		//s.grid = new GaussianConeRestrictedGrid(s.grid, collisionTime, collisionPosition, coneVelocity);
+		//drawGrid = new TukeyConeRestrictedGrid(drawGrid, collisionTime, collisionPosition, coneVelocity, tukeyWidth);
+
+		///
+
+		for (int i = 0; i < drawGrid.getNumCells(loop1); i++) {
+			for (int k = 0; k < drawGrid.getNumCells(loop2); k++) {
+				for (int l = 0; l < drawGrid.getNumCells(loop3); l++) {
+					pos[loop1] = increasing[loop1] ? i : drawGrid.getNumCells(loop1) - i - 1;
+					pos[loop2] = increasing[loop2] ? k : drawGrid.getNumCells(loop2) - k - 1;
+					pos[loop3] = increasing[loop3] ? l : drawGrid.getNumCells(loop3) - l - 1;
+					int index = drawGrid.getCellIndex(pos);
 
 					float x = (float)(as[0] * pos[0]);
 					float y = (float) (as[1] * pos[1]);
@@ -334,28 +351,28 @@ public class EnergyDensityVoxelGLPanel extends AnimationGLPanel {
 					color[GREEN] = 0;
 					color[BLUE] = 0;
 					double alpha = 0;
-					if(s.grid.isEvaluatable(index)) {
+					if(drawGrid.isEvaluatable(index)) {
 						switch(dataIndex) {
 						case INDEX_ENERGY_DENSITY:
-							value = getEnergyDensity(s, index, color, direction, true, true, true, true);
+							value = getEnergyDensity(drawGrid, index, color, direction, true, true, true, true);
 							break;
 						case INDEX_ENERGY_DENSITY_LONGITUDINAL_ELECTRIC:
-							value = getEnergyDensity(s, index, color, direction, true, false, true, false);
+							value = getEnergyDensity(drawGrid, index, color, direction, true, false, true, false);
 							break;
 						case INDEX_ENERGY_DENSITY_LONGITUDINAL_MAGNETIC:
-							value = getEnergyDensity(s, index, color, direction, true, false, false, true);
+							value = getEnergyDensity(drawGrid, index, color, direction, true, false, false, true);
 							break;
 						case INDEX_ENERGY_DENSITY_TRANSVERSE_ELECTRIC:
-							value = getEnergyDensity(s, index, color, direction, false, true, true, false);
+							value = getEnergyDensity(drawGrid, index, color, direction, false, true, true, false);
 							break;
 						case INDEX_ENERGY_DENSITY_TRANSVERSE_MAGNETIC:
-							value = getEnergyDensity(s, index, color, direction, false, true, false, true);
+							value = getEnergyDensity(drawGrid, index, color, direction, false, true, false, true);
 							break;
 						case INDEX_GAUSS_VIOLATION:
-							value = getGaussViolation(s, index, color);
+							value = getGaussViolation(drawGrid, index, color);
 							break;
 						case INDEX_U_LONGITUDINAL:
-							value = getU(s, index, color, direction) / s.grid.getLatticeUnitFactor(direction);
+							value = getU(drawGrid, index, color, direction) / s.grid.getLatticeUnitFactor(direction);
 							break;
 						}
 					}
@@ -455,7 +472,7 @@ public class EnergyDensityVoxelGLPanel extends AnimationGLPanel {
 	/**
 	 * Obtain energy density and corresponding color.
 	 * Longitudinal / transverse, electric / magnetic components can be specified.
-	 * @param s
+	 * @param drawGrid
 	 * @param index
 	 * @param color Returns color in a vector
 	 * @param direction Longitudinal direction
@@ -465,7 +482,7 @@ public class EnergyDensityVoxelGLPanel extends AnimationGLPanel {
 	 * @param magnetic
 	 * @return
 	 */
-	private double getEnergyDensity(Simulation s, int index, double[] color, int direction, boolean longitudinal, boolean transverse, boolean electric, boolean magnetic) {
+	private double getEnergyDensity(Grid drawGrid, int index, double[] color, int direction, boolean longitudinal, boolean transverse, boolean electric, boolean magnetic) {
 		float red = 0;
 		float green = 0;
 		float blue = 0;
@@ -475,26 +492,26 @@ public class EnergyDensityVoxelGLPanel extends AnimationGLPanel {
 
 		// Lattice spacing and coupling constant
 
-		double colors = s.grid.getNumberOfColors();
+		double colors = drawGrid.getNumberOfColors();
 
-		for (int w = 0; w < s.getNumberOfDimensions(); w++) {
-			double unitFactor = Math.pow(s.grid.getLatticeUnitFactor(w), -2);
+		for (int w = 0; w < drawGrid.getNumberOfDimensions(); w++) {
+			double unitFactor = Math.pow(drawGrid.getLatticeUnitFactor(w), -2);
 			if ((longitudinal && w == direction) || (transverse && w != direction)) {
 				if (electric) {
-					EfieldSquared += s.grid.getEsquaredFromLinks(index, w) * unitFactor / 2;
+					EfieldSquared += drawGrid.getEsquaredFromLinks(index, w) * unitFactor / 2;
 				}
 				if (magnetic) {
 					// Time averaging for B field.
-					BfieldSquared += s.grid.getBsquaredFromLinks(index, w, 0) * unitFactor / 4.0;
-					BfieldSquared += s.grid.getBsquaredFromLinks(index, w, 1) * unitFactor / 4.0;
+					BfieldSquared += drawGrid.getBsquaredFromLinks(index, w, 0) * unitFactor / 4.0;
+					BfieldSquared += drawGrid.getBsquaredFromLinks(index, w, 1) * unitFactor / 4.0;
 				}
 				// get color:
 				double c = 0;
 				for (int n = 0; n < colors * colors - 1; n++) {
 					if (electric) {
-						c = s.grid.getE(index, w).get(n);
+						c = drawGrid.getE(index, w).get(n);
 					} else if (magnetic) {
-						c = s.grid.getB(index, w, 0).get(n);
+						c = drawGrid.getB(index, w, 0).get(n);
 					}
 					// cycle through colors if there are more than three
 					switch (n % 3) {
@@ -517,8 +534,8 @@ public class EnergyDensityVoxelGLPanel extends AnimationGLPanel {
 		return EfieldSquared + BfieldSquared;
 	}
 
-	private double getGaussViolation(Simulation s, int index, double[] color) {
-		AlgebraElement gaussAlg = s.grid.getGaussConstraint(index);
+	private double getGaussViolation(Grid drawGrid, int index, double[] color) {
+		AlgebraElement gaussAlg = drawGrid.getGaussConstraint(index);
 
 		double value = gaussAlg.square();
 
@@ -528,8 +545,8 @@ public class EnergyDensityVoxelGLPanel extends AnimationGLPanel {
 		return value;
 	}
 
-	private double getU(Simulation s, int index, double[] color, int direction) {
-		AlgebraElement U = s.grid.getU(index, direction).proj();
+	private double getU(Grid drawGrid, int index, double[] color, int direction) {
+		AlgebraElement U = drawGrid.getU(index, direction).proj();
 
 		double value = U.square();
 
@@ -664,6 +681,7 @@ public class EnergyDensityVoxelGLPanel extends AnimationGLPanel {
 
 	public void addPropertyComponents(Box box) {
 		addLabel(box, "Energy density Voxel (OpenGL) panel");
+		sourceProperties.addComponents(box);
 		dataProperties.addComponents(box);
 		directionProperties.addComponents(box);
 		scaleProperties.addComponents(box);
@@ -673,4 +691,153 @@ public class EnergyDensityVoxelGLPanel extends AnimationGLPanel {
 		whiteBackgroundProperties.addComponents(box);
 		unequalScalingProperties.addComponents(box);
 	}
+
+
+	public class ConeRestrictedGrid extends Grid {
+		public ConeRestrictedGrid(Grid grid, double collisionTime, double[] collisionPosition, double[] coneVelocity) {
+			super(grid);
+			createGrid();
+			this.cellIterator.setNormalMode(numCells);
+
+			// Copy and mirror cells.
+			for (int i = 0; i < grid.getTotalNumberOfCells(); i++) {
+
+				int[] cellPos = grid.getCellPos(i);
+
+				// Check whether cellPos is within the cone
+				boolean isWithinCone = true;
+				for (int d = 0; d < coneVelocity.length; d++) {
+					if (coneVelocity[d] != 0) {
+						// Restriction on this axis!
+						double time = grid.getSimulationSteps() * grid.getTemporalSpacing();
+						double pos = cellPos[d] * grid.getLatticeSpacing(d);
+						double minTime = - Math.abs(time - collisionTime);
+						double maxTime = + Math.abs(time - collisionTime);
+						double minPos = minTime * coneVelocity[d] + collisionPosition[d];
+						double maxPos = maxTime * coneVelocity[d] + collisionPosition[d];
+
+						if ((pos < minPos) || (pos > maxPos)) {
+							isWithinCone = false;
+						}
+					}
+				}
+
+				if (isWithinCone) {
+					cells[i] = grid.getCell(i).copy();
+				} else {
+//					cells[i] = grid.getCell(i).copy();
+//					// Adjust all values by suppression factor
+//					for(int j = 0; j < grid.getNumberOfDimensions(); j++) {
+//						cells[i].getE(j).multAssign(0);
+//						cells[i].getJ(j).multAssign(0);
+//						cells[i].getU(j).multAssign(0);
+//						cells[i].getUnext(j).multAssign(0);
+//					}
+//					cells[i].getRho().multAssign(0);
+				}
+			}
+		}
+	}
+
+
+	private class GaussianConeRestrictedGrid extends Grid {
+		public GaussianConeRestrictedGrid(Grid grid, double collisionTime, double[] collisionPosition, double[] coneVelocity) {
+			super(grid);
+			createGrid();
+			this.cellIterator.setNormalMode(numCells);
+
+			double two_sqrt_log_two = 2 * Math.sqrt(Math.log(2));
+
+			// Copy and mirror cells.
+			for (int i = 0; i < grid.getTotalNumberOfCells(); i++) {
+
+				int[] cellPos = grid.getCellPos(i);
+
+				// Check whether cellPos is within the cone
+				double suppressionFactor = 1;
+				for (int d = 0; d < coneVelocity.length; d++) {
+					if (coneVelocity[d] != 0) {
+						// Restriction on this axis!
+						double time = grid.getSimulationSteps() * grid.getTemporalSpacing();
+						double pos = cellPos[d] * grid.getLatticeSpacing(d);
+						double minTime = - Math.abs(time - collisionTime);
+						double maxTime = + Math.abs(time - collisionTime);
+						double minPos = minTime * coneVelocity[d] + collisionPosition[d];
+						double maxPos = maxTime * coneVelocity[d] + collisionPosition[d];
+
+						// Construct Gaussian with full width at half maximum:
+						double sigma = (maxPos - minPos) / two_sqrt_log_two;
+
+						suppressionFactor *= Math.exp(- Math.pow((pos - collisionPosition[d]) / sigma, 2));
+					}
+				}
+
+				cells[i] = grid.getCell(i).copy();
+
+				// Adjust all values by suppression factor
+				for(int j = 0; j < grid.getNumberOfDimensions(); j++) {
+					cells[i].getE(j).multAssign(suppressionFactor);
+					cells[i].getJ(j).multAssign(suppressionFactor);
+					cells[i].getU(j).multAssign(suppressionFactor);
+					cells[i].getUnext(j).multAssign(suppressionFactor);
+				}
+				cells[i].getRho().multAssign(suppressionFactor);
+			}
+		}
+	}
+
+	private class TukeyConeRestrictedGrid extends Grid {
+		public TukeyConeRestrictedGrid(Grid grid, double collisionTime, double[] collisionPosition, double[] coneVelocity, double tukeyWidth) {
+			super(grid);
+			createGrid();
+			this.cellIterator.setNormalMode(numCells);
+
+			// Copy and mirror cells.
+			for (int i = 0; i < grid.getTotalNumberOfCells(); i++) {
+
+				int[] cellPos = grid.getCellPos(i);
+
+				// Check whether cellPos is within the cone
+				double suppressionFactor = 1;
+				for (int d = 0; d < coneVelocity.length; d++) {
+					if (coneVelocity[d] != 0) {
+						// Restriction on this axis!
+						double time = grid.getSimulationSteps() * grid.getTemporalSpacing();
+						double pos = cellPos[d] * grid.getLatticeSpacing(d);
+						double minTime = - Math.abs(time - collisionTime);
+						double maxTime = + Math.abs(time - collisionTime);
+						double minPos = minTime * coneVelocity[d] + collisionPosition[d];
+						double maxPos = maxTime * coneVelocity[d] + collisionPosition[d];
+
+						// Construct Gaussian with full width at half maximum:
+						double x = (pos - collisionPosition[d]) / (maxPos - minPos);
+						double suppression = 0;
+						if ((x > -.5 - .5 * tukeyWidth) && (x <= -.5 + .5 * tukeyWidth)) {
+							suppression = 0.5 * (1 + Math.sin(Math.PI * (x + 0.5) / tukeyWidth));
+						} else if ((x > -.5 + .5 * tukeyWidth) && (x <= .5 - 0.5 * tukeyWidth)) {
+							suppression = 1;
+						} else if ((x > 0.5 - 0.5 * tukeyWidth) && (x < 0.5 + 0.5 * tukeyWidth)) {
+							suppression = 0.5 * (1 - Math.sin(Math.PI * (x - 0.5) / tukeyWidth));
+						} else {
+							suppression = 0;
+						}
+
+						suppressionFactor *= suppression;
+					}
+				}
+
+				cells[i] = grid.getCell(i).copy();
+
+				// Adjust all values by suppression factor
+				for(int j = 0; j < grid.getNumberOfDimensions(); j++) {
+					cells[i].getE(j).multAssign(suppressionFactor);
+					cells[i].getJ(j).multAssign(suppressionFactor);
+					cells[i].getU(j).multAssign(suppressionFactor);
+					cells[i].getUnext(j).multAssign(suppressionFactor);
+				}
+				cells[i].getRho().multAssign(suppressionFactor);
+			}
+		}
+	}
+
 }

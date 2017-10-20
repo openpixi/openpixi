@@ -152,14 +152,15 @@ public class OccupationNumbersInTime implements Diagnostics {
 		if (steps % stepInterval == 0) {
 			Grid grid = grid_reference;
 			// Create copy and cut cone into grid
+
+			if (useGaussianWindow) {
+				grid = new GaussianConeRestrictedGrid(grid, collisionTime, collisionPosition, coneVelocity);
+			}
+			if (useTukeyWindow) {
+				grid = new TukeyConeRestrictedGrid(grid, collisionTime, collisionPosition, coneVelocity, tukeyWidth);
+			}
 			if (useCone) {
-				if (useGaussianWindow) {
-					grid = new GaussianConeRestrictedGrid(grid, collisionTime, collisionPosition, coneVelocity);
-				} else if (useTukeyWindow) {
-					grid = new TukeyConeRestrictedGrid(grid, collisionTime, collisionPosition, coneVelocity, tukeyWidth);
-				} else {
-					grid = new ConeRestrictedGrid(grid, collisionTime, collisionPosition, coneVelocity);
-				}
+				grid = new ConeRestrictedGrid(grid, collisionTime, collisionPosition, coneVelocity);
 			}
 
 			// Apply Coulomb gauge.
@@ -506,6 +507,16 @@ public class OccupationNumbersInTime implements Diagnostics {
 
 				if (isWithinCone) {
 					cells[i] = grid.getCell(i).copy();
+				} else {
+//					cells[i] = grid.getCell(i).copy();
+//					// Adjust all values by suppression factor
+//					for(int j = 0; j < grid.getNumberOfDimensions(); j++) {
+//						cells[i].getE(j).multAssign(0);
+//						cells[i].getJ(j).multAssign(0);
+//						cells[i].getU(j).multAssign(0);
+//						cells[i].getUnext(j).multAssign(0);
+//					}
+//					cells[i].getRho().multAssign(0);
 				}
 			}
 		}

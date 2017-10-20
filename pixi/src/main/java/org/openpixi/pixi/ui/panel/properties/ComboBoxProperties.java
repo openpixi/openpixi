@@ -3,9 +3,6 @@ package org.openpixi.pixi.ui.panel.properties;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
 import javax.swing.Box;
 import javax.swing.JComboBox;
@@ -73,7 +70,7 @@ public class ComboBoxProperties {
 
 	/**
 	 * Set values according to string array provided.
-	 * @param names
+	 * @param entry
 	 */
 	public void setEntryFromString(String entry) {
 		for (int i = 0; i < entries.length; i++) {
