@@ -52,6 +52,11 @@ public class OccupationNumbersInTime implements Diagnostics {
 	private boolean useTukeyWindow;
 	private double tukeyWidth;
 
+	private Grid windowGrid;
+	private Grid mirrorWindowGrid;
+	private Grid gaugeMirrorWindowGrid;
+	private Grid finalWindowGrid;
+
 	private String separator = ", ";
 	private String linebreak = "\n";
 
@@ -110,6 +115,14 @@ public class OccupationNumbersInTime implements Diagnostics {
 		this.tukeyWidth = tukeyWidth;
 	}
 
+	public Grid getWindowGrid() { return windowGrid; }
+
+	public Grid getMirrorWindowGrid() { return mirrorWindowGrid; }
+
+	public Grid getGaugeMirrorWindowGrid() { return gaugeMirrorWindowGrid; }
+
+	public Grid getFinalWindowGrid() { return finalWindowGrid; }
+
 	public void initialize(Simulation s) {
 		this.s = s;
 		this.stepInterval = (int) Math.max(Math.round((timeInterval / s.getTimeStep())), 1);
@@ -163,18 +176,27 @@ public class OccupationNumbersInTime implements Diagnostics {
 				grid = new ConeRestrictedGrid(grid, collisionTime, collisionPosition, coneVelocity);
 			}
 
+			windowGrid = grid;
+
 			// Apply Coulomb gauge.
 			if(useMirroredGrid) {
 				grid = new MirroredGrid(grid, mirroredDirection);
 			} else {
 				grid = new Grid(grid);	// Copy grid.
 			}
+
+			mirrorWindowGrid = grid;
+
 			CoulombGauge coulombGauge = new CoulombGauge(grid);
 			coulombGauge.applyGaugeTransformation(grid);
+
+			gaugeMirrorWindowGrid = grid;
 
 			if(useMirroredGrid) {
 				grid = new UnmirroredGrid(grid, mirroredDirection);
 			}
+
+			finalWindowGrid = grid;
 
 			// Fill arrays for FFT.
 			double gainv = 1.0 / (grid.getLatticeSpacing() * grid.getGaugeCoupling());

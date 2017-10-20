@@ -21,6 +21,7 @@ package org.openpixi.pixi.ui.panel.gl;
 import org.openpixi.pixi.diagnostics.methods.OccupationNumbersInTime;
 import org.openpixi.pixi.physics.Simulation;
 import org.openpixi.pixi.physics.util.GridFunctions;
+import org.openpixi.pixi.ui.GridManager;
 import org.openpixi.pixi.ui.SimulationAnimation;
 import org.openpixi.pixi.ui.panel.properties.*;
 
@@ -52,6 +53,11 @@ public class OccupationNumbers2DGLPanel extends AnimationGLPanel {
 
 	OccupationNumbersInTime diagnostic;
 	Simulation simulation;
+	GridManager gridManager;
+	GridManager.LabeledGrid windowLabeledGrid;
+	GridManager.LabeledGrid mirrorWindowLabeledGrid;
+	GridManager.LabeledGrid gaugeMirrorWindowLabeledGrid;
+	GridManager.LabeledGrid finalLabeledGrid;
 
 	private int frameCounter;
 	private int frameSkip;
@@ -88,6 +94,11 @@ public class OccupationNumbers2DGLPanel extends AnimationGLPanel {
 		updateDiagnostic();
 		diagnostic.calculate(simulation.grid, simulation.particles, 0);
 
+		gridManager = simulationAnimation.getMainControlApplet().getGridManager();
+		windowLabeledGrid = gridManager.add("Occupation numbers (window)", simulation.grid);
+		mirrorWindowLabeledGrid = gridManager.add("Occupation numbers (mirror + window)", simulation.grid);
+		gaugeMirrorWindowLabeledGrid = gridManager.add("Occupation numbers (gauge + mirror + window)", simulation.grid);
+		finalLabeledGrid = gridManager.add("Occupation numbers (final)", simulation.grid);
 	}
 
 	@Override
@@ -126,6 +137,10 @@ public class OccupationNumbers2DGLPanel extends AnimationGLPanel {
 		{
 			diagnostic.calculate(simulation.grid, simulation.particles, 0);
 
+			windowLabeledGrid.grid = diagnostic.getWindowGrid();
+			mirrorWindowLabeledGrid.grid = diagnostic.getMirrorWindowGrid();
+			gaugeMirrorWindowLabeledGrid.grid = diagnostic.getGaugeMirrorWindowGrid();
+			finalLabeledGrid.grid = diagnostic.getFinalWindowGrid();
 		}
 		frameCounter++;
 
@@ -253,5 +268,14 @@ public class OccupationNumbers2DGLPanel extends AnimationGLPanel {
 		useGaussianWindowProperties.addComponents(box);
 		useTukeyWindowProperties.addComponents(box);
 		tukeyWidthProperties.addComponents(box);
+	}
+
+	@Override
+	public void destruct() {
+		gridManager.remove(windowLabeledGrid);
+		gridManager.remove(mirrorWindowLabeledGrid);
+		gridManager.remove(gaugeMirrorWindowLabeledGrid);
+		gridManager.remove(finalLabeledGrid);
+		super.destruct();
 	}
 }

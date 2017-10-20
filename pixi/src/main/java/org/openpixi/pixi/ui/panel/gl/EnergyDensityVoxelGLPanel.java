@@ -30,6 +30,7 @@ import javax.swing.Box;
 import org.openpixi.pixi.math.AlgebraElement;
 import org.openpixi.pixi.physics.Simulation;
 import org.openpixi.pixi.physics.grid.Grid;
+import org.openpixi.pixi.ui.GridManager;
 import org.openpixi.pixi.ui.SimulationAnimation;
 import org.openpixi.pixi.ui.panel.properties.BooleanProperties;
 import org.openpixi.pixi.ui.panel.properties.ComboBoxProperties;
@@ -50,7 +51,7 @@ public class EnergyDensityVoxelGLPanel extends AnimationGLPanel {
 	public static final int INDEX_GAUSS_VIOLATION = 5;
 	public static final int INDEX_U_LONGITUDINAL = 6;
 
-	String[] sourceLabel = new String[] {"Simulation"};
+	String[] sourceLabel = new String[] {};
 
 	String[] dataLabel = new String[] {
 			"Energy density",
@@ -93,6 +94,8 @@ public class EnergyDensityVoxelGLPanel extends AnimationGLPanel {
 
 	public boolean shiftKeyPressed = false;
 
+	GridManager gridManager;
+
 	/** Constructor */
 	public EnergyDensityVoxelGLPanel(SimulationAnimation simulationAnimation) {
 		super(simulationAnimation);
@@ -115,6 +118,8 @@ public class EnergyDensityVoxelGLPanel extends AnimationGLPanel {
 		distanceFactor = 1;
 
 		scaleProperties.setAutomaticScaling(true);
+
+		gridManager = simulationAnimation.getMainControlApplet().getGridManager();
 	}
 
 	@Override
@@ -141,6 +146,10 @@ public class EnergyDensityVoxelGLPanel extends AnimationGLPanel {
 		scaleProperties.resetAutomaticScale();
 		Simulation s = getSimulationAnimation().getSimulation();
 
+		Grid drawGrid = s.grid;
+		int gridIndex = sourceProperties.getIndex();
+		drawGrid = gridManager.getGrid(gridIndex);
+
 		double visibilityThreshold = visibilityThresholdProperties.getValue();
 		double opacity = opacityProperties.getValue();
 		boolean showSimulationBox = showSimulationBoxProperties.getValue();
@@ -153,7 +162,7 @@ public class EnergyDensityVoxelGLPanel extends AnimationGLPanel {
 			if(unequalScaling) {
 				as[i] = 1.0;
 			} else {
-				as[i] = s.grid.getLatticeSpacing(i);
+				as[i] = drawGrid.getLatticeSpacing(i);
 			}
 		}
 
@@ -161,13 +170,16 @@ public class EnergyDensityVoxelGLPanel extends AnimationGLPanel {
 		// Perspective
 		float sizex, sizey, sizez;
 		if(unequalScaling) {
-			sizex = (float) s.grid.getNumCells(0);
-			sizey = (float) s.grid.getNumCells(1);
-			sizez = (float) s.grid.getNumCells(2);
+			sizex = (float) drawGrid.getNumCells(0);
+			sizey = (float) drawGrid.getNumCells(1);
+			sizez = (float) drawGrid.getNumCells(2);
 		} else {
-			sizex = (float) s.getSimulationBoxSize(0);
-			sizey = (float) s.getSimulationBoxSize(1);
-			sizez = (float) s.getSimulationBoxSize(2);
+			// sizex = (float) s.getSimulationBoxSize(0);
+			// sizey = (float) s.getSimulationBoxSize(1);
+			// sizez = (float) s.getSimulationBoxSize(2);
+			sizex = (float) (drawGrid.getNumCells(0) * as[0]);
+			sizey = (float) (drawGrid.getNumCells(1) * as[1]);
+			sizez = (float) (drawGrid.getNumCells(2) * as[2]);
 		}
 
 		float size = (float) Math.sqrt(sizex * sizex + sizey * sizey + sizez * sizez);
@@ -241,9 +253,9 @@ public class EnergyDensityVoxelGLPanel extends AnimationGLPanel {
 
 		// Lattice spacing
 
-		int[] pos = new int[s.getNumberOfDimensions()];
-		for(int w = 2; w < s.getNumberOfDimensions(); w++) {
-			pos[w] = s.grid.getNumCells(w)/2;
+		int[] pos = new int[drawGrid.getNumberOfDimensions()];
+		for(int w = 2; w < drawGrid.getNumberOfDimensions(); w++) {
+			pos[w] = drawGrid.getNumCells(w)/2;
 		}
 
 		if (showSimulationBox) {
@@ -322,18 +334,6 @@ public class EnergyDensityVoxelGLPanel extends AnimationGLPanel {
 
 		double[] color = new double[3];
 
-		///
-		Grid drawGrid = s.grid;
-		double collisionTime = 32;
-		double[] collisionPosition = {64., 0, 0};
-		double[] coneVelocity = {.7, 0, 0};
-		double tukeyWidth = 0;
-		//s.grid = new ConeRestrictedGrid(s.grid, collisionTime, collisionPosition, coneVelocity);
-		//s.grid = new GaussianConeRestrictedGrid(s.grid, collisionTime, collisionPosition, coneVelocity);
-		//drawGrid = new TukeyConeRestrictedGrid(drawGrid, collisionTime, collisionPosition, coneVelocity, tukeyWidth);
-
-		///
-
 		for (int i = 0; i < drawGrid.getNumCells(loop1); i++) {
 			for (int k = 0; k < drawGrid.getNumCells(loop2); k++) {
 				for (int l = 0; l < drawGrid.getNumCells(loop3); l++) {
@@ -372,7 +372,7 @@ public class EnergyDensityVoxelGLPanel extends AnimationGLPanel {
 							value = getGaussViolation(drawGrid, index, color);
 							break;
 						case INDEX_U_LONGITUDINAL:
-							value = getU(drawGrid, index, color, direction) / s.grid.getLatticeUnitFactor(direction);
+							value = getU(drawGrid, index, color, direction) / drawGrid.getLatticeUnitFactor(direction);
 							break;
 						}
 					}
@@ -681,6 +681,7 @@ public class EnergyDensityVoxelGLPanel extends AnimationGLPanel {
 
 	public void addPropertyComponents(Box box) {
 		addLabel(box, "Energy density Voxel (OpenGL) panel");
+		sourceProperties.updateEntries(gridManager.getLabelList());
 		sourceProperties.addComponents(box);
 		dataProperties.addComponents(box);
 		directionProperties.addComponents(box);
@@ -690,154 +691,6 @@ public class EnergyDensityVoxelGLPanel extends AnimationGLPanel {
 		showSimulationBoxProperties.addComponents(box);
 		whiteBackgroundProperties.addComponents(box);
 		unequalScalingProperties.addComponents(box);
-	}
-
-
-	public class ConeRestrictedGrid extends Grid {
-		public ConeRestrictedGrid(Grid grid, double collisionTime, double[] collisionPosition, double[] coneVelocity) {
-			super(grid);
-			createGrid();
-			this.cellIterator.setNormalMode(numCells);
-
-			// Copy and mirror cells.
-			for (int i = 0; i < grid.getTotalNumberOfCells(); i++) {
-
-				int[] cellPos = grid.getCellPos(i);
-
-				// Check whether cellPos is within the cone
-				boolean isWithinCone = true;
-				for (int d = 0; d < coneVelocity.length; d++) {
-					if (coneVelocity[d] != 0) {
-						// Restriction on this axis!
-						double time = grid.getSimulationSteps() * grid.getTemporalSpacing();
-						double pos = cellPos[d] * grid.getLatticeSpacing(d);
-						double minTime = - Math.abs(time - collisionTime);
-						double maxTime = + Math.abs(time - collisionTime);
-						double minPos = minTime * coneVelocity[d] + collisionPosition[d];
-						double maxPos = maxTime * coneVelocity[d] + collisionPosition[d];
-
-						if ((pos < minPos) || (pos > maxPos)) {
-							isWithinCone = false;
-						}
-					}
-				}
-
-				if (isWithinCone) {
-					cells[i] = grid.getCell(i).copy();
-				} else {
-//					cells[i] = grid.getCell(i).copy();
-//					// Adjust all values by suppression factor
-//					for(int j = 0; j < grid.getNumberOfDimensions(); j++) {
-//						cells[i].getE(j).multAssign(0);
-//						cells[i].getJ(j).multAssign(0);
-//						cells[i].getU(j).multAssign(0);
-//						cells[i].getUnext(j).multAssign(0);
-//					}
-//					cells[i].getRho().multAssign(0);
-				}
-			}
-		}
-	}
-
-
-	private class GaussianConeRestrictedGrid extends Grid {
-		public GaussianConeRestrictedGrid(Grid grid, double collisionTime, double[] collisionPosition, double[] coneVelocity) {
-			super(grid);
-			createGrid();
-			this.cellIterator.setNormalMode(numCells);
-
-			double two_sqrt_log_two = 2 * Math.sqrt(Math.log(2));
-
-			// Copy and mirror cells.
-			for (int i = 0; i < grid.getTotalNumberOfCells(); i++) {
-
-				int[] cellPos = grid.getCellPos(i);
-
-				// Check whether cellPos is within the cone
-				double suppressionFactor = 1;
-				for (int d = 0; d < coneVelocity.length; d++) {
-					if (coneVelocity[d] != 0) {
-						// Restriction on this axis!
-						double time = grid.getSimulationSteps() * grid.getTemporalSpacing();
-						double pos = cellPos[d] * grid.getLatticeSpacing(d);
-						double minTime = - Math.abs(time - collisionTime);
-						double maxTime = + Math.abs(time - collisionTime);
-						double minPos = minTime * coneVelocity[d] + collisionPosition[d];
-						double maxPos = maxTime * coneVelocity[d] + collisionPosition[d];
-
-						// Construct Gaussian with full width at half maximum:
-						double sigma = (maxPos - minPos) / two_sqrt_log_two;
-
-						suppressionFactor *= Math.exp(- Math.pow((pos - collisionPosition[d]) / sigma, 2));
-					}
-				}
-
-				cells[i] = grid.getCell(i).copy();
-
-				// Adjust all values by suppression factor
-				for(int j = 0; j < grid.getNumberOfDimensions(); j++) {
-					cells[i].getE(j).multAssign(suppressionFactor);
-					cells[i].getJ(j).multAssign(suppressionFactor);
-					cells[i].getU(j).multAssign(suppressionFactor);
-					cells[i].getUnext(j).multAssign(suppressionFactor);
-				}
-				cells[i].getRho().multAssign(suppressionFactor);
-			}
-		}
-	}
-
-	private class TukeyConeRestrictedGrid extends Grid {
-		public TukeyConeRestrictedGrid(Grid grid, double collisionTime, double[] collisionPosition, double[] coneVelocity, double tukeyWidth) {
-			super(grid);
-			createGrid();
-			this.cellIterator.setNormalMode(numCells);
-
-			// Copy and mirror cells.
-			for (int i = 0; i < grid.getTotalNumberOfCells(); i++) {
-
-				int[] cellPos = grid.getCellPos(i);
-
-				// Check whether cellPos is within the cone
-				double suppressionFactor = 1;
-				for (int d = 0; d < coneVelocity.length; d++) {
-					if (coneVelocity[d] != 0) {
-						// Restriction on this axis!
-						double time = grid.getSimulationSteps() * grid.getTemporalSpacing();
-						double pos = cellPos[d] * grid.getLatticeSpacing(d);
-						double minTime = - Math.abs(time - collisionTime);
-						double maxTime = + Math.abs(time - collisionTime);
-						double minPos = minTime * coneVelocity[d] + collisionPosition[d];
-						double maxPos = maxTime * coneVelocity[d] + collisionPosition[d];
-
-						// Construct Gaussian with full width at half maximum:
-						double x = (pos - collisionPosition[d]) / (maxPos - minPos);
-						double suppression = 0;
-						if ((x > -.5 - .5 * tukeyWidth) && (x <= -.5 + .5 * tukeyWidth)) {
-							suppression = 0.5 * (1 + Math.sin(Math.PI * (x + 0.5) / tukeyWidth));
-						} else if ((x > -.5 + .5 * tukeyWidth) && (x <= .5 - 0.5 * tukeyWidth)) {
-							suppression = 1;
-						} else if ((x > 0.5 - 0.5 * tukeyWidth) && (x < 0.5 + 0.5 * tukeyWidth)) {
-							suppression = 0.5 * (1 - Math.sin(Math.PI * (x - 0.5) / tukeyWidth));
-						} else {
-							suppression = 0;
-						}
-
-						suppressionFactor *= suppression;
-					}
-				}
-
-				cells[i] = grid.getCell(i).copy();
-
-				// Adjust all values by suppression factor
-				for(int j = 0; j < grid.getNumberOfDimensions(); j++) {
-					cells[i].getE(j).multAssign(suppressionFactor);
-					cells[i].getJ(j).multAssign(suppressionFactor);
-					cells[i].getU(j).multAssign(suppressionFactor);
-					cells[i].getUnext(j).multAssign(suppressionFactor);
-				}
-				cells[i].getRho().multAssign(suppressionFactor);
-			}
-		}
 	}
 
 }

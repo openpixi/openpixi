@@ -81,6 +81,14 @@ public class ComboBoxProperties {
 		}
 	}
 
+	public void updateEntries(String[] entries) {
+		this.entries = entries;
+		if (index > entries.length) {
+			index = 0;
+		}
+
+	}
+
 	class MyListener implements ActionListener {
 		public void actionPerformed(ActionEvent eve) {
 			JComboBox cbox = (JComboBox) eve.getSource();
