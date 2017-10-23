@@ -9,12 +9,9 @@ import org.openpixi.pixi.physics.Simulation;
 import org.openpixi.pixi.physics.gauge.CoulombGauge;
 import org.openpixi.pixi.physics.grid.Grid;
 import org.openpixi.pixi.physics.particles.IParticle;
+import org.openpixi.pixi.ui.GridManager;
 import org.openpixi.pixi.ui.SimulationAnimation;
-import org.openpixi.pixi.ui.panel.properties.BooleanArrayProperties;
-import org.openpixi.pixi.ui.panel.properties.BooleanProperties;
-import org.openpixi.pixi.ui.panel.properties.ColorProperties;
-import org.openpixi.pixi.ui.panel.properties.CoordinateProperties;
-import org.openpixi.pixi.ui.panel.properties.ScaleProperties;
+import org.openpixi.pixi.ui.panel.properties.*;
 
 /**
  * This panel shows the one-dimensional electric field along the x-direction.
@@ -23,6 +20,7 @@ import org.openpixi.pixi.ui.panel.properties.ScaleProperties;
  */
 public class ElectricFieldPanel extends AnimationPanel {
 
+	public ComboBoxProperties sourceProperties;
 	public ColorProperties colorProperties;
 	public ScaleProperties scaleProperties;
 	public BooleanProperties gaugeProperties;
@@ -40,6 +38,8 @@ public class ElectricFieldPanel extends AnimationPanel {
 	public final int INDEX_ROT_E = 8;
 	public final int INDEX_ROT_B = 9;
 	public final int INDEX_ROT_B_NEXT = 10;
+
+	String[] sourceLabel = new String[] {};
 
 	String[] fieldLabel = new String[] {
 			"E",
@@ -83,14 +83,19 @@ public class ElectricFieldPanel extends AnimationPanel {
 			false
 	};
 
+	GridManager gridManager;
+
 	/** Constructor */
 	public ElectricFieldPanel(SimulationAnimation simulationAnimation) {
 		super(simulationAnimation);
+		sourceProperties = new ComboBoxProperties(simulationAnimation, "Source", sourceLabel, 0);
 		colorProperties = new ColorProperties(simulationAnimation);
 		scaleProperties = new ScaleProperties(simulationAnimation);
 		gaugeProperties = new BooleanProperties(simulationAnimation, "Coulomb gauge", false);
 		showFieldProperties = new BooleanArrayProperties(simulationAnimation, fieldLabel, fieldInit);
 		showCoordinateProperties = new CoordinateProperties(simulationAnimation, CoordinateProperties.Mode.MODE_1D_LOOP);
+
+		gridManager = simulationAnimation.getMainControlApplet().getGridManager();
 	}
 
 	/** Display the particles */
@@ -113,14 +118,19 @@ public class ElectricFieldPanel extends AnimationPanel {
 		colorProperties.checkConsistency();
 
 		Simulation s = getSimulationAnimation().getSimulation();
+
+		Grid drawGrid = s.grid;
+		int gridIndex = sourceProperties.getIndex();
+		drawGrid = gridManager.getGrid(gridIndex);
+
 		/** Scaling factor for the displayed panel in x-direction*/
-		double sx = getWidth() / s.getWidth();
+		//double sx = getWidth() / s.getWidth();
+		double sx = getWidth() / (drawGrid.getNumCells(0) * drawGrid.getLatticeSpacing(0));
 
 		double panelWidth = getWidth();
 		double panelHeight = getHeight();
 
 		boolean useCoulombGauge = gaugeProperties.getValue();
-		Grid drawGrid = s.grid;
 		if (useCoulombGauge) {
 			Grid gridCopy = new Grid(s.grid);
 			CoulombGauge coulombGauge = new CoulombGauge(gridCopy);
@@ -267,6 +277,8 @@ public class ElectricFieldPanel extends AnimationPanel {
 
 	public void addPropertyComponents(Box box) {
 		addLabel(box, "Electric field panel");
+		sourceProperties.updateEntries(gridManager.getLabelList());
+		sourceProperties.addComponents(box);
 		showFieldProperties.addComponents(box);
 		colorProperties.addComponents(box);
 		showCoordinateProperties.addComponents(box);
