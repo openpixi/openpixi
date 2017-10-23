@@ -198,7 +198,8 @@ public class ElectricFieldPanel extends AnimationPanel {
 			kmin = 0;
 			kmax = drawGrid.getNumCells(loopIndex);
 		}
-		double sx = panelWidth / s.getSimulationBoxSize(abscissaIndex);
+		//double sx = panelWidth / s.getSimulationBoxSize(abscissaIndex);
+		double sx = panelWidth / (drawGrid.getNumCells(abscissaIndex) * drawGrid.getLatticeSpacing(abscissaIndex));
 		for(int k = kmin; k < kmax; k++)
 		{
 			int newPosition = 0;
