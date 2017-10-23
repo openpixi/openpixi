@@ -52,9 +52,9 @@ public class OccupationNumbersInTime implements Diagnostics {
 	private boolean useTukeyWindow;
 	private double tukeyWidth;
 
-	private Grid windowGrid;
-	private Grid mirrorWindowGrid;
-	private Grid gaugeMirrorWindowGrid;
+	private Grid mirrorGrid;
+	private Grid gaugeMirrorGrid;
+	private Grid gaugeGrid;
 	private Grid finalWindowGrid;
 
 	private String separator = ", ";
@@ -115,11 +115,11 @@ public class OccupationNumbersInTime implements Diagnostics {
 		this.tukeyWidth = tukeyWidth;
 	}
 
-	public Grid getWindowGrid() { return windowGrid; }
+	public Grid getMirrorGrid() { return mirrorGrid; }
 
-	public Grid getMirrorWindowGrid() { return mirrorWindowGrid; }
+	public Grid getGaugeMirrorGrid() { return gaugeMirrorGrid; }
 
-	public Grid getGaugeMirrorWindowGrid() { return gaugeMirrorWindowGrid; }
+	public Grid getGaugeGrid() { return gaugeGrid; }
 
 	public Grid getFinalWindowGrid() { return finalWindowGrid; }
 
@@ -166,6 +166,31 @@ public class OccupationNumbersInTime implements Diagnostics {
 			Grid grid = grid_reference;
 			// Create copy and cut cone into grid
 
+			if(useMirroredGrid) {
+				grid = new MirroredGrid(grid, mirroredDirection);
+			} else {
+				grid = new Grid(grid);	// Copy grid.
+			}
+
+			// Apply Coulomb gauge.
+			mirrorGrid = grid;
+
+			if (useMirroredGrid) {
+				// Copy for independent display of mirror grid
+				grid = new Grid(grid);
+			}
+
+			CoulombGauge coulombGauge = new CoulombGauge(grid);
+			coulombGauge.applyGaugeTransformation(grid);
+
+			gaugeMirrorGrid = grid;
+
+			if(useMirroredGrid) {
+				grid = new UnmirroredGrid(grid, mirroredDirection);
+			}
+
+			gaugeGrid = grid;
+
 			if (useGaussianWindow) {
 				grid = new GaussianConeRestrictedGrid(grid, collisionTime, collisionPosition, coneVelocity);
 			}
@@ -174,26 +199,6 @@ public class OccupationNumbersInTime implements Diagnostics {
 			}
 			if (useCone) {
 				grid = new ConeRestrictedGrid(grid, collisionTime, collisionPosition, coneVelocity);
-			}
-
-			windowGrid = grid;
-
-			// Apply Coulomb gauge.
-			if(useMirroredGrid) {
-				grid = new MirroredGrid(grid, mirroredDirection);
-			} else {
-				grid = new Grid(grid);	// Copy grid.
-			}
-
-			mirrorWindowGrid = grid;
-
-			CoulombGauge coulombGauge = new CoulombGauge(grid);
-			coulombGauge.applyGaugeTransformation(grid);
-
-			gaugeMirrorWindowGrid = grid;
-
-			if(useMirroredGrid) {
-				grid = new UnmirroredGrid(grid, mirroredDirection);
 			}
 
 			finalWindowGrid = grid;
@@ -530,6 +535,9 @@ public class OccupationNumbersInTime implements Diagnostics {
 				if (isWithinCone) {
 					cells[i] = grid.getCell(i).copy();
 				} else {
+					//cells[i].setActive(grid.getCell(i).isActive());
+					//cells[i].setEvaluatable(grid.getCell(i).isEvaluatable());
+					//cell[i] = grid.
 //					cells[i] = grid.getCell(i).copy();
 //					// Adjust all values by suppression factor
 //					for(int j = 0; j < grid.getNumberOfDimensions(); j++) {
@@ -582,8 +590,8 @@ public class OccupationNumbersInTime implements Diagnostics {
 				for(int j = 0; j < grid.getNumberOfDimensions(); j++) {
 					cells[i].getE(j).multAssign(suppressionFactor);
 					cells[i].getJ(j).multAssign(suppressionFactor);
-					cells[i].getU(j).multAssign(suppressionFactor);
-					cells[i].getUnext(j).multAssign(suppressionFactor);
+					cells[i].setU(j, cells[i].getU(j).pow(suppressionFactor));
+					cells[i].setUnext(j, cells[i].getUnext(j).pow(suppressionFactor));
 				}
 				cells[i].getRho().multAssign(suppressionFactor);
 			}
@@ -636,8 +644,8 @@ public class OccupationNumbersInTime implements Diagnostics {
 				for(int j = 0; j < grid.getNumberOfDimensions(); j++) {
 					cells[i].getE(j).multAssign(suppressionFactor);
 					cells[i].getJ(j).multAssign(suppressionFactor);
-					cells[i].getU(j).multAssign(suppressionFactor);
-					cells[i].getUnext(j).multAssign(suppressionFactor);
+					cells[i].setU(j, cells[i].getU(j).pow(suppressionFactor));
+					cells[i].setUnext(j, cells[i].getUnext(j).pow(suppressionFactor));
 				}
 				cells[i].getRho().multAssign(suppressionFactor);
 			}
