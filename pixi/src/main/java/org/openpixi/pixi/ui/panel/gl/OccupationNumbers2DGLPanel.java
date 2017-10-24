@@ -140,6 +140,7 @@ public class OccupationNumbers2DGLPanel extends AnimationGLPanel {
 			gaugeMirrorLabeledGrid.grid = diagnostic.getGaugeMirrorGrid();
 			gaugeLabeledGrid.grid = diagnostic.getGaugeGrid();
 			finalLabeledGrid.grid = diagnostic.getFinalWindowGrid();
+			finalLabeledGrid.occupationNumbers = diagnostic.occupationNumbers;
 		}
 		frameCounter++;
 

@@ -30,6 +30,7 @@ import javax.swing.Box;
 import org.openpixi.pixi.math.AlgebraElement;
 import org.openpixi.pixi.physics.Simulation;
 import org.openpixi.pixi.physics.grid.Grid;
+import org.openpixi.pixi.physics.util.GridFunctions;
 import org.openpixi.pixi.ui.GridManager;
 import org.openpixi.pixi.ui.SimulationAnimation;
 import org.openpixi.pixi.ui.panel.properties.BooleanProperties;
@@ -50,6 +51,7 @@ public class EnergyDensityVoxelGLPanel extends AnimationGLPanel {
 	public static final int INDEX_ENERGY_DENSITY_TRANSVERSE_MAGNETIC = 4;
 	public static final int INDEX_GAUSS_VIOLATION = 5;
 	public static final int INDEX_U_LONGITUDINAL = 6;
+	public static final int INDEX_OCCUPATION_NUMBERS = 7;
 
 	String[] sourceLabel = new String[] {};
 
@@ -60,7 +62,8 @@ public class EnergyDensityVoxelGLPanel extends AnimationGLPanel {
 			"Energy density transverse electric",
 			"Energy density transverse magnetic",
 			"Gauss violation",
-			"U (along direction)"
+			"U (along direction)",
+			"Occupation numbers"
 	};
 
 	String[] directionLabel = {
@@ -149,6 +152,7 @@ public class EnergyDensityVoxelGLPanel extends AnimationGLPanel {
 		Grid drawGrid = s.grid;
 		int gridIndex = sourceProperties.getIndex();
 		drawGrid = gridManager.getGrid(gridIndex);
+		double[][] occupationNumbers = gridManager.getOccupationNumbers(gridIndex);
 
 		double visibilityThreshold = visibilityThresholdProperties.getValue();
 		double opacity = opacityProperties.getValue();
@@ -374,6 +378,9 @@ public class EnergyDensityVoxelGLPanel extends AnimationGLPanel {
 						case INDEX_U_LONGITUDINAL:
 							value = getU(drawGrid, index, color, direction) / drawGrid.getLatticeUnitFactor(direction);
 							break;
+						case INDEX_OCCUPATION_NUMBERS:
+							value = getOccupationNumbers(drawGrid, occupationNumbers, pos, color);
+							break;
 						}
 					}
 					// Normalize
@@ -554,6 +561,35 @@ public class EnergyDensityVoxelGLPanel extends AnimationGLPanel {
 		color[GREEN] = Math.pow(U.get(1), 2);
 		color[BLUE] = Math.pow(U.get(2), 2);
 		return value;
+	}
+
+	private double getOccupationNumbers(Grid drawGrid, double[][] occupationNumbers, int[] pos, double[] color) {
+		double value = 0;
+		if (occupationNumbers != null) {
+			int index = getMomentumIndex(drawGrid, pos);
+			color[RED] = occupationNumbers[index][0];
+			color[GREEN] = occupationNumbers[index][1];
+			color[BLUE] = occupationNumbers[index][2];
+			value = color[RED] + color[GREEN] + color[BLUE];
+		}
+		return value;
+	}
+
+	// TODO: This is a copy of OccupationNumbers2DGBPanel. Put into helper class?
+	private int getMomentumIndex(Grid grid, int[] pos)
+	{
+		int[] numGridCells = grid.getNumCells().clone();
+		int[] pos2 = new int[pos.length];
+		System.arraycopy(pos, 0, pos2, 0, pos.length);
+
+		for(int i = 0; i < pos.length; i++)
+		{
+			pos2[i] += numGridCells[i] / 2;
+			pos2[i] %= numGridCells[i];
+			pos2[i] = numGridCells[i] - pos2[i];
+		}
+
+		return GridFunctions.getCellIndex(pos2, numGridCells);
 	}
 
 	private int mouseOldX, mouseOldY;
