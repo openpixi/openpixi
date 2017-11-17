@@ -115,7 +115,6 @@ public class SimulationAnimation {
 	private void doSimulationStep() {
 		try {
 			s.step();
-			mainControlApplet.defaultLabeledGrid.grid = s.grid;
 			if (s.totalSimulationSteps == s.getIterations()) {
 				// Stop simulation (the user can continue by hand)
 				stopAnimation();
@@ -138,6 +137,7 @@ public class SimulationAnimation {
 		// timer.restart();
 		timer.stop();
 		s = new Simulation(settings);
+		mainControlApplet.defaultLabeledGrid.grid = s.grid;
 		clear();
 		repaint();
 	}

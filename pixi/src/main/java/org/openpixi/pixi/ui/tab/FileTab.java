@@ -212,6 +212,7 @@ public class FileTab extends Box {
 				parent.web.validate();
 			}
 			if (panels != null) {
+				panelManager.resetGridManager();
 				Component component = panels.inflate(panelManager);
 				if (component != null) {
 					panelManager.replaceMainPanel(component);

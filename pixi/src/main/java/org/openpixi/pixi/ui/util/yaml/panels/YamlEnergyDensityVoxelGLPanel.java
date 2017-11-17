@@ -34,6 +34,8 @@ public class YamlEnergyDensityVoxelGLPanel {
 	/** Distance of viewer */
 	public Double distanceFactor;
 
+	public Integer dataSource;
+
 	/** Empty constructor called by SnakeYaml */
 	public YamlEnergyDensityVoxelGLPanel() {
 	}
@@ -56,6 +58,7 @@ public class YamlEnergyDensityVoxelGLPanel {
 			centery = panel.centery;
 			centerz = panel.centerz;
 			distanceFactor = panel.distanceFactor;
+			dataSource = panel.sourceProperties.getIndex();
 		}
 	}
 
@@ -121,6 +124,10 @@ public class YamlEnergyDensityVoxelGLPanel {
 
 		if (distanceFactor != null) {
 			panel.distanceFactor = distanceFactor;
+		}
+
+		if (dataSource != null) {
+			panel.sourceProperties.setIndex(dataSource);
 		}
 
 		return panel;

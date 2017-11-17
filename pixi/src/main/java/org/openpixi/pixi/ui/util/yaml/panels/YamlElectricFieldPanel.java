@@ -21,6 +21,8 @@ public class YamlElectricFieldPanel {
 	// Coordinate properties
 	public String showCoordinates;
 
+	public Integer dataSource;
+
 	/** Empty constructor called by SnakeYaml */
 	public YamlElectricFieldPanel() {
 	}
@@ -34,6 +36,7 @@ public class YamlElectricFieldPanel {
 			scaleFactor = panel.scaleProperties.getScaleFactor();
 			automaticScaling = panel.scaleProperties.getAutomaticScaling();
 			showCoordinates = panel.showCoordinateProperties.getValue();
+			dataSource = panel.sourceProperties.getIndex();
 		}
 	}
 
@@ -63,6 +66,10 @@ public class YamlElectricFieldPanel {
 
 		if (showCoordinates != null) {
 			panel.showCoordinateProperties.setValue(showCoordinates);
+		}
+
+		if (dataSource != null) {
+			panel.sourceProperties.setIndex(dataSource);
 		}
 		return panel;
 	}

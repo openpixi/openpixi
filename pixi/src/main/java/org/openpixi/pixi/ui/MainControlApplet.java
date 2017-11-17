@@ -134,9 +134,7 @@ public class MainControlApplet extends JApplet
 
 		simulationAnimation = new SimulationAnimation(this);
 		panelManager = new PanelManager(this);
-		Simulation s = simulationAnimation.getSimulation();
-		gridManager = new GridManager();
-		defaultLabeledGrid = gridManager.add("Simulation", s.grid);
+		panelManager.resetGridManager();
 
 		startButton = new JButton("Start");
 		stopButton = new JButton("Stop");
@@ -209,6 +207,10 @@ public class MainControlApplet extends JApplet
 
 		panelManager.replaceMainPanel(mainPanel);
 
+	}
+
+	public void setGridManager(GridManager gridManager) {
+		this.gridManager = gridManager;
 	}
 
 	public GridManager getGridManager() {
