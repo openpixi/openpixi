@@ -1,0 +1,134 @@
+simulationType: temporal cgc ngp
+gridStep: 1
+couplingConstant: 2
+numberOfDimensions: 3
+numberOfColors: 2
+numberOfThreads: 8
+gridCells: [128, 8, 8] #[128, 64, 64]
+timeStep: 0.25
+duration: 96
+evaluationRegion:
+  enabled: true
+  point1: [2, 0, 0]
+  point2: [-3, -1, -1]
+activeRegion:
+  enabled: true
+  point1: [1, 0, 0]
+  point2: [-2, -1, -1]
+
+# (Au+Au, 25 percent area at 128^2)
+# a = 0.04 fm; (1/a=5 GeV)
+# L = a * 64 = 2.56 fm
+# UV at 10GeV
+# IR at 0.2 GeV (1fm confinement radius)
+# mu at 0.505 GeV (MV parameter for SU(3) and Au 197)
+# Gamma of 22.5 corresponds to width of 4.0
+currents:
+  MVModels:
+    - direction: 0
+      orientation: 1
+      longitudinalLocation: 32
+      longitudinalWidth: 3.0
+      mu: 0.102
+      randomSeed: 1
+      lowPassCoefficient: 2.001
+      infraredCoefficient: 0.04
+    - direction: 0
+      orientation: -1
+      longitudinalLocation: -32
+      longitudinalWidth: 3.0
+      mu: 0.102
+      randomSeed: 2
+      lowPassCoefficient: 2.001
+      infraredCoefficient: 0.04
+
+output:
+  bulkQuantitiesInTime:
+    - path: "bulk.dat"
+      interval: 1.0
+  occupationNumbersInTime:
+    - path: "occupation_tukey.csv"
+      outputType: csv_with_vectors
+      interval: 8.0
+      colorful: true
+      useMirroredGrid: true
+      mirroredDirection: 0
+      useRectangularWindow: false
+      useGaussianWindow: false
+      useTukeyWindow: true
+      collisionPosition: [64, 0, 0]
+      collisionTime: 32.0
+      coneVelocity: [.7, 0., 0.]
+      tukeyWidth: 0.2
+
+# Generated panel code:
+panels:
+  dividerLocation: 727
+  leftPanel:
+    dividerLocation: 344
+    leftPanel:
+      occupationNumbers2DGLPanel:
+        automaticScaling: true
+        collisionPosition: 64, 0, 0
+        collisionTime: 32.0
+        colorful: true
+        coneRestriction: false
+        cutConeVelocity: .7, 0., 0.
+        frameSkip: 2
+        gaussianWindow: false
+        mirrorX: true
+        scaleFactor: 1.0
+        showCoordinates: x, y, 4
+        tukeyWidth: 0.2
+        tukeyWindow: true
+    orientation: 0
+    rightPanel:
+      dividerLocation: 355
+      leftPanel:
+        electricFieldPanel:
+          automaticScaling: false
+          colorIndex: 0
+          directionIndex: 0
+          scaleFactor: 25.0
+          showCoordinates: x, i, 0
+          showFields:
+          - E
+          - Gauss
+      orientation: 1
+      rightPanel:
+        electricFieldPanel:
+          automaticScaling: false
+          colorIndex: 0
+          directionIndex: 1
+          scaleFactor: 25.0
+          showCoordinates: x, i, 4
+          showFields:
+          - E
+  orientation: 1
+  rightPanel:
+    dividerLocation: 276
+    leftPanel:
+      energyDensityVoxelGLPanel:
+        automaticScaling: true
+        centerx: 0.0
+        centery: 0.0
+        centerz: 0.0
+        data: Energy density
+        direction: x
+        distanceFactor: 0.52
+        opacity: 1.0
+        phi: -2.3407963267948966
+        scaleFactor: 1.0
+        showSimulationBox: false
+        theta: 1.5353981633974487
+        unequalScaling: false
+        visibilityThreshold: 0.0
+        whiteBackground: false
+    orientation: 0
+    rightPanel:
+      gaussViolation2DGLPanel:
+        automaticScaling: true
+        scaleFactor: 1.0
+        showCoordinates: x, y, 0
+  windowHeight: 782
+  windowWidth: 1455
