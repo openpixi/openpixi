@@ -21,6 +21,7 @@ import org.openpixi.pixi.ui.util.FrameRateDetector;
 public class SimulationAnimation {
 
 	protected Simulation s;
+	private MainControlApplet mainControlApplet;
 
 	/** Milliseconds between updates */
 	private int interval = 30;
@@ -33,7 +34,8 @@ public class SimulationAnimation {
 	private ArrayList<SimulationAnimationListener> listeners = new ArrayList<SimulationAnimationListener>();
 
 	/** Constructor */
-	public SimulationAnimation() {
+	public SimulationAnimation(MainControlApplet mainControlApplet) {
+		this.mainControlApplet = mainControlApplet;
 		timer = new Timer(interval, new TimerListener());
 		frameratedetector = new FrameRateDetector(500);
 		Settings settings = new Settings();
@@ -69,6 +71,8 @@ public class SimulationAnimation {
 	public Simulation getSimulation() {
 		return s;
 	}
+
+	public MainControlApplet getMainControlApplet() { return mainControlApplet; }
 
 	public FrameRateDetector getFrameRateDetector() {
 		return frameratedetector;
@@ -133,6 +137,7 @@ public class SimulationAnimation {
 		// timer.restart();
 		timer.stop();
 		s = new Simulation(settings);
+		mainControlApplet.defaultLabeledGrid.grid = s.grid;
 		clear();
 		repaint();
 	}

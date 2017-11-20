@@ -13,6 +13,7 @@ import javax.swing.JPopupMenu;
 import javax.swing.JSeparator;
 import javax.swing.JSplitPane;
 
+import org.openpixi.pixi.physics.Simulation;
 import org.openpixi.pixi.ui.panel.ElectricFieldPanel;
 import org.openpixi.pixi.ui.panel.EnergyDensity1DPanel;
 import org.openpixi.pixi.ui.panel.EnergyDensity2DPanel;
@@ -86,6 +87,15 @@ public class PanelManager {
 
 	public SimulationAnimation getSimulationAnimation() {
 		return mainControlApplet.simulationAnimation;
+	}
+
+	/**
+	 *
+	 */
+	public void resetGridManager() {
+		Simulation s = mainControlApplet.simulationAnimation.getSimulation();
+		mainControlApplet.setGridManager(new GridManager());
+		mainControlApplet.defaultLabeledGrid = mainControlApplet.getGridManager().add("Simulation", s.grid);
 	}
 
 	/**

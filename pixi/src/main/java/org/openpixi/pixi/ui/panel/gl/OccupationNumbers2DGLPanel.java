@@ -21,17 +21,14 @@ package org.openpixi.pixi.ui.panel.gl;
 import org.openpixi.pixi.diagnostics.methods.OccupationNumbersInTime;
 import org.openpixi.pixi.physics.Simulation;
 import org.openpixi.pixi.physics.util.GridFunctions;
+import org.openpixi.pixi.ui.GridManager;
 import org.openpixi.pixi.ui.SimulationAnimation;
-import org.openpixi.pixi.ui.panel.properties.BooleanProperties;
-import org.openpixi.pixi.ui.panel.properties.CoordinateProperties;
-import org.openpixi.pixi.ui.panel.properties.IntegerProperties;
-import org.openpixi.pixi.ui.panel.properties.ScaleProperties;
+import org.openpixi.pixi.ui.panel.properties.*;
 
 import javax.media.opengl.GL;
 import javax.media.opengl.GL2;
 import javax.media.opengl.GLAutoDrawable;
 import javax.swing.*;
-import java.util.Arrays;
 
 
 /**
@@ -41,17 +38,37 @@ public class OccupationNumbers2DGLPanel extends AnimationGLPanel {
 
 	public ScaleProperties scaleProperties;
 	public BooleanProperties colorfulProperties;
-	BooleanProperties mirrorProperties;
+	public BooleanProperties mirrorProperties;
 	public IntegerProperties frameSkipProperties;
-	CoordinateProperties showCoordinateProperties;
+	public CoordinateProperties showCoordinateProperties;
+
+	public BooleanProperties useConeProperties;
+	public DoubleProperties collisionTimeDoubleProperties;
+	public CoordinateProperties collisionCoordinateProperties;
+	public CoordinateProperties velocityCoordinateProperties;
+	public BooleanProperties useGaussianWindowProperties;
+	public BooleanProperties useTukeyWindowProperties;
+	public DoubleProperties tukeyWidthProperties;
 
 	OccupationNumbersInTime diagnostic;
 	Simulation simulation;
+	GridManager gridManager;
+	GridManager.LabeledGrid mirrorLabeledGrid;
+	GridManager.LabeledGrid gaugeMirrorLabeledGrid;
+	GridManager.LabeledGrid gaugeLabeledGrid;
+	GridManager.LabeledGrid finalLabeledGrid;
 
 	private int frameCounter;
 	private int frameSkip;
 	private int mirrorDirection = 0;
 	private boolean oldUseMirror;
+	private boolean oldUseCone;
+	private double oldCollisionTime;
+	private double[] oldCollisionPosition;
+	private double[] oldConeVelocity;
+	private boolean oldUseGaussianWindow;
+	private boolean oldUseTukeyWindow;
+	private double oldTukeyWidth;
 
 	/** Constructor */
 	public OccupationNumbers2DGLPanel(SimulationAnimation simulationAnimation) {
@@ -63,21 +80,55 @@ public class OccupationNumbers2DGLPanel extends AnimationGLPanel {
 		oldUseMirror = mirrorProperties.getValue();
 		frameSkipProperties = new IntegerProperties(simulationAnimation, "Skipped frames:", 2);
 		showCoordinateProperties = new CoordinateProperties(simulationAnimation, CoordinateProperties.Mode.MODE_2D);
+		useConeProperties = new BooleanProperties(simulationAnimation, "Use cone restriction:", false);
+		collisionTimeDoubleProperties = new DoubleProperties(simulationAnimation, "Collision time:", 0.);
+		collisionCoordinateProperties = new CoordinateProperties(simulationAnimation, "Collision center:", "0, 0, 0");
+		velocityCoordinateProperties = new CoordinateProperties(simulationAnimation, "Cut cone velocity:", "0., 0., 0.");
+		useGaussianWindowProperties = new BooleanProperties(simulationAnimation, "Gaussian window", false);
+		useTukeyWindowProperties = new BooleanProperties(simulationAnimation, "Tukey window", false);
+		tukeyWidthProperties = new DoubleProperties(simulationAnimation, "Tukey width", 0.);
 		frameCounter = 0;
 
 		simulation = this.simulationAnimation.getSimulation();
 		updateDiagnostic();
 		diagnostic.calculate(simulation.grid, simulation.particles, 0);
 
+		gridManager = simulationAnimation.getMainControlApplet().getGridManager();
+		mirrorLabeledGrid = gridManager.add("Occupation numbers (mirror)", simulation.grid);
+		gaugeMirrorLabeledGrid = gridManager.add("Occupation numbers (gauge + mirror)", simulation.grid);
+		gaugeLabeledGrid = gridManager.add("Occupation numbers (gauge)", simulation.grid);
+		finalLabeledGrid = gridManager.add("Occupation numbers (final)", simulation.grid);
 	}
 
 	@Override
 	public void display(GLAutoDrawable glautodrawable) {
 
+		boolean useCone = useConeProperties.getValue();
+		double collisionTime = collisionTimeDoubleProperties.getValue();
+		double[] collisionPosition = collisionCoordinateProperties.getDoublePositions();
+		double[] coneVelocity = velocityCoordinateProperties.getDoublePositions();
+		boolean useGaussianWindow = useGaussianWindowProperties.getValue();
+		boolean useTukeyWindow = useTukeyWindowProperties.getValue();
+		double tukeyWidth = tukeyWidthProperties.getValue();
+
 		// Compute occupation numbers
-		if(mirrorProperties.getValue() != oldUseMirror || simulation != simulationAnimation.getSimulation()) {
+		if(mirrorProperties.getValue() != oldUseMirror || simulation != simulationAnimation.getSimulation()
+				|| useCone != oldUseCone
+				|| collisionTime != oldCollisionTime
+				|| ! collisionPosition.equals(oldCollisionPosition)
+				|| ! coneVelocity.equals(oldConeVelocity)
+				|| useGaussianWindow != oldUseGaussianWindow
+				|| useTukeyWindow != oldUseTukeyWindow
+				|| tukeyWidth != oldTukeyWidth) {
 			oldUseMirror = mirrorProperties.getValue();
 			simulation = simulationAnimation.getSimulation();
+			oldUseCone = useCone;
+			oldCollisionTime = collisionTime;
+			oldCollisionPosition = collisionPosition;
+			oldConeVelocity = coneVelocity;
+			oldUseGaussianWindow = useGaussianWindow;
+			oldUseTukeyWindow = useTukeyWindow;
+			oldTukeyWidth = tukeyWidth;
 			updateDiagnostic();
 		}
 		frameSkip = (frameSkipProperties.getValue() > 1) ? frameSkipProperties.getValue() : 1;
@@ -85,6 +136,11 @@ public class OccupationNumbers2DGLPanel extends AnimationGLPanel {
 		{
 			diagnostic.calculate(simulation.grid, simulation.particles, 0);
 
+			mirrorLabeledGrid.grid = diagnostic.getMirrorGrid();
+			gaugeMirrorLabeledGrid.grid = diagnostic.getGaugeMirrorGrid();
+			gaugeLabeledGrid.grid = diagnostic.getGaugeGrid();
+			finalLabeledGrid.grid = diagnostic.getFinalWindowGrid();
+			finalLabeledGrid.occupationNumbers = diagnostic.occupationNumbers;
 		}
 		frameCounter++;
 
@@ -118,6 +174,7 @@ public class OccupationNumbers2DGLPanel extends AnimationGLPanel {
 				int xstart2 = (int)(s.grid.getLatticeSpacing() * i * sx);
 				int xstart3 = (int)(s.grid.getLatticeSpacing() * (i + 1) * sx);
 				int ystart2 = (int) (s.grid.getLatticeSpacing() * k * sy);
+				int ystart3 = (int) (s.grid.getLatticeSpacing() * (k + 1) * sy);
 
 				pos[xAxisIndex] = i;
 				pos[yAxisIndex] = k;
@@ -140,6 +197,8 @@ public class OccupationNumbers2DGLPanel extends AnimationGLPanel {
 					gl2.glColor3d( red, green, blue );
 					gl2.glVertex2f( xstart2, ystart2 );
 					gl2.glVertex2f( xstart3, ystart2 );
+					gl2.glVertex2f( xstart2, ystart3 );
+					gl2.glVertex2f( xstart3, ystart3 );
 				} else {
 					double occ = diagnostic.occupationNumbers[index][0]
 							+ diagnostic.occupationNumbers[index][1]
@@ -151,6 +210,8 @@ public class OccupationNumbers2DGLPanel extends AnimationGLPanel {
 					gl2.glColor3d( value, value, value );
 					gl2.glVertex2f( xstart2, ystart2 );
 					gl2.glVertex2f( xstart3, ystart2 );
+					gl2.glVertex2f( xstart2, ystart3 );
+					gl2.glVertex2f( xstart3, ystart3 );
 				}
 
 			}
@@ -161,13 +222,20 @@ public class OccupationNumbers2DGLPanel extends AnimationGLPanel {
 	}
 
 	private void updateDiagnostic() {
-		if(mirrorProperties.getValue()) {
-			diagnostic = new OccupationNumbersInTime(1.0, "none", "", true, mirrorDirection);
-			diagnostic.initialize(simulation);
-		} else {
-			diagnostic = new OccupationNumbersInTime(1.0, "none", "", true);
-			diagnostic.initialize(simulation);
-		}
+		boolean useCone = useConeProperties.getValue();
+		double collisionTime = collisionTimeDoubleProperties.getValue();
+		double[] collisionPosition = collisionCoordinateProperties.getDoublePositions();
+		double[] coneVelocity = velocityCoordinateProperties.getDoublePositions();
+		boolean useGaussianWindow = useGaussianWindowProperties.getValue();
+		boolean useTukeyWindow = useTukeyWindowProperties.getValue();
+		double tukeyWidth = tukeyWidthProperties.getValue();
+
+		boolean useMirroredGrid = mirrorProperties.getValue();
+
+		diagnostic = new OccupationNumbersInTime(1.0, "none", "", true,
+				useMirroredGrid, mirrorDirection,
+				useCone, collisionTime, collisionPosition, coneVelocity, useGaussianWindow, useTukeyWindow, tukeyWidth);
+		diagnostic.initialize(simulation);
 	}
 
 	private int getMomentumIndex(int[] pos)
@@ -193,5 +261,21 @@ public class OccupationNumbers2DGLPanel extends AnimationGLPanel {
 		frameSkipProperties.addComponents(box);
 		showCoordinateProperties.addComponents(box);
 		mirrorProperties.addComponents(box);
+		useConeProperties.addComponents(box);
+		collisionTimeDoubleProperties.addComponents(box);
+		collisionCoordinateProperties.addComponents(box);
+		velocityCoordinateProperties.addComponents(box);
+		useGaussianWindowProperties.addComponents(box);
+		useTukeyWindowProperties.addComponents(box);
+		tukeyWidthProperties.addComponents(box);
+	}
+
+	@Override
+	public void destruct() {
+		gridManager.remove(gaugeLabeledGrid);
+		gridManager.remove(mirrorLabeledGrid);
+		gridManager.remove(gaugeMirrorLabeledGrid);
+		gridManager.remove(finalLabeledGrid);
+		super.destruct();
 	}
 }

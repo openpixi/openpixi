@@ -136,6 +136,7 @@ public class ScreenshotInTime implements Diagnostics {
 		 * @param simulation  The simulation object.
 		 */
 		public SimulationAnimationDummy(Simulation simulation) {
+			super(null);  // TODO: Is this quickfix justified?
 			this.s = simulation;
 		}
 	}

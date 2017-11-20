@@ -504,6 +504,8 @@ public class Grid {
 
 		this.fsolver = grid.fsolver;
 		this.cellIterator = grid.cellIterator.copy();
+
+		this.simulationSteps = grid.simulationSteps;
 	}
 
 	/**

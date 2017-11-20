@@ -9,7 +9,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 /**
- * A generic text field for setting integer values.
+ * A generic text field for setting double values.
  */
 public class DoubleProperties {
 

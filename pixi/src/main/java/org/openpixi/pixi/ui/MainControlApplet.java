@@ -47,6 +47,8 @@ public class MainControlApplet extends JApplet
 
 	protected SimulationAnimation simulationAnimation;
 	private PanelManager panelManager;
+	private GridManager gridManager;
+	public GridManager.LabeledGrid defaultLabeledGrid;
 
 	protected PropertiesTab propertiesTab;
 	private FileTab fileTab;
@@ -130,9 +132,9 @@ public class MainControlApplet extends JApplet
 		// Set US locale for numeric output ("1.23"[US] instead of "1,23"[DE])
 		Locale.setDefault(Locale.US);
 
-		simulationAnimation = new SimulationAnimation();
+		simulationAnimation = new SimulationAnimation(this);
 		panelManager = new PanelManager(this);
-		Simulation s = simulationAnimation.getSimulation();
+		panelManager.resetGridManager();
 
 		startButton = new JButton("Start");
 		stopButton = new JButton("Stop");
@@ -205,6 +207,14 @@ public class MainControlApplet extends JApplet
 
 		panelManager.replaceMainPanel(mainPanel);
 
+	}
+
+	public void setGridManager(GridManager gridManager) {
+		this.gridManager = gridManager;
+	}
+
+	public GridManager getGridManager() {
+		return gridManager;
 	}
 
 	public void setText(JTextArea text, String str, boolean onoff)
